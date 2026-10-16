@@ -59,6 +59,8 @@ function doPost(e) {
       result = upsertSchoolInMasterSheet(data.school);
     } else if (action === "admin_reset_school_password") {
       result = adminResetSchoolPassword(data);
+    } else if (action.indexOf("save_ebs") === 0) {
+      result = saveEbsFormDataToSheets(data);
     }
 
     lock.releaseLock();
@@ -160,4 +162,38 @@ function adminResetSchoolPassword(data) {
   }
   sheet.appendRow([data.udiseNo || "", data.uNo || "", "", "", "", "", "", "", "", data.newPassword, now, now]);
   return { status: "success", uNo: data.uNo };
+}
+
+
+// ============================================================================
+// EBS_2026_27 MODULE GOOGLE SHEETS HANDLERS (FORM I, II, III, IV)
+// ============================================================================
+function saveEbsFormDataToSheets(data) {
+  var ss = SpreadsheetApp.openById(MASTER_SPREADSHEET_ID);
+  var s1 = ss.getSheetByName("EBS_2026_27_Form1") || ss.insertSheet("EBS_2026_27_Form1");
+  if (s1.getLastRow() === 0) {
+    s1.appendRow(["Timestamp", "U.NO", "UDISE NO", "School Name", "Pincode", "HM Name", "HM Mobile", "AHM Name", "AHM Mobile", "Gmail", "Landline", "Total Rooms", "Exam Rooms", "Bench Pairs", "Teaching JSON", "NonTeaching JSON", "SSLC JSON", "HSC JSON"]);
+  }
+  var now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+  if (data.form1) {
+    var f1 = data.form1;
+    s1.appendRow([now, data.uNo, data.udiseNo, f1.schoolName, f1.pincode, f1.hmName, f1.hmMobile, f1.ahmName, f1.ahmMobile, f1.gmail, f1.landline, f1.totalRooms, f1.examRooms, f1.benchPairs, JSON.stringify(f1.teachReg), JSON.stringify(f1.nonTeachReg), JSON.stringify(f1.sslc), JSON.stringify(f1.hsc)]);
+  }
+  if (data.teacher) {
+    var s3 = ss.getSheetByName("EBS_2026_27_Form3_Teachers") || ss.insertSheet("EBS_2026_27_Form3_Teachers");
+    if (s3.getLastRow() === 0) {
+      s3.appendRow(["Timestamp", "U.NO", "UDISE NO", "Name EN", "Name TA", "Designation", "Gender", "EMIS ID", "Qualification", "Main Subject", "First App Mode", "DOJ First", "DOB", "Present Nature", "Mobile", "IFHRMS ID", "Preferred Camp"]);
+    }
+    var t = data.teacher;
+    s3.appendRow([now, data.uNo, data.udiseNo, t.nameEn, t.nameTa, t.desig, t.gender, t.emisId, t.qual, t.mainSub, t.firstAppMode, t.dojFirst, t.dob, t.presNature, t.mobile, t.ifhrms, t.prefCamp]);
+  }
+  if (data.employee) {
+    var s4 = ss.getSheetByName("EBS_2026_27_Form4_NonTeaching") || ss.insertSheet("EBS_2026_27_Form4_NonTeaching");
+    if (s4.getLastRow() === 0) {
+      s4.appendRow(["Timestamp", "U.NO", "UDISE NO", "Name EN", "Name TA", "Designation", "Gender", "EMIS ID", "GPF/CPS", "DOB", "Nature", "Mobile", "IFHRMS ID"]);
+    }
+    var emp = data.employee;
+    s4.appendRow([now, data.uNo, data.udiseNo, emp.nameEn, emp.nameTa, emp.desig, emp.gender, emp.emisId, emp.gpfCps, emp.dob, emp.nature, emp.mobile, emp.ifhrms]);
+  }
+  return { status: "success", savedEbs: true };
 }
