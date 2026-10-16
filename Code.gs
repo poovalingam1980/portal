@@ -197,3 +197,21 @@ function saveEbsFormDataToSheets(data) {
   }
   return { status: "success", savedEbs: true };
 }
+
+
+// Handle EBS_2026_27 Staff Delete Requests & Admin Approvals
+function handleDeleteRequest(ss, data) {
+  var sheetName = "EBS_Delete_Requests";
+  var sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    sheet.appendRow(["Req_ID", "Requested_At", "U_NO", "UDISE_NO", "School_Name", "Form_Type", "Staff_ID", "Staff_Name_EN", "Staff_Name_TA", "Designation", "EMIS_ID", "Reason_Category", "Reason_Detail", "Status", "Resolved_At"]);
+  }
+  var r = data.request || {};
+  sheet.appendRow([
+    r.reqId || "", r.requestedAt || "", r.uNo || "", r.udiseNo || "", r.schoolNameEn || "",
+    r.formType || "", r.staffId || "", r.staffNameEn || "", r.staffNameTa || "",
+    r.desig || "", r.emisId || "", r.reasonCategory || "", r.reasonDetail || "",
+    r.status || "PENDING", r.resolvedAt || ""
+  ]);
+}
