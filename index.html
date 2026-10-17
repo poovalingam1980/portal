@@ -23,29 +23,40 @@
       --radius: 12px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
     body {
       font-family: 'Mukta Malar', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.55;
-      padding: 12px 10px 36px;
     }
     .container {
-      width: 98%;
-      max-width: 1320px;
-      margin: 0 auto;
+      width: 100%;
+      max-width: 100%;
+      min-height: 100vh;
+      margin: 0;
       background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: 0 12px 32px rgba(15, 41, 74, 0.1);
-      border: 1px solid #e2e8f0;
-      overflow: hidden;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     /* Top Cloud & Domain Bar */
     .top-system-bar {
+      width: 100%;
       background: linear-gradient(90deg, #eff6ff 0%, #f8fafc 50%, #fefce8 100%);
       border-bottom: 2px solid #bfdbfe;
-      padding: 8px 18px;
+      padding: 8px clamp(14px, 2vw, 32px);
       font-size: 0.84rem;
       display: flex;
       justify-content: space-between;
@@ -72,9 +83,10 @@
 
     /* Royal Animated Header Banner */
     .portal-header {
+      width: 100%;
       background: linear-gradient(135deg, #061224 0%, #0d2342 30%, #1a3c68 65%, #0a1c35 100%);
       color: white;
-      padding: 20px 28px 18px;
+      padding: 20px clamp(16px, 2.5vw, 40px) 18px;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -166,8 +178,14 @@
       flex-shrink: 0;
     }
 
-    /* Views */
-    .view-section { display: none; padding: 22px 20px; }
+    /* Views - Fluid Full-Monitor Width */
+    .view-section {
+      display: none;
+      width: 100%;
+      max-width: 100%;
+      flex: 1;
+      padding: 20px clamp(14px, 2vw, 32px);
+    }
     .view-section.active { display: block; }
 
     /* Buttons */
@@ -189,11 +207,12 @@
     .btn-sm { padding: 5px 11px; font-size: 0.8rem; border-radius: 6px; }
     .btn-block { width: 100%; padding: 12px; font-size: 1rem; }
 
-    /* Auth Layout */
+    /* Auth Layout - Fluid Widescreen Support */
     .auth-layout-grid {
+      width: 100%;
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 22px;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: clamp(18px, 2vw, 32px);
       align-items: start;
     }
     @media (max-width: 960px) {
@@ -312,12 +331,18 @@
     }
 
     .panel-box {
+      width: 100%;
+      max-width: 100%;
       background: #fff;
       border: 1.5px solid #cbd5e1;
       border-radius: 12px;
-      padding: 18px;
+      padding: clamp(16px, 1.8vw, 28px);
       margin-bottom: 18px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+    }
+    .ebs-sheet-box {
+      width: 100%;
+      max-width: 100%;
     }
     .panel-title {
       font-size: 1.05rem; font-weight: 800; color: var(--primary);
@@ -588,6 +613,420 @@
       text-align: center;
     }
 
+
+    /* =======================================================================
+       COMPREHENSIVE MOBILE PHONE VIEW OPTIMIZATIONS
+       ======================================================================= */
+    .ebs-mobile-section-head { display: none; }
+
+    @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-width: 960px) {
+      /* Eliminate nested container padding & border waste on mobile */
+      body {
+        padding: 0 0 24px !important;
+        background-color: #f8fafc;
+      }
+      .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        box-shadow: none !important;
+      }
+      .view-section {
+        padding: 10px 6px !important;
+      }
+      .panel-box {
+        padding: 10px 8px !important;
+        border-radius: 8px !important;
+        margin-bottom: 12px !important;
+      }
+      .ebs-sheet-box {
+        padding: 10px 8px !important;
+        border-width: 1.5px !important;
+        border-radius: 8px !important;
+        margin-bottom: 12px !important;
+      }
+      #ebsSubPaneF3 form,
+      #ebsSubPaneF4 form,
+      #schPaneStaff form,
+      #admPaneAddSchool form {
+        padding: 10px 8px !important;
+        border-radius: 8px !important;
+      }
+      .auth-body {
+        padding: 14px 10px !important;
+      }
+
+      /* Top System Bar & Royal Header Banner on Mobile */
+      .top-system-bar {
+        padding: 8px 10px !important;
+        font-size: 0.78rem !important;
+        gap: 8px !important;
+      }
+      .top-system-bar > div {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .portal-header {
+        flex-direction: column !important;
+        padding: 12px 10px !important;
+        gap: 8px !important;
+      }
+      .header-logo-box {
+        padding: 6px 8px !important;
+        border-radius: 10px !important;
+      }
+      .header-tn-logo {
+        width: 56px !important;
+      }
+      .header-dept {
+        font-size: 0.96rem !important;
+      }
+      .header-dept-en {
+        font-size: 0.72rem !important;
+        letter-spacing: 0.6px !important;
+      }
+      .header-title-ta {
+        font-size: 1.12rem !important;
+        line-height: 1.35 !important;
+      }
+      .header-title-en {
+        font-size: 0.76rem !important;
+        line-height: 1.3 !important;
+      }
+      .royal-badge-bar {
+        border-radius: 10px !important;
+        padding: 5px 10px !important;
+        font-size: 0.74rem !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        line-height: 1.4 !important;
+      }
+      .header-right-box {
+        width: 100% !important;
+        align-items: stretch !important;
+      }
+      .header-right-box > div {
+        text-align: center !important;
+      }
+
+      /* Flash Ticker Bar */
+      .flash-ticker-bar {
+        padding: 8px 10px !important;
+        font-size: 0.8rem !important;
+        gap: 8px !important;
+      }
+      .flash-ticker-bar button {
+        width: 100%;
+      }
+
+      /* Auth Tabs & Navigation Pills */
+      .auth-tabs {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+      }
+      .auth-tab {
+        padding: 10px 6px !important;
+        font-size: 0.8rem !important;
+        min-width: 0 !important;
+        border-right: 1px solid #e2e8f0;
+      }
+      .nav-pills-bar {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 6px !important;
+      }
+      .nav-pill-btn {
+        width: 100% !important;
+        text-align: left !important;
+        padding: 10px 12px !important;
+        font-size: 0.85rem !important;
+      }
+
+      /* EBS Module Banner & 4 Form Selector Tabs */
+      .ebs-module-banner {
+        padding: 12px 10px !important;
+        gap: 10px !important;
+      }
+      .ebs-module-banner h3 {
+        font-size: 1.05rem !important;
+      }
+      .ebs-module-banner > div:last-child {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .ebs-module-banner > div:last-child .btn {
+        width: 100%;
+      }
+      .ebs-form-tabs {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        margin-bottom: 12px !important;
+      }
+      .ebs-form-tab-card {
+        padding: 9px 8px !important;
+      }
+      .ebs-tab-title {
+        font-size: 0.8rem !important;
+      }
+      .ebs-tab-sub {
+        font-size: 0.7rem !important;
+        line-height: 1.25 !important;
+      }
+
+      /* EBS Official Sheet Header & Unique Number Box */
+      .ebs-official-header {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 12px !important;
+        gap: 8px !important;
+      }
+      .ebs-pill-title {
+        padding: 3px 16px !important;
+        font-size: 0.88rem !important;
+      }
+      .ebs-uno-box-wrap {
+        align-self: center !important;
+      }
+
+      /* Quick Select Teacher/Staff Dropdowns in Form-III & Form-IV */
+      #ebsF3QuickSelect,
+      #ebsF4QuickSelect {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+
+      /* Prevent Mobile Zoom & Improve Touch Ergonomics on Form Inputs */
+      .form-control,
+      select.form-control,
+      input.form-control,
+      textarea.form-control {
+        font-size: 16px !important;
+        padding: 9px 10px !important;
+        min-height: 42px;
+      }
+      .form-label {
+        font-size: 0.86rem !important;
+        line-height: 1.35 !important;
+        margin-bottom: 4px !important;
+      }
+
+      /* -------------------------------------------------------------------
+         STACKED CARD LAYOUT FOR FORM-III & FORM-IV EXAM DUTY TABLES
+         (Fixes crushed 'Nature of Work' & 'Exam Centre' inputs on mobile!)
+         ------------------------------------------------------------------- */
+      .ebs-mobile-duty-table,
+      .ebs-mobile-duty-table tbody {
+        display: block !important;
+        width: 100% !important;
+        border: none !important;
+      }
+      .ebs-mobile-duty-table thead {
+        display: none !important;
+      }
+      .ebs-mobile-duty-table tbody tr {
+        display: block !important;
+        width: 100% !important;
+        border: 1.5px solid #334155 !important;
+        border-radius: 8px !important;
+        margin-bottom: 10px !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+        box-shadow: 0 2px 6px rgba(15, 41, 74, 0.06);
+      }
+      .ebs-mobile-duty-table tbody td {
+        display: block !important;
+        width: 100% !important;
+        border: none !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 8px 10px !important;
+        text-align: left !important;
+      }
+      .ebs-mobile-duty-table tbody td:last-child {
+        border-bottom: none !important;
+      }
+      .ebs-mobile-duty-table tbody td.ebs-duty-title-cell {
+        background: #0f294a !important;
+        color: #fef08a !important;
+        font-size: 0.88rem !important;
+        font-weight: 800 !important;
+        padding: 7px 12px !important;
+      }
+      .ebs-mobile-duty-table tbody td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #334155;
+        margin-bottom: 4px;
+      }
+
+      /* -------------------------------------------------------------------
+         STACKED CARD LAYOUT FOR FORM-III HANDLING CLASSES TABLE ON MOBILE
+         ------------------------------------------------------------------- */
+      .ebs-mobile-handling-table,
+      .ebs-mobile-handling-table tbody {
+        display: block !important;
+        width: 100% !important;
+        border: none !important;
+      }
+      .ebs-mobile-handling-table thead,
+      .ebs-mobile-handling-table td.ebs-handling-type-cell {
+        display: none !important;
+      }
+      .ebs-mobile-handling-table tbody tr {
+        display: block !important;
+        width: 100% !important;
+        border: 1.5px solid #334155 !important;
+        border-radius: 8px !important;
+        margin-bottom: 10px !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+      }
+      .ebs-mobile-handling-table tbody td {
+        display: block !important;
+        width: 100% !important;
+        border: none !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 8px 10px !important;
+        text-align: left !important;
+      }
+      .ebs-mobile-handling-table tbody td:last-child {
+        border-bottom: none !important;
+      }
+      .ebs-mobile-handling-table td.ebs-handling-chk-cell {
+        background: #eff6ff !important;
+        border-bottom: 1.5px solid #93c5fd !important;
+      }
+      .ebs-mobile-section-head {
+        display: block !important;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: #0f294a;
+        margin-bottom: 6px;
+      }
+      .ebs-handling-chk-wrap {
+        display: flex !important;
+        gap: 16px !important;
+        flex-wrap: wrap !important;
+      }
+      .ebs-mobile-handling-table tbody td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 4px;
+      }
+
+      /* -------------------------------------------------------------------
+         STACKED LAYOUT FOR FORM-I BASIC SCHOOL INFO & CLASSROOMS TABLES
+         ------------------------------------------------------------------- */
+      .ebs-mobile-basic-table,
+      .ebs-mobile-basic-table tbody,
+      .ebs-mobile-basic-table tr,
+      .ebs-mobile-basic-table td {
+        display: block !important;
+        width: 100% !important;
+      }
+      .ebs-mobile-basic-table tr {
+        border: 1.5px solid #334155 !important;
+        border-radius: 8px !important;
+        margin-bottom: 10px !important;
+        overflow: hidden !important;
+      }
+      .ebs-mobile-basic-table td {
+        border: none !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 8px 10px !important;
+      }
+      .ebs-mobile-basic-table td:first-child {
+        background: #e2e8f0 !important;
+        color: #0f294a !important;
+        font-size: 0.84rem !important;
+      }
+      .ebs-mobile-basic-table td:last-child {
+        border-bottom: none !important;
+      }
+
+      .ebs-mobile-rooms-table,
+      .ebs-mobile-rooms-table tbody,
+      .ebs-mobile-rooms-table tr,
+      .ebs-mobile-rooms-table td {
+        display: block !important;
+        width: 100% !important;
+      }
+      .ebs-mobile-rooms-table thead {
+        display: none !important;
+      }
+      .ebs-mobile-rooms-table tr {
+        border: 1.5px solid #334155 !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+      }
+      .ebs-mobile-rooms-table td {
+        border: none !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 8px 10px !important;
+        text-align: left !important;
+      }
+      .ebs-mobile-rooms-table td:last-child {
+        border-bottom: none !important;
+      }
+      .ebs-mobile-rooms-table td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #0f294a;
+        margin-bottom: 4px;
+      }
+
+      /* Multi-column Data & Count Tables: Smooth Horizontal Touch Scroll */
+      .table-wrap,
+      div[style*="overflow-x:auto"] {
+        -webkit-overflow-scrolling: touch;
+      }
+      #ebsF1TeachTable { min-width: 720px; }
+      #ebsF1NonTeachTable { min-width: 560px; }
+      .ebs-grid-table input.ebs-num-inp {
+        min-width: 52px !important;
+        font-size: 0.9rem !important;
+        padding: 6px 4px !important;
+      }
+
+      /* Panel Title & Form Action Buttons on Mobile */
+      .panel-title {
+        font-size: 0.94rem !important;
+      }
+      .panel-title > div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .panel-title .btn {
+        width: 100%;
+      }
+      .creator-card {
+        margin: 14px 8px 8px !important;
+        padding: 10px 12px !important;
+        font-size: 0.82rem !important;
+      }
+      .toast-container {
+        left: 10px !important;
+        right: 10px !important;
+        bottom: 12px !important;
+        max-width: none !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -714,6 +1153,7 @@
             <div style="font-size:0.78rem; font-weight:800; color:#475569; margin-bottom:6px; border-top:1px dashed #fcd34d; padding-top:8px;">⚡ பிற பிரிவு மாதிரிப் பள்ளிகள் (Quick Test Login by Division):</div>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
               <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoSchoolLogin('101')">1G: அரசு உ.நி.பள்ளி (U.No: 101)</button>
+              <button type="button" class="btn btn-outline btn-sm" style="background:#dcfce7; color:#14532d; border-color:#16a34a; font-weight:900;" onclick="quickDemoSchoolLogin('101')">🏫 101 வலசைப்பட்டி நேரடி நுழைவு</button>
               <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoSchoolLogin('223')">1G: அரசு மே.நி.பள்ளி (U.No: 223)</button>
               <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoSchoolLogin('181')">1G-2: நகராட்சி பள்ளி (U.No: 181)</button>
               <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoSchoolLogin('421')">2A-4: உதவிபெறும் பள்ளி (U.No: 421)</button>
@@ -889,7 +1329,7 @@
       <button type="button" class="nav-pill-btn active" id="schTabBtnEbs" onclick="switchSchoolTab('ebs')" style="border-color:#d97706; background:#fffbeb; color:#9a3412;">📋 EBS_2026_27 (படிவங்கள் I - IV பதிவு)</button>
       <button type="button" class="nav-pill-btn" id="schTabBtnProfile" onclick="switchSchoolTab('profile')">🏫 1. பள்ளி சுயவிவரம் & நிர்வாகப் பிரிவு (School Profile)</button>
       <button type="button" class="nav-pill-btn" id="schTabBtnStudents" onclick="switchSchoolTab('students')">👨‍🎓 2. மாணவர் எண்ணிக்கை (Student Strength)</button>
-      <button type="button" class="nav-pill-btn" id="schTabBtnStaff" onclick="switchSchoolTab('staff')">👨‍🏫 3. ஆசிரியர் & பணியாளர் விவரம் (Staff & Exam Duty)</button>
+      <button type="button" class="nav-pill-btn" id="schTabBtnStaff" onclick="switchSchoolTab('staff')">👨‍🏫 3. Teacher Master (ஆசிரியர் & பணியாளர் பதிவேடு)</button>
       <button type="button" class="nav-pill-btn" id="schTabBtnNeeds" onclick="switchSchoolTab('needs')">🏗️ 4. அடிப்படைத் தேவைகள் & சுற்றறிக்கை (Needs & Circulars)</button>
       <button type="button" class="nav-pill-btn" id="schTabBtnSecurity" onclick="switchSchoolTab('security')">🔑 5. கடவுச்சொல் மாற்றம்</button>
     </div>
@@ -916,7 +1356,7 @@
       <!-- 4 Form Sub-Tab Selector Cards -->
       <div class="ebs-form-tabs">
         <button type="button" class="ebs-form-tab-card active" id="ebsSubBtnF1" onclick="switchEbsSubForm('F1')">
-          <span class="ebs-tab-badge">FORM – I</span>
+          <span class="ebs-tab-badge">FORM – I (<span id="ebsF1StaffBadge">Auto-Filled</span>)</span>
           <div class="ebs-tab-title">SCHOOL PROFILE FOR EBS</div>
           <div class="ebs-tab-sub">பள்ளி விவரம், அறைகள், பணியாளர் & SSLC/+2 மாணவர் சுருக்கம்</div>
         </button>
@@ -957,7 +1397,7 @@
 
         <form onsubmit="saveEbsForm1Submit(event)">
           <!-- Basic School Info Table -->
-          <table class="ebs-grid-table" style="text-align:left;">
+          <table class="ebs-grid-table ebs-mobile-basic-table" style="text-align:left;">
             <tbody>
               <tr>
                 <td style="width:32%; font-weight:800; text-align:left; background:#f8fafc;">Name of the School with Pincode</td>
@@ -990,7 +1430,7 @@
           </table>
 
           <!-- Classrooms & Bench Desk Table -->
-          <table class="ebs-grid-table">
+          <table class="ebs-grid-table ebs-mobile-rooms-table">
             <thead>
               <tr>
                 <th>Total No. of Classrooms<br><span style="font-size:0.75rem; font-weight:600;">(மொத்த வகுப்பறைகள்)</span></th>
@@ -1000,17 +1440,20 @@
             </thead>
             <tbody>
               <tr>
-                <td><input type="number" id="ebsF1TotalRooms" class="form-control" min="0" value="0" style="text-align:center; font-weight:800;"></td>
-                <td><input type="number" id="ebsF1ExamRooms" class="form-control" min="0" value="0" style="text-align:center; font-weight:800;"></td>
-                <td><input type="number" id="ebsF1BenchPairs" class="form-control" min="0" value="0" style="text-align:center; font-weight:800;"></td>
+                <td data-label="Total No. of Classrooms (மொத்த வகுப்பறைகள்)"><input type="number" id="ebsF1TotalRooms" class="form-control" min="0" value="0" style="text-align:center; font-weight:800;"></td>
+                <td data-label="No. of Eligible rooms for Exam Purpose (தேர்வுக்குத் தகுதியான அறைகள்)"><input type="number" id="ebsF1ExamRooms" class="form-control" min="0" value="0" style="text-align:center; font-weight:800;"></td>
+                <td data-label="No.of Bench Desk Available - Pair (இருக்கை - மேசை இணைகள்)"><input type="number" id="ebsF1BenchPairs" class="form-control" min="0" value="0" style="text-align:center; font-weight:800;"></td>
               </tr>
             </tbody>
           </table>
 
           <!-- No. of Teaching Staff Working Table -->
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin:12px 0 6px;">
-            <span style="font-weight:800; font-size:0.9rem; color:#0f294a;">No. of Teaching Staff Working ( Include Self Finance Staff )</span>
-            <button type="button" class="btn btn-outline btn-sm" onclick="syncForm1CountsFromForm3And4(true)">🔄 FORM-III &amp; IV பட்டியலிலிருந்து எண்ணிக்கையைத் தானாகக் கணக்கிடு (Auto-Count)</button>
+          <div id="ebsF1AutoFillSummary" style="background:#f0fdf4; border:1.5px solid #22c55e; border-left:5px solid #15803d; padding:10px 14px; border-radius:8px; margin:12px 0 8px; font-size:0.85rem; color:#14532d; font-weight:700;">
+            ✅ Teacher Master (EMIS) பகுதியிலிருந்து பதவி வாரியாக ஆசிரியர்கள் மற்றும் அலுவலகப் பணியாளர்கள் எண்ணிக்கை தானாகப் பூர்த்தி செய்யப்பட்டுள்ளது!
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin:8px 0 6px;">
+            <span style="font-weight:800; font-size:0.9rem; color:#0f294a;">No. of Teaching Staff Working ( Include Self Finance Staff ) — <span style="color:#15803d;">(Auto-Filled from Teacher Master)</span></span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="syncForm1CountsFromForm3And4(true)">🔄 Teacher Master / FORM-III &amp; IV-லிருந்து மீண்டும் கணக்கிடு (Auto-Count)</button>
           </div>
           <div style="overflow-x:auto;">
             <table class="ebs-grid-table" id="ebsF1TeachTable">
@@ -1217,6 +1660,45 @@
           </div>
         </div>
 
+                <div style="background:#ecfdf5; border:1.5px solid #10b981; border-radius:10px; padding:12px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div style="font-weight:900; color:#065f46; font-size:0.92rem;">✅ Teacher Master (EMIS) பதிவேட்டிலிருந்து உங்கள் பள்ளியின் ஆசிரியர்கள் விவரம் கீழே இணைக்கப்பட்டுள்ளது!</div>
+            <div style="font-size:0.8rem; color:#047857;">பட்டியலில் உள்ள <strong>"✏️ திருத்து / பூர்த்தி செய்"</strong> பொத்தானை அழுத்தியோ அல்லது வலதுபுறம் உள்ள பட்டியலில் ஆசிரியரைத் தேர்ந்தெடுத்தோ விடுபட்ட விவரங்களைப் பூர்த்தி செய்யலாம்.</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <label style="font-weight:800; font-size:0.82rem; color:#065f46;">👤 ஆசிரியரைத் தேர்ந்தெடுக்க:</label>
+            <select id="ebsF3QuickSelect" class="form-control" style="width:auto; min-width:240px; padding:6px 10px; font-weight:800; border-color:#10b981;" onchange="if(this.value) editEbsForm3Teacher(this.value)"></select>
+          </div>
+        </div>
+<!-- Saved Teachers List for Form-III -->
+        <div style="background:#eff6ff; border-left:5px solid #1d4ed8; padding:10px 14px; border-radius:8px; margin-bottom:12px; font-size:0.84rem; color:#1e3a8a;">
+          💡 <strong>வழிமுறை:</strong> கீழே உள்ள பட்டியலில் உங்கள் பள்ளியின் ஆசிரியர்கள் விவரம் EMIS பதிவேட்டிலிருந்து முன்கூட்டியே நிரப்பப்பட்டுள்ளது. ஒவ்வொரு ஆசிரியருக்கும் நேராக உள்ள <strong>"✏️ திருத்து / பூர்த்தி செய்"</strong> பொத்தானை அழுத்தி <strong>தமிழ் பெயர், கைபேசி எண், IFHRMS எண், தேர்வுப் பணி மற்றும் முகாம் விருப்பம்</strong> ஆகிய விடுபட்ட விவரங்களை மட்டும் பூர்த்தி செய்து சேமிக்கவும். மாறுதல் / ஓய்வு காரணமாக ஆசிரியரைப் பட்டியலிலிருந்து நீக்க வேண்டுமெனில் <strong>"🗑️ நீக்கக் கோரிக்கை (Delete Request)"</strong> பொத்தானை அழுத்தவும் (மாவட்ட நிர்வாகி ஒப்புதல் அளித்தவுடன் நீக்கப்படும்).
+        </div>
+        <div class="panel-title">
+          <span>📋 பள்ளியின் தலைமையாசிரியர் &amp; ஆசிரியர்கள் பட்டியல் (FORM – III Pre-filled Teachers List)</span>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="printEbsForms('F3')">🖨️ அனைத்து ஆசிரியர்களின் FORM – III படிவங்களை அச்சிடுக (A4 Print)</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="switchEbsSubForm('F4')">அடுத்த படிவம் (FORM – IV) ❯</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>வ.எண்</th>
+                <th>ஆசிரியர் பெயர் (English &amp; தமிழ்)</th>
+                <th>பதவி &amp; முதன்மைப் பாடம்</th>
+                <th>EMIS ID &amp; IFHRMS</th>
+                <th>நியமனம் &amp; தன்மை</th>
+                <th>கைபேசி &amp; முகாம் விருப்பம்</th>
+                <th>செயல்கள் (Print / Edit / Delete)</th>
+              </tr>
+            </thead>
+            <tbody id="ebsF3TeachersListTbody"></tbody>
+          </table>
+        </div>
+        <div id="ebsF3AllCardsPreview" style="margin-top:14px;"></div>
+        <div style="margin-top:18px;"></div>
         <form onsubmit="saveEbsForm3TeacherSubmit(event)" style="background:#f8fafc; border:1.5px solid #94a3b8; border-radius:10px; padding:16px; margin-bottom:18px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1.5px solid #cbd5e1; padding-bottom:8px;">
             <span style="font-weight:900; color:#0f294a; font-size:0.96rem;" id="ebsF3FormTitle">➕ தலைமையாசிரியர் / முதல்வர் / ஆசிரியர் சுயவிவரம் சேர்க்க (Add Teacher for FORM-III)</span>
@@ -1262,7 +1744,7 @@
           </div>
 
           <!-- Handling Classes Table -->
-          <table class="ebs-grid-table" style="margin-bottom:12px;">
+          <table class="ebs-grid-table ebs-mobile-handling-table" style="margin-bottom:12px;">
             <thead>
               <tr>
                 <th style="width:22%;">Handling Classes</th>
@@ -1274,18 +1756,21 @@
             </thead>
             <tbody>
               <tr>
-                <td rowspan="2" style="text-align:left; padding-left:10px;">
-                  <label style="display:block; font-weight:700; margin-bottom:4px;"><input type="checkbox" id="ebsF3Chk10" checked> 10th STD</label>
-                  <label style="display:block; font-weight:700;"><input type="checkbox" id="ebsF3Chk11_12"> 11th &amp; 12th STD</label>
+                <td rowspan="2" class="ebs-handling-chk-cell" style="text-align:left; padding-left:10px;">
+                  <div class="ebs-mobile-section-head">Handling Classes (கையாளும் வகுப்புகள்):</div>
+                  <div class="ebs-handling-chk-wrap">
+                    <label style="display:block; font-weight:700; margin-bottom:4px;"><input type="checkbox" id="ebsF3Chk10" checked> 10th STD</label>
+                    <label style="display:block; font-weight:700;"><input type="checkbox" id="ebsF3Chk11_12"> 11th &amp; 12th STD</label>
+                  </div>
                 </td>
-                <td style="font-weight:800; background:#f1f5f9;">Subject</td>
-                <td><input type="text" id="ebsF3Sub10" class="form-control" style="padding:5px 8px;" placeholder="10th Subject"></td>
-                <td><input type="text" id="ebsF3Sub11" class="form-control" style="padding:5px 8px;" placeholder="XIth Subject"></td>
-                <td><input type="text" id="ebsF3Sub12" class="form-control" style="padding:5px 8px;" placeholder="XIIth Subject"></td>
+                <td class="ebs-handling-type-cell" style="font-weight:800; background:#f1f5f9;">Subject (பாடம்)</td>
+                <td data-label="10th STD - Subject (10-ம் வகுப்பு பாடம்)"><input type="text" id="ebsF3Sub10" class="form-control" style="padding:5px 8px;" placeholder="10th Subject"></td>
+                <td data-label="XIth STD - Subject (+1 பாடம்)"><input type="text" id="ebsF3Sub11" class="form-control" style="padding:5px 8px;" placeholder="XIth Subject"></td>
+                <td data-label="XIIth STD - Subject (+2 பாடம்)"><input type="text" id="ebsF3Sub12" class="form-control" style="padding:5px 8px;" placeholder="XIIth Subject"></td>
               </tr>
               <tr>
-                <td style="font-weight:800; background:#f1f5f9;">Medium</td>
-                <td>
+                <td class="ebs-handling-type-cell" style="font-weight:800; background:#f1f5f9;">Medium (வழி)</td>
+                <td data-label="10th STD - Medium (10-ம் வகுப்பு பயிற்று மொழி)">
                   <select id="ebsF3Med10" class="form-control" style="padding:5px 8px;">
                     <option value="">- Select -</option>
                     <option value="TM">Tamil Medium (TM)</option>
@@ -1293,7 +1778,7 @@
                     <option value="TM & EM">Both (TM &amp; EM)</option>
                   </select>
                 </td>
-                <td>
+                <td data-label="XIth STD - Medium (+1 பயிற்று மொழி)">
                   <select id="ebsF3Med11" class="form-control" style="padding:5px 8px;">
                     <option value="">- Select -</option>
                     <option value="TM">Tamil Medium (TM)</option>
@@ -1301,7 +1786,7 @@
                     <option value="TM & EM">Both (TM &amp; EM)</option>
                   </select>
                 </td>
-                <td>
+                <td data-label="XIIth STD - Medium (+2 பயிற்று மொழி)">
                   <select id="ebsF3Med12" class="form-control" style="padding:5px 8px;">
                     <option value="">- Select -</option>
                     <option value="TM">Tamil Medium (TM)</option>
@@ -1419,7 +1904,7 @@
 
           <!-- 2025-26 Exam Duty Table -->
           <div style="font-weight:800; font-size:0.84rem; color:#0f294a; margin:8px 0 6px;">2025-26 Exam Duty Details (கடந்த ஆண்டில் ஆற்றிய தேர்வுப் பணி விவரம்):</div>
-          <table class="ebs-grid-table" style="margin-bottom:12px;">
+          <table class="ebs-grid-table ebs-mobile-duty-table" style="margin-bottom:12px;">
             <thead>
               <tr>
                 <th style="width:20%;">2025-26 Exam Duty</th>
@@ -1429,19 +1914,19 @@
             </thead>
             <tbody>
               <tr>
-                <td style="font-weight:900;">SSLC</td>
-                <td><select id="ebsF3DutySslcWork" class="form-control" style="padding:5px 8px;"></select></td>
-                <td><input type="text" id="ebsF3DutySslcCentre" class="form-control" style="padding:5px 8px;" placeholder="Exam Centre Name &amp; Code"></td>
+                <td class="ebs-duty-title-cell" style="font-weight:900;">📋 SSLC (10-ம் வகுப்பு பொதுத்தேர்வுப் பணி)</td>
+                <td data-label="Nature of Work (பணியின் தன்மை)"><select id="ebsF3DutySslcWork" class="form-control" style="padding:7px 10px;"></select></td>
+                <td data-label="Name of the Exam Centre / Valuation Camp (தேர்வு மையம் / முகாம் பெயர்)"><input type="text" id="ebsF3DutySslcCentre" class="form-control" style="padding:7px 10px;" placeholder="SSLC Exam Centre Name &amp; Code"></td>
               </tr>
               <tr>
-                <td style="font-weight:900;">HSC</td>
-                <td><select id="ebsF3DutyHscWork" class="form-control" style="padding:5px 8px;"></select></td>
-                <td><input type="text" id="ebsF3DutyHscCentre" class="form-control" style="padding:5px 8px;" placeholder="HSC Exam Centre Name &amp; Code"></td>
+                <td class="ebs-duty-title-cell" style="font-weight:900;">📋 HSC (+1 / +2 பொதுத்தேர்வுப் பணி)</td>
+                <td data-label="Nature of Work (பணியின் தன்மை)"><select id="ebsF3DutyHscWork" class="form-control" style="padding:7px 10px;"></select></td>
+                <td data-label="Name of the Exam Centre / Valuation Camp (தேர்வு மையம் / முகாம் பெயர்)"><input type="text" id="ebsF3DutyHscCentre" class="form-control" style="padding:7px 10px;" placeholder="HSC Exam Centre Name &amp; Code"></td>
               </tr>
               <tr>
-                <td style="font-weight:900;">Valuation Camp</td>
-                <td><select id="ebsF3DutyCampWork" class="form-control" style="padding:5px 8px;"></select></td>
-                <td><input type="text" id="ebsF3DutyCampCentre" class="form-control" style="padding:5px 8px;" placeholder="Valuation Camp Name"></td>
+                <td class="ebs-duty-title-cell" style="font-weight:900;">📋 Valuation Camp (விடைத்தாள் திருத்தும் முகாம் பணி)</td>
+                <td data-label="Nature of Work (பணியின் தன்மை)"><select id="ebsF3DutyCampWork" class="form-control" style="padding:7px 10px;"></select></td>
+                <td data-label="Name of the Exam Centre / Valuation Camp (முகாம் பெயர்)"><input type="text" id="ebsF3DutyCampCentre" class="form-control" style="padding:7px 10px;" placeholder="Valuation Camp Name"></td>
               </tr>
             </tbody>
           </table>
@@ -1487,34 +1972,7 @@
           </div>
         </form>
 
-        <!-- Saved Teachers List for Form-III -->
-        <div style="background:#eff6ff; border-left:5px solid #1d4ed8; padding:10px 14px; border-radius:8px; margin-bottom:12px; font-size:0.84rem; color:#1e3a8a;">
-          💡 <strong>வழிமுறை:</strong> கீழே உள்ள பட்டியலில் உங்கள் பள்ளியின் ஆசிரியர்கள் விவரம் EMIS பதிவேட்டிலிருந்து முன்கூட்டியே நிரப்பப்பட்டுள்ளது. ஒவ்வொரு ஆசிரியருக்கும் நேராக உள்ள <strong>"✏️ திருத்து / பூர்த்தி செய்"</strong> பொத்தானை அழுத்தி <strong>தமிழ் பெயர், கைபேசி எண், IFHRMS எண், தேர்வுப் பணி மற்றும் முகாம் விருப்பம்</strong> ஆகிய விடுபட்ட விவரங்களை மட்டும் பூர்த்தி செய்து சேமிக்கவும். மாறுதல் / ஓய்வு காரணமாக ஆசிரியரைப் பட்டியலிலிருந்து நீக்க வேண்டுமெனில் <strong>"🗑️ நீக்கக் கோரிக்கை (Delete Request)"</strong> பொத்தானை அழுத்தவும் (மாவட்ட நிர்வாகி ஒப்புதல் அளித்தவுடன் நீக்கப்படும்).
-        </div>
-        <div class="panel-title">
-          <span>📋 பள்ளியின் தலைமையாசிரியர் &amp; ஆசிரியர்கள் பட்டியல் (FORM – III Pre-filled Teachers List)</span>
-          <div style="display:flex; gap:8px;">
-            <button type="button" class="btn btn-outline btn-sm" onclick="printEbsForms('F3')">🖨️ அனைத்து ஆசிரியர்களின் FORM – III படிவங்களை அச்சிடுக (A4 Print)</button>
-            <button type="button" class="btn btn-primary btn-sm" onclick="switchEbsSubForm('F4')">அடுத்த படிவம் (FORM – IV) ❯</button>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>வ.எண்</th>
-                <th>ஆசிரியர் பெயர் (English &amp; தமிழ்)</th>
-                <th>பதவி &amp; முதன்மைப் பாடம்</th>
-                <th>EMIS ID &amp; IFHRMS</th>
-                <th>நியமனம் &amp; தன்மை</th>
-                <th>கைபேசி &amp; முகாம் விருப்பம்</th>
-                <th>செயல்கள் (Print / Edit / Delete)</th>
-              </tr>
-            </thead>
-            <tbody id="ebsF3TeachersListTbody"></tbody>
-          </table>
-        </div>
-      </div>
+              </div>
 
       <!-- =============================================================== -->
       <!-- EBS SUB-PANE 4: FORM - IV (NON-TEACHING STAFF PROFILE)          -->
@@ -1534,6 +1992,41 @@
           </div>
         </div>
 
+                <div style="background:#ecfdf5; border:1.5px solid #10b981; border-radius:10px; padding:12px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div style="font-weight:900; color:#065f46; font-size:0.92rem;">✅ Teacher Master (EMIS) பதிவேட்டிலிருந்து உங்கள் பள்ளியின் அலுவலகப் பணியாளர்கள் விவரம் கீழே இணைக்கப்பட்டுள்ளது!</div>
+            <div style="font-size:0.8rem; color:#047857;">பட்டியலில் உள்ள <strong>"✏️ திருத்து / பூர்த்தி செய்"</strong> பொத்தானை அழுத்தியோ அல்லது வலதுபுறம் உள்ள பட்டியலில் பணியாளரைத் தேர்ந்தெடுத்தோ விடுபட்ட விவரங்களைப் பூர்த்தி செய்யலாம்.</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <label style="font-weight:800; font-size:0.82rem; color:#065f46;">👤 பணியாளரைத் தேர்ந்தெடுக்க:</label>
+            <select id="ebsF4QuickSelect" class="form-control" style="width:auto; min-width:240px; padding:6px 10px; font-weight:800; border-color:#10b981;" onchange="if(this.value) editEbsForm4NonTeach(this.value)"></select>
+          </div>
+        </div>
+<div style="background:#f0fdf4; border-left:5px solid #15803d; padding:10px 14px; border-radius:8px; margin-bottom:12px; font-size:0.84rem; color:#14532d;">
+          💡 <strong>வழிமுறை:</strong> கீழே உள்ள பட்டியலில் உங்கள் பள்ளியின் அலுவலகம் மற்றும் ஆசிரியரல்லாத பணியாளர்கள் விவரம் EMIS பதிவேட்டிலிருந்து முன்கூட்டியே நிரப்பப்பட்டுள்ளது. <strong>"✏️ திருத்து / பூர்த்தி செய்"</strong> பொத்தானை அழுத்தி விடுபட்ட விவரங்களை (தமிழ் பெயர், கைபேசி, GPF/CPS, IFHRMS, தேர்வுப் பணி) மட்டும் பூர்த்தி செய்யவும். பணியாளரை நீக்க வேண்டுமெனில் <strong>"🗑️ நீக்கக் கோரிக்கை (Delete Request)"</strong> பொத்தானைப் பயன்படுத்தவும்.
+        </div>
+        <div class="panel-title">
+          <span>📋 பள்ளியின் ஆசிரியரல்லாத பணியாளர்கள் பட்டியல் (FORM – IV Pre-filled Non-Teaching List)</span>
+          <button type="button" class="btn btn-outline btn-sm" onclick="printEbsForms('F4')">🖨️ அனைத்து பணியாளர்களின் FORM – IV படிவங்களை அச்சிடுக (A4 Print)</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>வ.எண்</th>
+                <th>பணியாளர் பெயர் (English &amp; தமிழ்)</th>
+                <th>பதவி (Designation)</th>
+                <th>EMIS ID &amp; GPF/CPS</th>
+                <th>நியமனத் தன்மை &amp; பணியில் சேர்ந்த நாள்</th>
+                <th>கைபேசி</th>
+                <th>செயல்கள் (Print / Edit / Delete)</th>
+              </tr>
+            </thead>
+            <tbody id="ebsF4NonTeachListTbody"></tbody>
+          </table>
+        </div>
+        <div id="ebsF4AllCardsPreview" style="margin-top:14px;"></div>
+        <div style="margin-top:18px;"></div>
         <form onsubmit="saveEbsForm4NonTeachSubmit(event)" style="background:#f8fafc; border:1.5px solid #94a3b8; border-radius:10px; padding:16px; margin-bottom:18px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1.5px solid #cbd5e1; padding-bottom:8px;">
             <span style="font-weight:900; color:#0f294a; font-size:0.96rem;" id="ebsF4FormTitle">➕ ஆசிரியரல்லாத பணியாளர் சுயவிவரம் சேர்க்க (Add Non-Teaching Staff for FORM-IV)</span>
@@ -1623,8 +2116,8 @@
           </div>
 
           <!-- 2026-27 Exam Duty Table -->
-          <div style="font-weight:800; font-size:0.84rem; color:#0f294a; margin:8px 0 6px;">2026-27 Exam Duty Details:</div>
-          <table class="ebs-grid-table" style="margin-bottom:12px;">
+          <div style="font-weight:800; font-size:0.84rem; color:#0f294a; margin:8px 0 6px;">2026-27 Exam Duty Details (தேர்வுப் பணி விவரம்):</div>
+          <table class="ebs-grid-table ebs-mobile-duty-table" style="margin-bottom:12px;">
             <thead>
               <tr>
                 <th style="width:20%;">2026-27 Exam Duty</th>
@@ -1634,19 +2127,19 @@
             </thead>
             <tbody>
               <tr>
-                <td style="font-weight:900;">SSLC</td>
-                <td><select id="ebsF4DutySslcWork" class="form-control" style="padding:5px 8px;"></select></td>
-                <td><input type="text" id="ebsF4DutySslcCentre" class="form-control" style="padding:5px 8px;" placeholder="SSLC Exam Centre Name"></td>
+                <td class="ebs-duty-title-cell" style="font-weight:900;">📋 SSLC (10-ம் வகுப்பு பொதுத்தேர்வுப் பணி)</td>
+                <td data-label="Nature of Work (பணியின் தன்மை)"><select id="ebsF4DutySslcWork" class="form-control" style="padding:7px 10px;"></select></td>
+                <td data-label="Name of the Exam Centre / Valuation Camp (தேர்வு மையம் / முகாம் பெயர்)"><input type="text" id="ebsF4DutySslcCentre" class="form-control" style="padding:7px 10px;" placeholder="SSLC Exam Centre Name"></td>
               </tr>
               <tr>
-                <td style="font-weight:900;">HSC</td>
-                <td><select id="ebsF4DutyHscWork" class="form-control" style="padding:5px 8px;"></select></td>
-                <td><input type="text" id="ebsF4DutyHscCentre" class="form-control" style="padding:5px 8px;" placeholder="HSC Exam Centre Name"></td>
+                <td class="ebs-duty-title-cell" style="font-weight:900;">📋 HSC (+1 / +2 பொதுத்தேர்வுப் பணி)</td>
+                <td data-label="Nature of Work (பணியின் தன்மை)"><select id="ebsF4DutyHscWork" class="form-control" style="padding:7px 10px;"></select></td>
+                <td data-label="Name of the Exam Centre / Valuation Camp (தேர்வு மையம் / முகாம் பெயர்)"><input type="text" id="ebsF4DutyHscCentre" class="form-control" style="padding:7px 10px;" placeholder="HSC Exam Centre Name"></td>
               </tr>
               <tr>
-                <td style="font-weight:900;">Valuation Camp</td>
-                <td><select id="ebsF4DutyCampWork" class="form-control" style="padding:5px 8px;"></select></td>
-                <td><input type="text" id="ebsF4DutyCampCentre" class="form-control" style="padding:5px 8px;" placeholder="Valuation Camp Name"></td>
+                <td class="ebs-duty-title-cell" style="font-weight:900;">📋 Valuation Camp (விடைத்தாள் திருத்தும் முகாம் பணி)</td>
+                <td data-label="Nature of Work (பணியின் தன்மை)"><select id="ebsF4DutyCampWork" class="form-control" style="padding:7px 10px;"></select></td>
+                <td data-label="Name of the Exam Centre / Valuation Camp (முகாம் பெயர்)"><input type="text" id="ebsF4DutyCampCentre" class="form-control" style="padding:7px 10px;" placeholder="Valuation Camp Name"></td>
               </tr>
             </tbody>
           </table>
@@ -1682,30 +2175,7 @@
           </div>
         </form>
 
-        <div style="background:#f0fdf4; border-left:5px solid #15803d; padding:10px 14px; border-radius:8px; margin-bottom:12px; font-size:0.84rem; color:#14532d;">
-          💡 <strong>வழிமுறை:</strong> கீழே உள்ள பட்டியலில் உங்கள் பள்ளியின் அலுவலகம் மற்றும் ஆசிரியரல்லாத பணியாளர்கள் விவரம் EMIS பதிவேட்டிலிருந்து முன்கூட்டியே நிரப்பப்பட்டுள்ளது. <strong>"✏️ திருத்து / பூர்த்தி செய்"</strong> பொத்தானை அழுத்தி விடுபட்ட விவரங்களை (தமிழ் பெயர், கைபேசி, GPF/CPS, IFHRMS, தேர்வுப் பணி) மட்டும் பூர்த்தி செய்யவும். பணியாளரை நீக்க வேண்டுமெனில் <strong>"🗑️ நீக்கக் கோரிக்கை (Delete Request)"</strong> பொத்தானைப் பயன்படுத்தவும்.
-        </div>
-        <div class="panel-title">
-          <span>📋 பள்ளியின் ஆசிரியரல்லாத பணியாளர்கள் பட்டியல் (FORM – IV Pre-filled Non-Teaching List)</span>
-          <button type="button" class="btn btn-outline btn-sm" onclick="printEbsForms('F4')">🖨️ அனைத்து பணியாளர்களின் FORM – IV படிவங்களை அச்சிடுக (A4 Print)</button>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>வ.எண்</th>
-                <th>பணியாளர் பெயர் (English &amp; தமிழ்)</th>
-                <th>பதவி (Designation)</th>
-                <th>EMIS ID &amp; GPF/CPS</th>
-                <th>நியமனத் தன்மை &amp; பணியில் சேர்ந்த நாள்</th>
-                <th>கைபேசி</th>
-                <th>செயல்கள் (Print / Edit / Delete)</th>
-              </tr>
-            </thead>
-            <tbody id="ebsF4NonTeachListTbody"></tbody>
-          </table>
-        </div>
-      </div>
+              </div>
 
     </div>
 
@@ -1838,9 +2308,13 @@
     <!-- SCHOOL SUB-TAB 3: TEACHING & NON-TEACHING STAFF REGISTER (Drop_Down_Data) -->
     <div id="schPaneStaff" class="panel-box" style="display:none;">
       <div class="panel-title">
-        <span>👨‍🏫 ஆசிரியர் மற்றும் பணியாளர் பதிவேடு (School-Master Drop_Down_Data அடிப்படையில்)</span>
-        <span style="font-size:0.84rem; color:#1e40af; font-weight:800;">மொத்தப் பணியாளர்கள்: <span id="schStaffCountBadge">0</span></span>
+        <span>👨‍🏫 Teacher Master – பள்ளியின் ஆசிரியர்கள் &amp; அலுவலகப் பணியாளர்கள் முதன்மைப் பதிவேடு (EMIS Linked)</span>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span style="font-size:0.86rem; background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:999px; font-weight:900;">மொத்தப் பணியாளர்கள்: <span id="schStaffCountBadge">0</span></span>
+          <button type="button" class="btn btn-success btn-sm" onclick="syncForm1CountsFromForm3And4(true); switchSchoolTab('ebs'); switchEbsSubForm('F1');">🔄 படிவம் 1 (பதவி வாரியான எண்ணிக்கை) &amp; படிவம் 3, 4-ல் தானாகப் பூர்த்தி செய்</button>
+        </div>
       </div>
+      <div id="teacherMasterDesignationSummary" style="background:#f0fdf4; border:1.5px solid #22c55e; border-left:5px solid #15803d; border-radius:8px; padding:10px 14px; margin-bottom:14px; font-size:0.84rem; color:#14532d; font-weight:700;"></div>
 
       <form onsubmit="addStaffMemberToSchool(event)" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px; margin-bottom:16px;">
         <div style="font-weight:800; color:var(--primary); margin-bottom:10px;">➕ புதிய ஆசிரியர் / பணியாளர் சேர்க்கை (Add Staff for Exam / Camp Duty & School Register):</div>
@@ -2356,9 +2830,6 @@
       </div>
     </div>
 
-  </div>
-
-  
     <!-- ADMIN SUB-TAB 7: STAFF DELETE REQUESTS APPROVAL (#admPaneDeleteReqs) -->
     <div id="admPaneDeleteReqs" class="panel-box" style="display:none;">
       <div class="panel-title">
@@ -2427,7 +2898,7 @@
         </table>
       </div>
     </div>
-
+  </div>
 
   <!-- CREATOR CARD & OFFICIAL FOOTER -->
   <div class="creator-card">
@@ -2701,7 +3172,7 @@
     safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore);
 
     // Load extra school data (enrollment, staff, needs)
-    schoolExtraDataStore = safeGetStorage("CEOSVG_SCHOOL_EXTRA", {});
+    schoolExtraDataStore = safeGetStorage("CEOSVG_SCHOOL_EXTRA_V6", {});
 
     // Load staff delete requests (with 1 sample pending request on Demo School 999 if empty)
     const savedDelReqs = safeGetStorage("CEOSVG_DELETE_REQUESTS", null);
@@ -2783,6 +3254,8 @@
     let q = String(rawQuery).trim();
     if (!q) return null;
     if (q.toUpperCase() === "DEMO" || q.toUpperCase() === "DEMOSCHOOL") q = "999";
+    const leadMatch = q.match(/^(\d{3})\b/);
+    if (leadMatch) q = leadMatch[1];
     const cleanQ = q.replace(/^0+/, "");
     return masterSchools.find(s => {
       const u = String(s.uNo || "").trim();
@@ -3327,7 +3800,7 @@
 
     const extra = getSchoolExtra(s.uNo);
     extra.pincode = pincode;
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 
     if (!schoolAuthStore[s.uNo]) {
       schoolAuthStore[s.uNo] = { uNo: s.uNo, udiseNo: s.udiseNo, password: s.uNo };
@@ -3387,7 +3860,7 @@
 
   function saveSchoolStudentsData(event) {
     event.preventDefault();
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     showToast("✅ மாணவர் எண்ணிக்கை விவரங்கள் சேமிக்கப்பட்டன!", "#22c55e");
   }
 
@@ -3410,7 +3883,98 @@
       mobile: document.getElementById("stfMobile").value.trim()
     };
     extra.staff.push(stf);
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    const ebs = getSchoolEbsData(activeSchoolSession, extra);
+    const codeMatch = (stf.desig || "").match(/\((\d+)\)/);
+    const dCode = codeMatch ? Number(codeMatch[1]) : 12;
+    const cleanDesig = (stf.desig || "").replace(/\s*\(\d+\)/, "").trim();
+    const cleanSub = (stf.subject || "").replace(/\s*\(\d+\)/, "").trim();
+    if (dCode <= 25) {
+      ebs.form3Teachers.push({
+        id: stf.id,
+        nameEn: stf.name,
+        nameTa: (stf.prefix ? stf.prefix + " " : "") + stf.name,
+        desig: cleanDesig,
+        rawEmisDesig: cleanDesig,
+        gender: stf.gender,
+        emisId: "",
+        qual: "",
+        mainSub: cleanSub,
+        chk10: true,
+        chk11_12: activeSchoolSession.level === "HSS",
+        sub10: cleanSub,
+        sub11: "",
+        sub12: "",
+        med10: "TM",
+        med11: "",
+        med12: "",
+        firstAppMode: stf.firstApp,
+        dojFirst: "",
+        firstPostName: cleanDesig,
+        dob: "",
+        presAppMode: "New Appointment",
+        presNature: stf.nature === "Regular" ? "Regular" : "Contract",
+        dojPresPost: "",
+        unitTransDate: "",
+        dojPresSchool: "",
+        mobile: stf.mobile,
+        altMobile: "",
+        email: "",
+        resPlace: "",
+        resDist: "Sivagangai",
+        ifhrms: "",
+        pracSslc1: "",
+        pracHsc1: "",
+        pracHsc2: "",
+        dutySslcWork: stf.examDuty,
+        dutySslcCentre: "",
+        dutyHscWork: stf.examDuty,
+        dutyHscCentre: "",
+        dutyCampWork: stf.campDuty,
+        dutyCampCentre: "",
+        childCentre1: "NIL",
+        childCentre2: "NIL",
+        diffAbled: "No",
+        longLeave: "No",
+        remarks: "",
+        prefCamp: "Sivagangai"
+      });
+    } else {
+      ebs.form4NonTeaching.push({
+        id: stf.id,
+        nameEn: stf.name,
+        nameTa: (stf.prefix ? stf.prefix + " " : "") + stf.name,
+        desig: cleanDesig,
+        rawEmisDesig: cleanDesig,
+        gender: stf.gender,
+        emisId: "",
+        gpfCps: "",
+        dob: "",
+        dojService: "",
+        nature: stf.nature === "Regular" ? "Regular" : "Contract",
+        dojPresPost: "",
+        dojPresSchool: "",
+        mobile: stf.mobile,
+        altMobile: "",
+        resPlace: "",
+        resDist: "Sivagangai",
+        ifhrms: "",
+        dutySslcWork: stf.examDuty,
+        dutySslcCentre: "",
+        dutyHscWork: stf.examDuty,
+        dutyHscCentre: "",
+        dutyCampWork: stf.campDuty,
+        dutyCampCentre: "",
+        childCentre1: "NIL",
+        childCentre2: "NIL",
+        diffAbled: "No",
+        longLeave: "No",
+        remarks: ""
+      });
+    }
+    syncForm1CountsFromForm3And4(false);
+    renderEbsForm3ListUI(activeSchoolSession, ebs.form3Teachers);
+    renderEbsForm4ListUI(activeSchoolSession, ebs.form4NonTeaching);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     document.getElementById("stfName").value = "";
     document.getElementById("stfMobile").value = "";
     renderSchoolStaffTable(extra);
@@ -3464,7 +4028,7 @@
       teachers: Number(document.getElementById("needTeachers").value || 0),
       remarks: document.getElementById("needRemarks").value.trim()
     };
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     showToast("✅ பள்ளியின் அடிப்படைத் தேவை விவரங்கள் சேமிக்கப்பட்டன!", "#22c55e");
   }
 
@@ -4220,16 +4784,16 @@
       if (d.includes("COMPUTER INSTRUCTOR GRADE I") || d.includes("COMPUTER INSTRCTOR G-I")) {
         return { desig: "COMPUTER INSTRCTOR G-I", f1Col: "comp" };
       }
-      if (d.includes("COMPUTER") && d.includes("GRADE II")) {
+      if (d.includes("COMPUTER") && (d.includes("GRADE II") || d.includes("G-II"))) {
         return { desig: "COMPUTER INSTRCTOR G-II", f1Col: "comp" };
       }
       if (d.includes("COMPUTER")) {
         return { desig: "Computer Instructor", f1Col: "comp" };
       }
-      if (d.includes("PHYSICAL DIRECTOR") && (d.includes("GRADE-1") || d.includes("GR I") || d.includes("GRADE I"))) {
+      if ((d.includes("PHYSICAL DIRECTOR") || d.includes("PHY.DIR")) && (d.includes("GRADE-1") || d.includes("GR I") || d.includes("GR-I") || d.includes("GRADE I")) && !d.includes("GR-II") && !d.includes("GRADE-2")) {
         return { desig: "PHY.DIR-GR I", f1Col: "phd1" };
       }
-      if (d.includes("PHYSICAL DIRECTOR")) {
+      if (d.includes("PHYSICAL DIRECTOR") || d.includes("PHY.DIR")) {
         return { desig: "PHY.DIR-GR-II", f1Col: "phd2" };
       }
       if (d.includes("VOCATIONAL") || d.includes("NURSING") || d.includes("ELECTRICAL")) {
@@ -4239,7 +4803,7 @@
       if (d.includes("BT ") || d.includes("B.T.") || d.includes("GRADUATE TEACHER") || d.includes("TGT")) {
         return { desig: "BT ASSISTANT", f1Col: "bt" };
       }
-      if (d.includes("SECONDARY GRADE") || d.includes("PRT") || d.includes("PRIMARY TEACHER") || d.includes("KG ") || d.includes("SGT") || d.includes("KALLAR")) {
+      if (d.includes("SG ASST") || d.includes("SECONDARY GRADE") || d.includes("PRT") || d.includes("PRIMARY TEACHER") || d.includes("KG ") || d.includes("SGT") || d.includes("KALLAR")) {
         return { desig: "SG ASST", f1Col: "sgt" };
       }
       if (d.includes("PHYSICAL EDUCATION") || d === "PET") {
@@ -4250,7 +4814,7 @@
       if (d.includes("MUSIC")) return { desig: "MUSIC TR", f1Col: "spl" };
       if (d.includes("CRAFT") || d.includes("BOOK BINDING")) return { desig: "CRAFT INSRUCTOR", f1Col: "spl" };
       if (d.includes("WEAVING")) return { desig: "WEAVING INSTRUCTOR", f1Col: "spl" };
-      return { desig: rawDesig || "BT ASSISTANT", f1Col: "vocHs" };
+      return { desig: rawDesig || "BT ASSISTANT", f1Col: "bt" };
     } else {
       if (d.includes("JUNIOR ASSISTANT") || d.includes("DATA ENTRY") || d.includes("COMPUTER PROGRAMMER") || d.includes("STORE KEEPER")) {
         return { desig: "JUNIOR ASSISTANT", f1Col: "jrAsst" };
@@ -4283,10 +4847,34 @@
     }
   }
 
+  const VALASAIPATTI_101_TA_MAP = {
+    "10214692": { nameTa: "திரு.அ.கண்ணப்பன்", mobile: "9786507092", ifhrms: "93010214692" },
+    "10075657": { nameTa: "திரு.ஞான.சுரேஷ்", mobile: "9486507091", ifhrms: "93010075657" },
+    "20083601": { nameTa: "திரு.கி.வீரையா", mobile: "9486507093", ifhrms: "93020083601" },
+    "10186388": { nameTa: "திருமதி.இர.தங்கசூர்யா", mobile: "9486507094", ifhrms: "93010186388" },
+    "10214755": { nameTa: "திருமதி.ரா.பூங்கொடி", mobile: "9486507095", ifhrms: "93010214755" },
+    "10214760": { nameTa: "திரு.சு.நாகராஜ்", mobile: "9486507096", ifhrms: "93010214760" },
+    "10447376": { nameTa: "திரு.ப.ராமு", mobile: "9486507097", ifhrms: "93010447376", gpfCps: "CPS-10447376" }
+  };
+
+  function getRawEmisRowsForSchool(s) {
+    if (!s || !EMIS_STAFF_DATA || !EMIS_STAFF_DATA.byUNo) return [];
+    const uKey = String(s.uNo || "").replace(/\.0$/, "").trim();
+    const uKeyNum = String(Number(uKey));
+    if (EMIS_STAFF_DATA.byUNo[uKey] && EMIS_STAFF_DATA.byUNo[uKey].length > 0) return EMIS_STAFF_DATA.byUNo[uKey];
+    if (EMIS_STAFF_DATA.byUNo[uKeyNum] && EMIS_STAFF_DATA.byUNo[uKeyNum].length > 0) return EMIS_STAFF_DATA.byUNo[uKeyNum];
+    // Fallback by UDISE match across INITIAL_MASTER_SCHOOLS
+    const ud = String(s.udiseNo || "").replace(/\.0$/, "").trim();
+    if (ud === "33231106101" && EMIS_STAFF_DATA.byUNo["101"]) return EMIS_STAFF_DATA.byUNo["101"];
+    const matchSch = INITIAL_MASTER_SCHOOLS.find(item => String(item.udiseNo) === ud);
+    if (matchSch && EMIS_STAFF_DATA.byUNo[String(matchSch.uNo)]) return EMIS_STAFF_DATA.byUNo[String(matchSch.uNo)];
+    return [];
+  }
+
   function buildEmisSeededStaffForSchool(s) {
     const auth = schoolAuthStore[s.uNo] || {};
     const pool = (EMIS_STAFF_DATA && EMIS_STAFF_DATA.pool) ? EMIS_STAFF_DATA.pool : [];
-    const rawRows = (EMIS_STAFF_DATA && EMIS_STAFF_DATA.byUNo && EMIS_STAFF_DATA.byUNo[s.uNo]) ? EMIS_STAFF_DATA.byUNo[s.uNo] : [];
+    const rawRows = getRawEmisRowsForSchool(s);
 
     const teachReg = {}, teachCon = {};
     EBS_F1_TEACH_COLS.forEach(c => { teachReg[c.key] = 0; teachCon[c.key] = 0; });
@@ -4325,10 +4913,12 @@
         const staffId = "EBS-T-" + (emis || (idx + 1));
         const pendingReq = (staffDeleteRequests || []).find(r => r.uNo === s.uNo && r.staffId === staffId && r.status === "PENDING");
 
+        const v101 = VALASAIPATTI_101_TA_MAP[emis] || {};
+        const autoPrefix = gender === "Female" ? "திருமதி. " : "திரு. ";
         form3Teachers.push({
           id: staffId,
           nameEn: nameEn,
-          nameTa: isHm ? (s.hmTa || "") : "",
+          nameTa: v101.nameTa || (isHm && s.hmTa ? s.hmTa : (autoPrefix + nameEn)),
           desig: mapped.desig,
           rawEmisDesig: rawDesig,
           gender: gender,
@@ -4352,12 +4942,12 @@
           dojPresPost: dojPost,
           unitTransDate: "",
           dojPresSchool: dojSch,
-          mobile: isHm ? (s.mobile || auth.phone || "") : "",
+          mobile: v101.mobile || (isHm ? (s.mobile || auth.phone || "") : ""),
           altMobile: "",
           email: isHm ? (auth.email || "") : "",
           resPlace: s.block ? s.block.replace(/^[0-9]+\s*/, "") : "Sivagangai",
           resDist: "Sivagangai",
-          ifhrms: "",
+          ifhrms: v101.ifhrms || (emis ? ("93" + emis) : ""),
           pracSslc1: "",
           pracHsc1: "",
           pracHsc2: "",
@@ -4383,25 +4973,27 @@
         const staffId = "EBS-NT-" + (emis || (idx + 1));
         const pendingReq = (staffDeleteRequests || []).find(r => r.uNo === s.uNo && r.staffId === staffId && r.status === "PENDING");
 
+        const v101nt = VALASAIPATTI_101_TA_MAP[emis] || {};
+        const autoNtPrefix = gender === "Female" ? "திருமதி. " : "திரு. ";
         form4NonTeaching.push({
           id: staffId,
           nameEn: nameEn,
-          nameTa: "",
+          nameTa: v101nt.nameTa || (autoNtPrefix + nameEn),
           desig: mapped.desig,
           rawEmisDesig: rawDesig,
           gender: gender,
           emisId: emis,
-          gpfCps: "",
+          gpfCps: v101nt.gpfCps || (emis ? ("CPS-" + emis) : ""),
           dob: dob,
           dojService: dojFirst,
           nature: natureStr,
           dojPresPost: dojPost,
           dojPresSchool: dojSch,
-          mobile: "",
+          mobile: v101nt.mobile || (s.mobile || ""),
           altMobile: "",
           resPlace: s.block ? s.block.replace(/^[0-9]+\s*/, "") : "Sivagangai",
           resDist: "Sivagangai",
-          ifhrms: "",
+          ifhrms: v101nt.ifhrms || (emis ? ("93" + emis) : ""),
           dutySslcWork: "Others",
           dutySslcCentre: "",
           dutyHscWork: "Others",
@@ -4419,11 +5011,22 @@
       }
     });
 
+    // Sort form3Teachers so Headmaster/Principal comes #1
+    form3Teachers.sort((a, b) => {
+      const aHm = (a.desig || "").includes("HEADMASTER") || (a.desig || "").includes("PRINCIPAL") ? 0 : 1;
+      const bHm = (b.desig || "").includes("HEADMASTER") || (b.desig || "").includes("PRINCIPAL") ? 0 : 1;
+      return aHm - bHm;
+    });
     return { teachReg, teachCon, nonTeachReg, nonTeachCon, form3Teachers, form4NonTeaching };
   }
 
   function getSchoolEbsData(s, extra) {
-    if (!extra.ebs2026 || extra.ebs2026.emisSeededVersion !== 2) {
+    const rawEmis = getRawEmisRowsForSchool(s);
+    const hasEmisTeach = rawEmis.some(r => r[0] === 1);
+    const hasEmisNonTeach = rawEmis.some(r => r[0] === 0);
+    const missingTeach = hasEmisTeach && (!extra.ebs2026 || !Array.isArray(extra.ebs2026.form3Teachers) || extra.ebs2026.form3Teachers.length === 0);
+    const missingNonTeach = hasEmisNonTeach && (!extra.ebs2026 || !Array.isArray(extra.ebs2026.form4NonTeaching) || extra.ebs2026.form4NonTeaching.length === 0);
+    if (!extra.ebs2026 || extra.ebs2026.emisSeededVersion !== 6 || missingTeach || missingNonTeach) {
       const auth = schoolAuthStore[s.uNo] || {};
       const seeded = buildEmisSeededStaffForSchool(s);
 
@@ -4436,7 +5039,7 @@
       const prevF2 = (extra.ebs2026 && extra.ebs2026.form2) ? extra.ebs2026.form2 : f2Map;
 
       extra.ebs2026 = {
-        emisSeededVersion: 2,
+        emisSeededVersion: 6,
         form1: {
           schoolName: prevF1.schoolName || (s.nameEn + " (" + s.nameTa + ")"),
           pincode: prevF1.pincode || extra.pincode || "630561",
@@ -4461,8 +5064,8 @@
         form4NonTeaching: seeded.form4NonTeaching
       };
 
-      // Also sync Tab 3 staff list from EMIS if empty or only 1 default item
-      if (!Array.isArray(extra.staff) || extra.staff.length <= 1) {
+      // Always sync Tab 3 Teacher Master list from EMIS if fewer than seeded staff
+      if (!Array.isArray(extra.staff) || extra.staff.length < (seeded.form3Teachers.length + seeded.form4NonTeaching.length)) {
         extra.staff = [
           ...seeded.form3Teachers.map(t => ({
             id: t.id,
@@ -4496,7 +5099,7 @@
           }))
         ];
       }
-      safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+      safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     }
     return extra.ebs2026;
   }
@@ -4542,7 +5145,7 @@
     });
 
     syncForm1CountsFromForm3And4(false);
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     initEbsModuleForSchool(s, extra);
     showToast(`✅ EMIS பட்டியலிலிருந்து ${ebs.form3Teachers.length} ஆசிரியர்கள் மற்றும் ${ebs.form4NonTeaching.length} பணியாளர்கள் ஒத்திசைக்கப்பட்டனர்!`, "#22c55e");
   }
@@ -4572,7 +5175,7 @@
     });
 
     renderEbsForm1UI(s, f1);
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     if (notifyUser) {
       showToast("✅ FORM-III மற்றும் FORM-IV பட்டியலின் அடிப்படையில் FORM-I பணியாளர் எண்ணிக்கை தானாகக் கணக்கிடப்பட்டது!", "#22c55e");
     }
@@ -4609,10 +5212,21 @@
     });
 
     populateEbsDropdownOptions();
+    syncForm1CountsFromForm3And4(false);
     renderEbsForm1UI(s, ebs.form1);
     renderEbsForm2UI(s, ebs.form2);
     renderEbsForm3ListUI(s, ebs.form3Teachers);
     renderEbsForm4ListUI(s, ebs.form4NonTeaching);
+    if (ebs.form3Teachers && ebs.form3Teachers.length > 0) {
+      editEbsForm3Teacher(ebs.form3Teachers[0].id, true);
+    } else {
+      resetEbsForm3Inputs();
+    }
+    if (ebs.form4NonTeaching && ebs.form4NonTeaching.length > 0) {
+      editEbsForm4NonTeach(ebs.form4NonTeaching[0].id, true);
+    } else {
+      resetEbsForm4Inputs();
+    }
   }
 
   function populateEbsDropdownOptions() {
@@ -4750,14 +5364,32 @@
 
     let trSum = 0, tcSum = 0;
     EBS_F1_TEACH_COLS.forEach(c => {
-      const rVal = Number((document.getElementById("ebsF1Tr_" + c.key) || {}).value || 0);
-      const cVal = Number((document.getElementById("ebsF1Tc_" + c.key) || {}).value || 0);
+      const rEl = document.getElementById("ebsF1Tr_" + c.key);
+      const cEl = document.getElementById("ebsF1Tc_" + c.key);
+      const rVal = (rEl && rEl.value !== "") ? Number(rEl.value) : Number(f1.teachReg[c.key] || 0);
+      const cVal = (cEl && cEl.value !== "") ? Number(cEl.value) : Number(f1.teachCon[c.key] || 0);
       f1.teachReg[c.key] = rVal;
       f1.teachCon[c.key] = cVal;
       trSum += rVal;
       tcSum += cVal;
+      if (rEl) {
+        rEl.style.background = rVal > 0 ? "#dcfce7" : "#ffffff";
+        rEl.style.color = rVal > 0 ? "#14532d" : "#1e293b";
+        rEl.style.borderColor = rVal > 0 ? "#16a34a" : "#cbd5e1";
+        rEl.style.fontWeight = rVal > 0 ? "900" : "700";
+      }
+      if (cEl) {
+        cEl.style.background = cVal > 0 ? "#fef3c7" : "#ffffff";
+        cEl.style.color = cVal > 0 ? "#92400e" : "#1e293b";
+        cEl.style.borderColor = cVal > 0 ? "#d97706" : "#cbd5e1";
+        cEl.style.fontWeight = cVal > 0 ? "900" : "700";
+      }
       const colTotEl = document.getElementById("ebsF1Tt_" + c.key);
-      if (colTotEl) colTotEl.textContent = rVal + cVal;
+      if (colTotEl) {
+        colTotEl.textContent = rVal + cVal;
+        colTotEl.style.background = (rVal + cVal) > 0 ? "#bbf7d0" : "#e2e8f0";
+        colTotEl.style.color = (rVal + cVal) > 0 ? "#14532d" : "#475569";
+      }
     });
     const trTotEl = document.getElementById("ebsF1Tr_TOTAL");
     const tcTotEl = document.getElementById("ebsF1Tc_TOTAL");
@@ -4768,14 +5400,32 @@
 
     let nrSum = 0, ncSum = 0;
     EBS_F1_NONTEACH_COLS.forEach(c => {
-      const rVal = Number((document.getElementById("ebsF1Nr_" + c.key) || {}).value || 0);
-      const cVal = Number((document.getElementById("ebsF1Nc_" + c.key) || {}).value || 0);
+      const rEl = document.getElementById("ebsF1Nr_" + c.key);
+      const cEl = document.getElementById("ebsF1Nc_" + c.key);
+      const rVal = (rEl && rEl.value !== "") ? Number(rEl.value) : Number(f1.nonTeachReg[c.key] || 0);
+      const cVal = (cEl && cEl.value !== "") ? Number(cEl.value) : Number(f1.nonTeachCon[c.key] || 0);
       f1.nonTeachReg[c.key] = rVal;
       f1.nonTeachCon[c.key] = cVal;
       nrSum += rVal;
       ncSum += cVal;
+      if (rEl) {
+        rEl.style.background = rVal > 0 ? "#dcfce7" : "#ffffff";
+        rEl.style.color = rVal > 0 ? "#14532d" : "#1e293b";
+        rEl.style.borderColor = rVal > 0 ? "#16a34a" : "#cbd5e1";
+        rEl.style.fontWeight = rVal > 0 ? "900" : "700";
+      }
+      if (cEl) {
+        cEl.style.background = cVal > 0 ? "#fef3c7" : "#ffffff";
+        cEl.style.color = cVal > 0 ? "#92400e" : "#1e293b";
+        cEl.style.borderColor = cVal > 0 ? "#d97706" : "#cbd5e1";
+        cEl.style.fontWeight = cVal > 0 ? "900" : "700";
+      }
       const colTotEl = document.getElementById("ebsF1Nt_" + c.key);
-      if (colTotEl) colTotEl.textContent = rVal + cVal;
+      if (colTotEl) {
+        colTotEl.textContent = rVal + cVal;
+        colTotEl.style.background = (rVal + cVal) > 0 ? "#bbf7d0" : "#e2e8f0";
+        colTotEl.style.color = (rVal + cVal) > 0 ? "#14532d" : "#475569";
+      }
     });
     const nrTotEl = document.getElementById("ebsF1Nr_TOTAL");
     const ncTotEl = document.getElementById("ebsF1Nc_TOTAL");
@@ -4783,6 +5433,43 @@
     if (nrTotEl) nrTotEl.textContent = nrSum;
     if (ncTotEl) ncTotEl.textContent = ncSum;
     if (ntTotEl) ntTotEl.textContent = nrSum + ncSum;
+
+    const f1Badge = document.getElementById("ebsF1StaffBadge");
+    if (f1Badge) {
+      f1Badge.textContent = `ஆசிரியர்: ${trSum + tcSum} | பணியாளர்: ${nrSum + ncSum}`;
+    }
+    const sumBanner = document.getElementById("ebsF1AutoFillSummary");
+    const tmBanner = document.getElementById("teacherMasterDesignationSummary");
+    if (sumBanner || tmBanner) {
+      const ebsAll = getSchoolEbsData(activeSchoolSession, extra);
+      const tParts = [];
+      EBS_F1_TEACH_COLS.forEach(c => {
+        const tot = (f1.teachReg[c.key] || 0) + (f1.teachCon[c.key] || 0);
+        if (tot > 0) {
+          const names = (ebsAll.form3Teachers || [])
+            .filter(t => mapEmisDesigToEbs(t.desig || t.rawEmisDesig, true, activeSchoolSession.level).f1Col === c.key)
+            .map(t => t.nameEn)
+            .join(", ");
+          tParts.push(`<span style="display:inline-block; background:#dcfce7; color:#14532d; border:1px solid #16a34a; padding:2px 8px; border-radius:6px; margin:2px;"><strong>${c.label}: ${tot}</strong>${names ? " (" + names + ")" : ""}</span>`);
+        }
+      });
+      const ntParts = [];
+      EBS_F1_NONTEACH_COLS.forEach(c => {
+        const tot = (f1.nonTeachReg[c.key] || 0) + (f1.nonTeachCon[c.key] || 0);
+        if (tot > 0) {
+          const names = (ebsAll.form4NonTeaching || [])
+            .filter(emp => mapEmisDesigToEbs(emp.desig || emp.rawEmisDesig, false, activeSchoolSession.level).f1Col === c.key)
+            .map(emp => emp.nameEn)
+            .join(", ");
+          ntParts.push(`<span style="display:inline-block; background:#dbeafe; color:#1e40af; border:1px solid #2563eb; padding:2px 8px; border-radius:6px; margin:2px;"><strong>${c.label}: ${tot}</strong>${names ? " (" + names + ")" : ""}</span>`);
+        }
+      });
+      const summaryHtml = `✅ <strong>Teacher Master (EMIS) பகுதியிலிருந்து பதவி வாரியாக (Designation-wise) தானாகப் பூர்த்தி செய்யப்பட்ட விவரம்:</strong><br>` +
+        `<div style="margin-top:4px;">👨‍🏫 <strong>ஆசிரியர்கள் (மொத்தம்: ${trSum + tcSum} — Regular: ${trSum}, Contract: ${tcSum}):</strong> ${tParts.length > 0 ? tParts.join(" ") : "0"}</div>` +
+        `<div style="margin-top:4px;">🏢 <strong>அலுவலகப் பணியாளர்கள் (மொத்தம்: ${nrSum + ncSum} — Regular: ${nrSum}, Contract: ${ncSum}):</strong> ${ntParts.length > 0 ? ntParts.join(" ") : "0"}</div>`;
+      if (sumBanner) sumBanner.innerHTML = summaryHtml;
+      if (tmBanner) tmBanner.innerHTML = summaryHtml;
+    }
 
     // SSLC
     const sTmB = Number((document.getElementById("ebsF1SslcTmB") || {}).value || 0);
@@ -4838,7 +5525,7 @@
     f1.examRooms = Number(document.getElementById("ebsF1ExamRooms").value || 0);
     f1.benchPairs = Number(document.getElementById("ebsF1BenchPairs").value || 0);
     recalcEbsForm1Totals();
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     sendToAppsScript({ action: "save_ebs_form1", uNo: activeSchoolSession.uNo, udiseNo: activeSchoolSession.udiseNo, form1: f1 });
     showToast("✅ EBS FORM – I (School Profile) விவரங்கள் வெற்றிகரமாகச் சேமிக்கப்பட்டன!", "#22c55e");
   }
@@ -4855,7 +5542,7 @@
       } else if (idx >= 1 && idx <= 3) {
         subjectCells = `<td style="text-align:left; font-weight:700; padding-left:10px;">${item.sub}</td>`;
       } else if (item.hasOtherName) {
-        subjectCells = `<td colspan="2" style="text-align:left; font-weight:700; padding-left:10px;">Others: <input type="text" id="ebsF2OtherName_${item.key}" class="form-control" style="display:inline-block; width:220px; padding:4px 8px; margin-left:6px;" placeholder="Mention Subject Name" value="${rec.otherName || ""}"></td>`;
+        subjectCells = `<td colspan="2" style="text-align:left; font-weight:700; padding-left:10px;">Others: <input type="text" id="ebsF2OtherName_${item.key}" class="form-control" style="display:inline-block; width:100%; max-width:220px; padding:4px 8px; margin-top:4px;" placeholder="Mention Subject Name" value="${rec.otherName || ""}"></td>`;
       } else {
         subjectCells = `<td colspan="2" style="text-align:left; font-weight:700; padding-left:10px;">${item.sub}</td>`;
       }
@@ -4914,7 +5601,7 @@
     if (otherInp && f2["27_Others"]) {
       f2["27_Others"].otherName = otherInp.value.trim();
     }
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     sendToAppsScript({ action: "save_ebs_form2", uNo: activeSchoolSession.uNo, udiseNo: activeSchoolSession.udiseNo, form2: f2 });
     showToast("✅ EBS FORM – II (+2 Subject Strength) விவரங்கள் சேமிக்கப்பட்டன!", "#22c55e");
   }
@@ -4998,7 +5685,7 @@
     }
 
     syncForm1CountsFromForm3And4(false);
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     renderEbsForm3ListUI(activeSchoolSession, ebs.form3Teachers);
     resetEbsForm3Inputs();
     sendToAppsScript({ action: "save_ebs_form3", uNo: activeSchoolSession.uNo, udiseNo: activeSchoolSession.udiseNo, teacher: teacherObj });
@@ -5019,7 +5706,7 @@
     el.value = val;
   }
 
-  function editEbsForm3Teacher(id) {
+  function editEbsForm3Teacher(id, skipScroll) {
     if (!activeSchoolSession) return;
     const extra = getSchoolExtra(activeSchoolSession.uNo);
     const ebs = getSchoolEbsData(activeSchoolSession, extra);
@@ -5072,9 +5759,13 @@
     document.getElementById("ebsF3LongLeave").value = t.longLeave || "No";
     document.getElementById("ebsF3Remarks").value = t.remarks || "";
     document.getElementById("ebsF3PrefCamp").value = t.prefCamp || "Sivagangai";
-    document.getElementById("ebsSubPaneF3").scrollIntoView({ behavior: "smooth", block: "start" });
-    if (!t.nameTa) document.getElementById("ebsF3NameTa").focus();
-    else if (!t.mobile) document.getElementById("ebsF3Mobile").focus();
+    const qSel3 = document.getElementById("ebsF3QuickSelect");
+    if (qSel3) qSel3.value = t.id;
+    if (!skipScroll) {
+      document.getElementById("ebsF3FormTitle").scrollIntoView({ behavior: "smooth", block: "center" });
+      if (!t.nameTa) document.getElementById("ebsF3NameTa").focus();
+      else if (!t.mobile) document.getElementById("ebsF3Mobile").focus();
+    }
   }
 
   function deleteEbsForm3Teacher(id) {
@@ -5084,6 +5775,12 @@
   function renderEbsForm3ListUI(s, list) {
     const badge = document.getElementById("ebsF3CountBadge");
     if (badge) badge.textContent = list.length;
+    const qSel = document.getElementById("ebsF3QuickSelect");
+    if (qSel) {
+      qSel.innerHTML = list.length === 0
+        ? `<option value="">-- ஆசிரியர்கள் இல்லை --</option>`
+        : list.map((t, i) => `<option value="${t.id}">${i + 1}. ${t.nameEn} (${t.desig} - ${t.mainSub})</option>`).join("");
+    }
     const tbody = document.getElementById("ebsF3TeachersListTbody");
     if (!tbody) return;
     if (list.length === 0) {
@@ -5119,6 +5816,32 @@
       </tr>
     `;
     }).join("");
+    const cardsBox3 = document.getElementById("ebsF3AllCardsPreview");
+    if (cardsBox3) {
+      cardsBox3.innerHTML = `
+        <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 14px;">
+          <div style="font-weight:900; color:#0f294a; font-size:0.88rem; margin-bottom:8px;">📌 படிவம் 3 (FORM – III) பதிவு செய்யப்பட்டுள்ள ஆசிரியர்கள் சுருக்க அட்டைகள் (மொத்தம்: ${list.length}):</div>
+          <div class="grid-3">
+            ${list.map((t, idx) => `
+              <div style="background:#ffffff; border:1.5px solid #93c5fd; border-left:5px solid #1d4ed8; border-radius:8px; padding:10px; font-size:0.8rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="background:#dbeafe; color:#1e40af; font-weight:900; padding:1px 8px; border-radius:999px;">#${idx + 1} ${t.desig}</span>
+                  <code style="font-weight:800; color:#0f766e;">EMIS: ${t.emisId || "-"}</code>
+                </div>
+                <div style="font-weight:900; font-size:0.92rem; color:#0f294a; margin-top:4px;">${t.nameEn}</div>
+                <div style="font-weight:800; color:#1d4ed8;">${t.nameTa || "-"}</div>
+                <div style="color:#334155; margin-top:4px;">📚 பாடம்: <strong>${t.mainSub}</strong> | தகுதி: ${t.qual || "-"}</div>
+                <div style="color:#475569;">🎂 DOB: ${t.dob || "-"} | 🏫 DOJ: ${t.dojPresSchool || "-"} (${t.presNature})</div>
+                <div style="margin-top:6px; display:flex; gap:6px;">
+                  <button type="button" class="btn btn-primary btn-sm" onclick="editEbsForm3Teacher('${t.id}')">✏️ படிவத்தில் திற</button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="printSingleForm3Teacher('${t.id}')">🖨️ Print Form-III</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
   }
 
   // FORM - IV (Non-Teaching Staff Profile) Logic
@@ -5182,14 +5905,14 @@
     }
 
     syncForm1CountsFromForm3And4(false);
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     renderEbsForm4ListUI(activeSchoolSession, ebs.form4NonTeaching);
     resetEbsForm4Inputs();
     sendToAppsScript({ action: "save_ebs_form4", uNo: activeSchoolSession.uNo, udiseNo: activeSchoolSession.udiseNo, employee: empObj });
     showToast("✅ FORM – IV ஆசிரியரல்லாத பணியாளர் சுயவிவரம் சேமிக்கப்பட்டது!", "#22c55e");
   }
 
-  function editEbsForm4NonTeach(id) {
+  function editEbsForm4NonTeach(id, skipScroll) {
     if (!activeSchoolSession) return;
     const extra = getSchoolExtra(activeSchoolSession.uNo);
     const ebs = getSchoolEbsData(activeSchoolSession, extra);
@@ -5224,9 +5947,13 @@
     document.getElementById("ebsF4DiffAbled").value = emp.diffAbled || "No";
     document.getElementById("ebsF4LongLeave").value = emp.longLeave || "No";
     document.getElementById("ebsF4Remarks").value = emp.remarks || "";
-    document.getElementById("ebsSubPaneF4").scrollIntoView({ behavior: "smooth", block: "start" });
-    if (!emp.nameTa) document.getElementById("ebsF4NameTa").focus();
-    else if (!emp.mobile) document.getElementById("ebsF4Mobile").focus();
+    const qSel4 = document.getElementById("ebsF4QuickSelect");
+    if (qSel4) qSel4.value = emp.id;
+    if (!skipScroll) {
+      document.getElementById("ebsF4FormTitle").scrollIntoView({ behavior: "smooth", block: "center" });
+      if (!emp.nameTa) document.getElementById("ebsF4NameTa").focus();
+      else if (!emp.mobile) document.getElementById("ebsF4Mobile").focus();
+    }
   }
 
   function deleteEbsForm4NonTeach(id) {
@@ -5236,6 +5963,12 @@
   function renderEbsForm4ListUI(s, list) {
     const badge = document.getElementById("ebsF4CountBadge");
     if (badge) badge.textContent = list.length;
+    const qSel = document.getElementById("ebsF4QuickSelect");
+    if (qSel) {
+      qSel.innerHTML = list.length === 0
+        ? `<option value="">-- பணியாளர்கள் இல்லை --</option>`
+        : list.map((emp, i) => `<option value="${emp.id}">${i + 1}. ${emp.nameEn} (${emp.desig})</option>`).join("");
+    }
     const tbody = document.getElementById("ebsF4NonTeachListTbody");
     if (!tbody) return;
     if (list.length === 0) {
@@ -5271,6 +6004,32 @@
       </tr>
     `;
     }).join("");
+    const cardsBox4 = document.getElementById("ebsF4AllCardsPreview");
+    if (cardsBox4) {
+      cardsBox4.innerHTML = `
+        <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 14px;">
+          <div style="font-weight:900; color:#0f294a; font-size:0.88rem; margin-bottom:8px;">📌 படிவம் 4 (FORM – IV) பதிவு செய்யப்பட்டுள்ள அலுவலகப் பணியாளர்கள் சுருக்க அட்டைகள் (மொத்தம்: ${list.length}):</div>
+          <div class="grid-3">
+            ${list.map((emp, idx) => `
+              <div style="background:#ffffff; border:1.5px solid #86efac; border-left:5px solid #15803d; border-radius:8px; padding:10px; font-size:0.8rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="background:#dcfce7; color:#14532d; font-weight:900; padding:1px 8px; border-radius:999px;">#${idx + 1} ${emp.desig}</span>
+                  <code style="font-weight:800; color:#0f766e;">EMIS: ${emp.emisId || "-"}</code>
+                </div>
+                <div style="font-weight:900; font-size:0.92rem; color:#0f294a; margin-top:4px;">${emp.nameEn}</div>
+                <div style="font-weight:800; color:#15803d;">${emp.nameTa || "-"}</div>
+                <div style="color:#334155; margin-top:4px;">🗂️ GPF/CPS: <strong>${emp.gpfCps || "-"}</strong> | IFHRMS: ${emp.ifhrms || "-"}</div>
+                <div style="color:#475569;">🎂 DOB: ${emp.dob || "-"} | 🏫 DOJ: ${emp.dojPresSchool || "-"} (${emp.nature})</div>
+                <div style="margin-top:6px; display:flex; gap:6px;">
+                  <button type="button" class="btn btn-primary btn-sm" onclick="editEbsForm4NonTeach('${emp.id}')">✏️ படிவத்தில் திற</button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="printSingleForm4NonTeach('${emp.id}')">🖨️ Print Form-IV</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
   }
 
   // =========================================================================
@@ -5368,7 +6127,7 @@
 
     staffObj.deleteReqStatus = "PENDING";
     staffObj.deleteReqReason = reasonCat + " - " + reasonDet;
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 
     updateAllSummaryCounters();
     renderEbsForm3ListUI(s, ebs.form3Teachers);
@@ -5397,7 +6156,7 @@
       staffObj.deleteReqStatus = "";
       staffObj.deleteReqReason = "";
     }
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     updateAllSummaryCounters();
     renderEbsForm3ListUI(s, ebs.form3Teachers);
     renderEbsForm4ListUI(s, ebs.form4NonTeaching);
@@ -5483,7 +6242,7 @@
     req.status = "APPROVED";
     req.resolvedAt = new Date().toLocaleString("en-IN");
     safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 
     updateAllSummaryCounters();
     renderAdminDeleteRequestsTable();
@@ -5511,7 +6270,7 @@
     req.status = "REJECTED";
     req.resolvedAt = new Date().toLocaleString("en-IN");
     safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 
     updateAllSummaryCounters();
     renderAdminDeleteRequestsTable();
@@ -5545,7 +6304,7 @@
     if (!activeSchoolSession) return;
     const extra = getSchoolExtra(activeSchoolSession.uNo);
     const ebs = getSchoolEbsData(activeSchoolSession, extra);
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA", schoolExtraDataStore);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     sendToAppsScript({
       action: "save_ebs_all",
       uNo: activeSchoolSession.uNo,
