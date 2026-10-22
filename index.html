@@ -1601,7 +1601,11 @@
       <div id="teacherMasterDesignationSummary" style="background:#f0fdf4; border:1.5px solid #22c55e; border-left:5px solid #15803d; border-radius:8px; padding:10px 14px; margin-bottom:14px; font-size:0.84rem; color:#14532d; font-weight:700;"></div>
 
       <form onsubmit="addStaffMemberToSchool(event)" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px; margin-bottom:16px;">
-        <div style="font-weight:800; color:var(--primary); margin-bottom:10px;">➕ புதிய ஆசிரியர் / பணியாளர் சேர்க்கை (Add Staff for Exam / Camp Duty & School Register):</div>
+        <input type="hidden" id="stfEditId" value="">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div style="font-weight:800; color:var(--primary);" id="stfFormTitle">➕ புதிய ஆசிரியர் / பணியாளர் சேர்க்கை (Add Staff for Exam / Camp Duty & School Register):</div>
+          <button type="button" class="btn btn-outline btn-sm" id="stfCancelBtn" onclick="cancelEditStaffMember()" style="display:none;">❌ திருத்தத்தை ரத்து செய் (Cancel)</button>
+        </div>
         <div class="grid-4">
           <div class="form-group">
             <label class="form-label">முன்னொட்டு (Prefix)</label>
@@ -1655,7 +1659,7 @@
             <input type="tel" id="stfMobile" class="form-control" maxlength="10" required>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary">➕ பணியாளரைப் பட்டியலில் சேர் (Add Staff Member)</button>
+        <button type="submit" class="btn btn-primary" id="stfSubmitBtn">➕ பணியாளரைப் பட்டியலில் சேர் (Add Staff Member)</button>
       </form>
 
       <div class="table-wrap">
@@ -1762,6 +1766,7 @@
         <div style="font-size:0.84rem; color:#cbd5e1; margin-top:2px;">பள்ளிகள், நிர்வாகப் பிரிவுகள் (MANAGEMENT 1/2/3), உள்நுழைவு கடவுச்சொற்கள், தேர்வு மையங்கள் மற்றும் அறிக்கைகள் மேலாண்மை</div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-sm" id="admEbsToggleHeaderBtn" onclick="toggleEbsModuleStatus()" style="font-weight:900; background:#15803d; color:#fff; border-color:#22c55e;">🟢 EBS பதிவு: ON (இயங்குகிறது)</button>
         <button type="button" class="btn btn-secondary btn-sm" onclick="syncMasterFromGoogleSheet(true)">🔄 Google Sheet ஒத்திசைவு</button>
         <button type="button" class="btn btn-success btn-sm" onclick="exportFilteredSchoolsCsv()">📥 பள்ளிகள் பட்டியல் CSV பதிவிறக்கம்</button>
         <button type="button" class="btn btn-danger btn-sm" onclick="logoutAdmin()">🚪 வெளியேறு (Admin Logout)</button>
@@ -2597,6 +2602,7 @@
       document.body.classList.toggle("auth-mode", viewName === "viewAuth");
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
+    if (typeof updateAllEbsControlUI === "function") updateAllEbsControlUI();
   }
 
   function switchAuthTab(tabKey) {
@@ -2805,6 +2811,13 @@
   }
 
   function logoutSchool() {
+    if (activeSchoolSession && activeSchoolSession.isAdminInspection) {
+      activeSchoolSession = null;
+      switchMainView("viewAdmin");
+      switchAdminTab("ebs");
+      showToast("🛡️ மாவட்ட நிர்வாகி முகப்பிற்குத் திரும்பினீர்கள்.", "#38bdf8");
+      return;
+    }
     activeSchoolSession = null;
     const badge = document.getElementById("headerActiveUserBadge");
     if (badge) badge.textContent = "உள்நுழைவு தயார் நிலை";
@@ -3136,8 +3149,10 @@
     event.preventDefault();
     if (!activeSchoolSession) return;
     const extra = getSchoolExtra(activeSchoolSession.uNo);
+    const editId = (document.getElementById("stfEditId") || {}).value || "";
+
     const stf = {
-      id: "STF-" + Date.now(),
+      id: editId || ("STF-" + Date.now()),
       prefix: document.getElementById("stfPrefix").value,
       name: document.getElementById("stfName").value.trim(),
       gender: document.getElementById("stfGender").value,
@@ -3150,15 +3165,73 @@
       campOption: document.getElementById("stfCampOption").value,
       mobile: document.getElementById("stfMobile").value.trim()
     };
-    extra.staff.push(stf);
+
+    if (editId) {
+      const idx = extra.staff.findIndex(item => item.id === editId);
+      if (idx >= 0) {
+        extra.staff[idx] = Object.assign({}, extra.staff[idx], stf);
+      }
+      showToast(`✅ ஆசிரியர் / பணியாளர் (${stf.name}) விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!`, "#22c55e");
+    } else {
+      extra.staff.push(stf);
+      showToast(`✅ புதிய ஆசிரியர் / பணியாளர் (${stf.name}) விவரம் சேர்க்கப்பட்டது!`, "#22c55e");
+    }
+
     if (typeof syncAddedStaffToEbs === "function") {
       syncAddedStaffToEbs(stf, activeSchoolSession, extra);
     }
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+    cancelEditStaffMember();
+    renderSchoolStaffTable(extra);
+  }
+
+  function editStaffMember(staffId) {
+    if (!activeSchoolSession) return;
+    const extra = getSchoolExtra(activeSchoolSession.uNo);
+    const st = extra.staff.find(item => item.id === staffId);
+    if (!st) return;
+
+    document.getElementById("stfEditId").value = st.id;
+    document.getElementById("stfPrefix").value = st.prefix || "திரு.";
+    document.getElementById("stfName").value = st.name || "";
+    document.getElementById("stfGender").value = st.gender || "Male";
+    document.getElementById("stfDesig").value = st.desig || "";
+    document.getElementById("stfSubject").value = st.subject || "";
+    document.getElementById("stfFirstApp").value = st.firstApp || "";
+    document.getElementById("stfNature").value = st.nature || "Regular";
+    document.getElementById("stfExamDuty").value = st.examDuty || "Invigilator";
+    document.getElementById("stfCampDuty").value = st.campDuty || "AE";
+    document.getElementById("stfCampOption").value = st.campOption || "Sivagangai";
+    document.getElementById("stfMobile").value = st.mobile || "";
+
+    const titleEl = document.getElementById("stfFormTitle");
+    if (titleEl) titleEl.textContent = `✏️ ஆசிரியர் / பணியாளர் விவரங்களைத் திருத்துதல் (Edit / Correct Data): ${st.name}`;
+    const btn = document.getElementById("stfSubmitBtn");
+    if (btn) {
+      btn.textContent = `💾 திருத்தங்களைச் சேமி (Update Staff Details)`;
+      btn.className = "btn btn-success";
+    }
+    const cancelBtn = document.getElementById("stfCancelBtn");
+    if (cancelBtn) cancelBtn.style.display = "inline-block";
+
+    titleEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    document.getElementById("stfName").focus();
+  }
+
+  function cancelEditStaffMember() {
+    const editIdEl = document.getElementById("stfEditId");
+    if (editIdEl) editIdEl.value = "";
     document.getElementById("stfName").value = "";
     document.getElementById("stfMobile").value = "";
-    renderSchoolStaffTable(extra);
-    showToast("✅ ஆசிரியர் / பணியாளர் விவரம் சேர்க்கப்பட்டது!", "#22c55e");
+    const titleEl = document.getElementById("stfFormTitle");
+    if (titleEl) titleEl.textContent = "➕ புதிய ஆசிரியர் / பணியாளர் சேர்க்கை (Add Staff for Exam / Camp Duty & School Register):";
+    const btn = document.getElementById("stfSubmitBtn");
+    if (btn) {
+      btn.textContent = "➕ பணியாளரைப் பட்டியலில் சேர் (Add Staff Member)";
+      btn.className = "btn btn-primary";
+    }
+    const cancelBtn = document.getElementById("stfCancelBtn");
+    if (cancelBtn) cancelBtn.style.display = "none";
   }
 
   function deleteStaffMember(staffId) {
@@ -3183,10 +3256,11 @@
         <td>${st.firstApp} (${st.nature})</td>
         <td>தேர்வு: <strong>${st.examDuty}</strong><br>முகாம்: ${st.campDuty} (${st.campOption})</td>
         <td>${st.mobile}</td>
-        <td>
+        <td style="white-space:nowrap;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="editStaffMember('${st.id}')">✏️ திருத்து / சரிசெய்</button>
           ${st.deleteReqStatus === "PENDING"
-            ? `<span style="display:inline-block; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 8px; border-radius:6px; font-size:0.74rem; font-weight:800;">⏳ நீக்கக் கோரிக்கை நிலுவையில்</span><br><button type="button" class="btn btn-outline btn-sm" style="margin-top:4px;" onclick="cancelSchoolDeleteRequest('STF', '${st.id}')">↩️ திரும்பப் பெறு</button>`
-            : `<button type="button" class="btn btn-danger btn-sm" onclick="openDeleteRequestModal('STF', '${st.id}')">🗑️ Delete Request</button>`
+            ? `<span style="display:inline-block; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 6px; border-radius:4px; font-size:0.72rem; font-weight:800; margin-left:4px;">⏳ நீக்கக் கோரிக்கை நிலுவையில்</span><button type="button" class="btn btn-outline btn-sm" style="margin-left:4px;" onclick="cancelSchoolDeleteRequest('STF', '${st.id}')">↩️ திரும்பப் பெறு</button>`
+            : `<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" onclick="openDeleteRequestModal('STF', '${st.id}')">🗑️ Delete Request</button>`
           }
         </td>
       </tr>
