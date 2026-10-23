@@ -601,22 +601,31 @@
     /* =======================================================================
        REDESIGNED CONCISE UNIFIED SIGN-IN SCREEN (INSPIRED BY REFERENCE IMAGE)
        ======================================================================= */
+        /* =======================================================================
+       BEAUTIFUL UNIFIED SIGN-IN SCREEN - ORIGINAL SPLIT CARD DESIGN
+       ======================================================================= */
     body.auth-mode {
-      background: linear-gradient(135deg, #004fb8 0%, #003884 50%, #001e4d 100%) !important;
+      background: linear-gradient(135deg, #0052cc 0%, #003884 50%, #001e4d 100%) !important;
       min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
     }
     body.auth-mode .container {
       background: transparent !important;
       min-height: 100vh;
-      display: flex;
+      display: flex !important;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 10px 12px;
+      padding: 16px 12px;
+      margin: 0 auto;
     }
     body.auth-mode .top-system-bar,
     body.auth-mode .flash-ticker-bar,
     body.auth-mode .portal-header,
+    body.auth-mode #viewSchool,
+    body.auth-mode #viewAdmin,
     body.auth-mode .creator-card,
     body.auth-mode .portal-footer {
       display: none !important;
@@ -625,91 +634,228 @@
       display: flex !important;
       align-items: center;
       justify-content: center;
-      min-height: auto;
-      padding: 0 !important;
       width: 100%;
-      position: relative;
+      padding: 0 !important;
+      margin: 0 !important;
     }
 
-    /* Split Card Wrapper - Streamlined, Compact & Balanced */
+    /* Split Card Wrapper matching Original Design */
     .modern-signin-shell {
       width: 100%;
-      max-width: 720px;
+      max-width: 820px;
       margin: 0 auto;
       background: #ffffff;
-      border-radius: 14px;
-      box-shadow: 0 16px 40px rgba(0, 12, 40, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.20);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 12, 40, 0.40), 0 0 0 1px rgba(255, 255, 255, 0.18);
       display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
+      grid-template-columns: 1.02fr 0.98fr;
       overflow: hidden;
       position: relative;
-      min-height: auto;
+      min-height: 460px;
     }
 
-    /* Left Blue Panel with Informative Header & Map */
+    /* Left Blue Sivaganga District Map Panel with Google AI Studio Animated Glow */
     .modern-signin-left {
       background: linear-gradient(145deg, #007cf0 0%, #0047b3 58%, #002663 100%);
       color: #ffffff;
-      padding: 14px 14px;
+      padding: 22px 18px;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      border-top-right-radius: 24px;
-      border-bottom-right-radius: 24px;
+      border-top-right-radius: 46% 52%;
+      border-bottom-right-radius: 46% 52%;
       z-index: 2;
-      box-shadow: 6px 0 18px rgba(0, 30, 80, 0.14);
+      box-shadow: 10px 0 26px rgba(0, 30, 80, 0.16);
     }
-    .sphere-3d { display: none !important; }
+    /* Decorative 3D Glossy Spheres */
+    .sphere-3d {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .sphere-3d-lg {
+      width: 170px;
+      height: 170px;
+      bottom: -55px;
+      left: -35px;
+      background: radial-gradient(circle at 32% 28%, #60a5fa 0%, #0284c7 48%, #001e4d 100%);
+      box-shadow: 0 14px 28px rgba(0, 15, 45, 0.4);
+      z-index: 1;
+    }
+    .sphere-3d-md {
+      width: 115px;
+      height: 115px;
+      bottom: 12px;
+      right: 14px;
+      background: radial-gradient(circle at 30% 30%, #38bdf8 0%, #0052cc 55%, #001a4d 100%);
+      box-shadow: 0 12px 24px rgba(0, 15, 45, 0.35);
+      z-index: 1;
+    }
+    .sphere-3d-corner {
+      width: 100px;
+      height: 100px;
+      bottom: -40px;
+      right: -35px;
+      background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0052cc 60%, #002266 100%);
+      z-index: 1;
+    }
 
-    /* Sivaganga District Map Showcase - Compact Frame without excessive gaps */
+    .signin-left-content {
+      position: relative;
+      z-index: 3;
+    }
+    .signin-welcome-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fde047;
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      letter-spacing: 0.4px;
+    }
+    .signin-welcome-headline {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fef08a;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+      line-height: 1.35;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    .signin-welcome-title {
+      font-family: 'Inter', 'Mukta Malar', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      line-height: 1.2;
+      color: #ffffff;
+      margin-bottom: 6px;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Sivaganga District Map with Flowing Rainbow Border Animation & Glowing Silhouette */
     .svg-map-showcase {
       position: relative;
       z-index: 3;
-      margin: 2px auto;
-      padding: 0;
-      border: none !important;
+      margin: 0 auto;
+      padding: 3px;
+      border-radius: 22px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      max-width: 220px;
+      max-width: 275px;
       width: 100%;
-      background: transparent !important;
-      box-shadow: none !important;
-      transition: transform 0.2s ease;
+      background: transparent;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .svg-map-showcase:hover {
-      transform: scale(1.02);
+      transform: translateY(-3px) scale(1.03);
     }
+
+    /* Animated Outer Diffuse Nebula Aura */
+    .ai-aura-glow {
+      position: absolute;
+      inset: -5px;
+      border-radius: 26px;
+      padding: 3px;
+      background: conic-gradient(
+        #38bdf8 0%,
+        #818cf8 20%,
+        #f472b6 40%,
+        #fbbf24 60%,
+        #34d399 80%,
+        #38bdf8 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      filter: blur(10px);
+      opacity: 0.85;
+      z-index: 1;
+      pointer-events: none;
+      animation: googleAiStudioSpin 4.5s linear infinite;
+    }
+
+    /* Animated Crisp Flowing Gradient Border Ring with Hollow Transparent Center */
+    .ai-border-flow {
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      padding: 2.5px;
+      background: conic-gradient(
+        #38bdf8 0%,
+        #818cf8 20%,
+        #f472b6 40%,
+        #fbbf24 60%,
+        #34d399 80%,
+        #38bdf8 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: 2;
+      pointer-events: none;
+      animation: googleAiStudioSpin 4.5s linear infinite;
+    }
+
+    /* Completely Transparent Canvas */
     .map-inner-canvas {
       position: relative;
       z-index: 3;
       background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      padding: 0;
+      border-radius: 20px;
+      padding: 10px 8px;
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: none !important;
+      border: none !important;
     }
     .map-inner-canvas img {
-      width: auto;
-      max-width: 100%;
-      max-height: 175px;
+      width: 100%;
+      max-height: 250px;
       object-fit: contain;
       display: block;
       margin: 0 auto;
-      filter: drop-shadow(0 6px 16px rgba(0, 18, 50, 0.45));
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8)) drop-shadow(0 0 20px rgba(251, 191, 36, 0.45));
+      animation: mapContourAura 3.5s ease-in-out infinite alternate;
+      transition: transform 0.3s ease;
+    }
+    .svg-map-showcase:hover .map-inner-canvas img {
+      transform: scale(1.02);
     }
 
-    /* Right White Unified Sign-In Panel - Tight & Proportional Spacing */
+    @keyframes mapContourAura {
+      0% {
+        filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.85)) drop-shadow(0 0 16px rgba(129, 140, 248, 0.5));
+      }
+      50% {
+        filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.9)) drop-shadow(0 0 26px rgba(56, 189, 248, 0.65));
+      }
+      100% {
+        filter: drop-shadow(0 0 10px rgba(244, 114, 182, 0.85)) drop-shadow(0 0 20px rgba(52, 211, 153, 0.5));
+      }
+    }
+
+    @keyframes googleAiStudioSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Right White Unified Sign-In Panel */
     .modern-signin-right {
       background: #ffffff;
-      padding: 14px 18px 12px;
+      padding: 24px 28px 18px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -719,19 +865,19 @@
     /* Animated Welcome Header Ribbon inside Login Box (News Banner Style) */
     .welcome-header-ribbon {
       width: 100%;
-      min-height: auto;
+      min-height: 38px;
       height: auto;
       background: linear-gradient(135deg, #091326 0%, #0f1d3a 50%, #070e1c 100%);
-      border-radius: 8px;
-      border: 1.5px solid rgba(56, 189, 248, 0.40);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+      border-radius: 9px;
+      border: 1.5px solid rgba(56, 189, 248, 0.45);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.28), inset 0 0 14px rgba(56, 189, 248, 0.18);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 4px 8px;
+      padding: 5px 10px;
       position: relative;
       overflow: hidden;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       text-align: center;
     }
     .welcome-header-ribbon::before {
@@ -818,11 +964,11 @@
     }
 
     .signin-right-title {
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: #334155;
       line-height: 1.2;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       display: flex;
@@ -841,11 +987,11 @@
     .modern-input-box {
       display: flex;
       align-items: center;
-      background: #f8fafc;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 7px;
-      padding: 2px 10px;
-      margin-bottom: 7px;
+      background: #f1f5f9;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 9px;
+      padding: 3px 12px;
+      margin-bottom: 11px;
       transition: all 0.2s ease;
     }
     .modern-input-box:focus-within {
@@ -898,8 +1044,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: 1px 0 7px;
-      font-size: 0.74rem;
+      margin: 2px 0 12px;
+      font-size: 0.78rem;
       gap: 6px;
       flex-wrap: wrap;
     }
@@ -1014,15 +1160,15 @@
 
     /* Login Box Footer Developer Credit */
     .login-dev-credit {
-      margin-top: 6px;
-      padding-top: 4px;
-      border-top: 1px dashed #e2e8f0;
+      margin-top: 10px;
+      padding-top: 7px;
+      border-top: 1px dashed #cbd5e1;
       text-align: center;
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       font-weight: 600;
       color: #64748b;
-      letter-spacing: 0.1px;
-      line-height: 1.25;
+      letter-spacing: 0.2px;
+      line-height: 1.35;
     }
     .login-dev-credit a.login-dev-phone {
       color: #0284c7;
@@ -1050,18 +1196,14 @@
         max-width: 100%;
       }
       .svg-map-showcase {
-        max-width: 300px;
+        max-width: 240px;
         margin: 0 auto;
-      }
-      .map-inner-canvas img {
-        max-height: 270px;
       }
       .modern-signin-right {
         padding: 20px 18px 16px;
       }
     }
-  
-    /* Admin Master Dashboard - 2 Big Module Cards */
+  /* Admin Master Dashboard - 2 Big Module Cards */
     .adm-module-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -1135,14 +1277,6 @@
       <span class="domain-pill">🌐 portal.ceosvg.in</span>
       <span><span class="status-dot" id="sheetSyncDot"></span><strong id="sheetSyncStatusText">School-Master Google Sheet இணைக்கப்பட்டுள்ளது (281 பள்ளிகள்)</strong></span>
     </div>
-                  <div style="font-size:0.82rem; color:#475569; margin-top:2px;">EMIS தளத்திலிருந்து பதிவிறக்கப்படும் Teachers &amp; Staffs Excel கோப்பினைப் பதிவேற்றி, 281 பள்ளிகளுக்கான ஆசிரியர்களின் விவரங்களை உடனுக்குடன் புதுப்பிக்கலாம்.</div>
-          </div>
-        </div>
-        <button type="button" class="btn btn-primary btn-sm" onclick="switchAdminTab('emisSync')" style="background:#0284c7; border-color:#0284c7; font-weight:800; padding:8px 16px;">
-          📥 Excel பதிவேற்றத்தைத் திறக்க ❯
-        </button>
-      </div>
-
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       <button type="button" class="btn btn-outline btn-sm" onclick="syncMasterFromGoogleSheet(true)">🔄 Google Sheet ஒத்திசைவு (Sync)</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal()">⚙️ இணைப்பு அமைப்பு (Cloud Settings)</button>
@@ -1190,6 +1324,7 @@
   </div>
 
   <!-- ===================================================================== -->
+    <!-- ===================================================================== -->
   <!-- VIEW 1: CONCISE UNIFIED SIGN-IN PORTAL (#viewAuth)                    -->
   <!-- ===================================================================== -->
   <div id="viewAuth" class="view-section active">
@@ -1197,30 +1332,22 @@
 
       <!-- LEFT BLUE WELCOME & SIVAGANGA DISTRICT MAP PANEL -->
       <div class="modern-signin-left">
-        <!-- Top District Emblem Header -->
-        <div style="text-align:center; width:100%; position:relative; z-index:3;">
-          <div style="font-size:0.72rem; font-weight:800; color:#bfdbfe; letter-spacing:0.8px; text-transform:uppercase;">தமிழ்நாடு அரசு • பள்ளிக் கல்வித்துறை</div>
-          <div style="font-size:1.05rem; font-weight:900; color:#ffffff; margin:2px 0 1px;">சிவகங்கை மாவட்டம்</div>
-          <div style="font-size:0.75rem; color:#fde68a; font-weight:700;">ஒருங்கிணைந்த பள்ளி மேலாண்மை தளம்</div>
-        </div>
+        <div class="sphere-3d sphere-3d-lg"></div>
+        <div class="sphere-3d sphere-3d-md"></div>
+        <div class="sphere-3d sphere-3d-corner"></div>
 
-        <!-- Sivaganga District Map Showcase -->
-        <div class="svg-map-showcase" onclick="openSvgMapModal()" title="சிவகங்கை மாவட்டம் - 12 ஒன்றியங்கள் வரைபடம் (பெரிதாக்கிப் பார்க்க சொடுக்கவும்)" style="max-width:210px; max-height:175px; margin:4px auto;">
+        <!-- Sivaganga District Map with Glowing Chrome Aura & Silhouette -->
+        <div class="svg-map-showcase" onclick="openSvgMapModal()" title="சிவகங்கை மாவட்டம் - 12 ஒன்றியங்கள் வரைபடம் (பெரிதாக்கிப் பார்க்க சொடுக்கவும்)">
+          <div class="ai-aura-glow"></div>
+          <div class="ai-border-flow"></div>
           <div class="map-inner-canvas">
-            <img src="" class="svg-district-map-img" alt="சிவகங்கை மாவட்டம் - 12 ஒன்றியங்கள் வரைபடம்" style="max-height:170px; width:auto; object-fit:contain; filter:drop-shadow(0 6px 14px rgba(0,18,50,0.5));">
+            <img src="" class="svg-district-map-img" alt="சிவகங்கை மாவட்டம் - 12 ஒன்றியங்கள் வரைபடம்">
           </div>
-        </div>
-
-        <!-- Bottom District Stats Strip -->
-        <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(0,20,60,0.45); border:1px solid rgba(255,255,255,0.2); border-radius:999px; padding:2px 10px; font-size:0.70rem; color:#e0f2fe; position:relative; z-index:3;">
-          <span>🏛️ 137 அரசு</span> • <span>🤝 59 உதவி</span> • <span>🏢 85 மெட்ரிக்</span>
         </div>
       </div>
 
       <!-- RIGHT WHITE UNIFIED SINGLE-WINDOW SIGN-IN PANEL -->
       <div class="modern-signin-right">
-        <div class="sphere-3d sphere-3d-corner"></div>
-
         <!-- ANIMATED WELCOME HEADER RIBBON (NEWS BANNER STYLE) -->
         <div class="welcome-header-ribbon">
           <div class="welcome-title-wrap">
@@ -1232,20 +1359,15 @@
           </div>
         </div>
 
-        <!-- 1A. UNIFIED SIGN-IN FORM (STREAMLINED & COMPACT) -->
+        <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
         <div id="authPaneSchoolLogin">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <h2 class="signin-right-title" style="margin-bottom:0;">Sign in</h2>
-            <button type="button" onclick="openQuickFinderModal()" style="background:none; border:none; color:#0284c7; font-weight:800; font-size:0.75rem; cursor:pointer; display:inline-flex; align-items:center; gap:3px;">
-              🔍 பள்ளி U.NO தேட
-            </button>
-          </div>
+          <h2 class="signin-right-title">Sign in</h2>
 
           <form onsubmit="handleSchoolLoginSubmit(event)">
             <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
             <div class="modern-input-box">
               <span class="modern-input-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/>
                 </svg>
               </span>
@@ -1253,29 +1375,29 @@
             </div>
 
             <!-- Live Recognized School Preview Badge (Compact) -->
-            <div id="loginLiveSchoolCard" class="school-preview-box" style="display:none; margin:0 0 8px; padding:6px 10px;">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
+            <div id="loginLiveSchoolCard" class="school-preview-box" style="display:none; margin:0 0 12px; padding:8px 12px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
                 <div>
-                  <div style="font-size:0.88rem; font-weight:800; color:#14532d;" id="prevLoginNameTa"></div>
-                  <div style="font-size:0.74rem; font-weight:700; color:#166534;" id="prevLoginNameEn"></div>
+                  <div style="font-size:0.92rem; font-weight:800; color:#14532d;" id="prevLoginNameTa"></div>
+                  <div style="font-size:0.78rem; font-weight:700; color:#166534;" id="prevLoginNameEn"></div>
                 </div>
                 <span id="prevLoginMgmtBadge" class="mgmt-badge mgmt-1G"></span>
               </div>
-              <div style="margin-top:2px; font-size:0.74rem; color:#1e293b;">
+              <div style="margin-top:3px; font-size:0.78rem; color:#1e293b;">
                 <strong>U.NO:</strong> <span id="prevLoginUNo"></span> | <strong>UDISE:</strong> <span id="prevLoginUdise"></span> | <strong>ஒன்றியம்:</strong> <span id="prevLoginBlock"></span>
                 <span style="display:none;"><span id="prevLoginDge"></span><span id="prevLoginAssembly"></span><span id="prevLoginHm"></span></span>
               </div>
             </div>
 
             <!-- Live Recognized Admin Mode Badge -->
-            <div id="loginLiveAdminCard" style="display:none; margin:0 0 8px; padding:6px 10px; background:#fffbeb; border:1.5px solid #f59e0b; border-radius:8px; font-size:0.78rem; font-weight:800; color:#9a3412;">
-              🛡️ மாவட்ட நிர்வாகி உள்நுழைவு (Administrator Sign in)
+            <div id="loginLiveAdminCard" style="display:none; margin:0 0 12px; padding:8px 12px; background:#fffbeb; border:1.5px solid #f59e0b; border-radius:10px; font-size:0.82rem; font-weight:800; color:#9a3412;">
+              🛡️ மாவட்ட நிர்வாகி உள்நுழைவு (District Administrator Sign in)
             </div>
 
             <!-- Password Input with SHOW Toggle -->
             <div class="modern-input-box">
               <span class="modern-input-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm3 11c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
                 </svg>
               </span>
@@ -1294,17 +1416,21 @@
 
             <!-- Primary Sign in Button -->
             <button type="submit" class="btn-modern-signin">Sign in (உள்நுழைக)</button>
-            <div id="schoolLoginErrorMsg" style="margin-top:6px; font-size:0.80rem; font-weight:700; text-align:center; color:var(--accent);"></div>
+            <div id="schoolLoginErrorMsg" style="margin-top:8px; font-size:0.84rem; font-weight:700; text-align:center; color:var(--accent);"></div>
           </form>
 
-          <!-- Streamlined Single-Row Action Strip -->
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px solid #e2e8f0; font-size:0.75rem;">
-            <button type="button" onclick="openQuickFinderModal()" style="background:none; border:none; color:#0284c7; font-weight:800; cursor:pointer; padding:2px 4px; display:inline-flex; align-items:center; gap:3px;">
-              🔍 பள்ளி பட்டியல்
-            </button>
-            <div style="color:#475569;">
-              புதிய பள்ளியா? <button type="button" onclick="switchAuthTab('schoolReg')" style="background:none; border:none; color:#16a34a; font-weight:800; cursor:pointer; padding:2px 4px;">Sign Up / பதிவு</button>
-            </div>
+          <!-- Divider: or -->
+          <div class="signin-or-divider">or</div>
+
+          <!-- Secondary Button: Quick School U.No / UDISE Finder Modal -->
+          <button type="button" class="btn-modern-other" onclick="openQuickFinderModal()">
+            🔍 பள்ளியின் U.NO / UDISE எண் தேடுக (Find School)
+          </button>
+
+          <!-- Bottom Prompt: Sign Up / New School Registration -->
+          <div class="signin-bottom-prompt">
+            புதிய பள்ளிப் பதிவா? (Don't have a password?)
+            <button type="button" onclick="switchAuthTab('schoolReg')">Sign Up / புதிய பதிவு</button>
           </div>
 
           <!-- Login Box Footer Developer Credit -->
@@ -1423,7 +1549,6 @@
     </div>
   </div>
 
-  <!-- ===================================================================== -->
   <!-- VIEW 2: SCHOOL PORTAL DASHBOARD (#viewSchool)                         -->
   <!-- ===================================================================== -->
   <div id="viewSchool" class="view-section">
@@ -1847,6 +1972,9 @@
     <!-- ========================================================================= -->
     <!-- 1. ADMIN MAIN DASHBOARD: INITIAL 2 MODULE CHOOSER CARDS (ONLY 2 BOXES)    -->
     <!-- ========================================================================= -->
+        <!-- ========================================================================= -->
+    <!-- 1. ADMIN MAIN DASHBOARD: 2 MODULE CHOOSER CARDS                           -->
+    <!-- ========================================================================= -->
     <div id="admMainPortalChooser" style="margin-bottom:28px;">
       <div style="text-align:center; margin-bottom:24px;">
         <span style="display:inline-block; font-size:0.8rem; font-weight:800; background:#dbeafe; color:#1e40af; padding:3px 14px; border-radius:999px; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">CEO SIVAGANGAI • MASTER DASHBOARD</span>
@@ -1887,8 +2015,7 @@
           </button>
         </div>
 
-        <!-- MODULE 2: EBS 26-27 -->
-                <!-- MODULE 2: EMIS STAFF MASTER -->
+        <!-- MODULE 2: EMIS STAFF MASTER -->
         <div class="adm-module-card card-ebs" id="admModuleCardEmisStaff" onclick="openAdminModule('emisStaff')" style="border-color:#38bdf8;">
           <span class="adm-module-badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd;">MOD 02</span>
           <div>
@@ -1912,45 +2039,127 @@
             👉 EMIS STAFF MASTER திறக்க கிளிக் செய்க (Open) ❯
           </button>
         </div>
-        </div>
-        <div class="grid-3">
-          <div>
-            <label class="form-label" style="font-size:0.78rem;">📍 ஒன்றியம் (Block - 12 ஒன்றியங்கள்):</label>
-            <select id="admFilterBlock" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
-          </div>
-          <div>
-            <label class="form-label" style="font-size:0.78rem;">🗳️ சட்டமன்றத் தொகுதி (Assembly):</label>
-            <select id="admFilterAssembly" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
-          </div>
-          <div>
-            <label class="form-label" style="font-size:0.78rem;">🎓 பள்ளி வகை (School Level - HS/HSS/MS):</label>
-            <select id="admFilterLevel" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
-          </div>
-        </div>
-      </div>
 
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>SN</th>
-              <th>U.NO</th>
-              <th>UDISE எண்</th>
-              <th>DGE எண்</th>
-              <th>பள்ளியின் பெயர் (தமிழ் & ஆங்கிலம்)</th>
-              <th>ஒன்றியம் & தொகுதி</th>
-              <th>நிர்வாகப் பிரிவு (M1 / M2 / M3)</th>
-              <th>தலைமையாசிரியர் & கைபேசி</th>
-              <th>செயல்கள் (Actions)</th>
-            </tr>
-          </thead>
-          <tbody id="admDirectoryTableBody"></tbody>
-        </table>
       </div>
     </div>
 
-    <!-- ADMIN SUB-TAB 2: ADD NEW SCHOOLS & BULK IMPORT -->
-    <div id="admPaneAddSchool" class="panel-box" style="display:none;">
+    <!-- ========================================================================= -->
+    <!-- 2. ADMIN SECTION: SCHOOL MASTER & EMIS STAFF MANAGEMENT                   -->
+    <!-- ========================================================================= -->
+    <div id="admSectionSchoolMaster" style="display:none;">
+      <!-- Breadcrumb Bar -->
+      <div style="display:flex; justify-content:space-between; align-items:center; background:#eff6ff; border:2px solid #bfdbfe; border-radius:10px; padding:10px 16px; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff;">
+          ⬅️ முதன்மை கட்டுப்பாட்டகம் (Back to Main Dashboard)
+        </button>
+        <div style="font-size:1.15rem; font-weight:900; color:#0f294a; display:flex; align-items:center; gap:8px;">
+          <span>🏫</span> 1. SCHOOL MASTER – சிவகங்கை மாவட்டப் பள்ளிகள் முதன்மை மேலாண்மை
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" onclick="switchAdminTab('addSchool')">➕ புதிய பள்ளி சேர்</button>
+      </div>
+
+      <!-- Quick Summary Stat Cards -->
+      <div class="stat-grid">
+        <div class="stat-card" onclick="resetAdminDirectoryFilters()">
+          <div class="stat-num" style="color:#0f294a;" id="admStatTotal">281</div>
+          <div class="stat-label">மொத்தப் பள்ளிகள் (All)</div>
+        </div>
+        <div class="stat-card" onclick="document.getElementById('admFilterMgmt1').value='1G'; renderAdminDirectoryTable();">
+          <div class="stat-num" style="color:#16a34a;" id="admStat1G">137</div>
+          <div class="stat-label">1G - அரசுப் பள்ளி</div>
+        </div>
+        <div class="stat-card" onclick="document.getElementById('admFilterMgmt1').value='2A'; renderAdminDirectoryTable();">
+          <div class="stat-num" style="color:#2563eb;" id="admStat2A">59</div>
+          <div class="stat-label">2A - அரசு உதவிபெறும்</div>
+        </div>
+        <div class="stat-card" onclick="document.getElementById('admFilterMgmt1').value='3P'; renderAdminDirectoryTable();">
+          <div class="stat-num" style="color:#9333ea;" id="admStat3P">85</div>
+          <div class="stat-label">3P - தனியார் / மெட்ரிக்</div>
+        </div>
+        <div class="stat-card" onclick="switchAdminTab('divisions')">
+          <div class="stat-num" style="color:#d97706;" id="admStatDivisions">12</div>
+          <div class="stat-label">நிர்வாகப் பிரிவுகள்</div>
+        </div>
+        <div class="stat-card" onclick="switchAdminTab('credentials')">
+          <div class="stat-num" style="color:#0284c7;" id="admStatRegSchools">281</div>
+          <div class="stat-label">கடவுச்சொல் பதிவு</div>
+        </div>
+      </div>
+
+      <!-- Navigation Sub-Tabs for School Master -->
+      <div class="nav-pills-bar" style="margin-bottom:16px;">
+        <button type="button" class="nav-pill-btn active" id="admTabBtnDirectory" onclick="switchAdminTab('directory')">📋 1. பள்ளிகள் பட்டியல் &amp; வடிகட்டி (Directory)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnAddSchool" onclick="switchAdminTab('addSchool')">➕ 2. புதிய பள்ளிகள் &amp; Bulk Import</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnDivisions" onclick="switchAdminTab('divisions')">🗂️ 3. நிர்வாகப் பிரிவுகள் மேலாண்மை</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnCredentials" onclick="switchAdminTab('credentials')">🔑 4. பள்ளி கடவுச்சொல் மீட்பு</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnCentres" onclick="switchAdminTab('centres')">🏛️ 5. தேர்வு மையங்கள் (12_Ex_Cen)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnEmisSync" onclick="switchAdminTab('emisSync')" style="border-color:#0284c7; background:#f0f9ff; color:#0369a1; font-weight:800;">📥 6. EMIS ஆசிரியர் &amp; பணியாளர் Excel பதிவேற்றம் (Staff Sync)</button>
+      </div>
+
+      <!-- ADMIN SUB-TAB 1: DIRECTORY & FILTER -->
+      <div id="admPaneDirectory" class="panel-box">
+        <div class="panel-title">
+          <span>📋 சிவகங்கை மாவட்டப் பள்ளிகள் முதன்மைப் பட்டியல் (Master Schools Directory)</span>
+          <span style="font-size:0.85rem; color:#475569;">பொருந்திய பள்ளிகள்: <strong style="color:#1d4ed8;" id="admFilteredCountBadge">281</strong></span>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:16px;">
+          <div class="grid-4" style="margin-bottom:10px;">
+            <div style="grid-column: span 2;">
+              <label class="form-label" style="font-size:0.78rem;">🔍 விரைவுத் தேடல் (பெயர் / U.No / UDISE / DGE / தலைமையாசிரியர்):</label>
+              <input type="text" id="admFilterSearch" class="form-control" style="padding:7px 10px; font-size:0.86rem;" placeholder="தட்டச்சு செய்க..." oninput="renderAdminDirectoryTable()">
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">🏛️ முதன்மை நிர்வாகம் (MANAGEMENT_1):</label>
+              <select id="admFilterMgmt1" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">📂 நிர்வாக உட்பிரிவு (MANAGEMENT_2):</label>
+              <select id="admFilterMgmt2" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
+            </div>
+          </div>
+          <div class="grid-4" style="margin-bottom:10px;">
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">📑 உதவிபெறும் பிரிவு (MANAGEMENT_3):</label>
+              <select id="admFilterMgmt3" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">📍 ஒன்றியம் (Block - 12 ஒன்றியங்கள்):</label>
+              <select id="admFilterBlock" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">🗳️ சட்டமன்றத் தொகுதி (Assembly):</label>
+              <select id="admFilterAssembly" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">🎓 பள்ளி வகை (School Level - HS/HSS/MS):</label>
+              <select id="admFilterLevel" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>SN</th>
+                <th>U.NO</th>
+                <th>UDISE எண்</th>
+                <th>DGE எண்</th>
+                <th>பள்ளியின் பெயர் (தமிழ் &amp; ஆங்கிலம்)</th>
+                <th>ஒன்றியம் &amp; தொகுதி</th>
+                <th>நிர்வாகப் பிரிவு (M1 / M2 / M3)</th>
+                <th>தலைமையாசிரியர் &amp; கைபேசி</th>
+                <th>செயல்கள் (Actions)</th>
+              </tr>
+            </thead>
+            <tbody id="admDirectoryTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADMIN SUB-TAB 2: ADD NEW SCHOOLS & BULK IMPORT -->
+      <div id="admPaneAddSchool" class="panel-box" style="display:none;">
       <div class="panel-title">
         <span>➕ புதிய பள்ளி சேர்த்தல் / திருத்துதல் & கூகுள் சீட் மொத்தப் பதிவேற்றம் (Add / Edit School & Bulk Import)</span>
       </div>
@@ -2056,7 +2265,9 @@
     </div>
 
     <!-- ADMIN SUB-TAB 3: DYNAMIC ADMINISTRATIVE / MANAGEMENT DIVISIONS MANAGER -->
-    <div id="admPaneDivisions" class="panel-box" style="display:none;">
+
+      <!-- ADMIN SUB-TAB 3: DYNAMIC ADMINISTRATIVE / MANAGEMENT DIVISIONS MANAGER -->
+      <div id="admPaneDivisions" class="panel-box" style="display:none;">
       <div class="panel-title">
         <span>🗂️ நிர்வாகப் பிரிவுகள் மற்றும் ஒன்றியங்கள் மேலாண்மை (Dynamic Management Divisions & Categories)</span>
       </div>
@@ -2096,7 +2307,9 @@
     </div>
 
     <!-- ADMIN SUB-TAB 4: SCHOOL LOGIN CREDENTIALS & PASSWORD RESET -->
-    <div id="admPaneCredentials" class="panel-box" style="display:none;">
+
+      <!-- ADMIN SUB-TAB 4: SCHOOL LOGIN CREDENTIALS & PASSWORD RESET -->
+      <div id="admPaneCredentials" class="panel-box" style="display:none;">
       <div class="panel-title">
         <span>🔑 பள்ளி உள்நுழைவு விவரங்கள் & கடவுச்சொல் மீட்டமைப்பு (School Credentials & Password Control)</span>
       </div>
@@ -2139,7 +2352,9 @@
     </div>
 
     <!-- ADMIN SUB-TAB 5: 12_Ex_Cen EXAM CENTRES & CIRCULARS -->
-    <div id="admPaneCentres" class="panel-box" style="display:none;">
+
+      <!-- ADMIN SUB-TAB 5: 12_Ex_Cen EXAM CENTRES & CIRCULARS -->
+      <div id="admPaneCentres" class="panel-box" style="display:none;">
       <div class="grid-2">
         <div>
           <div class="panel-title"><span>🏛️ மேல்நிலைத் தேர்வு மையங்கள் (12_Ex_Cen - 92 மையங்கள்)</span></div>
@@ -2189,7 +2404,9 @@
     <!-- ADMIN SUB-TAB 7: STAFF DELETE REQUESTS APPROVAL (#admPaneDeleteReqs) -->
 
       <!-- ADMIN SUB-TAB 8 / EBS 3: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
-    <div id="admPaneEmisSync" class="panel-box" style="display:none;">
+
+      <!-- ADMIN SUB-TAB 6: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
+      <div id="admPaneEmisSync" class="panel-box" style="display:none;">
       <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <span style="font-size:1.15rem; font-weight:900; color:#0f294a;">
           📥 EMIS ஆசிரியர் மற்றும் பணியாளர் Excel பதிவேற்றம் &amp; தரவுப் புதுப்பித்தல் (EMIS Staff Upload &amp; Sync Engine)
@@ -2372,25 +2589,16 @@
 
     </div>
 
-    <div id="admPaneDeleteReqs" class="panel-box" style="display:none;"></div>
-    <div id="admPaneEbs" class="panel-box" style="display:none;"></div>
-
       <!-- Bottom Return Button -->
-      <div style="text-align:center; margin-top:24px; padding-top:16px; border-top:1px solid #cbd5e1;">
-        <button type="button" class="btn btn-outline" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff;">
-          ⬅️ முதன்மை கட்டுப்பாட்டகத்திற்குத் திரும்பு (Back to Main Dashboard)
-        </button>
-      </div>
-    <
-      <!-- Bottom Return Button -->
-      <div style="text-align:center; margin-top:24px; padding-top:16px; border-top:1px solid #cbd5e1;">
+      <div style="text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid #cbd5e1;">
         <button type="button" class="btn btn-outline" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff;">
           ⬅️ முதன்மை கட்டுப்பாட்டகத்திற்குத் திரும்பு (Back to Main Dashboard)
         </button>
       </div>
     </div>
+  </div>
 
-    <div class="creator-card">
+  <div class="creator-card">
     <div style="display:inline-flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px;">
       <span class="creator-label">இணையதள வடிவமைப்பு & பராமரிப்பு: </span>
       <span class="creator-name-ta">கூ. பூவலிங்கம்</span>
