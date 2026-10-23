@@ -1265,6 +1265,174 @@
       text-transform: uppercase;
     }
 
+  
+    /* Multi-Select Dropdown Component Styles */
+    .multi-select-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .multi-select-trigger {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 0.84rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 38px;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .multi-select-trigger:hover {
+      border-color: #0284c7;
+      background: #f8fafc;
+    }
+    .multi-select-trigger.active {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+    .multi-select-placeholder {
+      color: #0f172a;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 6px;
+      font-size: 0.80rem;
+    }
+    .multi-select-arrow {
+      color: #64748b;
+      font-size: 0.72rem;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+    .multi-select-trigger.active .multi-select-arrow {
+      transform: rotate(180deg);
+    }
+    .multi-select-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 100%;
+      min-width: 290px;
+      max-width: 380px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .multi-select-search-bar {
+      padding: 6px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    .multi-select-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 10px;
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+    .multi-select-actions button {
+      background: none;
+      border: none;
+      color: #0284c7;
+      cursor: pointer;
+      padding: 2px 4px;
+      font-weight: 800;
+      font-family: inherit;
+    }
+    .multi-select-actions button:hover {
+      text-decoration: underline;
+    }
+    .multi-select-options-list {
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .multi-select-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 0.80rem;
+      font-weight: 600;
+      color: #1e293b;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.12s ease;
+    }
+    .multi-select-option:hover {
+      background: #eff6ff;
+      color: #1e40af;
+    }
+    .multi-select-option input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #0284c7;
+      cursor: pointer;
+    }
+
+    /* Seniority Badges */
+    .seniority-badge-gold {
+      background: linear-gradient(135deg, #fef08a 0%, #facc15 100%);
+      color: #713f12;
+      border: 1px solid #eab308;
+      font-weight: 900;
+      font-size: 0.85rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(234, 179, 8, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .seniority-badge-silver {
+      background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+      color: #1e293b;
+      border: 1px solid #94a3b8;
+      font-weight: 900;
+      font-size: 0.85rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .seniority-badge-bronze {
+      background: linear-gradient(135deg, #ffedd5 0%, #fdba74 100%);
+      color: #7c2d12;
+      border: 1px solid #f97316;
+      font-weight: 900;
+      font-size: 0.85rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .seniority-badge-normal {
+      background: #f1f5f9;
+      color: #0f294a;
+      border: 1px solid #cbd5e1;
+      font-weight: 900;
+      font-size: 0.80rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+    }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -2447,13 +2615,66 @@
           </div>
         </div>
 
-        <!-- ADVANCED SEARCH & FILTER BOX -->
+        <!-- SENIORITY & PRIORITY PANEL GENERATOR BANNER -->
+        <div style="background:linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #eff6ff 100%); border:2px solid #f59e0b; border-radius:12px; padding:12px 16px; margin-bottom:14px; box-shadow:0 4px 12px rgba(245, 158, 11, 0.12);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.45rem;">🎖️</span>
+              <div>
+                <div style="font-weight:900; font-size:1.02rem; color:#78350f;">
+                  மாவட்ட ஆசிரியர் முன்னுரிமைப் பட்டியல் தயாரிப்பு (Seniority &amp; Priority Panel Generator)
+                </div>
+                <div style="font-size:0.76rem; color:#92400e;">
+                  தமிழ்நாடு பள்ளிக்கல்வித்துறை பணி மூப்பு விதிகளின்படி (DOJ in Service / DOJ in School / வயது முன்னுரிமை)
+                </div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-sm" id="btnToggleSeniorityMode" onclick="toggleSeniorityMode()" style="font-weight:900; background:#d97706; color:#fff; border:none; box-shadow:0 3px 8px rgba(217, 119, 6, 0.3);">
+                ⭐ முன்னுரிமைப் பட்டியல் முறை: ON
+              </button>
+              <select id="senioritySortCriterion" class="form-control" style="width:auto; padding:5px 10px; font-size:0.80rem; font-weight:700; height:34px;" onchange="onSenioritySortChange(this.value)">
+                <option value="dojService">🥇 பணியில் சேர்ந்த நாள் (DOJ Service) - Senior First</option>
+                <option value="dojSchool">🏫 இப்பள்ளியில் சேர்ந்த நாள் (DOJ Station/School)</option>
+                <option value="dob">🎂 வயது / பிறந்த தேதி (Age Seniority - Older First)</option>
+              </select>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="printSeniorityPanelReport()" style="font-weight:800;">
+                🖨️ முன்னுரிமைப் பட்டியல் அச்சிடுக
+              </button>
+              <button type="button" class="btn btn-success btn-sm" onclick="exportAdminFilteredStaffCsv(true)" style="font-weight:800;">
+                📥 முன்னுரிமைப் பட்டியல் CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- 1-Click Quick Seniority Preset Buttons -->
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:0.78rem;">
+            <span style="font-weight:800; color:#78350f;">விரைவுப் பட்டியல்கள் (1-Click Presets):</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('PG')" style="background:#fff; color:#1e40af; border-color:#93c5fd; padding:3px 9px; font-size:0.75rem; font-weight:800;">
+              🎖️ 1. முதுகலை ஆசிரியர் பட்டியல் (PG Teachers)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('BT')" style="background:#fff; color:#15803d; border-color:#86efac; padding:3px 9px; font-size:0.75rem; font-weight:800;">
+              🎖️ 2. பட்டதாரி ஆசிரியர் பட்டியல் (BT Assistants)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('HM_PROMOTION')" style="background:#fff; color:#9333ea; border-color:#d8b4fe; padding:3px 9px; font-size:0.75rem; font-weight:800;">
+              🎖️ 3. தலைமையாசிரியர் பதவி உயர்வு தகுதிப் பட்டியல் (PG + BT)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('SGT')" style="background:#fff; color:#c2410c; border-color:#fed7aa; padding:3px 9px; font-size:0.75rem; font-weight:800;">
+              🎖️ 4. இடைநிலை ஆசிரியர் பட்டியல் (SG Teachers)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('NON_TEACH')" style="background:#fff; color:#475569; border-color:#cbd5e1; padding:3px 9px; font-size:0.75rem; font-weight:800;">
+              🎖️ 5. அலுவலகப் பணியாளர் பட்டியல் (Non-Teaching)
+            </button>
+          </div>
+        </div>
+
+        <!-- ADVANCED SEARCH & MULTIPLE SELECTION FILTER BOX -->
         <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:14px; margin-bottom:16px;">
           <div style="font-size:0.92rem; font-weight:900; color:#0f294a; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-            <span>🔍 ஆசிரியர் &amp; பணியாளர் மேம்பட்ட தேடல் &amp; வடிகட்டி (Advanced Search &amp; Filters):</span>
+            <span>🔍 ஆசிரியர் &amp; பணியாளர் மேம்பட்ட தேடல் &amp; பல்தேர்வு வடிகட்டி (Multiple Selection Filters):</span>
             <div style="display:flex; gap:8px;">
               <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStaffFilters()">🧹 வடிகட்டிகளை மீட்டமை (Reset)</button>
-              <button type="button" class="btn btn-success btn-sm" onclick="exportAdminFilteredStaffCsv()">📥 வடிகட்டிய ஆசிரியர் பட்டியல் CSV</button>
+              <button type="button" class="btn btn-success btn-sm" onclick="exportAdminFilteredStaffCsv(false)">📥 வடிகட்டிய ஆசிரியர் பட்டியல் CSV</button>
             </div>
           </div>
 
@@ -2463,10 +2684,26 @@
               <label class="form-label" style="font-size:0.78rem;">🔍 விரைவுத் தேடல் (பெயர் / Staff ID / UDISE / கைபேசி):</label>
               <input type="text" id="admStaffFilterSearch" class="form-control" style="padding:7px 10px; font-size:0.86rem;" placeholder="ஆசிரியர் பெயர், Staff ID, பள்ளி பெயர்..." oninput="onAdminStaffFilterInput()">
             </div>
-            <div>
-              <label class="form-label" style="font-size:0.78rem;">📍 ஒன்றியம் (Block - 12 ஒன்றியங்கள்):</label>
-              <select id="admStaffFilterBlock" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffBlockChange()"></select>
+            
+            <!-- MULTI-SELECT BLOCK -->
+            <div class="multi-select-wrap" id="msWrap_block">
+              <label class="form-label" style="font-size:0.78rem;">📍 ஒன்றியம் (Blocks - பல்தேர்வு):</label>
+              <div class="multi-select-trigger" id="msTrigger_block" onclick="toggleMultiSelectMenu('block', event)">
+                <span class="multi-select-placeholder" id="msPlaceholder_block">அனைத்து ஒன்றியங்கள் (All 12)</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-menu" id="msMenu_block" style="display:none;" onclick="event.stopPropagation()">
+                <div class="multi-select-search-bar">
+                  <input type="text" placeholder="🔍 ஒன்றியம் தேடுக..." oninput="filterMultiSelectItems('block', this.value)" class="form-control" style="padding:4px 8px; font-size:0.78rem;">
+                </div>
+                <div class="multi-select-actions">
+                  <button type="button" onclick="selectAllMultiSelect('block')">☑️ அனைத்தும்</button>
+                  <button type="button" onclick="clearAllMultiSelect('block')">⬜ அழி (Clear)</button>
+                </div>
+                <div class="multi-select-options-list" id="msOptions_block"></div>
+              </div>
             </div>
+
             <div>
               <label class="form-label" style="font-size:0.78rem;">🏫 பள்ளி (School - 281 பள்ளிகள்):</label>
               <select id="admStaffFilterSchool" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()"></select>
@@ -2475,23 +2712,65 @@
 
           <!-- Filter Row 2 -->
           <div class="grid-4" style="margin-bottom:10px;">
-            <div>
-              <label class="form-label" style="font-size:0.78rem;">👨‍🏫 பதவி (Designation):</label>
-              <select id="admStaffFilterDesig" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()"></select>
+            
+            <!-- MULTI-SELECT DESIGNATION -->
+            <div class="multi-select-wrap" id="msWrap_desig">
+              <label class="form-label" style="font-size:0.78rem;">👨‍🏫 பதவி (Designations - பல்தேர்வு):</label>
+              <div class="multi-select-trigger" id="msTrigger_desig" onclick="toggleMultiSelectMenu('desig', event)">
+                <span class="multi-select-placeholder" id="msPlaceholder_desig">அனைத்துப் பதவிகள் (All)</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-menu" id="msMenu_desig" style="display:none;" onclick="event.stopPropagation()">
+                <div class="multi-select-search-bar">
+                  <input type="text" placeholder="🔍 பதவி தேடுக (எ.கா: PG, BT, HM)..." oninput="filterMultiSelectItems('desig', this.value)" class="form-control" style="padding:4px 8px; font-size:0.78rem;">
+                </div>
+                <div class="multi-select-actions">
+                  <button type="button" onclick="selectAllMultiSelect('desig')">☑️ அனைத்தும்</button>
+                  <button type="button" onclick="clearAllMultiSelect('desig')">⬜ அழி (Clear)</button>
+                </div>
+                <div class="multi-select-options-list" id="msOptions_desig"></div>
+              </div>
             </div>
-            <div>
-              <label class="form-label" style="font-size:0.78rem;">📚 கற்பிக்கும் பாடம் (Teaching Subject):</label>
-              <select id="admStaffFilterSubject" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()"></select>
+
+            <!-- MULTI-SELECT SUBJECT -->
+            <div class="multi-select-wrap" id="msWrap_subject">
+              <label class="form-label" style="font-size:0.78rem;">📚 கற்பிக்கும் பாடம் (Subjects - பல்தேர்வு):</label>
+              <div class="multi-select-trigger" id="msTrigger_subject" onclick="toggleMultiSelectMenu('subject', event)">
+                <span class="multi-select-placeholder" id="msPlaceholder_subject">அனைத்துப் பாடங்கள் (All)</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-menu" id="msMenu_subject" style="display:none;" onclick="event.stopPropagation()">
+                <div class="multi-select-search-bar">
+                  <input type="text" placeholder="🔍 பாடம் தேடுக (எ.கா: Maths, Tamil)..." oninput="filterMultiSelectItems('subject', this.value)" class="form-control" style="padding:4px 8px; font-size:0.78rem;">
+                </div>
+                <div class="multi-select-actions">
+                  <button type="button" onclick="selectAllMultiSelect('subject')">☑️ அனைத்தும்</button>
+                  <button type="button" onclick="clearAllMultiSelect('subject')">⬜ அழி (Clear)</button>
+                </div>
+                <div class="multi-select-options-list" id="msOptions_subject"></div>
+              </div>
             </div>
-            <div>
-              <label class="form-label" style="font-size:0.78rem;">🏛️ முதன்மை நிர்வாகம் (MANAGEMENT_1):</label>
-              <select id="admStaffFilterMgmt" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()">
-                <option value="">அனைத்து நிர்வாகங்கள் (All)</option>
-                <option value="1G">1G - அரசுப் பள்ளிகள் (Government)</option>
-                <option value="2A">2A - அரசு உதவிபெறும் (Govt. Aided)</option>
-                <option value="3P">3P - தனியார் / மெட்ரிக் (Private / Matric)</option>
-              </select>
+
+            <!-- MULTI-SELECT MANAGEMENT -->
+            <div class="multi-select-wrap" id="msWrap_mgmt">
+              <label class="form-label" style="font-size:0.78rem;">🏛️ நிர்வாகப் பிரிவு (Management - பல்தேர்வு):</label>
+              <div class="multi-select-trigger" id="msTrigger_mgmt" onclick="toggleMultiSelectMenu('mgmt', event)">
+                <span class="multi-select-placeholder" id="msPlaceholder_mgmt">அனைத்து நிர்வாகங்கள் (1G, 2A, 3P)</span>
+                <span class="multi-select-arrow">▾</span>
+              </div>
+              <div class="multi-select-menu" id="msMenu_mgmt" style="display:none;" onclick="event.stopPropagation()">
+                <div class="multi-select-actions">
+                  <button type="button" onclick="selectAllMultiSelect('mgmt')">☑️ அனைத்தும்</button>
+                  <button type="button" onclick="clearAllMultiSelect('mgmt')">⬜ அழி (Clear)</button>
+                </div>
+                <div class="multi-select-options-list" id="msOptions_mgmt">
+                  <label class="multi-select-option"><input type="checkbox" value="1G" onchange="onMultiSelectToggle('mgmt', this.value, this.checked)"> 1G - அரசுப் பள்ளிகள் (Government)</label>
+                  <label class="multi-select-option"><input type="checkbox" value="2A" onchange="onMultiSelectToggle('mgmt', this.value, this.checked)"> 2A - அரசு உதவிபெறும் (Govt. Aided)</label>
+                  <label class="multi-select-option"><input type="checkbox" value="3P" onchange="onMultiSelectToggle('mgmt', this.value, this.checked)"> 3P - தனியார் / மெட்ரிக் (Private / Matric)</label>
+                </div>
+              </div>
             </div>
+
             <div>
               <label class="form-label" style="font-size:0.78rem;">🎯 பணிப் பிரிவு (Category):</label>
               <select id="admStaffFilterCategory" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()">
@@ -2541,6 +2820,9 @@
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; font-size:0.84rem;">
           <div style="color:#475569; font-weight:700;">
             காண்பிக்கப்படுவது: <strong id="admStaffPaginationRange" style="color:#0f294a;">1 - 50</strong> / மொத்தம்: <strong id="admStaffTotalMatching" style="color:#0284c7;">7,081</strong> பணியாளர்கள்
+            <span id="seniorityModeBadgeText" style="margin-left:8px; background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:999px; font-weight:800; font-size:0.74rem; border:1px solid #f59e0b;">
+              🎖️ முன்னுரிமைப் பட்டியல் வரிசை (Seniority Sorted)
+            </span>
           </div>
           <div style="display:flex; align-items:center; gap:6px;">
             <button type="button" class="btn btn-outline btn-sm" onclick="goToAdminStaffPage(1)" id="admStaffPageFirstBtn">⏮️</button>
@@ -2556,15 +2838,16 @@
           <table class="data-table" style="font-size:0.82rem;">
             <thead>
               <tr style="position:sticky; top:0; z-index:5;">
-                <th style="width:45px; text-align:center;">வ.எண்</th>
-                <th style="min-width:190px;">ஆசிரியர் பெயர் &amp; Staff ID</th>
-                <th style="min-width:170px;">பதவி (Designation)</th>
+                <th style="width:55px; text-align:center;" id="thStaffRank">மு.எண்</th>
+                <th style="min-width:180px;">ஆசிரியர் பெயர் &amp; Staff ID</th>
+                <th style="min-width:160px;">பதவி (Designation)</th>
                 <th style="min-width:120px;">பாடம் (Subject)</th>
-                <th style="min-width:210px;">பள்ளி விவரம் (School Name)</th>
-                <th style="min-width:120px;">ஒன்றியம் &amp; நிர்வாகம்</th>
-                <th style="min-width:90px;">நியமனம்</th>
-                <th style="min-width:105px;">கைபேசி</th>
-                <th style="min-width:90px; text-align:center;">செயல்</th>
+                <th style="min-width:190px;">பள்ளி விவரம் (School Name)</th>
+                <th style="min-width:115px;">ஒன்றியம் &amp; நிர்வாகம்</th>
+                <th style="min-width:110px; text-align:center;">பணியில் சேர்ந்த நாள் (DOJ)</th>
+                <th style="min-width:95px; text-align:center;">பிறந்த தேதி (DOB)</th>
+                <th style="min-width:95px;">கைபேசி</th>
+                <th style="min-width:110px; text-align:center;">செயல்கள்</th>
               </tr>
             </thead>
             <tbody id="admStaffMasterTableBody"></tbody>
@@ -2809,6 +3092,139 @@
 <!-- STAFF DELETE REQUEST MODAL (SCHOOL PORTAL) -->
 <div id="deleteRequestModal" class="modal-backdrop"></div>
 
+
+
+<!-- ADMIN EDIT STAFF MODAL (TEACHER MASTER) -->
+<div id="adminEditStaffModal" class="modal-backdrop" onclick="if(event.target===this) closeAdminEditStaffModal()">
+  <div class="modal-card" style="max-width:760px;">
+    <div class="modal-header">
+      <div class="modal-title" id="admEditStaffModalTitle">✏️ ஆசிரியர் / பணியாளர் விவரங்களைத் திருத்துதல் (Edit Staff Details)</div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeAdminEditStaffModal()">✕ மூடுக</button>
+    </div>
+    <form onsubmit="saveAdminEditStaff(event)">
+      <input type="hidden" id="admEditStaffId">
+      
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div>
+          <span style="font-size:0.75rem; color:#1e40af; font-weight:800; text-transform:uppercase;">STAFF ID:</span>
+          <strong id="admEditStaffIdBadge" style="font-size:1.05rem; color:#1d4ed8; margin-left:4px;">-</strong>
+        </div>
+        <div id="admEditStaffSourceBadge" style="font-size:0.75rem; background:#dcfce7; color:#166534; padding:2px 8px; border-radius:4px; font-weight:800;">TN EMIS நேரடித் தரவு</div>
+      </div>
+
+      <div class="grid-3">
+        <div class="form-group">
+          <label class="form-label">ஆசிரியர் பெயர் (Staff Name) <span class="required">*</span></label>
+          <input type="text" id="admEditStaffName" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">பாலினம் (Gender) <span class="required">*</span></label>
+          <select id="admEditStaffGender" class="form-control" required>
+            <option value="Male">Male (ஆண்)</option>
+            <option value="Female">Female (பெண்)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">பிறந்த தேதி (Date of Birth)</label>
+          <input type="date" id="admEditStaffDob" class="form-control">
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="form-group">
+          <label class="form-label">பதவி (Designation) <span class="required">*</span></label>
+          <input type="text" id="admEditStaffDesig" class="form-control" list="admEditDesigDatalist" required>
+          <datalist id="admEditDesigDatalist"></datalist>
+        </div>
+        <div class="form-group">
+          <label class="form-label">கற்பிக்கும் பாடம் (Subject)</label>
+          <input type="text" id="admEditStaffSubject" class="form-control" list="admEditSubjectDatalist">
+          <datalist id="admEditSubjectDatalist"></datalist>
+        </div>
+        <div class="form-group">
+          <label class="form-label">பணி வகை (Category)</label>
+          <select id="admEditStaffCategory" class="form-control">
+            <option value="teaching">கற்பித்தல் பணி (Teaching)</option>
+            <option value="nonteaching">அலுவலகப் பணி (Non-Teaching)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="form-group">
+          <label class="form-label">பணி நியமனத் தன்மை (Nature)</label>
+          <select id="admEditStaffNature" class="form-control">
+            <option value="Regular">Regular (நிரந்தரப் பணி)</option>
+            <option value="Contract">Contract (ஒப்பந்தப் பணி)</option>
+            <option value="Part-Time">Part-Time (பகுதிநேரம்)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">பணியில் சேர்ந்த நாள் (DOJ in Service)</label>
+          <input type="date" id="admEditStaffDojService" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">இப்பள்ளியில் சேர்ந்த நாள் (DOJ in School)</label>
+          <input type="date" id="admEditStaffDojSchool" class="form-control">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">பணிபுரியும் பள்ளி (School Assignment / Transfer)</label>
+          <select id="admEditStaffSchool" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">கல்வித் தகுதி (Educational Qualification)</label>
+          <input type="text" id="admEditStaffQual" class="form-control" placeholder="எ.கா: M.Sc., B.Ed., M.Phil.">
+        </div>
+      </div>
+
+      <div class="grid-4">
+        <div class="form-group">
+          <label class="form-label">கைபேசி எண் (Mobile) <span class="required">*</span></label>
+          <input type="tel" id="admEditStaffMobile" class="form-control" maxlength="10" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">தேர்வுப் பணி (Exam Duty)</label>
+          <select id="admEditStaffExamDuty" class="form-control">
+            <option value="Chief Superintendent">Chief Superintendent (CS)</option>
+            <option value="Department Officer">Department Officer (DO)</option>
+            <option value="Hall Superintendent">Hall Superintendent (HS)</option>
+            <option value="Flying Squad">Flying Squad</option>
+            <option value="Standing Squad">Standing Squad</option>
+            <option value="Invigilator">Invigilator</option>
+            <option value="Not Allotted">Not Allotted</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">முகாம் பணி (Camp Duty)</label>
+          <select id="admEditStaffCampDuty" class="form-control">
+            <option value="Camp Officer / CE">Camp Officer / CE</option>
+            <option value="SO">Scrutiny Officer (SO)</option>
+            <option value="AE / Tabulator">AE / Tabulator</option>
+            <option value="Examiner">Examiner</option>
+            <option value="Not Allotted">Not Allotted</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">முகாம் விருப்பம் (Camp Option)</label>
+          <select id="admEditStaffCampOption" class="form-control">
+            <option value="01-Sivagangai">01-Sivagangai</option>
+            <option value="02-Karaikudi">02-Karaikudi</option>
+            <option value="03-Devakottai">03-Devakottai</option>
+            <option value="04-Other Dist">04-Other Dist</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px; border-top:1px solid #e2e8f0; padding-top:14px;">
+        <button type="button" class="btn btn-outline" onclick="closeAdminEditStaffModal()">❌ ரத்து செய் (Cancel)</button>
+        <button type="submit" class="btn btn-success" style="font-weight:800; padding:10px 20px;">💾 மாற்றங்களைச் சேமி (Update Staff Details)</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- QUICK SCHOOL U.NO / UDISE FINDER MODAL -->
 <div id="quickSchoolFinderModal" class="modal-backdrop" onclick="if(event.target===this) closeQuickFinderModal()">
@@ -4715,12 +5131,22 @@
 
 
   // =========================================================================
-  // ADMIN TEACHER MASTER & ADVANCED SEARCH ENGINE (7,081 STAFF)
+  // ADMIN TEACHER MASTER & ADVANCED MULTI-SELECT & SENIORITY PANEL ENGINE
   // =========================================================================
   let districtFlattenedStaffCache = null;
   let adminStaffFilteredList = [];
   let adminStaffCurrentPage = 1;
   let adminStaffPageSize = 50;
+
+  // Multi-select state arrays
+  let selectedBlocks = [];
+  let selectedDesigs = [];
+  let selectedSubjects = [];
+  let selectedMgmts = [];
+
+  // Seniority mode state
+  let isSeniorityMode = true; // Default ON as requested
+  let senioritySortBy = "dojService"; // "dojService", "dojSchool", "dob"
 
   function getDistrictAllStaffList(forceRefresh) {
     if (districtFlattenedStaffCache && !forceRefresh) {
@@ -4730,6 +5156,9 @@
     const pool = (emis && emis.pool) ? emis.pool : [];
     const schoolMap = {};
     masterSchools.forEach(s => { schoolMap[String(s.uNo)] = s; });
+
+    // Load admin persistent overrides from localStorage
+    const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {});
 
     const allStaff = [];
     const seenIds = new Set();
@@ -4746,7 +5175,7 @@
           const desig = pool[r[3]] || (isTeach ? "TEACHER" : "OFFICE STAFF");
           const isHm = desig.toUpperCase().includes("HEAD") || desig.toUpperCase().includes("PRINCIPAL");
 
-          allStaff.push({
+          let staffObj = {
             staffId: staffId,
             name: String(r[2] || ""),
             isTeaching: isTeach,
@@ -4768,15 +5197,33 @@
             mgmt2: sch.mgmt2 || "1",
             level: sch.level || "HS",
             mobile: isHm ? (sch.mobile || "-") : (sch.mobile ? sch.mobile : "-"),
+            examDuty: isHm ? "Chief Superintendent" : (desig.toUpperCase().includes("P.G.") ? "Hall Superintendent / AE" : "Hall Superintendent"),
+            campDuty: isHm ? "Camp Officer / CE" : (desig.toUpperCase().includes("P.G.") ? "AE / Tabulator" : "Examiner"),
+            campOption: sch.block || "01-Sivagangai",
             source: "EMIS"
-          });
+          };
+
+          // Apply saved override if exists
+          if (staffOverrides[staffId]) {
+            staffObj = Object.assign(staffObj, staffOverrides[staffId]);
+            const assignedSch = schoolMap[String(staffObj.uNo)];
+            if (assignedSch) {
+              staffObj.schoolNameTa = assignedSch.nameTa;
+              staffObj.schoolNameEn = assignedSch.nameEn;
+              staffObj.udiseNo = assignedSch.udiseNo;
+              staffObj.block = assignedSch.block;
+              staffObj.mgmt1 = assignedSch.mgmt1;
+            }
+          }
+
+          allStaff.push(staffObj);
         });
 
         if (extra && extra.staff && Array.isArray(extra.staff)) {
           extra.staff.forEach(st => {
             if (st.id && !seenIds.has(String(st.id))) {
               seenIds.add(String(st.id));
-              allStaff.push({
+              let manualStaff = {
                 staffId: String(st.id),
                 name: st.name || "",
                 isTeaching: st.isTeaching !== false,
@@ -4786,6 +5233,8 @@
                 nature: st.nature || "Regular",
                 subject: st.subject || "-",
                 qualification: st.qualification || "-",
+                dojSchool: st.dojSchool || "",
+                dojService: st.dojService || "",
                 uNo: String(uNo),
                 schoolNameTa: sch.nameTa || "",
                 schoolNameEn: sch.nameEn || "",
@@ -4795,8 +5244,16 @@
                 mgmt2: sch.mgmt2 || "1",
                 level: sch.level || "HS",
                 mobile: st.mobile || sch.mobile || "-",
+                examDuty: st.examDuty || "Invigilator",
+                campDuty: st.campDuty || "AE",
+                campOption: st.campOption || sch.block || "01-Sivagangai",
                 source: "Manual"
-              });
+              };
+
+              if (staffOverrides[String(st.id)]) {
+                manualStaff = Object.assign(manualStaff, staffOverrides[String(st.id)]);
+              }
+              allStaff.push(manualStaff);
             }
           });
         }
@@ -4807,42 +5264,172 @@
     return allStaff;
   }
 
+  // Multi-Select UI Management
   function initAdminTeacherMasterFilters() {
     const allStaff = getDistrictAllStaffList();
 
-    // Populate Block select
-    const blkSelect = document.getElementById("admStaffFilterBlock");
-    if (blkSelect && blkSelect.options.length <= 1) {
-      blkSelect.innerHTML = `<option value="">அனைத்து ஒன்றியங்கள் (All 12 Blocks)</option>` +
-        (divisionsRegistry.block || []).map(b => `<option value="${b.code}">${b.label}</option>`).join("");
+    // 1. Populate Multi-Select Blocks
+    const blkOptions = document.getElementById("msOptions_block");
+    if (blkOptions && blkOptions.children.length === 0) {
+      blkOptions.innerHTML = (divisionsRegistry.block || []).map(b => `
+        <label class="multi-select-option">
+          <input type="checkbox" value="${b.code}" onchange="onMultiSelectToggle('block', this.value, this.checked)">
+          <span>${b.label}</span>
+        </label>
+      `).join("");
     }
 
-    // Populate Schools select
-    populateAdminStaffSchoolDropdown("");
+    // 2. Populate Schools dropdown
+    populateAdminStaffSchoolDropdown();
 
-    // Populate Designation select (distinct designations sorted alphabetically)
-    const desigSelect = document.getElementById("admStaffFilterDesig");
-    if (desigSelect && desigSelect.options.length <= 1) {
+    // 3. Populate Multi-Select Designations (distinct designations sorted alphabetically)
+    const desigOptions = document.getElementById("msOptions_desig");
+    if (desigOptions && desigOptions.children.length === 0) {
       const desigs = Array.from(new Set(allStaff.map(s => s.desig))).filter(Boolean).sort();
-      desigSelect.innerHTML = `<option value="">அனைத்துப் பதவிகள் (All Designations - ${desigs.length})</option>` +
-        desigs.map(d => `<option value="${d}">${d}</option>`).join("");
+      desigOptions.innerHTML = desigs.map(d => `
+        <label class="multi-select-option">
+          <input type="checkbox" value="${d}" onchange="onMultiSelectToggle('desig', this.value, this.checked)">
+          <span>${d}</span>
+        </label>
+      `).join("");
+
+      // Also populate modal datalist
+      const dl = document.getElementById("admEditDesigDatalist");
+      if (dl) dl.innerHTML = desigs.map(d => `<option value="${d}">`).join("");
     }
 
-    // Populate Subject select (distinct subjects sorted alphabetically)
-    const subSelect = document.getElementById("admStaffFilterSubject");
-    if (subSelect && subSelect.options.length <= 1) {
+    // 4. Populate Multi-Select Subjects (distinct subjects sorted alphabetically)
+    const subOptions = document.getElementById("msOptions_subject");
+    if (subOptions && subOptions.children.length === 0) {
       const subs = Array.from(new Set(allStaff.map(s => s.subject))).filter(s => s && s !== "-").sort();
-      subSelect.innerHTML = `<option value="">அனைத்துப் பாடங்கள் (All Subjects - ${subs.length})</option>` +
-        subs.map(s => `<option value="${s}">${s}</option>`).join("");
+      subOptions.innerHTML = subs.map(s => `
+        <label class="multi-select-option">
+          <input type="checkbox" value="${s}" onchange="onMultiSelectToggle('subject', this.value, this.checked)">
+          <span>${s}</span>
+        </label>
+      `).join("");
+
+      // Also populate modal datalist
+      const dlSub = document.getElementById("admEditSubjectDatalist");
+      if (dlSub) dlSub.innerHTML = subs.map(s => `<option value="${s}">`).join("");
+    }
+
+    // Populate modal schools select
+    const mSch = document.getElementById("admEditStaffSchool");
+    if (mSch && mSch.options.length <= 1) {
+      const sorted = masterSchools.slice().sort((a,b) => (Number(a.uNo)||0) - (Number(b.uNo)||0));
+      mSch.innerHTML = sorted.map(s => `<option value="${s.uNo}">[${s.uNo}] ${s.nameTa} (${s.block})</option>`).join("");
+    }
+
+    // Close any open multi-select when clicking anywhere outside
+    document.addEventListener("click", closeAllMultiSelectMenus);
+  }
+
+  function toggleMultiSelectMenu(type, event) {
+    if (event) event.stopPropagation();
+    const menu = document.getElementById("msMenu_" + type);
+    const trigger = document.getElementById("msTrigger_" + type);
+    const isVisible = menu.style.display === "flex";
+    closeAllMultiSelectMenus();
+    if (!isVisible) {
+      menu.style.display = "flex";
+      trigger.classList.add("active");
     }
   }
 
-  function populateAdminStaffSchoolDropdown(filterBlock) {
+  function closeAllMultiSelectMenus() {
+    ["block", "desig", "subject", "mgmt"].forEach(type => {
+      const menu = document.getElementById("msMenu_" + type);
+      const trigger = document.getElementById("msTrigger_" + type);
+      if (menu) menu.style.display = "none";
+      if (trigger) trigger.classList.remove("active");
+    });
+  }
+
+  function onMultiSelectToggle(type, value, isChecked) {
+    let arr = getMultiSelectArray(type);
+    if (isChecked) {
+      if (!arr.includes(value)) arr.push(value);
+    } else {
+      const idx = arr.indexOf(value);
+      if (idx >= 0) arr.splice(idx, 1);
+    }
+    updateMultiSelectTriggerText(type);
+    if (type === "block") populateAdminStaffSchoolDropdown();
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+  }
+
+  function getMultiSelectArray(type) {
+    if (type === "block") return selectedBlocks;
+    if (type === "desig") return selectedDesigs;
+    if (type === "subject") return selectedSubjects;
+    if (type === "mgmt") return selectedMgmts;
+    return [];
+  }
+
+  function selectAllMultiSelect(type) {
+    const listEl = document.getElementById("msOptions_" + type);
+    if (!listEl) return;
+    const cbs = listEl.querySelectorAll('input[type="checkbox"]');
+    const arr = getMultiSelectArray(type);
+    arr.length = 0;
+    cbs.forEach(cb => {
+      cb.checked = true;
+      arr.push(cb.value);
+    });
+    updateMultiSelectTriggerText(type);
+    if (type === "block") populateAdminStaffSchoolDropdown();
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+  }
+
+  function clearAllMultiSelect(type) {
+    const listEl = document.getElementById("msOptions_" + type);
+    if (!listEl) return;
+    const cbs = listEl.querySelectorAll('input[type="checkbox"]');
+    cbs.forEach(cb => { cb.checked = false; });
+    const arr = getMultiSelectArray(type);
+    arr.length = 0;
+    updateMultiSelectTriggerText(type);
+    if (type === "block") populateAdminStaffSchoolDropdown();
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+  }
+
+  function filterMultiSelectItems(type, query) {
+    const q = (query || "").trim().toLowerCase();
+    const listEl = document.getElementById("msOptions_" + type);
+    if (!listEl) return;
+    const labels = listEl.querySelectorAll(".multi-select-option");
+    labels.forEach(lbl => {
+      const txt = lbl.textContent.toLowerCase();
+      lbl.style.display = txt.includes(q) ? "flex" : "none";
+    });
+  }
+
+  function updateMultiSelectTriggerText(type) {
+    const arr = getMultiSelectArray(type);
+    const ph = document.getElementById("msPlaceholder_" + type);
+    if (!ph) return;
+
+    if (type === "block") {
+      ph.textContent = arr.length === 0 ? "அனைத்து ஒன்றியங்கள் (All 12)" : `${arr.length} ஒன்றியங்கள் (${arr.slice(0,2).join(", ")}${arr.length > 2 ? '...' : ''})`;
+    } else if (type === "desig") {
+      ph.textContent = arr.length === 0 ? "அனைத்துப் பதவிகள் (All)" : `${arr.length} பதவிகள் (${arr.slice(0,2).join(", ")}${arr.length > 2 ? '...' : ''})`;
+    } else if (type === "subject") {
+      ph.textContent = arr.length === 0 ? "அனைத்துப் பாடங்கள் (All)" : `${arr.length} பாடங்கள் (${arr.slice(0,2).join(", ")}${arr.length > 2 ? '...' : ''})`;
+    } else if (type === "mgmt") {
+      ph.textContent = arr.length === 0 ? "அனைத்து நிர்வாகங்கள் (1G, 2A, 3P)" : `${arr.join(", ")} (${arr.length} நிர்வாகங்கள்)`;
+    }
+  }
+
+  function populateAdminStaffSchoolDropdown() {
     const schSelect = document.getElementById("admStaffFilterSchool");
     if (!schSelect) return;
     const currentVal = schSelect.value;
-    const filteredSchools = filterBlock 
-      ? masterSchools.filter(s => s.block === filterBlock) 
+    const filteredSchools = (selectedBlocks.length > 0)
+      ? masterSchools.filter(s => selectedBlocks.includes(s.block)) 
       : masterSchools.slice();
     
     filteredSchools.sort((a, b) => (Number(a.uNo) || 0) - (Number(b.uNo) || 0));
@@ -4855,52 +5442,134 @@
     }
   }
 
-  function onAdminStaffBlockChange() {
-    const blk = (document.getElementById("admStaffFilterBlock") || {}).value || "";
-    populateAdminStaffSchoolDropdown(blk);
-    onAdminStaffFilterInput();
-  }
-
   function onAdminStaffFilterInput() {
     adminStaffCurrentPage = 1;
     applyAdminStaffFiltersAndRender();
   }
 
   function resetAdminStaffFilters() {
-    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
-    setVal("admStaffFilterSearch", "");
-    setVal("admStaffFilterBlock", "");
-    populateAdminStaffSchoolDropdown("");
-    setVal("admStaffFilterSchool", "");
-    setVal("admStaffFilterDesig", "");
-    setVal("admStaffFilterSubject", "");
-    setVal("admStaffFilterMgmt", "");
-    setVal("admStaffFilterCategory", "");
-    setVal("admStaffFilterGender", "");
-    setVal("admStaffFilterNature", "");
+    document.getElementById("admStaffFilterSearch").value = "";
+    clearAllMultiSelect("block");
+    clearAllMultiSelect("desig");
+    clearAllMultiSelect("subject");
+    clearAllMultiSelect("mgmt");
+    document.getElementById("admStaffFilterSchool").value = "";
+    document.getElementById("admStaffFilterCategory").value = "";
+    document.getElementById("admStaffFilterGender").value = "";
+    document.getElementById("admStaffFilterNature").value = "";
     adminStaffCurrentPage = 1;
     applyAdminStaffFiltersAndRender();
-    showToast("🧹 வடிகட்டிகள் மீட்டமைக்கப்பட்டன.", "#0284c7");
+    showToast("🧹 அனைத்து வடிகட்டிகளும் மீட்டமைக்கப்பட்டன.", "#0284c7");
+  }
+
+  // Seniority List Generation Functions
+  function toggleSeniorityMode() {
+    isSeniorityMode = !isSeniorityMode;
+    updateSeniorityModeUI();
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+    showToast(isSeniorityMode ? "🎖️ முன்னுரிமைப் பட்டியல் முறை இயக்கப்பட்டது (Seniority Mode ON)." : "📋 இயல்பான பட்டியல் முறை மாற்றப்பட்டது.", "#d97706");
+  }
+
+  function onSenioritySortChange(val) {
+    senioritySortBy = val;
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+  }
+
+  function updateSeniorityModeUI() {
+    const btn = document.getElementById("btnToggleSeniorityMode");
+    const badgeText = document.getElementById("seniorityModeBadgeText");
+    const thRank = document.getElementById("thStaffRank");
+
+    if (btn) {
+      btn.textContent = isSeniorityMode ? "⭐ முன்னுரிமைப் பட்டியல் முறை: ON" : "⚪ முன்னுரிமைப் பட்டியல் முறை: OFF";
+      btn.style.background = isSeniorityMode ? "#d97706" : "#64748b";
+    }
+    if (badgeText) {
+      badgeText.style.display = isSeniorityMode ? "inline-block" : "none";
+    }
+    if (thRank) {
+      thRank.textContent = isSeniorityMode ? "மு.எண் (Rank)" : "வ.எண்";
+    }
+  }
+
+  function applySeniorityPreset(presetKey) {
+    // Reset other filters first
+    clearAllMultiSelect("block");
+    clearAllMultiSelect("subject");
+    document.getElementById("admStaffFilterSearch").value = "";
+    document.getElementById("admStaffFilterSchool").value = "";
+    document.getElementById("admStaffFilterCategory").value = "";
+    document.getElementById("admStaffFilterGender").value = "";
+    document.getElementById("admStaffFilterNature").value = "";
+
+    isSeniorityMode = true;
+    senioritySortBy = "dojService";
+    document.getElementById("senioritySortCriterion").value = "dojService";
+
+    if (presetKey === "PG") {
+      // Set Designation = P.G. TEACHER
+      setMultiSelectValues("desig", ["P.G. TEACHER", "PG ASSISTANT"]);
+      setMultiSelectValues("mgmt", ["1G"]);
+      showToast("🎖️ முதுகலை ஆசிரியர் (P.G. Teacher) முன்னுரிமைப் பட்டியல் தயார் செய்யப்பட்டது!", "#15803d");
+    } else if (presetKey === "BT") {
+      // Set Designation = BT ASSISTANT
+      setMultiSelectValues("desig", ["GRADUATE TEACHER (BT ASSISTANT)", "BT ASSISTANT", "SPECIAL GRADUATE TEACHER (BT ASSISTANT)"]);
+      setMultiSelectValues("mgmt", ["1G"]);
+      showToast("🎖️ பட்டதாரி ஆசிரியர் (B.T. Assistant) முன்னுரிமைப் பட்டியல் தயார் செய்யப்பட்டது!", "#15803d");
+    } else if (presetKey === "HM_PROMOTION") {
+      // Multiple Selection: BOTH PG and BT Teachers for HM promotion panel!
+      setMultiSelectValues("desig", ["P.G. TEACHER", "GRADUATE TEACHER (BT ASSISTANT)", "PG ASSISTANT", "BT ASSISTANT"]);
+      setMultiSelectValues("mgmt", ["1G"]);
+      showToast("🎖️ தலைமையாசிரியர் பதவி உயர்வு தகுதிப் பட்டியல் (PG & BT பல்தேர்வு) தயார் செய்யப்பட்டது!", "#9333ea");
+    } else if (presetKey === "SGT") {
+      setMultiSelectValues("desig", ["SECONDARY GRADE TEACHER", "SG ASST", "JUNIOR SECONDARY GRADE TEACHER"]);
+      clearAllMultiSelect("mgmt");
+      showToast("🎖️ இடைநிலை ஆசிரியர் (SG Teacher) முன்னுரிமைப் பட்டியல் தயார் செய்யப்பட்டது!", "#c2410c");
+    } else if (presetKey === "NON_TEACH") {
+      clearAllMultiSelect("desig");
+      document.getElementById("admStaffFilterCategory").value = "nonteaching";
+      clearAllMultiSelect("mgmt");
+      showToast("🎖️ அலுவலகப் பணியாளர்கள் (Non-Teaching) முன்னுரிமைப் பட்டியல் தயார் செய்யப்பட்டது!", "#0284c7");
+    }
+
+    updateSeniorityModeUI();
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+  }
+
+  function setMultiSelectValues(type, valuesArr) {
+    const listEl = document.getElementById("msOptions_" + type);
+    if (!listEl) return;
+    const cbs = listEl.querySelectorAll('input[type="checkbox"]');
+    const arr = getMultiSelectArray(type);
+    arr.length = 0;
+    cbs.forEach(cb => {
+      const match = valuesArr.includes(cb.value);
+      cb.checked = match;
+      if (match) arr.push(cb.value);
+    });
+    updateMultiSelectTriggerText(type);
   }
 
   function applyAdminStaffFiltersAndRender() {
     const allStaff = getDistrictAllStaffList();
     const q = ((document.getElementById("admStaffFilterSearch") || {}).value || "").trim().toLowerCase();
-    const blk = ((document.getElementById("admStaffFilterBlock") || {}).value || "");
     const uNo = ((document.getElementById("admStaffFilterSchool") || {}).value || "");
-    const desig = ((document.getElementById("admStaffFilterDesig") || {}).value || "");
-    const subject = ((document.getElementById("admStaffFilterSubject") || {}).value || "");
-    const mgmt = ((document.getElementById("admStaffFilterMgmt") || {}).value || "");
     const cat = ((document.getElementById("admStaffFilterCategory") || {}).value || "");
     const gender = ((document.getElementById("admStaffFilterGender") || {}).value || "");
     const nature = ((document.getElementById("admStaffFilterNature") || {}).value || "");
 
     adminStaffFilteredList = allStaff.filter(st => {
-      if (blk && st.block !== blk) return false;
+      // Multiple Selection Filters
+      if (selectedBlocks.length > 0 && !selectedBlocks.includes(st.block)) return false;
+      if (selectedDesigs.length > 0 && !selectedDesigs.includes(st.desig)) return false;
+      if (selectedSubjects.length > 0 && !selectedSubjects.includes(st.subject)) return false;
+      if (selectedMgmts.length > 0 && !selectedMgmts.includes(st.mgmt1)) return false;
+
+      // Single Select Filters
       if (uNo && st.uNo !== uNo) return false;
-      if (desig && st.desig !== desig) return false;
-      if (subject && st.subject !== subject) return false;
-      if (mgmt && st.mgmt1 !== mgmt) return false;
       if (cat === "teaching" && !st.isTeaching) return false;
       if (cat === "nonteaching" && st.isTeaching) return false;
       if (gender && st.gender !== gender) return false;
@@ -4914,6 +5583,38 @@
       }
       return true;
     });
+
+    // Seniority Sorting Algorithm (Tamil Nadu School Education Rules)
+    if (isSeniorityMode) {
+      adminStaffFilteredList.sort((a, b) => {
+        if (senioritySortBy === "dojSchool") {
+          const s1 = a.dojSchool || "9999-99-99";
+          const s2 = b.dojSchool || "9999-99-99";
+          if (s1 !== s2) return s1.localeCompare(s2);
+        } else if (senioritySortBy === "dob") {
+          const b1 = a.dob || "9999-99-99";
+          const b2 = b.dob || "9999-99-99";
+          if (b1 !== b2) return b1.localeCompare(b2);
+        } else {
+          // Primary: DOJ Service ASC (earlier joining = senior)
+          const d1 = a.dojService || "9999-99-99";
+          const d2 = b.dojService || "9999-99-99";
+          if (d1 !== d2) return d1.localeCompare(d2);
+        }
+
+        // Tie-breaker 1: Station Seniority (DOJ School)
+        const sch1 = a.dojSchool || "9999-99-99";
+        const sch2 = b.dojSchool || "9999-99-99";
+        if (sch1 !== sch2) return sch1.localeCompare(sch2);
+
+        // Tie-breaker 2: Age Seniority (DOB ASC - older person gets priority)
+        const dob1 = a.dob || "9999-99-99";
+        const dob2 = b.dob || "9999-99-99";
+        if (dob1 !== dob2) return dob1.localeCompare(dob2);
+
+        return a.name.localeCompare(b.name);
+      });
+    }
 
     renderAdminStaffTablePage();
   }
@@ -4964,7 +5665,7 @@
     if (!tbody) return;
 
     if (total === 0) {
-      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:32px; color:#64748b; font-size:0.95rem;">
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:32px; color:#64748b; font-size:0.95rem;">
         🔍 கொடுக்கப்பட்ட வடிகட்டிகளுக்குப் பொருந்தும் ஆசிரியர்கள் அல்லது பணியாளர்கள் எவரும் இல்லை.<br>
         <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStaffFilters()" style="margin-top:10px;">வடிகட்டிகளை மீட்டமை (Reset Filters)</button>
       </td></tr>`;
@@ -4972,22 +5673,32 @@
     }
 
     tbody.innerHTML = pageItems.map((st, idx) => {
-      const rowNum = startIndex + idx + 1;
+      const overallRank = startIndex + idx + 1;
+      let rankBadge = "";
+      if (isSeniorityMode) {
+        if (overallRank === 1) rankBadge = `<span class="seniority-badge-gold">🥇 #1</span>`;
+        else if (overallRank === 2) rankBadge = `<span class="seniority-badge-silver">🥈 #2</span>`;
+        else if (overallRank === 3) rankBadge = `<span class="seniority-badge-bronze">🥉 #3</span>`;
+        else rankBadge = `<span class="seniority-badge-normal">#${overallRank}</span>`;
+      } else {
+        rankBadge = `<span style="font-weight:700; color:#64748b;">${overallRank}</span>`;
+      }
+
       const catBadge = st.isTeaching
         ? `<span style="font-size:0.68rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 6px; border-radius:4px; font-weight:800;">Teaching</span>`
         : `<span style="font-size:0.68rem; background:#fefce8; color:#854d0e; border:1px solid #fde047; padding:1px 6px; border-radius:4px; font-weight:800;">Non-Teaching</span>`;
 
       return `
         <tr style="border-bottom:1px solid #e2e8f0;">
-          <td style="text-align:center; font-weight:700; color:#64748b;">${rowNum}</td>
+          <td style="text-align:center;">${rankBadge}</td>
           <td>
             <div style="font-weight:800; color:#0f294a;">${st.name}</div>
             <div style="font-size:0.74rem; color:#475569; font-weight:600; margin-top:1px;">
-              ID: <strong style="color:#1d4ed8;">${st.staffId}</strong> | ${st.gender}${st.dob ? " | பிறந்த தேதி: " + st.dob : ""}
+              ID: <strong style="color:#1d4ed8;">${st.staffId}</strong> | ${st.gender}
             </div>
           </td>
           <td>
-            <div style="font-weight:800; color:#0f294a;">${st.desig}</div>
+            <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.desig}</div>
             <div style="margin-top:2px;">${catBadge}</div>
           </td>
           <td>
@@ -4995,7 +5706,7 @@
             ${st.qualification && st.qualification !== "-" ? `<div style="font-size:0.72rem; color:#64748b;">${st.qualification}</div>` : ""}
           </td>
           <td>
-            <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.schoolNameTa}</div>
+            <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.schoolNameTa || st.schoolNameEn}</div>
             <div style="font-size:0.72rem; color:#64748b;">U.NO: <strong>${st.uNo}</strong> | UDISE: ${st.udiseNo}</div>
           </td>
           <td>
@@ -5004,13 +5715,20 @@
               <span class="${getMgmtBadgeClass(st.mgmt1)}" style="padding:1px 6px;">${st.mgmt1}</span>
             </div>
           </td>
-          <td style="font-size:0.78rem;">
-            <strong>${st.nature || "Regular"}</strong>
+          <td style="text-align:center; font-size:0.78rem;">
+            <strong style="color:#15803d;">${st.dojService || "-"}</strong>
+            ${st.dojSchool ? `<div style="font-size:0.70rem; color:#64748b;">பள்ளி: ${st.dojSchool}</div>` : ""}
+          </td>
+          <td style="text-align:center; font-size:0.78rem;">
+            ${st.dob || "-"}
           </td>
           <td>
             <strong style="color:#0284c7; font-size:0.80rem;">${st.mobile || "-"}</strong>
           </td>
           <td style="text-align:center; white-space:nowrap;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="openAdminEditStaffModal('${st.staffId}')" style="font-size:0.74rem; padding:3px 8px; margin-right:4px;" title="ஆசிரியர் விவரங்களைத் திருத்துக">
+              ✏️ திருத்து
+            </button>
             <button type="button" class="btn btn-outline btn-sm" onclick="adminInspectSchoolPortal('${st.uNo}')" style="font-size:0.74rem; padding:3px 8px;" title="பள்ளி முகப்பிற்குச் செல்ல">
               👁️ பள்ளி
             </button>
@@ -5039,22 +5757,212 @@
 
   function renderAdminTeacherMasterUI() {
     initAdminTeacherMasterFilters();
+    updateSeniorityModeUI();
     applyAdminStaffFiltersAndRender();
   }
 
-  function exportAdminFilteredStaffCsv() {
+  // =========================================================================
+  // ADMIN EDIT STAFF MODAL IMPLEMENTATION
+  // =========================================================================
+  function openAdminEditStaffModal(staffId) {
+    const allStaff = getDistrictAllStaffList();
+    const st = allStaff.find(item => String(item.staffId) === String(staffId));
+    if (!st) {
+      showToast("❌ ஆசிரியர் விவரம் காணப்படவில்லை.", "#ef4444");
+      return;
+    }
+
+    document.getElementById("admEditStaffId").value = st.staffId;
+    document.getElementById("admEditStaffIdBadge").textContent = st.staffId;
+    document.getElementById("admEditStaffName").value = st.name || "";
+    document.getElementById("admEditStaffGender").value = st.gender || "Male";
+    document.getElementById("admEditStaffDob").value = st.dob || "";
+    document.getElementById("admEditStaffDesig").value = st.desig || "";
+    document.getElementById("admEditStaffSubject").value = st.subject || "";
+    document.getElementById("admEditStaffCategory").value = st.isTeaching ? "teaching" : "nonteaching";
+    document.getElementById("admEditStaffNature").value = st.nature || "Regular";
+    document.getElementById("admEditStaffDojService").value = st.dojService || "";
+    document.getElementById("admEditStaffDojSchool").value = st.dojSchool || "";
+    document.getElementById("admEditStaffQual").value = st.qualification !== "-" ? (st.qualification || "") : "";
+    document.getElementById("admEditStaffSchool").value = st.uNo || "101";
+    document.getElementById("admEditStaffMobile").value = st.mobile !== "-" ? (st.mobile || "") : "";
+    document.getElementById("admEditStaffExamDuty").value = st.examDuty || "Hall Superintendent";
+    document.getElementById("admEditStaffCampDuty").value = st.campDuty || "AE / Tabulator";
+    document.getElementById("admEditStaffCampOption").value = st.campOption || "01-Sivagangai";
+
+    const modal = document.getElementById("adminEditStaffModal");
+    if (modal) modal.classList.add("open");
+  }
+
+  function closeAdminEditStaffModal() {
+    const modal = document.getElementById("adminEditStaffModal");
+    if (modal) modal.classList.remove("open");
+  }
+
+  function saveAdminEditStaff(event) {
+    event.preventDefault();
+    const staffId = document.getElementById("admEditStaffId").value.trim();
+    if (!staffId) return;
+
+    const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {});
+    const targetUNo = document.getElementById("admEditStaffSchool").value;
+    const targetSch = masterSchools.find(s => String(s.uNo) === String(targetUNo));
+
+    const updatedData = {
+      staffId: staffId,
+      name: document.getElementById("admEditStaffName").value.trim(),
+      gender: document.getElementById("admEditStaffGender").value,
+      dob: document.getElementById("admEditStaffDob").value,
+      desig: document.getElementById("admEditStaffDesig").value.trim(),
+      subject: document.getElementById("admEditStaffSubject").value.trim(),
+      isTeaching: document.getElementById("admEditStaffCategory").value === "teaching",
+      nature: document.getElementById("admEditStaffNature").value,
+      dojService: document.getElementById("admEditStaffDojService").value,
+      dojSchool: document.getElementById("admEditStaffDojSchool").value,
+      qualification: document.getElementById("admEditStaffQual").value.trim() || "-",
+      uNo: targetUNo,
+      schoolNameTa: targetSch ? targetSch.nameTa : "",
+      schoolNameEn: targetSch ? targetSch.nameEn : "",
+      udiseNo: targetSch ? targetSch.udiseNo : "",
+      block: targetSch ? targetSch.block : "-",
+      mgmt1: targetSch ? targetSch.mgmt1 : "1G",
+      mobile: document.getElementById("admEditStaffMobile").value.trim(),
+      examDuty: document.getElementById("admEditStaffExamDuty").value,
+      campDuty: document.getElementById("admEditStaffCampDuty").value,
+      campOption: document.getElementById("admEditStaffCampOption").value,
+      updatedAt: new Date().toISOString()
+    };
+
+    staffOverrides[staffId] = updatedData;
+    safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
+
+    // Also sync to extra data store if exists
+    const extra = getSchoolExtra(targetUNo);
+    if (extra && extra.staff) {
+      const idx = extra.staff.findIndex(item => String(item.id) === String(staffId));
+      if (idx >= 0) {
+        extra.staff[idx] = Object.assign(extra.staff[idx], updatedData, { id: staffId });
+      } else {
+        extra.staff.push(Object.assign({}, updatedData, { id: staffId }));
+      }
+      safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+    }
+
+    // Refresh memory cache
+    getDistrictAllStaffList(true);
+    closeAdminEditStaffModal();
+    applyAdminStaffFiltersAndRender();
+    showToast(`✅ ஆசிரியர் "${updatedData.name}" (Staff ID: ${staffId}) விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!`, "#22c55e");
+  }
+
+  // Official Seniority Print Report
+  function printSeniorityPanelReport() {
+    const list = adminStaffFilteredList;
+    if (!list || list.length === 0) {
+      showToast("⚠️ அச்சிட ஆசிரியர்கள் எவரும் இல்லை.", "#f59e0b");
+      return;
+    }
+    const area = document.getElementById("printReportArea");
+    if (!area) return;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString("en-IN") + " " + now.toLocaleTimeString("en-IN");
+    const desigStr = selectedDesigs.length > 0 ? selectedDesigs.join(", ") : "அனைத்துப் பதவிகள் (All Cadres)";
+    const subjectStr = selectedSubjects.length > 0 ? selectedSubjects.join(", ") : "அனைத்துப் பாடங்கள் (All Subjects)";
+    const blockStr = selectedBlocks.length > 0 ? selectedBlocks.join(", ") : "அனைத்து ஒன்றியங்கள் (All 12 Blocks)";
+    const mgmtStr = selectedMgmts.length > 0 ? selectedMgmts.join(", ") : "அனைத்து நிர்வாகப் பிரிவுகள்";
+
+    area.innerHTML = `
+      <div style="font-family:'Mukta Malar', 'Inter', sans-serif; color:#000; padding:10px;">
+        <div style="text-align:center; border-bottom:2.5px solid #000; padding-bottom:8px; margin-bottom:12px;">
+          <div style="font-size:1.15rem; font-weight:800;">தமிழ்நாடு பள்ளிக் கல்வித்துறை • சிவகங்கை மாவட்டம்</div>
+          <div style="font-size:1.4rem; font-weight:900; margin:2px 0;">முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (portal.ceosvg.in)</div>
+          <div style="font-size:1.1rem; font-weight:900; color:#0f294a; text-decoration:underline;">
+            ஆசிரியர்கள் மற்றும் பணியாளர்கள் மாவட்ட முன்னுரிமைப் பட்டியல் (DISTRICT SENIORITY &amp; PROMOTION ELIGIBILITY PANEL)
+          </div>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:10px; background:#f8fafc; border:1px solid #cbd5e1; padding:6px 10px; border-radius:4px;">
+          <div>
+            <div><strong>பதவி(கள்):</strong> ${desigStr}</div>
+            <div><strong>பாடம்:</strong> ${subjectStr} | <strong>நிர்வாகம்:</strong> ${mgmtStr}</div>
+          </div>
+          <div style="text-align:right;">
+            <div><strong>ஒன்றியம்:</strong> ${blockStr}</div>
+            <div><strong>மொத்தப் பணியாளர்கள்:</strong> <strong>${list.length}</strong> | <strong>நாள்:</strong> ${dateStr}</div>
+          </div>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; font-size:0.75rem;" border="1" cellpadding="5">
+          <thead>
+            <tr style="background:#e2e8f0;">
+              <th style="width:35px; text-align:center;">மு.எண்</th>
+              <th style="width:75px;">Staff ID</th>
+              <th>ஆசிரியர் பெயர் (Name)</th>
+              <th style="width:40px; text-align:center;">பாலினம்</th>
+              <th style="width:75px; text-align:center;">பிறந்த தேதி (DOB)</th>
+              <th style="width:85px; text-align:center;">பணியில் சேர்ந்த நாள் (DOJ Service)</th>
+              <th style="width:85px; text-align:center;">பள்ளியில் சேர்ந்த நாள் (DOJ School)</th>
+              <th>பதவி (Designation)</th>
+              <th>பாடம் (Subject)</th>
+              <th>பணிபுரியும் பள்ளி (School Name &amp; U.No)</th>
+              <th>ஒன்றியம் (Block)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.slice(0, 500).map((st, idx) => `
+              <tr>
+                <td style="text-align:center; font-weight:900;">#${idx + 1}</td>
+                <td style="font-family:monospace; font-weight:700;">${st.staffId}</td>
+                <td style="font-weight:800;">${st.name}</td>
+                <td style="text-align:center;">${st.gender === "Female" ? "பெண்" : "ஆண்"}</td>
+                <td style="text-align:center;">${st.dob || "-"}</td>
+                <td style="text-align:center; font-weight:800; color:#1d4ed8;">${st.dojService || "-"}</td>
+                <td style="text-align:center;">${st.dojSchool || "-"}</td>
+                <td>${st.desig}</td>
+                <td>${st.subject || "-"}</td>
+                <td>[${st.uNo}] ${st.schoolNameTa || st.schoolNameEn}</td>
+                <td>${st.block}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+
+        ${list.length > 500 ? `<div style="font-size:0.75rem; color:#64748b; margin-top:6px;">* அச்சுப் பதிவில் முதல் 500 ஆசிரியர்களின் விவரங்கள் மட்டுமே காட்டப்பட்டுள்ளன. முழுப் பட்டியலுக்கு CSV பதிவிறக்கத்தைப் பயன்படுத்தவும்.</div>` : ""}
+
+        <div style="margin-top:40px; display:flex; justify-content:space-between; font-size:0.85rem; font-weight:800; page-break-inside:avoid;">
+          <div>
+            தயாரித்தவர் (Prepared By):<br><br>
+            பள்ளித் துணை ஆய்வாளர் (DI of Schools)<br>
+            முதன்மைக் கல்வி அலுவலகம், சிவகங்கை.
+          </div>
+          <div style="text-align:right;">
+            சரிபார்த்து அங்கீகரித்தவர் (Approved By):<br><br>
+            முதன்மைக் கல்வி அலுவலர் (Chief Educational Officer)<br>
+            சிவகங்கை மாவட்டம்.
+          </div>
+        </div>
+      </div>
+    `;
+    window.print();
+  }
+
+  function exportAdminFilteredStaffCsv(asSeniority) {
     const list = adminStaffFilteredList;
     if (!list || list.length === 0) {
       showToast("⚠️ பதிவிறக்கம் செய்ய ஆசிரியர்கள் எவரும் இல்லை.", "#f59e0b");
       return;
     }
 
+    const isSenior = (asSeniority === true) || isSeniorityMode;
     const headers = [
-      "வ.எண் (S.No)",
+      isSenior ? "முன்னுரிமை எண் (Seniority Rank)" : "வ.எண் (S.No)",
       "Staff ID",
       "பணியாளர் பெயர் (Name)",
       "பாலினம் (Gender)",
       "பிறந்த தேதி (DOB)",
+      "பணியில் சேர்ந்த நாள் (DOJ in Service)",
+      "இப்பள்ளியில் சேர்ந்த நாள் (DOJ in School)",
       "பணி வகை (Category)",
       "பதவி (Designation)",
       "கற்பிக்கும் பாடம் (Subject)",
@@ -5066,16 +5974,17 @@
       "ஒன்றியம் (Block)",
       "நிர்வாகம் (Management)",
       "பணி நியமனத் தன்மை (Nature)",
-      "கைபேசி எண் (Mobile)",
-      "தரவு ஆதாரம் (Source)"
+      "கைபேசி எண் (Mobile)"
     ];
 
     const rows = list.map((st, idx) => [
-      idx + 1,
+      isSenior ? `#${idx + 1}` : (idx + 1),
       `"${st.staffId}"`,
       `"${(st.name || "").replace(/"/g, '""')}"`,
       st.gender,
       st.dob || "",
+      st.dojService || "",
+      st.dojSchool || "",
       st.isTeaching ? "Teaching" : "Non-Teaching",
       `"${(st.desig || "").replace(/"/g, '""')}"`,
       `"${(st.subject || "").replace(/"/g, '""')}"`,
@@ -5087,8 +5996,7 @@
       `"${(st.block || "").replace(/"/g, '""')}"`,
       st.mgmt1,
       st.nature || "Regular",
-      `"${st.mobile || ""}"`,
-      st.source
+      `"${st.mobile || ""}"`
     ].join(","));
 
     const csvContent = "\uFEFF" + headers.join(",") + "\n" + rows.join("\n");
@@ -5096,15 +6004,18 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Sivagangai_Teacher_Master_Filtered_${list.length}_Staff.csv`;
+    const fileName = isSenior 
+      ? `Sivagangai_Seniority_Panel_List_${list.length}_Teachers.csv`
+      : `Sivagangai_Teacher_Master_${list.length}_Staff.csv`;
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast(`📥 ${list.length.toLocaleString("en-IN")} ஆசிரியர்களின் பட்டியல் CSV ஆகப் பதிவிறக்கப்பட்டது!`, "#22c55e");
+    showToast(`📥 ${list.length.toLocaleString("en-IN")} ஆசிரியர்களின் ${isSenior ? "முன்னுரிமைப் பட்டியல்" : "பட்டியல்"} CSV ஆகப் பதிவிறக்கப்பட்டது!`, "#22c55e");
   }
 
-    document.addEventListener("DOMContentLoaded", initPortal);
+  document.addEventListener("DOMContentLoaded", initPortal);
 
   // =========================================================================
   // SCHOOL HOME: DESIGNATION-WISE STAFF STRENGTH RENDER ENGINE
