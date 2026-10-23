@@ -2096,7 +2096,8 @@
         <button type="button" class="nav-pill-btn" id="admTabBtnDivisions" onclick="switchAdminTab('divisions')">🗂️ 3. நிர்வாகப் பிரிவுகள் மேலாண்மை</button>
         <button type="button" class="nav-pill-btn" id="admTabBtnCredentials" onclick="switchAdminTab('credentials')">🔑 4. பள்ளி கடவுச்சொல் மீட்பு</button>
         <button type="button" class="nav-pill-btn" id="admTabBtnCentres" onclick="switchAdminTab('centres')">🏛️ 5. தேர்வு மையங்கள் (12_Ex_Cen)</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnEmisSync" onclick="switchAdminTab('emisSync')" style="border-color:#0284c7; background:#f0f9ff; color:#0369a1; font-weight:800;">📥 6. EMIS ஆசிரியர் &amp; பணியாளர் Excel பதிவேற்றம் (Staff Sync)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnTeacherMaster" onclick="switchAdminTab('teacherMaster')" style="border-color:#0284c7; background:#f0f9ff; color:#0369a1; font-weight:800;">👨‍🏫 6. Teacher Master &amp; தேடல் / வடிகட்டி (Staff Search)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnEmisSync" onclick="switchAdminTab('emisSync')">📥 7. EMIS Excel பதிவேற்றம் (Upload &amp; Sync)</button>
       </div>
 
       <!-- ADMIN SUB-TAB 1: DIRECTORY & FILTER -->
@@ -2408,7 +2409,182 @@
 
       <!-- ADMIN SUB-TAB 6: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
 
-      <!-- ADMIN SUB-TAB 6: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
+      <!-- ADMIN SUB-TAB 6: TEACHER MASTER & ADVANCED SEARCH -->
+      <div id="admPaneTeacherMaster" class="panel-box" style="display:none;">
+        <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <span>👨‍🏫 Teacher Master – சிவகங்கை மாவட்ட ஆசிரியர்கள் &amp; பணியாளர்கள் முதன்மைப் பதிவேடு (7,081 Staff Roster)</span>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span style="font-size:0.78rem; font-weight:800; background:#f0fdf4; color:#166534; padding:3px 10px; border-radius:999px; border:1px solid #bbf7d0;">
+              🟢 TN EMIS நேரடித் தரவு (7,081 பணியாளர்கள்)
+            </span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="switchAdminTab('emisSync')">
+              📥 புதிய EMIS Excel பதிவேற்றம் ❯
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Quick Metric Summary Cards -->
+        <div class="grid-4" style="margin-bottom:14px; gap:10px;">
+          <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 14px; text-align:center;">
+            <div style="font-size:0.74rem; font-weight:800; color:#64748b; text-transform:uppercase;">மாவட்ட மொத்தப் பணியாளர்கள்</div>
+            <div style="font-size:1.5rem; font-weight:900; color:#0f294a; line-height:1.2; margin-top:2px;" id="admTeacherTotalBadge">7,081</div>
+            <div style="font-size:0.72rem; color:#64748b;">(281 உயர்/மேல்நிலைப் பள்ளிகள்)</div>
+          </div>
+          <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; padding:10px 14px; text-align:center;">
+            <div style="font-size:0.74rem; font-weight:800; color:#1e40af; text-transform:uppercase;">கற்பித்தல் ஆசிரியர்கள் (Teaching)</div>
+            <div style="font-size:1.5rem; font-weight:900; color:#1d4ed8; line-height:1.2; margin-top:2px;" id="admTeacherTeachingBadge">6,124</div>
+            <div style="font-size:0.72rem; color:#1e40af;">தலைமையாசிரியர், PG, BT, SG &amp; பிறர்</div>
+          </div>
+          <div style="background:#fefce8; border:1.5px solid #fde047; border-radius:10px; padding:10px 14px; text-align:center;">
+            <div style="font-size:0.74rem; font-weight:800; color:#854d0e; text-transform:uppercase;">அலுவலகப் பணியாளர்கள் (Non-Teaching)</div>
+            <div style="font-size:1.5rem; font-weight:900; color:#a16207; line-height:1.2; margin-top:2px;" id="admTeacherNonTeachBadge">957</div>
+            <div style="font-size:0.72rem; color:#854d0e;">உதவியாளர், ஆய்வகம், நூலகம் &amp; பிறர்</div>
+          </div>
+          <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:10px 14px; text-align:center;">
+            <div style="font-size:0.74rem; font-weight:800; color:#166534; text-transform:uppercase;">வடிகட்டப்பட்ட முடிவுகள் (Filtered)</div>
+            <div style="font-size:1.5rem; font-weight:900; color:#15803d; line-height:1.2; margin-top:2px;" id="admTeacherFilteredBadge">7,081</div>
+            <div style="font-size:0.72rem; color:#166534;">தற்போதைய தேர்வில் உள்ளவர்கள்</div>
+          </div>
+        </div>
+
+        <!-- ADVANCED SEARCH & FILTER BOX -->
+        <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:12px; padding:14px; margin-bottom:16px;">
+          <div style="font-size:0.92rem; font-weight:900; color:#0f294a; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <span>🔍 ஆசிரியர் &amp; பணியாளர் மேம்பட்ட தேடல் &amp; வடிகட்டி (Advanced Search &amp; Filters):</span>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStaffFilters()">🧹 வடிகட்டிகளை மீட்டமை (Reset)</button>
+              <button type="button" class="btn btn-success btn-sm" onclick="exportAdminFilteredStaffCsv()">📥 வடிகட்டிய ஆசிரியர் பட்டியல் CSV</button>
+            </div>
+          </div>
+
+          <!-- Filter Row 1 -->
+          <div class="grid-3" style="margin-bottom:10px;">
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">🔍 விரைவுத் தேடல் (பெயர் / Staff ID / UDISE / கைபேசி):</label>
+              <input type="text" id="admStaffFilterSearch" class="form-control" style="padding:7px 10px; font-size:0.86rem;" placeholder="ஆசிரியர் பெயர், Staff ID, பள்ளி பெயர்..." oninput="onAdminStaffFilterInput()">
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">📍 ஒன்றியம் (Block - 12 ஒன்றியங்கள்):</label>
+              <select id="admStaffFilterBlock" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffBlockChange()"></select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">🏫 பள்ளி (School - 281 பள்ளிகள்):</label>
+              <select id="admStaffFilterSchool" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()"></select>
+            </div>
+          </div>
+
+          <!-- Filter Row 2 -->
+          <div class="grid-4" style="margin-bottom:10px;">
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">👨‍🏫 பதவி (Designation):</label>
+              <select id="admStaffFilterDesig" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()"></select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">📚 கற்பிக்கும் பாடம் (Teaching Subject):</label>
+              <select id="admStaffFilterSubject" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()"></select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">🏛️ முதன்மை நிர்வாகம் (MANAGEMENT_1):</label>
+              <select id="admStaffFilterMgmt" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()">
+                <option value="">அனைத்து நிர்வாகங்கள் (All)</option>
+                <option value="1G">1G - அரசுப் பள்ளிகள் (Government)</option>
+                <option value="2A">2A - அரசு உதவிபெறும் (Govt. Aided)</option>
+                <option value="3P">3P - தனியார் / மெட்ரிக் (Private / Matric)</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">🎯 பணிப் பிரிவு (Category):</label>
+              <select id="admStaffFilterCategory" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()">
+                <option value="">அனைத்துப் பணிகள் (All Staff)</option>
+                <option value="teaching">கற்பித்தல் பணி (Teaching Staff)</option>
+                <option value="nonteaching">அலுவலகப் பணி (Non-Teaching Staff)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Filter Row 3 -->
+          <div class="grid-4">
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">⚧️ பாலினம் (Gender):</label>
+              <select id="admStaffFilterGender" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()">
+                <option value="">அனைத்து பாலினம் (All)</option>
+                <option value="Male">ஆண் (Male)</option>
+                <option value="Female">பெண் (Female)</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">📜 நியமனத் தன்மை (Nature):</label>
+              <select id="admStaffFilterNature" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()">
+                <option value="">அனைத்து நியமனம் (All)</option>
+                <option value="Regular">Regular (நிரந்தரப் பணி)</option>
+                <option value="Contract">Contract / Part Time (ஒப்பந்தம்/பகுதிநேரம்)</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" style="font-size:0.78rem;">📄 ஒரு பக்கத்திற்கு (Page Size):</label>
+              <select id="admStaffPageSize" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="changeAdminStaffPageSize(this.value)">
+                <option value="50">50 ஆசிரியர்கள்</option>
+                <option value="100">100 ஆசிரியர்கள்</option>
+                <option value="200">200 ஆசிரியர்கள்</option>
+                <option value="500">500 ஆசிரியர்கள்</option>
+              </select>
+            </div>
+            <div style="display:flex; align-items:flex-end; gap:6px;">
+              <button type="button" class="btn btn-primary btn-block" onclick="onAdminStaffFilterInput()" style="padding:7px 12px; font-size:0.84rem;">
+                🔎 வடிகட்டு (Apply Filter)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table Information & Pagination Top Bar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; font-size:0.84rem;">
+          <div style="color:#475569; font-weight:700;">
+            காண்பிக்கப்படுவது: <strong id="admStaffPaginationRange" style="color:#0f294a;">1 - 50</strong> / மொத்தம்: <strong id="admStaffTotalMatching" style="color:#0284c7;">7,081</strong> பணியாளர்கள்
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="goToAdminStaffPage(1)" id="admStaffPageFirstBtn">⏮️</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="goToAdminStaffPage(adminStaffCurrentPage - 1)" id="admStaffPagePrevBtn">◀️ முந்தையது</button>
+            <span style="font-weight:800; padding:0 6px;" id="admStaffPageIndicator">பக்கம் 1 / 142</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="goToAdminStaffPage(adminStaffCurrentPage + 1)" id="admStaffPageNextBtn">அடுத்தது ▶️</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="goToAdminStaffPage('last')" id="admStaffPageLastBtn">⏭️</button>
+          </div>
+        </div>
+
+        <!-- Data Table Container -->
+        <div class="table-wrap" style="max-height:580px;">
+          <table class="data-table" style="font-size:0.82rem;">
+            <thead>
+              <tr style="position:sticky; top:0; z-index:5;">
+                <th style="width:45px; text-align:center;">வ.எண்</th>
+                <th style="min-width:190px;">ஆசிரியர் பெயர் &amp; Staff ID</th>
+                <th style="min-width:170px;">பதவி (Designation)</th>
+                <th style="min-width:120px;">பாடம் (Subject)</th>
+                <th style="min-width:210px;">பள்ளி விவரம் (School Name)</th>
+                <th style="min-width:120px;">ஒன்றியம் &amp; நிர்வாகம்</th>
+                <th style="min-width:90px;">நியமனம்</th>
+                <th style="min-width:105px;">கைபேசி</th>
+                <th style="min-width:90px; text-align:center;">செயல்</th>
+              </tr>
+            </thead>
+            <tbody id="admStaffMasterTableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Bottom Bar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:12px; font-size:0.84rem;">
+          <div style="color:#64748b;" id="admStaffPaginationRangeBottom"></div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="goToAdminStaffPage(1)">⏮️ முதல் பக்கம்</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="goToAdminStaffPage(adminStaffCurrentPage - 1)">◀️ முந்தையது</button>
+            <span style="font-weight:800; padding:0 6px;" id="admStaffPageIndicatorBottom">பக்கம் 1 / 142</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="goToAdminStaffPage(adminStaffCurrentPage + 1)">அடுத்தது ▶️</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="goToAdminStaffPage('last')">கடைசி பக்கம் ⏭️</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN SUB-TAB 7: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
       <div id="admPaneEmisSync" class="panel-box" style="display:none;">
       <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <span style="font-size:1.15rem; font-weight:900; color:#0f294a;">
@@ -2524,11 +2700,11 @@
               </label>
               <label style="display:flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:700; color:#1e293b; cursor:pointer;">
                 <input type="checkbox" id="emisOptInsertNew" checked style="width:16px; height:16px; accent-color:#0284c7;">
-                <span>புதிய ஆசிரியர்களை FORM-III / FORM-IV பட்டியலில் இணைக்க (Insert New Joiners)</span>
+                <span>புதிய ஆசிரியர்களை ஆசிரியர் & பணியாளர் பட்டியலில் இணைக்க (Insert New Joiners)</span>
               </label>
               <label style="display:flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:700; color:#1e293b; cursor:pointer;">
                 <input type="checkbox" id="emisOptRecalcF1" checked style="width:16px; height:16px; accent-color:#0284c7;">
-                <span>FORM-I பணியாளர் எண்ணிக்கையைத் தானாக மறு கணக்கீடு செய் (Auto-Recalculate Form-I Counts)</span>
+                <span>பதவி வாரியான பணியாளர் எண்ணிக்கையைத் தானாக மறு கணக்கீடு செய் (Auto-Recalculate Staff Strength Counts)</span>
               </label>
             </div>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -2556,38 +2732,17 @@
         <div style="margin-top:6px; font-size:0.88rem; line-height:1.5;" id="emisSyncResultDetail"></div>
       </div>
 
-      <!-- Current District Schools Staff Audit Table -->
-      <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:18px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
-          <div>
-            <div style="font-weight:900; font-size:1rem; color:#0f294a;">🏫 சிவகங்கை மாவட்டப் பள்ளிகளில் ஆசிரியர்களின் தற்போதைய நிலவரம் (281 Schools Staff Audit)</div>
-            <div style="font-size:0.82rem; color:#64748b; margin-top:2px;">ஒவ்வொரு பள்ளியிலும் FORM-III ஆசிரியர்கள் மற்றும் FORM-IV பணியாளர்களின் எண்ணிக்கை:</div>
-          </div>
-          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <input type="text" id="emisAuditSearchInput" class="form-control" placeholder="🔍 பள்ளி அல்லது UDISE தேட..." style="width:240px; font-size:0.85rem;" oninput="filterEmisAuditTable()">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="exportDistrictStaffSummaryCsv()">📥 தற்போதைய நிலவரத்தை CSV-ஆகப் பதிவிறக்கு</button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="renderEmisDistrictAuditTable()">🔄 புதுப்பி</button>
+      <!-- Quick Link to Teacher Master -->
+      <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:12px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:20px;">
+        <div>
+          <div style="font-weight:900; font-size:1rem; color:#14532d;">👨‍🏫 ஆசிரியர்கள் &amp; பணியாளர்கள் முதன்மைப் பதிவேடு (Teacher Master)</div>
+          <div style="font-size:0.84rem; color:#166534; margin-top:2px;">
+            சிவகங்கை மாவட்டத்தின் 281 பள்ளிகளில் உள்ள அனைத்து 7,081 ஆசிரியர்களையும் தேட, வடிகட்ட மற்றும் CSV-ஆகப் பதிவிறக்க:
           </div>
         </div>
-
-        <div class="table-container" style="max-height:480px; overflow-y:auto;">
-          <table class="data-table" style="font-size:0.84rem;">
-            <thead>
-              <tr style="background:#f8fafc; position:sticky; top:0; z-index:2;">
-                <th style="width:50px;">U.No</th>
-                <th style="width:110px;">UDISE</th>
-                <th>பள்ளியின் பெயர் (School Name)</th>
-                <th style="width:130px;">ஒன்றியம் (Block)</th>
-                <th style="width:90px; text-align:center;">நிர்வாகம்</th>
-                <th style="width:110px; text-align:center;">ஆசிரியர்கள் (F3)</th>
-                <th style="width:110px; text-align:center;">பணியாளர்கள் (F4)</th>
-                <th style="width:120px; text-align:center;">ஒத்திசைவு நிலை</th>
-                <th style="width:110px; text-align:center;">செயல்</th>
-              </tr>
-            </thead>
-            <tbody id="emisAuditTableBody"></tbody>
-          </table>
-        </div>
+        <button type="button" class="btn btn-primary" onclick="switchAdminTab('teacherMaster')" style="font-weight:800; background:#0284c7; border-color:#0284c7;">
+          👉 Teacher Master தேடல் பகுதிக்குச் செல்க ❯
+        </button>
       </div>
 
     </div>
@@ -3970,7 +4125,7 @@
     if (modKey === "schoolMaster") {
       switchAdminTab("directory");
     } else if (modKey === "emisStaff") {
-      switchAdminTab("emisSync");
+      switchAdminTab("teacherMaster");
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -3987,6 +4142,7 @@
       divisions: ["admTabBtnDivisions", "admPaneDivisions"],
       credentials: ["admTabBtnCredentials", "admPaneCredentials"],
       centres: ["admTabBtnCentres", "admPaneCentres"],
+      teacherMaster: ["admTabBtnTeacherMaster", "admPaneTeacherMaster"],
       emisSync: ["admTabBtnEmisSync", "admPaneEmisSync"]
     };
     Object.keys(map).forEach(k => {
@@ -3997,8 +4153,8 @@
       if (pane) pane.style.display = (k === tabKey) ? "block" : "none";
     });
 
-    if (tabKey === "emisSync" && typeof renderEmisDistrictAuditTable === "function") {
-      renderEmisDistrictAuditTable();
+    if (tabKey === "teacherMaster") {
+      renderAdminTeacherMasterUI();
     }
   }
   function resetAdminDirectoryFilters() {
@@ -4557,7 +4713,398 @@
 
   
 
-  document.addEventListener("DOMContentLoaded", initPortal);
+
+  // =========================================================================
+  // ADMIN TEACHER MASTER & ADVANCED SEARCH ENGINE (7,081 STAFF)
+  // =========================================================================
+  let districtFlattenedStaffCache = null;
+  let adminStaffFilteredList = [];
+  let adminStaffCurrentPage = 1;
+  let adminStaffPageSize = 50;
+
+  function getDistrictAllStaffList(forceRefresh) {
+    if (districtFlattenedStaffCache && !forceRefresh) {
+      return districtFlattenedStaffCache;
+    }
+    const emis = getEmisStaffData();
+    const pool = (emis && emis.pool) ? emis.pool : [];
+    const schoolMap = {};
+    masterSchools.forEach(s => { schoolMap[String(s.uNo)] = s; });
+
+    const allStaff = [];
+    const seenIds = new Set();
+
+    if (emis && emis.byUNo) {
+      for (const [uNo, rows] of Object.entries(emis.byUNo)) {
+        const sch = schoolMap[String(uNo)] || { nameTa: "பள்ளி " + uNo, nameEn: "School " + uNo, block: "-", mgmt1: "1G", udiseNo: "-", mobile: "" };
+        const extra = schoolExtraDataStore[uNo];
+
+        rows.forEach(r => {
+          const staffId = String(r[1] || "");
+          if (staffId) seenIds.add(staffId);
+          const isTeach = r[0] === 1;
+          const desig = pool[r[3]] || (isTeach ? "TEACHER" : "OFFICE STAFF");
+          const isHm = desig.toUpperCase().includes("HEAD") || desig.toUpperCase().includes("PRINCIPAL");
+
+          allStaff.push({
+            staffId: staffId,
+            name: String(r[2] || ""),
+            isTeaching: isTeach,
+            desig: desig,
+            gender: r[4] === "F" ? "Female" : "Male",
+            dob: r[5] || "",
+            nature: r[6] === "R" ? "Regular" : "Contract",
+            subject: pool[r[7]] || "-",
+            classTaught: pool[r[8]] || "-",
+            qualification: pool[r[9]] || "-",
+            dojSchool: r[10] || "",
+            dojService: r[11] || "",
+            uNo: String(uNo),
+            schoolNameTa: sch.nameTa || "",
+            schoolNameEn: sch.nameEn || "",
+            udiseNo: sch.udiseNo || "",
+            block: sch.block || "-",
+            mgmt1: sch.mgmt1 || "1G",
+            mgmt2: sch.mgmt2 || "1",
+            level: sch.level || "HS",
+            mobile: isHm ? (sch.mobile || "-") : (sch.mobile ? sch.mobile : "-"),
+            source: "EMIS"
+          });
+        });
+
+        if (extra && extra.staff && Array.isArray(extra.staff)) {
+          extra.staff.forEach(st => {
+            if (st.id && !seenIds.has(String(st.id))) {
+              seenIds.add(String(st.id));
+              allStaff.push({
+                staffId: String(st.id),
+                name: st.name || "",
+                isTeaching: st.isTeaching !== false,
+                desig: st.desig || "TEACHER",
+                gender: st.gender || "Male",
+                dob: st.dob || "",
+                nature: st.nature || "Regular",
+                subject: st.subject || "-",
+                qualification: st.qualification || "-",
+                uNo: String(uNo),
+                schoolNameTa: sch.nameTa || "",
+                schoolNameEn: sch.nameEn || "",
+                udiseNo: sch.udiseNo || "",
+                block: sch.block || "-",
+                mgmt1: sch.mgmt1 || "1G",
+                mgmt2: sch.mgmt2 || "1",
+                level: sch.level || "HS",
+                mobile: st.mobile || sch.mobile || "-",
+                source: "Manual"
+              });
+            }
+          });
+        }
+      }
+    }
+
+    districtFlattenedStaffCache = allStaff;
+    return allStaff;
+  }
+
+  function initAdminTeacherMasterFilters() {
+    const allStaff = getDistrictAllStaffList();
+
+    // Populate Block select
+    const blkSelect = document.getElementById("admStaffFilterBlock");
+    if (blkSelect && blkSelect.options.length <= 1) {
+      blkSelect.innerHTML = `<option value="">அனைத்து ஒன்றியங்கள் (All 12 Blocks)</option>` +
+        (divisionsRegistry.block || []).map(b => `<option value="${b.code}">${b.label}</option>`).join("");
+    }
+
+    // Populate Schools select
+    populateAdminStaffSchoolDropdown("");
+
+    // Populate Designation select (distinct designations sorted alphabetically)
+    const desigSelect = document.getElementById("admStaffFilterDesig");
+    if (desigSelect && desigSelect.options.length <= 1) {
+      const desigs = Array.from(new Set(allStaff.map(s => s.desig))).filter(Boolean).sort();
+      desigSelect.innerHTML = `<option value="">அனைத்துப் பதவிகள் (All Designations - ${desigs.length})</option>` +
+        desigs.map(d => `<option value="${d}">${d}</option>`).join("");
+    }
+
+    // Populate Subject select (distinct subjects sorted alphabetically)
+    const subSelect = document.getElementById("admStaffFilterSubject");
+    if (subSelect && subSelect.options.length <= 1) {
+      const subs = Array.from(new Set(allStaff.map(s => s.subject))).filter(s => s && s !== "-").sort();
+      subSelect.innerHTML = `<option value="">அனைத்துப் பாடங்கள் (All Subjects - ${subs.length})</option>` +
+        subs.map(s => `<option value="${s}">${s}</option>`).join("");
+    }
+  }
+
+  function populateAdminStaffSchoolDropdown(filterBlock) {
+    const schSelect = document.getElementById("admStaffFilterSchool");
+    if (!schSelect) return;
+    const currentVal = schSelect.value;
+    const filteredSchools = filterBlock 
+      ? masterSchools.filter(s => s.block === filterBlock) 
+      : masterSchools.slice();
+    
+    filteredSchools.sort((a, b) => (Number(a.uNo) || 0) - (Number(b.uNo) || 0));
+
+    schSelect.innerHTML = `<option value="">அனைத்துப் பள்ளிகள் (${filteredSchools.length} பள்ளிகள்)</option>` +
+      filteredSchools.map(s => `<option value="${s.uNo}">[${s.uNo}] ${s.nameTa} (${s.block})</option>`).join("");
+    
+    if (currentVal && filteredSchools.some(s => s.uNo === currentVal)) {
+      schSelect.value = currentVal;
+    }
+  }
+
+  function onAdminStaffBlockChange() {
+    const blk = (document.getElementById("admStaffFilterBlock") || {}).value || "";
+    populateAdminStaffSchoolDropdown(blk);
+    onAdminStaffFilterInput();
+  }
+
+  function onAdminStaffFilterInput() {
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+  }
+
+  function resetAdminStaffFilters() {
+    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+    setVal("admStaffFilterSearch", "");
+    setVal("admStaffFilterBlock", "");
+    populateAdminStaffSchoolDropdown("");
+    setVal("admStaffFilterSchool", "");
+    setVal("admStaffFilterDesig", "");
+    setVal("admStaffFilterSubject", "");
+    setVal("admStaffFilterMgmt", "");
+    setVal("admStaffFilterCategory", "");
+    setVal("admStaffFilterGender", "");
+    setVal("admStaffFilterNature", "");
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+    showToast("🧹 வடிகட்டிகள் மீட்டமைக்கப்பட்டன.", "#0284c7");
+  }
+
+  function applyAdminStaffFiltersAndRender() {
+    const allStaff = getDistrictAllStaffList();
+    const q = ((document.getElementById("admStaffFilterSearch") || {}).value || "").trim().toLowerCase();
+    const blk = ((document.getElementById("admStaffFilterBlock") || {}).value || "");
+    const uNo = ((document.getElementById("admStaffFilterSchool") || {}).value || "");
+    const desig = ((document.getElementById("admStaffFilterDesig") || {}).value || "");
+    const subject = ((document.getElementById("admStaffFilterSubject") || {}).value || "");
+    const mgmt = ((document.getElementById("admStaffFilterMgmt") || {}).value || "");
+    const cat = ((document.getElementById("admStaffFilterCategory") || {}).value || "");
+    const gender = ((document.getElementById("admStaffFilterGender") || {}).value || "");
+    const nature = ((document.getElementById("admStaffFilterNature") || {}).value || "");
+
+    adminStaffFilteredList = allStaff.filter(st => {
+      if (blk && st.block !== blk) return false;
+      if (uNo && st.uNo !== uNo) return false;
+      if (desig && st.desig !== desig) return false;
+      if (subject && st.subject !== subject) return false;
+      if (mgmt && st.mgmt1 !== mgmt) return false;
+      if (cat === "teaching" && !st.isTeaching) return false;
+      if (cat === "nonteaching" && st.isTeaching) return false;
+      if (gender && st.gender !== gender) return false;
+      if (nature) {
+        if (nature === "Regular" && st.nature !== "Regular") return false;
+        if (nature === "Contract" && st.nature === "Regular") return false;
+      }
+      if (q) {
+        const hay = `${st.staffId} ${st.name} ${st.schoolNameTa} ${st.schoolNameEn} ${st.uNo} ${st.udiseNo} ${st.desig} ${st.subject} ${st.mobile} ${st.block}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    renderAdminStaffTablePage();
+  }
+
+  function renderAdminStaffTablePage() {
+    const total = adminStaffFilteredList.length;
+    const pageSize = adminStaffPageSize;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    if (adminStaffCurrentPage > totalPages) adminStaffCurrentPage = totalPages;
+    if (adminStaffCurrentPage < 1) adminStaffCurrentPage = 1;
+
+    const startIndex = (adminStaffCurrentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, total);
+    const pageItems = adminStaffFilteredList.slice(startIndex, endIndex);
+
+    // Update Badges
+    const allStaff = getDistrictAllStaffList();
+    const elTot = document.getElementById("admTeacherTotalBadge");
+    const elTeach = document.getElementById("admTeacherTeachingBadge");
+    const elNon = document.getElementById("admTeacherNonTeachBadge");
+    const elFilt = document.getElementById("admTeacherFilteredBadge");
+
+    if (elTot) elTot.textContent = allStaff.length.toLocaleString("en-IN");
+    if (elTeach) elTeach.textContent = allStaff.filter(s => s.isTeaching).length.toLocaleString("en-IN");
+    if (elNon) elNon.textContent = allStaff.filter(s => !s.isTeaching).length.toLocaleString("en-IN");
+    if (elFilt) elFilt.textContent = total.toLocaleString("en-IN");
+
+    // Pagination Labels
+    const rangeText = total > 0 ? `${(startIndex + 1).toLocaleString("en-IN")} - ${endIndex.toLocaleString("en-IN")}` : "0";
+    const totalText = total.toLocaleString("en-IN");
+    const pageIndText = `பக்கம் ${adminStaffCurrentPage} / ${totalPages}`;
+
+    const rTop = document.getElementById("admStaffPaginationRange");
+    if (rTop) rTop.textContent = rangeText;
+    const tTop = document.getElementById("admStaffTotalMatching");
+    if (tTop) tTop.textContent = totalText;
+    const indTop = document.getElementById("admStaffPageIndicator");
+    if (indTop) indTop.textContent = pageIndText;
+
+    const indBot = document.getElementById("admStaffPageIndicatorBottom");
+    if (indBot) indBot.textContent = pageIndText;
+    const rBot = document.getElementById("admStaffPaginationRangeBottom");
+    if (rBot) rBot.textContent = `காண்பிக்கப்படுவது ${rangeText} / மொத்தம் ${totalText} பணியாளர்கள்`;
+
+    // Render Table Rows
+    const tbody = document.getElementById("admStaffMasterTableBody");
+    if (!tbody) return;
+
+    if (total === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:32px; color:#64748b; font-size:0.95rem;">
+        🔍 கொடுக்கப்பட்ட வடிகட்டிகளுக்குப் பொருந்தும் ஆசிரியர்கள் அல்லது பணியாளர்கள் எவரும் இல்லை.<br>
+        <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStaffFilters()" style="margin-top:10px;">வடிகட்டிகளை மீட்டமை (Reset Filters)</button>
+      </td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = pageItems.map((st, idx) => {
+      const rowNum = startIndex + idx + 1;
+      const catBadge = st.isTeaching
+        ? `<span style="font-size:0.68rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 6px; border-radius:4px; font-weight:800;">Teaching</span>`
+        : `<span style="font-size:0.68rem; background:#fefce8; color:#854d0e; border:1px solid #fde047; padding:1px 6px; border-radius:4px; font-weight:800;">Non-Teaching</span>`;
+
+      return `
+        <tr style="border-bottom:1px solid #e2e8f0;">
+          <td style="text-align:center; font-weight:700; color:#64748b;">${rowNum}</td>
+          <td>
+            <div style="font-weight:800; color:#0f294a;">${st.name}</div>
+            <div style="font-size:0.74rem; color:#475569; font-weight:600; margin-top:1px;">
+              ID: <strong style="color:#1d4ed8;">${st.staffId}</strong> | ${st.gender}${st.dob ? " | பிறந்த தேதி: " + st.dob : ""}
+            </div>
+          </td>
+          <td>
+            <div style="font-weight:800; color:#0f294a;">${st.desig}</div>
+            <div style="margin-top:2px;">${catBadge}</div>
+          </td>
+          <td>
+            <strong style="color:#1e40af;">${st.subject || "-"}</strong>
+            ${st.qualification && st.qualification !== "-" ? `<div style="font-size:0.72rem; color:#64748b;">${st.qualification}</div>` : ""}
+          </td>
+          <td>
+            <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.schoolNameTa}</div>
+            <div style="font-size:0.72rem; color:#64748b;">U.NO: <strong>${st.uNo}</strong> | UDISE: ${st.udiseNo}</div>
+          </td>
+          <td>
+            <div style="font-weight:700; color:#1e293b;">${st.block}</div>
+            <div style="font-size:0.74rem; margin-top:1px;">
+              <span class="${getMgmtBadgeClass(st.mgmt1)}" style="padding:1px 6px;">${st.mgmt1}</span>
+            </div>
+          </td>
+          <td style="font-size:0.78rem;">
+            <strong>${st.nature || "Regular"}</strong>
+          </td>
+          <td>
+            <strong style="color:#0284c7; font-size:0.80rem;">${st.mobile || "-"}</strong>
+          </td>
+          <td style="text-align:center; white-space:nowrap;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="adminInspectSchoolPortal('${st.uNo}')" style="font-size:0.74rem; padding:3px 8px;" title="பள்ளி முகப்பிற்குச் செல்ல">
+              👁️ பள்ளி
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function goToAdminStaffPage(page) {
+    const totalPages = Math.max(1, Math.ceil(adminStaffFilteredList.length / adminStaffPageSize));
+    if (page === "last") adminStaffCurrentPage = totalPages;
+    else if (typeof page === "number") adminStaffCurrentPage = Math.max(1, Math.min(totalPages, page));
+    renderAdminStaffTablePage();
+    const tableEl = document.getElementById("admStaffMasterTableBody");
+    if (tableEl && tableEl.parentElement && tableEl.parentElement.parentElement) {
+      tableEl.parentElement.parentElement.scrollTop = 0;
+    }
+  }
+
+  function changeAdminStaffPageSize(newSize) {
+    adminStaffPageSize = Number(newSize) || 50;
+    adminStaffCurrentPage = 1;
+    renderAdminStaffTablePage();
+  }
+
+  function renderAdminTeacherMasterUI() {
+    initAdminTeacherMasterFilters();
+    applyAdminStaffFiltersAndRender();
+  }
+
+  function exportAdminFilteredStaffCsv() {
+    const list = adminStaffFilteredList;
+    if (!list || list.length === 0) {
+      showToast("⚠️ பதிவிறக்கம் செய்ய ஆசிரியர்கள் எவரும் இல்லை.", "#f59e0b");
+      return;
+    }
+
+    const headers = [
+      "வ.எண் (S.No)",
+      "Staff ID",
+      "பணியாளர் பெயர் (Name)",
+      "பாலினம் (Gender)",
+      "பிறந்த தேதி (DOB)",
+      "பணி வகை (Category)",
+      "பதவி (Designation)",
+      "கற்பிக்கும் பாடம் (Subject)",
+      "கல்வித் தகுதி (Qualification)",
+      "பள்ளி U.NO",
+      "UDISE எண்",
+      "பள்ளியின் பெயர் (தமிழில்)",
+      "School Name (English)",
+      "ஒன்றியம் (Block)",
+      "நிர்வாகம் (Management)",
+      "பணி நியமனத் தன்மை (Nature)",
+      "கைபேசி எண் (Mobile)",
+      "தரவு ஆதாரம் (Source)"
+    ];
+
+    const rows = list.map((st, idx) => [
+      idx + 1,
+      `"${st.staffId}"`,
+      `"${(st.name || "").replace(/"/g, '""')}"`,
+      st.gender,
+      st.dob || "",
+      st.isTeaching ? "Teaching" : "Non-Teaching",
+      `"${(st.desig || "").replace(/"/g, '""')}"`,
+      `"${(st.subject || "").replace(/"/g, '""')}"`,
+      `"${(st.qualification || "").replace(/"/g, '""')}"`,
+      st.uNo,
+      `"${st.udiseNo}"`,
+      `"${(st.schoolNameTa || "").replace(/"/g, '""')}"`,
+      `"${(st.schoolNameEn || "").replace(/"/g, '""')}"`,
+      `"${(st.block || "").replace(/"/g, '""')}"`,
+      st.mgmt1,
+      st.nature || "Regular",
+      `"${st.mobile || ""}"`,
+      st.source
+    ].join(","));
+
+    const csvContent = "\uFEFF" + headers.join(",") + "\n" + rows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Sivagangai_Teacher_Master_Filtered_${list.length}_Staff.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`📥 ${list.length.toLocaleString("en-IN")} ஆசிரியர்களின் பட்டியல் CSV ஆகப் பதிவிறக்கப்பட்டது!`, "#22c55e");
+  }
+
+    document.addEventListener("DOMContentLoaded", initPortal);
 
   // =========================================================================
   // SCHOOL HOME: DESIGNATION-WISE STAFF STRENGTH RENDER ENGINE
