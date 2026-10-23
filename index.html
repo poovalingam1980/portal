@@ -7,8 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="ebs-module.css">
-  <style>
+    <style>
     :root {
       --primary: #0f294a;
       --primary-dark: #07162c;
@@ -1206,6 +1205,7 @@
     }
 
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body class="auth-mode">
 
@@ -1216,6 +1216,14 @@
       <span class="domain-pill">🌐 portal.ceosvg.in</span>
       <span><span class="status-dot" id="sheetSyncDot"></span><strong id="sheetSyncStatusText">School-Master Google Sheet இணைக்கப்பட்டுள்ளது (281 பள்ளிகள்)</strong></span>
     </div>
+                  <div style="font-size:0.82rem; color:#475569; margin-top:2px;">EMIS தளத்திலிருந்து பதிவிறக்கப்படும் Teachers &amp; Staffs Excel கோப்பினைப் பதிவேற்றி, 281 பள்ளிகளுக்கான ஆசிரியர்களின் விவரங்களை உடனுக்குடன் புதுப்பிக்கலாம்.</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" onclick="switchAdminTab('emisSync')" style="background:#0284c7; border-color:#0284c7; font-weight:800; padding:8px 16px;">
+          📥 Excel பதிவேற்றத்தைத் திறக்க ❯
+        </button>
+      </div>
+
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       <button type="button" class="btn btn-outline btn-sm" onclick="syncMasterFromGoogleSheet(true)">🔄 Google Sheet ஒத்திசைவு (Sync)</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal()">⚙️ இணைப்பு அமைப்பு (Cloud Settings)</button>
@@ -1510,21 +1518,95 @@
 
     <!-- School Navigation Tabs -->
     <div class="nav-pills-bar">
-      <button type="button" class="nav-pill-btn active" id="schTabBtnEbs" onclick="switchSchoolTab('ebs')" style="border-color:#d97706; background:#fffbeb; color:#9a3412;">📋 EBS_2026_27 (படிவங்கள் I - IV பதிவு)</button>
-      <button type="button" class="nav-pill-btn" id="schTabBtnProfile" onclick="switchSchoolTab('profile')">🏫 1. பள்ளி சுயவிவரம் & நிர்வாகப் பிரிவு (School Profile)</button>
-      <button type="button" class="nav-pill-btn" id="schTabBtnStudents" onclick="switchSchoolTab('students')">👨‍🎓 2. மாணவர் எண்ணிக்கை (Student Strength)</button>
-      <button type="button" class="nav-pill-btn" id="schTabBtnStaff" onclick="switchSchoolTab('staff')">👨‍🏫 3. Teacher Master (ஆசிரியர் & பணியாளர் பதிவேடு)</button>
-      <button type="button" class="nav-pill-btn" id="schTabBtnNeeds" onclick="switchSchoolTab('needs')">🏗️ 4. அடிப்படைத் தேவைகள் & சுற்றறிக்கை (Needs & Circulars)</button>
-      <button type="button" class="nav-pill-btn" id="schTabBtnSecurity" onclick="switchSchoolTab('security')">🔑 5. கடவுச்சொல் மாற்றம்</button>
+      <button type="button" class="nav-pill-btn active" id="schTabBtnStaffStrength" onclick="switchSchoolTab('staffStrength')" style="border-color:#1d4ed8; background:#eff6ff; color:#1e40af; font-weight:800;">👨‍🏫 1. பதவி வாரியான ஆசிரியர் எண்ணிக்கை (Staff Strength)</button>
+      <button type="button" class="nav-pill-btn" id="schTabBtnProfile" onclick="switchSchoolTab('profile')">🏫 2. பள்ளி சுயவிவரம் &amp; நிர்வாகப் பிரிவு (School Profile)</button>
+      <button type="button" class="nav-pill-btn" id="schTabBtnStudents" onclick="switchSchoolTab('students')">👨‍🎓 3. மாணவர் எண்ணிக்கை (Student Strength)</button>
+      <button type="button" class="nav-pill-btn" id="schTabBtnStaff" onclick="switchSchoolTab('staff')">👥 4. ஆசிரியர் &amp; பணியாளர் பதிவேடு (Staff Roster)</button>
+      <button type="button" class="nav-pill-btn" id="schTabBtnNeeds" onclick="switchSchoolTab('needs')">🏗️ 5. அடிப்படைத் தேவைகள் &amp; சுற்றறிக்கை (Needs &amp; Circulars)</button>
+      <button type="button" class="nav-pill-btn" id="schTabBtnSecurity" onclick="switchSchoolTab('security')">🔑 6. கடவுச்சொல் மாற்றம்</button>
     </div>
 
     <!-- SCHOOL SUB-TAB 1: MASTER PROFILE -->
     
     <!-- =================================================================== -->
-    <!-- SCHOOL EBS_2026_27 MODULE (FORM I, FORM II, FORM III, FORM IV)      -->
     <!-- =================================================================== -->
-    <!-- EBS_2026_27 MODULE MOUNT CONTAINER (Populated by ebs-module.js) -->
-    <div id="schPaneEbs" class="panel-box"></div>
+    <!-- 1. SCHOOL HOME: DESIGNATION-WISE WORKING STAFF STRENGTH TABLE       -->
+    <!-- =================================================================== -->
+    <div id="schPaneStaffStrength" class="panel-box">
+      <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <span style="font-size:1.15rem; font-weight:900; color:#0f294a;">
+          👨‍🏫 பள்ளியில் பணியாற்றும் ஆசிரியர்கள் &amp; பணியாளர்கள் – பதவி வாரியான விவரம் (Working Staff Strength by Designation)
+        </span>
+        <span style="font-size:0.8rem; font-weight:800; background:#f0fdf4; color:#166534; padding:4px 12px; border-radius:999px; border:1px solid #bbf7d0;">
+          🟢 TN EMIS நேரடித் தரவு (Verified)
+        </span>
+      </div>
+
+      <!-- 3 Quick Metric Cards -->
+      <div class="grid-3" style="margin-bottom:18px;">
+        <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; padding:14px 16px; text-align:center;">
+          <div style="font-size:0.8rem; font-weight:800; color:#1e40af; text-transform:uppercase;">பணியாற்றும் ஆசிரியர்கள் (Teaching Staff)</div>
+          <div style="font-size:1.85rem; font-weight:900; color:#1d4ed8; margin-top:2px;" id="schStrengthTeachingCount">0</div>
+          <div style="font-size:0.75rem; color:#1e40af;">தலைமையாசிரியர், முதுகலை &amp; பட்டதாரி ஆசிரியர்கள்</div>
+        </div>
+        <div style="background:#fefce8; border:1.5px solid #fde047; border-radius:10px; padding:14px 16px; text-align:center;">
+          <div style="font-size:0.8rem; font-weight:800; color:#854d0e; text-transform:uppercase;">அலுவலகப் பணியாளர்கள் (Non-Teaching)</div>
+          <div style="font-size:1.85rem; font-weight:900; color:#a16207; margin-top:2px;" id="schStrengthNonTeachCount">0</div>
+          <div style="font-size:0.75rem; color:#854d0e;">இளநிலை உதவியாளர், ஆய்வக உதவியாளர் &amp; பிறர்</div>
+        </div>
+        <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:14px 16px; text-align:center;">
+          <div style="font-size:0.8rem; font-weight:800; color:#166534; text-transform:uppercase;">ஒட்டுமொத்தப் பணியாளர்கள் (Total Strength)</div>
+          <div style="font-size:1.85rem; font-weight:900; color:#15803d; margin-top:2px;" id="schStrengthTotalCount">0</div>
+          <div style="font-size:0.75rem; color:#166534;">இப்பள்ளியில் தற்போது பணியில் உள்ளவர்கள்</div>
+        </div>
+      </div>
+
+      <!-- Designation-wise Table -->
+      <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:16px; margin-bottom:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          <div style="font-weight:900; font-size:1rem; color:#0f294a;">
+            📋 பதவி வாரியான பணியாளர் எண்ணிக்கை அட்டவணை (Designation-wise Staff Count)
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="printSchoolStaffStrength()">
+            🖨️ அட்டவணையை அச்சிடுக (Print)
+          </button>
+        </div>
+
+        <div class="table-container" style="overflow-x:auto;">
+          <table class="data-table" style="font-size:0.88rem; width:100%; border-collapse:collapse;">
+            <thead>
+              <tr style="background:#f8fafc; color:#0f294a;">
+                <th style="width:60px; text-align:center;">வ.எண்</th>
+                <th style="text-align:left;">பதவிப் பெயர் (Designation / Post)</th>
+                <th style="width:180px; text-align:center;">பணி வகை (Category)</th>
+                <th style="width:140px; text-align:center;">எண்ணிக்கை (Count)</th>
+                <th style="text-align:left;">கற்பிக்கும் பாடங்கள் / பொறுப்புகள் (Subjects / Disciplines)</th>
+              </tr>
+            </thead>
+            <tbody id="schStaffStrengthTableBody"></tbody>
+            <tfoot id="schStaffStrengthTableFoot" style="background:#f1f5f9; font-weight:900;"></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- LAST UPDATED DATE SECTION AT THE BOTTOM -->
+      <div style="background:#f8fafc; border:2px solid #cbd5e1; border-left:6px solid #0284c7; border-radius:10px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:8px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:2rem;">📅</span>
+          <div>
+            <div style="font-size:0.95rem; font-weight:900; color:#0f294a;">
+              கடைசியாக புதுப்பிக்கப்பட்ட நாள் &amp; நேரம்: <span id="schStaffLastUpdatedDate" style="color:#0284c7; font-weight:900;">22/10/2026 04:31:41 PM</span>
+            </div>
+            <div style="font-size:0.82rem; color:#475569; margin-top:3px;">
+              அறிக்கை பெயர்: <strong>Teachers &amp; Staffs-All-Details-Daily Rpt</strong> | தரவு ஆதாரம்: <strong>தமிழ்நாடு கல்வி மேலாண்மைத் தகவல் முறைமை (TN EMIS)</strong>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:0.8rem; background:#eff6ff; color:#1e40af; padding:6px 14px; border-radius:8px; font-weight:800; border:1px solid #bfdbfe;">
+          🛡️ CEO SIVAGANGAI EMIS VERIFIED
+        </div>
+      </div>
+    </div>
 
     <div id="schPaneProfile" class="panel-box" style="display:none;">
       <div class="panel-title">
@@ -1881,133 +1963,30 @@
         </div>
 
         <!-- MODULE 2: EBS 26-27 -->
-        <div class="adm-module-card card-ebs" id="admModuleCardEbs" onclick="openAdminModule('ebs')">
-          <span class="adm-module-badge" style="background:#fffbeb; color:#92400e; border:1px solid #fde68a;">MOD 02</span>
+                <!-- MODULE 2: EMIS STAFF MASTER -->
+        <div class="adm-module-card card-ebs" id="admModuleCardEmisStaff" onclick="openAdminModule('emisStaff')" style="border-color:#38bdf8;">
+          <span class="adm-module-badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd;">MOD 02</span>
           <div>
-            <div class="adm-module-icon-wrap">📋</div>
-            <div style="font-size:0.78rem; font-weight:800; color:#d97706; letter-spacing:1px; text-transform:uppercase;">EXAMINATION BOARD SECTION</div>
-            <h4 style="font-size:1.35rem; font-weight:900; color:#0f294a; margin:4px 0 8px 0;">2. EBS 26-27</h4>
-            <div style="font-size:0.92rem; font-weight:800; color:#b45309; margin-bottom:8px;">தேர்வுப் படிவங்கள் (FORM I to IV) &amp; பணியாளர் தரவுத் தொகுப்பு</div>
+            <div class="adm-module-icon-wrap" style="background:#e0f2fe; color:#0284c7;">👨‍🏫</div>
+            <div style="font-size:0.78rem; font-weight:800; color:#0284c7; letter-spacing:1px; text-transform:uppercase;">STAFF MASTER &amp; EMIS INTEGRATION</div>
+            <h4 style="font-size:1.35rem; font-weight:900; color:#0f294a; margin:4px 0 8px 0;">2. EMIS STAFF MASTER</h4>
+            <div style="font-size:0.92rem; font-weight:800; color:#0369a1; margin-bottom:8px;">ஆசிரியர்கள் &amp; பணியாளர்கள் தரவுத் தொகுப்பு &amp; எக்செல் பதிவேற்றம்</div>
             <p style="font-size:0.84rem; color:#475569; line-height:1.55; margin-bottom:14px;">
-              பள்ளிகள், மாணவர்கள், 6,104 ஆசிரியர்கள் மற்றும் 956 அலுவலகப் பணியாளர்களின் தேர்வுப் படிவங்கள் (FORM I, II, III, IV) மேலாண்மை. பள்ளிகளுக்கான சேர்க்கை/திருத்தம் அனுமதி, கடைசி நாள் நிர்ணயம் &amp; நீக்கக் கோரிக்கைகள் ஒப்புதல்.
+              சிவகங்கை மாவட்டத்தின் 281 பள்ளிகளில் உள்ள 7,081 ஆசிரியர்கள் மற்றும் அலுவலகப் பணியாளர்களின் பதவி வாரியான விவரங்கள் மேலாண்மை. EMIS எக்செல் (.xlsx / .csv) பதிவேற்றம் மூலம் உடனுக்குடன் விவரங்களைப் புதுப்பிக்கும் வசதி.
             </p>
-            <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:10px 12px; margin-bottom:16px;">
-              <div style="font-size:0.75rem; font-weight:800; color:#92400e; margin-bottom:6px; text-transform:uppercase;">இயங்குநிலை &amp; காலக்கெடு (Live Status):</div>
-              <div style="display:flex; flex-direction:column; gap:5px; font-size:0.82rem;">
-                <div>
-                  <span style="font-weight:700; color:#475569;">பள்ளிப் பதிவு நிலை:</span> 
-                  <span id="admChooserEbsStatusBadge" style="font-weight:900; padding:2px 10px; border-radius:999px; background:#fee2e2; color:#b91c1c;">🔒 முடக்கப்பட்டுள்ளது (View &amp; Download Only)</span>
-                </div>
-                <div>
-                  <span style="font-weight:700; color:#475569;">கடைசி நாள் (Deadline):</span> 
-                  <span id="admChooserEbsDeadlineBadge" style="font-weight:800; color:#92400e;">நிர்ணயிக்கப்படவில்லை</span>
-                </div>
-                <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; font-weight:800;">
-                  <span style="background:#1e3a8a; color:#fff; padding:1px 8px; border-radius:6px; font-size:0.75rem;">👨‍🏫 6,104 ஆசிரியர்கள்</span>
-                  <span style="background:#0f766e; color:#fff; padding:1px 8px; border-radius:6px; font-size:0.75rem;">🧑‍💼 956 பணியாளர்கள்</span>
-                  <span style="background:#312e81; color:#fff; padding:1px 8px; border-radius:6px; font-size:0.75rem;">📊 281 பள்ளிகள் நிலை</span>
-                </div>
+            <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:10px 12px; margin-bottom:16px;">
+              <div style="font-size:0.75rem; font-weight:800; color:#0369a1; margin-bottom:6px; text-transform:uppercase;">பணியாளர் தரவு நிலவரம் (Live EMIS Status):</div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px; font-size:0.8rem; font-weight:800;">
+                <span style="background:#0284c7; color:#fff; padding:2px 8px; border-radius:6px;">👨‍🏫 6,125 ஆசிரியர்கள்</span>
+                <span style="background:#059669; color:#fff; padding:2px 8px; border-radius:6px;">🏢 956 அலுவலகப் பணியாளர்</span>
+                <span style="background:#d97706; color:#fff; padding:2px 8px; border-radius:6px;">🏫 281 பள்ளிகள்</span>
               </div>
             </div>
           </div>
-          <button type="button" class="btn btn-warning" style="width:100%; font-size:1rem; font-weight:900; padding:12px; border-radius:8px; background:#d97706; border-color:#b45309; color:#fff;">
-            👉 EBS 26-27 மேலாண்மை திறக்க கிளிக் செய்க (Open) ❯
+          <button type="button" class="btn btn-primary" style="width:100%; font-size:1rem; font-weight:900; padding:12px; border-radius:8px; background:#0284c7; border-color:#0284c7; color:#fff;">
+            👉 EMIS STAFF MASTER திறக்க கிளிக் செய்க (Open) ❯
           </button>
         </div>
-
-      </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- 2. ADMIN SECTION: SCHOOL MASTER (OPENED WHEN CLICKING BOX 1)              -->
-    <!-- ========================================================================= -->
-    <div id="admSectionSchoolMaster" style="display:none;">
-      <!-- Breadcrumb Bar -->
-      <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; border:2px solid #cbd5e1; border-radius:10px; padding:10px 16px; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-        <button type="button" class="btn btn-outline btn-sm" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff; border-color:#0f294a; color:#0f294a;">
-          ⬅️ முதன்மை கட்டுப்பாட்டகம் (Back to Main Dashboard)
-        </button>
-        <div style="font-size:1.15rem; font-weight:900; color:#0f294a; display:flex; align-items:center; gap:8px;">
-          <span>🏫</span> 1. SCHOOL MASTER – பள்ளிகள் முதன்மை மேலாண்மை
-        </div>
-        <div style="font-size:0.82rem; color:#475569; font-weight:700;">
-          சிவகங்கை மாவட்டம் &bull; 281 பள்ளிகள் &bull; 12 ஒன்றியங்கள்
-        </div>
-      </div>
-
-      <!-- School Master Internal Stat Cards, Nav-Pills and Panes -->
-      <!-- Admin Dynamic Stat Cards -->
-    <div class="stat-grid">
-      <div class="stat-card" style="border-top:4px solid #0f294a;" onclick="filterAdminByMgmt1('')">
-        <div class="stat-num" id="admStatTotal" style="color:#0f294a;">281</div>
-        <div class="stat-label">🏫 மொத்தப் பள்ளிகள்<br><span style="font-size:0.74rem; color:#64748b;">All Schools (Click)</span></div>
-      </div>
-      <div class="stat-card" style="border-top:4px solid #16a34a;" onclick="filterAdminByMgmt1('1G')">
-        <div class="stat-num" id="admStat1G" style="color:#16a34a;">137</div>
-        <div class="stat-label">🏛️ 1G: அரசுப் பள்ளிகள்<br><span style="font-size:0.74rem; color:#64748b;">Govt (M2: 1 & 2)</span></div>
-      </div>
-      <div class="stat-card" style="border-top:4px solid #2563eb;" onclick="filterAdminByMgmt1('2A')">
-        <div class="stat-num" id="admStat2A" style="color:#2563eb;">59</div>
-        <div class="stat-label">🤝 2A: அரசு உதவிபெறும்<br><span style="font-size:0.74rem; color:#64748b;">Aided (M2: 4 & 5)</span></div>
-      </div>
-      <div class="stat-card" style="border-top:4px solid #9333ea;" onclick="filterAdminByMgmt1('3P')">
-        <div class="stat-num" id="admStat3P" style="color:#9333ea;">85</div>
-        <div class="stat-label">🏢 3P: தனியார் / மெட்ரிக்<br><span style="font-size:0.74rem; color:#64748b;">Private (M2: 6 & 7)</span></div>
-      </div>
-      <div class="stat-card" style="border-top:4px solid #d97706;" onclick="switchAdminTab('divisions')">
-        <div class="stat-num" id="admStatDivisions" style="color:#d97706;">12</div>
-        <div class="stat-label">🗂️ நிர்வாகப் பிரிவுகள்<br><span style="font-size:0.74rem; color:#64748b;">Mgmt 1/2/3 & Blocks</span></div>
-      </div>
-      <div class="stat-card" style="border-top:4px solid #0284c7;" onclick="switchAdminTab('credentials')">
-        <div class="stat-num" id="admStatRegSchools" style="color:#0284c7;">16</div>
-        <div class="stat-label">🔑 கடவுச்சொல் பதிவு<br><span style="font-size:0.74rem; color:#64748b;">Custom Passwords Set</span></div>
-      </div>
-      <div class="stat-card" style="border-top:4px solid #dc2626; background:#fef2f2;" onclick="switchAdminTab('deleteReqs')">
-        <div class="stat-num" id="admStatDeleteReqs" style="color:#dc2626;">0</div>
-        <div class="stat-label">🗑️ நீக்கக் கோரிக்கைகள்<br><span style="font-size:0.74rem; color:#991b1b;">Delete Requests (Click)</span></div>
-      </div>
-    </div>
-
-    <!-- Admin Navigation Sub-Tabs -->
-    <div class="nav-pills-bar">
-      <button type="button" class="nav-pill-btn active" id="admTabBtnDirectory" onclick="switchAdminTab('directory')">📋 1. பள்ளிகள் பட்டியல் & வடிகட்டி (Schools Master Directory)</button>
-      <button type="button" class="nav-pill-btn" id="admTabBtnAddSchool" onclick="switchAdminTab('addSchool')">➕ 2. புதிய பள்ளிகள் சேர்த்தல் & Bulk Import</button>
-      <button type="button" class="nav-pill-btn" id="admTabBtnDivisions" onclick="switchAdminTab('divisions')">🗂️ 3. நிர்வாகப் பிரிவுகள் மேலாண்மை (Management Divisions)</button>
-      <button type="button" class="nav-pill-btn" id="admTabBtnCredentials" onclick="switchAdminTab('credentials')">🔑 4. பள்ளி உள்நுழைவு & கடவுச்சொல் மீட்பு</button>
-      <button type="button" class="nav-pill-btn" id="admTabBtnCentres" onclick="switchAdminTab('centres')">🏛️ 5. தேர்வு மையங்கள் (12_Ex_Cen) & சுற்றறிக்கை</button>
-      <button type="button" class="nav-pill-btn" id="admTabBtnEbs" onclick="switchAdminTab('ebs')" style="border-color:#d97706; background:#fffbeb; color:#9a3412;">📋 6. EBS_2026_27 படிவங்கள் தொகுப்பு (Form I - IV)</button>
-      <button type="button" class="nav-pill-btn" id="admTabBtnDeleteReqs" onclick="switchAdminTab('deleteReqs')" style="border-color:#dc2626; background:#fef2f2; color:#991b1b;">🗑️ 7. பணியாளர் நீக்கக் கோரிக்கைகள் ஒப்புதல் (<span id="admNavDelReqBadge">0</span>)</button>
-    </div>
-
-    <!-- ADMIN SUB-TAB 1: SCHOOLS MASTER DIRECTORY WITH MULTI-LEVEL DYNAMIC FILTERS -->
-    <div id="admPaneDirectory" class="panel-box">
-      <div class="panel-title">
-        <span>📋 சிவகங்கை மாவட்ட அனைத்துப் பள்ளிகள் மற்றும் நிர்வாகப் பிரிவுகள் பட்டியல் (<span id="admFilteredCountBadge">281</span> பள்ளிகள்)</span>
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button type="button" class="btn btn-primary btn-sm" onclick="switchAdminTab('addSchool')">➕ புதிய பள்ளி சேர்</button>
-          <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminDirectoryFilters()">🔄 வடிகட்டிகளை மீட்டமை</button>
-        </div>
-      </div>
-
-      <!-- Multi-level Filter Row -->
-      <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:14px;">
-        <div class="grid-4" style="margin-bottom:10px;">
-          <div>
-            <label class="form-label" style="font-size:0.78rem;">🔍 தேடல் (U.No / UDISE / பள்ளிப் பெயர் / HM):</label>
-            <input type="text" id="admFilterSearch" class="form-control" style="padding:7px 10px; font-size:0.84rem;" placeholder="எ.கா: 101, 33231106101, காரைக்குடி..." oninput="renderAdminDirectoryTable()">
-          </div>
-          <div>
-            <label class="form-label" style="font-size:0.78rem;">🏛️ நிர்வாகப் பிரிவு 1 (MANAGEMENT_1):</label>
-            <select id="admFilterMgmt1" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
-          </div>
-          <div>
-            <label class="form-label" style="font-size:0.78rem;">📂 நிர்வாக உட்பிரிவு 2 (MANAGEMENT_2):</label>
-            <select id="admFilterMgmt2" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
-          </div>
-          <div>
-            <label class="form-label" style="font-size:0.78rem;">📑 நிர்வாக உட்பிரிவு 3 (MANAGEMENT_3):</label>
-            <select id="admFilterMgmt3" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
-          </div>
         </div>
         <div class="grid-3">
           <div>
@@ -2284,45 +2263,191 @@
 
     <!-- ADMIN SUB-TAB 7: STAFF DELETE REQUESTS APPROVAL (#admPaneDeleteReqs) -->
 
-      <!-- Bottom Return Button -->
-      <div style="text-align:center; margin-top:24px; padding-top:16px; border-top:1px solid #cbd5e1;">
-        <button type="button" class="btn btn-outline" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff;">
-          ⬅️ முதன்மை கட்டுப்பாட்டகத்திற்குத் திரும்பு (Back to Main Dashboard)
-        </button>
+      <!-- ADMIN SUB-TAB 8 / EBS 3: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
+    <div id="admPaneEmisSync" class="panel-box" style="display:none;">
+      <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <span style="font-size:1.15rem; font-weight:900; color:#0f294a;">
+          📥 EMIS ஆசிரியர் மற்றும் பணியாளர் Excel பதிவேற்றம் &amp; தரவுப் புதுப்பித்தல் (EMIS Staff Upload &amp; Sync Engine)
+        </span>
+        <span style="font-size:0.8rem; font-weight:800; background:#e0f2fe; color:#0369a1; padding:4px 12px; border-radius:999px; border:1px solid #bae6fd;">
+          TN EMIS DAILY REPORT COMPATIBLE (.XLSX / .CSV)
+        </span>
       </div>
-    </div>
 
-    <!-- ========================================================================= -->
-    <!-- 3. ADMIN SECTION: EBS 26-27 (OPENED WHEN CLICKING BOX 2)                  -->
-    <!-- ========================================================================= -->
-    <div id="admSectionEbs" style="display:none;">
-      <!-- Breadcrumb Bar -->
-      <div style="display:flex; justify-content:space-between; align-items:center; background:#fffbeb; border:2px solid #fde68a; border-radius:10px; padding:10px 16px; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-        <button type="button" class="btn btn-outline btn-sm" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff; border-color:#92400e; color:#92400e;">
-          ⬅️ முதன்மை கட்டுப்பாட்டகம் (Back to Main Dashboard)
-        </button>
-        <div style="font-size:1.15rem; font-weight:900; color:#0f294a; display:flex; align-items:center; gap:8px;">
-          <span>📋</span> 2. EBS 26-27 – தேர்வுப் படிவங்கள் மற்றும் பணியாளர் தரவுத் தொகுப்பு
+      <div style="background:#f0f9ff; border-left:5px solid #0284c7; border-radius:10px; padding:14px 18px; margin-bottom:20px; font-size:0.9rem; color:#0c4a6e; line-height:1.6;">
+        <div style="font-weight:900; font-size:0.98rem; margin-bottom:4px; display:flex; align-items:center; gap:8px;">
+          <span>💡</span> <strong>நிர்வாகி வழிகாட்டுதல் (Admin Workflow &amp; Periodic Sync):</strong>
         </div>
-        <div>
-          <button type="button" class="btn btn-sm" id="admEbsToggleHeaderBtn" onclick="toggleEbsModuleStatus()" style="font-weight:900; background:#dc2626; color:#fff; border-color:#ef4444;">
-            🔒 EBS பதிவு: OFF (முடக்கப்பட்டுள்ளது)
+        EMIS தளத்திலிருந்து பதிவிறக்கம் செய்யப்படும் <strong>Teachers &amp; Staffs-All-Details-Daily Rpt</strong> எக்செல் கோப்பினை (எ.கா: <code>25-TEACH-DETAILS.xlsx</code>) குறிப்பிட்ட கால இடைவெளியில் (வாரம் அல்லது மாதம் ஒருமுறை) கீழே பதிவேற்றினால், 
+        அதில் உள்ள <strong>Staff_ID</strong> அடிப்படையில் சிவகங்கை மாவட்டத்தின் <strong>281 உயர்நிலை, மேல்நிலை மற்றும் மெட்ரிக் பள்ளிகளின்</strong> ஆசிரியர்களின் பதவி, கற்பிக்கும் பாடம், தற்போதைய பள்ளிச் சேர்க்கை விவரங்கள் தளத்தில் தானாகவே <strong>Upsert</strong> முறையில் புதுப்பிக்கப்பட்டு விடும்.
+      </div>
+
+      <!-- Drag & Drop Upload Zone -->
+      <div id="emisDropZone" style="border:2.5px dashed #0284c7; background:#f8fafc; border-radius:14px; padding:32px 20px; text-align:center; cursor:pointer; transition:all 0.25s ease; margin-bottom:20px;"
+           onclick="document.getElementById('emisExcelFileInput').click()"
+           ondragover="handleEmisDragOver(event)" ondragleave="handleEmisDragLeave(event)" ondrop="handleEmisDrop(event)">
+        <input type="file" id="emisExcelFileInput" accept=".xlsx, .xls, .csv" style="display:none;" onchange="handleEmisFileInputChange(event)">
+        <div style="font-size:2.8rem; margin-bottom:10px;">📤</div>
+        <div style="font-size:1.15rem; font-weight:900; color:#0f294a; margin-bottom:6px;">
+          EMIS ஆசிரியர்/பணியாளர் Excel கோப்பினை இங்கு இழுத்து விடவும் (Drag &amp; Drop)
+        </div>
+        <div style="font-size:0.88rem; color:#475569; margin-bottom:14px;">
+          அல்லது உங்கள் கணினியிலிருந்து கோப்பைத் தேர்வு செய்ய <strong>இங்கு கிளிக் செய்யவும் (Browse File)</strong>
+        </div>
+        <div style="display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:6px 14px; font-size:0.82rem; color:#334155;">
+          <span>📄 ஆதரிக்கப்படும் கோப்புகள்:</span> <strong>.xlsx, .xls, .csv</strong> (உதாரணம்: <code>25-TEACH-DETAILS.xlsx</code>)
+        </div>
+        <div id="emisFileStatusText" style="margin-top:14px; font-size:0.92rem; font-weight:800; color:#0369a1; display:none;"></div>
+      </div>
+
+      <!-- Parsing Progress Bar -->
+      <div id="emisParseProgressBox" style="display:none; background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:16px; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.86rem; font-weight:800; color:#0f294a; margin-bottom:8px;">
+          <span id="emisProgressLabel">⏳ கோப்பு படிக்கப்பட்டு ஆய்வு செய்யப்படுகிறது...</span>
+          <span id="emisProgressPercent">0%</span>
+        </div>
+        <div style="width:100%; height:10px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+          <div id="emisProgressBar" style="width:0%; height:100%; background:linear-gradient(90deg, #0284c7, #16a34a); transition:width 0.2s;"></div>
+        </div>
+      </div>
+
+      <!-- Analysis & Preview Card (Appears after file is parsed) -->
+      <div id="emisAnalysisBox" style="display:none; margin-bottom:24px;">
+        <div style="background:#ffffff; border:2px solid #bae6fd; border-radius:14px; padding:20px; box-shadow:0 6px 18px rgba(2,132,199,0.08);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px; border-bottom:1.5px solid #e2e8f0; padding-bottom:12px;">
+            <div style="font-weight:900; font-size:1.05rem; color:#0f294a; display:flex; align-items:center; gap:8px;">
+              <span>📊</span> EMIS கோப்பு ஆய்வு முடிவுகள் (File Analysis &amp; Data Matching)
+            </div>
+            <div id="emisFileMetaBadge" style="font-size:0.8rem; background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:6px; font-weight:700;"></div>
+          </div>
+
+          <!-- 4 Stat Summary Badges -->
+          <div class="grid-4" style="margin-bottom:18px;">
+            <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 14px; text-align:center;">
+              <div style="font-size:0.75rem; font-weight:800; color:#64748b; text-transform:uppercase;">கோப்பில் உள்ள மொத்தப் பதிவுகள்</div>
+              <div style="font-size:1.6rem; font-weight:900; color:#0f294a; margin-top:3px;" id="statEmisTotalRows">0</div>
+              <div style="font-size:0.74rem; color:#64748b;">(அனைத்துப் பள்ளிகள்)</div>
+            </div>
+            <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:12px 14px; text-align:center;">
+              <div style="font-size:0.75rem; font-weight:800; color:#166534; text-transform:uppercase;">சிவகங்கை மாவட்டப் பள்ளிகள்</div>
+              <div style="font-size:1.6rem; font-weight:900; color:#15803d; margin-top:3px;" id="statEmisMatchedSchools">0</div>
+              <div style="font-size:0.74rem; color:#166534;">(281 மாஸ்டர் பள்ளிகள்)</div>
+            </div>
+            <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; padding:12px 14px; text-align:center;">
+              <div style="font-size:0.75rem; font-weight:800; color:#1e40af; text-transform:uppercase;">பொருந்திய ஆசிரியர்கள் (F3)</div>
+              <div style="font-size:1.6rem; font-weight:900; color:#1d4ed8; margin-top:3px;" id="statEmisMatchedTeachers">0</div>
+              <div style="font-size:0.74rem; color:#1e40af;">(Teaching Staff)</div>
+            </div>
+            <div style="background:#fefce8; border:1.5px solid #fde047; border-radius:10px; padding:12px 14px; text-align:center;">
+              <div style="font-size:0.75rem; font-weight:800; color:#854d0e; text-transform:uppercase;">அலுவலகப் பணியாளர்கள் (F4)</div>
+              <div style="font-size:1.6rem; font-weight:900; color:#a16207; margin-top:3px;" id="statEmisMatchedNonTeach">0</div>
+              <div style="font-size:0.74rem; color:#854d0e;">(Non-Teaching Staff)</div>
+            </div>
+          </div>
+
+          <!-- Preview Table of Matched Records -->
+          <div style="margin-bottom:18px;">
+            <div style="font-size:0.9rem; font-weight:800; color:#334155; margin-bottom:8px; display:flex; justify-content:space-between;">
+              <span>👀 பதிவேற்றப்பட்ட தரவுகளின் மாதிரிக் காட்சி (First 8 Matched Staff Preview):</span>
+              <span id="emisPreviewCountBadge" style="font-size:0.8rem; color:#64748b;"></span>
+            </div>
+            <div class="table-container" style="max-height:260px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px;">
+              <table class="data-table" style="font-size:0.82rem;">
+                <thead>
+                  <tr style="background:#f1f5f9;">
+                    <th>#</th>
+                    <th>Staff ID</th>
+                    <th>பெயர் (Staff Name)</th>
+                    <th>பதவி (Designation)</th>
+                    <th>பாடம் (Subject)</th>
+                    <th>பள்ளி (UDISE &amp; School)</th>
+                    <th>பணி வகை</th>
+                    <th>பணியில் சேர்ந்த தேதி</th>
+                  </tr>
+                </thead>
+                <tbody id="emisPreviewTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sync Execution Options & Action Buttons -->
+          <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:700; color:#1e293b; cursor:pointer;">
+                <input type="checkbox" id="emisOptUpdateExisting" checked style="width:16px; height:16px; accent-color:#0284c7;">
+                <span>Staff_ID அடிப்படையில் பதவி, பள்ளி, பணி மூப்பு விவரங்களைப் புதுப்பி (Update Existing Records)</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:700; color:#1e293b; cursor:pointer;">
+                <input type="checkbox" id="emisOptInsertNew" checked style="width:16px; height:16px; accent-color:#0284c7;">
+                <span>புதிய ஆசிரியர்களை FORM-III / FORM-IV பட்டியலில் இணைக்க (Insert New Joiners)</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:700; color:#1e293b; cursor:pointer;">
+                <input type="checkbox" id="emisOptRecalcF1" checked style="width:16px; height:16px; accent-color:#0284c7;">
+                <span>FORM-I பணியாளர் எண்ணிக்கையைத் தானாக மறு கணக்கீடு செய் (Auto-Recalculate Form-I Counts)</span>
+              </label>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary" onclick="executeEmisDataSync()" style="font-weight:900; padding:10px 20px; font-size:0.95rem; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; box-shadow:0 4px 12px rgba(2,132,199,0.3);">
+                🚀 சிவகங்கை மாவட்டப் பள்ளிகளில் தரவுகளை ஒத்திசைக்க (Execute Live Sync)
+              </button>
+              <button type="button" class="btn btn-outline" onclick="downloadUpdatedEmisSeedJs()" style="font-weight:800; background:#fff;">
+                💾 emis-staff-data.js கோப்பாகப் பதிவிறக்கு
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sync Log / Live Report Modal or Card -->
+      <div id="emisSyncResultBox" style="display:none; background:#f0fdf4; border:2px solid #22c55e; border-left:8px solid #16a34a; border-radius:12px; padding:16px 20px; margin-bottom:20px; color:#14532d;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="font-weight:900; font-size:1.05rem;" id="emisSyncResultHeading">
+            🎉 ஆசிரியர்களின் விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('emisSyncResultBox').style.display='none'" style="font-weight:800; background:#fff;">
+            ✕ மூடுக (Dismiss)
           </button>
         </div>
+        <div style="margin-top:6px; font-size:0.88rem; line-height:1.5;" id="emisSyncResultDetail"></div>
       </div>
 
-      <!-- Navigation Sub-Tabs for EBS Module -->
-      <div class="nav-pills-bar" style="margin-bottom:16px;">
-        <button type="button" class="nav-pill-btn active" id="admTabBtnEbs" onclick="switchAdminTab('ebs')" style="border-color:#d97706; background:#fffbeb; color:#9a3412; font-weight:800;">
-          📋 1. 281 பள்ளிகளின் EBS_2026_27 நிலை &amp; தரவுத் திருத்தம் (Admin Monitor)
-        </button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnDeleteReqs" onclick="switchAdminTab('deleteReqs')" style="border-color:#dc2626; background:#fef2f2; color:#991b1b; font-weight:800;">
-          🗑️ 2. பணியாளர் நீக்கக் கோரிக்கைகள் ஒப்புதல் (<span id="admNavDelReqBadge">0</span>)
-        </button>
+      <!-- Current District Schools Staff Audit Table -->
+      <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:12px; padding:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+          <div>
+            <div style="font-weight:900; font-size:1rem; color:#0f294a;">🏫 சிவகங்கை மாவட்டப் பள்ளிகளில் ஆசிரியர்களின் தற்போதைய நிலவரம் (281 Schools Staff Audit)</div>
+            <div style="font-size:0.82rem; color:#64748b; margin-top:2px;">ஒவ்வொரு பள்ளியிலும் FORM-III ஆசிரியர்கள் மற்றும் FORM-IV பணியாளர்களின் எண்ணிக்கை:</div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <input type="text" id="emisAuditSearchInput" class="form-control" placeholder="🔍 பள்ளி அல்லது UDISE தேட..." style="width:240px; font-size:0.85rem;" oninput="filterEmisAuditTable()">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="exportDistrictStaffSummaryCsv()">📥 தற்போதைய நிலவரத்தை CSV-ஆகப் பதிவிறக்கு</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="renderEmisDistrictAuditTable()">🔄 புதுப்பி</button>
+          </div>
+        </div>
+
+        <div class="table-container" style="max-height:480px; overflow-y:auto;">
+          <table class="data-table" style="font-size:0.84rem;">
+            <thead>
+              <tr style="background:#f8fafc; position:sticky; top:0; z-index:2;">
+                <th style="width:50px;">U.No</th>
+                <th style="width:110px;">UDISE</th>
+                <th>பள்ளியின் பெயர் (School Name)</th>
+                <th style="width:130px;">ஒன்றியம் (Block)</th>
+                <th style="width:90px; text-align:center;">நிர்வாகம்</th>
+                <th style="width:110px; text-align:center;">ஆசிரியர்கள் (F3)</th>
+                <th style="width:110px; text-align:center;">பணியாளர்கள் (F4)</th>
+                <th style="width:120px; text-align:center;">ஒத்திசைவு நிலை</th>
+                <th style="width:110px; text-align:center;">செயல்</th>
+              </tr>
+            </thead>
+            <tbody id="emisAuditTableBody"></tbody>
+          </table>
+        </div>
       </div>
 
-      <!-- EBS Panes (Monitor & Delete Requests) -->
-      <div id="admPaneDeleteReqs" class="panel-box" style="display:none;"></div>
+    </div>
+
+    <div id="admPaneDeleteReqs" class="panel-box" style="display:none;"></div>
     <div id="admPaneEbs" class="panel-box" style="display:none;"></div>
 
       <!-- Bottom Return Button -->
@@ -2331,10 +2456,16 @@
           ⬅️ முதன்மை கட்டுப்பாட்டகத்திற்குத் திரும்பு (Back to Main Dashboard)
         </button>
       </div>
+    <
+      <!-- Bottom Return Button -->
+      <div style="text-align:center; margin-top:24px; padding-top:16px; border-top:1px solid #cbd5e1;">
+        <button type="button" class="btn btn-outline" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff;">
+          ⬅️ முதன்மை கட்டுப்பாட்டகத்திற்குத் திரும்பு (Back to Main Dashboard)
+        </button>
+      </div>
     </div>
-  </div>
- & OFFICIAL FOOTER -->
-  <div class="creator-card">
+
+    <div class="creator-card">
     <div style="display:inline-flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px;">
       <span class="creator-label">இணையதள வடிவமைப்பு & பராமரிப்பு: </span>
       <span class="creator-name-ta">கூ. பூவலிங்கம்</span>
@@ -3148,7 +3279,7 @@
   // =========================================================================
   function switchSchoolTab(tabKey) {
     const map = {
-      ebs: ["schTabBtnEbs", "schPaneEbs"],
+      staffStrength: ["schTabBtnStaffStrength", "schPaneStaffStrength"],
       profile: ["schTabBtnProfile", "schPaneProfile"],
       students: ["schTabBtnStudents", "schPaneStudents"],
       staff: ["schTabBtnStaff", "schPaneStaff"],
@@ -3221,7 +3352,7 @@
     document.getElementById("schFormPincode").value = extra.pincode || "630561";
 
     renderSchoolStudentTable(s, extra);
-    initEbsModuleForSchool(s, extra);
+    renderSchoolStaffStrengthUI(s);
 
     if (extra.staff.length === 0 && (s.hmName || s.hmTa)) {
       extra.staff.push({
@@ -3631,7 +3762,7 @@
     const secSch = document.getElementById("admSectionSchoolMaster");
     const secEbs = document.getElementById("admSectionEbs");
 
-    const ebsTabs = ["ebs", "deleteReqs"];
+    const ebsTabs = ["ebs", "deleteReqs", "emisSync"];
     if (ebsTabs.includes(tabKey)) {
       if (chooser) chooser.style.display = "none";
       if (secSch) secSch.style.display = "none";
@@ -3648,8 +3779,7 @@
       divisions: ["admTabBtnDivisions", "admPaneDivisions"],
       credentials: ["admTabBtnCredentials", "admPaneCredentials"],
       centres: ["admTabBtnCentres", "admPaneCentres"],
-      ebs: ["admTabBtnEbs", "admPaneEbs"],
-      deleteReqs: ["admTabBtnDeleteReqs", "admPaneDeleteReqs"]
+      emisSync: ["admTabBtnEmisSync", "admPaneEmisSync"]
     };
     Object.keys(map).forEach(k => {
       const [btnId, paneId] = map[k];
@@ -3658,6 +3788,13 @@
       if (btn) btn.classList.toggle("active", k === tabKey);
       if (pane) pane.style.display = (k === tabKey) ? "block" : "none";
     });
+
+    const ebsEmisBtn = document.getElementById("admTabBtnEbsEmisSync");
+    if (ebsEmisBtn) ebsEmisBtn.classList.toggle("active", tabKey === "emisSync");
+
+    if (tabKey === "emisSync" && typeof renderEmisDistrictAuditTable === "function") {
+      renderEmisDistrictAuditTable();
+    }
   }
 
   function resetAdminDirectoryFilters() {
@@ -4216,7 +4353,181 @@
   
 
   document.addEventListener("DOMContentLoaded", initPortal);
+
+  // =========================================================================
+  // SCHOOL HOME: DESIGNATION-WISE STAFF STRENGTH RENDER ENGINE
+  // =========================================================================
+  function renderSchoolStaffStrengthUI(s) {
+    if (!s) return;
+    const uNo = String(s.uNo || "").trim();
+    const pool = (window.EMIS_STAFF_DATA && window.EMIS_STAFF_DATA.pool) ? window.EMIS_STAFF_DATA.pool : [];
+    const rawRows = (window.EMIS_STAFF_DATA && window.EMIS_STAFF_DATA.byUNo && window.EMIS_STAFF_DATA.byUNo[uNo]) 
+      ? window.EMIS_STAFF_DATA.byUNo[uNo] 
+      : [];
+
+    let staffList = [];
+    if (rawRows.length > 0) {
+      staffList = rawRows.map(r => ({
+        isTeaching: r[0] === 1,
+        staffId: String(r[1] || ""),
+        name: String(r[2] || ""),
+        desig: pool[r[3]] || "TEACHER",
+        gender: r[4] === "F" ? "Female" : "Male",
+        dob: r[5] || "",
+        nature: r[6] === "R" ? "Regular" : "Contract",
+        subject: pool[r[7]] || "",
+        classTaught: pool[r[8]] || "",
+        qualification: pool[r[9]] || ""
+      }));
+    } else {
+      const extra = getSchoolExtra(uNo);
+      if (extra.staff && extra.staff.length > 0) {
+        staffList = extra.staff.map(st => ({
+          isTeaching: true,
+          staffId: st.id || "",
+          name: st.name || "",
+          desig: st.desig || "TEACHER",
+          gender: st.gender || "Male",
+          nature: st.nature || "Regular",
+          subject: st.subject || "",
+          mobile: st.mobile || ""
+        }));
+      } else if (s.hmName || s.hmTa) {
+        staffList.push({
+          isTeaching: true,
+          staffId: "HM-" + s.uNo,
+          name: s.hmTa || s.hmName,
+          desig: s.level === "HSS" ? "HEADTEACHER (HSS)" : "HEADTEACHER (HS)",
+          gender: "Male",
+          nature: "Regular",
+          subject: "All Subjects"
+        });
+      }
+    }
+
+    let teachCount = 0;
+    let nonTeachCount = 0;
+    const desigMap = {};
+    const desigCategory = {};
+    const desigSubjects = {};
+
+    staffList.forEach(st => {
+      if (st.isTeaching) teachCount++; else nonTeachCount++;
+      const d = st.desig;
+      desigMap[d] = (desigMap[d] || 0) + 1;
+      desigCategory[d] = st.isTeaching ? "கற்பித்தல் பணி (Teaching)" : "அலுவலகப் பணி (Non-Teaching)";
+      if (!desigSubjects[d]) desigSubjects[d] = {};
+      const sub = st.subject && st.subject !== "other" && st.subject !== "All Subjects" ? st.subject : "";
+      if (sub) {
+        desigSubjects[d][sub] = (desigSubjects[d][sub] || 0) + 1;
+      }
+    });
+
+    const totalCount = teachCount + nonTeachCount;
+    const elTeach = document.getElementById("schStrengthTeachingCount");
+    const elNon = document.getElementById("schStrengthNonTeachCount");
+    const elTot = document.getElementById("schStrengthTotalCount");
+    if (elTeach) elTeach.textContent = teachCount;
+    if (elNon) elNon.textContent = nonTeachCount;
+    if (elTot) elTot.textContent = totalCount;
+
+    function getDesigRank(d) {
+      const u = d.toUpperCase();
+      if (u.includes("HEADTEACHER") || u.includes("PRINCIPAL") || u.includes("HEADMASTER")) return 1;
+      if (u.includes("P.G.") || u.includes("PG ASSISTANT")) return 2;
+      if (u.includes("GRADUATE") || u.includes("BT ASSISTANT")) return 3;
+      if (u.includes("PHYSICAL DIRECTOR")) return 4;
+      if (u.includes("COMPUTER")) return 5;
+      if (u.includes("PHYSICAL EDUCATION") || u.includes("PET")) return 6;
+      if (u.includes("VOCATIONAL")) return 7;
+      if (u.includes("SECONDARY GRADE") || u.includes("SG ASST")) return 8;
+      if (u.includes("SPECIAL") || u.includes("MUSIC") || u.includes("DRAWING") || u.includes("SEWING")) return 9;
+      if (u.includes("PRIMARY") || u.includes("TGT") || u.includes("PRT") || u.includes("KG")) return 10;
+      if (u.includes("JUNIOR ASSISTANT")) return 11;
+      if (u.includes("LAB ASSISTANT")) return 12;
+      if (u.includes("RECORD")) return 13;
+      if (u.includes("LIBRARIAN")) return 14;
+      if (u.includes("OFFICE ASSISTANT")) return 15;
+      if (u.includes("DRIVER")) return 16;
+      if (u.includes("WATCHMAN") || u.includes("SECURITY")) return 17;
+      if (u.includes("SWEEPER") || u.includes("CLEANER") || u.includes("SCAVENGER")) return 18;
+      return 20;
+    }
+
+    const sortedDesigs = Object.keys(desigMap).sort((a, b) => {
+      const ra = getDesigRank(a);
+      const rb = getDesigRank(b);
+      if (ra !== rb) return ra - rb;
+      return desigMap[b] - desigMap[a];
+    });
+
+    const tbody = document.getElementById("schStaffStrengthTableBody");
+    if (tbody) {
+      if (sortedDesigs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">இப்பள்ளிக்கான ஆசிரியர் விவரங்கள் எதுவும் EMIS பதிவேட்டில் காணப்படவில்லை.</td></tr>`;
+      } else {
+        tbody.innerHTML = sortedDesigs.map((d, idx) => {
+          const cnt = desigMap[d];
+          const cat = desigCategory[d];
+          const isTeach = cat.includes("Teaching");
+          const subMap = desigSubjects[d] || {};
+          const subList = Object.keys(subMap).map(subKey => subMap[subKey] > 1 ? `${subKey} (${subMap[subKey]})` : subKey);
+          const subStr = subList.length > 0 ? subList.join(", ") : "-";
+
+          return `
+            <tr style="border-bottom:1px solid #e2e8f0;">
+              <td style="text-align:center; font-weight:700; color:#64748b;">${idx + 1}</td>
+              <td>
+                <strong style="color:#0f294a; font-size:0.92rem;">${d}</strong>
+              </td>
+              <td style="text-align:center;">
+                <span class="badge" style="font-weight:700; background:${isTeach ? '#eff6ff' : '#fefce8'}; color:${isTeach ? '#1d4ed8' : '#854d0e'}; border:1px solid ${isTeach ? '#bfdbfe' : '#fef08a'};">
+                  ${cat}
+                </span>
+              </td>
+              <td style="text-align:center;">
+                <span style="display:inline-block; min-width:32px; padding:3px 10px; border-radius:999px; background:#0284c7; color:#fff; font-weight:900; font-size:0.95rem;">
+                  ${cnt}
+                </span>
+              </td>
+              <td style="color:#334155; font-size:0.86rem;">${subStr}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+    }
+
+    const tfoot = document.getElementById("schStaffStrengthTableFoot");
+    if (tfoot) {
+      tfoot.innerHTML = `
+        <tr>
+          <td colspan="2" style="text-align:right; padding:12px; font-weight:900; color:#0f294a;">மொத்தப் பணியாளர்கள் (Total):</td>
+          <td style="text-align:center; font-weight:800; font-size:0.82rem; color:#475569;">ஆசிரியர்கள்: ${teachCount} | பணியாளர்கள்: ${nonTeachCount}</td>
+          <td style="text-align:center;">
+            <span style="display:inline-block; min-width:36px; padding:4px 12px; border-radius:999px; background:#15803d; color:#fff; font-weight:900; font-size:1.05rem;">
+              ${totalCount}
+            </span>
+          </td>
+          <td></td>
+        </tr>
+      `;
+    }
+
+    const dateEl = document.getElementById("schStaffLastUpdatedDate");
+    if (dateEl) {
+      const lastSync = safeGetStorage("CEOSVG_LAST_EMIS_SYNC", null);
+      if (lastSync && lastSync.timestamp) {
+        dateEl.textContent = `${lastSync.timestamp} (கடைசி நேரடி ஒத்திசைவு)`;
+      } else {
+        dateEl.textContent = "22/10/2026 04:31:41 PM (TN EMIS அறிக்கை தேதி)";
+      }
+    }
+  }
+
+  function printSchoolStaffStrength() {
+    window.print();
+  }
+
 </script>
-<script src="ebs-module.js"></script>
 </body>
 </html>
