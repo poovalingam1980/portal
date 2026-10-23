@@ -2615,17 +2615,19 @@
           </div>
         </div>
 
-        <!-- SENIORITY & PRIORITY PANEL GENERATOR BANNER -->
-        <div style="background:linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #eff6ff 100%); border:2px solid #f59e0b; border-radius:12px; padding:12px 16px; margin-bottom:14px; box-shadow:0 4px 12px rgba(245, 158, 11, 0.12);">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:1.45rem;">🎖️</span>
+        <!-- DEDICATED SENIORITY & PRIORITY CRITERIA CONFIGURATOR (5 COMPONENTS) -->
+        <div id="admSeniorityConfigBox" style="background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 45%, #eff6ff 100%); border:2.5px solid #f59e0b; border-radius:14px; padding:14px 18px; margin-bottom:16px; box-shadow:0 4px 16px rgba(245, 158, 11, 0.14);">
+          <!-- Top Bar: Title & Action Buttons -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; border-bottom:1.5px solid #fde68a; padding-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:1.6rem;">🎖️</span>
               <div>
-                <div style="font-weight:900; font-size:1.02rem; color:#78350f;">
-                  மாவட்ட ஆசிரியர் முன்னுரிமைப் பட்டியல் தயாரிப்பு (Seniority &amp; Priority Panel Generator)
+                <div style="font-weight:900; font-size:1.08rem; color:#78350f; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <span>மாவட்ட ஆசிரியர் முன்னுரிமைப் பட்டியல் நிர்ணயக் கட்டுப்பாட்டகம்</span>
+                  <span style="font-size:0.74rem; background:#78350f; color:#fef08a; padding:2px 8px; border-radius:999px; letter-spacing:0.5px;">5-CRITERIA PANEL BUILDER</span>
                 </div>
-                <div style="font-size:0.76rem; color:#92400e;">
-                  தமிழ்நாடு பள்ளிக்கல்வித்துறை பணி மூப்பு விதிகளின்படி (DOJ in Service / DOJ in School / வயது முன்னுரிமை)
+                <div style="font-size:0.78rem; color:#92400e; margin-top:2px;">
+                  ஒவ்வொரு பணிக்கான (மாறுதல் கலந்தாய்வு / பதவி உயர்வு / தேர்வுப் பணி / முகாம் பணி) 5 கூறுகளின் அடிப்படையில் முன்னுரிமையை நிர்ணயிக்கும் பிரத்யேகப் பகுதி
                 </div>
               </div>
             </div>
@@ -2633,11 +2635,9 @@
               <button type="button" class="btn btn-sm" id="btnToggleSeniorityMode" onclick="toggleSeniorityMode()" style="font-weight:900; background:#d97706; color:#fff; border:none; box-shadow:0 3px 8px rgba(217, 119, 6, 0.3);">
                 ⭐ முன்னுரிமைப் பட்டியல் முறை: ON
               </button>
-              <select id="senioritySortCriterion" class="form-control" style="width:auto; padding:5px 10px; font-size:0.80rem; font-weight:700; height:34px;" onchange="onSenioritySortChange(this.value)">
-                <option value="dojService">🥇 பணியில் சேர்ந்த நாள் (DOJ Service) - Senior First</option>
-                <option value="dojSchool">🏫 இப்பள்ளியில் சேர்ந்த நாள் (DOJ Station/School)</option>
-                <option value="dob">🎂 வயது / பிறந்த தேதி (Age Seniority - Older First)</option>
-              </select>
+              <button type="button" class="btn btn-outline btn-sm" id="btnToggleSenConfigDetails" onclick="toggleSeniorityConfigDetails()" style="font-weight:800; background:#fff; color:#78350f; border-color:#f59e0b;">
+                ⚙️ விதிகள் மாற்றி அமை (Configure) ▾
+              </button>
               <button type="button" class="btn btn-secondary btn-sm" onclick="printSeniorityPanelReport()" style="font-weight:800;">
                 🖨️ முன்னுரிமைப் பட்டியல் அச்சிடுக
               </button>
@@ -2647,24 +2647,136 @@
             </div>
           </div>
 
-          <!-- 1-Click Quick Seniority Preset Buttons -->
-          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:0.78rem;">
-            <span style="font-weight:800; color:#78350f;">விரைவுப் பட்டியல்கள் (1-Click Presets):</span>
-            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('PG')" style="background:#fff; color:#1e40af; border-color:#93c5fd; padding:3px 9px; font-size:0.75rem; font-weight:800;">
-              🎖️ 1. முதுகலை ஆசிரியர் பட்டியல் (PG Teachers)
+          <!-- 1-Click Administrative Duty Presets (Buttons Strip) -->
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:0.78rem; margin-bottom:12px;">
+            <span style="font-weight:900; color:#78350f;">பணி முன்னுரிமை விரைவுத் தெரிவுகள் (1-Click Presets):</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityDutyPreset('transfer')" style="background:#fff; color:#1e40af; border-color:#93c5fd; padding:4px 10px; font-size:0.76rem; font-weight:800;">
+              🚀 1. பொது மாறுதல் கலந்தாய்வு (Transfer)
             </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('BT')" style="background:#fff; color:#15803d; border-color:#86efac; padding:3px 9px; font-size:0.75rem; font-weight:800;">
-              🎖️ 2. பட்டதாரி ஆசிரியர் பட்டியல் (BT Assistants)
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityDutyPreset('promotion')" style="background:#fff; color:#9333ea; border-color:#d8b4fe; padding:4px 10px; font-size:0.76rem; font-weight:800;">
+              🎓 2. பதவி உயர்வு தகுதிப் பட்டியல் (Promotion)
             </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('HM_PROMOTION')" style="background:#fff; color:#9333ea; border-color:#d8b4fe; padding:3px 9px; font-size:0.75rem; font-weight:800;">
-              🎖️ 3. தலைமையாசிரியர் பதவி உயர்வு தகுதிப் பட்டியல் (PG + BT)
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityDutyPreset('examDuty')" style="background:#fff; color:#15803d; border-color:#86efac; padding:4px 10px; font-size:0.76rem; font-weight:800;">
+              📝 3. பொதுத்தேர்வு CS / DO பணிகள் (Exam Duty)
             </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('SGT')" style="background:#fff; color:#c2410c; border-color:#fed7aa; padding:3px 9px; font-size:0.75rem; font-weight:800;">
-              🎖️ 4. இடைநிலை ஆசிரியர் பட்டியல் (SG Teachers)
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityDutyPreset('campDuty')" style="background:#fff; color:#c2410c; border-color:#fed7aa; padding:4px 10px; font-size:0.76rem; font-weight:800;">
+              📚 4. விடைத்தாள் மதிப்பீட்டு முகாம் (Valuation Camp)
             </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityPreset('NON_TEACH')" style="background:#fff; color:#475569; border-color:#cbd5e1; padding:3px 9px; font-size:0.75rem; font-weight:800;">
-              🎖️ 5. அலுவலகப் பணியாளர் பட்டியல் (Non-Teaching)
+            <button type="button" class="btn btn-outline btn-sm" onclick="applySeniorityDutyPreset('general')" style="background:#fff; color:#475569; border-color:#cbd5e1; padding:4px 10px; font-size:0.76rem; font-weight:800;">
+              🏛️ 5. மாவட்ட பொதுப் பணி மூப்பு (General Seniority)
             </button>
+          </div>
+
+          <!-- Live Rule Formula Banner -->
+          <div style="background:#fff; border:1.5px solid #fde68a; border-left:5px solid #d97706; border-radius:8px; padding:8px 12px; margin-bottom:12px; font-size:0.82rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-weight:900; color:#9a3412;">📌 தற்போதைய முன்னுரிமை சூத்திரம்:</span>
+              <span id="senActiveFormulaBadge" style="font-weight:800; color:#0f294a;">
+                [பணி: பொது மாறுதல் கலந்தாய்வு] ➔ 1. இப்பள்ளியில் சேர்ந்த நாள் ➔ 2. பணியில் சேர்ந்த நாள் ➔ 3. வயது மூப்பு (DOB)
+              </span>
+            </div>
+            <div id="senActiveConcessionsBadge" style="font-size:0.74rem; background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:6px; font-weight:800;">
+              சிறப்பு சலுகைகள்: 55+ வயது முதியோர் முன்னுரிமை: ON | Regular மட்டும்: ON
+            </div>
+          </div>
+
+          <!-- DEDICATED 5-CRITERIA CONFIGURATION PANEL (Collapsible / Expandable) -->
+          <div id="senConfigDetailsPanel" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:14px; margin-top:8px;">
+            <div style="font-size:0.86rem; font-weight:900; color:#0f294a; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+              <span>⚙️ முன்னுரிமை நிர்ணயத்திற்கான 5 அடிப்படைக் கூறுகள் (5 Configurable Criteria):</span>
+              <button type="button" class="btn btn-outline btn-sm" onclick="resetSeniorityCriteriaToDefault()" style="font-size:0.74rem; padding:2px 8px;">
+                🔄 இயல்பு நிலைக்கு மீட்டமை (Reset)
+              </button>
+            </div>
+
+            <div class="grid-4" style="margin-bottom:12px; gap:10px;">
+              <!-- Component 1: Administrative Purpose -->
+              <div>
+                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#78350f;">
+                  🏷️ கூறு 1: முன்னுரிமைப் பணி நோக்கம் (Purpose):
+                </label>
+                <select id="senCfgPurpose" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityPurposeChange(this.value)">
+                  <option value="transfer">🚀 பொது மாறுதல் கலந்தாய்வு (Transfer)</option>
+                  <option value="promotion">🎓 பதவி உயர்வு தகுதிப் பட்டியல் (Promotion)</option>
+                  <option value="examDuty">📝 பொதுத்தேர்வுப் பணிகள் (CS / DO Exam)</option>
+                  <option value="campDuty">📚 விடைத்தாள் மதிப்பீட்டு முகாம் (Camp)</option>
+                  <option value="stationIncharge">🏫 உள்ளூர் பள்ளிப் பொறுப்பு (Station)</option>
+                  <option value="general">🏛️ மாவட்ட பொதுப் பணி மூப்பு (General)</option>
+                  <option value="custom">⚙️ தனிப்பயன் முன்னுரிமை விதி (Custom Rules)</option>
+                </select>
+              </div>
+
+              <!-- Component 2: Primary Criterion -->
+              <div>
+                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e40af;">
+                  🥇 கூறு 2: முதன்மை காரணி (Primary Sort):
+                </label>
+                <select id="senCfgPrimary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange()">
+                  <option value="dojSchool">🏫 இப்பள்ளியில் சேர்ந்த நாள் (DOJ Station/School)</option>
+                  <option value="dojService">🥇 அரசுப் பணியில் சேர்ந்த நாள் (DOJ Service)</option>
+                  <option value="dob">🎂 பிறந்த தேதி / வயது மூப்பு (Age Seniority)</option>
+                  <option value="qualification">🎓 கல்வித் தகுதி (Qualification)</option>
+                </select>
+              </div>
+
+              <!-- Component 3: Secondary Factor (Tie-Breaker 1) -->
+              <div>
+                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#15803d;">
+                  🥈 கூறு 3: இரண்டாம் நிலை காரணி (Tie-Breaker 1):
+                </label>
+                <select id="senCfgSecondary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange()">
+                  <option value="dojService">🥇 அரசுப் பணியில் சேர்ந்த நாள் (DOJ Service)</option>
+                  <option value="dojSchool">🏫 இப்பள்ளியில் சேர்ந்த நாள் (DOJ Station)</option>
+                  <option value="dob">🎂 பிறந்த தேதி / வயது மூப்பு (DOB / Age)</option>
+                  <option value="staffId">🆔 Staff ID வரிசை (Ascending)</option>
+                </select>
+              </div>
+
+              <!-- Component 4: Tertiary Factor (Tie-Breaker 2) & Direction -->
+              <div>
+                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#9333ea;">
+                  🥉 கூறு 4: மூன்றாம் நிலை காரணி (Tie-Breaker 2):
+                </label>
+                <select id="senCfgTertiary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange()">
+                  <option value="dob">🎂 பிறந்த தேதி / வயது மூப்பு (Older First)</option>
+                  <option value="staffId">🆔 Staff ID எண் வரிசை</option>
+                  <option value="name">🔤 ஆசிரியர் பெயர் அகரவரிசை (A-Z)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Component 5: Special Priority Concessions & Operational Constraints -->
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 14px;">
+              <div style="font-size:0.78rem; font-weight:800; color:#334155; margin-bottom:6px;">
+                ⭐ கூறு 5: கூடுதல் முன்னுரிமைச் சலுகைகள் &amp; நிபந்தனை வடிகட்டிகள் (Special Priority Concessions &amp; Constraints):
+              </div>
+              <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; font-size:0.80rem;">
+                <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-weight:700; color:#78350f;">
+                  <input type="checkbox" id="chkSenAge55" checked onchange="onSeniorityCriteriaChange()" style="width:16px; height:16px; accent-color:#d97706;">
+                  <span>👴 55+ வயது முதியோர்க்கு முதன்மை முன்னுரிமை (Senior Age 55+ Priority)</span>
+                </label>
+
+                <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-weight:700; color:#1e40af;">
+                  <input type="checkbox" id="chkSenFemale" onchange="onSeniorityCriteriaChange()" style="width:16px; height:16px; accent-color:#0284c7;">
+                  <span>👩 பெண் ஆசிரியர்களுக்கு முன்னுரிமை (Female Staff Preference)</span>
+                </label>
+
+                <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-weight:700; color:#15803d;">
+                  <input type="checkbox" id="chkSenRegularOnly" checked onchange="onSeniorityCriteriaChange()" style="width:16px; height:16px; accent-color:#16a34a;">
+                  <span>📜 Regular பணியாளர்கள் மட்டும் (Regular Staff Only)</span>
+                </label>
+
+                <div style="display:inline-flex; align-items:center; gap:6px;">
+                  <span style="font-weight:700; color:#475569;">⏱️ பள்ளியில் குறைந்தபட்சப் பணிக்காலம்:</span>
+                  <select id="selSenMinYears" class="form-control" style="width:auto; padding:3px 8px; font-size:0.78rem; font-weight:700; height:30px;" onchange="onSeniorityCriteriaChange()">
+                    <option value="0">அனைவரும் (No Minimum Limit)</option>
+                    <option value="1" selected>குறைந்தபட்சம் 1 வருடம் (1+ Year in Station)</option>
+                    <option value="2">குறைந்தபட்சம் 2 ஆண்டுகள் (2+ Years)</option>
+                    <option value="3">குறைந்தபட்சம் 3 ஆண்டுகள் (3+ Years)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -5144,9 +5256,6 @@
   let selectedSubjects = [];
   let selectedMgmts = [];
 
-  // Seniority mode state
-  let isSeniorityMode = true; // Default ON as requested
-  let senioritySortBy = "dojService"; // "dojService", "dojSchool", "dob"
 
   function getDistrictAllStaffList(forceRefresh) {
     if (districtFlattenedStaffCache && !forceRefresh) {
@@ -5462,7 +5571,22 @@
     showToast("🧹 அனைத்து வடிகட்டிகளும் மீட்டமைக்கப்பட்டன.", "#0284c7");
   }
 
-  // Seniority List Generation Functions
+  // =========================================================================
+  // DEDICATED 5-COMPONENT SENIORITY & PRIORITY RULES ENGINE
+  // =========================================================================
+  let isSeniorityMode = true; // Default ON
+  let seniorityCriteria = {
+    purpose: "transfer",       // "transfer", "promotion", "examDuty", "campDuty", "stationIncharge", "general", "custom"
+    primary: "dojSchool",      // "dojSchool", "dojService", "dob", "qualification"
+    secondary: "dojService",   // "dojService", "dojSchool", "dob", "staffId"
+    tertiary: "dob",           // "dob", "staffId", "name"
+    sortDirection: "asc",      // "asc", "desc"
+    age55Priority: true,       // true: Age 55+ gets top priority
+    femalePriority: false,     // true: Female staff preference
+    regularOnly: true,         // true: Only regular staff
+    minStationYears: "1"       // "0", "1", "2", "3" (minimum years in current school)
+  };
+
   function toggleSeniorityMode() {
     isSeniorityMode = !isSeniorityMode;
     updateSeniorityModeUI();
@@ -5471,10 +5595,13 @@
     showToast(isSeniorityMode ? "🎖️ முன்னுரிமைப் பட்டியல் முறை இயக்கப்பட்டது (Seniority Mode ON)." : "📋 இயல்பான பட்டியல் முறை மாற்றப்பட்டது.", "#d97706");
   }
 
-  function onSenioritySortChange(val) {
-    senioritySortBy = val;
-    adminStaffCurrentPage = 1;
-    applyAdminStaffFiltersAndRender();
+  function toggleSeniorityConfigDetails() {
+    const p = document.getElementById("senConfigDetailsPanel");
+    const btn = document.getElementById("btnToggleSenConfigDetails");
+    if (!p) return;
+    const isHidden = p.style.display === "none";
+    p.style.display = isHidden ? "block" : "none";
+    if (btn) btn.innerHTML = isHidden ? "⚙️ விதிகள் மாற்றி அமை ▾" : "⚙️ விதிகள் சுருக்கு ▴";
   }
 
   function updateSeniorityModeUI() {
@@ -5494,49 +5621,181 @@
     }
   }
 
-  function applySeniorityPreset(presetKey) {
-    // Reset other filters first
-    clearAllMultiSelect("block");
-    clearAllMultiSelect("subject");
-    document.getElementById("admStaffFilterSearch").value = "";
-    document.getElementById("admStaffFilterSchool").value = "";
-    document.getElementById("admStaffFilterCategory").value = "";
-    document.getElementById("admStaffFilterGender").value = "";
-    document.getElementById("admStaffFilterNature").value = "";
+  function getSeniorityPurposeLabel(key) {
+    const map = {
+      transfer: "பொது மாறுதல் கலந்தாய்வு (Transfer)",
+      promotion: "பதவி உயர்வு தகுதிப் பட்டியல் (Promotion)",
+      examDuty: "பொதுத்தேர்வுப் பணிகள் (CS / DO Exam)",
+      campDuty: "விடைத்தாள் மதிப்பீட்டு முகாம் (Camp Duty)",
+      stationIncharge: "உள்ளூர் பள்ளிப் பொறுப்பு (Station Incharge)",
+      general: "மாவட்ட பொதுப் பணி மூப்பு (General)",
+      custom: "தனிப்பயன் முன்னுரிமை விதி (Custom Rules)"
+    };
+    return map[key] || "பொது முன்னுரிமை";
+  }
 
+  function getSeniorityFactorLabel(key) {
+    const map = {
+      dojSchool: "இப்பள்ளியில் சேர்ந்த நாள் (Station Seniority)",
+      dojService: "அரசுப் பணியில் சேர்ந்த நாள் (DOJ Service)",
+      dob: "பிறந்த தேதி / வயது மூப்பு (DOB / Age)",
+      qualification: "கல்வித் தகுதி",
+      staffId: "Staff ID எண் வரிசை",
+      name: "ஆசிரியர் பெயர் (A-Z)"
+    };
+    return map[key] || key;
+  }
+
+  function updateSeniorityFormulaBadge() {
+    const fBadge = document.getElementById("senActiveFormulaBadge");
+    const cBadge = document.getElementById("senActiveConcessionsBadge");
+    const cfg = seniorityCriteria;
+
+    if (fBadge) {
+      fBadge.textContent = `[பணி: ${getSeniorityPurposeLabel(cfg.purpose)}] ➔ 1. ${getSeniorityFactorLabel(cfg.primary)} ➔ 2. ${getSeniorityFactorLabel(cfg.secondary)} ➔ 3. ${getSeniorityFactorLabel(cfg.tertiary)}`;
+    }
+    if (cBadge) {
+      const parts = [];
+      if (cfg.age55Priority) parts.push("55+ வயது முதியோர்: ON");
+      if (cfg.femalePriority) parts.push("பெண் முன்னுரிமை: ON");
+      if (cfg.regularOnly) parts.push("Regular மட்டும்: ON");
+      if (cfg.minStationYears && cfg.minStationYears !== "0") parts.push(`பள்ளிப் பணி: ${cfg.minStationYears}+ ஆண்டுகள்`);
+      cBadge.textContent = "சிறப்பு சலுகைகள்: " + (parts.length > 0 ? parts.join(" | ") : "சலுகைகள் ஏதுமில்லை (இயல்பு நிலை)");
+    }
+  }
+
+  function syncSeniorityCriteriaToUI() {
+    const cfg = seniorityCriteria;
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    const setChk = (id, val) => { const el = document.getElementById(id); if (el) el.checked = Boolean(val); };
+
+    setVal("senCfgPurpose", cfg.purpose);
+    setVal("senCfgPrimary", cfg.primary);
+    setVal("senCfgSecondary", cfg.secondary);
+    setVal("senCfgTertiary", cfg.tertiary);
+    setChk("chkSenAge55", cfg.age55Priority);
+    setChk("chkSenFemale", cfg.femalePriority);
+    setChk("chkSenRegularOnly", cfg.regularOnly);
+    setVal("selSenMinYears", cfg.minStationYears);
+  }
+
+  function applySeniorityDutyPreset(dutyKey) {
     isSeniorityMode = true;
-    senioritySortBy = "dojService";
-    document.getElementById("senioritySortCriterion").value = "dojService";
+    updateSeniorityModeUI();
 
-    if (presetKey === "PG") {
-      // Set Designation = P.G. TEACHER
-      setMultiSelectValues("desig", ["P.G. TEACHER", "PG ASSISTANT"]);
-      setMultiSelectValues("mgmt", ["1G"]);
-      showToast("🎖️ முதுகலை ஆசிரியர் (P.G. Teacher) முன்னுரிமைப் பட்டியல் தயார் செய்யப்பட்டது!", "#15803d");
-    } else if (presetKey === "BT") {
-      // Set Designation = BT ASSISTANT
-      setMultiSelectValues("desig", ["GRADUATE TEACHER (BT ASSISTANT)", "BT ASSISTANT", "SPECIAL GRADUATE TEACHER (BT ASSISTANT)"]);
-      setMultiSelectValues("mgmt", ["1G"]);
-      showToast("🎖️ பட்டதாரி ஆசிரியர் (B.T. Assistant) முன்னுரிமைப் பட்டியல் தயார் செய்யப்பட்டது!", "#15803d");
-    } else if (presetKey === "HM_PROMOTION") {
-      // Multiple Selection: BOTH PG and BT Teachers for HM promotion panel!
-      setMultiSelectValues("desig", ["P.G. TEACHER", "GRADUATE TEACHER (BT ASSISTANT)", "PG ASSISTANT", "BT ASSISTANT"]);
-      setMultiSelectValues("mgmt", ["1G"]);
-      showToast("🎖️ தலைமையாசிரியர் பதவி உயர்வு தகுதிப் பட்டியல் (PG & BT பல்தேர்வு) தயார் செய்யப்பட்டது!", "#9333ea");
-    } else if (presetKey === "SGT") {
-      setMultiSelectValues("desig", ["SECONDARY GRADE TEACHER", "SG ASST", "JUNIOR SECONDARY GRADE TEACHER"]);
-      clearAllMultiSelect("mgmt");
-      showToast("🎖️ இடைநிலை ஆசிரியர் (SG Teacher) முன்னுரிமைப் பட்டியல் தயார் செய்யப்பட்டது!", "#c2410c");
-    } else if (presetKey === "NON_TEACH") {
-      clearAllMultiSelect("desig");
-      document.getElementById("admStaffFilterCategory").value = "nonteaching";
-      clearAllMultiSelect("mgmt");
-      showToast("🎖️ அலுவலகப் பணியாளர்கள் (Non-Teaching) முன்னுரிமைப் பட்டியல் தயார் செய்யப்பட்டது!", "#0284c7");
+    if (dutyKey === "transfer") {
+      seniorityCriteria = {
+        purpose: "transfer",
+        primary: "dojSchool",
+        secondary: "dojService",
+        tertiary: "dob",
+        sortDirection: "asc",
+        age55Priority: true,
+        femalePriority: false,
+        regularOnly: true,
+        minStationYears: "1"
+      };
+      showToast("🚀 பொது மாறுதல் கலந்தாய்வு முன்னுரிமை விதிகள் (நிலைய பணி மூப்பு) அமைக்கப்பட்டன!", "#1d4ed8");
+    } else if (dutyKey === "promotion") {
+      seniorityCriteria = {
+        purpose: "promotion",
+        primary: "dojService",
+        secondary: "dojSchool",
+        tertiary: "dob",
+        sortDirection: "asc",
+        age55Priority: false,
+        femalePriority: false,
+        regularOnly: true,
+        minStationYears: "0"
+      };
+      // Auto-filter: PG and BT teachers if currently not restricted
+      if (selectedDesigs.length === 0) {
+        setMultiSelectValues("desig", ["P.G. TEACHER", "GRADUATE TEACHER (BT ASSISTANT)", "PG ASSISTANT", "BT ASSISTANT"]);
+      }
+      showToast("🎓 பதவி உயர்வு தகுதிப் பட்டியல் முன்னுரிமை விதிகள் (அரசுப் பணி மூப்பு) அமைக்கப்பட்டன!", "#9333ea");
+    } else if (dutyKey === "examDuty") {
+      seniorityCriteria = {
+        purpose: "examDuty",
+        primary: "dojService",
+        secondary: "dob",
+        tertiary: "staffId",
+        sortDirection: "asc",
+        age55Priority: false,
+        femalePriority: false,
+        regularOnly: true,
+        minStationYears: "0"
+      };
+      showToast("📝 பொதுத்தேர்வு CS / DO பணிகள் முன்னுரிமை விதிகள் அமைக்கப்பட்டன!", "#15803d");
+    } else if (dutyKey === "campDuty") {
+      seniorityCriteria = {
+        purpose: "campDuty",
+        primary: "dojService",
+        secondary: "dojSchool",
+        tertiary: "dob",
+        sortDirection: "asc",
+        age55Priority: false,
+        femalePriority: false,
+        regularOnly: true,
+        minStationYears: "0"
+      };
+      showToast("📚 விடைத்தாள் மதிப்பீட்டு முகாம் அலுவலர் பணி முன்னுரிமை விதிகள் அமைக்கப்பட்டன!", "#c2410c");
+    } else if (dutyKey === "general") {
+      seniorityCriteria = {
+        purpose: "general",
+        primary: "dojService",
+        secondary: "dob",
+        tertiary: "staffId",
+        sortDirection: "asc",
+        age55Priority: false,
+        femalePriority: false,
+        regularOnly: false,
+        minStationYears: "0"
+      };
+      showToast("🏛️ மாவட்ட பொதுப் பணி மூப்பு முன்னுரிமை விதிகள் அமைக்கப்பட்டன!", "#475569");
     }
 
-    updateSeniorityModeUI();
+    syncSeniorityCriteriaToUI();
+    updateSeniorityFormulaBadge();
     adminStaffCurrentPage = 1;
     applyAdminStaffFiltersAndRender();
+  }
+
+  function onSeniorityPurposeChange(val) {
+    if (val !== "custom") {
+      applySeniorityDutyPreset(val);
+    } else {
+      seniorityCriteria.purpose = "custom";
+      updateSeniorityFormulaBadge();
+      adminStaffCurrentPage = 1;
+      applyAdminStaffFiltersAndRender();
+      showToast("⚙️ தனிப்பயன் முன்னுரிமை விதிகள் பயன்முறை அமைக்கப்பட்டது.", "#d97706");
+    }
+  }
+
+  function onSeniorityCriteriaChange() {
+    isSeniorityMode = true;
+    updateSeniorityModeUI();
+
+    const getVal = id => (document.getElementById(id) || {}).value || "";
+    const getChk = id => Boolean((document.getElementById(id) || {}).checked);
+
+    seniorityCriteria.primary = getVal("senCfgPrimary") || "dojSchool";
+    seniorityCriteria.secondary = getVal("senCfgSecondary") || "dojService";
+    seniorityCriteria.tertiary = getVal("senCfgTertiary") || "dob";
+    seniorityCriteria.age55Priority = getChk("chkSenAge55");
+    seniorityCriteria.femalePriority = getChk("chkSenFemale");
+    seniorityCriteria.regularOnly = getChk("chkSenRegularOnly");
+    seniorityCriteria.minStationYears = getVal("selSenMinYears") || "0";
+    seniorityCriteria.purpose = getVal("senCfgPurpose") || "custom";
+
+    updateSeniorityFormulaBadge();
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+  }
+
+  function resetSeniorityCriteriaToDefault() {
+    applySeniorityDutyPreset("transfer");
+    showToast("🔄 முன்னுரிமை நிர்ணயக் கூறுகள் இயல்பு நிலைக்கு மீட்டமைக்கப்பட்டன.", "#0284c7");
   }
 
   function setMultiSelectValues(type, valuesArr) {
@@ -5553,6 +5812,57 @@
     updateMultiSelectTriggerText(type);
   }
 
+  // Multi-tier Seniority Comparison Algorithm
+  function compareSeniorityStaff(a, b, cfg) {
+    // 1. Concession Tier 1: Age 55+ Priority (if enabled)
+    // Local current year is 2026. Age 55+ means born on or before 1971-12-31.
+    if (cfg.age55Priority) {
+      const aIs55 = Boolean(a.dob && a.dob <= "1971-12-31");
+      const bIs55 = Boolean(b.dob && b.dob <= "1971-12-31");
+      if (aIs55 !== bIs55) return aIs55 ? -1 : 1;
+    }
+
+    // 2. Concession Tier 2: Female Priority (if enabled)
+    if (cfg.femalePriority) {
+      const aIsFem = a.gender === "Female";
+      const bIsFem = b.gender === "Female";
+      if (aIsFem !== bIsFem) return aIsFem ? -1 : 1;
+    }
+
+    // Helper to extract date or string values
+    function getFactorVal(item, factor) {
+      if (factor === "dojSchool") return item.dojSchool || "9999-99-99";
+      if (factor === "dojService") return item.dojService || "9999-99-99";
+      if (factor === "dob") return item.dob || "9999-99-99";
+      if (factor === "qualification") return item.qualification || "";
+      if (factor === "staffId") return item.staffId || "";
+      if (factor === "name") return item.name || "";
+      return "";
+    }
+
+    // 3. Primary Factor
+    const pA = getFactorVal(a, cfg.primary);
+    const pB = getFactorVal(b, cfg.primary);
+    let pCmp = pA.localeCompare(pB);
+    if (cfg.sortDirection === "desc") pCmp = -pCmp;
+    if (pCmp !== 0) return pCmp;
+
+    // 4. Secondary Factor (Tie-Breaker 1)
+    const sA = getFactorVal(a, cfg.secondary);
+    const sB = getFactorVal(b, cfg.secondary);
+    const sCmp = sA.localeCompare(sB);
+    if (sCmp !== 0) return sCmp;
+
+    // 5. Tertiary Factor (Tie-Breaker 2)
+    const tA = getFactorVal(a, cfg.tertiary);
+    const tB = getFactorVal(b, cfg.tertiary);
+    const tCmp = tA.localeCompare(tB);
+    if (tCmp !== 0) return tCmp;
+
+    // 6. Final Tie-Breaker
+    return a.staffId.localeCompare(b.staffId);
+  }
+
   function applyAdminStaffFiltersAndRender() {
     const allStaff = getDistrictAllStaffList();
     const q = ((document.getElementById("admStaffFilterSearch") || {}).value || "").trim().toLowerCase();
@@ -5560,6 +5870,13 @@
     const cat = ((document.getElementById("admStaffFilterCategory") || {}).value || "");
     const gender = ((document.getElementById("admStaffFilterGender") || {}).value || "");
     const nature = ((document.getElementById("admStaffFilterNature") || {}).value || "");
+    const cfg = seniorityCriteria;
+
+    // Cutoff date calculation for minStationYears (relative to October 2026)
+    let minStationCutoff = "";
+    if (cfg.minStationYears === "1") minStationCutoff = "2025-10-23";
+    else if (cfg.minStationYears === "2") minStationCutoff = "2024-10-23";
+    else if (cfg.minStationYears === "3") minStationCutoff = "2023-10-23";
 
     adminStaffFilteredList = allStaff.filter(st => {
       // Multiple Selection Filters
@@ -5577,6 +5894,17 @@
         if (nature === "Regular" && st.nature !== "Regular") return false;
         if (nature === "Contract" && st.nature === "Regular") return false;
       }
+
+      // Special Concessions / Criteria 5: Regular Only filter
+      if (isSeniorityMode && cfg.regularOnly) {
+        if (st.nature && st.nature !== "Regular") return false;
+      }
+
+      // Special Concessions / Criteria 5: Minimum Station Tenure
+      if (isSeniorityMode && minStationCutoff) {
+        if (st.dojSchool && st.dojSchool > minStationCutoff) return false;
+      }
+
       if (q) {
         const hay = `${st.staffId} ${st.name} ${st.schoolNameTa} ${st.schoolNameEn} ${st.uNo} ${st.udiseNo} ${st.desig} ${st.subject} ${st.mobile} ${st.block}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -5584,36 +5912,16 @@
       return true;
     });
 
-    // Seniority Sorting Algorithm (Tamil Nadu School Education Rules)
+    // Tag age 55 status on matching records
+    adminStaffFilteredList.forEach(st => {
+      st.is55Plus = Boolean(st.dob && st.dob <= "1971-12-31");
+      st.hasAgePriority = Boolean(isSeniorityMode && cfg.age55Priority && st.is55Plus);
+      st.hasFemalePriority = Boolean(isSeniorityMode && cfg.femalePriority && st.gender === "Female");
+    });
+
+    // Seniority Multi-Criteria Sorting
     if (isSeniorityMode) {
-      adminStaffFilteredList.sort((a, b) => {
-        if (senioritySortBy === "dojSchool") {
-          const s1 = a.dojSchool || "9999-99-99";
-          const s2 = b.dojSchool || "9999-99-99";
-          if (s1 !== s2) return s1.localeCompare(s2);
-        } else if (senioritySortBy === "dob") {
-          const b1 = a.dob || "9999-99-99";
-          const b2 = b.dob || "9999-99-99";
-          if (b1 !== b2) return b1.localeCompare(b2);
-        } else {
-          // Primary: DOJ Service ASC (earlier joining = senior)
-          const d1 = a.dojService || "9999-99-99";
-          const d2 = b.dojService || "9999-99-99";
-          if (d1 !== d2) return d1.localeCompare(d2);
-        }
-
-        // Tie-breaker 1: Station Seniority (DOJ School)
-        const sch1 = a.dojSchool || "9999-99-99";
-        const sch2 = b.dojSchool || "9999-99-99";
-        if (sch1 !== sch2) return sch1.localeCompare(sch2);
-
-        // Tie-breaker 2: Age Seniority (DOB ASC - older person gets priority)
-        const dob1 = a.dob || "9999-99-99";
-        const dob2 = b.dob || "9999-99-99";
-        if (dob1 !== dob2) return dob1.localeCompare(dob2);
-
-        return a.name.localeCompare(b.name);
-      });
+      adminStaffFilteredList.sort((a, b) => compareSeniorityStaff(a, b, cfg));
     }
 
     renderAdminStaffTablePage();
@@ -5672,6 +5980,8 @@
       return;
     }
 
+    const cfg = seniorityCriteria;
+
     tbody.innerHTML = pageItems.map((st, idx) => {
       const overallRank = startIndex + idx + 1;
       let rankBadge = "";
@@ -5688,9 +5998,62 @@
         ? `<span style="font-size:0.68rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 6px; border-radius:4px; font-weight:800;">Teaching</span>`
         : `<span style="font-size:0.68rem; background:#fefce8; color:#854d0e; border:1px solid #fde047; padding:1px 6px; border-radius:4px; font-weight:800;">Non-Teaching</span>`;
 
+      // Priority Concession Badges
+      let conBadges = "";
+      if (st.hasAgePriority) {
+        conBadges += `<span style="display:inline-block; font-size:0.68rem; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:1px 5px; border-radius:4px; font-weight:800; margin-left:3px;" title="55 வயது கடந்த ஆசிரியர் சிறப்பு முன்னுரிமை">👴 55+</span>`;
+      }
+      if (st.hasFemalePriority) {
+        conBadges += `<span style="display:inline-block; font-size:0.68rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 5px; border-radius:4px; font-weight:800; margin-left:3px;" title="பெண் ஆசிரியர் முன்னுரிமை">👩 பெண்</span>`;
+      }
+
+      // Visual Highlight on Primary Sorting Factor
+      let dojCellHtml = "";
+      if (isSeniorityMode && cfg.primary === "dojSchool") {
+        dojCellHtml = `
+          <div style="font-size:0.80rem;">
+            <strong style="color:#15803d; font-size:0.86rem; background:#dcfce7; padding:1px 5px; border-radius:4px; border:1px solid #86efac; display:inline-block;" title="முதன்மை காரணி: இப்பள்ளியில் சேர்ந்த நாள்">
+              பள்ளி: ${st.dojSchool || "-"}
+            </strong>
+            <div style="font-size:0.72rem; color:#475569; margin-top:2px;">பணி: <strong>${st.dojService || "-"}</strong></div>
+          </div>
+        `;
+      } else if (isSeniorityMode && cfg.primary === "dojService") {
+        dojCellHtml = `
+          <div style="font-size:0.80rem;">
+            <strong style="color:#1d4ed8; font-size:0.86rem; background:#eff6ff; padding:1px 5px; border-radius:4px; border:1px solid #bfdbfe; display:inline-block;" title="முதன்மை காரணி: அரசுப் பணியில் சேர்ந்த நாள்">
+              பணி: ${st.dojService || "-"}
+            </strong>
+            <div style="font-size:0.72rem; color:#475569; margin-top:2px;">பள்ளி: <strong>${st.dojSchool || "-"}</strong></div>
+          </div>
+        `;
+      } else {
+        dojCellHtml = `
+          <div style="font-size:0.80rem;">
+            <strong style="color:#15803d;">${st.dojService || "-"}</strong>
+            ${st.dojSchool ? `<div style="font-size:0.70rem; color:#64748b;">பள்ளி: ${st.dojSchool}</div>` : ""}
+          </div>
+        `;
+      }
+
+      // DOB cell highlight if DOB is primary factor
+      let dobCellHtml = "";
+      if (isSeniorityMode && cfg.primary === "dob") {
+        dobCellHtml = `
+          <strong style="color:#b45309; font-size:0.86rem; background:#fef3c7; padding:2px 6px; border-radius:4px; border:1px solid #fde047; display:inline-block;" title="முதன்மை காரணி: வயது மூப்பு">
+            ${st.dob || "-"}
+          </strong>
+        `;
+      } else {
+        dobCellHtml = `<span style="font-size:0.78rem;">${st.dob || "-"}</span>`;
+      }
+
       return `
         <tr style="border-bottom:1px solid #e2e8f0;">
-          <td style="text-align:center;">${rankBadge}</td>
+          <td style="text-align:center;">
+            ${rankBadge}
+            ${conBadges}
+          </td>
           <td>
             <div style="font-weight:800; color:#0f294a;">${st.name}</div>
             <div style="font-size:0.74rem; color:#475569; font-weight:600; margin-top:1px;">
@@ -5715,12 +6078,11 @@
               <span class="${getMgmtBadgeClass(st.mgmt1)}" style="padding:1px 6px;">${st.mgmt1}</span>
             </div>
           </td>
-          <td style="text-align:center; font-size:0.78rem;">
-            <strong style="color:#15803d;">${st.dojService || "-"}</strong>
-            ${st.dojSchool ? `<div style="font-size:0.70rem; color:#64748b;">பள்ளி: ${st.dojSchool}</div>` : ""}
+          <td style="text-align:center;">
+            ${dojCellHtml}
           </td>
-          <td style="text-align:center; font-size:0.78rem;">
-            ${st.dob || "-"}
+          <td style="text-align:center;">
+            ${dobCellHtml}
           </td>
           <td>
             <strong style="color:#0284c7; font-size:0.80rem;">${st.mobile || "-"}</strong>
@@ -5757,7 +6119,9 @@
 
   function renderAdminTeacherMasterUI() {
     initAdminTeacherMasterFilters();
+    syncSeniorityCriteriaToUI();
     updateSeniorityModeUI();
+    updateSeniorityFormulaBadge();
     applyAdminStaffFiltersAndRender();
   }
 
@@ -5855,7 +6219,7 @@
     showToast(`✅ ஆசிரியர் "${updatedData.name}" (Staff ID: ${staffId}) விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!`, "#22c55e");
   }
 
-  // Official Seniority Print Report
+  // Official Seniority Print Report (Dynamic 5-Criteria Formatted)
   function printSeniorityPanelReport() {
     const list = adminStaffFilteredList;
     if (!list || list.length === 0) {
@@ -5867,6 +6231,8 @@
 
     const now = new Date();
     const dateStr = now.toLocaleDateString("en-IN") + " " + now.toLocaleTimeString("en-IN");
+    const cfg = seniorityCriteria;
+    const purposeTitle = getSeniorityPurposeLabel(cfg.purpose);
     const desigStr = selectedDesigs.length > 0 ? selectedDesigs.join(", ") : "அனைத்துப் பதவிகள் (All Cadres)";
     const subjectStr = selectedSubjects.length > 0 ? selectedSubjects.join(", ") : "அனைத்துப் பாடங்கள் (All Subjects)";
     const blockStr = selectedBlocks.length > 0 ? selectedBlocks.join(", ") : "அனைத்து ஒன்றியங்கள் (All 12 Blocks)";
@@ -5877,19 +6243,28 @@
         <div style="text-align:center; border-bottom:2.5px solid #000; padding-bottom:8px; margin-bottom:12px;">
           <div style="font-size:1.15rem; font-weight:800;">தமிழ்நாடு பள்ளிக் கல்வித்துறை • சிவகங்கை மாவட்டம்</div>
           <div style="font-size:1.4rem; font-weight:900; margin:2px 0;">முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (portal.ceosvg.in)</div>
-          <div style="font-size:1.1rem; font-weight:900; color:#0f294a; text-decoration:underline;">
-            ஆசிரியர்கள் மற்றும் பணியாளர்கள் மாவட்ட முன்னுரிமைப் பட்டியல் (DISTRICT SENIORITY &amp; PROMOTION ELIGIBILITY PANEL)
+          <div style="font-size:1.15rem; font-weight:900; color:#0f294a; text-decoration:underline;">
+            [பணி: ${purposeTitle}] மாவட்ட ஆசிரியர் முன்னுரிமைப் பட்டியல் (DISTRICT SENIORITY &amp; PRIORITY PANEL)
           </div>
         </div>
         
-        <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:10px; background:#f8fafc; border:1px solid #cbd5e1; padding:6px 10px; border-radius:4px;">
-          <div>
-            <div><strong>பதவி(கள்):</strong> ${desigStr}</div>
-            <div><strong>பாடம்:</strong> ${subjectStr} | <strong>நிர்வாகம்:</strong> ${mgmtStr}</div>
+        <!-- Seniority Criteria Description Box -->
+        <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:0.80rem; line-height:1.55;">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+            <div><strong>முன்னுரிமை நிர்ணயக் கூறுகள் (5 Criteria):</strong></div>
+            <div><strong>நாள்:</strong> ${dateStr} | <strong>பட்டியலில் உள்ளோர்:</strong> <strong>${list.length}</strong> ஆசிரியர்கள்</div>
           </div>
-          <div style="text-align:right;">
-            <div><strong>ஒன்றியம்:</strong> ${blockStr}</div>
-            <div><strong>மொத்தப் பணியாளர்கள்:</strong> <strong>${list.length}</strong> | <strong>நாள்:</strong> ${dateStr}</div>
+          <div style="margin-top:3px; color:#1e293b;">
+            • <strong>முதன்மை காரணி (Primary):</strong> ${getSeniorityFactorLabel(cfg.primary)} | 
+            • <strong>இரண்டாம் நிலை (Tie-Breaker 1):</strong> ${getSeniorityFactorLabel(cfg.secondary)} | 
+            • <strong>மூன்றாம் நிலை (Tie-Breaker 2):</strong> ${getSeniorityFactorLabel(cfg.tertiary)}<br>
+            • <strong>சிறப்பு சலுகைகள்:</strong> 55+ வயது முதியோர் முன்னுரிமை: <strong>${cfg.age55Priority ? "ஆம் (Enabled)" : "இல்லை"}</strong> | 
+            பெண் ஆசிரியர் முன்னுரிமை: <strong>${cfg.femalePriority ? "ஆம்" : "இல்லை"}</strong> | 
+            Regular மட்டும்: <strong>${cfg.regularOnly ? "ஆம்" : "இல்லை"}</strong> | 
+            பள்ளிப் பணிக்கால வரம்பு: <strong>${cfg.minStationYears !== "0" ? cfg.minStationYears + "+ ஆண்டுகள்" : "வரம்பில்லை"}</strong>
+          </div>
+          <div style="margin-top:3px; color:#475569; font-size:0.75rem;">
+            <strong>தேர்ந்தெடுத்த பதவிகள்:</strong> ${desigStr} | <strong>பாடங்கள்:</strong> ${subjectStr} | <strong>ஒன்றியங்கள்:</strong> ${blockStr}
           </div>
         </div>
 
@@ -5907,10 +6282,17 @@
               <th>பாடம் (Subject)</th>
               <th>பணிபுரியும் பள்ளி (School Name &amp; U.No)</th>
               <th>ஒன்றியம் (Block)</th>
+              <th style="width:70px; text-align:center;">முன்னுரிமைக் குறிப்பு</th>
             </tr>
           </thead>
           <tbody>
-            ${list.slice(0, 500).map((st, idx) => `
+            ${list.slice(0, 500).map((st, idx) => {
+              let note = "";
+              if (st.hasAgePriority) note = "55+ வயது மூப்பு";
+              else if (st.hasFemalePriority) note = "பெண் முன்னுரிமை";
+              else if (idx === 0) note = "முதன்மை மூத்தவர்";
+
+              return `
               <tr>
                 <td style="text-align:center; font-weight:900;">#${idx + 1}</td>
                 <td style="font-family:monospace; font-weight:700;">${st.staffId}</td>
@@ -5918,13 +6300,15 @@
                 <td style="text-align:center;">${st.gender === "Female" ? "பெண்" : "ஆண்"}</td>
                 <td style="text-align:center;">${st.dob || "-"}</td>
                 <td style="text-align:center; font-weight:800; color:#1d4ed8;">${st.dojService || "-"}</td>
-                <td style="text-align:center;">${st.dojSchool || "-"}</td>
+                <td style="text-align:center; font-weight:800; color:#15803d;">${st.dojSchool || "-"}</td>
                 <td>${st.desig}</td>
                 <td>${st.subject || "-"}</td>
                 <td>[${st.uNo}] ${st.schoolNameTa || st.schoolNameEn}</td>
                 <td>${st.block}</td>
+                <td style="text-align:center; font-size:0.70rem; font-weight:700;">${note || "-"}</td>
               </tr>
-            `).join("")}
+              `;
+            }).join("")}
           </tbody>
         </table>
 
@@ -5955,8 +6339,12 @@
     }
 
     const isSenior = (asSeniority === true) || isSeniorityMode;
+    const cfg = seniorityCriteria;
+    const purposeTitle = getSeniorityPurposeLabel(cfg.purpose);
+
     const headers = [
       isSenior ? "முன்னுரிமை எண் (Seniority Rank)" : "வ.எண் (S.No)",
+      "முன்னுரிமைக் குறிப்பு / காரணி (Priority Basis / Concession)",
       "Staff ID",
       "பணியாளர் பெயர் (Name)",
       "பாலினம் (Gender)",
@@ -5977,42 +6365,53 @@
       "கைபேசி எண் (Mobile)"
     ];
 
-    const rows = list.map((st, idx) => [
-      isSenior ? `#${idx + 1}` : (idx + 1),
-      `"${st.staffId}"`,
-      `"${(st.name || "").replace(/"/g, '""')}"`,
-      st.gender,
-      st.dob || "",
-      st.dojService || "",
-      st.dojSchool || "",
-      st.isTeaching ? "Teaching" : "Non-Teaching",
-      `"${(st.desig || "").replace(/"/g, '""')}"`,
-      `"${(st.subject || "").replace(/"/g, '""')}"`,
-      `"${(st.qualification || "").replace(/"/g, '""')}"`,
-      st.uNo,
-      `"${st.udiseNo}"`,
-      `"${(st.schoolNameTa || "").replace(/"/g, '""')}"`,
-      `"${(st.schoolNameEn || "").replace(/"/g, '""')}"`,
-      `"${(st.block || "").replace(/"/g, '""')}"`,
-      st.mgmt1,
-      st.nature || "Regular",
-      `"${st.mobile || ""}"`
-    ].join(","));
+    const rows = list.map((st, idx) => {
+      let note = "";
+      if (st.hasAgePriority) note = "55+ வயது முதியோர் முன்னுரிமை";
+      else if (st.hasFemalePriority) note = "பெண் ஆசிரியர் முன்னுரிமை";
+      else if (cfg.primary === "dojSchool") note = "நிலைய பணி மூப்பு (Station Seniority)";
+      else if (cfg.primary === "dojService") note = "அரசுப் பணி மூப்பு (Service Seniority)";
+      else if (cfg.primary === "dob") note = "வயது மூப்பு (Age Seniority)";
 
-    const csvContent = "\uFEFF" + headers.join(",") + "\n" + rows.join("\n");
+      return [
+        isSenior ? `#${idx + 1}` : (idx + 1),
+        `"${note}"`,
+        `"${st.staffId}"`,
+        `"${(st.name || "").replace(/"/g, '""')}"`,
+        st.gender,
+        st.dob || "",
+        st.dojService || "",
+        st.dojSchool || "",
+        st.isTeaching ? "Teaching" : "Non-Teaching",
+        `"${(st.desig || "").replace(/"/g, '""')}"`,
+        `"${(st.subject || "").replace(/"/g, '""')}"`,
+        `"${(st.qualification || "").replace(/"/g, '""')}"`,
+        st.uNo,
+        `"${st.udiseNo}"`,
+        `"${(st.schoolNameTa || "").replace(/"/g, '""')}"`,
+        `"${(st.schoolNameEn || "").replace(/"/g, '""')}"`,
+        `"${(st.block || "").replace(/"/g, '""')}"`,
+        st.mgmt1,
+        st.nature || "Regular",
+        `"${st.mobile || ""}"`
+      ].join(",");
+    });
+
+    const csvContent = "﻿" + headers.join(",") + "\n" + rows.join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
+    const cleanPurpose = purposeTitle.replace(/[^a-zA-Z0-9_஀-௿]/g, "_");
     const fileName = isSenior 
-      ? `Sivagangai_Seniority_Panel_List_${list.length}_Teachers.csv`
+      ? `Sivagangai_Seniority_${cleanPurpose}_${list.length}_Teachers.csv`
       : `Sivagangai_Teacher_Master_${list.length}_Staff.csv`;
     a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast(`📥 ${list.length.toLocaleString("en-IN")} ஆசிரியர்களின் ${isSenior ? "முன்னுரிமைப் பட்டியல்" : "பட்டியல்"} CSV ஆகப் பதிவிறக்கப்பட்டது!`, "#22c55e");
+    showToast(`📥 ${list.length.toLocaleString("en-IN")} ஆசிரியர்களின் ${isSenior ? purposeTitle : "பட்டியல்"} CSV ஆகப் பதிவிறக்கப்பட்டது!`, "#22c55e");
   }
 
   document.addEventListener("DOMContentLoaded", initPortal);
