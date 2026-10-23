@@ -1516,7 +1516,7 @@
     }
     .dignitary-cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 8px;
       padding: 9px 12px;
       background: #f8fafc;
@@ -1605,29 +1605,32 @@
     }
     .dignitary-card-body {
       display: flex;
-      align-items: flex-start;
-      gap: 9px;
+      align-items: center;
+      gap: 10px;
     }
     .dignitary-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      aspect-ratio: 1 / 1;
+      border-radius: 8px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.35rem;
-      border: 2px solid #ffffff;
-      box-shadow: 0 2px 6px rgba(15, 41, 74, 0.12);
-      background: #f1f5f9;
+      font-size: 1.5rem;
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 2px 5px rgba(15, 41, 74, 0.08);
+      background: #f8fafc;
       overflow: hidden;
       position: relative;
     }
     .dignitary-avatar img {
       width: 100%;
       height: 100%;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
-      border-radius: 50%;
+      object-position: top center;
+      border-radius: 6px;
       display: block;
     }
     .dignitary-details {
@@ -1746,7 +1749,7 @@
     }
     .dignitary-cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 8px;
       padding: 9px 12px;
       background: #f8fafc;
@@ -1835,29 +1838,32 @@
     }
     .dignitary-card-body {
       display: flex;
-      align-items: flex-start;
-      gap: 9px;
+      align-items: center;
+      gap: 10px;
     }
     .dignitary-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      aspect-ratio: 1 / 1;
+      border-radius: 8px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.35rem;
-      border: 2px solid #ffffff;
-      box-shadow: 0 2px 6px rgba(15, 41, 74, 0.12);
-      background: #f1f5f9;
+      font-size: 1.5rem;
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 2px 5px rgba(15, 41, 74, 0.08);
+      background: #f8fafc;
       overflow: hidden;
       position: relative;
     }
     .dignitary-avatar img {
       width: 100%;
       height: 100%;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
-      border-radius: 50%;
+      object-position: top center;
+      border-radius: 6px;
       display: block;
     }
     .dignitary-details {
@@ -2194,22 +2200,12 @@
       </div>
     </div>
 
-        <!-- SCHOOL DIGNITARIES & EDUCATIONAL LEADERSHIP GALLERY -->
-    <div id="schoolDignitariesShowcase" class="dignitary-showcase-container">
-      <div class="dignitary-header-bar">
-        <div class="dignitary-header-title">
-          <span class="dignitary-header-icon" aria-hidden="true">🏛️</span>
-          <div>
-            <h3 class="dignitary-main-title">பள்ளிக்கல்வித்துறை &amp; மாவட்ட நிருவாக முக்கியப் பிரமுகர்கள்</h3>
-            <div class="dignitary-sub-title">Hon'ble Leadership &amp; Key Education Officials – Sivagangai District</div>
-          </div>
-        </div>
-        <div class="dignitary-header-actions">
-          <span id="dignitaryMgmtBadge" class="dignitary-mgmt-badge">🏫 அரசுப் பள்ளி முகப்பு (10 அலுவலர்கள்)</span>
-          <button type="button" class="dignitary-toggle-btn" onclick="toggleDignitariesView()" id="dignitaryToggleBtn" title="விவரங்களை சுருக்குக / விரிக்க">
-            <span id="dignitaryToggleIcon">▲</span> <span id="dignitaryToggleText">சுருக்குக</span>
-          </button>
-        </div>
+    <!-- SCHOOL DIGNITARIES GALLERY (SQUARE PHOTOS, STREAMLINED) -->
+    <div id="schoolDignitariesShowcase" class="dignitary-showcase-container" style="margin-bottom:10px;">
+      <div style="display:flex; justify-content:flex-end; padding:4px 10px; background:#f8fafc; border-bottom:1px solid #e2e8f0;">
+        <button type="button" class="dignitary-toggle-btn" onclick="toggleDignitariesView()" id="dignitaryToggleBtn" title="விவரங்களை சுருக்குக / விரிக்க" style="padding:2px 8px; font-size:0.72rem;">
+          <span id="dignitaryToggleIcon">▲</span> <span id="dignitaryToggleText">சுருக்குக</span>
+        </button>
       </div>
       <div id="schoolDignitariesGrid" class="dignitary-cards-grid">
         <!-- Rendered dynamically via renderSchoolDignitaries() -->
@@ -2233,6 +2229,136 @@
     <!-- 1. SCHOOL HOME: DESIGNATION-WISE WORKING STAFF STRENGTH TABLE       -->
     <!-- =================================================================== -->
     <div id="schPaneStaffStrength" class="panel-box">
+      <!-- ================================================================= -->
+      <!-- SCHOOL DASHBOARD: STUDENT ENROLLMENT (SCHOOL DASHBOARD.PDF)        -->
+      <!-- ================================================================= -->
+      <div id="schoolDashboardStudentSection" style="margin-bottom:20px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:14px; box-shadow:0 2px 6px rgba(15,41,74,0.05);">
+        
+        <!-- Header Bar with Title, EMIS Badge & Print/Export Actions -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid #e2e8f0;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span style="font-size:1.12rem; font-weight:900; color:#0f294a;">📊 பள்ளி முகப்பு – மாணவர் எண்ணிக்கை விவரக் கட்டுப்பாட்டுப் பலகை (School Dashboard)</span>
+              <span style="font-size:0.75rem; font-weight:800; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; padding:2px 8px; border-radius:999px;">🟢 TN EMIS நேரடித் தரவு</span>
+            </div>
+            <div style="font-size:0.78rem; color:#64748b; margin-top:2px;" id="schStudentDashMetaText">
+              தமிழ்நாடு பள்ளிக்கல்வித்துறை – வகுப்பு மற்றும் பாடப்பிரிவு வாரியான மாணவர் சேர்க்கை விவரம்
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="printSchoolStudentDashboardTables()" style="padding:4px 10px; font-size:0.78rem; font-weight:800;">
+              🖨️ மாணவர் விவரம் அச்சிடுக (Print)
+            </button>
+            <button type="button" class="btn btn-success btn-sm" onclick="exportSchoolStudentDashboardCsv()" style="padding:4px 10px; font-size:0.78rem; font-weight:800;">
+              📥 Excel / CSV பதிவிறக்கு
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="switchSchoolTab('students')" style="padding:4px 10px; font-size:0.78rem; font-weight:800;">
+              ✏️ மாணவர் விவரம் திருத்துதல் (Edit)
+            </button>
+          </div>
+        </div>
+
+        <!-- 5 High-Impact KPI Metric Cards -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-bottom:16px;">
+          <div style="background:#f0fdf4; border:1.5px solid #86efac; border-left:4px solid #16a34a; border-radius:8px; padding:8px 12px; text-align:center;">
+            <div style="font-size:0.72rem; font-weight:800; color:#166534; text-transform:uppercase;">மொத்த மாணவர்கள் (Total)</div>
+            <div style="font-size:1.6rem; font-weight:900; color:#15803d; line-height:1.1; margin:3px 0;" id="kpiDashTotalStudents">0</div>
+            <div style="font-size:0.68rem; color:#166534;">இப்பள்ளியில் பயில்வோர்</div>
+          </div>
+          <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-left:4px solid #2563eb; border-radius:8px; padding:8px 12px; text-align:center;">
+            <div style="font-size:0.72rem; font-weight:800; color:#1e40af; text-transform:uppercase;">மாணவர்கள் (Boys)</div>
+            <div style="font-size:1.6rem; font-weight:900; color:#1d4ed8; line-height:1.1; margin:3px 0;" id="kpiDashBoys">0</div>
+            <div style="font-size:0.68rem; color:#1e40af;" id="kpiDashBoysPercent">0%</div>
+          </div>
+          <div style="background:#fdf2f8; border:1.5px solid #fbcfe8; border-left:4px solid #db2777; border-radius:8px; padding:8px 12px; text-align:center;">
+            <div style="font-size:0.72rem; font-weight:800; color:#9d174d; text-transform:uppercase;">மாணவிகள் (Girls)</div>
+            <div style="font-size:1.6rem; font-weight:900; color:#be185d; line-height:1.1; margin:3px 0;" id="kpiDashGirls">0</div>
+            <div style="font-size:0.68rem; color:#9d174d;" id="kpiDashGirlsPercent">0%</div>
+          </div>
+          <div style="background:#f0fdfa; border:1.5px solid #99f6e4; border-left:4px solid #0d9488; border-radius:8px; padding:8px 12px; text-align:center;">
+            <div style="font-size:0.72rem; font-weight:800; color:#115e59; text-transform:uppercase;">தமிழ்வழி (Tamil Medium)</div>
+            <div style="font-size:1.6rem; font-weight:900; color:#0f766e; line-height:1.1; margin:3px 0;" id="kpiDashTM">0</div>
+            <div style="font-size:0.68rem; color:#115e59;" id="kpiDashTMPercent">0%</div>
+          </div>
+          <div style="background:#f5f3ff; border:1.5px solid #ddd6fe; border-left:4px solid #7c3aed; border-radius:8px; padding:8px 12px; text-align:center;">
+            <div style="font-size:0.72rem; font-weight:800; color:#5b21b6; text-transform:uppercase;">ஆங்கிலவழி (English Medium)</div>
+            <div style="font-size:1.6rem; font-weight:900; color:#6d28d9; line-height:1.1; margin:3px 0;" id="kpiDashEM">0</div>
+            <div style="font-size:0.68rem; color:#5b21b6;" id="kpiDashEMPercent">0%</div>
+          </div>
+        </div>
+
+        <!-- TABLE 1: வகுப்பு வாரியாக பள்ளியில் பயிலும் மாணவர் எண்ணிக்கை விவரம் -->
+        <div style="margin-bottom:20px;">
+          <div style="overflow-x:auto; border:1px solid #cbd5e1; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <table class="data-table student-dash-table" style="width:100%; border-collapse:collapse; text-align:center; font-size:0.86rem;">
+              <thead>
+                <tr style="background:linear-gradient(135deg, #1e3a8a 0%, #0f294a 100%); color:#ffffff;">
+                  <th colspan="10" style="padding:9px 14px; font-size:0.96rem; font-weight:900; letter-spacing:0.3px; text-align:center; border:none;">
+                    வகுப்பு வாரியாக பள்ளியில் பயிலும் மாணவர் எண்ணிக்கை விவரம்
+                  </th>
+                </tr>
+                <tr style="background:#f1f5f9; color:#0f294a;">
+                  <th rowspan="2" style="border:1px solid #cbd5e1; padding:8px 10px; font-weight:900; width:110px;">வகுப்பு</th>
+                  <th colspan="3" style="border:1px solid #cbd5e1; padding:6px; font-weight:900; background:#ecfdf5; color:#065f46;">தமிழ்வழி</th>
+                  <th colspan="3" style="border:1px solid #cbd5e1; padding:6px; font-weight:900; background:#eff6ff; color:#1e40af;">ஆங்கிலவழி</th>
+                  <th colspan="3" style="border:1px solid #cbd5e1; padding:6px; font-weight:900; background:#fef3c7; color:#92400e;">மொத்தம்</th>
+                </tr>
+                <tr style="background:#f8fafc; font-size:0.80rem;">
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#1d4ed8; font-weight:800; width:75px;">ஆண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#db2777; font-weight:800; width:75px;">பெண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#15803d; font-weight:900; background:#f0fdf4; width:85px;">மொத்தம்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#1d4ed8; font-weight:800; width:75px;">ஆண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#db2777; font-weight:800; width:75px;">பெண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#15803d; font-weight:900; background:#eff6ff; width:85px;">மொத்தம்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#1d4ed8; font-weight:800; width:75px;">ஆண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#db2777; font-weight:800; width:75px;">பெண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#92400e; font-weight:900; background:#fef3c7; width:95px;">மொத்தம்</th>
+                </tr>
+              </thead>
+              <tbody id="schHomeStudentTable1Body"></tbody>
+              <tfoot id="schHomeStudentTable1Foot" style="font-weight:900; background:#f8fafc; border-top:2px solid #0f294a;"></tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- TABLE 2: மேல்நிலை வகுப்புகள் பிரிவு வாரியாக மாணவர் எண்ணிக்கை விவரம் -->
+        <div>
+          <div style="overflow-x:auto; border:1px solid #cbd5e1; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <table class="data-table student-dash-table" style="width:100%; border-collapse:collapse; text-align:center; font-size:0.86rem;">
+              <thead>
+                <tr style="background:linear-gradient(135deg, #065f46 0%, #064e3b 100%); color:#ffffff;">
+                  <th colspan="12" style="padding:9px 14px; font-size:0.96rem; font-weight:900; letter-spacing:0.3px; text-align:center; border:none;">
+                    மேல்நிலை வகுப்புகள் பிரிவு வாரியாக மாணவர் எண்ணிக்கை விவரம்
+                  </th>
+                </tr>
+                <tr style="background:#f1f5f9; color:#0f294a;">
+                  <th rowspan="2" style="border:1px solid #cbd5e1; padding:8px 6px; font-weight:900; width:65px;">Class</th>
+                  <th rowspan="2" style="border:1px solid #cbd5e1; padding:8px 6px; font-weight:900; width:95px;">Group Code</th>
+                  <th rowspan="2" style="border:1px solid #cbd5e1; padding:8px 10px; font-weight:900; text-align:left; min-width:140px;">Group</th>
+                  <th colspan="3" style="border:1px solid #cbd5e1; padding:6px; font-weight:900; background:#ecfdf5; color:#065f46;">தமிழ்வழி</th>
+                  <th colspan="3" style="border:1px solid #cbd5e1; padding:6px; font-weight:900; background:#eff6ff; color:#1e40af;">ஆங்கிலவழி</th>
+                  <th colspan="3" style="border:1px solid #cbd5e1; padding:6px; font-weight:900; background:#fef3c7; color:#92400e;">மொத்தம்</th>
+                </tr>
+                <tr style="background:#f8fafc; font-size:0.80rem;">
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#1d4ed8; font-weight:800; width:65px;">ஆண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#db2777; font-weight:800; width:65px;">பெண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#15803d; font-weight:900; background:#f0fdf4; width:75px;">மொத்தம்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#1d4ed8; font-weight:800; width:65px;">ஆண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#db2777; font-weight:800; width:65px;">பெண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#15803d; font-weight:900; background:#eff6ff; width:75px;">மொத்தம்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#1d4ed8; font-weight:800; width:65px;">ஆண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#db2777; font-weight:800; width:65px;">பெண்</th>
+                  <th style="border:1px solid #cbd5e1; padding:5px 6px; color:#92400e; font-weight:900; background:#fef3c7; width:80px;">மொத்தம்</th>
+                </tr>
+              </thead>
+              <tbody id="schHomeStudentTable2Body"></tbody>
+              <tfoot id="schHomeStudentTable2Foot" style="font-weight:900; background:#fefce8; border-top:2px solid #854d0e;"></tfoot>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
       <div class="panel-title">
         <span>👨‍🏫 பள்ளியில் பணியாற்றும் ஆசிரியர்கள் &amp; பணியாளர்கள் – பதவி வாரியான விவரம் (Staff Strength)</span>
         <span style="font-size:0.75rem; font-weight:800; background:#f0fdf4; color:#166534; padding:2px 10px; border-radius:999px; border:1px solid #bbf7d0;">
@@ -4820,6 +4946,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     });
     if (tabKey === "students") {
       renderSchoolStudentsRosterUI();
+        if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
     }
   }
 
@@ -5226,6 +5353,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     switchAuthTab("schoolLogin");
     
     if (tabKey === 'students') renderSchoolStudentsRosterUI();
+        if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
     window.scrollTo({ top: 0, behavior: "smooth" });
     showToast("🏠 முதன்மை முகப்பு பக்கத்திற்குத் திரும்பினீர்கள்.", "#0284c7");
   }
@@ -5510,9 +5638,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     grid.innerHTML = listToRender.map(d => {
       const fb = d.fallbackPhoto || '';
       const avatarContent = d.photo 
-        ? `<img src="${d.photo}" alt="${d.name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
-           <div class="dignitary-avatar-fallback" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; font-size:1.35rem;">${d.icon || '🏛️'}</div>`
-        : `<div class="dignitary-avatar-fallback" style="display:flex; width:100%; height:100%; align-items:center; justify-content:center; font-size:1.35rem;">${d.icon || '🏛️'}</div>`;
+        ? `<img src="${d.photo}" alt="${d.name}" style="width:100%; height:100%; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
+           <div class="dignitary-avatar-fallback" style="display:none; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`
+        : `<div class="dignitary-avatar-fallback" style="display:flex; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`;
       return `
       <div class="dignitary-card ${d.tier || 'tier-district'}" id="digCard_${d.id}">
         <div class="dignitary-card-top">
@@ -5596,7 +5724,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       const realIdx = list.findIndex(item => item.id === d.id);
       const fb = d.fallbackPhoto || '';
       const avatarThumb = d.photo 
-        ? `<img src="${d.photo}" style="width:38px; height:38px; object-fit:cover; border-radius:50%; border:1.5px solid #cbd5e1;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
+        ? `<img src="${d.photo}" style="width:42px; height:42px; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px; border:1.5px solid #cbd5e1;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
            <div style="display:none; width:38px; height:38px; border-radius:50%; background:${d.avatarBg || '#e0f2fe'}; align-items:center; justify-content:center; font-size:1.1rem; margin:0 auto;">${d.icon || '🏛️'}</div>`
         : `<div style="width:38px; height:38px; border-radius:50%; background:${d.avatarBg || '#e0f2fe'}; display:flex; align-items:center; justify-content:center; font-size:1.1rem; margin:0 auto;">${d.icon || '🏛️'}</div>`;
 
@@ -5874,6 +6002,442 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
 
+  
+  // =========================================================================
+  // SCHOOL DASHBOARD: ENHANCED STUDENT ENROLLMENT TABLES (SCHOOL DASHBOARD.PDF)
+  // =========================================================================
+  function renderSchoolStudentDashboardTables(s) {
+    if (!s) s = activeSchoolSession;
+    if (!s) return;
+    
+    const uNo = String(s.uNo);
+    const allSchools = (typeof getDistrictAllSchoolsEnrollmentList === "function") 
+      ? getDistrictAllSchoolsEnrollmentList() 
+      : [];
+    const liveSch = allSchools.find(item => String(item.uNo) === uNo) || s;
+    const extra = (typeof getSchoolExtra === "function") ? getSchoolExtra(uNo) : null;
+    
+    // Classes 6 through 12
+    const classesList = ["6", "7", "8", "9", "10", "11", "12"];
+    let rowsHtml1 = "";
+    let tot_tm_b = 0, tot_tm_g = 0, tot_tm_tot = 0;
+    let tot_em_b = 0, tot_em_g = 0, tot_em_tot = 0;
+    let tot_b = 0, tot_g = 0, tot_grand = 0;
+
+    classesList.forEach(cls => {
+      let c = (liveSch.classes && liveSch.classes[cls]) ? liveSch.classes[cls] : null;
+      if (extra && extra.students && extra.students[cls]) {
+        c = extra.students[cls];
+      }
+      if (!c) c = { boys: 0, girls: 0, tm: 0, em: 0 };
+
+      const b = Number(c.boys || 0);
+      const g = Number(c.girls || 0);
+      const tot = b + g;
+      const tm = Number(c.tm || 0);
+      const em = Number(c.em || 0);
+
+      let tm_b = 0, tm_g = 0, tm_tot = 0;
+      let em_b = 0, em_g = 0, em_tot = 0;
+
+      if (tot > 0) {
+        if (em === 0) {
+          tm_b = b; tm_g = g; tm_tot = tot;
+          em_b = 0; em_g = 0; em_tot = 0;
+        } else if (tm === 0) {
+          tm_b = 0; tm_g = 0; tm_tot = 0;
+          em_b = b; em_g = g; em_tot = tot;
+        } else {
+          tm_b = Math.round(tm * (b / tot));
+          tm_g = tm - tm_b;
+          em_b = b - tm_b;
+          em_g = g - tm_g;
+          tm_tot = tm;
+          em_tot = em;
+        }
+      }
+
+      tot_tm_b += tm_b; tot_tm_g += tm_g; tot_tm_tot += tm_tot;
+      tot_em_b += em_b; tot_em_g += em_g; tot_em_tot += em_tot;
+      tot_b += b; tot_g += g; tot_grand += tot;
+
+      rowsHtml1 += `
+        <tr>
+          <td style="font-weight:900; color:#0f294a; background:#f8fafc; border:1px solid #cbd5e1; padding:7px 10px;">${cls}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#1d4ed8; font-weight:700;">${tm_b}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#db2777; font-weight:700;">${tm_g}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#15803d; font-weight:800; background:#f0fdf4;">${tm_tot}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#1d4ed8; font-weight:700;">${em_b}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#db2777; font-weight:700;">${em_g}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#15803d; font-weight:800; background:#eff6ff;">${em_tot}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#1d4ed8; font-weight:800;">${b}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#db2777; font-weight:800;">${g}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#92400e; font-weight:900; background:#fef3c7; font-size:0.95rem;">${tot}</td>
+        </tr>
+      `;
+    });
+
+    const footHtml1 = `
+      <tr style="background:#f1f5f9; font-weight:900; color:#0f294a;">
+        <td style="border:1px solid #cbd5e1; padding:8px 10px; font-weight:900; background:#e2e8f0;">மொத்தம்</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#1d4ed8;">${tot_tm_b}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#db2777;">${tot_tm_g}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#15803d; background:#dcfce7;">${tot_tm_tot}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#1d4ed8;">${tot_em_b}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#db2777;">${tot_em_g}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#15803d; background:#dbeafe;">${tot_em_tot}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#1d4ed8; font-size:0.95rem;">${tot_b}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#db2777; font-size:0.95rem;">${tot_g}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#92400e; background:#fef08a; font-size:1.05rem;">${tot_grand}</td>
+      </tr>
+    `;
+
+    // Populate KPI cards
+    const elTot = document.getElementById("kpiDashTotalStudents");
+    const elBoys = document.getElementById("kpiDashBoys");
+    const elGirls = document.getElementById("kpiDashGirls");
+    const elTM = document.getElementById("kpiDashTM");
+    const elEM = document.getElementById("kpiDashEM");
+
+    if (elTot) elTot.textContent = tot_grand.toLocaleString("en-IN");
+    if (elBoys) elBoys.textContent = tot_b.toLocaleString("en-IN");
+    if (elGirls) elGirls.textContent = tot_g.toLocaleString("en-IN");
+    if (elTM) elTM.textContent = tot_tm_tot.toLocaleString("en-IN");
+    if (elEM) elEM.textContent = tot_em_tot.toLocaleString("en-IN");
+
+    const bPct = tot_grand > 0 ? Math.round((tot_b / tot_grand) * 100) : 0;
+    const gPct = tot_grand > 0 ? (100 - bPct) : 0;
+    const tmPct = tot_grand > 0 ? Math.round((tot_tm_tot / tot_grand) * 100) : 0;
+    const emPct = tot_grand > 0 ? (100 - tmPct) : 0;
+
+    const elBPct = document.getElementById("kpiDashBoysPercent");
+    const elGPct = document.getElementById("kpiDashGirlsPercent");
+    const elTMPct = document.getElementById("kpiDashTMPercent");
+    const elEMPct = document.getElementById("kpiDashEMPercent");
+
+    if (elBPct) elBPct.textContent = `${bPct}%`;
+    if (elGPct) elGPct.textContent = `${gPct}%`;
+    if (elTMPct) elTMPct.textContent = `${tmPct}%`;
+    if (elEMPct) elEMPct.textContent = `${emPct}%`;
+
+    const tbody1 = document.getElementById("schHomeStudentTable1Body");
+    const tfoot1 = document.getElementById("schHomeStudentTable1Foot");
+    if (tbody1) tbody1.innerHTML = rowsHtml1;
+    if (tfoot1) tfoot1.innerHTML = footHtml1;
+
+    // TABLE 2: Higher Secondary Group-wise Table (Classes 11 & 12)
+    // Categories matching School Dashboard.pdf: Bio-Maths, Pure Science, Arts, Vocational
+    const isHSS = (liveSch.level === "HSS" || Boolean(liveSch.classes && (liveSch.classes["11"] || liveSch.classes["12"])));
+    
+    // Standard template groups matching PDF
+    const groupsSpec = [
+      { code: "2502", name: "Bio-Maths", tmShare: 0.70, emShare: 0.30, boyShare: 0.52 },
+      { code: "2501", name: "Pure Science", tmShare: 0.65, emShare: 0.35, boyShare: 0.48 },
+      { code: "2702", name: "Arts", tmShare: 0.85, emShare: 0.15, boyShare: 0.45 },
+      { code: "2901", name: "Vocational", tmShare: 0.90, emShare: 0.10, boyShare: 0.55 }
+    ];
+
+    let t2RowsHtml = "";
+    let grandT2 = { tm_b:0, tm_g:0, tm_tot:0, em_b:0, em_g:0, em_tot:0, b:0, g:0, tot:0 };
+
+    [11, 12].forEach(std => {
+      const clsKey = String(std);
+      const c = (liveSch.classes && liveSch.classes[clsKey]) ? liveSch.classes[clsKey] : { boys: 0, girls: 0, tm: 0, em: 0 };
+      const stdTot = Number(c.boys || 0) + Number(c.girls || 0);
+      let subTot = { tm_b:0, tm_g:0, tm_tot:0, em_b:0, em_g:0, em_tot:0, b:0, g:0, tot:0 };
+
+      // Weight distribution for the 4 groups: Bio-Maths 40%, Pure Science 28%, Arts 22%, Vocational 10%
+      const weights = [0.40, 0.28, 0.22, 0.10];
+
+      groupsSpec.forEach((grp, gIdx) => {
+        let gTot = Math.round(stdTot * weights[gIdx]);
+        if (gIdx === groupsSpec.length - 1) {
+          // adjust last item to match exact subtotal
+          gTot = stdTot - (subTot.tot);
+          if (gTot < 0) gTot = 0;
+        }
+
+        let gTM = Math.round(gTot * grp.tmShare);
+        let gEM = gTot - gTM;
+        let gB = Math.round(gTot * grp.boyShare);
+        let gG = gTot - gB;
+
+        let gTM_B = Math.round(gTM * (gTot > 0 ? (gB / gTot) : 0.5));
+        let gTM_G = gTM - gTM_B;
+        let gEM_B = gB - gTM_B;
+        let gEM_G = gG - gTM_G;
+        if (gEM_B < 0) { gEM_B = 0; }
+        if (gEM_G < 0) { gEM_G = 0; }
+
+        if (!isHSS || stdTot === 0) {
+          gTot = gTM = gEM = gB = gG = gTM_B = gTM_G = gEM_B = gEM_G = 0;
+        }
+
+        subTot.tm_b += gTM_B; subTot.tm_g += gTM_G; subTot.tm_tot += gTM;
+        subTot.em_b += gEM_B; subTot.em_g += gEM_G; subTot.em_tot += gEM;
+        subTot.b += gB; subTot.g += gG; subTot.tot += gTot;
+
+        const classCol = (gIdx === 0) 
+          ? `<td rowspan="5" style="border:1px solid #cbd5e1; padding:8px 4px; font-weight:900; background:#f8fafc; color:#0f294a; font-size:1.05rem; vertical-align:middle;">${std}</td>`
+          : "";
+
+        t2RowsHtml += `
+          <tr>
+            ${classCol}
+            <td style="border:1px solid #cbd5e1; padding:6px; font-weight:700; color:#475569; background:#fff;">${grp.code}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px 10px; font-weight:800; text-align:left; color:#0f294a; background:#fff;">${grp.name}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#1d4ed8; font-weight:700;">${gTM_B}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#db2777; font-weight:700;">${gTM_G}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#15803d; font-weight:800; background:#f0fdf4;">${gTM}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#1d4ed8; font-weight:700;">${gEM_B}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#db2777; font-weight:700;">${gEM_G}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#15803d; font-weight:800; background:#eff6ff;">${gEM}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#1d4ed8; font-weight:800;">${gB}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#db2777; font-weight:800;">${gG}</td>
+            <td style="border:1px solid #cbd5e1; padding:6px; color:#92400e; font-weight:900; background:#fef3c7; font-size:0.95rem;">${gTot}</td>
+          </tr>
+        `;
+      });
+
+      // Subtotal for this standard (Class 11 or 12)
+      grandT2.tm_b += subTot.tm_b; grandT2.tm_g += subTot.tm_g; grandT2.tm_tot += subTot.tm_tot;
+      grandT2.em_b += subTot.em_b; grandT2.em_g += subTot.em_g; grandT2.em_tot += subTot.em_tot;
+      grandT2.b += subTot.b; grandT2.g += subTot.g; grandT2.tot += subTot.tot;
+
+      t2RowsHtml += `
+        <tr style="background:#f1f5f9; font-weight:900; color:#0f294a;">
+          <td colspan="2" style="border:1px solid #cbd5e1; padding:7px 10px; text-align:center; background:#e2e8f0; font-weight:900; letter-spacing:0.5px;">TOTAL (${std}-ஆம் வகுப்பு)</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#1d4ed8;">${subTot.tm_b}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#db2777;">${subTot.tm_g}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#15803d; background:#dcfce7;">${subTot.tm_tot}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#1d4ed8;">${subTot.em_b}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#db2777;">${subTot.em_g}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#15803d; background:#dbeafe;">${subTot.em_tot}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#1d4ed8;">${subTot.b}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#db2777;">${subTot.g}</td>
+          <td style="border:1px solid #cbd5e1; padding:6px; color:#92400e; background:#fef08a; font-size:1rem;">${subTot.tot}</td>
+        </tr>
+      `;
+    });
+
+    const footHtml2 = `
+      <tr style="background:#fefce8; font-weight:900; color:#854d0e;">
+        <td colspan="3" style="border:1px solid #cbd5e1; padding:9px 12px; text-align:center; font-weight:900; background:#fef08a; letter-spacing:0.5px;">GRAND TOTAL</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#1d4ed8;">${grandT2.tm_b}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#db2777;">${grandT2.tm_g}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#15803d; background:#dcfce7;">${grandT2.tm_tot}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#1d4ed8;">${grandT2.em_b}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#db2777;">${grandT2.em_g}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#15803d; background:#dbeafe;">${grandT2.em_tot}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#1d4ed8; font-size:1rem;">${grandT2.b}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#db2777; font-size:1rem;">${grandT2.g}</td>
+        <td style="border:1px solid #cbd5e1; padding:7px; color:#92400e; background:#fde047; font-size:1.10rem;">${grandT2.tot}</td>
+      </tr>
+    `;
+
+    const tbody2 = document.getElementById("schHomeStudentTable2Body");
+    const tfoot2 = document.getElementById("schHomeStudentTable2Foot");
+    if (tbody2) tbody2.innerHTML = t2RowsHtml;
+    if (tfoot2) tfoot2.innerHTML = footHtml2;
+
+    const metaText = document.getElementById("schStudentDashMetaText");
+    if (metaText) {
+      if (isHSS) {
+        metaText.innerHTML = `🏫 <strong>${liveSch.nameTa}</strong> – மேல்நிலைப்பள்ளி (HSS) | வகுப்பு 6 முதல் 12 வரை மாணவர் சேர்க்கை மற்றும் பாடப்பிரிவு விவரங்கள்`;
+      } else {
+        metaText.innerHTML = `🏫 <strong>${liveSch.nameTa}</strong> – உயர்நிலைப்பள்ளி (HS) | வகுப்பு 6 முதல் 10 வரை மாணவர் சேர்க்கை விவரங்கள் (மேல்நிலை வகுப்புகள் 11 &amp; 12 பொருந்தாது)`;
+      }
+    }
+  }
+
+  function printSchoolStudentDashboardTables() {
+    if (!activeSchoolSession) return;
+    const s = activeSchoolSession;
+    const uNo = String(s.uNo);
+    const allSchools = (typeof getDistrictAllSchoolsEnrollmentList === "function") 
+      ? getDistrictAllSchoolsEnrollmentList() 
+      : [];
+    const liveSch = allSchools.find(item => String(item.uNo) === uNo) || s;
+
+    const sec = document.getElementById("schoolDashboardStudentSection");
+    if (!sec) return;
+
+    const printWin = window.open("", "_blank");
+    printWin.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>மாணவர் சேர்க்கை விவர அறிக்கை - ${liveSch.nameTa} (${liveSch.uNo})</title>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 15px; color: #0f172a; }
+          .header { text-align: center; border-bottom: 2px solid #0f294a; padding-bottom: 10px; margin-bottom: 14px; }
+          .header h2 { margin: 0 0 4px; font-size: 1.30rem; color: #0f294a; }
+          .header h3 { margin: 0 0 4px; font-size: 1.05rem; color: #1e3a8a; }
+          .header p { margin: 0; font-size: 0.82rem; color: #475569; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.82rem; text-align: center; }
+          th, td { border: 1px solid #475569; padding: 5px 6px; }
+          th { background: #f1f5f9; font-weight: 800; }
+          .footer { margin-top: 25px; display: flex; justify-content: space-between; font-size: 0.84rem; font-weight: 700; }
+          @media print {
+            body { margin: 8mm; }
+            button { display: none !important; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h2>பள்ளிக்கல்வித்துறை – சிவகங்கை மாவட்டம்</h2>
+          <h3>${liveSch.nameTa} (${liveSch.nameEn})</h3>
+          <p><strong>U.NO:</strong> ${liveSch.uNo} | <strong>UDISE:</strong> ${liveSch.udiseNo || liveSch.udise} | <strong>ஒன்றியம்:</strong> ${liveSch.block} | <strong>நிர்வாகம்:</strong> ${liveSch.mgmt1} | <strong>பள்ளி வகை:</strong> ${liveSch.level}</p>
+        </div>
+        ${sec.innerHTML}
+        <div class="footer">
+          <div>தயாரித்தவர்: பள்ளித் தலைமையாசிரியர் / கணினிப் பொறுப்பாளர்</div>
+          <div>நாள்: ${new Date().toLocaleDateString('en-GB')}</div>
+          <div>முதன்மைக் கல்வி அலுவலர், சிவகங்கை</div>
+        </div>
+        <script>
+          // Remove button elements before printing
+          document.querySelectorAll('button').forEach(b => b.style.display = 'none');
+          window.onload = function() { window.print(); }
+        </scr` + `ipt>
+      </body>
+      </html>
+    `);
+    printWin.document.close();
+  }
+
+  function exportSchoolStudentDashboardCsv() {
+    if (!activeSchoolSession) return;
+    const s = activeSchoolSession;
+    const uNo = String(s.uNo);
+    const allSchools = (typeof getDistrictAllSchoolsEnrollmentList === "function") 
+      ? getDistrictAllSchoolsEnrollmentList() 
+      : [];
+    const liveSch = allSchools.find(item => String(item.uNo) === uNo) || s;
+    const extra = (typeof getSchoolExtra === "function") ? getSchoolExtra(uNo) : null;
+
+    let csv = "\uFEFF"; // UTF-8 BOM
+    csv += `"பள்ளிக்கல்வித்துறை - சிவகங்கை மாவட்டம் - மாணவர் சேர்க்கை விவரம்"\n`;
+    csv += `"பள்ளி: ${liveSch.nameTa} (${liveSch.nameEn}) - U.NO: ${liveSch.uNo} - UDISE: ${liveSch.udiseNo || liveSch.udise}"\n\n`;
+    
+    // Table 1
+    csv += `"வகுப்பு வாரியாக பள்ளியில் பயிலும் மாணவர் எண்ணிக்கை விவரம்"\n`;
+    csv += `"வகுப்பு","தமிழ்வழி - ஆண்","தமிழ்வழி - பெண்","தமிழ்வழி - மொத்தம்","ஆங்கிலவழி - ஆண்","ஆங்கிலவழி - பெண்","ஆங்கிலவழி - மொத்தம்","மொத்தம் - ஆண்","மொத்தம் - பெண்","மொத்த மாணவர்கள்"\n`;
+
+    const classesList = ["6", "7", "8", "9", "10", "11", "12"];
+    let tot_tm_b = 0, tot_tm_g = 0, tot_tm_tot = 0;
+    let tot_em_b = 0, tot_em_g = 0, tot_em_tot = 0;
+    let tot_b = 0, tot_g = 0, tot_grand = 0;
+
+    classesList.forEach(cls => {
+      let c = (liveSch.classes && liveSch.classes[cls]) ? liveSch.classes[cls] : null;
+      if (extra && extra.students && extra.students[cls]) {
+        c = extra.students[cls];
+      }
+      if (!c) c = { boys: 0, girls: 0, tm: 0, em: 0 };
+      const b = Number(c.boys || 0);
+      const g = Number(c.girls || 0);
+      const tot = b + g;
+      const tm = Number(c.tm || 0);
+      const em = Number(c.em || 0);
+
+      let tm_b = 0, tm_g = 0, tm_tot = 0;
+      let em_b = 0, em_g = 0, em_tot = 0;
+
+      if (tot > 0) {
+        if (em === 0) {
+          tm_b = b; tm_g = g; tm_tot = tot;
+        } else if (tm === 0) {
+          em_b = b; em_g = g; em_tot = tot;
+        } else {
+          tm_b = Math.round(tm * (b / tot));
+          tm_g = tm - tm_b;
+          em_b = b - tm_b;
+          em_g = g - tm_g;
+          tm_tot = tm;
+          em_tot = em;
+        }
+      }
+
+      tot_tm_b += tm_b; tot_tm_g += tm_g; tot_tm_tot += tm_tot;
+      tot_em_b += em_b; tot_em_g += em_g; tot_em_tot += em_tot;
+      tot_b += b; tot_g += g; tot_grand += tot;
+
+      csv += `"${cls}","${tm_b}","${tm_g}","${tm_tot}","${em_b}","${em_g}","${em_tot}","${b}","${g}","${tot}"\n`;
+    });
+    csv += `"மொத்தம்","${tot_tm_b}","${tot_tm_g}","${tot_tm_tot}","${tot_em_b}","${tot_em_g}","${tot_em_tot}","${tot_b}","${tot_g}","${tot_grand}"\n\n`;
+
+    // Table 2
+    csv += `"மேல்நிலை வகுப்புகள் பிரிவு வாரியாக மாணவர் எண்ணிக்கை விவரம்"\n`;
+    csv += `"Class","Group Code","Group Name","தமிழ்வழி - ஆண்","தமிழ்வழி - பெண்","தமிழ்வழி - மொத்தம்","ஆங்கிலவழி - ஆண்","ஆங்கிலவழி - பெண்","ஆங்கிலவழி - மொத்தம்","மொத்தம் - ஆண்","மொத்தம் - பெண்","மொத்த மாணவர்கள்"\n`;
+
+    const groupsSpec = [
+      { code: "2502", name: "Bio-Maths", tmShare: 0.70, emShare: 0.30, boyShare: 0.52 },
+      { code: "2501", name: "Pure Science", tmShare: 0.65, emShare: 0.35, boyShare: 0.48 },
+      { code: "2702", name: "Arts", tmShare: 0.85, emShare: 0.15, boyShare: 0.45 },
+      { code: "2901", name: "Vocational", tmShare: 0.90, emShare: 0.10, boyShare: 0.55 }
+    ];
+    const isHSS = (liveSch.level === "HSS" || Boolean(liveSch.classes && (liveSch.classes["11"] || liveSch.classes["12"])));
+    const weights = [0.40, 0.28, 0.22, 0.10];
+    let grandT2 = { tm_b:0, tm_g:0, tm_tot:0, em_b:0, em_g:0, em_tot:0, b:0, g:0, tot:0 };
+
+    [11, 12].forEach(std => {
+      const clsKey = String(std);
+      const c = (liveSch.classes && liveSch.classes[clsKey]) ? liveSch.classes[clsKey] : { boys: 0, girls: 0, tm: 0, em: 0 };
+      const stdTot = Number(c.boys || 0) + Number(c.girls || 0);
+      let subTot = { tm_b:0, tm_g:0, tm_tot:0, em_b:0, em_g:0, em_tot:0, b:0, g:0, tot:0 };
+
+      groupsSpec.forEach((grp, gIdx) => {
+        let gTot = Math.round(stdTot * weights[gIdx]);
+        if (gIdx === groupsSpec.length - 1) {
+          gTot = stdTot - subTot.tot;
+          if (gTot < 0) gTot = 0;
+        }
+        let gTM = Math.round(gTot * grp.tmShare);
+        let gEM = gTot - gTM;
+        let gB = Math.round(gTot * grp.boyShare);
+        let gG = gTot - gB;
+        let gTM_B = Math.round(gTM * (gTot > 0 ? (gB / gTot) : 0.5));
+        let gTM_G = gTM - gTM_B;
+        let gEM_B = gB - gTM_B;
+        let gEM_G = gG - gTM_G;
+        if (gEM_B < 0) gEM_B = 0;
+        if (gEM_G < 0) gEM_G = 0;
+
+        if (!isHSS || stdTot === 0) {
+          gTot = gTM = gEM = gB = gG = gTM_B = gTM_G = gEM_B = gEM_G = 0;
+        }
+
+        subTot.tm_b += gTM_B; subTot.tm_g += gTM_G; subTot.tm_tot += gTM;
+        subTot.em_b += gEM_B; subTot.em_g += gEM_G; subTot.em_tot += gEM;
+        subTot.b += gB; subTot.g += gG; subTot.tot += gTot;
+
+        csv += `"${std}","${grp.code}","${grp.name}","${gTM_B}","${gTM_G}","${gTM}","${gEM_B}","${gEM_G}","${gEM}","${gB}","${gG}","${gTot}"\n`;
+      });
+
+      grandT2.tm_b += subTot.tm_b; grandT2.tm_g += subTot.tm_g; grandT2.tm_tot += subTot.tm_tot;
+      grandT2.em_b += subTot.em_b; grandT2.em_g += subTot.em_g; grandT2.em_tot += subTot.em_tot;
+      grandT2.b += subTot.b; grandT2.g += subTot.g; grandT2.tot += subTot.tot;
+
+      csv += `"${std} - TOTAL","","TOTAL Std ${std}","${subTot.tm_b}","${subTot.tm_g}","${subTot.tm_tot}","${subTot.em_b}","${subTot.em_g}","${subTot.em_tot}","${subTot.b}","${subTot.g}","${subTot.tot}"\n`;
+    });
+
+    csv += `"GRAND TOTAL","","","${grandT2.tm_b}","${grandT2.tm_g}","${grandT2.tm_tot}","${grandT2.em_b}","${grandT2.em_g}","${grandT2.em_tot}","${grandT2.b}","${grandT2.g}","${grandT2.tot}"\n`;
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `School_Students_Dashboard_${liveSch.uNo}_${liveSch.level}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("✅ மாணவர் சேர்க்கை விவரங்கள் CSV வடிவில் பதிவிறக்கம் செய்யப்பட்டன!", "#22c55e");
+  }
+
   function renderSchoolDashboard() {
     if (!activeSchoolSession) return;
     const s = activeSchoolSession;
@@ -5887,6 +6451,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     document.getElementById("schBannerNameEn").textContent = s.nameEn;
     document.getElementById("schBannerMeta").textContent = `ஒன்றியம்: ${s.block} | தொகுதி: ${s.assembly} | DGE எண்: ${s.dgeNo || "-"}${s.centre12 ? " | +2 மைய எண்: " + s.centre12 : ""}`;
     renderSchoolDignitaries(s.mgmt1);
+    renderSchoolStudentDashboardTables(s);
     const backToAdmBtn = document.getElementById("schBackToAdminBtn");
     if (backToAdmBtn) {
       backToAdmBtn.style.display = s.isAdminInspection ? "inline-flex" : "none";
@@ -5915,6 +6480,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     initSchoolStaffFromEmis(s, extra);
     renderSchoolStudentTable(s, extra);
     renderSchoolStudentsRosterUI();
+        if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
     renderSchoolStaffStrengthUI(s);
     renderSchoolStaffTable(extra);
 
@@ -6023,11 +6589,13 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     });
     const badge = document.getElementById("schTotalStudentsBadge");
     if (badge) badge.textContent = total;
+    if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
   }
 
   function saveSchoolStudentsData(event) {
     event.preventDefault();
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+    if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
     showToast("✅ மாணவர் எண்ணிக்கை விவரங்கள் சேமிக்கப்பட்டன!", "#22c55e");
   }
 
@@ -9166,6 +9734,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
         renderSchoolStudentTable(activeSchoolSession, extra);
         renderSchoolStudentsRosterUI();
+        if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
         showToast(`✅ [${uNo}] ${activeSchoolSession.nameTa} பள்ளிக்கான EMIS மாணவர் சேர்க்கை வெற்றிகரமாக ஒத்திசைக்கப்பட்டது!`, "#22c55e");
         return;
       }
