@@ -1230,7 +1230,7 @@
       box-shadow: 0 16px 36px rgba(15, 41, 74, 0.16);
       border-color: #2563eb;
     }
-    .adm-module-card.card-ebs:hover {
+    .adm-module-card.card-emis:hover {
       border-color: #d97706;
       box-shadow: 0 16px 36px rgba(217, 119, 6, 0.2);
     }
@@ -1249,7 +1249,7 @@
       background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
       border: 2px solid #93c5fd;
     }
-    .adm-module-card.card-ebs .adm-module-icon-wrap {
+    .adm-module-card.card-emis .adm-module-icon-wrap {
       background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
       border: 2px solid #fde047;
     }
@@ -1274,10 +1274,11 @@
   <!-- TOP SYSTEM & GOOGLE SHEET SYNC BAR -->
   <div class="top-system-bar">
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-      <span class="domain-pill">🌐 portal.ceosvg.in</span>
+      <span class="domain-pill" onclick="goToMainHome()" style="cursor:pointer;" title="முதன்மை முகப்பு பக்கத்திற்கு செல்ல">🌐 portal.ceosvg.in</span>
       <span><span class="status-dot" id="sheetSyncDot"></span><strong id="sheetSyncStatusText">School-Master Google Sheet இணைக்கப்பட்டுள்ளது (281 பள்ளிகள்)</strong></span>
     </div>
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <button type="button" class="btn btn-outline btn-sm" onclick="goToMainHome()">🏠 முதன்மை முகப்பு (Home)</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="syncMasterFromGoogleSheet(true)">🔄 Google Sheet ஒத்திசைவு (Sync)</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal()">⚙️ இணைப்பு அமைப்பு (Cloud Settings)</button>
       <button type="button" class="btn btn-primary btn-sm" id="topQuickAdminBtn" onclick="quickSwitchToAdminLogin()">🛡️ நிர்வாகி உள்நுழைவு (Admin)</button>
@@ -1318,7 +1319,7 @@
   <div class="flash-ticker-bar">
     <span class="flash-badge">📢 முக்கிய அறிவிப்பு</span>
     <div style="flex:1; font-weight:700;" id="flashTickerText">
-      📢 [EBS_2026_27 முக்கிய அறிவிப்பு] அனைத்து 281 பள்ளிகளின் ஆசிரியர்கள் (6104) மற்றும் அலுவலகப் பணியாளர்கள் (956) விவரங்கள் EMIS பதிவேட்டிலிருந்து FORM-III மற்றும் FORM-IV-ல் முன்கூட்டியே நிரப்பப்பட்டுள்ளன! பள்ளிகள் விடுபட்ட விவரங்களை மட்டும் பூர்த்தி செய்தால் போதும். பணியாளர் நீக்கம் செய்ய 'Delete Request' அனுப்பி மாவட்ட நிர்வாகி (CEO Admin) ஒப்புதல் பெற வேண்டும்.
+      📢 [முக்கிய அறிவிப்பு] சிவகங்கை மாவட்ட 281 பள்ளிகளின் ஆசிரியர்கள் (6,125) மற்றும் அலுவலகப் பணியாளர்கள் (956) விவரங்கள் TN EMIS பதிவேட்டிலிருந்து இணைக்கப்பட்டு நேரடி ஒத்திசைவு செய்யப்பட்டுள்ளது. பள்ளிகள் விடுபட்ட விவரங்களை மட்டும் பூர்த்தி செய்தால் போதும்.
     </div>
     <button type="button" class="btn btn-sm" style="background:#fef08a; color:#7f1d1d; font-weight:800;" onclick="cycleFlashNews()">அடுத்த அறிவிப்பு ❯</button>
   </div>
@@ -1565,6 +1566,8 @@
         <div style="font-size:0.74rem; color:#fde68a; margin-top:1px;" id="schBannerMeta">ஒன்றியம்: 01 S.Pudur | தொகுதி: 185 Tiruppattur | DGE: 208TPRS0037</div>
       </div>
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="goToMainHome()" style="background:#fff; color:#0f294a; font-weight:800; padding:4px 10px; font-size:0.78rem;">🏠 முதன்மை முகப்பு (Home)</button>
+        <button type="button" class="btn btn-outline btn-sm" id="schBackToAdminBtn" onclick="returnToAdminFromSchool()" style="display:none; background:#fef3c7; color:#92400e; border-color:#f59e0b; padding:4px 10px; font-size:0.78rem; font-weight:800;">🛡️ நிர்வாகி முகப்பு (Admin)</button>
         <button type="button" class="btn btn-secondary btn-sm" onclick="printSchoolProfileReport()" style="padding:4px 10px; font-size:0.78rem;">🖨️ அச்சிடுக (Print)</button>
         <button type="button" class="btn btn-danger btn-sm" onclick="logoutSchool()" style="padding:4px 10px; font-size:0.78rem;">🚪 வெளியேறு</button>
       </div>
@@ -1790,7 +1793,7 @@
         <span>👨‍🏫 Teacher Master – பள்ளியின் ஆசிரியர்கள் &amp; அலுவலகப் பணியாளர்கள் முதன்மைப் பதிவேடு (EMIS Linked)</span>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <span style="font-size:0.86rem; background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:999px; font-weight:900;">மொத்தப் பணியாளர்கள்: <span id="schStaffCountBadge">0</span></span>
-          <button type="button" class="btn btn-success btn-sm" onclick="syncForm1CountsFromForm3And4(true); switchSchoolTab('ebs'); switchEbsSubForm('F1');">🔄 படிவம் 1 (பதவி வாரியான எண்ணிக்கை) &amp; படிவம் 3, 4-ல் தானாகப் பூர்த்தி செய்</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="switchSchoolTab('staffStrength')">📊 1. பதவி வாரியான எண்ணிக்கை காண்க</button>
         </div>
       </div>
       <div id="teacherMasterDesignationSummary" style="background:#f0fdf4; border:1.5px solid #22c55e; border-left:5px solid #15803d; border-radius:8px; padding:10px 14px; margin-bottom:14px; font-size:0.84rem; color:#14532d; font-weight:700;"></div>
@@ -1962,7 +1965,7 @@
         <div style="font-size:0.84rem; color:#cbd5e1; margin-top:2px;">பள்ளிகள், நிர்வாகப் பிரிவுகள் (MANAGEMENT 1/2/3), உள்நுழைவு கடவுச்சொற்கள், தேர்வு மையங்கள் மற்றும் அறிக்கைகள் மேலாண்மை</div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button type="button" class="btn btn-sm" id="admEbsToggleHeaderBtn" onclick="toggleEbsModuleStatus()" style="font-weight:900; background:#15803d; color:#fff; border-color:#22c55e;">🟢 EBS பதிவு: ON (இயங்குகிறது)</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="goToMainHome()" style="background:#fff; color:#0f294a; font-weight:800; font-size:0.84rem;">🏠 முதன்மை முகப்பு (Home)</button>
         <button type="button" class="btn btn-secondary btn-sm" onclick="syncMasterFromGoogleSheet(true)">🔄 Google Sheet ஒத்திசைவு</button>
         <button type="button" class="btn btn-success btn-sm" onclick="exportFilteredSchoolsCsv()">📥 பள்ளிகள் பட்டியல் CSV பதிவிறக்கம்</button>
         <button type="button" class="btn btn-danger btn-sm" onclick="logoutAdmin()">🚪 வெளியேறு (Admin Logout)</button>
@@ -2016,7 +2019,7 @@
         </div>
 
         <!-- MODULE 2: EMIS STAFF MASTER -->
-        <div class="adm-module-card card-ebs" id="admModuleCardEmisStaff" onclick="openAdminModule('emisStaff')" style="border-color:#38bdf8;">
+        <div class="adm-module-card card-emis" id="admModuleCardEmisStaff" onclick="openAdminModule('emisStaff')" style="border-color:#38bdf8;">
           <span class="adm-module-badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd;">MOD 02</span>
           <div>
             <div class="adm-module-icon-wrap" style="background:#e0f2fe; color:#0284c7;">👨‍🏫</div>
@@ -2403,7 +2406,7 @@
 
     <!-- ADMIN SUB-TAB 7: STAFF DELETE REQUESTS APPROVAL (#admPaneDeleteReqs) -->
 
-      <!-- ADMIN SUB-TAB 8 / EBS 3: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
+      <!-- ADMIN SUB-TAB 6: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
 
       <!-- ADMIN SUB-TAB 6: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
       <div id="admPaneEmisSync" class="panel-box" style="display:none;">
@@ -2876,7 +2879,7 @@
           schoolNameEn: "DEMO MODEL HSS, SIVAGANGAI",
           block: "12 Sivagangai",
           formType: "F3",
-          staffId: "EBS-T-3323990007",
+          staffId: "DEL-STAFF-999",
           staffNameEn: "SUNDARARAJAN V",
           staffNameTa: "திரு.வ.சுந்தரராஜன்",
           desig: "PET",
@@ -3075,7 +3078,6 @@
       document.body.classList.toggle("auth-mode", viewName === "viewAuth");
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
-    if (typeof updateAllEbsControlUI === "function") updateAllEbsControlUI();
   }
 
   function switchAuthTab(tabKey) {
@@ -3287,7 +3289,7 @@
     if (activeSchoolSession && activeSchoolSession.isAdminInspection) {
       activeSchoolSession = null;
       switchMainView("viewAdmin");
-      switchAdminTab("ebs");
+      returnToAdminDashboard();
       showToast("🛡️ மாவட்ட நிர்வாகி முகப்பிற்குத் திரும்பினீர்கள்.", "#38bdf8");
       return;
     }
@@ -3428,6 +3430,83 @@
     });
   }
 
+  
+  // Helper to reliably access EMIS data across browser and script contexts
+  function getEmisStaffData() {
+    if (typeof window !== "undefined" && window.EMIS_STAFF_DATA) return window.EMIS_STAFF_DATA;
+    if (typeof EMIS_STAFF_DATA !== "undefined") return EMIS_STAFF_DATA;
+    if (typeof globalThis !== "undefined" && globalThis.EMIS_STAFF_DATA) return globalThis.EMIS_STAFF_DATA;
+    return null;
+  }
+
+  // Populate school staff from EMIS dataset
+  function initSchoolStaffFromEmis(s, extra) {
+    if (!s || !extra) return;
+    const emis = getEmisStaffData();
+    if (!emis || !emis.byUNo) return;
+    const pool = emis.pool || [];
+    const uNo = String(s.uNo || "").trim();
+    const cleanUNo = uNo.replace(/^0+/, "");
+    const rawRows = emis.byUNo[uNo] || (cleanUNo ? emis.byUNo[cleanUNo] : null) || [];
+    
+    if (rawRows.length > 0) {
+      const hasOnlyDummy = !extra.staff || extra.staff.length <= 1;
+      const fewerThanEmis = extra.staff && extra.staff.length < rawRows.length;
+      if (hasOnlyDummy || fewerThanEmis) {
+        extra.staff = rawRows.map(r => {
+          const isTeach = r[0] === 1;
+          const staffId = String(r[1] || "");
+          const name = String(r[2] || "");
+          const desig = pool[r[3]] || (isTeach ? "TEACHER" : "OFFICE STAFF");
+          const gender = r[4] === "F" ? "Female" : "Male";
+          const dob = r[5] || "";
+          const nature = r[6] === "R" ? "Regular" : "Contract";
+          const subject = pool[r[7]] || (isTeach ? "General" : "-");
+          const qualification = pool[r[9]] || "";
+          const isHm = desig.toUpperCase().includes("HEAD") || desig.toUpperCase().includes("PRINCIPAL");
+
+          return {
+            id: staffId,
+            prefix: "",
+            name: name,
+            gender: gender,
+            dob: dob,
+            desig: desig,
+            subject: subject,
+            qualification: qualification,
+            firstApp: "TRB",
+            nature: nature,
+            examDuty: isHm ? "Chief Superintendent" : (desig.toUpperCase().includes("P.G.") ? "Hall Superintendent / AE" : "Hall Superintendent"),
+            campDuty: isHm ? "Camp Officer / CE" : (desig.toUpperCase().includes("P.G.") ? "AE / Tabulator" : "Examiner"),
+            campOption: s.block || "01-Sivagangai",
+            mobile: (isHm && s.mobile) ? s.mobile : (s.mobile || "-"),
+            source: "EMIS",
+            isTeaching: isTeach
+          };
+        });
+        safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+      }
+    }
+  }
+
+  function goToMainHome() {
+    activeSchoolSession = null;
+    const badge = document.getElementById("headerActiveUserBadge");
+    if (badge) badge.textContent = "உள்நுழைவு தயார் நிலை";
+    switchMainView("viewAuth");
+    switchAuthTab("schoolLogin");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    showToast("🏠 முதன்மை முகப்பு பக்கத்திற்குத் திரும்பினீர்கள்.", "#0284c7");
+  }
+
+  function returnToAdminFromSchool() {
+    activeSchoolSession = null;
+    switchMainView("viewAdmin");
+    returnToAdminDashboard();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    showToast("🛡️ மாவட்ட நிர்வாகி முகப்பிற்குத் திரும்பினீர்கள்.", "#f59e0b");
+  }
+
   function getSchoolExtra(uNo) {
     if (!schoolExtraDataStore[uNo]) {
       schoolExtraDataStore[uNo] = {
@@ -3463,6 +3542,10 @@
     document.getElementById("schBannerNameTa").textContent = s.nameTa;
     document.getElementById("schBannerNameEn").textContent = s.nameEn;
     document.getElementById("schBannerMeta").textContent = `ஒன்றியம்: ${s.block} | தொகுதி: ${s.assembly} | DGE எண்: ${s.dgeNo || "-"}${s.centre12 ? " | +2 மைய எண்: " + s.centre12 : ""}`;
+    const backToAdmBtn = document.getElementById("schBackToAdminBtn");
+    if (backToAdmBtn) {
+      backToAdmBtn.style.display = s.isAdminInspection ? "inline-flex" : "none";
+    }
 
     // Populate Profile Form
     document.getElementById("schFormSn").textContent = s.sn || "-";
@@ -3484,25 +3567,9 @@
     document.getElementById("schFormEmail").value = auth.email || "";
     document.getElementById("schFormPincode").value = extra.pincode || "630561";
 
+    initSchoolStaffFromEmis(s, extra);
     renderSchoolStudentTable(s, extra);
     renderSchoolStaffStrengthUI(s);
-
-    if (extra.staff.length === 0 && (s.hmName || s.hmTa)) {
-      extra.staff.push({
-        id: "STF-1",
-        prefix: "",
-        name: s.hmTa || s.hmName,
-        gender: "Male",
-        desig: s.level === "HSS" ? "HEADMASTER (HSS) (1)" : "HEADMASTER (HS) (2)",
-        subject: "All Subjects (27)",
-        firstApp: "PROMOTION",
-        nature: "Regular",
-        examDuty: "Chief Superintendent",
-        campDuty: "CE",
-        campOption: "01-Sivagangai",
-        mobile: s.mobile || ""
-      });
-    }
     renderSchoolStaffTable(extra);
 
     const n = extra.needs;
@@ -3650,12 +3717,10 @@
       showToast(`✅ புதிய ஆசிரியர் / பணியாளர் (${stf.name}) விவரம் சேர்க்கப்பட்டது!`, "#22c55e");
     }
 
-    if (typeof syncAddedStaffToEbs === "function") {
-      syncAddedStaffToEbs(stf, activeSchoolSession, extra);
-    }
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     cancelEditStaffMember();
     renderSchoolStaffTable(extra);
+    if (activeSchoolSession) renderSchoolStaffStrengthUI(activeSchoolSession);
   }
 
   function editStaffMember(staffId) {
@@ -3714,26 +3779,64 @@
   function renderSchoolStaffTable(extra) {
     const tbody = document.getElementById("schStaffTableBody");
     const badge = document.getElementById("schStaffCountBadge");
-    if (badge) badge.textContent = extra.staff.length;
+    const staffList = extra.staff || [];
+    if (badge) badge.textContent = staffList.length;
+
+    // Render Designation Summary Badges Strip
+    const desigCounts = {};
+    staffList.forEach(st => {
+      const d = st.desig || "TEACHER";
+      desigCounts[d] = (desigCounts[d] || 0) + 1;
+    });
+    const summaryBadges = Object.keys(desigCounts).map(d => `
+      <span style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; padding:3px 10px; border-radius:6px; font-size:0.80rem; font-weight:800;">
+        ${d}: <strong style="color:#1d4ed8; font-size:0.92rem;">${desigCounts[d]}</strong>
+      </span>
+    `).join(" ");
+
+    const summaryEl = document.getElementById("teacherMasterDesignationSummary");
+    if (summaryEl) {
+      if (staffList.length > 0) {
+        summaryEl.style.display = "block";
+        summaryEl.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+            <span style="font-size:0.88rem; font-weight:900; color:#14532d;">📊 இப்பள்ளியில் பணியாற்றும் ஆசிரியர் &amp; பணியாளர் பதவி வாரியான தொகுப்பு:</span>
+            <span style="font-size:0.78rem; background:#dcfce7; color:#166534; padding:2px 8px; border-radius:999px; font-weight:800;">மொத்தம்: ${staffList.length} பணியாளர்கள் (TN EMIS நேரடித் தரவு)</span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">${summaryBadges}</div>
+        `;
+      } else {
+        summaryEl.style.display = "none";
+      }
+    }
+
     if (!tbody) return;
-    if (extra.staff.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:16px; color:#64748b;">பணியாளர் விவரங்கள் இன்னும் சேர்க்கப்படவில்லை.</td></tr>`;
+    if (staffList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:18px; color:#64748b;">பணியாளர் விவரங்கள் இன்னும் சேர்க்கப்படவில்லை.</td></tr>`;
       return;
     }
-    tbody.innerHTML = extra.staff.map((st, idx) => `
-      <tr>
-        <td>${idx + 1}</td>
-        <td style="font-weight:800;">${st.prefix ? st.prefix + " " : ""}${st.name}<br><span style="font-size:0.75rem; color:#64748b;">${st.gender}</span></td>
-        <td>${st.desig}</td>
-        <td>${st.subject}</td>
-        <td>${st.firstApp} (${st.nature})</td>
-        <td>தேர்வு: <strong>${st.examDuty}</strong><br>முகாம்: ${st.campDuty} (${st.campOption})</td>
-        <td>${st.mobile}</td>
+    tbody.innerHTML = staffList.map((st, idx) => `
+      <tr style="border-bottom:1px solid #e2e8f0;">
+        <td style="text-align:center; font-weight:700; color:#64748b;">${idx + 1}</td>
+        <td>
+          <div style="font-weight:800; color:#0f294a;">${st.prefix ? st.prefix + " " : ""}${st.name}</div>
+          <div style="font-size:0.74rem; color:#475569; font-weight:600; margin-top:2px;">
+            Staff ID: <strong style="color:#1d4ed8;">${st.id}</strong> | ${st.gender}${st.dob ? ' | பிறந்த தேதி: ' + st.dob : ''}
+          </div>
+        </td>
+        <td>
+          <strong style="color:#0f294a;">${st.desig}</strong>
+          ${st.source === 'EMIS' ? '<br><span style="font-size:0.68rem; background:#dcfce7; color:#166534; padding:1px 6px; border-radius:4px; font-weight:800; border:1px solid #bbf7d0;">🟢 EMIS நேரடித் தரவு</span>' : '<br><span style="font-size:0.68rem; background:#fef3c7; color:#92400e; padding:1px 6px; border-radius:4px; font-weight:800;">✏️ புதிய சேர்க்கை</span>'}
+        </td>
+        <td><strong style="color:#1e40af;">${st.subject || "-"}</strong></td>
+        <td>${st.firstApp || "TRB"} (${st.nature || "Regular"})</td>
+        <td style="font-size:0.80rem;">தேர்வு: <strong>${st.examDuty || "-"}</strong><br>முகாம்: ${st.campDuty || "-"} (${st.campOption || "-"})</td>
+        <td><strong style="color:#0284c7;">${st.mobile || "-"}</strong></td>
         <td style="white-space:nowrap;">
-          <button type="button" class="btn btn-primary btn-sm" onclick="editStaffMember('${st.id}')">✏️ திருத்து / சரிசெய்</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="editStaffMember('${st.id}')">✏️ திருத்து</button>
           ${st.deleteReqStatus === "PENDING"
-            ? `<span style="display:inline-block; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 6px; border-radius:4px; font-size:0.72rem; font-weight:800; margin-left:4px;">⏳ நீக்கக் கோரிக்கை நிலுவையில்</span><button type="button" class="btn btn-outline btn-sm" style="margin-left:4px;" onclick="cancelSchoolDeleteRequest('STF', '${st.id}')">↩️ திரும்பப் பெறு</button>`
-            : `<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" onclick="openDeleteRequestModal('STF', '${st.id}')">🗑️ Delete Request</button>`
+            ? `<span style="display:inline-block; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 6px; border-radius:4px; font-size:0.72rem; font-weight:800; margin-left:4px;">⏳ நீக்கக் கோரிக்கை</span><button type="button" class="btn btn-outline btn-sm" style="margin-left:4px;" onclick="cancelSchoolDeleteRequest('STF', '${st.id}')">↩️</button>`
+            : `<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" onclick="openDeleteRequestModal('STF', '${st.id}')">🗑️ நீக்கக் கோரிக்கை</button>`
           }
         </td>
       </tr>
@@ -3838,9 +3941,6 @@
     renderAdminCircularsList();
     switchMainView("viewAdmin");
     returnToAdminDashboard();
-    if (typeof updateAllEbsControlUI === "function") {
-      updateAllEbsControlUI();
-    }
     showToast("🛡️ மாவட்ட நிர்வாகி கட்டுப்பாட்டு முகப்பிற்கு வரவேற்கிறோம்!", "#f59e0b");
   }
 
@@ -3856,36 +3956,21 @@
   function returnToAdminDashboard() {
     const chooser = document.getElementById("admMainPortalChooser");
     const secSch = document.getElementById("admSectionSchoolMaster");
-    const secEbs = document.getElementById("admSectionEbs");
     if (chooser) chooser.style.display = "block";
     if (secSch) secSch.style.display = "none";
-    if (secEbs) secEbs.style.display = "none";
-    if (typeof updateAllEbsControlUI === "function") {
-      updateAllEbsControlUI();
-    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function openAdminModule(modKey) {
     const chooser = document.getElementById("admMainPortalChooser");
     const secSch = document.getElementById("admSectionSchoolMaster");
-    const secEbs = document.getElementById("admSectionEbs");
     if (chooser) chooser.style.display = "none";
+    if (secSch) secSch.style.display = "block";
 
     if (modKey === "schoolMaster") {
-      if (secSch) secSch.style.display = "block";
-      if (secEbs) secEbs.style.display = "none";
       switchAdminTab("directory");
-    } else if (modKey === "ebs") {
-      if (secSch) secSch.style.display = "none";
-      if (secEbs) secEbs.style.display = "block";
-      switchAdminTab("ebs");
-      if (typeof renderAdminEbsMonitorTable === "function") {
-        renderAdminEbsMonitorTable();
-      }
-    }
-    if (typeof updateAllEbsControlUI === "function") {
-      updateAllEbsControlUI();
+    } else if (modKey === "emisStaff") {
+      switchAdminTab("emisSync");
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -3893,18 +3978,8 @@
   function switchAdminTab(tabKey) {
     const chooser = document.getElementById("admMainPortalChooser");
     const secSch = document.getElementById("admSectionSchoolMaster");
-    const secEbs = document.getElementById("admSectionEbs");
-
-    const ebsTabs = ["ebs", "deleteReqs", "emisSync"];
-    if (ebsTabs.includes(tabKey)) {
-      if (chooser) chooser.style.display = "none";
-      if (secSch) secSch.style.display = "none";
-      if (secEbs) secEbs.style.display = "block";
-    } else {
-      if (chooser) chooser.style.display = "none";
-      if (secSch) secSch.style.display = "block";
-      if (secEbs) secEbs.style.display = "none";
-    }
+    if (chooser) chooser.style.display = "none";
+    if (secSch) secSch.style.display = "block";
 
     const map = {
       directory: ["admTabBtnDirectory", "admPaneDirectory"],
@@ -3922,14 +3997,10 @@
       if (pane) pane.style.display = (k === tabKey) ? "block" : "none";
     });
 
-    const ebsEmisBtn = document.getElementById("admTabBtnEbsEmisSync");
-    if (ebsEmisBtn) ebsEmisBtn.classList.toggle("active", tabKey === "emisSync");
-
     if (tabKey === "emisSync" && typeof renderEmisDistrictAuditTable === "function") {
       renderEmisDistrictAuditTable();
     }
   }
-
   function resetAdminDirectoryFilters() {
     ["admFilterSearch", "admFilterMgmt1", "admFilterMgmt2", "admFilterMgmt3", "admFilterBlock", "admFilterAssembly", "admFilterLevel"].forEach(id => {
       const el = document.getElementById(id);
@@ -4007,6 +4078,7 @@
   function adminInspectSchoolPortal(uNo) {
     const s = findSchoolByUNoOrUdise(uNo);
     if (!s) return;
+    s.isAdminInspection = true;
     loginAsSchool(s);
   }
 
@@ -4493,37 +4565,28 @@
   function renderSchoolStaffStrengthUI(s) {
     if (!s) return;
     const uNo = String(s.uNo || "").trim();
-    const pool = (window.EMIS_STAFF_DATA && window.EMIS_STAFF_DATA.pool) ? window.EMIS_STAFF_DATA.pool : [];
-    const rawRows = (window.EMIS_STAFF_DATA && window.EMIS_STAFF_DATA.byUNo && window.EMIS_STAFF_DATA.byUNo[uNo]) 
-      ? window.EMIS_STAFF_DATA.byUNo[uNo] 
-      : [];
+    const extra = getSchoolExtra(uNo);
+    initSchoolStaffFromEmis(s, extra);
 
-    let staffList = [];
-    if (rawRows.length > 0) {
-      staffList = rawRows.map(r => ({
-        isTeaching: r[0] === 1,
-        staffId: String(r[1] || ""),
-        name: String(r[2] || ""),
-        desig: pool[r[3]] || "TEACHER",
-        gender: r[4] === "F" ? "Female" : "Male",
-        dob: r[5] || "",
-        nature: r[6] === "R" ? "Regular" : "Contract",
-        subject: pool[r[7]] || "",
-        classTaught: pool[r[8]] || "",
-        qualification: pool[r[9]] || ""
-      }));
-    } else {
-      const extra = getSchoolExtra(uNo);
-      if (extra.staff && extra.staff.length > 0) {
-        staffList = extra.staff.map(st => ({
-          isTeaching: true,
-          staffId: st.id || "",
-          name: st.name || "",
-          desig: st.desig || "TEACHER",
-          gender: st.gender || "Male",
-          nature: st.nature || "Regular",
-          subject: st.subject || "",
-          mobile: st.mobile || ""
+    let staffList = (extra.staff && extra.staff.length > 0) ? extra.staff : [];
+
+    // Secondary fallback directly to EMIS
+    if (staffList.length === 0) {
+      const emis = getEmisStaffData();
+      const pool = (emis && emis.pool) ? emis.pool : [];
+      const cleanUNo = uNo.replace(/^0+/, "");
+      const rawRows = (emis && emis.byUNo) ? (emis.byUNo[uNo] || (cleanUNo ? emis.byUNo[cleanUNo] : null) || []) : [];
+      if (rawRows.length > 0) {
+        staffList = rawRows.map(r => ({
+          isTeaching: r[0] === 1,
+          staffId: String(r[1] || ""),
+          name: String(r[2] || ""),
+          desig: pool[r[3]] || (r[0] === 1 ? "TEACHER" : "OFFICE STAFF"),
+          gender: r[4] === "F" ? "Female" : "Male",
+          dob: r[5] || "",
+          nature: r[6] === "R" ? "Regular" : "Contract",
+          subject: pool[r[7]] || "",
+          qualification: pool[r[9]] || ""
         }));
       } else if (s.hmName || s.hmTa) {
         staffList.push({
