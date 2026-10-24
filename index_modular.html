@@ -2160,6 +2160,10 @@
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
       <span class="domain-pill" onclick="goToMainHome()" style="cursor:pointer;" title="முதன்மை முகப்பு பக்கத்திற்கு செல்ல">🌐 portal.ceosvg.in</span>
       <span><span class="status-dot" id="sheetSyncDot"></span><strong id="sheetSyncStatusText">School-Master Google Sheet இணைக்கப்பட்டுள்ளது (281 பள்ளிகள்)</strong></span>
+      <span id="firebaseLiveBadge" onclick="openCloudSettingsModal('firebase')" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#fff7ed; border:1.5px solid #fdba74; color:#c2410c; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:800; transition:all 0.2s;" title="Firebase நேரடி மேகக்கணித் தரவுத்தள அமைப்புகளைத் திறக்க கிளிக் செய்க">
+        <span id="firebaseStatusDot" style="width:8px; height:8px; border-radius:50%; background:#f97316; display:inline-block; box-shadow:0 0 6px #f97316;"></span>
+        <span id="firebaseStatusText">🔥 Firebase நேரடி இணைப்பு: தயார் நிலை (Setup)</span>
+      </span>
     </div>
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       <button type="button" class="btn btn-outline btn-sm" onclick="goToMainHome()">🏠 முதன்மை முகப்பு (Home)</button>
@@ -3116,6 +3120,9 @@
             <button type="button" class="btn btn-outline btn-sm" onclick="switchAdminTab('emisSync')" style="font-weight:800; border-color:#10b981; color:#047857; background:#ecfdf5;">
               📥 EMIS தரவு பதிவேற்றம் (Upload Center)
             </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal('firebase')" style="font-weight:800; border-color:#f97316; color:#c2410c; background:#fff7ed;">
+              🔥 Firebase நேரடித் தரவுத்தளம் (Real-Time DB)
+            </button>
           </div>
         </div>
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(155px, 1fr)); gap:10px;">
@@ -3143,6 +3150,24 @@
             <div style="font-size:0.72rem; font-weight:800; color:#92400e;">நீக்கக் கோரிக்கைகள் (REQUESTS)</div>
             <div style="font-size:1.45rem; font-weight:900; color:#b45309;" id="admExecDelReqCount">1</div>
             <div style="font-size:0.70rem; color:#92400e; font-weight:700;">மாவட்ட நிர்வாகி ஒப்புதலுக்கு</div>
+          </div>
+        </div>
+
+        <!-- LIVE REAL-TIME CLOUD SYNC MONITOR BAR IN CEO DASHBOARD -->
+        <div id="adminLiveSyncFeedBar" style="margin-top:12px; padding:10px 14px; background:linear-gradient(90deg, #fff7ed 0%, #f0fdf4 100%); border:1.5px solid #fed7aa; border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span style="background:#ea580c; color:#fff; font-size:0.72rem; font-weight:900; padding:3px 9px; border-radius:999px; letter-spacing:0.4px;">⚡ REAL-TIME SYNC</span>
+            <span id="adminLiveSyncLastMsg" style="font-size:0.83rem; font-weight:800; color:#1e293b;">
+              பள்ளிகளில் தலைமையாசிரியர் சேமிக்கும் விவரங்கள் அதே வினாடியில் இங்கே நேரடியாகப் பிரதிபலிக்கும் (Firebase RTDB + Multi-Tab Live Bus தயார் நிலை).
+            </span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="simulateLiveSchoolToCeoSync()" style="font-size:0.76rem; font-weight:800; padding:4px 10px; border-color:#16a34a; color:#15803d; background:#ffffff;">
+              ⚡ நேரடி ஒத்திசைவு சோதனை (Test HM ➔ CEO Sync)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal('guide')" style="font-size:0.76rem; font-weight:800; padding:4px 10px; border-color:#ea580c; color:#c2410c; background:#ffffff;">
+              📖 Firebase இணைப்பு வழிகாட்டி
+            </button>
           </div>
         </div>
       </div>
@@ -4877,31 +4902,181 @@
   </footer>
 </div>
 
-<!-- CLOUD & GOOGLE SHEET SETTINGS MODAL -->
-<div id="cloudSettingsModal" class="modal-backdrop">
-  <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title">⚙️ Google Sheet & Apps Script இணைப்பு அமைப்புகள் (portal.ceosvg.in)</div>
+<!-- CLOUD, FIREBASE REAL-TIME DB & GOOGLE SHEET SETTINGS MODAL -->
+<div id="cloudSettingsModal" class="modal-backdrop" onclick="if(event.target===this) closeCloudSettingsModal()">
+  <div class="modal-card" style="max-width:860px; width:96%; max-height:92vh; overflow-y:auto;">
+    <div class="modal-header" style="border-bottom:2px solid #e2e8f0; padding-bottom:12px; margin-bottom:14px;">
+      <div>
+        <div class="modal-title" style="font-size:1.15rem; color:#0f294a;">🔥 மையப்படுத்தப்பட்ட நேரடி மேகக்கணித் தரவுத்தளம் (Firebase Real-Time DB &amp; Cloud Sync)</div>
+        <div style="font-size:0.78rem; color:#64748b; margin-top:2px;">ஒரு பள்ளியில் தலைமையாசிரியர் சேமிக்கும் விவரம் அதே வினாடியில் முதன்மைக் கல்வி அலுவலர் (CEO) முகப்பில் பிரதிபலிக்கும் நேரடி ஒத்திசைவு அமைப்பு</div>
+      </div>
       <button type="button" class="btn btn-outline btn-sm" onclick="closeCloudSettingsModal()">✕ மூடுக</button>
     </div>
-    <div style="font-size:0.86rem; color:#334155; margin-bottom:14px;">
-      உங்கள் <strong>School-Master</strong> கூகுள் சீட் (ID: <code>1QesgNBu6tHCgM5xNIwfi4rwvU8quM2y7qXOc47_A64o</code>) நேரடியாக இணைக்கப்பட்டுள்ளது. கூகுள் சீட்டில் புதிய பள்ளிகள் அல்லது நிர்வாகப் பிரிவுகளைச் சேர்த்தவுடன் <strong>"இப்போது ஒத்திசைக்க (Sync Now)"</strong> பொத்தானை அழுத்தினால் போதும்.
+
+    <!-- Modal Navigation Tabs -->
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; border-bottom:1.5px solid #cbd5e1; padding-bottom:10px;">
+      <button type="button" id="cloudTabBtnFirebase" class="btn btn-primary btn-sm" onclick="switchCloudSettingsTab('firebase')" style="font-weight:800;">
+        🔥 1. Firebase நேரடித் தரவுத்தள இணைப்பு (Real-Time DB)
+      </button>
+      <button type="button" id="cloudTabBtnGuide" class="btn btn-outline btn-sm" onclick="switchCloudSettingsTab('guide')" style="font-weight:800;">
+        📖 2. Firebase உருவாக்கும் 5-படி தமிழ் வழிகாட்டி &amp; Rules
+      </button>
+      <button type="button" id="cloudTabBtnSheet" class="btn btn-outline btn-sm" onclick="switchCloudSettingsTab('sheet')" style="font-weight:800;">
+        📊 3. Google Sheet &amp; Apps Script இணைப்பு
+      </button>
     </div>
-    <div class="form-group">
-      <label class="form-label">1. Master Schools Google Sheet ID (School-Master - 281 Schools):</label>
-      <input type="text" id="cfgMasterSheetId" class="form-control" value="1QesgNBu6tHCgM5xNIwfi4rwvU8quM2y7qXOc47_A64o">
+
+    <!-- TAB 1: FIREBASE REALTIME DATABASE CONFIGURATION & LIVE CONTROLS -->
+    <div id="cloudTabPaneFirebase" style="display:block;">
+      <div id="fbConnStatusBanner" style="background:#fff7ed; border:1.5px solid #fdba74; border-left:5px solid #ea580c; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div id="fbModalStatusHeadline" style="font-size:0.92rem; font-weight:900; color:#9a3412;">🟡 நிலை: உள்ளூர் + Multi-Tab நேரடி ஒத்திசைவு செயலில் உள்ளது (Firebase URL இன்னும் இணைக்கப்படவில்லை)</div>
+            <div id="fbModalStatusSubtext" style="font-size:0.8rem; color:#7c2d12; margin-top:2px;">கீழே உங்கள் Firebase Realtime Database URL-ஐ உள்ளிட்டு <strong>"💾 அமைப்புகளைச் சேமி"</strong> அழுத்தியவுடன், 282 பள்ளிகளும் நேரடி மேகக்கணியில் இணையும்.</div>
+          </div>
+          <span id="fbLastSyncBadge" style="font-size:0.75rem; font-weight:800; background:#ffffff; border:1px solid #fdba74; color:#c2410c; padding:4px 10px; border-radius:999px;">கடைசி ஒத்திசைவு: தயார் நிலை</span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" style="font-weight:800; color:#0f294a;">1. Firebase Realtime Database URL (<span style="color:#dc2626;">*</span>):</label>
+          <input type="url" id="cfgFirebaseDbUrl" class="form-control" placeholder="https://ceosvg-portal-default-rtdb.asia-southeast1.firebasedatabase.app">
+          <div style="font-size:0.73rem; color:#64748b; margin-top:3px;">Firebase Console ➔ Realtime Database ➔ Data பிரிவில் உள்ள URL</div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" style="font-weight:800; color:#0f294a;">2. Firebase Web API Key / Auth Secret (விருப்பத்தேர்வு):</label>
+          <input type="text" id="cfgFirebaseApiKey" class="form-control" placeholder="AIzaSy... (அல்லது பொது விதிகளுக்கு காலியாக விடலாம்)">
+          <div style="font-size:0.73rem; color:#64748b; margin-top:3px;">Project Settings ➔ General ➔ Web API Key</div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:12px; background:#f8fafc; border:1.5px dashed #94a3b8; border-radius:8px; padding:10px 12px;">
+        <label class="form-label" style="font-weight:800; color:#1e3a8a;">💡 எளிய முறை: Firebase Console-லிருந்து <code>firebaseConfig</code> குறியீட்டை இங்கே ஒட்டினால் (Paste) தானாகவே மேலே நிரப்பப்படும்:</label>
+        <textarea id="cfgFirebaseRawJson" class="form-control" rows="2" placeholder="const firebaseConfig = { apiKey: &quot;AIza...&quot;, databaseURL: &quot;https://ceosvg-portal-default-rtdb.asia-southeast1.firebasedatabase.app&quot;, projectId: &quot;ceosvg-portal&quot; };" oninput="autoExtractFirebaseConfigFromText(this.value)" style="font-family:monospace; font-size:0.78rem;"></textarea>
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:8px; padding:10px 14px; margin-bottom:14px;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.85rem; font-weight:800; color:#14532d;">
+          <input type="checkbox" id="cfgFirebaseAutoSync" checked style="width:17px; height:17px; accent-color:#16a34a;">
+          <span>⚡ தலைமையாசிரியர் &amp; நிர்வாகி சேமிக்கும் மாற்றங்களை அதே வினாடியில் நேரடியாக ஒத்திசைக்க (Instant Live SSE + REST Push)</span>
+        </label>
+        <button type="button" class="btn btn-outline btn-sm" onclick="disconnectFirebaseDatabase()" style="font-size:0.75rem; border-color:#ef4444; color:#dc2626; background:#fff;">
+          🔌 இணைப்பைத் துண்டி (Reset URL)
+        </button>
+      </div>
+
+      <!-- Progress Bar for Seeding 282 Schools -->
+      <div id="fbSeedProgressBox" style="display:none; background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px; padding:10px 14px; margin-bottom:14px;">
+        <div id="fbSeedProgressText" style="font-size:0.82rem; font-weight:800; color:#1e3a8a; margin-bottom:6px;">🚀 Firebase மேகக்கணிக்குத் தரவுகள் பதிவேற்றப்படுகின்றன...</div>
+        <div style="width:100%; height:10px; background:#dbeafe; border-radius:999px; overflow:hidden;">
+          <div id="fbSeedProgressBar" style="width:0%; height:100%; background:linear-gradient(90deg, #2563eb, #10b981); transition:width 0.3s;"></div>
+        </div>
+      </div>
+
+      <!-- Action Buttons Toolbar -->
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+        <button type="button" class="btn btn-primary" onclick="saveCloudSettings()" style="font-weight:800;">
+          💾 அமைப்புகளைச் சேமி &amp; இணை (Save &amp; Connect)
+        </button>
+        <button type="button" class="btn btn-outline" onclick="testFirebaseConnection()" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#f0f9ff;">
+          🔌 இணைப்பைச் சோதி (Test Connection)
+        </button>
+        <button type="button" class="btn btn-success" onclick="seedAllPortalDataToFirebase()" style="font-weight:800;">
+          🚀 282 பள்ளிகளின் முழுத் தரவையும் Firebase-க்கு பதிவேற்று (Initial Seed)
+        </button>
+        <button type="button" class="btn btn-outline" onclick="pullAllPortalDataFromFirebase(true)" style="font-weight:800; border-color:#7c3aed; color:#6d28d9; background:#f5f3ff;">
+          📥 Firebase-லிருந்து தரவைப் பெறு (Pull Now)
+        </button>
+        <button type="button" class="btn btn-outline" onclick="simulateLiveSchoolToCeoSync()" style="font-weight:800; border-color:#ea580c; color:#c2410c; background:#fff7ed;">
+          ⚡ நேரடி ஒத்திசைவு மாதிரிச் சோதனை (Simulate HM ➔ CEO)
+        </button>
+      </div>
+
+      <!-- Live Real-Time Sync Event Log -->
+      <div style="background:#0f172a; color:#f8fafc; border-radius:10px; padding:12px 14px; border:1.5px solid #334155;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:6px;">
+          <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">📡 நேரடி மேகக்கணி ஒத்திசைவுப் பதிவேடு (Live Real-Time Sync Stream Log)</span>
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyPermanentFirebaseConfigSnippet()" style="font-size:0.72rem; padding:2px 8px; background:#1e293b; color:#fde047; border-color:#475569;">
+            📋 portal.ceosvg.in நிரந்தர Config நகலெடு
+          </button>
+        </div>
+        <div id="fbLiveActivityLogBox" style="font-family:monospace; font-size:0.78rem; max-height:130px; overflow-y:auto; display:flex; flex-direction:column; gap:5px; color:#cbd5e1;">
+          <div>[தயார் நிலை] நேரடி ஒத்திசைவு இயந்திரம் (SSE + REST + Multi-Tab Bus) விழிப்புடன் உள்ளது...</div>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">2. Teachers &amp; Staff EMIS Google Sheet ID (25-TEACH-DETAILS - 7,008 Staff):</label>
-      <input type="text" id="cfgTeachersSheetId" class="form-control" value="1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A">
+
+    <!-- TAB 2: STEP-BY-STEP TAMIL GUIDE & SECURITY RULES -->
+    <div id="cloudTabPaneGuide" style="display:none;">
+      <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:14px 16px; margin-bottom:14px; font-size:0.85rem; color:#1e293b; line-height:1.6;">
+        <h4 style="font-size:1rem; font-weight:900; color:#1e3a8a; margin-bottom:8px;">🚀 3 நிமிடங்களில் இலவச Firebase Realtime Database உருவாக்கி இணைக்கும் முறை:</h4>
+        <ol style="margin-left:18px; display:flex; flex-direction:column; gap:8px;">
+          <li>
+            <strong>படி 1 (Firebase Project உருவாக்குதல்):</strong>
+            உங்கள் உலாவியில் <a href="https://console.firebase.google.com/" target="_blank" rel="noopener" style="color:#2563eb; font-weight:800; text-decoration:underline;">https://console.firebase.google.com</a> தளத்திற்குச் சென்று உங்கள் Google கணக்கில் உள்நுழையவும். அங்கு <strong>"Create a project"</strong> (அல்லது Add project) கிளிக் செய்து <code>ceosvg-school-portal</code> எனப் பெயரிட்டு Project-ஐ உருவாக்கவும்.
+          </li>
+          <li>
+            <strong>படி 2 (Realtime Database தொடங்குதல்):</strong>
+            இடதுபுற மெனுவில் <strong>Build ➔ Realtime Database</strong> என்பதைத் தேர்ந்தெடுத்து <strong>"Create Database"</strong> பொத்தானை அழுத்தவும்.
+            Location என்பதில் <strong>Singapore (asia-southeast1)</strong> (இந்தியாவிற்கு அதிவேகமான சர்வர்) என்பதைத் தேர்ந்தெடுத்து, <strong>Start in test mode</strong> கொடுத்து <strong>Enable</strong> செய்யவும்.
+          </li>
+          <li>
+            <strong>படி 3 (Security Rules அமைத்தல்):</strong>
+            Realtime Database பக்கத்தில் மேலே உள்ள <strong>"Rules"</strong> தாவலைத் (Tab) திறந்து, கீழேயுள்ள விதிகளை நகலெடுத்து ஒட்டி <strong>"Publish"</strong> பொத்தானை அழுத்தவும்:
+            <div style="background:#0f172a; color:#a7f3d0; padding:10px 12px; border-radius:8px; margin-top:6px; font-family:monospace; font-size:0.78rem; position:relative;">
+              <pre id="fbSecurityRulesPre" style="margin:0; white-space:pre-wrap;">{
+  "rules": {
+    "ceosvg_live": {
+      ".read": true,
+      ".write": true,
+      "school_extra": {
+        "$uNo": { ".read": true, ".write": true }
+      },
+      "master_schools_by_uno": {
+        "$uNo": { ".read": true, ".write": true }
+      }
+    }
+  }
+}</pre>
+              <button type="button" class="btn btn-outline btn-sm" onclick="copyFirebaseSecurityRules()" style="position:absolute; top:8px; right:8px; background:#1e293b; color:#fff; border-color:#475569; font-size:0.74rem; padding:3px 9px;">
+                📋 Rules நகலெடு (Copy)
+              </button>
+            </div>
+          </li>
+          <li>
+            <strong>படி 4 (Database URL இணைத்தல் &amp; 282 பள்ளிகளைப் பதிவேற்றுதல்):</strong>
+            இப்போது <strong>"Data"</strong> தாவலில் தோன்றும் <code>https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app</code> என்ற இணைப்பை நகலெடுத்து, இங்கே <strong>"🔥 1. Firebase நேரடித் தரவுத்தள இணைப்பு"</strong> தாவலில் ஒட்டி, முதலில் <strong>"💾 அமைப்புகளைச் சேமி &amp; இணை"</strong> பொத்தானையும், அடுத்து <strong>"🚀 282 பள்ளிகளின் முழுத் தரவையும் Firebase-க்கு பதிவேற்று"</strong> பொத்தானையும் அழுத்தவும்.
+          </li>
+          <li>
+            <strong>படி 5 (எவ்வாறு செயல்படுகிறது?):</strong>
+            இனி எந்தவொரு பள்ளியின் தலைமையாசிரியரும் (எ.கா: பள்ளி எண் 201) தனது பள்ளி முகப்பில் மாணவர் எண்ணிக்கை, பணியாளர் பதிவேடு, நீக்கக் கோரிக்கை அல்லது சுயவிவரத்தைச் சேமித்த அடுத்த வினாடியே (<code>&lt; 1 Second</code>), அது <code>/ceosvg_live/school_extra/201</code> முகவரியில் சேமிக்கப்பட்டு, முதன்மைக் கல்வி அலுவலர் (CEO Admin) முகப்பில் பக்கத்தை Refresh செய்யாமலேயே நேரடியாகப் பிரதிபலிக்கும்!
+          </li>
+        </ol>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Google Apps Script Web App URL (Code.gs Deployment URL):</label>
-      <input type="url" id="cfgAppsScriptUrl" class="form-control" value="https://script.google.com/macros/s/AKfycbzDu0rRh1KcdmkkqOFJzbx80J7VtBYFzjowRzu1IeAdPU7iZgP5Q6J6cdKT4VkopxAI/exec">
-    </div>
-    <div style="display:flex; gap:10px; justify-content:flex-end;">
-      <button type="button" class="btn btn-outline" onclick="syncMasterFromGoogleSheet(true)">🔄 இப்போது ஒத்திசைக்க (Sync Now)</button>
-      <button type="button" class="btn btn-primary" onclick="saveCloudSettings()">💾 அமைப்புகளைச் சேமி</button>
+
+    <!-- TAB 3: EXISTING GOOGLE SHEET & APPS SCRIPT BACKUP SETTINGS -->
+    <div id="cloudTabPaneSheet" style="display:none;">
+      <div style="font-size:0.86rem; color:#334155; margin-bottom:14px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1;">
+        உங்கள் <strong>School-Master</strong> கூகுள் சீட் (ID: <code>1QesgNBu6tHCgM5xNIwfi4rwvU8quM2y7qXOc47_A64o</code>) நேரடியாக இணைக்கப்பட்டுள்ளது. கூகுள் சீட்டில் புதிய பள்ளிகள் அல்லது நிர்வாகப் பிரிவுகளைச் சேர்த்தவுடன் <strong>"இப்போது ஒத்திசைக்க (Sync Now)"</strong> பொத்தானை அழுத்தினால் போதும்.
+      </div>
+      <div class="form-group">
+        <label class="form-label">1. Master Schools Google Sheet ID (School-Master - 281 Schools):</label>
+        <input type="text" id="cfgMasterSheetId" class="form-control" value="1QesgNBu6tHCgM5xNIwfi4rwvU8quM2y7qXOc47_A64o">
+      </div>
+      <div class="form-group">
+        <label class="form-label">2. Teachers &amp; Staff EMIS Google Sheet ID (25-TEACH-DETAILS - 7,008 Staff):</label>
+        <input type="text" id="cfgTeachersSheetId" class="form-control" value="1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Google Apps Script Web App URL (Code.gs Deployment URL):</label>
+        <input type="url" id="cfgAppsScriptUrl" class="form-control" value="https://script.google.com/macros/s/AKfycbzDu0rRh1KcdmkkqOFJzbx80J7VtBYFzjowRzu1IeAdPU7iZgP5Q6J6cdKT4VkopxAI/exec">
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button type="button" class="btn btn-outline" onclick="syncMasterFromGoogleSheet(true)">🔄 இப்போது ஒத்திசைக்க (Sync Now)</button>
+        <button type="button" class="btn btn-primary" onclick="saveCloudSettings()">💾 அமைப்புகளைச் சேமி</button>
+      </div>
     </div>
   </div>
 </div>
@@ -5352,7 +5527,21 @@
   let teachersSheetId = "1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A";
   let appsScriptUrl = "https://script.google.com/macros/s/AKfycbzDu0rRh1KcdmkkqOFJzbx80J6cdKT4VkopxAI/exec";
 
-  // Safe Storage Helpers
+  // Firebase Real-Time Database Configuration State
+  // District Admin can paste their permanent URL in DEFAULT_FIREBASE_DB_URL for automatic district-wide connection
+  const DEFAULT_FIREBASE_DB_URL = "";
+  let firebaseDbUrl = DEFAULT_FIREBASE_DB_URL;
+  let firebaseApiKey = "";
+  let firebaseAutoSyncEnabled = true;
+  let firebaseSseSource = null;
+  let firebasePollTimer = null;
+  let realtimeBroadcastChannel = null;
+  let lastProcessedRealtimeEventId = "";
+  let isApplyingRemoteRealtimeUpdate = false;
+  let isPortalInitializing = true;
+  let fbLiveActivityLog = [];
+
+  // Safe Storage Helpers with Automatic Real-Time Cloud & Multi-Tab Hook
   function safeGetStorage(key, fallbackVal) {
     try {
       const raw = localStorage.getItem(key);
@@ -5361,10 +5550,15 @@
       return fallbackVal;
     }
   }
-  function safeSetStorage(key, val) {
+  function safeSetStorage(key, val, skipCloudPush) {
     try {
       localStorage.setItem(key, JSON.stringify(val));
     } catch (e) {}
+    if (!skipCloudPush && !isApplyingRemoteRealtimeUpdate && !isPortalInitializing) {
+      if (typeof triggerRealtimeSyncForStorageKey === "function") {
+        triggerRealtimeSyncForStorageKey(key, val);
+      }
+    }
   }
 
   function showToast(msg, borderColor) {
@@ -5388,11 +5582,21 @@
       document.querySelectorAll(".svg-district-map-img").forEach(img => { img.src = SVG_MAP_DATA_URI; });
     }
 
-    // Load saved settings
+    // Load saved settings (Google Sheet & Firebase Real-Time DB)
     const savedCfg = safeGetStorage("CEOSVG_PORTAL_CFG", null);
     if (savedCfg) {
       if (savedCfg.masterSheetId) masterSheetId = savedCfg.masterSheetId;
+      if (savedCfg.teachersSheetId) teachersSheetId = savedCfg.teachersSheetId;
       if (savedCfg.appsScriptUrl) appsScriptUrl = savedCfg.appsScriptUrl;
+      if (typeof savedCfg.firebaseDbUrl === "string" && savedCfg.firebaseDbUrl.trim()) {
+        firebaseDbUrl = savedCfg.firebaseDbUrl.trim();
+      }
+      if (typeof savedCfg.firebaseApiKey === "string") {
+        firebaseApiKey = savedCfg.firebaseApiKey.trim();
+      }
+      if (typeof savedCfg.firebaseAutoSyncEnabled === "boolean") {
+        firebaseAutoSyncEnabled = savedCfg.firebaseAutoSyncEnabled;
+      }
     }
 
     // Load divisions registry
@@ -5463,6 +5667,12 @@
     renderPublicQuickFinder();
     renderStaffFormDropdowns();
     renderSchoolDignitaries();
+
+    // Mark initialization finished so subsequent user saves trigger real-time cloud push
+    isPortalInitializing = false;
+
+    // Initialize Real-Time Multi-Tab & Firebase Cloud Sync Engine
+    initRealtimeCloudEngine();
 
     // Background sync from Google Sheet
     syncMasterFromGoogleSheet(false);
@@ -8179,22 +8389,796 @@
   }
 
   // =========================================================================
-  // 7. LIVE GOOGLE SHEET (GVIZ) & APPS SCRIPT SYNC
+  // 7. FIREBASE REAL-TIME CLOUD DATABASE ENGINE & GOOGLE SHEET SYNC
   // =========================================================================
-  function openCloudSettingsModal() {
-    document.getElementById("cfgMasterSheetId").value = masterSheetId;
-    document.getElementById("cfgAppsScriptUrl").value = appsScriptUrl;
+  function switchCloudSettingsTab(tabName) {
+    const tabs = ["firebase", "guide", "sheet"];
+    tabs.forEach(t => {
+      const pane = document.getElementById("cloudTabPane" + t.charAt(0).toUpperCase() + t.slice(1));
+      const btn = document.getElementById("cloudTabBtn" + t.charAt(0).toUpperCase() + t.slice(1));
+      if (pane) pane.style.display = (t === tabName) ? "block" : "none";
+      if (btn) {
+        btn.className = (t === tabName) ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
+      }
+    });
+  }
+
+  function openCloudSettingsModal(defaultTab) {
+    const mSheetEl = document.getElementById("cfgMasterSheetId");
+    const tSheetEl = document.getElementById("cfgTeachersSheetId");
+    const appUrlEl = document.getElementById("cfgAppsScriptUrl");
+    const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
+    const fbKeyEl = document.getElementById("cfgFirebaseApiKey");
+    const fbAutoEl = document.getElementById("cfgFirebaseAutoSync");
+
+    if (mSheetEl) mSheetEl.value = masterSheetId;
+    if (tSheetEl) tSheetEl.value = teachersSheetId;
+    if (appUrlEl) appUrlEl.value = appsScriptUrl;
+    if (fbUrlEl) fbUrlEl.value = firebaseDbUrl || "";
+    if (fbKeyEl) fbKeyEl.value = firebaseApiKey || "";
+    if (fbAutoEl) fbAutoEl.checked = firebaseAutoSyncEnabled !== false;
+
+    if (defaultTab && ["firebase", "guide", "sheet"].includes(defaultTab)) {
+      switchCloudSettingsTab(defaultTab);
+    } else {
+      switchCloudSettingsTab("firebase");
+    }
+    updateFirebaseStatusIndicators();
     document.getElementById("cloudSettingsModal").classList.add("open");
   }
+
   function closeCloudSettingsModal() {
     document.getElementById("cloudSettingsModal").classList.remove("open");
   }
+
+  function normalizeFirebaseDbUrl(rawUrl) {
+    if (!rawUrl) return "";
+    let u = String(rawUrl).trim();
+    // Strip trailing slashes or .json paths if user pasted a deeper path
+    u = u.replace(/\/ceosvg_live.*$/i, "").replace(/\/+\.json$/i, "").replace(/\/+$/, "");
+    if (u && !/^https?:\/\//i.test(u)) {
+      u = "https://" + u;
+    }
+    return u;
+  }
+
+  function autoExtractFirebaseConfigFromText(rawText) {
+    if (!rawText) return;
+    const dbMatch = rawText.match(/databaseURL\s*:\s*["']([^"']+)["']/i) || rawText.match(/(https:\/\/[a-z0-9-]+\.[a-z0-9.-]*firebasedatabase\.app|https:\/\/[a-z0-9-]+\.firebaseio\.com)/i);
+    const keyMatch = rawText.match(/apiKey\s*:\s*["']([^"']+)["']/i);
+    if (dbMatch && dbMatch[1]) {
+      const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
+      if (fbUrlEl) fbUrlEl.value = normalizeFirebaseDbUrl(dbMatch[1]);
+    }
+    if (keyMatch && keyMatch[1]) {
+      const fbKeyEl = document.getElementById("cfgFirebaseApiKey");
+      if (fbKeyEl) fbKeyEl.value = keyMatch[1].trim();
+    }
+    if ((dbMatch && dbMatch[1]) || (keyMatch && keyMatch[1])) {
+      showToast("✨ Firebase Config குறியீட்டிலிருந்து Database URL & API Key தானாகப் பிரித்தெடுக்கப்பட்டன!", "#22c55e");
+    }
+  }
+
   function saveCloudSettings() {
-    masterSheetId = document.getElementById("cfgMasterSheetId").value.trim() || masterSheetId;
-    appsScriptUrl = document.getElementById("cfgAppsScriptUrl").value.trim() || appsScriptUrl;
-    safeSetStorage("CEOSVG_PORTAL_CFG", { masterSheetId, appsScriptUrl });
-    closeCloudSettingsModal();
-    syncMasterFromGoogleSheet(true);
+    const mSheetEl = document.getElementById("cfgMasterSheetId");
+    const tSheetEl = document.getElementById("cfgTeachersSheetId");
+    const appUrlEl = document.getElementById("cfgAppsScriptUrl");
+    const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
+    const fbKeyEl = document.getElementById("cfgFirebaseApiKey");
+    const fbAutoEl = document.getElementById("cfgFirebaseAutoSync");
+
+    if (mSheetEl && mSheetEl.value.trim()) masterSheetId = mSheetEl.value.trim();
+    if (tSheetEl && tSheetEl.value.trim()) teachersSheetId = tSheetEl.value.trim();
+    if (appUrlEl && appUrlEl.value.trim()) appsScriptUrl = appUrlEl.value.trim();
+    if (fbUrlEl) firebaseDbUrl = normalizeFirebaseDbUrl(fbUrlEl.value);
+    if (fbKeyEl) firebaseApiKey = fbKeyEl.value.trim();
+    if (fbAutoEl) firebaseAutoSyncEnabled = fbAutoEl.checked;
+
+    safeSetStorage("CEOSVG_PORTAL_CFG", {
+      masterSheetId,
+      teachersSheetId,
+      appsScriptUrl,
+      firebaseDbUrl,
+      firebaseApiKey,
+      firebaseAutoSyncEnabled
+    }, true);
+
+    updateFirebaseStatusIndicators();
+    if (firebaseDbUrl) {
+      startFirebaseRealtimeListener();
+      pullAllPortalDataFromFirebase(false);
+      showToast("🔥 Firebase நேரடி மேகக்கணித் தரவுத்தள இணைப்பு சேமிக்கப்பட்டு நேரடி ஒத்திசைவு தொடங்கப்பட்டது!", "#22c55e");
+    } else {
+      stopFirebaseRealtimeListener();
+      syncMasterFromGoogleSheet(true);
+    }
+  }
+
+  function disconnectFirebaseDatabase() {
+    firebaseDbUrl = "";
+    firebaseApiKey = "";
+    const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
+    const fbKeyEl = document.getElementById("cfgFirebaseApiKey");
+    const fbRawEl = document.getElementById("cfgFirebaseRawJson");
+    if (fbUrlEl) fbUrlEl.value = "";
+    if (fbKeyEl) fbKeyEl.value = "";
+    if (fbRawEl) fbRawEl.value = "";
+    stopFirebaseRealtimeListener();
+    safeSetStorage("CEOSVG_PORTAL_CFG", {
+      masterSheetId,
+      teachersSheetId,
+      appsScriptUrl,
+      firebaseDbUrl: "",
+      firebaseApiKey: "",
+      firebaseAutoSyncEnabled
+    }, true);
+    updateFirebaseStatusIndicators();
+    showToast("ℹ️ Firebase URL நீக்கப்பட்டது. உள்ளூர் & Multi-Tab பயன்முறை செயலில் உள்ளது.", "#38bdf8");
+  }
+
+  function buildFirebaseEndpoint(path) {
+    const base = normalizeFirebaseDbUrl(firebaseDbUrl);
+    if (!base) return "";
+    const cleanPath = String(path || "").replace(/^\/+/, "");
+    const q = firebaseApiKey ? `?auth=${encodeURIComponent(firebaseApiKey)}` : "";
+    return `${base}/${cleanPath}.json${q}`;
+  }
+
+  function appendFirebaseActivityLog(msg, colorHex) {
+    const timeNow = new Date().toLocaleTimeString("en-IN");
+    const entry = `[${timeNow}] ${msg}`;
+    fbLiveActivityLog.unshift({ text: entry, color: colorHex || "#38bdf8" });
+    if (fbLiveActivityLog.length > 25) fbLiveActivityLog.pop();
+
+    const box = document.getElementById("fbLiveActivityLogBox");
+    if (box) {
+      box.innerHTML = fbLiveActivityLog.map(item =>
+        `<div style="color:${item.color}; border-bottom:1px dashed rgba(148,163,184,0.2); padding-bottom:3px;">${item.text}</div>`
+      ).join("");
+    }
+    const feedMsg = document.getElementById("adminLiveSyncLastMsg");
+    if (feedMsg) {
+      feedMsg.textContent = entry;
+    }
+    const badge = document.getElementById("fbLastSyncBadge");
+    if (badge) {
+      badge.textContent = `கடைசி ஒத்திசைவு: ${timeNow}`;
+    }
+  }
+
+  function updateFirebaseStatusIndicators(isConnectedOverride) {
+    const dot = document.getElementById("firebaseStatusDot");
+    const txt = document.getElementById("firebaseStatusText");
+    const badge = document.getElementById("firebaseLiveBadge");
+    const banner = document.getElementById("fbConnStatusBanner");
+    const head = document.getElementById("fbModalStatusHeadline");
+    const sub = document.getElementById("fbModalStatusSubtext");
+
+    const hasUrl = Boolean(normalizeFirebaseDbUrl(firebaseDbUrl));
+    const isLive = isConnectedOverride !== undefined ? isConnectedOverride : hasUrl;
+
+    if (hasUrl && isLive) {
+      if (dot) {
+        dot.style.background = "#16a34a";
+        dot.style.boxShadow = "0 0 8px #16a34a";
+      }
+      if (txt) txt.textContent = "🟢 Firebase நேரடி இணைப்பு (Live RTDB)";
+      if (badge) {
+        badge.style.background = "#f0fdf4";
+        badge.style.borderColor = "#86efac";
+        badge.style.color = "#15803d";
+      }
+      if (banner) {
+        banner.style.background = "#f0fdf4";
+        banner.style.borderColor = "#86efac";
+        banner.style.borderLeftColor = "#16a34a";
+      }
+      if (head) {
+        head.style.color = "#14532d";
+        head.textContent = `🟢 நிலை: Firebase நேரடி மேகக்கணித் தரவுத்தளம் இணைக்கப்பட்டுள்ளது (${normalizeFirebaseDbUrl(firebaseDbUrl)})`;
+      }
+      if (sub) {
+        sub.style.color = "#166534";
+        sub.textContent = "பள்ளிகளில் தலைமையாசிரியர்கள் சேமிக்கும் விவரங்கள் அதே வினாடியில் முதன்மைக் கல்வி அலுவலர் (CEO) முகப்பில் நேரடியாக ஒத்திசைக்கப்படுகின்றன.";
+      }
+    } else {
+      if (dot) {
+        dot.style.background = "#f97316";
+        dot.style.boxShadow = "0 0 6px #f97316";
+      }
+      if (txt) txt.textContent = "🔥 Firebase நேரடி இணைப்பு: தயார் நிலை (Setup)";
+      if (badge) {
+        badge.style.background = "#fff7ed";
+        badge.style.borderColor = "#fdba74";
+        badge.style.color = "#c2410c";
+      }
+      if (banner) {
+        banner.style.background = "#fff7ed";
+        banner.style.borderColor = "#fdba74";
+        banner.style.borderLeftColor = "#ea580c";
+      }
+      if (head) {
+        head.style.color = "#9a3412";
+        head.textContent = "🟡 நிலை: உள்ளூர் + Multi-Tab நேரடி ஒத்திசைவு செயலில் உள்ளது (Firebase URL இன்னும் இணைக்கப்படவில்லை)";
+      }
+      if (sub) {
+        sub.style.color = "#7c2d12";
+        sub.textContent = "கீழே உங்கள் Firebase Realtime Database URL-ஐ உள்ளிட்டு '💾 அமைப்புகளைச் சேமி & இணை' அழுத்தியவுடன், 282 பள்ளிகளும் நேரடி மேகக்கணியில் இணையும்.";
+      }
+    }
+  }
+
+  function getFriendlySyncSummaryTa(key, uNo, schoolName) {
+    const schLabel = (uNo && uNo !== "ADMIN") ? `[U.No: ${uNo}] ${schoolName || ""}` : "மாவட்ட நிர்வாகி (CEO Admin)";
+    if (key === "CEOSVG_SCHOOL_EXTRA_V6") return `${schLabel} – மாணவர் எண்ணிக்கை / பணியாளர் / அடிப்படைத் தேவை விவரம் புதுப்பிக்கப்பட்டது`;
+    if (key === "CEOSVG_MASTER_SCHOOLS") return `${schLabel} – பள்ளி சுயவிவரம் / முதன்மைப் பட்டியல் புதுப்பிக்கப்பட்டது`;
+    if (key === "CEOSVG_SCHOOL_AUTH") return `${schLabel} – உள்நுழைவு / தொடர்பு விவரம் புதுப்பிக்கப்பட்டது`;
+    if (key === "CEOSVG_DELETE_REQUESTS") return `${schLabel} – பணியாளர் நீக்கக் கோரிக்கை (Delete Request) புதுப்பிக்கப்பட்டது`;
+    if (key === "CEOSVG_DIGNITARIES_V1") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் (Dignitaries) விவரம் புதுப்பிக்கப்பட்டது`;
+    if (key === "CEOSVG_CIRCULARS") return `மாவட்ட நிர்வாகி – புதிய சுற்றறிக்கை (Circular) வெளியிடப்பட்டது`;
+    if (key === "CEOSVG_DIVISIONS") return `மாவட்ட நிர்வாகி – நிர்வாகப் பிரிவுகள் (Divisions) புதுப்பிக்கப்பட்டன`;
+    if (key === "CEOSVG_STAFF_OVERRIDES") return `மாவட்ட நிர்வாகி – ஆசிரியர் பணி விவரம் (Staff Master) திருத்தப்பட்டது`;
+    if (key === "CEOSVG_EMIS_STUDENT_DATA") return `மாவட்ட நிர்வாகி – EMIS மாணவர் எண்ணிக்கை முழுமையாக ஒத்திசைக்கப்பட்டது`;
+    return `${schLabel} – தரவு (${key}) புதுப்பிக்கப்பட்டது`;
+  }
+
+  // Triggered automatically whenever safeSetStorage(key, val) is called
+  function triggerRealtimeSyncForStorageKey(key, val) {
+    const ignoredKeys = ["CEOSVG_ACTIVE_SESSION", "CEOSVG_PORTAL_CFG", "CEOSVG_FIREBASE_CFG"];
+    if (ignoredKeys.includes(key)) return;
+
+    const isSchoolActor = Boolean(activeSchoolSession && activeSchoolSession.uNo);
+    const uNo = isSchoolActor ? String(activeSchoolSession.uNo) : "ADMIN";
+    const schoolName = isSchoolActor ? (activeSchoolSession.nameTa || activeSchoolSession.nameEn || "") : "CEO Admin";
+    const evt = {
+      eventId: "EVT_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+      ts: Date.now(),
+      timeStr: new Date().toLocaleTimeString("en-IN"),
+      actor: isSchoolActor ? ("SCHOOL_" + uNo) : "CEO_ADMIN",
+      uNo: uNo,
+      schoolName: schoolName,
+      key: key,
+      summary: getFriendlySyncSummaryTa(key, uNo, schoolName)
+    };
+
+    lastProcessedRealtimeEventId = evt.eventId;
+    appendFirebaseActivityLog(`📤 அனுப்பப்பட்டது: ${evt.summary}`, "#4ade80");
+
+    // 1. Instant Multi-Tab BroadcastChannel Push (<10ms across open browser tabs)
+    if (realtimeBroadcastChannel) {
+      try {
+        let granularPayload = null;
+        if (key === "CEOSVG_SCHOOL_EXTRA_V6" && isSchoolActor && val && val[uNo]) {
+          granularPayload = { type: "school_extra", uNo: uNo, data: val[uNo] };
+        } else if (key === "CEOSVG_MASTER_SCHOOLS" && isSchoolActor && Array.isArray(val)) {
+          const foundSch = val.find(s => String(s.uNo) === uNo);
+          if (foundSch) granularPayload = { type: "master_school_single", uNo: uNo, data: foundSch };
+        } else if (key === "CEOSVG_SCHOOL_AUTH" && isSchoolActor && val && val[uNo]) {
+          granularPayload = { type: "school_auth_single", uNo: uNo, data: val[uNo] };
+        }
+        realtimeBroadcastChannel.postMessage({
+          evt: evt,
+          key: key,
+          granular: granularPayload
+        });
+      } catch (e) {}
+    }
+
+    // 2. Instant Firebase Realtime Database Cloud Push (if configured)
+    const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
+    if (!cleanUrl || !firebaseAutoSyncEnabled) return;
+
+    (async () => {
+      try {
+        if (key === "CEOSVG_SCHOOL_EXTRA_V6" && isSchoolActor && val && val[uNo]) {
+          await fetch(buildFirebaseEndpoint(`ceosvg_live/school_extra/${encodeURIComponent(uNo)}`), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(val[uNo])
+          });
+        } else if (key === "CEOSVG_MASTER_SCHOOLS" && isSchoolActor && Array.isArray(val)) {
+          const foundSch = val.find(s => String(s.uNo) === uNo);
+          if (foundSch) {
+            await fetch(buildFirebaseEndpoint(`ceosvg_live/master_schools_by_uno/${encodeURIComponent(uNo)}`), {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(foundSch)
+            });
+          }
+        } else if (key === "CEOSVG_SCHOOL_AUTH" && isSchoolActor && val && val[uNo]) {
+          await fetch(buildFirebaseEndpoint(`ceosvg_live/school_auth/${encodeURIComponent(uNo)}`), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(val[uNo])
+          });
+        } else {
+          await fetch(buildFirebaseEndpoint(`ceosvg_live/stores/${encodeURIComponent(key)}`), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(val)
+          });
+        }
+
+        // Publish last_event trigger so all connected CEO & School SSE streams receive instant notification
+        await fetch(buildFirebaseEndpoint("ceosvg_live/last_event"), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(evt)
+        });
+      } catch (err) {
+        appendFirebaseActivityLog(`⚠️ Firebase மேகக்கணி அனுப்புதலில் தற்காலிகத் தடை: ${err.message || "Network Error"}`, "#fbbf24");
+      }
+    })();
+  }
+
+  // Apply an incoming real-time update to memory, localStorage, and live DOM views
+  async function applyIncomingRealtimeEvent(evt, optionalGranular) {
+    if (!evt || !evt.eventId || evt.eventId === lastProcessedRealtimeEventId) return;
+    lastProcessedRealtimeEventId = evt.eventId;
+
+    isApplyingRemoteRealtimeUpdate = true;
+    try {
+      const key = evt.key;
+      const uNo = evt.uNo;
+      const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
+
+      if (optionalGranular) {
+        if (optionalGranular.type === "school_extra" && optionalGranular.uNo) {
+          schoolExtraDataStore[optionalGranular.uNo] = optionalGranular.data;
+          safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+        } else if (optionalGranular.type === "master_school_single" && optionalGranular.uNo) {
+          const idx = masterSchools.findIndex(s => String(s.uNo) === String(optionalGranular.uNo));
+          if (idx >= 0) masterSchools[idx] = Object.assign({}, masterSchools[idx], optionalGranular.data);
+          else masterSchools.push(optionalGranular.data);
+          safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+        } else if (optionalGranular.type === "school_auth_single" && optionalGranular.uNo) {
+          schoolAuthStore[optionalGranular.uNo] = optionalGranular.data;
+          safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+        }
+      } else if (cleanUrl) {
+        // Fetch granular node or store from Firebase
+        if (key === "CEOSVG_SCHOOL_EXTRA_V6" && uNo && uNo !== "ADMIN") {
+          const r = await fetch(buildFirebaseEndpoint(`ceosvg_live/school_extra/${encodeURIComponent(uNo)}`));
+          if (r.ok) {
+            const d = await r.json();
+            if (d) {
+              schoolExtraDataStore[uNo] = d;
+              safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+            }
+          }
+        } else if (key === "CEOSVG_MASTER_SCHOOLS" && uNo && uNo !== "ADMIN") {
+          const r = await fetch(buildFirebaseEndpoint(`ceosvg_live/master_schools_by_uno/${encodeURIComponent(uNo)}`));
+          if (r.ok) {
+            const d = await r.json();
+            if (d && d.uNo) {
+              const idx = masterSchools.findIndex(s => String(s.uNo) === String(d.uNo));
+              if (idx >= 0) masterSchools[idx] = Object.assign({}, masterSchools[idx], d);
+              else masterSchools.push(d);
+              safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+            }
+          }
+        } else if (key === "CEOSVG_SCHOOL_AUTH" && uNo && uNo !== "ADMIN") {
+          const r = await fetch(buildFirebaseEndpoint(`ceosvg_live/school_auth/${encodeURIComponent(uNo)}`));
+          if (r.ok) {
+            const d = await r.json();
+            if (d) {
+              schoolAuthStore[uNo] = d;
+              safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+            }
+          }
+        } else if (key) {
+          const r = await fetch(buildFirebaseEndpoint(`ceosvg_live/stores/${encodeURIComponent(key)}`));
+          if (r.ok) {
+            const d = await r.json();
+            if (d !== null && d !== undefined) {
+              safeSetStorage(key, d, true);
+              reloadInMemoryStoreFromKey(key, d);
+            }
+          }
+        }
+      } else {
+        // Reload directly from localStorage for same-browser storage events
+        const localVal = safeGetStorage(key, null);
+        if (localVal !== null) {
+          reloadInMemoryStoreFromKey(key, localVal);
+        }
+      }
+
+      refreshAllActivePortalViews();
+      appendFirebaseActivityLog(`⚡ நேரடி வரவு (Live Sync): ${evt.summary}`, "#38bdf8");
+      showToast(`⚡ நேரடி ஒத்திசைவு: ${evt.summary}`, "#10b981");
+    } catch (e) {
+    } finally {
+      isApplyingRemoteRealtimeUpdate = false;
+    }
+  }
+
+  function reloadInMemoryStoreFromKey(key, val) {
+    if (!val) return;
+    if (key === "CEOSVG_MASTER_SCHOOLS" && Array.isArray(val)) {
+      masterSchools = val;
+    } else if (key === "CEOSVG_SCHOOL_EXTRA_V6" && typeof val === "object") {
+      schoolExtraDataStore = val;
+    } else if (key === "CEOSVG_SCHOOL_AUTH" && typeof val === "object") {
+      schoolAuthStore = val;
+    } else if (key === "CEOSVG_DELETE_REQUESTS" && Array.isArray(val)) {
+      staffDeleteRequests = val;
+    } else if (key === "CEOSVG_CIRCULARS" && Array.isArray(val)) {
+      districtCirculars = val;
+    } else if (key === "CEOSVG_DIVISIONS" && typeof val === "object") {
+      divisionsRegistry = val;
+    } else if (key === "CEOSVG_EMIS_STUDENT_DATA" && typeof val === "object" && typeof EMIS_STUDENT_DATA !== "undefined") {
+      Object.assign(EMIS_STUDENT_DATA, val);
+    }
+  }
+
+  function refreshAllActivePortalViews() {
+    try {
+      updateAllSummaryCounters();
+      renderPublicQuickFinder();
+      renderAdminDirectoryTable();
+      renderAdminCredentialsTable();
+      renderAdminCircularsList();
+      if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+      if (typeof renderSchoolDignitaries === "function") renderSchoolDignitaries();
+      if (typeof renderAdminDignitariesManager === "function") renderAdminDignitariesManager();
+      if (typeof getDistrictAllStaffList === "function") {
+        getDistrictAllStaffList(true);
+        if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
+      }
+      if (typeof renderAdminStudentsMasterView === "function") {
+        const stuPane = document.getElementById("admPaneStudentsMaster");
+        if (stuPane && stuPane.style.display !== "none") renderAdminStudentsMasterView();
+      }
+      if (activeSchoolSession) {
+        const refreshed = masterSchools.find(s => String(s.uNo) === String(activeSchoolSession.uNo));
+        if (refreshed) activeSchoolSession = refreshed;
+        renderSchoolDashboard();
+      }
+    } catch (e) {}
+  }
+
+  function initRealtimeCloudEngine() {
+    // 1. Multi-tab BroadcastChannel for instant local testing & multi-window usage
+    if (typeof BroadcastChannel !== "undefined") {
+      try {
+        realtimeBroadcastChannel = new BroadcastChannel("ceosvg_realtime_bus");
+        realtimeBroadcastChannel.onmessage = function(ev) {
+          if (ev && ev.data && ev.data.evt) {
+            applyIncomingRealtimeEvent(ev.data.evt, ev.data.granular);
+          }
+        };
+      } catch (e) {}
+    }
+
+    // 2. Cross-tab storage listener fallback
+    window.addEventListener("storage", function(ev) {
+      if (!ev || !ev.key || !ev.newValue) return;
+      if (ev.key.startsWith("CEOSVG_") && ev.key !== "CEOSVG_ACTIVE_SESSION") {
+        try {
+          const parsed = JSON.parse(ev.newValue);
+          reloadInMemoryStoreFromKey(ev.key, parsed);
+          refreshAllActivePortalViews();
+        } catch (e) {}
+      }
+    });
+
+    updateFirebaseStatusIndicators();
+
+    // 3. If Firebase URL is configured, start real-time SSE stream & initial pull
+    if (normalizeFirebaseDbUrl(firebaseDbUrl)) {
+      startFirebaseRealtimeListener();
+      setTimeout(() => pullAllPortalDataFromFirebase(false), 600);
+    }
+  }
+
+  function stopFirebaseRealtimeListener() {
+    if (firebaseSseSource) {
+      try { firebaseSseSource.close(); } catch (e) {}
+      firebaseSseSource = null;
+    }
+    if (firebasePollTimer) {
+      clearInterval(firebasePollTimer);
+      firebasePollTimer = null;
+    }
+  }
+
+  function startFirebaseRealtimeListener() {
+    stopFirebaseRealtimeListener();
+    const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
+    if (!cleanUrl) return;
+
+    const eventEndpoint = buildFirebaseEndpoint("ceosvg_live/last_event");
+    // 1. Native Firebase Server-Sent Events (SSE) stream for sub-second push updates
+    if (typeof EventSource !== "undefined") {
+      try {
+        firebaseSseSource = new EventSource(eventEndpoint);
+        firebaseSseSource.addEventListener("put", function(e) {
+          try {
+            const packet = JSON.parse(e.data);
+            const evt = packet && packet.data ? packet.data : null;
+            if (evt && evt.eventId) {
+              if (!lastProcessedRealtimeEventId) {
+                lastProcessedRealtimeEventId = evt.eventId;
+              } else if (evt.eventId !== lastProcessedRealtimeEventId) {
+                applyIncomingRealtimeEvent(evt, null);
+              }
+            }
+          } catch (err) {}
+        });
+        firebaseSseSource.onopen = function() {
+          updateFirebaseStatusIndicators(true);
+          appendFirebaseActivityLog("🟢 Firebase நேரடி SSE அலைவரிசை (Real-Time Stream) இணைக்கப்பட்டது!", "#4ade80");
+        };
+      } catch (e) {}
+    }
+
+    // 2. Lightweight 5-second heartbeat poller fallback (in case school firewall blocks SSE)
+    firebasePollTimer = setInterval(async () => {
+      if (!normalizeFirebaseDbUrl(firebaseDbUrl) || !firebaseAutoSyncEnabled) return;
+      try {
+        const res = await fetch(buildFirebaseEndpoint("ceosvg_live/last_event"));
+        if (!res.ok) return;
+        const evt = await res.json();
+        if (evt && evt.eventId) {
+          if (!lastProcessedRealtimeEventId) {
+            lastProcessedRealtimeEventId = evt.eventId;
+          } else if (evt.eventId !== lastProcessedRealtimeEventId) {
+            applyIncomingRealtimeEvent(evt, null);
+          }
+        }
+      } catch (e) {}
+    }, 5000);
+  }
+
+  async function testFirebaseConnection() {
+    const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
+    const fbKeyEl = document.getElementById("cfgFirebaseApiKey");
+    if (fbUrlEl && fbUrlEl.value.trim()) firebaseDbUrl = normalizeFirebaseDbUrl(fbUrlEl.value);
+    if (fbKeyEl) firebaseApiKey = fbKeyEl.value.trim();
+
+    if (!firebaseDbUrl) {
+      showToast("⚠️ முதலில் உங்கள் Firebase Realtime Database URL-ஐ உள்ளிடவும்!", "#f59e0b");
+      return;
+    }
+
+    appendFirebaseActivityLog(`🔌 Firebase இணைப்பு சோதிக்கப்படுகிறது: ${firebaseDbUrl}...`, "#fde047");
+    try {
+      const pingPayload = {
+        status: "ONLINE",
+        portal: "portal.ceosvg.in",
+        testedAt: new Date().toISOString()
+      };
+      const res = await fetch(buildFirebaseEndpoint("ceosvg_live/connection_test"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(pingPayload)
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status} - Rules-ல் .read/.write: true என உள்ளதா எனச் சரிபார்க்கவும்`);
+      }
+      updateFirebaseStatusIndicators(true);
+      appendFirebaseActivityLog("✅ Firebase இணைப்புச் சோதனை வெற்றி! Read & Write அனுமதி உறுதி செய்யப்பட்டது.", "#4ade80");
+      showToast("✅ Firebase Realtime Database வெற்றிகரமாக இணைக்கப்பட்டது!", "#22c55e");
+    } catch (err) {
+      updateFirebaseStatusIndicators(false);
+      appendFirebaseActivityLog(`❌ இணைப்புப் பிழை: ${err.message}`, "#f87171");
+      showToast(`❌ Firebase இணைப்பு தோல்வி: ${err.message}`, "#ef4444");
+    }
+  }
+
+  async function seedAllPortalDataToFirebase() {
+    const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
+    const fbKeyEl = document.getElementById("cfgFirebaseApiKey");
+    if (fbUrlEl && fbUrlEl.value.trim()) firebaseDbUrl = normalizeFirebaseDbUrl(fbUrlEl.value);
+    if (fbKeyEl) firebaseApiKey = fbKeyEl.value.trim();
+
+    if (!firebaseDbUrl) {
+      showToast("⚠️ முதலில் உங்கள் Firebase Realtime Database URL-ஐ உள்ளிடவும்!", "#f59e0b");
+      return;
+    }
+
+    const progBox = document.getElementById("fbSeedProgressBox");
+    const progBar = document.getElementById("fbSeedProgressBar");
+    const progTxt = document.getElementById("fbSeedProgressText");
+    if (progBox) progBox.style.display = "block";
+    const setProg = (pct, msg) => {
+      if (progBar) progBar.style.width = pct + "%";
+      if (progTxt) progTxt.textContent = msg;
+    };
+
+    try {
+      setProg(15, "🚀 படி 1/4: 282 பள்ளிகளின் முதன்மைப் பட்டியல் (Master Schools) பதிவேற்றப்படுகிறது...");
+      const schoolsByUNo = {};
+      masterSchools.forEach(s => { if (s && s.uNo) schoolsByUNo[String(s.uNo)] = s; });
+
+      const r1 = await fetch(buildFirebaseEndpoint("ceosvg_live/master_schools_by_uno"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(schoolsByUNo)
+      });
+      if (!r1.ok) throw new Error("HTTP " + r1.status);
+
+      setProg(45, "🚀 படி 2/4: பள்ளிகளின் மாணவர் எண்ணிக்கை, பணியாளர் & தேவை விவரங்கள் பதிவேற்றப்படுகின்றன...");
+      await fetch(buildFirebaseEndpoint("ceosvg_live/school_extra"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(schoolExtraDataStore || {})
+      });
+      await fetch(buildFirebaseEndpoint("ceosvg_live/school_auth"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(schoolAuthStore || {})
+      });
+
+      setProg(75, "🚀 படி 3/4: முக்கியப் பிரமுகர்கள், சுற்றறிக்கைகள், நீக்கக் கோரிக்கைகள் & பிரிவுகள் பதிவேற்றப்படுகின்றன...");
+      const storesPayload = {
+        CEOSVG_MASTER_SCHOOLS: masterSchools,
+        CEOSVG_DELETE_REQUESTS: staffDeleteRequests,
+        CEOSVG_CIRCULARS: districtCirculars,
+        CEOSVG_DIVISIONS: divisionsRegistry,
+        CEOSVG_DIGNITARIES_V1: typeof getDignitariesList === "function" ? getDignitariesList() : [],
+        CEOSVG_STAFF_OVERRIDES: safeGetStorage("CEOSVG_STAFF_OVERRIDES", {})
+      };
+      await fetch(buildFirebaseEndpoint("ceosvg_live/stores"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(storesPayload)
+      });
+
+      setProg(100, "✅ படி 4/4: அனைத்து 282 பள்ளிகளின் தரவுகளும் Firebase மேகக்கணியில் வெற்றிகரமாகப் பதிவேற்றப்பட்டன!");
+      saveCloudSettings();
+      appendFirebaseActivityLog(`🚀 282 பள்ளிகளின் முழுத் தரவும் Firebase மேகக்கணியில் வெற்றிகரமாகப் பதிவேற்றப்பட்டது!`, "#4ade80");
+      showToast("🎉 282 பள்ளிகளின் முழுத் தரவும் Firebase Realtime Database-ல் பதிவேற்றப்பட்டது!", "#22c55e");
+      setTimeout(() => { if (progBox) progBox.style.display = "none"; }, 3500);
+    } catch (err) {
+      setProg(0, "❌ பதிவேற்றப் பிழை: " + err.message);
+      appendFirebaseActivityLog(`❌ Seed பிழை: ${err.message}`, "#f87171");
+      showToast(`❌ Firebase பதிவேற்றம் தோல்வி: ${err.message}`, "#ef4444");
+    }
+  }
+
+  async function pullAllPortalDataFromFirebase(showNotification) {
+    const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
+    if (!cleanUrl) {
+      if (showNotification) showToast("⚠️ முதலில் Firebase Database URL-ஐ அமைக்கவும்!", "#f59e0b");
+      return;
+    }
+
+    try {
+      const res = await fetch(buildFirebaseEndpoint("ceosvg_live"));
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const rootData = await res.json();
+      if (!rootData) {
+        if (showNotification) showToast("ℹ️ Firebase தரவுத்தளம் காலியாக உள்ளது. 'Initial Seed' பொத்தானை அழுத்திப் பதிவேற்றவும்.", "#38bdf8");
+        return;
+      }
+
+      isApplyingRemoteRealtimeUpdate = true;
+      if (rootData.master_schools_by_uno && typeof rootData.master_schools_by_uno === "object") {
+        Object.values(rootData.master_schools_by_uno).forEach(sch => {
+          if (!sch || !sch.uNo) return;
+          const idx = masterSchools.findIndex(s => String(s.uNo) === String(sch.uNo));
+          if (idx >= 0) masterSchools[idx] = Object.assign({}, masterSchools[idx], sch);
+          else masterSchools.push(sch);
+        });
+        safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+      }
+      if (rootData.school_extra && typeof rootData.school_extra === "object") {
+        schoolExtraDataStore = Object.assign({}, schoolExtraDataStore, rootData.school_extra);
+        safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+      }
+      if (rootData.school_auth && typeof rootData.school_auth === "object") {
+        schoolAuthStore = Object.assign({}, schoolAuthStore, rootData.school_auth);
+        safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+      }
+      if (rootData.stores && typeof rootData.stores === "object") {
+        for (const [k, v] of Object.entries(rootData.stores)) {
+          if (v !== null && v !== undefined) {
+            safeSetStorage(k, v, true);
+            reloadInMemoryStoreFromKey(k, v);
+          }
+        }
+      }
+      if (rootData.last_event && rootData.last_event.eventId) {
+        lastProcessedRealtimeEventId = rootData.last_event.eventId;
+      }
+      isApplyingRemoteRealtimeUpdate = false;
+
+      refreshAllActivePortalViews();
+      updateFirebaseStatusIndicators(true);
+      appendFirebaseActivityLog("📥 Firebase மேகக்கணியிலிருந்து அனைத்துப் பள்ளிகளின் சமீபத்திய தரவுகளும் ஒத்திசைக்கப்பட்டன!", "#4ade80");
+      if (showNotification) {
+        showToast("✅ Firebase மேகக்கணியிலிருந்து சமீபத்திய தரவுகள் வெற்றிகரமாகப் பெறப்பட்டன!", "#22c55e");
+      }
+    } catch (err) {
+      isApplyingRemoteRealtimeUpdate = false;
+      if (showNotification) {
+        showToast(`❌ Firebase தரவு பெறுதலில் பிழை: ${err.message}`, "#ef4444");
+      }
+    }
+  }
+
+  // Simulate a Headmaster saving data in School 201 (GHSS Karisalpatti) and reflecting immediately in CEO Admin Dashboard
+  function simulateLiveSchoolToCeoSync() {
+    const sampleUNo = "201";
+    const sch = masterSchools.find(s => String(s.uNo) === sampleUNo) || masterSchools[0];
+    if (!sch) return;
+
+    const extra = getSchoolExtra(sch.uNo);
+    extra.lastLiveSyncTestAt = new Date().toLocaleTimeString("en-IN");
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+
+    const simEvt = {
+      eventId: "SIM_" + Date.now(),
+      ts: Date.now(),
+      timeStr: new Date().toLocaleTimeString("en-IN"),
+      actor: "SCHOOL_" + sch.uNo,
+      uNo: String(sch.uNo),
+      schoolName: sch.nameTa,
+      key: "CEOSVG_SCHOOL_EXTRA_V6",
+      summary: `[U.No: ${sch.uNo}] ${sch.nameTa} – தலைமையாசிரியர் சேமித்த மாணவர் & பணியாளர் விவரம் அதே வினாடியில் CEO முகப்பில் ஒத்திசைக்கப்பட்டது!`
+    };
+
+    appendFirebaseActivityLog(`⚡ நேரடி ஒத்திசைவு சோதனை வெற்றி: ${simEvt.summary}`, "#4ade80");
+    if (realtimeBroadcastChannel) {
+      try {
+        realtimeBroadcastChannel.postMessage({
+          evt: simEvt,
+          key: "CEOSVG_SCHOOL_EXTRA_V6",
+          granular: { type: "school_extra", uNo: String(sch.uNo), data: extra }
+        });
+      } catch (e) {}
+    }
+    if (normalizeFirebaseDbUrl(firebaseDbUrl)) {
+      fetch(buildFirebaseEndpoint("ceosvg_live/last_event"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(simEvt)
+      }).catch(() => {});
+    }
+    refreshAllActivePortalViews();
+    showToast(`⚡ நேரடி ஒத்திசைவு வெற்றி! [U.No: ${sch.uNo}] ${sch.nameTa} விவரம் அதே வினாடியில் CEO முகப்பில் பிரதிபலித்தது!`, "#10b981");
+  }
+
+  function copyTextWithFallback(textToCopy, successMsg) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showToast(successMsg, "#22c55e");
+        }).catch(() => {
+          fallbackExecCopy(textToCopy, successMsg);
+        });
+      } else {
+        fallbackExecCopy(textToCopy, successMsg);
+      }
+    } catch (e) {
+      fallbackExecCopy(textToCopy, successMsg);
+    }
+  }
+
+  function fallbackExecCopy(textToCopy, successMsg) {
+    const ta = document.createElement("textarea");
+    ta.value = textToCopy;
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+    showToast(successMsg, "#22c55e");
+  }
+
+  function copyFirebaseSecurityRules() {
+    const pre = document.getElementById("fbSecurityRulesPre");
+    const rulesText = pre ? pre.textContent : `{\n  "rules": {\n    "ceosvg_live": {\n      ".read": true,\n      ".write": true\n    }\n  }\n}`;
+    copyTextWithFallback(rulesText, "📋 Firebase Security Rules நகலெடுக்கப்பட்டது! Firebase Console ➔ Rules தாவலில் ஒட்டவும்.");
+  }
+
+  function copyPermanentFirebaseConfigSnippet() {
+    const urlVal = normalizeFirebaseDbUrl(document.getElementById("cfgFirebaseDbUrl")?.value || firebaseDbUrl) || "https://YOUR-PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app";
+    const snippet = `const DEFAULT_FIREBASE_DB_URL = "${urlVal}";`;
+    copyTextWithFallback(snippet, "📋 நிரந்தர Firebase Config வரி நகலெடுக்கப்பட்டது!");
   }
 
   function syncMasterFromGoogleSheet(showNotification) {
