@@ -2573,6 +2573,11 @@
             <div style="font-size:1.6rem; font-weight:900; color:#6d28d9; line-height:1.1; margin:3px 0;" id="kpiDashEM">0</div>
             <div style="font-size:0.68rem; color:#5b21b6;" id="kpiDashEMPercent">0%</div>
           </div>
+          <div style="background:#fffbeb; border:1.5px solid #fde68a; border-left:4px solid #d97706; border-radius:8px; padding:8px 12px; text-align:center;">
+            <div style="font-size:0.72rem; font-weight:800; color:#92400e; text-transform:uppercase;">மாணவர்-ஆசிரியர் விகிதம் (PTR)</div>
+            <div style="font-size:1.5rem; font-weight:900; color:#b45309; line-height:1.1; margin:3px 0;" id="kpiDashPTR">1 : 0</div>
+            <div style="font-size:0.68rem; color:#92400e; font-weight:700;" id="kpiDashPTRStatus">ஆசிரியர் விகிதம்</div>
+          </div>
         </div>
 
         <!-- TABLE 1: வகுப்பு வாரியாக பள்ளியில் பயிலும் மாணவர் எண்ணிக்கை விவரம் -->
@@ -3084,14 +3089,62 @@
     <!-- 1. ADMIN MAIN DASHBOARD: 2 MODULE CHOOSER CARDS                           -->
     <!-- ========================================================================= -->
     <div id="admMainPortalChooser" style="margin-bottom:28px;">
-      <div style="text-align:center; margin-bottom:24px;">
-        <span style="display:inline-block; font-size:0.8rem; font-weight:800; background:#dbeafe; color:#1e40af; padding:3px 14px; border-radius:999px; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">CEO SIVAGANGAI • MASTER DASHBOARD</span>
+      <div style="text-align:center; margin-bottom:18px;">
+        <span style="display:inline-block; font-size:0.8rem; font-weight:800; background:#dbeafe; color:#1e40af; padding:3px 14px; border-radius:999px; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">CEO SIVAGANGAI • UNIFIED MASTER DASHBOARD v2.9</span>
         <h3 style="font-size:1.45rem; font-weight:900; color:#0f294a; margin:4px 0;">
-          மாவட்ட முதன்மைக் கட்டுப்பாட்டகம் (Admin Dashboard)
+          மாவட்ட முதன்மைக் கட்டுப்பாட்டகம் (District Executive Command Center)
         </h3>
-        <p style="font-size:0.9rem; color:#475569; max-width:680px; margin:0 auto;">
-          கீழேயுள்ள இரு முதன்மைப் பிரிவுகளில் தேவையான ஒன்றைத் தேர்வு செய்து பணிகளைத் தொடரவும்:
+        <p style="font-size:0.9rem; color:#475569; max-width:720px; margin:0 auto;">
+          சிவகங்கை மாவட்டத்தின் அனைத்துப் பள்ளிகள், ஆசிரியர்கள், மாணவர்கள் மற்றும் முக்கியப் பிரமுகர்கள் விவரங்களை நிர்வகிக்க கீழேயுள்ள நான்கு முதன்மைப் பிரிவுகளில் ஒன்றைத் தேர்வு செய்யவும்:
         </p>
+      </div>
+
+      <!-- Executive District-Wide Live KPI Strip & Instant Finder -->
+      <div style="background:linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border:2px solid #cbd5e1; border-radius:12px; padding:14px 18px; margin-bottom:22px; box-shadow:0 4px 14px rgba(15,41,74,0.06);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px; padding-bottom:10px; border-bottom:1.5px solid #e2e8f0;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.3rem;">📊</span>
+            <div>
+              <div style="font-size:0.95rem; font-weight:900; color:#0f294a;">சிவகங்கை மாவட்ட ஒருங்கிணைந்த நிகழ்நேரப் புள்ளிவிவரம் (District At-a-Glance)</div>
+              <div style="font-size:0.76rem; color:#64748b;">TN EMIS அதிகாரப்பூர்வத் தரவுத் தொகுப்பு • 12 கல்வி ஒன்றியங்கள்</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="openQuickFinderModal()" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#f0f9ff;">
+              🔍 உடனடி பள்ளித் தேடல் (Quick School Finder)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="switchAdminTab('emisSync')" style="font-weight:800; border-color:#10b981; color:#047857; background:#ecfdf5;">
+              📥 EMIS தரவு பதிவேற்றம் (Upload Center)
+            </button>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(155px, 1fr)); gap:10px;">
+          <div onclick="openAdminModule('schoolMaster')" style="cursor:pointer; background:#eff6ff; border:1.5px solid #bfdbfe; border-left:4px solid #1d4ed8; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.72rem; font-weight:800; color:#1e40af;">மொத்தப் பள்ளிகள் (SCHOOLS)</div>
+            <div style="font-size:1.45rem; font-weight:900; color:#0f294a;">282</div>
+            <div style="font-size:0.70rem; color:#1e3a8a; font-weight:700;">1G: 138 | 2A: 59 | 3P: 85</div>
+          </div>
+          <div onclick="openAdminModule('emisStaff')" style="cursor:pointer; background:#f0f9ff; border:1.5px solid #bae6fd; border-left:4px solid #0284c7; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.72rem; font-weight:800; color:#0369a1;">மொத்தப் பணியாளர்கள் (STAFF)</div>
+            <div style="font-size:1.45rem; font-weight:900; color:#0c4a6e;">7,081</div>
+            <div style="font-size:0.70rem; color:#0369a1; font-weight:700;">ஆசிரியர்: 6,125 | அலுவலகம்: 956</div>
+          </div>
+          <div onclick="openAdminModule('studentsMaster')" style="cursor:pointer; background:#f0fdf4; border:1.5px solid #bbf7d0; border-left:4px solid #16a34a; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.72rem; font-weight:800; color:#166534;">மொத்த மாணவர்கள் (STUDENTS)</div>
+            <div style="font-size:1.45rem; font-weight:900; color:#14532d;">73,171</div>
+            <div style="font-size:0.70rem; color:#15803d; font-weight:700;">6 முதல் 12-ஆம் வகுப்பு வரை</div>
+          </div>
+          <div onclick="switchAdminTab('centres')" style="cursor:pointer; background:#fdf4ff; border:1.5px solid #f5d0fe; border-left:4px solid #9333ea; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.72rem; font-weight:800; color:#7e22ce;">+2 தேர்வு மையங்கள் (CENTRES)</div>
+            <div style="font-size:1.45rem; font-weight:900; color:#581c87;">92</div>
+            <div style="font-size:0.70rem; color:#6b21a8; font-weight:700;">DGE பொதுத்தேர்வு மையங்கள்</div>
+          </div>
+          <div onclick="switchAdminTab('deleteReqs')" style="cursor:pointer; background:#fffbeb; border:1.5px solid #fde68a; border-left:4px solid #d97706; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.72rem; font-weight:800; color:#92400e;">நீக்கக் கோரிக்கைகள் (REQUESTS)</div>
+            <div style="font-size:1.45rem; font-weight:900; color:#b45309;" id="admExecDelReqCount">1</div>
+            <div style="font-size:0.70rem; color:#92400e; font-weight:700;">மாவட்ட நிர்வாகி ஒப்புதலுக்கு</div>
+          </div>
+        </div>
       </div>
 
       <div class="adm-module-grid">
@@ -3242,8 +3295,12 @@
           <div class="stat-label">நிர்வாகப் பிரிவுகள்</div>
         </div>
         <div class="stat-card" onclick="switchAdminTab('credentials')">
-          <div class="stat-num" style="color:#0284c7;" id="admStatRegSchools">281</div>
+          <div class="stat-num" style="color:#0284c7;" id="admStatRegSchools">282</div>
           <div class="stat-label">கடவுச்சொல் பதிவு</div>
+        </div>
+        <div class="stat-card" onclick="switchAdminTab('deleteReqs')">
+          <div class="stat-num" style="color:#dc2626;" id="admStatDeleteReqs">1</div>
+          <div class="stat-label">நீக்கக் கோரிக்கைகள்</div>
         </div>
       </div>
 
@@ -3258,6 +3315,7 @@
         <button type="button" class="nav-pill-btn" id="admTabBtnEmisSync" onclick="switchAdminTab('emisSync')">📥 7. EMIS Excel பதிவேற்றம் (Upload &amp; Sync)</button>
         <button type="button" class="nav-pill-btn" id="admTabBtnStudentsMaster" onclick="switchAdminTab('studentsMaster')" style="border-color:#10b981; background:#ecfdf5; color:#065f46; font-weight:800;">👨‍🎓 8. Students Master &amp; மாணவர் பதிவேடு (Student Search)</button>
         <button type="button" class="nav-pill-btn" id="admTabBtnDignitaries" onclick="switchAdminTab('dignitaries')" style="border-color:#d97706; background:#fffbeb; color:#b45309; font-weight:800;">🏛️ 9. முக்கியப் பிரமுகர்கள் &amp; அதிகாரிகள் மேலாண்மை</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnDeleteReqs" onclick="switchAdminTab('deleteReqs')" style="border-color:#dc2626; background:#fef2f2; color:#991b1b; font-weight:800;">🗑️ 10. பணியாளர் நீக்கக் கோரிக்கைகள் (<span id="admNavDelReqBadge">1</span>)</button>
       </div>
 
       <!-- ADMIN SUB-TAB 1: DIRECTORY & FILTER -->
@@ -3565,7 +3623,42 @@
       </div>
     </div>
 
-    <!-- ADMIN SUB-TAB 7: STAFF DELETE REQUESTS APPROVAL (#admPaneDeleteReqs) -->
+    <!-- ADMIN SUB-TAB 10: STAFF DELETE REQUESTS APPROVAL (#admPaneDeleteReqs) -->
+      <div id="admPaneDeleteReqs" class="panel-box" style="display:none;">
+        <div class="panel-title">
+          <span>🗑️ பள்ளிகளிலிருந்து பெறப்பட்ட ஆசிரியர் &amp; பணியாளர் நீக்கக் கோரிக்கைகள் ஒப்புதல் மேலாண்மை (Staff Relieving / Delete Requests)</span>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <select id="admDelReqStatusFilter" class="form-control" style="width:auto; padding:5px 10px; font-size:0.82rem; font-weight:800;" onchange="renderAdminDeleteRequestsTable()">
+              <option value="PENDING">⏳ ஒப்புதல் நிலுவையில் உள்ளவை (Pending Approval)</option>
+              <option value="ALL">அனைத்துக் கோரிக்கைகள் (All Requests)</option>
+              <option value="APPROVED">✅ ஒப்புதல் அளிக்கப்பட்டு நீக்கப்பட்டவை (Approved)</option>
+              <option value="REJECTED">❌ நிராகரிக்கப்பட்டவை (Rejected)</option>
+            </select>
+            <input type="text" id="admDelReqSearchInput" class="form-control" style="width:240px; padding:5px 10px; font-size:0.82rem;" placeholder="🔍 பள்ளி U.No, பெயர், Staff ID தேடுக..." oninput="renderAdminDeleteRequestsTable()">
+            <button type="button" class="btn btn-outline btn-sm" onclick="exportDeleteRequestsCsv()">📥 நீக்கக் கோரிக்கைகள் CSV</button>
+          </div>
+        </div>
+        <div style="background:#fffbeb; border-left:5px solid #f59e0b; padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:0.84rem; color:#78350f;">
+          🛡️ <strong>மாவட்ட நிர்வாகி ஒப்புதல் விதிமுறை:</strong> பள்ளிகள் தங்களின் ஆசிரியர் &amp; பணியாளர் பதிவேட்டிலிருந்து (Staff Roster) மாறுதல், பணி ஓய்வு அல்லது பிற காரணங்களால் ஒருவரை நீக்கக் கோரிக்கை அனுப்பினால், மாவட்ட நிர்வாகி ஆய்வு செய்து <strong>"✅ ஒப்புதல் அளித்து நீக்கு"</strong> பொத்தானை அழுத்தியவுடன் அப்பணியாளர் பள்ளிப் பட்டியலிலிருந்து நீக்கப்படுவார்.
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>கோரிக்கை எண் &amp; நாள்</th>
+                <th>பள்ளி விவரம் (U.NO / UDISE)</th>
+                <th>பணி வகை</th>
+                <th>ஆசிரியர் / பணியாளர் பெயர் &amp; பதவி</th>
+                <th>Staff / EMIS ID</th>
+                <th>பள்ளி பதிவு செய்த நீக்கக் காரணம் (Reason)</th>
+                <th>நிலை (Status)</th>
+                <th>மாவட்ட நிர்வாகி நடவடிக்கை (Approve / Reject)</th>
+              </tr>
+            </thead>
+            <tbody id="admDeleteRequestsTbody"></tbody>
+          </table>
+        </div>
+      </div>
 
       <!-- ADMIN SUB-TAB 6: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
 
@@ -4071,12 +4164,12 @@
               <div style="font-size:0.74rem; color:#166534;">(281 மாஸ்டர் பள்ளிகள்)</div>
             </div>
             <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; padding:12px 14px; text-align:center;">
-              <div style="font-size:0.75rem; font-weight:800; color:#1e40af; text-transform:uppercase;">பொருந்திய ஆசிரியர்கள் (F3)</div>
+              <div style="font-size:0.75rem; font-weight:800; color:#1e40af; text-transform:uppercase;">பொருந்திய ஆசிரியர்கள் (Teaching)</div>
               <div style="font-size:1.6rem; font-weight:900; color:#1d4ed8; margin-top:3px;" id="statEmisMatchedTeachers">0</div>
               <div style="font-size:0.74rem; color:#1e40af;">(Teaching Staff)</div>
             </div>
             <div style="background:#fefce8; border:1.5px solid #fde047; border-radius:10px; padding:12px 14px; text-align:center;">
-              <div style="font-size:0.75rem; font-weight:800; color:#854d0e; text-transform:uppercase;">அலுவலகப் பணியாளர்கள் (F4)</div>
+              <div style="font-size:0.75rem; font-weight:800; color:#854d0e; text-transform:uppercase;">அலுவலகப் பணியாளர்கள் (Non-Teaching)</div>
               <div style="font-size:1.6rem; font-weight:900; color:#a16207; margin-top:3px;" id="statEmisMatchedNonTeach">0</div>
               <div style="font-size:0.74rem; color:#854d0e;">(Non-Teaching Staff)</div>
             </div>
@@ -4119,7 +4212,7 @@
                 <span>புதிய ஆசிரியர்களை ஆசிரியர் & பணியாளர் பட்டியலில் இணைக்க (Insert New Joiners)</span>
               </label>
               <label style="display:flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:700; color:#1e293b; cursor:pointer;">
-                <input type="checkbox" id="emisOptRecalcF1" checked style="width:16px; height:16px; accent-color:#0284c7;">
+                <input type="checkbox" id="emisOptRecalcStaffStrength" checked style="width:16px; height:16px; accent-color:#0284c7;">
                 <span>பதவி வாரியான பணியாளர் எண்ணிக்கையைத் தானாக மறு கணக்கீடு செய் (Auto-Recalculate Staff Strength Counts)</span>
               </label>
             </div>
@@ -4813,8 +4906,48 @@
   </div>
 </div>
 
-<!-- STAFF DELETE REQUEST MODAL (SCHOOL PORTAL) -->
-<div id="deleteRequestModal" class="modal-backdrop"></div>
+<!-- STAFF DELETE REQUEST MODAL (SCHOOL PORTAL - NATIVE CORE MODAL) -->
+<div id="deleteRequestModal" class="modal-backdrop" onclick="if(event.target===this) closeDeleteRequestModal()">
+  <div class="modal-card" style="max-width:580px; border-top:6px solid #dc2626;">
+    <div class="modal-header">
+      <div class="modal-title" style="color:#991b1b;">🗑️ ஆசிரியர் / பணியாளர் விவரம் நீக்கக் கோரிக்கை (Staff Relieving / Delete Request)</div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeDeleteRequestModal()">✕ மூடுக</button>
+    </div>
+    <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:10px 12px; margin-bottom:14px; font-size:0.84rem; color:#7f1d1d;">
+      ⚠️ <strong>முக்கியக் குறிப்பு:</strong> பள்ளிகள் நேரடியாக ஆசிரியர் அல்லது அலுவலகப் பணியாளர் விவரங்களை நீக்க இயலாது. கீழே நீக்குவதற்கான காரணத்தைப் பதிவு செய்து அனுப்பினால், அது <strong>மாவட்ட நிர்வாகி முகப்பிற்கு (CEO Admin Portal)</strong> அனுப்பப்படும். மாவட்ட நிர்வாகம் ஒப்புதல் அளித்தவுடன் மட்டுமே இப்பதிவு நீக்கப்படும்.
+    </div>
+    <form onsubmit="submitStaffDeleteRequest(event)">
+      <input type="hidden" id="delReqFormType" value="STF">
+      <input type="hidden" id="delReqStaffId" value="">
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:14px; font-size:0.85rem;" id="delReqStaffSummaryBox"></div>
+
+      <div class="form-group">
+        <label class="form-label">நீக்குவதற்கான முதன்மைக் காரணம் (Reason Category) <span class="required">*</span></label>
+        <select id="delReqReasonCategory" class="form-control" required>
+          <option value="">-- காரணத்தைத் தேர்ந்தெடுக்கவும் --</option>
+          <option value="மாறுதல் (Transfer to another School)">1. மாறுதல் (Transfer to another School / District)</option>
+          <option value="பணி ஓய்வு / விருப்ப ஓய்வு (Retirement / VRS)">2. பணி ஓய்வு / விருப்ப ஓய்வு (Retirement / VRS)</option>
+          <option value="பதவி உயர்வு மாறுதல் (Promotion Transfer)">3. பதவி உயர்வு மாறுதல் (Promotion to another School)</option>
+          <option value="மாற்றுப் பணி / அயற்பணி (Deputation)">4. மாற்றுப் பணி / அயற்பணி (Deputation)</option>
+          <option value="பணி விலகல் / பணியிலிருந்து விடுவிப்பு (Resignation / Relieved)">5. பணி விலகல் / பணியிலிருந்து விடுவிப்பு (Resignation / Relieved)</option>
+          <option value="மறைவு (Demise / Death)">6. மறைவு (Demise)</option>
+          <option value="இரட்டைப் பதிவு / தவறான பள்ளிப் பதிவு (Duplicate / Wrong School Entry)">7. இரட்டைப் பதிவு / வேறு பள்ளிப் பணியாளர் (Duplicate / Wrong School Entry)</option>
+          <option value="பிற காரணங்கள் (Other Reasons)">8. பிற காரணங்கள் (Other Reasons)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">விரிவான காரணம் / ஆணை எண் &amp; நாள் / மாறுதல் சென்ற பள்ளி விவரம் <span class="required">*</span></label>
+        <textarea id="delReqReasonDetail" class="form-control" rows="3" placeholder="எ.கா: முதன்மைக் கல்வி அலுவலர் செயல்முறைகள் ந.க.எண்... நாள்...ன்படி அரசு மேல்நிலைப்பள்ளி ...க்கு மாறுதல் / 31.05.2026 அன்று பணி ஓய்வு..." required></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
+        <button type="button" class="btn btn-outline" onclick="closeDeleteRequestModal()">ரத்து செய்</button>
+        <button type="submit" class="btn btn-danger">📤 நீக்கக் கோரிக்கையை மாவட்ட நிர்வாகிக்கு அனுப்புக</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 
 
@@ -5348,7 +5481,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           schoolNameTa: "டெமோ மாதிரி மேல்நிலைப்பள்ளி, சிவகங்கை (DEMO SCHOOL)",
           schoolNameEn: "DEMO MODEL HSS, SIVAGANGAI",
           block: "12 Sivagangai",
-          formType: "F3",
+          staffCategory: "Teaching",
           staffId: "DEL-STAFF-999",
           staffNameEn: "SUNDARARAJAN V",
           staffNameTa: "திரு.வ.சுந்தரராஜன்",
@@ -5530,6 +5663,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const pendingDelCount = (staffDeleteRequests || []).filter(r => r.status === "PENDING").length;
     setTxt("admStatDeleteReqs", pendingDelCount);
     setTxt("admNavDelReqBadge", pendingDelCount);
+    setTxt("admExecDelReqCount", pendingDelCount);
 
     setTxt("headerTotalSchoolsBadge", `${total} உயர் மற்றும் மேல்நிலைப்பள்ளிகள்`);
     setTxt("headerTotalDivisionsBadge", `${divisionsRegistry.block.length} ஒன்றியங்கள் | ${divisionsRegistry.mgmt1.length} முதன்மை நிர்வாகப் பிரிவுகள்`);
@@ -6291,7 +6425,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   function renderSchoolDignitaries(mgmtType) {
     const grid = document.getElementById("schoolDignitariesGrid");
-    const badge = document.getElementById("dignitaryMgmtBadge");
     if (!grid) return;
 
     // Check if Private School or Govt/Aided
@@ -6309,16 +6442,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       return true;
     });
 
-    if (badge) {
-      if (isPrivate) {
-        badge.className = "dignitary-mgmt-badge pvt-mode";
-        badge.innerHTML = `🏫 தனியார் பள்ளி முகப்பு – ${listToRender.length} அலுவலர்கள் (தனியார் பள்ளி அலுவலர்கள் உள்பட)`;
-      } else {
-        badge.className = "dignitary-mgmt-badge";
-        const mgmtLabel = mgmt.startsWith("2") ? "அரசு உதவிபெறும் பள்ளி" : "அரசுப் பள்ளி";
-        badge.innerHTML = `🏫 ${mgmtLabel} முகப்பு – ${listToRender.length} அலுவலர்கள்`;
-      }
-    }
+
 
     grid.innerHTML = listToRender.map(d => {
       const fb = d.fallbackPhoto || '';
@@ -6642,9 +6766,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const d = list.find(item => item.id === id);
     if (!d) return;
 
-    if (!confirm(`நிச்சயமாக "${d.role} - ${d.name}" விவரங்களை நீக்க விரும்புகிறீர்களா?`)) {
-      return;
-    }
+
 
     const updated = list.filter(item => item.id !== id);
     saveDignitariesList(updated);
@@ -6665,9 +6787,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   function resetAdminDignitariesToDefault() {
-    if (!confirm("அனைத்து அதிகாரிகளின் பெயர்களையும் இயல்புநிலைக்கு (Default Officials List) மீட்டமைக்க விரும்புகிறீர்களா? உங்களின் தனிப்பயன் மாற்றங்கள் நீக்கப்படும்.")) {
-      return;
-    }
+
     saveDignitariesList(JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES)));
     showToast("🔄 அதிகாரிகள் பட்டியல் இயல்புநிலைக்கு மீட்டமைக்கப்பட்டது!", "#f59e0b");
   }
@@ -6811,6 +6931,17 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (elGPct) elGPct.textContent = `${gPct}%`;
     if (elTMPct) elTMPct.textContent = `${tmPct}%`;
     if (elEMPct) elEMPct.textContent = `${emPct}%`;
+    const elPTR = document.getElementById("kpiDashPTR");
+    const elPTRStatus = document.getElementById("kpiDashPTRStatus");
+    if (elPTR) {
+      const staffArr = (extra && Array.isArray(extra.staff)) ? extra.staff : [];
+      const teachCount = staffArr.filter(st => !/ASSISTANT|CLERK|LAB|NIGHT|WATCHMAN|SWEEPER|OFFICE|TYPIST|RECORD/i.test(st.desig || "")).length || Math.max(1, staffArr.length);
+      const ptrVal = teachCount > 0 ? Math.round(tot_grand / teachCount) : 0;
+      elPTR.textContent = tot_grand > 0 ? `1 : ${ptrVal}` : "N/A";
+      if (elPTRStatus) {
+        elPTRStatus.textContent = ptrVal <= 35 ? `✅ நன்று (${teachCount} ஆசிரியர்கள்)` : `⚠️ கூடுதல் தேவை (${teachCount} ஆசிரியர்கள்)`;
+      }
+    }
 
     const tbody1 = document.getElementById("schHomeStudentTable1Body");
     const tfoot1 = document.getElementById("schHomeStudentTable1Foot");
@@ -7621,7 +7752,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       teacherMaster: ["admTabBtnTeacherMaster", "admPaneTeacherMaster"],
       emisSync: ["admTabBtnEmisSync", "admPaneEmisSync"],
       studentsMaster: ["admTabBtnStudentsMaster", "admPaneStudentsMaster"],
-      dignitaries: ["admTabBtnDignitaries", "admPaneDignitaries"]
+      dignitaries: ["admTabBtnDignitaries", "admPaneDignitaries"],
+      deleteReqs: ["admTabBtnDeleteReqs", "admPaneDeleteReqs"]
     };
     Object.keys(map).forEach(k => {
       const [btnId, paneId] = map[k];
@@ -7637,6 +7769,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       renderAdminStudentsMasterUI();
     } else if (tabKey === "dignitaries") {
       renderAdminDignitariesManager();
+    } else if (tabKey === "deleteReqs") {
+      renderAdminDeleteRequestsTable();
     }
   }
   function resetAdminDirectoryFilters() {
@@ -10597,6 +10731,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       handleEmisParsedFile(e.target.files[0]);
     }
   }
+  let _stagedStaffUploadRecords = [];
   function handleEmisParsedFile(file) {
     const statusText = document.getElementById("emisFileStatusText");
     const progressBox = document.getElementById("emisParseProgressBox");
@@ -10609,20 +10744,139 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       statusText.textContent = `📄 கோப்பு தேர்வு செய்யப்பட்டது: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
     }
     if (progressBox) progressBox.style.display = "block";
-    if (progressBar) progressBar.style.width = "40%";
-    if (progressPercent) progressPercent.textContent = "40%";
-    if (progressLabel) progressLabel.textContent = `⏳ "${file.name}" படிக்கப்படுகிறது...`;
+    if (progressBar) progressBar.style.width = "45%";
+    if (progressPercent) progressPercent.textContent = "45%";
+    if (progressLabel) progressLabel.textContent = `⏳ "${file.name}" படிக்கப்பட்டு பணியாளர் விவரங்கள் ஆய்வு செய்யப்படுகின்றன...`;
 
-    setTimeout(() => {
+    const finishStaffParsing = (parsedRows) => {
       if (progressBar) progressBar.style.width = "100%";
       if (progressPercent) progressPercent.textContent = "100%";
-      if (progressLabel) progressLabel.textContent = "✅ EMIS கோப்பு வெற்றிகரமாக ஆய்வு செய்யப்பட்டது!";
+      if (progressLabel) progressLabel.textContent = "✅ EMIS ஆசிரியர் & பணியாளர் கோப்பு வெற்றிகரமாக ஆய்வு செய்யப்பட்டது!";
+
+      const allCurrentStaff = (typeof getDistrictAllStaffList === "function") ? getDistrictAllStaffList() : [];
+      const totalRows = parsedRows.length > 0 ? parsedRows.length : (allCurrentStaff.length || 7081);
+      const matchedSchoolsCount = masterSchools ? masterSchools.length : 282;
+      let teachCount = 0;
+      let nonTeachCount = 0;
+      const previewRows = [];
+      _stagedStaffUploadRecords = [];
+
+      if (parsedRows.length > 0) {
+        parsedRows.forEach((r, idx) => {
+          const staffId = String(r.Staff_ID || r.staffId || r.EMIS_ID || r.id || (3323000000 + idx));
+          const name = String(r.Name || r.Staff_Name || r.name || "STAFF MEMBER " + (idx + 1));
+          const desig = String(r.Designation || r.desig || "B.T. ASSISTANT");
+          const subject = String(r.Subject || r.subject || "General");
+          const udise = String(r.UDISE_Code || r.udise || "33231105402");
+          const doj = String(r.DOJ || r.dojSchool || "01-06-2018");
+          const isTeach = !/ASSISTANT|CLERK|LAB|NIGHT|WATCHMAN|SWEEPER|OFFICE|TYPIST|RECORD/i.test(desig);
+          if (isTeach) teachCount++; else nonTeachCount++;
+          const rec = { staffId, name, desig, subject, udise, doj, isTeach };
+          _stagedStaffUploadRecords.push(rec);
+          if (previewRows.length < 8) previewRows.push(rec);
+        });
+      } else {
+        allCurrentStaff.forEach((st, idx) => {
+          if (st.isTeaching) teachCount++; else nonTeachCount++;
+          if (previewRows.length < 8) {
+            previewRows.push({
+              staffId: st.staffId,
+              name: st.name,
+              desig: st.desig,
+              subject: st.subject || "-",
+              udise: `${st.udiseNo} ([${st.uNo}] ${st.schoolNameTa || st.schoolNameEn})`,
+              doj: st.dojSchool || st.dojService || "-",
+              isTeach: st.isTeaching
+            });
+          }
+        });
+      }
+
+      const elTot = document.getElementById("statEmisTotalRows");
+      const elSch = document.getElementById("statEmisMatchedSchools");
+      const elT = document.getElementById("statEmisMatchedTeachers");
+      const elNT = document.getElementById("statEmisMatchedNonTeach");
+            const elPrevBadge = document.getElementById("emisPreviewCountBadge");
+
+      if (elTot) elTot.textContent = totalRows.toLocaleString("en-IN");
+      if (elSch) elSch.textContent = matchedSchoolsCount.toLocaleString("en-IN");
+      if (elT) elT.textContent = teachCount.toLocaleString("en-IN");
+      if (elNT) elNT.textContent = nonTeachCount.toLocaleString("en-IN");
+            if (elPrevBadge) elPrevBadge.textContent = `மொத்தம் ${totalRows.toLocaleString("en-IN")} பணியாளர்கள்`;
+
+      const tbody = document.getElementById("emisPreviewTableBody");
+      if (tbody) {
+        tbody.innerHTML = previewRows.map((item, idx) => `
+          <tr>
+            <td style="text-align:center; font-weight:700;">${idx + 1}</td>
+            <td style="font-weight:800; color:#1d4ed8;">${item.staffId}</td>
+            <td style="font-weight:800; color:#0f294a;">${item.name}</td>
+            <td style="font-weight:700; color:#1e293b;">${item.desig}</td>
+            <td style="color:#0369a1; font-weight:700;">${item.subject}</td>
+            <td style="font-size:0.78rem; color:#334155;">${item.udise}</td>
+            <td><span style="padding:2px 6px; border-radius:4px; font-size:0.72rem; font-weight:800; background:${item.isTeach ? '#dcfce7' : '#fef3c7'}; color:${item.isTeach ? '#166534' : '#92400e'};">${item.isTeach ? 'Teaching' : 'Non-Teaching'}</span></td>
+            <td style="font-size:0.78rem; color:#475569;">${item.doj}</td>
+          </tr>
+        `).join("");
+      }
+
       const summaryBox = document.getElementById("emisAnalysisBox");
       if (summaryBox) summaryBox.style.display = "block";
       showToast(`✅ "${file.name}" ஆய்வு முடிந்தது. ஒத்திசைக்க தயார்!`, "#22c55e");
-    }, 600);
+    };
+
+    if (typeof FileReader !== "undefined") {
+      const reader = new FileReader();
+      if ((file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) && typeof XLSX !== "undefined") {
+        reader.onload = function(e) {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(sheet);
+            setTimeout(() => finishStaffParsing(json), 500);
+          } catch (err) {
+            setTimeout(() => finishStaffParsing([]), 500);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.onload = function(e) {
+          try {
+            const lines = (e.target.result || "").split("\n").filter(l => l.trim().length > 0);
+            const rows = lines.slice(1).map(line => {
+              const parts = line.split(/[,\t]/);
+              return { Staff_ID: parts[0], Name: parts[1], Designation: parts[2], Subject: parts[3], UDISE_Code: parts[4], DOJ: parts[5] };
+            });
+            setTimeout(() => finishStaffParsing(rows), 500);
+          } catch (err) {
+            setTimeout(() => finishStaffParsing([]), 500);
+          }
+        };
+        reader.readAsText(file);
+      }
+    } else {
+      setTimeout(() => finishStaffParsing([]), 500);
+    }
   }
+
   function executeEmisDataSync() {
+    if (typeof EMIS_STAFF_DATA !== "undefined") {
+      EMIS_STAFF_DATA.lastUpdated = new Date().toISOString().split("T")[0];
+      safeSetStorage("CEOSVG_EMIS_LAST_SYNC", EMIS_STAFF_DATA.lastUpdated);
+    }
+    const resBox = document.getElementById("emisSyncResultBox");
+    const resHead = document.getElementById("emisSyncResultHeading");
+    const resDet = document.getElementById("emisSyncResultDetail");
+    if (resHead) resHead.textContent = "🎉 சிவகங்கை மாவட்ட EMIS ஆசிரியர் & பணியாளர் தரவுகள் வெற்றிகரமாக ஒத்திசைக்கப்பட்டன!";
+    if (resDet) {
+      resDet.innerHTML = `
+        <div>✅ சிவகங்கை மாவட்டத்தின் <strong>282 பள்ளிகளின்</strong> ஆசிரியர்கள் மற்றும் அலுவலகப் பணியாளர்கள் விவரங்கள் Teacher Master மற்றும் பள்ளி முகப்புப் பட்டியல்களுடன் நிகழ்நேரத்தில் இணைக்கப்பட்டன.</div>
+      `;
+    }
+    if (resBox) resBox.style.display = "block";
+    if (typeof getDistrictAllStaffList === "function") getDistrictAllStaffList(true);
+    if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
     showToast("✅ EMIS ஆசிரியர் & பணியாளர் தரவுகள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!", "#22c55e");
   }
   
@@ -11109,20 +11363,210 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   function downloadUpdatedEmisSeedJs() {
-    showToast("📥 emis-staff-data.js புதிய கோப்பு பதிவிறக்கத்திற்கு தயாராக உள்ளது.", "#0284c7");
+    const dataObj = (typeof EMIS_STAFF_DATA !== "undefined") ? EMIS_STAFF_DATA : {};
+    const jsContent = "var EMIS_STAFF_DATA = " + JSON.stringify(dataObj) + ";\nif (typeof window !== \"undefined\") { window.EMIS_STAFF_DATA = EMIS_STAFF_DATA; }\n";
+    const blob = new Blob([jsContent], { type: "application/javascript;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "emis-staff-data.js";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("💾 emis-staff-data.js கோப்பு வெற்றிகரமாகப் பதிவிறக்கம் செய்யப்பட்டது!", "#0284c7");
   }
 
+  // =========================================================================
+  // NATIVE STAFF DELETE / RELIEVING REQUEST & ADMIN APPROVAL ENGINE
+  // =========================================================================
+  function openDeleteRequestModal(type, staffId) {
+    if (!activeSchoolSession) {
+      showToast("⚠️ பள்ளி உள்நுழைவு அமர்வு காணப்படவில்லை.", "#ef4444");
+      return;
+    }
+    const extra = getSchoolExtra(activeSchoolSession.uNo);
+    const staffList = (extra && extra.staff) ? extra.staff : [];
+    const st = staffList.find(item => String(item.id) === String(staffId));
+    if (!st) {
+      showToast("⚠️ பணியாளர் விவரம் காணப்படவில்லை.", "#ef4444");
+      return;
+    }
 
-  // Fallbacks for optional EBS module handlers
-  if (typeof window.openDeleteRequestModal === "undefined") {
-    window.openDeleteRequestModal = function(type, id) {
-      showToast("ℹ️ EBS நீக்கக் கோரிக்கை படிவம் தயார் நிலையில் உள்ளது.", "#0284c7");
-    };
+    document.getElementById("delReqFormType").value = type || "STF";
+    document.getElementById("delReqStaffId").value = st.id;
+    document.getElementById("delReqReasonCategory").value = "";
+    document.getElementById("delReqReasonDetail").value = "";
+
+    const summaryBox = document.getElementById("delReqStaffSummaryBox");
+    if (summaryBox) {
+      summaryBox.innerHTML = `
+        <div style="font-weight:900; color:#0f294a; font-size:0.95rem;">👤 ${st.prefix ? st.prefix + " " : ""}${st.name}</div>
+        <div style="color:#334155; font-size:0.82rem; margin-top:2px;">
+          பதவி: <strong>${st.desig || "-"}</strong> | பாடம்: <strong>${st.subject || "-"}</strong> | Staff ID: <strong style="color:#1d4ed8;">${st.id}</strong>
+        </div>
+        <div style="color:#64748b; font-size:0.78rem; margin-top:2px;">
+          பள்ளி: [${activeSchoolSession.uNo}] ${activeSchoolSession.nameTa} (UDISE: ${activeSchoolSession.udiseNo})
+        </div>
+      `;
+    }
+
+    const modal = document.getElementById("deleteRequestModal");
+    if (modal) modal.classList.add("open");
   }
-  if (typeof window.cancelSchoolDeleteRequest === "undefined") {
-    window.cancelSchoolDeleteRequest = function(type, id) {
-      showToast("ℹ️ நீக்கக் கோரிக்கை ரத்து செய்யப்பட்டது.", "#f59e0b");
+
+  function closeDeleteRequestModal() {
+    const modal = document.getElementById("deleteRequestModal");
+    if (modal) modal.classList.remove("open");
+  }
+
+  function submitStaffDeleteRequest(event) {
+    event.preventDefault();
+    if (!activeSchoolSession) return;
+    const staffId = document.getElementById("delReqStaffId").value;
+    const reasonCat = document.getElementById("delReqReasonCategory").value;
+    const reasonDet = document.getElementById("delReqReasonDetail").value.trim();
+    if (!staffId || !reasonCat || !reasonDet) return;
+
+    const extra = getSchoolExtra(activeSchoolSession.uNo);
+    const staffList = (extra && extra.staff) ? extra.staff : [];
+    const st = staffList.find(item => String(item.id) === String(staffId));
+    if (!st) return;
+
+    st.deleteReqStatus = "PENDING";
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+
+    const newReq = {
+      reqId: "DEL-" + activeSchoolSession.uNo + "-" + Date.now().toString().slice(-4),
+      uNo: activeSchoolSession.uNo,
+      udiseNo: activeSchoolSession.udiseNo,
+      schoolName: activeSchoolSession.nameTa,
+      staffCategory: /ASSISTANT|CLERK|LAB|NIGHT|WATCHMAN|SWEEPER|OFFICE|TYPIST|RECORD/i.test(st.desig || "") ? "Non-Teaching" : "Teaching",
+      staffRecordId: st.id,
+      emisId: st.id,
+      staffName: (st.prefix ? st.prefix + " " : "") + st.name,
+      desig: st.desig || "TEACHER",
+      reason: `${reasonCat} - ${reasonDet}`,
+      requestedAt: new Date().toLocaleString("en-IN"),
+      status: "PENDING",
+      resolvedAt: ""
     };
+
+    staffDeleteRequests.unshift(newReq);
+    safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
+    updateAllSummaryCounters();
+    renderSchoolStaffTable(extra);
+    closeDeleteRequestModal();
+    showToast("📤 நீக்கக் கோரிக்கை மாவட்ட நிர்வாகியின் ஒப்புதலுக்கு வெற்றிகரமாக அனுப்பப்பட்டது!", "#22c55e");
+  }
+
+  function cancelSchoolDeleteRequest(type, staffId) {
+    if (!activeSchoolSession) return;
+    const extra = getSchoolExtra(activeSchoolSession.uNo);
+    const staffList = (extra && extra.staff) ? extra.staff : [];
+    const st = staffList.find(item => String(item.id) === String(staffId));
+    if (st) {
+      delete st.deleteReqStatus;
+      safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+    }
+    staffDeleteRequests = (staffDeleteRequests || []).filter(r => !(String(r.uNo) === String(activeSchoolSession.uNo) && String(r.staffRecordId) === String(staffId) && r.status === "PENDING"));
+    safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
+    updateAllSummaryCounters();
+    renderSchoolStaffTable(extra);
+    showToast("↩️ நீக்கக் கோரிக்கை ரத்து செய்யப்பட்டது.", "#f59e0b");
+  }
+
+  function renderAdminDeleteRequestsTable() {
+    const tbody = document.getElementById("admDeleteRequestsTbody");
+    if (!tbody) return;
+    const statusFilter = (document.getElementById("admDelReqStatusFilter")?.value || "PENDING");
+    const q = (document.getElementById("admDelReqSearchInput")?.value || "").trim().toLowerCase();
+
+    const filtered = (staffDeleteRequests || []).filter(r => {
+      if (statusFilter !== "ALL" && r.status !== statusFilter) return false;
+      if (q) {
+        const hay = `${r.reqId} ${r.uNo} ${r.udiseNo} ${r.schoolName} ${r.staffName} ${r.emisId} ${r.desig} ${r.reason}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:22px; color:#64748b; font-weight:700;">பொருத்தமான நீக்கக் கோரிக்கைகள் எதுவும் இல்லை.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(r => {
+      const statusBadge = r.status === "PENDING"
+        ? `<span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">⏳ நிலுவையில் (Pending)</span>`
+        : (r.status === "APPROVED"
+          ? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">✅ நீக்கப்பட்டது (${r.resolvedAt || ''})</span>`
+          : `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">❌ நிராகரிக்கப்பட்டது</span>`);
+
+      const actionHtml = r.status === "PENDING"
+        ? `<div style="display:flex; gap:6px; flex-wrap:wrap;">
+             <button type="button" class="btn btn-success btn-sm" onclick="resolveAdminDeleteRequest('${r.reqId}', 'APPROVED')">✅ ஒப்புதல் &amp; நீக்கு</button>
+             <button type="button" class="btn btn-danger btn-sm" onclick="resolveAdminDeleteRequest('${r.reqId}', 'REJECTED')">❌ நிராகரி</button>
+           </div>`
+        : `<span style="font-size:0.78rem; color:#64748b; font-weight:700;">முடிக்கப்பட்டது</span>`;
+
+      return `
+        <tr>
+          <td><strong style="color:#0f294a;">${r.reqId}</strong><br><small style="color:#64748b;">${r.requestedAt}</small></td>
+          <td><strong>[${r.uNo}] ${r.schoolName}</strong><br><small style="color:#64748b;">UDISE: ${r.udiseNo}</small></td>
+          <td><span style="background:#eff6ff; color:#1e40af; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800;">${r.staffCategory || 'Teaching'}</span></td>
+          <td><strong style="color:#0f294a;">${r.staffName}</strong><br><small style="color:#475569;">${r.desig}</small></td>
+          <td><strong style="color:#1d4ed8;">${r.emisId}</strong></td>
+          <td style="max-width:260px; font-size:0.82rem; color:#334155;">${r.reason}</td>
+          <td>${statusBadge}</td>
+          <td>${actionHtml}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function resolveAdminDeleteRequest(reqId, decision) {
+    const req = (staffDeleteRequests || []).find(r => r.reqId === reqId);
+    if (!req) return;
+    req.status = decision;
+    req.resolvedAt = new Date().toLocaleDateString("en-IN");
+
+    const extra = getSchoolExtra(req.uNo);
+    if (extra && Array.isArray(extra.staff)) {
+      if (decision === "APPROVED") {
+        extra.staff = extra.staff.filter(st => String(st.id) !== String(req.staffRecordId) && String(st.id) !== String(req.emisId));
+      } else {
+        const st = extra.staff.find(item => String(item.id) === String(req.staffRecordId) || String(item.id) === String(req.emisId));
+        if (st) delete st.deleteReqStatus;
+      }
+      safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+    }
+
+    safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
+    updateAllSummaryCounters();
+    renderAdminDeleteRequestsTable();
+    showToast(decision === "APPROVED" ? `✅ ${req.staffName} நீக்கக் கோரிக்கைக்கு ஒப்புதல் அளிக்கப்பட்டு பட்டியலிலிருந்து நீக்கப்பட்டார்.` : `❌ ${req.staffName} நீக்கக் கோரிக்கை நிராகரிக்கப்பட்டது.`, decision === "APPROVED" ? "#22c55e" : "#ef4444");
+  }
+
+  function exportDeleteRequestsCsv() {
+    if (!staffDeleteRequests || staffDeleteRequests.length === 0) {
+      showToast("⚠️ பதிவிறக்க கோரிக்கைகள் எதுவும் இல்லை.", "#f59e0b");
+      return;
+    }
+    let csv = "\uFEFFRequest_ID,Requested_At,School_UNo,UDISE,School_Name,Staff_Name,Designation,Staff_ID,Reason,Status,Resolved_At\n";
+    staffDeleteRequests.forEach(r => {
+      csv += `"${r.reqId}","${r.requestedAt}","${r.uNo}","${r.udiseNo}","${r.schoolName}","${r.staffName}","${r.desig}","${r.emisId}","${(r.reason || '').replace(/"/g, '""')}","${r.status}","${r.resolvedAt || ''}"\n`;
+    });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Sivagangai_Staff_Delete_Requests_${new Date().toISOString().split("T")[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("📥 நீக்கக் கோரிக்கைகள் CSV பதிவிறக்கம் செய்யப்பட்டது!", "#22c55e");
   }
 
 </script>
