@@ -473,7 +473,7 @@
       position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65);
       display: none; justify-content: center; align-items: center; z-index: 2000; padding: 14px;
     }
-    .modal-backdrop.open { display: flex; }
+    .modal-backdrop.open, .modal-backdrop.active { display: flex !important; }
     .modal-card {
       background: #fff; width: 100%; max-width: 680px; max-height: 92vh;
       overflow-y: auto; border-radius: 12px; padding: 20px;
@@ -2461,10 +2461,16 @@
 
     <!-- SCHOOL DIGNITARIES GALLERY (SQUARE PHOTOS, STREAMLINED) -->
     <div id="schoolDignitariesShowcase" class="dignitary-showcase-container" style="margin-bottom:10px;">
-      <div style="display:flex; justify-content:flex-end; padding:4px 10px; background:#f8fafc; border-bottom:1px solid #e2e8f0;">
-        <button type="button" class="dignitary-toggle-btn" onclick="toggleDignitariesView()" id="dignitaryToggleBtn" title="விவரங்களை சுருக்குக / விரிக்க" style="padding:2px 8px; font-size:0.72rem;">
-          <span id="dignitaryToggleIcon">▲</span> <span id="dignitaryToggleText">சுருக்குக</span>
-        </button>
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 10px; background:#f8fafc; border-bottom:1px solid #e2e8f0; gap:8px; flex-wrap:wrap;">
+        <span style="font-size:0.74rem; font-weight:800; color:#475569;">🏛️ முக்கியப் பிரமுகர்கள் &amp; கல்வித்துறை அலுவலர்கள்</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button type="button" class="dignitary-toggle-btn" onclick="openAdminAddDignitaryModal()" title="புதிய அதிகாரி / பிரமுகர் சேர்க்க" style="padding:2px 8px; font-size:0.72rem; color:#15803d; border-color:#bbf7d0; background:#f0fdf4;">
+            ➕ அதிகாரி சேர்
+          </button>
+          <button type="button" class="dignitary-toggle-btn" onclick="toggleDignitariesView()" id="dignitaryToggleBtn" title="விவரங்களை சுருக்குக / விரிக்க" style="padding:2px 8px; font-size:0.72rem;">
+            <span id="dignitaryToggleIcon">▲</span> <span id="dignitaryToggleText">சுருக்குக</span>
+          </button>
+        </div>
       </div>
       <div id="schoolDignitariesGrid" class="dignitary-cards-grid">
         <!-- Rendered dynamically via renderSchoolDignitaries() -->
@@ -4821,6 +4827,19 @@
           </div>
         </div>
 
+        <!-- LIVE VISUAL DIGNITARIES BOX IN ADMIN WITH DIRECT EDIT BUTTONS -->
+        <div id="admDignitariesVisualBox" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;">
+            <div style="font-size:0.86rem; font-weight:900; color:#0f294a;">
+              🖼️ முக்கியப் பிரமுகர்கள் நேரடி அட்டைப் பெட்டி (அட்டையில் உள்ள <strong>✏️ திருத்து</strong> பொத்தானை அழுத்தி உடனடியாகத் திருத்தலாம்)
+            </div>
+            <span style="font-size:0.74rem; color:#0369a1; background:#e0f2fe; padding:3px 9px; border-radius:6px; font-weight:800;">1:1 சதுர வடிவப் புகைப்படங்கள்</span>
+          </div>
+          <div id="admDignitariesCardsPreviewGrid" class="dignitary-cards-grid" style="padding:4px 0;">
+            <!-- Rendered via renderAdminDignitariesManager() -->
+          </div>
+        </div>
+
         <!-- SEARCH & FILTER BAR -->
         <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div style="flex:1; min-width:240px; position:relative;">
@@ -5571,7 +5590,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   // Firebase Real-Time Database Configuration State
   // District Admin can paste their permanent URL in DEFAULT_FIREBASE_DB_URL for automatic district-wide connection
-  const DEFAULT_FIREBASE_DB_URL = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";
+  const DEFAULT_FIREBASE_DB_URL = "";
   let firebaseDbUrl = DEFAULT_FIREBASE_DB_URL;
   let firebaseApiKey = "";
   let firebaseAutoSyncEnabled = true;
@@ -6592,13 +6611,16 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   ];
 
   const DIGNITARIES_STORAGE_KEY = "CEOSVG_DIGNITARIES_DATA_V2";
+  let dignitariesMemoryStore = null;
 
   function getDignitariesList() {
-    const saved = safeGetStorage(DIGNITARIES_STORAGE_KEY, null);
+    if (Array.isArray(dignitariesMemoryStore) && dignitariesMemoryStore.length > 0) {
+      return dignitariesMemoryStore;
+    }
+    const saved = safeGetStorage(DIGNITARIES_STORAGE_KEY, null) || safeGetStorage("CEOSVG_DIGNITARIES_V1", null);
     if (Array.isArray(saved) && saved.length > 0) {
-      // Ensure any item with missing photo inherits default photo
-      return saved.map(d => {
-        const def = DEFAULT_DIGNITARIES.find(item => item.id === d.id);
+      dignitariesMemoryStore = saved.map(d => {
+        const def = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(d.id));
         if (def && (!d.photo || d.photo === "")) {
           d.photo = def.photo;
         }
@@ -6607,12 +6629,16 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         }
         return d;
       });
+      return dignitariesMemoryStore;
     }
-    return JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES));
+    dignitariesMemoryStore = JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES));
+    return dignitariesMemoryStore;
   }
 
   function saveDignitariesList(list) {
-    safeSetStorage(DIGNITARIES_STORAGE_KEY, list);
+    dignitariesMemoryStore = JSON.parse(JSON.stringify(list));
+    safeSetStorage(DIGNITARIES_STORAGE_KEY, dignitariesMemoryStore);
+    safeSetStorage("CEOSVG_DIGNITARIES_V1", dignitariesMemoryStore, true);
     renderSchoolDignitaries();
     renderAdminDignitariesManager();
   }
@@ -6650,19 +6676,21 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       return true;
     });
 
-
-
     grid.innerHTML = listToRender.map(d => {
       const fb = d.fallbackPhoto || '';
+      const safeId = String(d.id).replace(/'/g, "\\'");
       const avatarContent = d.photo 
         ? `<img src="${d.photo}" alt="${d.name}" style="width:100%; height:100%; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
            <div class="dignitary-avatar-fallback" style="display:none; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`
         : `<div class="dignitary-avatar-fallback" style="display:flex; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`;
       return `
-      <div class="dignitary-card ${d.tier || 'tier-district'}" id="digCard_${d.id}">
+      <div class="dignitary-card ${d.tier || 'tier-district'}" id="digCard_${d.id}" style="position:relative;">
         <div class="dignitary-card-top">
           <span class="dignitary-hon-badge ${d.honorificClass || getHonorificClass(d.honorific)}">${d.honorific || ''}</span>
-          <span class="dignitary-tier-tag">${d.tierBadge || ''}</span>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <span class="dignitary-tier-tag">${d.tierBadge || ''}</span>
+            <button type="button" onclick="openAdminEditDignitaryModal('${safeId}')" title="இப்பிரமுகர் விவரங்களைத் திருத்துக (Edit)" style="border:1px solid #bae6fd; background:#f0f9ff; color:#0369a1; border-radius:4px; padding:1px 5px; font-size:0.65rem; font-weight:800; cursor:pointer; line-height:1.2;">✏️ திருத்து</button>
+          </div>
         </div>
         <div class="dignitary-card-body">
           <div class="dignitary-avatar" style="background:${d.avatarBg || '#e0f2fe'}; overflow:hidden;" aria-hidden="true">
@@ -6705,6 +6733,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   function renderAdminDignitariesManager() {
     const tbody = document.getElementById("admDignitariesTbody");
+    const cardsGrid = document.getElementById("admDignitariesCardsPreviewGrid");
     const statTotal = document.getElementById("admDignitaryStatTotal");
     const statGovt = document.getElementById("admDignitaryStatGovt");
     const statPvt = document.getElementById("admDignitaryStatPvt");
@@ -6716,8 +6745,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (statGovt) statGovt.textContent = list.filter(d => !d.privateOnly).length;
     if (statPvt) statPvt.textContent = list.length;
     if (chooserBadge) chooserBadge.textContent = `🏛️ ${list.length} அலுவலர்கள்`;
-
-    if (!tbody) return;
 
     let filtered = list.filter(d => {
       if (admDignitariesFilterTier) {
@@ -6732,18 +6759,66 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       return true;
     });
 
+    if (cardsGrid) {
+      if (filtered.length === 0) {
+        cardsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:18px; color:#64748b; font-weight:700;">பொருந்திய அதிகாரிகள் எவரும் காணப்படவில்லை.</div>`;
+      } else {
+        cardsGrid.innerHTML = filtered.map(d => {
+          const fb = d.fallbackPhoto || '';
+          const safeId = String(d.id).replace(/'/g, "\\'");
+          const avatarContent = d.photo 
+            ? `<img src="${d.photo}" alt="${d.name}" style="width:100%; height:100%; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
+               <div class="dignitary-avatar-fallback" style="display:none; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`
+            : `<div class="dignitary-avatar-fallback" style="display:flex; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`;
+          return `
+            <div class="dignitary-card ${d.tier || 'tier-district'}" style="position:relative;">
+              <div class="dignitary-card-top">
+                <span class="dignitary-hon-badge ${d.honorificClass || getHonorificClass(d.honorific)}">${d.honorific || ''}</span>
+                <span class="dignitary-tier-tag">${d.tierBadge || ''}</span>
+              </div>
+              <div class="dignitary-card-body">
+                <div class="dignitary-avatar" style="background:${d.avatarBg || '#e0f2fe'}; overflow:hidden;" aria-hidden="true">
+                  ${avatarContent}
+                </div>
+                <div class="dignitary-details">
+                  <div class="dignitary-role">${d.role || ''}</div>
+                  <div class="dignitary-name">${d.name || ''}</div>
+                </div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:6px; padding-top:6px; border-top:1px dashed #e2e8f0;">
+                <span style="font-size:0.65rem; font-weight:800; color:${d.privateOnly ? '#92400e' : '#166534'};">
+                  ${d.privateOnly ? '🏢 தனியார் மட்டும்' : '🏫 அனைத்துப் பள்ளிகள்'}
+                </span>
+                <div style="display:flex; gap:4px;">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="openAdminEditDignitaryModal('${safeId}')" style="font-size:0.72rem; font-weight:800; padding:2px 8px; border-color:#0284c7; color:#0369a1; background:#f0f9ff;">
+                    ✏️ திருத்து
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="deleteAdminDignitary('${safeId}')" style="font-size:0.72rem; font-weight:800; padding:2px 6px; border-color:#fca5a5; color:#dc2626;" title="நீக்குக">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    if (!tbody) return;
+
     if (filtered.length === 0) {
       tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#64748b; font-weight:700;">பொருந்திய அதிகாரிகள் எவரும் காணப்படவில்லை.</td></tr>`;
       return;
     }
 
     tbody.innerHTML = filtered.map((d, idx) => {
-      const realIdx = list.findIndex(item => item.id === d.id);
+      const realIdx = list.findIndex(item => String(item.id) === String(d.id));
+      const safeId = String(d.id).replace(/'/g, "\\'");
       const fb = d.fallbackPhoto || '';
       const avatarThumb = d.photo 
         ? `<img src="${d.photo}" style="width:42px; height:42px; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px; border:1.5px solid #cbd5e1;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
-           <div style="display:none; width:38px; height:38px; border-radius:50%; background:${d.avatarBg || '#e0f2fe'}; align-items:center; justify-content:center; font-size:1.1rem; margin:0 auto;">${d.icon || '🏛️'}</div>`
-        : `<div style="width:38px; height:38px; border-radius:50%; background:${d.avatarBg || '#e0f2fe'}; display:flex; align-items:center; justify-content:center; font-size:1.1rem; margin:0 auto;">${d.icon || '🏛️'}</div>`;
+           <div style="display:none; width:38px; height:38px; border-radius:6px; background:${d.avatarBg || '#e0f2fe'}; align-items:center; justify-content:center; font-size:1.1rem; margin:0 auto;">${d.icon || '🏛️'}</div>`
+        : `<div style="width:38px; height:38px; border-radius:6px; background:${d.avatarBg || '#e0f2fe'}; display:flex; align-items:center; justify-content:center; font-size:1.1rem; margin:0 auto;">${d.icon || '🏛️'}</div>`;
 
       const honClass = d.honorificClass || getHonorificClass(d.honorific);
       const isPvt = Boolean(d.privateOnly);
@@ -6782,10 +6857,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           </td>
           <td style="padding:10px; text-align:center;">
             <div style="display:flex; gap:6px; justify-content:center; align-items:center;">
-              <button type="button" class="btn btn-outline btn-sm" onclick="openAdminEditDignitaryModal('${d.id}')" style="font-size:0.76rem; font-weight:800; padding:3px 8px; border-color:#0284c7; color:#0369a1;" title="விவரங்களைத் திருத்துக">
+              <button type="button" class="btn btn-outline btn-sm" onclick="openAdminEditDignitaryModal('${safeId}')" style="font-size:0.76rem; font-weight:800; padding:4px 10px; border-color:#0284c7; color:#0369a1; background:#f0f9ff; cursor:pointer;" title="விவரங்களைத் திருத்துக">
                 ✏️ திருத்து
               </button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="deleteAdminDignitary('${d.id}')" style="font-size:0.76rem; font-weight:800; padding:3px 8px; border-color:#fca5a5; color:#dc2626;" title="நீக்குக">
+              <button type="button" class="btn btn-outline btn-sm" onclick="deleteAdminDignitary('${safeId}')" style="font-size:0.76rem; font-weight:800; padding:4px 8px; border-color:#fca5a5; color:#dc2626; cursor:pointer;" title="நீக்குக">
                 🗑️
               </button>
             </div>
@@ -6815,51 +6890,119 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   function openAdminEditDignitaryModal(id) {
     const list = getDignitariesList();
-    const d = list.find(item => item.id === id);
-    if (!d) return;
+    const d = list.find(item => String(item.id) === String(id));
+    if (!d) {
+      showToast("⚠️ அதிகாரி விவரம் காணப்படவில்லை.", "#ef4444");
+      return;
+    }
 
-    document.getElementById("admDigFormId").value = d.id;
-    document.getElementById("admDigFormHonorific").value = d.honorific || "மதிப்புமிகு";
-    document.getElementById("admDigFormRole").value = d.role || "";
-    document.getElementById("admDigFormName").value = d.name || "";
-    document.getElementById("admDigFormTier").value = d.tier || "tier-district";
-    document.getElementById("admDigFormTierBadge").value = d.tierBadge || "";
-    document.getElementById("admDigFormIcon").value = d.icon || "🏛️";
-    document.getElementById("admDigFormPhotoUrl").value = d.photo || "";
-    document.getElementById("admDigFormPrivateOnly").value = String(Boolean(d.privateOnly));
+    const idEl = document.getElementById("admDigFormId");
+    const honEl = document.getElementById("admDigFormHonorific");
+    const roleEl = document.getElementById("admDigFormRole");
+    const nameEl = document.getElementById("admDigFormName");
+    const tierEl = document.getElementById("admDigFormTier");
+    const badgeEl = document.getElementById("admDigFormTierBadge");
+    const iconEl = document.getElementById("admDigFormIcon");
+    const urlEl = document.getElementById("admDigFormPhotoUrl");
+    const pvtEl = document.getElementById("admDigFormPrivateOnly");
+
+    if (idEl) idEl.value = d.id;
+    if (honEl) honEl.value = d.honorific || "மதிப்புமிகு";
+    if (roleEl) roleEl.value = d.role || "";
+    if (nameEl) nameEl.value = d.name || "";
+    if (tierEl) tierEl.value = d.tier || "tier-district";
+    if (badgeEl) badgeEl.value = d.tierBadge || "";
+    if (iconEl) iconEl.value = d.icon || "🏛️";
+    if (pvtEl) pvtEl.value = String(Boolean(d.privateOnly));
+
     tempDignitaryUploadedPhoto = d.photo || "";
+    if (urlEl) {
+      if (d.photo && !String(d.photo).startsWith("data:")) {
+        urlEl.value = d.photo;
+      } else {
+        urlEl.value = "";
+        urlEl.placeholder = d.photo
+          ? "✅ தற்போதைய புகைப்படம் இணைக்கப்பட்டுள்ளது — மாற்ற புதிய URL உள்ளிடவும் அல்லது கோப்பு பதிவேற்றவும்"
+          : "https://... அல்லது மேலே உள்ள கோப்பு பதிவேற்றத்தைப் பயன்படுத்தவும்";
+      }
+    }
 
     const fileInput = document.getElementById("admDigFormPhotoFile");
     if (fileInput) fileInput.value = "";
 
-    document.getElementById("admDignitaryModalTitle").textContent = `✏️ அதிகாரி விவரங்களைத் திருத்துதல்: ${d.role} (${d.name})`;
-    document.getElementById("adminDignitaryEditModal").classList.add("active");
+    const titleEl = document.getElementById("admDignitaryModalTitle");
+    if (titleEl) {
+      titleEl.textContent = `✏️ அதிகாரி விவரங்களைத் திருத்துதல்: ${d.role} (${d.name})`;
+    }
+
+    const modal = document.getElementById("adminDignitaryEditModal");
+    if (modal) {
+      modal.classList.add("open");
+      modal.classList.add("active");
+      modal.style.display = "flex";
+    }
     updateAdminDignitaryPreview();
+    if (nameEl) {
+      setTimeout(() => {
+        try { nameEl.focus(); nameEl.select(); } catch (e) {}
+      }, 60);
+    }
   }
 
   function openAdminAddDignitaryModal() {
-    document.getElementById("admDigFormId").value = "dig_" + Date.now();
-    document.getElementById("admDigFormHonorific").value = "மதிப்புமிகு";
-    document.getElementById("admDigFormRole").value = "";
-    document.getElementById("admDigFormName").value = "";
-    document.getElementById("admDigFormTier").value = "tier-district";
-    document.getElementById("admDigFormTierBadge").value = "மாவட்ட நிர்வாகம்";
-    document.getElementById("admDigFormIcon").value = "🏛️";
-    document.getElementById("admDigFormPhotoUrl").value = "";
-    document.getElementById("admDigFormPrivateOnly").value = "false";
+    const idEl = document.getElementById("admDigFormId");
+    const honEl = document.getElementById("admDigFormHonorific");
+    const roleEl = document.getElementById("admDigFormRole");
+    const nameEl = document.getElementById("admDigFormName");
+    const tierEl = document.getElementById("admDigFormTier");
+    const badgeEl = document.getElementById("admDigFormTierBadge");
+    const iconEl = document.getElementById("admDigFormIcon");
+    const urlEl = document.getElementById("admDigFormPhotoUrl");
+    const pvtEl = document.getElementById("admDigFormPrivateOnly");
+
+    if (idEl) idEl.value = "dig_" + Date.now();
+    if (honEl) honEl.value = "மதிப்புமிகு";
+    if (roleEl) roleEl.value = "";
+    if (nameEl) nameEl.value = "";
+    if (tierEl) tierEl.value = "tier-district";
+    if (badgeEl) badgeEl.value = "மாவட்ட நிர்வாகம்";
+    if (iconEl) iconEl.value = "🏛️";
+    if (urlEl) {
+      urlEl.value = "";
+      urlEl.placeholder = "https://... அல்லது மேலே உள்ள கோப்பு பதிவேற்றத்தைப் பயன்படுத்தவும்";
+    }
+    if (pvtEl) pvtEl.value = "false";
     tempDignitaryUploadedPhoto = "";
 
     const fileInput = document.getElementById("admDigFormPhotoFile");
     if (fileInput) fileInput.value = "";
 
-    document.getElementById("admDignitaryModalTitle").textContent = "➕ புதிய அதிகாரி / பிரமுகர் சேர்த்தல்";
-    document.getElementById("adminDignitaryEditModal").classList.add("active");
+    const titleEl = document.getElementById("admDignitaryModalTitle");
+    if (titleEl) {
+      titleEl.textContent = "➕ புதிய அதிகாரி / பிரமுகர் சேர்த்தல்";
+    }
+
+    const modal = document.getElementById("adminDignitaryEditModal");
+    if (modal) {
+      modal.classList.add("open");
+      modal.classList.add("active");
+      modal.style.display = "flex";
+    }
     updateAdminDignitaryPreview();
+    if (roleEl) {
+      setTimeout(() => {
+        try { roleEl.focus(); } catch (e) {}
+      }, 60);
+    }
   }
 
   function closeAdminDignitaryModal() {
     const modal = document.getElementById("adminDignitaryEditModal");
-    if (modal) modal.classList.remove("active");
+    if (modal) {
+      modal.classList.remove("open");
+      modal.classList.remove("active");
+      modal.style.display = "";
+    }
   }
 
   function handleDignitaryPhotoUpload(event) {
@@ -6867,10 +7010,39 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function(e) {
-      tempDignitaryUploadedPhoto = e.target.result;
-      const urlInput = document.getElementById("admDigFormPhotoUrl");
-      if (urlInput) urlInput.value = "";
-      updateAdminDignitaryPreview();
+      const rawDataUrl = e.target.result;
+      // Auto square-crop & compress to 260x260 so it fits cleanly in localStorage & Firebase
+      const img = new Image();
+      img.onload = function() {
+        try {
+          const canvas = document.createElement("canvas");
+          const size = 260;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          const minSide = Math.min(img.width, img.height);
+          const sx = Math.max(0, (img.width - minSide) / 2);
+          // Bias crop toward top-center for portraits
+          const sy = Math.max(0, (img.height - minSide) * 0.15);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, size, size);
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+          tempDignitaryUploadedPhoto = canvas.toDataURL("image/jpeg", 0.88);
+        } catch (err) {
+          tempDignitaryUploadedPhoto = rawDataUrl;
+        }
+        const urlInput = document.getElementById("admDigFormPhotoUrl");
+        if (urlInput) urlInput.value = "";
+        updateAdminDignitaryPreview();
+        showToast("🖼️ புகைப்படம் 1:1 சதுர வடிவில் தயார் செய்யப்பட்டது!", "#0284c7");
+      };
+      img.onerror = function() {
+        tempDignitaryUploadedPhoto = rawDataUrl;
+        const urlInput = document.getElementById("admDigFormPhotoUrl");
+        if (urlInput) urlInput.value = "";
+        updateAdminDignitaryPreview();
+      };
+      img.src = rawDataUrl;
     };
     reader.readAsDataURL(file);
   }
@@ -6898,9 +7070,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const avatarBg = getDefaultAvatarBg(tier);
 
     const avatarContent = finalPhoto
-      ? `<img src="${finalPhoto}" alt="${name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-         <div style="display:none; width:100%; height:100%; align-items:center; justify-content:center; font-size:1.35rem;">${icon}</div>`
-      : `<div style="display:flex; width:100%; height:100%; align-items:center; justify-content:center; font-size:1.35rem;">${icon}</div>`;
+      ? `<img src="${finalPhoto}" alt="${name}" style="width:100%; height:100%; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+         <div style="display:none; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${icon}</div>`
+      : `<div style="display:flex; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${icon}</div>`;
 
     container.innerHTML = `
       <div class="dignitary-card ${tier}" style="box-shadow:0 3px 8px rgba(0,0,0,0.08);">
@@ -6942,7 +7114,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const privateOnly = document.getElementById("admDigFormPrivateOnly").value === "true";
 
     const list = getDignitariesList();
-    const existingIdx = list.findIndex(item => item.id === id);
+    const existingIdx = list.findIndex(item => String(item.id) === String(id));
+    const existingObj = existingIdx >= 0 ? list[existingIdx] : null;
+    const defObj = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(id));
 
     const digObj = {
       id: id || ("dig_" + Date.now()),
@@ -6954,6 +7128,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       name: name,
       icon: icon,
       photo: photo,
+      fallbackPhoto: (existingObj && existingObj.fallbackPhoto) || (defObj && defObj.fallbackPhoto) || "",
       avatarBg: getDefaultAvatarBg(tier),
       privateOnly: privateOnly
     };
@@ -6971,12 +7146,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   function deleteAdminDignitary(id) {
     const list = getDignitariesList();
-    const d = list.find(item => item.id === id);
+    const d = list.find(item => String(item.id) === String(id));
     if (!d) return;
 
-
-
-    const updated = list.filter(item => item.id !== id);
+    const updated = list.filter(item => String(item.id) !== String(id));
     saveDignitariesList(updated);
     showToast(`🗑️ ${d.role} விவரங்கள் நீக்கப்பட்டன.`, "#ef4444");
   }
@@ -6995,8 +7168,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   function resetAdminDignitariesToDefault() {
-
-    saveDignitariesList(JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES)));
+    dignitariesMemoryStore = JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES));
+    saveDignitariesList(dignitariesMemoryStore);
     showToast("🔄 அதிகாரிகள் பட்டியல் இயல்புநிலைக்கு மீட்டமைக்கப்பட்டது!", "#f59e0b");
   }
 
@@ -7007,8 +7180,12 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   function previewDignitariesInSchoolShowcase() {
+    const admBox = document.getElementById("admDignitariesVisualBox");
     const showcase = document.getElementById("schoolDignitariesShowcase");
-    if (showcase) {
+    if (admBox && admBox.offsetParent !== null) {
+      admBox.scrollIntoView({ behavior: "smooth", block: "center" });
+      showToast("👀 முக்கியப் பிரமுகர்கள் நேரடி அட்டைப் பெட்டி", "#0284c7");
+    } else if (showcase) {
       showcase.scrollIntoView({ behavior: "smooth" });
       showToast("👀 முகப்பில் தோன்றும் முக்கிய பிரமுகர்கள் காட்சிப்பலகை", "#0284c7");
     }
@@ -8656,7 +8833,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (key === "CEOSVG_MASTER_SCHOOLS") return `${schLabel} – பள்ளி சுயவிவரம் / முதன்மைப் பட்டியல் புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_SCHOOL_AUTH") return `${schLabel} – உள்நுழைவு / தொடர்பு விவரம் புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_DELETE_REQUESTS") return `${schLabel} – பணியாளர் நீக்கக் கோரிக்கை (Delete Request) புதுப்பிக்கப்பட்டது`;
-    if (key === "CEOSVG_DIGNITARIES_V1") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் (Dignitaries) விவரம் புதுப்பிக்கப்பட்டது`;
+    if (key === "CEOSVG_DIGNITARIES_V1" || key === "CEOSVG_DIGNITARIES_DATA_V2") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் (Dignitaries) விவரம் புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_CIRCULARS") return `மாவட்ட நிர்வாகி – புதிய சுற்றறிக்கை (Circular) வெளியிடப்பட்டது`;
     if (key === "CEOSVG_DIVISIONS") return `மாவட்ட நிர்வாகி – நிர்வாகப் பிரிவுகள் (Divisions) புதுப்பிக்கப்பட்டன`;
     if (key === "CEOSVG_STAFF_OVERRIDES") return `மாவட்ட நிர்வாகி – ஆசிரியர் பணி விவரம் (Staff Master) திருத்தப்பட்டது`;
@@ -8847,6 +9024,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       staffDeleteRequests = val;
     } else if (key === "CEOSVG_CIRCULARS" && Array.isArray(val)) {
       districtCirculars = val;
+    } else if ((key === "CEOSVG_DIGNITARIES_V1" || key === "CEOSVG_DIGNITARIES_DATA_V2") && Array.isArray(val)) {
+      dignitariesMemoryStore = val;
     } else if (key === "CEOSVG_DIVISIONS" && typeof val === "object") {
       divisionsRegistry = val;
     } else if (key === "CEOSVG_EMIS_STUDENT_DATA" && typeof val === "object" && typeof EMIS_STUDENT_DATA !== "undefined") {
