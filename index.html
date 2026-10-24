@@ -2439,17 +2439,11 @@
   <!-- VIEW 2: SCHOOL PORTAL DASHBOARD (#viewSchool)                         -->
   <!-- ===================================================================== -->
   <div id="viewSchool" class="view-section">
-    <!-- School Top Identity Banner - Compact & Clean -->
-    <div style="background:linear-gradient(135deg, #0f294a 0%, #1e3a8a 100%); color:#fff; border-radius:8px; padding:8px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-left:5px solid #f59e0b;">
-      <div>
-        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-          <span style="background:#fef08a; color:#0f294a; font-weight:900; padding:1px 8px; border-radius:5px; font-size:0.78rem;" id="schBannerUNo">U.NO: 101</span>
-          <span style="background:rgba(255,255,255,0.18); color:#fff; font-weight:800; padding:1px 8px; border-radius:5px; font-size:0.76rem;" id="schBannerUdise">UDISE: 33231106101</span>
-          <span style="background:#22c55e; color:#fff; font-weight:800; padding:1px 8px; border-radius:5px; font-size:0.74rem;" id="schBannerMgmt">1G - அரசுப் பள்ளி</span>
-        </div>
-        <h2 style="font-size:1.10rem; font-weight:900; margin:2px 0 1px; color:#fff; line-height:1.25;" id="schBannerNameTa">அரசு உயர்நிலைப்பள்ளி வலசைப்பட்டி</h2>
-        <div style="font-size:0.78rem; color:#bfdbfe; font-weight:600;" id="schBannerNameEn">GOVT. HS , VALASAIPATTI</div>
-        <div style="font-size:0.74rem; color:#fde68a; margin-top:1px;" id="schBannerMeta">ஒன்றியம்: 01 S.Pudur | தொகுதி: 185 Tiruppattur | DGE: 208TPRS0037</div>
+    <!-- School Top Quick Action Bar + Navigation Menu -->
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:#0f294a; color:#fff; padding:6px 12px; border-radius:8px; margin-bottom:8px; border-left:4px solid #f59e0b;">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span style="font-size:0.82rem; font-weight:900; color:#fde047;">🏫 பள்ளி உள்நுழைவு முகப்பு (School Portal)</span>
+        <span id="schTopQuickNameBadge" style="font-size:0.80rem; font-weight:700; color:#e2e8f0;"></span>
       </div>
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
         <button type="button" class="btn btn-outline btn-sm" onclick="goToMainHome()" style="background:#fff; color:#0f294a; font-weight:800; padding:4px 10px; font-size:0.78rem;">🏠 முதன்மை முகப்பு (Home)</button>
@@ -2459,22 +2453,7 @@
       </div>
     </div>
 
-    <!-- SCHOOL DIGNITARIES GALLERY (SQUARE PHOTOS, STREAMLINED) -->
-    <div id="schoolDignitariesShowcase" class="dignitary-showcase-container" style="margin-bottom:10px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 10px; background:#f8fafc; border-bottom:1px solid #e2e8f0; gap:8px; flex-wrap:wrap;">
-        <span style="font-size:0.74rem; font-weight:800; color:#475569;">🏛️ முக்கியப் பிரமுகர்கள் &amp; கல்வித்துறை அலுவலர்கள்</span>
-        <div style="display:flex; align-items:center; gap:6px;">
-          <button type="button" class="dignitary-toggle-btn" onclick="toggleDignitariesView()" id="dignitaryToggleBtn" title="விவரங்களை சுருக்குக / விரிக்க" style="padding:2px 8px; font-size:0.72rem;">
-            <span id="dignitaryToggleIcon">▲</span> <span id="dignitaryToggleText">சுருக்குக</span>
-          </button>
-        </div>
-      </div>
-      <div id="schoolDignitariesGrid" class="dignitary-cards-grid">
-        <!-- Rendered dynamically via renderSchoolDignitaries() -->
-      </div>
-    </div>
-
-<!-- =================================================================== -->
+    <!-- =================================================================== -->
     <!-- SCHOOL TOP NAVIGATION MENU (TOPMENU) - PREMIER PORTAL TOPBAR        -->
     <!-- =================================================================== -->
     <nav class="school-topmenu-container" aria-label="School Dashboard Top Navigation">
@@ -2511,13 +2490,94 @@
       </div>
     </nav>
 
-    <!-- SCHOOL SUB-TAB 1: MASTER PROFILE -->
-    
     <!-- =================================================================== -->
-    <!-- =================================================================== -->
-    <!-- 1. SCHOOL HOME: DESIGNATION-WISE WORKING STAFF STRENGTH TABLE       -->
+    <!-- 1. பள்ளித்தகவல் பலகை (SCHOOL DASHBOARD)                               -->
     <!-- =================================================================== -->
     <div id="schPaneStaffStrength" class="panel-box">
+      <!-- SECTION 1 OF SCHOOL DASHBOARD: DIGNITARIES & EDUCATION OFFICIALS -->
+      <div id="schoolDignitariesShowcase" class="dignitary-showcase-container" style="margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px; background:linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%); border-bottom:1.5px solid #cbd5e1; gap:8px; flex-wrap:wrap;">
+          <span style="font-size:0.84rem; font-weight:900; color:#0f294a;">🏛️ முக்கியப் பிரமுகர்கள் &amp; கல்வித்துறை அலுவலர்கள்</span>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button type="button" class="dignitary-toggle-btn" onclick="toggleDignitariesView()" id="dignitaryToggleBtn" title="விவரங்களை சுருக்குக / விரிக்க" style="padding:2px 8px; font-size:0.72rem;">
+              <span id="dignitaryToggleIcon">▲</span> <span id="dignitaryToggleText">சுருக்குக</span>
+            </button>
+          </div>
+        </div>
+        <div id="schoolDignitariesGrid" class="dignitary-cards-grid">
+          <!-- Rendered dynamically via renderSchoolDignitaries() -->
+        </div>
+      </div>
+
+      <!-- SECTION 2 OF SCHOOL DASHBOARD: SCHOOL IDENTITY, ESTABLISHMENT, U.NO / UDISE / DGE & EXAM CENTRE DETAILS -->
+      <div id="schoolDashboardIdentityPanel" style="background:linear-gradient(135deg, #0f294a 0%, #1e3a8a 100%); color:#fff; border-radius:12px; padding:16px 18px; margin-bottom:18px; border-left:6px solid #f59e0b; box-shadow:0 4px 14px rgba(15,41,74,0.12);">
+        <!-- Top Row: School Name (Tamil & English) + Edit Button -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.18); margin-bottom:12px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+              <span style="background:#22c55e; color:#fff; font-weight:900; padding:2px 10px; border-radius:999px; font-size:0.75rem;" id="schBannerMgmt">1G - அரசுப் பள்ளி</span>
+              <span style="font-size:0.78rem; color:#fde68a; font-weight:700;" id="schBannerMeta">ஒன்றியம்: 01 S.Pudur | தொகுதி: 185 Tiruppattur</span>
+            </div>
+            <h2 style="font-size:1.35rem; font-weight:900; margin:2px 0 3px; color:#ffffff; line-height:1.3; letter-spacing:0.2px;" id="schBannerNameTa">அரசு உயர்நிலைப்பள்ளி வலசைப்பட்டி</h2>
+            <div style="font-size:0.95rem; color:#93c5fd; font-weight:800; letter-spacing:0.4px;" id="schBannerNameEn">GOVT. HS , VALASAIPATTI</div>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-sm" onclick="switchSchoolTab('profile')" style="background:#fef08a; color:#0f294a; font-weight:900; padding:5px 12px; font-size:0.78rem; border-radius:6px; border:none;">
+              ✏️ பள்ளி விவரம் திருத்து (Edit Profile)
+            </button>
+          </div>
+        </div>
+
+        <!-- Middle Row: Key Identification Codes (U.NO, UDISE NO, DGE SCHOOL NUMBER) & Establishment Date -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(195px, 1fr)); gap:10px; margin-bottom:10px;">
+          <div style="background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.22); border-left:4px solid #fef08a; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.70rem; color:#cbd5e1; font-weight:800; text-transform:uppercase;">பள்ளியின் U.NO (School U.NO)</div>
+            <div style="font-size:1.18rem; font-weight:900; color:#fef08a; margin-top:2px;" id="schBannerUNo">101</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.22); border-left:4px solid #38bdf8; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.70rem; color:#cbd5e1; font-weight:800; text-transform:uppercase;">UDISE NO (11-இலக்க எண்)</div>
+            <div style="font-size:1.18rem; font-weight:900; color:#ffffff; margin-top:2px;" id="schBannerUdise">33231106101</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.22); border-left:4px solid #a7f3d0; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.70rem; color:#cbd5e1; font-weight:800; text-transform:uppercase;">DGE SCHOOL NUMBER</div>
+            <div style="font-size:1.15rem; font-weight:900; color:#6ee7b7; margin-top:2px;" id="schDashDgeNo">208TPRS0037</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.22); border-left:4px solid #f472b6; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.70rem; color:#cbd5e1; font-weight:800; text-transform:uppercase;">பள்ளித் தோற்றுவிக்கப்பட்ட நாள்</div>
+            <div style="font-size:1.02rem; font-weight:900; color:#fbcfe8; margin-top:2px;" id="schDashEstDate">-</div>
+          </div>
+        </div>
+
+        <!-- Conditional Row 1: Higher Secondary School Upgradation Details (Shown ONLY if HSS / மேல்நிலைப்பள்ளி) -->
+        <div id="schDashHssUpgradationBox" style="display:none; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px; margin-bottom:10px; background:rgba(16,185,129,0.16); border:1px solid rgba(110,231,183,0.4); border-radius:8px; padding:9px 12px;">
+          <div>
+            <div style="font-size:0.71rem; color:#a7f3d0; font-weight:800;">🎓 மேல்நிலைப்பள்ளியாக தரம் உயர்த்தப்பட்ட நாள் (Upgraded Date as HSS):</div>
+            <div style="font-size:0.98rem; font-weight:900; color:#ffffff; margin-top:2px;" id="schDashHssUpgradedDate">-</div>
+          </div>
+          <div>
+            <div style="font-size:0.71rem; color:#a7f3d0; font-weight:800;">📜 மேல்நிலை தரம் உயர்த்தப்பட்ட அரசாணை விவரம் (G.O. Details):</div>
+            <div style="font-size:0.98rem; font-weight:900; color:#fef08a; margin-top:2px;" id="schDashHssGoDetails">-</div>
+          </div>
+        </div>
+
+        <!-- Conditional Row 2: Public Exam Centre Numbers (Shown ONLY if School is an Exam Centre / தேர்வு மையமாக இருந்தால்) -->
+        <div id="schDashExamCentreBox" style="display:none; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:10px; background:rgba(245,158,11,0.18); border:1px solid rgba(253,224,71,0.45); border-radius:8px; padding:9px 12px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.2rem;">🏛️</span>
+            <div>
+              <div style="font-size:0.71rem; color:#fde68a; font-weight:800;">10th Exam Centre No. (10-ஆம் வகுப்பு தேர்வு மைய எண்)</div>
+              <div style="font-size:1.08rem; font-weight:900; color:#ffffff; margin-top:1px;" id="schDashExamCentre10">-</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.2rem;">🎓</span>
+            <div>
+              <div style="font-size:0.71rem; color:#fde68a; font-weight:800;">12th Exam Centre No. (12-ஆம் வகுப்பு தேர்வு மைய எண்)</div>
+              <div style="font-size:1.08rem; font-weight:900; color:#fef08a; margin-top:1px;" id="schDashExamCentre12">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- ================================================================= -->
       <!-- SCHOOL DASHBOARD: STUDENT ENROLLMENT (SCHOOL DASHBOARD.PDF)        -->
       <!-- ================================================================= -->
@@ -2730,20 +2790,51 @@
       <form onsubmit="saveSchoolProfileFromDashboard(event)">
         <div class="grid-4">
           <div class="form-group">
-            <label class="form-label">பள்ளி தனி எண் (U.NO)</label>
+            <label class="form-label">பள்ளியின் U.NO (School U.NO)</label>
             <input type="text" id="schFormUNo" class="form-control" readonly style="background:#f1f5f9; font-weight:800;">
           </div>
           <div class="form-group">
-            <label class="form-label">11 இலக்க UDISE எண்</label>
+            <label class="form-label">UDISE NO (11 இலக்க எண்)</label>
             <input type="text" id="schFormUdise" class="form-control" readonly style="background:#f1f5f9; font-weight:800;">
           </div>
           <div class="form-group">
-            <label class="form-label">DGE தேர்வு எண் (DGE NO)</label>
-            <input type="text" id="schFormDge" class="form-control">
+            <label class="form-label">DGE SCHOOL NUMBER</label>
+            <input type="text" id="schFormDge" class="form-control" placeholder="எ.கா: 208TPRS0037">
           </div>
           <div class="form-group">
-            <label class="form-label">+2 தேர்வு மைய எண் (12_Ex_Cen)</label>
-            <input type="text" id="schFormCentre12" class="form-control" placeholder="மையம் எனில் எண் (எ.கா: 208001)">
+            <label class="form-label">பள்ளித் தோற்றுவிக்கப்பட்ட நாள் (Est. Date)</label>
+            <input type="text" id="schFormEstDate" class="form-control" placeholder="எ.கா: 15.06.1965 / 1965">
+          </div>
+        </div>
+
+        <!-- Conditional HSS Upgradation Fields (Shown for Higher Secondary Schools) -->
+        <div id="schFormHssUpgradeRow" class="grid-2" style="background:#ecfdf5; border:1.5px solid #6ee7b7; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="color:#065f46;">🎓 மேல்நிலைப்பள்ளியாக தரம் உயர்த்தப்பட்ட நாள் (HSS Upgradation Date)</label>
+            <input type="text" id="schFormHssUpgradedDate" class="form-control" placeholder="எ.கா: 01.07.1989">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="color:#065f46;">📜 மேல்நிலை தரம் உயர்த்தப்பட்ட அரசாணை விவரம் (G.O. No. &amp; Date)</label>
+            <input type="text" id="schFormHssGoDetails" class="form-control" placeholder="எ.கா: அரசாணை நிலை எண் (G.O.Ms.No.) 1240, நாள்: 28.06.1989">
+          </div>
+        </div>
+
+        <!-- Exam Centre Details Row (10th & 12th Exam Centre No.) -->
+        <div class="grid-3" style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="color:#92400e;">🏛️ பள்ளியானது தேர்வு மையமா? (Is Exam Centre?)</label>
+            <select id="schFormIsExamCentre" class="form-control" onchange="toggleSchFormExamCentreInputs()">
+              <option value="NO">இல்லை (Not an Exam Centre)</option>
+              <option value="YES">ஆம் – பொதுத்தேர்வு மையம் (Exam Centre)</option>
+            </select>
+          </div>
+          <div class="form-group" id="schFormCentre10Wrap" style="margin-bottom:0;">
+            <label class="form-label" style="color:#92400e;">10th Exam Centre No. (10-ஆம் வகுப்பு தேர்வு மைய எண்)</label>
+            <input type="text" id="schFormCentre10" class="form-control" placeholder="தேர்வு மையம் எனில் எண் (எ.கா: 108001)">
+          </div>
+          <div class="form-group" id="schFormCentre12Wrap" style="margin-bottom:0;">
+            <label class="form-label" style="color:#92400e;">12th Exam Centre No. (+2 தேர்வு மைய எண்)</label>
+            <input type="text" id="schFormCentre12" class="form-control" placeholder="தேர்வு மையம் எனில் எண் (எ.கா: 208001)">
           </div>
         </div>
 
@@ -2769,7 +2860,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">பள்ளி நிலை (School Category/Level)</label>
-            <select id="schFormLevel" class="form-control"></select>
+            <select id="schFormLevel" class="form-control" onchange="toggleSchFormHssFields()"></select>
           </div>
         </div>
 
@@ -3272,8 +3363,95 @@
           </button>
         </div>
 
+        <!-- MODULE 5: ADMIN CIRCULARS & ANNOUNCEMENTS DISPATCH -->
+        <div class="adm-module-card card-circulars" id="admModuleCardCirculars" onclick="openAdminModule('circulars')" style="border-color:#dc2626; box-shadow:0 4px 18px rgba(220,38,38,0.12); cursor:pointer;">
+          <span class="adm-module-badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fecaca;">MOD 05</span>
+          <div>
+            <div class="adm-module-icon-wrap" style="background:#fee2e2; color:#dc2626;">📢</div>
+            <div style="font-size:0.78rem; font-weight:800; color:#dc2626; letter-spacing:1px; text-transform:uppercase;">CIRCULARS &amp; OFFICIAL NOTIFICATIONS</div>
+            <h4 style="font-size:1.35rem; font-weight:900; color:#0f294a; margin:4px 0 8px 0;">5. சுற்றறிக்கை அனுப்புதல்</h4>
+            <div style="font-size:0.92rem; font-weight:800; color:#b91c1c; margin-bottom:8px;">பள்ளிகளுக்கு உடனடி சுற்றறிக்கை &amp; அறிவிப்புகள் அனுப்பும் பெட்டி</div>
+            <p style="font-size:0.84rem; color:#475569; line-height:1.55; margin-bottom:14px;">
+              முதன்மைக் கல்வி அலுவலர் (CEO) மற்றும் மாவட்ட நிர்வாகி அனைத்துப் பள்ளிகளுக்கும் அல்லது குறிப்பிட்ட வகைப் பள்ளிகளுக்கு (1G / 2A / 3P / HSS / HS) உடனடி சுற்றறிக்கைகள், ந.க.எண் ஆணைகள் மற்றும் Google Form / Sheet இணைப்புகளை நேரடியாக அனுப்பும் வசதி.
+            </p>
+            <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:10px 12px; margin-bottom:16px;">
+              <div style="font-size:0.75rem; font-weight:800; color:#b91c1c; margin-bottom:6px; text-transform:uppercase;">சுற்றறிக்கை நிலவரம் (Active Circulars):</div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px; font-size:0.8rem; font-weight:800;">
+                <span style="background:#dc2626; color:#fff; padding:2px 8px; border-radius:6px;" id="admChooserCircularCount">📢 0 சுற்றறிக்கைகள்</span>
+                <span style="background:#0f294a; color:#fff; padding:2px 8px; border-radius:6px;">🏫 282 பள்ளிகள் இணைப்பு</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" style="width:100%; font-size:1rem; font-weight:900; padding:12px; border-radius:8px; background:#dc2626; border-color:#dc2626; color:#fff;">
+            👉 சுற்றறிக்கை அனுப்பும் பெட்டியைத் திற ❯
+          </button>
+        </div>
 
+      </div>
 
+      <!-- DEDICATED DIRECT CIRCULAR SENDING BOX ON ADMIN HOME DASHBOARD -->
+      <div id="adminHomeCircularDispatchBox" style="margin-top:20px; background:#ffffff; border:2px solid #dc2626; border-radius:12px; padding:18px; box-shadow:0 6px 20px rgba(220,38,38,0.08);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-bottom:12px; border-bottom:2px solid #fee2e2; margin-bottom:14px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span style="font-size:1.15rem; font-weight:900; color:#991b1b;">📢 நிர்வாகி சுற்றறிக்கை அனுப்பும் பெட்டி (CEO / Admin Circular Dispatch Box)</span>
+              <span style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca; font-size:0.75rem; font-weight:900; padding:2px 10px; border-radius:999px;" id="admDirectBoxCirBadge">தற்போதைய சுற்றறிக்கைகள்: 0</span>
+            </div>
+            <div style="font-size:0.80rem; color:#64748b; margin-top:2px;">
+              இங்கிருந்து அனுப்பப்படும் சுற்றறிக்கைகள் உடனடியாக பள்ளிகளின் உள்நுழைவு முகப்பில் (பள்ளித்தகவல் பலகை மற்றும் சுற்றறிக்கை பகுதியில்) நேரடியாகக் காட்சிப்படுத்தப்படும்.
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-danger btn-sm" onclick="clearAllDistrictCirculars()" style="font-weight:800;">
+              🗑️ அனைத்துச் சுற்றறிக்கைகளையும் நீக்கு (Clear All)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap:18px; align-items:start;">
+          <form onsubmit="handleAdminAddCircularFromBox(event, 'Home')" style="background:#fffafa; border:1.5px solid #fecaca; border-radius:10px; padding:14px;">
+            <div style="font-weight:900; color:#991b1b; font-size:0.92rem; margin-bottom:10px;">✍️ புதிய சுற்றறிக்கை உருவாக்கிப் பள்ளிகளுக்கு அனுப்புக:</div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">சுற்றறிக்கை ந.க.எண் / பிரிவு (Category / Rc.No) <span class="required">*</span></label>
+                <input type="text" id="cirCategoryHome" class="form-control" placeholder="எ.கா: ந.க.எண்: 4210/அ1/2026 / CEO CIRCULAR" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">சுற்றறிக்கைத் தலைப்பு / கடைசி நாள் (Headline) <span class="required">*</span></label>
+                <input type="text" id="cirHeadlineHome" class="form-control" placeholder="எ.கா: நாள்: 24.10.2026 / உடனடி நடவடிக்கை" required>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">யாருக்கு அனுப்ப வேண்டும்? (Target Schools)</label>
+                <select id="cirTargetHome" class="form-control">
+                  <option value="ALL">அனைத்துப் பள்ளிகளுக்கும் (All 282 Schools)</option>
+                  <option value="1G">1G - அரசுப் பள்ளிகளுக்கு மட்டும் (Govt Schools Only)</option>
+                  <option value="2A">2A - அரசு உதவிபெறும் பள்ளிகளுக்கு மட்டும் (Aided Only)</option>
+                  <option value="3P">3P - தனியார் / மெட்ரிக் பள்ளிகளுக்கு மட்டும் (Private Only)</option>
+                  <option value="HSS">மேல்நிலைப்பள்ளிகளுக்கு மட்டும் (HSS Only)</option>
+                  <option value="HS">உயர்நிலைப்பள்ளிகளுக்கு மட்டும் (HS Only)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">இணைப்பு முகவரி (Google Form / Sheet / PDF Link)</label>
+                <input type="url" id="cirLinkHome" class="form-control" placeholder="https://docs.google.com/...">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">விரிவான சுற்றறிக்கை விவரம் (Circular Message / Instructions) <span class="required">*</span></label>
+              <textarea id="cirDescHome" class="form-control" rows="3" placeholder="பள்ளிகளுக்கு அனுப்ப வேண்டிய சுற்றறிக்கை விவரத்தினை இங்கே உள்ளிடவும்..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="background:#dc2626; border-color:#dc2626; font-weight:900; padding:10px;">
+              📢 பள்ளிகளுக்குச் சுற்றறிக்கை அனுப்பு (Send Circular Now)
+            </button>
+          </form>
+
+          <div>
+            <div style="font-weight:900; color:#0f294a; font-size:0.92rem; margin-bottom:8px;">📋 தற்போது பள்ளிகளுக்கு அனுப்பப்பட்டுள்ள சுற்றறிக்கைகள் பட்டியல்:</div>
+            <div id="admHomeCircularsManageList" style="max-height:320px; overflow-y:auto;"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -3335,7 +3513,8 @@
         <button type="button" class="nav-pill-btn" id="admTabBtnEmisSync" onclick="switchAdminTab('emisSync')">📥 7. EMIS Excel பதிவேற்றம் (Upload &amp; Sync)</button>
         <button type="button" class="nav-pill-btn" id="admTabBtnStudentsMaster" onclick="switchAdminTab('studentsMaster')" style="border-color:#10b981; background:#ecfdf5; color:#065f46; font-weight:800;">👨‍🎓 8. Students Master &amp; மாணவர் பதிவேடு (Student Search)</button>
         <button type="button" class="nav-pill-btn" id="admTabBtnDignitaries" onclick="switchAdminTab('dignitaries')" style="border-color:#d97706; background:#fffbeb; color:#b45309; font-weight:800;">🏛️ 9. முக்கியப் பிரமுகர்கள் &amp; அதிகாரிகள் மேலாண்மை</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnDeleteReqs" onclick="switchAdminTab('deleteReqs')" style="display:none;">🗑️ 10. பணியாளர் நீக்கக் கோரிக்கைகள் (<span id="admNavDelReqBadge">0</span>)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnCirculars" onclick="switchAdminTab('circulars')" style="border-color:#dc2626; background:#fef2f2; color:#b91c1c; font-weight:800;">📢 10. சுற்றறிக்கை அனுப்புதல் (Circulars)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnDeleteReqs" onclick="switchAdminTab('deleteReqs')" style="display:none;">🗑️ 11. பணியாளர் நீக்கக் கோரிக்கைகள் (<span id="admNavDelReqBadge">0</span>)</button>
       </div>
 
       <!-- ADMIN SUB-TAB 1: DIRECTORY & FILTER -->
@@ -3451,8 +3630,27 @@
             <select id="admAddAssembly" class="form-control"></select>
           </div>
           <div class="form-group">
-            <label class="form-label">+2 தேர்வு மைய எண் (12_Ex_Cen)</label>
-            <input type="text" id="admAddCentre12" class="form-control" placeholder="விருப்பத்தேர்வு (Optional)">
+            <label class="form-label">பள்ளித் தோற்றுவிக்கப்பட்ட நாள் (Est. Date)</label>
+            <input type="text" id="admAddEstDate" class="form-control" placeholder="எ.கா: 15.06.1965 / 1965">
+          </div>
+        </div>
+
+        <div class="grid-4" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px; margin-bottom:12px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">மேல்நிலை தரம் உயர்த்தப்பட்ட நாள் (HSS Date)</label>
+            <input type="text" id="admAddHssUpgradedDate" class="form-control" placeholder="மேல்நிலைப்பள்ளி எனில் நாள்">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">அரசாணை விவரம் (HSS G.O. Details)</label>
+            <input type="text" id="admAddHssGoDetails" class="form-control" placeholder="G.O.Ms.No. & Date">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">10th Exam Centre No.</label>
+            <input type="text" id="admAddCentre10" class="form-control" placeholder="10th தேர்வு மைய எண்">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">12th Exam Centre No.</label>
+            <input type="text" id="admAddCentre12" class="form-control" placeholder="12th தேர்வு மைய எண் (208xxx)">
           </div>
         </div>
 
@@ -3643,7 +3841,56 @@
       </div>
     </div>
 
-    <!-- ADMIN SUB-TAB 10: STAFF DELETE REQUESTS APPROVAL (#admPaneDeleteReqs) -->
+    <!-- ADMIN SUB-TAB 10: DEDICATED CIRCULARS DISPATCH BOX (#admPaneCirculars) -->
+      <div id="admPaneCirculars" class="panel-box" style="display:none;">
+        <div class="panel-title">
+          <span>📢 பள்ளிகளுக்குச் சுற்றறிக்கை அனுப்பும் பெட்டி &amp; அறிவிப்புகள் மேலாண்மை (Admin Circulars Dispatch Center)</span>
+          <button type="button" class="btn btn-danger btn-sm" onclick="clearAllDistrictCirculars()" style="font-weight:800;">
+            🗑️ அனைத்துச் சுற்றறிக்கைகளையும் நீக்கு (Clear All)
+          </button>
+        </div>
+        <div class="grid-2" style="gap:18px; align-items:start;">
+          <form onsubmit="handleAdminAddCircularFromBox(event, 'Pane')" style="background:#fffafa; border:1.5px solid #fecaca; border-radius:10px; padding:16px;">
+            <div style="font-weight:900; color:#991b1b; font-size:0.95rem; margin-bottom:12px;">✍️ புதிய மாவட்ட சுற்றறிக்கை / ஆணை அனுப்புக:</div>
+            <div class="form-group">
+              <label class="form-label">சுற்றறிக்கை ந.க.எண் / பிரிவு (Category / Rc.No) <span class="required">*</span></label>
+              <input type="text" id="cirCategoryPane" class="form-control" placeholder="எ.கா: ந.க.எண்: 4210/அ1/2026 / CEO CIRCULAR" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">சுற்றறிக்கைத் தலைப்பு / கடைசி நாள் (Headline) <span class="required">*</span></label>
+              <input type="text" id="cirHeadlinePane" class="form-control" placeholder="எ.கா: நாள்: 24.10.2026 / உடனடி நடவடிக்கை" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">யாருக்கு அனுப்ப வேண்டும்? (Target Schools)</label>
+              <select id="cirTargetPane" class="form-control">
+                <option value="ALL">அனைத்துப் பள்ளிகளுக்கும் (All 282 Schools)</option>
+                <option value="1G">1G - அரசுப் பள்ளிகளுக்கு மட்டும் (Govt Schools Only)</option>
+                <option value="2A">2A - அரசு உதவிபெறும் பள்ளிகளுக்கு மட்டும் (Aided Only)</option>
+                <option value="3P">3P - தனியார் / மெட்ரிக் பள்ளிகளுக்கு மட்டும் (Private Only)</option>
+                <option value="HSS">மேல்நிலைப்பள்ளிகளுக்கு மட்டும் (HSS Only)</option>
+                <option value="HS">உயர்நிலைப்பள்ளிகளுக்கு மட்டும் (HS Only)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">விரிவான சுற்றறிக்கை விவரம் (Description) <span class="required">*</span></label>
+              <textarea id="cirDescPane" class="form-control" rows="3" placeholder="பள்ளிகளுக்கு அனுப்ப வேண்டிய சுற்றறிக்கை விவரத்தினை இங்கே உள்ளிடவும்..." required></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">இணைப்பு முகவரி (Google Sheet / Form Link)</label>
+              <input type="url" id="cirLinkPane" class="form-control" placeholder="https://docs.google.com/...">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="background:#dc2626; border-color:#dc2626; font-weight:900;">
+              📢 பள்ளிகளுக்குச் சுற்றறிக்கை அனுப்பு (Publish Circular)
+            </button>
+          </form>
+          <div>
+            <div style="font-weight:900; color:#0f294a; font-size:0.95rem; margin-bottom:10px;">📋 அனுப்பப்பட்ட சுற்றறிக்கைகள் பட்டியல்:</div>
+            <div id="admPaneCircularsManageList"></div>
+          </div>
+        </div>
+      </div>
+
+    <!-- ADMIN SUB-TAB 11: STAFF DELETE REQUESTS APPROVAL (#admPaneDeleteReqs) -->
       <div id="admPaneDeleteReqs" class="panel-box" style="display:none;">
         <div class="panel-title">
           <span>🗑️ பள்ளிகளிலிருந்து பெறப்பட்ட ஆசிரியர் &amp; பணியாளர் நீக்கக் கோரிக்கைகள் ஒப்புதல் மேலாண்மை (Staff Relieving / Delete Requests)</span>
@@ -5625,36 +5872,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     ]
   };
 
-  const DEFAULT_CIRCULARS = [
-    {
-      id: "CIR-1",
-      category: "National Painting Competition",
-      headline: "LAST DATE : 25.10.2026",
-      desc: "(Hard copies) தபால் / கூரியர் மூலம் மாநில ஒருங்கிணைப்புக்கு அனுப்பப்பட்ட விவரத்தினை ஆன்லைனில் பதிவு செய்யக் கேட்டுக்கொள்ளப்படுகிறது.",
-      link: "https://docs.google.com/spreadsheets/d/13efyX9dOYUQadDjCiDSPjC1rYsBXSIQY6uO4XTxx7zY/edit?usp=sharing"
-    },
-    {
-      id: "CIR-2",
-      category: "SOUTH INDIA SCIENCE FAIR 2026",
-      headline: "LAST DATE : 30.10.2026",
-      desc: "மாவட்ட அளவிலான தென்னிந்திய அறிவியல் கண்காட்சி மற்றும் போட்டிகளுக்கான விண்ணப்பப் பதிவு நடைபெற்று வருகிறது.",
-      link: "https://www.ceosvg.in/online-entry/south-india-science-fair-2026"
-    },
-    {
-      id: "CIR-3",
-      category: "Veer Gatha 6.0",
-      headline: "MyGov Portal Upload",
-      desc: "Veer Gatha 6.0 சிறந்த 4 படைப்புகளை (4 per school) MyGov இணையதளத்தில் பதிவேற்றம் செய்யக் கேட்டுக்கொள்ளப்படுகிறது.",
-      link: "https://innovateindia.mygov.in/veer-gatha-6/"
-    },
-    {
-      id: "CIR-4",
-      category: "ANTI-DRUG CLUB",
-      headline: "நினைவூட்டல்-3",
-      desc: "பள்ளிகளில் செயல்படும் போதைப்பொருள் எதிர்ப்பு மன்றம் சார்பான விவரத்தினை உடனடியாகப் பதிவு செய்யக் கேட்டுக்கொள்ளப்படுகிறது.",
-      link: "https://docs.google.com/forms/d/e/1FAIpQLSesriWGrGy29OviEtQ57CyoppN2OGonGX8Y8MPIGYgS_9Oujw/viewform?usp=dialog"
-    }
-  ];
+  // All previously sent circulars have been completely removed per user instructions
+  const DEFAULT_CIRCULARS = [];
+  const LEGACY_REMOVED_CIRCULAR_IDS = new Set(["CIR-1", "CIR-2", "CIR-3", "CIR-4"]);
 
   // Runtime State
   let masterSchools = [];
@@ -5802,9 +6022,15 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
     }
 
-    // Load circulars
-    const savedCir = safeGetStorage("CEOSVG_CIRCULARS", null);
-    districtCirculars = Array.isArray(savedCir) && savedCir.length > 0 ? savedCir : JSON.parse(JSON.stringify(DEFAULT_CIRCULARS));
+    // Purge previously sent circulars and load only newly created admin circulars
+    if (!safeGetStorage("CEOSVG_CIRCULARS_PURGED_V32", false)) {
+      safeSetStorage("CEOSVG_CIRCULARS", []);
+      safeSetStorage("CEOSVG_CIRCULARS_PURGED_V32", true);
+    }
+    const savedCir = safeGetStorage("CEOSVG_CIRCULARS", []);
+    districtCirculars = Array.isArray(savedCir)
+      ? savedCir.filter(c => c && !LEGACY_REMOVED_CIRCULAR_IDS.has(String(c.id)))
+      : [];
 
     populateAllDynamicDropdowns();
     updateAllSummaryCounters();
@@ -7783,36 +8009,118 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     showToast("✅ மாணவர் சேர்க்கை விவரங்கள் CSV வடிவில் பதிவிறக்கம் செய்யப்பட்டன!", "#22c55e");
   }
 
+  function isHigherSecondarySchool(s) {
+    if (!s) return false;
+    return (s.level === "HSS" || (/மேல்நிலை|HSS/i.test(s.nameTa || "") && !/உயர்நிலை/i.test(s.nameTa || "")) || /HSS|HR\.?\s*SEC/i.test(s.nameEn || ""));
+  }
+
+  function toggleSchFormHssFields() {
+    const lvlEl = document.getElementById("schFormLevel");
+    const nameTaEl = document.getElementById("schFormNameTa");
+    const row = document.getElementById("schFormHssUpgradeRow");
+    if (!row) return;
+    const isHss = (lvlEl && lvlEl.value === "HSS") || (nameTaEl && /மேல்நிலை/i.test(nameTaEl.value) && !/உயர்நிலை/i.test(nameTaEl.value));
+    row.style.display = isHss ? "grid" : "none";
+  }
+
+  function toggleSchFormExamCentreInputs() {
+    const sel = document.getElementById("schFormIsExamCentre");
+    const c10Wrap = document.getElementById("schFormCentre10Wrap");
+    const c12Wrap = document.getElementById("schFormCentre12Wrap");
+    const isEx = !sel || sel.value === "YES";
+    if (c10Wrap) c10Wrap.style.opacity = isEx ? "1" : "0.55";
+    if (c12Wrap) c12Wrap.style.opacity = isEx ? "1" : "0.55";
+  }
+
   function renderSchoolDashboard() {
     if (!activeSchoolSession) return;
     const s = activeSchoolSession;
     const auth = schoolAuthStore[s.uNo] || {};
     const extra = getSchoolExtra(s.uNo);
+    const isHSS = isHigherSecondarySchool(s);
 
-    document.getElementById("schBannerUNo").textContent = `U.NO: ${s.uNo}`;
-    document.getElementById("schBannerUdise").textContent = `UDISE: ${s.udiseNo}`;
-    document.getElementById("schBannerMgmt").textContent = `${s.mgmt1} (M2:${s.mgmt2}${s.mgmt3 ? " / M3:" + s.mgmt3 : ""})`;
-    document.getElementById("schBannerNameTa").textContent = s.nameTa;
-    document.getElementById("schBannerNameEn").textContent = s.nameEn;
-    document.getElementById("schBannerMeta").textContent = `ஒன்றியம்: ${s.block} | தொகுதி: ${s.assembly} | DGE எண்: ${s.dgeNo || "-"}${s.centre12 ? " | +2 மைய எண்: " + s.centre12 : ""}`;
+    const estDate = s.estDate || extra.estDate || "";
+    const hssUpgradedDate = s.hssUpgradedDate || extra.hssUpgradedDate || "";
+    const hssGoDetails = s.hssGoDetails || extra.hssGoDetails || "";
+    const centre10 = s.centre10 || extra.centre10 || "";
+    const centre12 = s.centre12 || extra.centre12 || "";
+    const isExamCentre = Boolean(s.isExamCentre || extra.isExamCentre || (centre10 && String(centre10).trim()) || (centre12 && String(centre12).trim()));
+
+    const topQuickBadge = document.getElementById("schTopQuickNameBadge");
+    if (topQuickBadge) {
+      topQuickBadge.textContent = `| U.NO: ${s.uNo} | ${s.nameTa}`;
+    }
+
+    // 1. First Section in School Dashboard: Dignitaries & Education Officials
     renderSchoolDignitaries(s.mgmt1);
+
+    // 2. Second Section in School Dashboard: School Name (Ta & En), Est Date, Conditional HSS Upgradation, U.NO, UDISE NO, DGE SCHOOL NUMBER, Conditional Exam Centre Nos
+    document.getElementById("schBannerUNo").textContent = s.uNo || "-";
+    document.getElementById("schBannerUdise").textContent = s.udiseNo || "-";
+    document.getElementById("schBannerMgmt").textContent = `${s.mgmt1} (M2:${s.mgmt2}${s.mgmt3 ? " / M3:" + s.mgmt3 : ""}) • ${isHSS ? "மேல்நிலைப்பள்ளி (HSS)" : "உயர்நிலைப்பள்ளி (HS)"}`;
+    document.getElementById("schBannerNameTa").textContent = s.nameTa || "-";
+    document.getElementById("schBannerNameEn").textContent = s.nameEn || "-";
+    document.getElementById("schBannerMeta").textContent = `ஒன்றியம்: ${s.block || "-"} | சட்டமன்றத் தொகுதி: ${s.assembly || "-"}`;
+
+    const dgeEl = document.getElementById("schDashDgeNo");
+    if (dgeEl) dgeEl.textContent = s.dgeNo || "பதிவு செய்யப்படவில்லை";
+
+    const estEl = document.getElementById("schDashEstDate");
+    if (estEl) estEl.textContent = estDate || "பதிவு செய்க (சுயவிவரம்)";
+
+    const hssBox = document.getElementById("schDashHssUpgradationBox");
+    if (hssBox) {
+      if (isHSS) {
+        hssBox.style.display = "grid";
+        const upgDateEl = document.getElementById("schDashHssUpgradedDate");
+        const goEl = document.getElementById("schDashHssGoDetails");
+        if (upgDateEl) upgDateEl.textContent = hssUpgradedDate || "பதிவு செய்க (சுயவிவரம்)";
+        if (goEl) goEl.textContent = hssGoDetails || "பதிவு செய்க (சுயவிவரம்)";
+      } else {
+        hssBox.style.display = "none";
+      }
+    }
+
+    const examBox = document.getElementById("schDashExamCentreBox");
+    if (examBox) {
+      if (isExamCentre) {
+        examBox.style.display = "grid";
+        const c10El = document.getElementById("schDashExamCentre10");
+        const c12El = document.getElementById("schDashExamCentre12");
+        if (c10El) c10El.textContent = centre10 || "மைய எண் இல்லை / பதிவு செய்க";
+        if (c12El) c12El.textContent = centre12 || (isHSS ? "மைய எண் இல்லை / பதிவு செய்க" : "பொருந்தாது (HS)");
+      } else {
+        examBox.style.display = "none";
+      }
+    }
+
     renderSchoolStudentDashboardTables(s);
     const backToAdmBtn = document.getElementById("schBackToAdminBtn");
     if (backToAdmBtn) {
       backToAdmBtn.style.display = s.isAdminInspection ? "inline-flex" : "none";
     }
 
-    // Populate Profile Form
+    // Populate Profile Form (#schPaneProfile)
     document.getElementById("schFormSn").textContent = s.sn || "-";
     document.getElementById("schFormUNo").value = s.uNo;
     document.getElementById("schFormUdise").value = s.udiseNo;
     document.getElementById("schFormDge").value = s.dgeNo || "";
-    document.getElementById("schFormCentre12").value = s.centre12 || "";
+    const estInput = document.getElementById("schFormEstDate");
+    if (estInput) estInput.value = estDate;
+    const hssDateInput = document.getElementById("schFormHssUpgradedDate");
+    if (hssDateInput) hssDateInput.value = hssUpgradedDate;
+    const hssGoInput = document.getElementById("schFormHssGoDetails");
+    if (hssGoInput) hssGoInput.value = hssGoDetails;
+    const isExSelect = document.getElementById("schFormIsExamCentre");
+    if (isExSelect) isExSelect.value = isExamCentre ? "YES" : "NO";
+    const c10Input = document.getElementById("schFormCentre10");
+    if (c10Input) c10Input.value = centre10;
+    document.getElementById("schFormCentre12").value = centre12;
     document.getElementById("schFormNameTa").value = s.nameTa || "";
     document.getElementById("schFormNameEn").value = s.nameEn || "";
     document.getElementById("schFormBlock").value = s.block || "";
     document.getElementById("schFormAssembly").value = s.assembly || "";
-    document.getElementById("schFormLevel").value = s.level || "HS";
+    document.getElementById("schFormLevel").value = s.level || (isHSS ? "HSS" : "HS");
     document.getElementById("schFormMgmt1").value = s.mgmt1 || "1G";
     document.getElementById("schFormMgmt2").value = s.mgmt2 || "1";
     document.getElementById("schFormMgmt3").value = s.mgmt3 || "";
@@ -7822,10 +8130,13 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     document.getElementById("schFormEmail").value = auth.email || "";
     document.getElementById("schFormPincode").value = extra.pincode || "630561";
 
+    toggleSchFormHssFields();
+    toggleSchFormExamCentreInputs();
+
     initSchoolStaffFromEmis(s, extra);
     renderSchoolStudentTable(s, extra);
     renderSchoolStudentsRosterUI();
-        if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
+    if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
     renderSchoolStaffStrengthUI(s);
     renderSchoolStaffTable(extra);
 
@@ -7842,16 +8153,31 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     const cirBox = document.getElementById("schCircularsList");
     if (cirBox) {
-      cirBox.innerHTML = districtCirculars.map(c => `
-        <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-left:5px solid #1d4ed8; border-radius:8px; padding:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span style="background:#dbeafe; color:#1e40af; font-weight:800; font-size:0.75rem; padding:2px 8px; border-radius:999px;">${c.category}</span>
-            <span style="font-size:0.78rem; font-weight:800; color:#dc2626;">${c.headline}</span>
+      const applicableCirculars = districtCirculars.filter(c => {
+        if (!c || !c.target || c.target === "ALL") return true;
+        if (c.target === s.mgmt1) return true;
+        if (c.target === "HSS" && isHSS) return true;
+        if (c.target === "HS" && !isHSS) return true;
+        return false;
+      });
+      if (applicableCirculars.length === 0) {
+        cirBox.innerHTML = `
+          <div style="grid-column: 1 / -1; background:#f8fafc; border:1.5px dashed #cbd5e1; border-radius:10px; padding:18px; text-align:center; color:#64748b; font-weight:700;">
+            📭 தற்போது முதன்மைக் கல்வி அலுவலகத்திலிருந்து புதிய சுற்றறிக்கைகள் எதுவும் அனுப்பப்படவில்லை. (No active circulars)
           </div>
-          <div style="font-size:0.85rem; color:#1e293b; margin-bottom:8px;">${c.desc}</div>
-          ${c.link ? `<a href="${c.link}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">🔗 ஆன்லைன் பதிவு / இணைப்பைத் திற ❯</a>` : ""}
-        </div>
-      `).join("");
+        `;
+      } else {
+        cirBox.innerHTML = applicableCirculars.map(c => `
+          <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-left:5px solid #dc2626; border-radius:8px; padding:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:6px; flex-wrap:wrap;">
+              <span style="background:#fee2e2; color:#991b1b; font-weight:800; font-size:0.75rem; padding:2px 8px; border-radius:999px;">${c.category}</span>
+              <span style="font-size:0.78rem; font-weight:800; color:#dc2626;">${c.headline}</span>
+            </div>
+            <div style="font-size:0.85rem; color:#1e293b; margin-bottom:8px;">${c.desc}</div>
+            ${c.link ? `<a href="${c.link}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">🔗 ஆன்லைன் பதிவு / இணைப்பைத் திற ❯</a>` : ""}
+          </div>
+        `).join("");
+      }
     }
   }
 
@@ -7860,7 +8186,13 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (!activeSchoolSession) return;
     const s = activeSchoolSession;
     s.dgeNo = document.getElementById("schFormDge").value.trim();
+    s.estDate = (document.getElementById("schFormEstDate") ? document.getElementById("schFormEstDate").value.trim() : "");
+    s.hssUpgradedDate = (document.getElementById("schFormHssUpgradedDate") ? document.getElementById("schFormHssUpgradedDate").value.trim() : "");
+    s.hssGoDetails = (document.getElementById("schFormHssGoDetails") ? document.getElementById("schFormHssGoDetails").value.trim() : "");
+    const isExVal = (document.getElementById("schFormIsExamCentre") ? document.getElementById("schFormIsExamCentre").value : "NO");
+    s.centre10 = (document.getElementById("schFormCentre10") ? document.getElementById("schFormCentre10").value.trim() : "");
     s.centre12 = document.getElementById("schFormCentre12").value.trim();
+    s.isExamCentre = (isExVal === "YES" || Boolean(s.centre10) || Boolean(s.centre12));
     s.nameTa = document.getElementById("schFormNameTa").value.trim();
     s.nameEn = document.getElementById("schFormNameEn").value.trim();
     s.block = document.getElementById("schFormBlock").value;
@@ -7878,6 +8210,12 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     const extra = getSchoolExtra(s.uNo);
     extra.pincode = pincode;
+    extra.estDate = s.estDate;
+    extra.hssUpgradedDate = s.hssUpgradedDate;
+    extra.hssGoDetails = s.hssGoDetails;
+    extra.centre10 = s.centre10;
+    extra.centre12 = s.centre12;
+    extra.isExamCentre = s.isExamCentre;
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 
     if (!schoolAuthStore[s.uNo]) {
@@ -8150,12 +8488,14 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           <div style="font-weight:bold;">பள்ளி முதன்மை விவர அறிக்கை (SCHOOL MASTER PROFILE REPORT)</div>
         </div>
         <table style="width:100%; border-collapse:collapse; margin-bottom:16px;" border="1" cellpadding="8">
-          <tr><td><strong>பள்ளி தனி எண் (U.NO)</strong></td><td><strong>${s.uNo}</strong></td><td><strong>UDISE எண்</strong></td><td><strong>${s.udiseNo}</strong></td></tr>
           <tr><td><strong>பள்ளியின் பெயர் (தமிழில்)</strong></td><td colspan="3"><strong>${s.nameTa}</strong></td></tr>
-          <tr><td><strong>Name of the School</strong></td><td colspan="3">${s.nameEn}</td></tr>
+          <tr><td><strong>Name of the School (English)</strong></td><td colspan="3">${s.nameEn}</td></tr>
+          <tr><td><strong>பள்ளியின் U.NO</strong></td><td><strong>${s.uNo}</strong></td><td><strong>UDISE NO</strong></td><td><strong>${s.udiseNo}</strong></td></tr>
+          <tr><td><strong>DGE SCHOOL NUMBER</strong></td><td><strong>${s.dgeNo || "-"}</strong></td><td><strong>பள்ளித் தோற்றுவிக்கப்பட்ட நாள்</strong></td><td>${s.estDate || (getSchoolExtra(s.uNo).estDate) || "-"}</td></tr>
+          ${isHigherSecondarySchool(s) ? `<tr><td><strong>மேல்நிலைப்பள்ளியாக தரம் உயர்த்தப்பட்ட நாள்</strong></td><td>${s.hssUpgradedDate || (getSchoolExtra(s.uNo).hssUpgradedDate) || "-"}</td><td><strong>அரசாணை விவரம் (G.O.)</strong></td><td>${s.hssGoDetails || (getSchoolExtra(s.uNo).hssGoDetails) || "-"}</td></tr>` : ""}
+          ${(s.isExamCentre || s.centre10 || s.centre12 || getSchoolExtra(s.uNo).centre10 || getSchoolExtra(s.uNo).centre12) ? `<tr><td><strong>10th Exam Centre No.</strong></td><td>${s.centre10 || getSchoolExtra(s.uNo).centre10 || "-"}</td><td><strong>12th Exam Centre No.</strong></td><td>${s.centre12 || getSchoolExtra(s.uNo).centre12 || "-"}</td></tr>` : ""}
           <tr><td><strong>ஒன்றியம் (Block)</strong></td><td>${s.block}</td><td><strong>சட்டமன்றத் தொகுதி</strong></td><td>${s.assembly}</td></tr>
-          <tr><td><strong>நிர்வாகப் பிரிவு (M1 / M2 / M3)</strong></td><td>${s.mgmt1} / ${s.mgmt2} / ${s.mgmt3 || "-"}</td><td><strong>DGE எண்</strong></td><td>${s.dgeNo || "-"}</td></tr>
-          <tr><td><strong>தலைமையாசிரியர்</strong></td><td>${s.hmTa || s.hmName || "-"}</td><td><strong>கைபேசி எண்</strong></td><td>${s.mobile || "-"}</td></tr>
+          <tr><td><strong>நிர்வாகப் பிரிவு (M1 / M2 / M3)</strong></td><td>${s.mgmt1} / ${s.mgmt2} / ${s.mgmt3 || "-"}</td><td><strong>தலைமையாசிரியர் &amp; கைபேசி</strong></td><td>${s.hmTa || s.hmName || "-"} (${s.mobile || "-"})</td></tr>
         </table>
         <div style="margin-top:45px; display:flex; justify-content:space-between; font-weight:bold;">
           <div>நாள்: ${new Date().toLocaleDateString("en-IN")}</div>
@@ -8234,6 +8574,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       switchAdminTab("studentsMaster");
     } else if (modKey === "dignitaries") {
       switchAdminTab("dignitaries");
+    } else if (modKey === "circulars") {
+      switchAdminTab("circulars");
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -8254,6 +8596,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       emisSync: ["admTabBtnEmisSync", "admPaneEmisSync"],
       studentsMaster: ["admTabBtnStudentsMaster", "admPaneStudentsMaster"],
       dignitaries: ["admTabBtnDignitaries", "admPaneDignitaries"],
+      circulars: ["admTabBtnCirculars", "admPaneCirculars"],
       deleteReqs: ["admTabBtnDeleteReqs", "admPaneDeleteReqs"]
     };
     Object.keys(map).forEach(k => {
@@ -8270,6 +8613,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       renderAdminStudentsMasterUI();
     } else if (tabKey === "dignitaries") {
       renderAdminDignitariesManager();
+    } else if (tabKey === "circulars") {
+      renderAdminCircularsList();
     } else if (tabKey === "deleteReqs") {
       renderAdminDeleteRequestsTable();
     }
@@ -8368,7 +8713,12 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     document.getElementById("admAddNameEn").value = s.nameEn || "";
     document.getElementById("admAddBlock").value = s.block || "";
     document.getElementById("admAddAssembly").value = s.assembly || "";
-    document.getElementById("admAddCentre12").value = s.centre12 || "";
+    const extra = getSchoolExtra(s.uNo);
+    if (document.getElementById("admAddEstDate")) document.getElementById("admAddEstDate").value = s.estDate || extra.estDate || "";
+    if (document.getElementById("admAddHssUpgradedDate")) document.getElementById("admAddHssUpgradedDate").value = s.hssUpgradedDate || extra.hssUpgradedDate || "";
+    if (document.getElementById("admAddHssGoDetails")) document.getElementById("admAddHssGoDetails").value = s.hssGoDetails || extra.hssGoDetails || "";
+    if (document.getElementById("admAddCentre10")) document.getElementById("admAddCentre10").value = s.centre10 || extra.centre10 || "";
+    document.getElementById("admAddCentre12").value = s.centre12 || extra.centre12 || "";
     document.getElementById("admAddMgmt1").value = s.mgmt1 || "1G";
     document.getElementById("admAddMgmt2").value = s.mgmt2 || "1";
     document.getElementById("admAddMgmt3").value = s.mgmt3 || "";
@@ -8379,7 +8729,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   function clearAdminAddSchoolForm() {
     document.getElementById("admSchoolFormHeading").textContent = "🏫 புதிய பள்ளி விவரங்களை உள்ளிடவும் (Add / Update School in Master List)";
-    ["admAddUNo", "admAddUdise", "admAddDge", "admAddNameTa", "admAddNameEn", "admAddCentre12", "admAddHmEn", "admAddHmTa", "admAddMobile"].forEach(id => {
+    ["admAddUNo", "admAddUdise", "admAddDge", "admAddNameTa", "admAddNameEn", "admAddEstDate", "admAddHssUpgradedDate", "admAddHssGoDetails", "admAddCentre10", "admAddCentre12", "admAddHmEn", "admAddHmTa", "admAddMobile"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = "";
     });
@@ -8399,6 +8749,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       nameEn: document.getElementById("admAddNameEn").value.trim(),
       block: document.getElementById("admAddBlock").value,
       assembly: document.getElementById("admAddAssembly").value,
+      estDate: (document.getElementById("admAddEstDate") ? document.getElementById("admAddEstDate").value.trim() : ""),
+      hssUpgradedDate: (document.getElementById("admAddHssUpgradedDate") ? document.getElementById("admAddHssUpgradedDate").value.trim() : ""),
+      hssGoDetails: (document.getElementById("admAddHssGoDetails") ? document.getElementById("admAddHssGoDetails").value.trim() : ""),
+      centre10: (document.getElementById("admAddCentre10") ? document.getElementById("admAddCentre10").value.trim() : ""),
       centre12: document.getElementById("admAddCentre12").value.trim(),
       mgmt1: document.getElementById("admAddMgmt1").value,
       mgmt2: document.getElementById("admAddMgmt2").value,
@@ -8665,8 +9019,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       id: "CIR-" + Date.now(),
       category: document.getElementById("cirCategory").value.trim(),
       headline: document.getElementById("cirHeadline").value.trim(),
+      target: "ALL",
       desc: document.getElementById("cirDesc").value.trim(),
-      link: document.getElementById("cirLink").value.trim()
+      link: document.getElementById("cirLink").value.trim(),
+      createdAt: new Date().toLocaleString("en-IN")
     };
     districtCirculars.unshift(cir);
     safeSetStorage("CEOSVG_CIRCULARS", districtCirculars);
@@ -8676,27 +9032,98 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     document.getElementById("cirLink").value = "";
     renderAdminCircularsList();
     cycleFlashNews();
-    showToast("📢 புதிய சுற்றறிக்கை வெளியிடப்பட்டது!", "#22c55e");
+    showToast("📢 புதிய சுற்றறிக்கை பள்ளிகளுக்கு வெற்றிகரமாக அனுப்பப்பட்டது!", "#22c55e");
+  }
+
+  function handleAdminAddCircularFromBox(event, suffix) {
+    event.preventDefault();
+    const catEl = document.getElementById("cirCategory" + suffix);
+    const headEl = document.getElementById("cirHeadline" + suffix);
+    const tgtEl = document.getElementById("cirTarget" + suffix);
+    const descEl = document.getElementById("cirDesc" + suffix);
+    const linkEl = document.getElementById("cirLink" + suffix);
+    const cir = {
+      id: "CIR-" + Date.now(),
+      category: (catEl ? catEl.value.trim() : "CEO CIRCULAR"),
+      headline: (headEl ? headEl.value.trim() : ""),
+      target: (tgtEl ? tgtEl.value : "ALL"),
+      desc: (descEl ? descEl.value.trim() : ""),
+      link: (linkEl ? linkEl.value.trim() : ""),
+      createdAt: new Date().toLocaleString("en-IN")
+    };
+    districtCirculars.unshift(cir);
+    safeSetStorage("CEOSVG_CIRCULARS", districtCirculars);
+    if (catEl) catEl.value = "";
+    if (headEl) headEl.value = "";
+    if (tgtEl) tgtEl.value = "ALL";
+    if (descEl) descEl.value = "";
+    if (linkEl) linkEl.value = "";
+    renderAdminCircularsList();
+    cycleFlashNews();
+    if (activeSchoolSession) renderSchoolDashboard();
+    showToast("📢 புதிய சுற்றறிக்கை பள்ளிகளுக்கு வெற்றிகரமாக அனுப்பப்பட்டது!", "#22c55e");
   }
 
   function deleteCircularItem(id) {
     districtCirculars = districtCirculars.filter(c => c.id !== id);
     safeSetStorage("CEOSVG_CIRCULARS", districtCirculars);
     renderAdminCircularsList();
-    showToast("சுற்றறிக்கை நீக்கப்பட்டது.", "#f59e0b");
+    if (activeSchoolSession) renderSchoolDashboard();
+    showToast("🗑️ சுற்றறிக்கை நீக்கப்பட்டது.", "#f59e0b");
+  }
+
+  function clearAllDistrictCirculars() {
+    if (districtCirculars.length === 0) {
+      showToast("ℹ️ நீக்குவதற்குச் சுற்றறிக்கைகள் எதுவும் இல்லை.", "#38bdf8");
+      return;
+    }
+    districtCirculars = [];
+    safeSetStorage("CEOSVG_CIRCULARS", []);
+    renderAdminCircularsList();
+    if (activeSchoolSession) renderSchoolDashboard();
+    const el = document.getElementById("flashTickerText");
+    if (el) {
+      el.textContent = "📢 [முக்கிய அறிவிப்பு] சிவகங்கை மாவட்ட 282 பள்ளிகளின் ஆசிரியர்கள் மற்றும் மாணவர்கள் விவரங்கள் TN EMIS பதிவேட்டிலிருந்து இணைக்கப்பட்டு நேரடி ஒத்திசைவு செய்யப்பட்டுள்ளது.";
+    }
+    showToast("🗑️ பள்ளிகளுக்கு அனுப்பப்பட்ட அனைத்துச் சுற்றறிக்கைகளும் நீக்கப்பட்டன!", "#ef4444");
   }
 
   function renderAdminCircularsList() {
-    const box = document.getElementById("admCircularsManageList");
-    if (!box) return;
-    box.innerHTML = districtCirculars.map(c => `
-      <div style="padding:10px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px; background:#fff;">
-        <div style="font-size:0.82rem;">
-          <strong>[${c.category}] ${c.headline}</strong><br>${c.desc}
+    const countBadge1 = document.getElementById("admChooserCircularCount");
+    if (countBadge1) countBadge1.textContent = `📢 ${districtCirculars.length} சுற்றறிக்கைகள்`;
+    const countBadge2 = document.getElementById("admDirectBoxCirBadge");
+    if (countBadge2) countBadge2.textContent = `தற்போதைய சுற்றறிக்கைகள்: ${districtCirculars.length}`;
+
+    const targetLabels = {
+      ALL: "அனைத்துப் பள்ளிகள்",
+      "1G": "1G - அரசுப் பள்ளிகள்",
+      "2A": "2A - உதவிபெறும் பள்ளிகள்",
+      "3P": "3P - தனியார் பள்ளிகள்",
+      HSS: "மேல்நிலைப்பள்ளிகள் (HSS)",
+      HS: "உயர்நிலைப்பள்ளிகள் (HS)"
+    };
+
+    const htmlList = districtCirculars.length === 0
+      ? `<div style="padding:18px; border:1.5px dashed #cbd5e1; border-radius:10px; text-align:center; color:#64748b; font-weight:700; background:#f8fafc;">📭 தற்போது பள்ளிகளுக்கு அனுப்பப்பட்ட சுற்றறிக்கைகள் எதுவும் இல்லை. (0 Circulars)</div>`
+      : districtCirculars.map(c => `
+        <div style="padding:10px 12px; border:1.5px solid #fecaca; border-left:5px solid #dc2626; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:8px; background:#fff;">
+          <div style="font-size:0.83rem; line-height:1.45;">
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:3px;">
+              <span style="background:#fee2e2; color:#991b1b; font-weight:900; padding:1px 8px; border-radius:999px; font-size:0.74rem;">${c.category}</span>
+              <span style="background:#eff6ff; color:#1e40af; font-weight:800; padding:1px 8px; border-radius:999px; font-size:0.72rem;">🎯 ${targetLabels[c.target || "ALL"] || "அனைத்துப் பள்ளிகள்"}</span>
+              <strong style="color:#dc2626;">${c.headline}</strong>
+            </div>
+            <div style="color:#1e293b;">${c.desc}</div>
+            ${c.link ? `<div style="margin-top:4px;"><a href="${c.link}" target="_blank" rel="noopener noreferrer" style="font-size:0.76rem; font-weight:800; color:#2563eb;">🔗 இணைப்பு முகவரியைத் திற ❯</a></div>` : ""}
+          </div>
+          <button type="button" class="btn btn-danger btn-sm" onclick="deleteCircularItem('${c.id}')">🗑️ நீக்கு</button>
         </div>
-        <button type="button" class="btn btn-danger btn-sm" onclick="deleteCircularItem('${c.id}')">நீக்கு</button>
-      </div>
-    `).join("");
+      `).join("");
+
+    ["admCircularsManageList", "admHomeCircularsManageList", "admPaneCircularsManageList"].forEach(id => {
+      const box = document.getElementById(id);
+      if (box) box.innerHTML = htmlList;
+    });
   }
 
   function exportFilteredSchoolsCsv() {
