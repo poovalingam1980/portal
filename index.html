@@ -2162,7 +2162,7 @@
       <span><span class="status-dot" id="sheetSyncDot"></span><strong id="sheetSyncStatusText">School-Master Google Sheet இணைக்கப்பட்டுள்ளது (281 பள்ளிகள்)</strong></span>
       <span id="firebaseLiveBadge" onclick="openCloudSettingsModal('firebase')" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#fff7ed; border:1.5px solid #fdba74; color:#c2410c; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:800; transition:all 0.2s;" title="Firebase நேரடி மேகக்கணித் தரவுத்தள அமைப்புகளைத் திறக்க கிளிக் செய்க">
         <span id="firebaseStatusDot" style="width:8px; height:8px; border-radius:50%; background:#f97316; display:inline-block; box-shadow:0 0 6px #f97316;"></span>
-        <span id="firebaseStatusText">🔥 Firebase நேரடி இணைப்பு: தயார் நிலை (Setup)</span>
+        <span id="firebaseStatusText">🟢 Firebase நேரடி இணைப்பு (Live RTDB)</span>
       </span>
     </div>
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -5592,7 +5592,7 @@
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
         <div class="form-group" style="margin-bottom:0;">
           <label class="form-label" style="font-weight:800; color:#0f294a;">1. Firebase Realtime Database URL (<span style="color:#dc2626;">*</span>):</label>
-          <input type="url" id="cfgFirebaseDbUrl" class="form-control" placeholder="https://ceosvg-portal-default-rtdb.asia-southeast1.firebasedatabase.app">
+          <input type="url" id="cfgFirebaseDbUrl" class="form-control" value="https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app" placeholder="https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app">
           <div style="font-size:0.73rem; color:#64748b; margin-top:3px;">Firebase Console ➔ Realtime Database ➔ Data பிரிவில் உள்ள URL</div>
         </div>
         <div class="form-group" style="margin-bottom:0;">
@@ -6196,7 +6196,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   // Firebase Real-Time Database Configuration State
   // District Admin can paste their permanent URL in DEFAULT_FIREBASE_DB_URL for automatic district-wide connection
-  const DEFAULT_FIREBASE_DB_URL = "";
+  const DEFAULT_FIREBASE_DB_URL = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";
   let firebaseDbUrl = DEFAULT_FIREBASE_DB_URL;
   let firebaseApiKey = "";
   let firebaseAutoSyncEnabled = true;
@@ -6257,6 +6257,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       if (savedCfg.appsScriptUrl) appsScriptUrl = savedCfg.appsScriptUrl;
       if (typeof savedCfg.firebaseDbUrl === "string" && savedCfg.firebaseDbUrl.trim()) {
         firebaseDbUrl = savedCfg.firebaseDbUrl.trim();
+      } else if (DEFAULT_FIREBASE_DB_URL) {
+        firebaseDbUrl = DEFAULT_FIREBASE_DB_URL;
       }
       if (typeof savedCfg.firebaseApiKey === "string") {
         firebaseApiKey = savedCfg.firebaseApiKey.trim();
@@ -8395,49 +8397,71 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   function handleImportHssGroupTemplateFile(event) {
     const file = event.target && event.target.files ? event.target.files[0] : null;
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const text = String(e.target.result || "");
-        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-        let added = 0;
-        const list = getHssGroupMasterList().slice();
-        lines.forEach((line, idx) => {
-          if (idx === 0 && /GROUP\s*CODE/i.test(line)) return;
-          const cols = line.split(",").map(c => c.replace(/^"|"$/g, "").trim());
-          if (cols.length >= 5 && /^\d{4}$/.test(cols[0])) {
-            const entry = {
-              groupCode: cols[0],
-              catCode: Number(cols[1] || 1),
-              category: (cols[2] || "SCIENCE").toUpperCase(),
-              groupName: (cols[3] || "").toUpperCase(),
-              majorSubjects: (cols[4] || "").toUpperCase(),
-              sub1: (cols[5] || "LANGUAGE").toUpperCase(),
-              sub2: (cols[6] || "ENGLISH").toUpperCase(),
-              sub3: (cols[7] || "").toUpperCase(),
-              sub4: (cols[8] || "").toUpperCase(),
-              sub5: (cols[9] || "").toUpperCase(),
-              sub6: (cols[10] || "").toUpperCase()
-            };
-            const exIdx = list.findIndex(x => String(x.groupCode) === entry.groupCode);
-            if (exIdx !== -1) list[exIdx] = entry;
-            else list.push(entry);
-            added++;
-          }
-        });
-        if (added > 0) {
-          list.sort((a, b) => String(a.groupCode).localeCompare(String(b.groupCode)));
-          saveHssGroupMasterList(list);
-          renderAdminHssGroupMasterTable();
-          showToast(`✅ ${added} மேல்நிலைப் பாடப்பிரிவுகள் வெற்றிகரமாகப் பதிவேற்றப்பட்டன!`, "#0f766e");
-        } else {
-          showToast("ℹ️ கோப்பு சரிபார்க்கப்பட்டது. புதிய Group பதிவுகள் கண்டறியப்படவில்லை.", "#0284c7");
-        }
-      } catch (err) {
-        showToast("⚠️ கோப்பினைப் படிப்பதில் பிழை ஏற்பட்டது.", "#dc2626");
+    const applyGroupRows = (rowsArray) => {
+      let added = 0;
+      const list = getHssGroupMasterList().slice();
+      rowsArray.forEach((cols) => {
+        if (!Array.isArray(cols) || cols.length < 4) return;
+        const codeStr = String(cols[0] || "").trim().replace(/\.0$/, "");
+        if (!/^\d{4}$/.test(codeStr)) return;
+        const catStr = String(cols[2] || "SCIENCE").trim().toUpperCase();
+        const catCodeNum = Number(cols[1]) || (catStr === "SCIENCE" ? 1 : (catStr === "ARTS" ? 2 : 3));
+        const entry = {
+          groupCode: codeStr,
+          catCode: catCodeNum,
+          category: catStr,
+          groupName: String(cols[3] || "").trim().toUpperCase(),
+          majorSubjects: String(cols[4] || "").trim().toUpperCase(),
+          sub1: String(cols[5] || "LANGUAGE").trim().toUpperCase(),
+          sub2: String(cols[6] || "ENGLISH").trim().toUpperCase(),
+          sub3: String(cols[7] || "").trim().toUpperCase(),
+          sub4: String(cols[8] || "").trim().toUpperCase(),
+          sub5: String(cols[9] || "").trim().toUpperCase(),
+          sub6: String(cols[10] || "").trim().toUpperCase()
+        };
+        const exIdx = list.findIndex(x => String(x.groupCode) === entry.groupCode);
+        if (exIdx !== -1) list[exIdx] = entry;
+        else list.push(entry);
+        added++;
+      });
+      if (added > 0) {
+        list.sort((a, b) => String(a.groupCode).localeCompare(String(b.groupCode)));
+        saveHssGroupMasterList(list);
+        renderAdminHssGroupMasterTable();
+        sendToAppsScript({ action: "syncHssGroupMaster", count: list.length, groups: list });
+        showToast(`✅ ${added} மேல்நிலைப் பாடப்பிரிவுகள் (${file.name}) பதிவேற்றப்பட்டு Firebase & Local-ல் ஒத்திசைக்கப்பட்டன!`, "#0f766e");
+      } else {
+        showToast("ℹ️ கோப்பு சரிபார்க்கப்பட்டது. புதிய 4-இலக்க Group Code பதிவுகள் கண்டறியப்படவில்லை.", "#0284c7");
       }
     };
-    reader.readAsText(file);
+
+    const reader = new FileReader();
+    if ((file.name.toLowerCase().endsWith(".xlsx") || file.name.toLowerCase().endsWith(".xls")) && typeof XLSX !== "undefined") {
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const wb = XLSX.read(data, { type: "array" });
+          const sheet = wb.Sheets[wb.SheetNames[0]];
+          const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+          applyGroupRows(aoa);
+        } catch (err) {
+          showToast("⚠️ Excel கோப்பினைப் படிப்பதில் பிழை ஏற்பட்டது.", "#dc2626");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.onload = function(e) {
+        try {
+          const text = String(e.target.result || "");
+          const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+          const aoa = lines.map(line => line.split(",").map(c => c.replace(/^"|"$/g, "").trim()));
+          applyGroupRows(aoa);
+        } catch (err) {
+          showToast("⚠️ CSV கோப்பினைப் படிப்பதில் பிழை ஏற்பட்டது.", "#dc2626");
+        }
+      };
+      reader.readAsText(file);
+    }
   }
 
   // =========================================================================
@@ -10643,11 +10667,13 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (key === "CEOSVG_MASTER_SCHOOLS") return `${schLabel} – பள்ளி சுயவிவரம் / முதன்மைப் பட்டியல் புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_SCHOOL_AUTH") return `${schLabel} – உள்நுழைவு / தொடர்பு விவரம் புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_DELETE_REQUESTS") return `${schLabel} – பணியாளர் நீக்கக் கோரிக்கை (Delete Request) புதுப்பிக்கப்பட்டது`;
-    if (key === "CEOSVG_DIGNITARIES_V1" || key === "CEOSVG_DIGNITARIES_DATA_V2") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் (Dignitaries) விவரம் புதுப்பிக்கப்பட்டது`;
+    if (key === "CEOSVG_DIGNITARIES_V1" || key === "CEOSVG_DIGNITARIES_DATA_V2" || key === "CEOSVG_DIGNITARIES_DATA_V3") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் (Dignitaries) விவரம் புதுப்பிக்கப்பட்டது`;
+    if (key === "CEOSVG_DIGNITARIES_PHOTO_VAULT") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் புகைப்படப் பெட்டகம் (Photo Vault) ஒத்திசைக்கப்பட்டது`;
+    if (key === "CEOSVG_HSS_GROUP_MASTER_V1") return `மாவட்ட நிர்வாகி – மேல்நிலைப் பாடப்பிரிவு வார்ப்புரு (HSS Group Template) புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_CIRCULARS") return `மாவட்ட நிர்வாகி – புதிய சுற்றறிக்கை (Circular) வெளியிடப்பட்டது`;
     if (key === "CEOSVG_DIVISIONS") return `மாவட்ட நிர்வாகி – நிர்வாகப் பிரிவுகள் (Divisions) புதுப்பிக்கப்பட்டன`;
-    if (key === "CEOSVG_STAFF_OVERRIDES") return `மாவட்ட நிர்வாகி – ஆசிரியர் பணி விவரம் (Staff Master) திருத்தப்பட்டது`;
-    if (key === "CEOSVG_EMIS_STUDENT_DATA") return `மாவட்ட நிர்வாகி – EMIS மாணவர் எண்ணிக்கை முழுமையாக ஒத்திசைக்கப்பட்டது`;
+    if (key === "CEOSVG_STAFF_OVERRIDES" || key === "CEOSVG_UPLOADED_EMIS_STAFF") return `மாவட்ட நிர்வாகி – EMIS ஆசிரியர் & பணியாளர் விவரம் (Staff Master) ஒத்திசைக்கப்பட்டது`;
+    if (key === "CEOSVG_EMIS_STUDENT_DATA") return `மாவட்ட நிர்வாகி – EMIS மாணவர் எண்ணிக்கை (Medium & Group-wise) முழுமையாக ஒத்திசைக்கப்பட்டது`;
     return `${schLabel} – தரவு (${key}) புதுப்பிக்கப்பட்டது`;
   }
 
@@ -10838,14 +10864,28 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       dignitariesMemoryStore = typeof migrateDignitariesList === "function" ? migrateDignitariesList(val) : val;
     } else if (key === "CEOSVG_DIVISIONS" && typeof val === "object") {
       divisionsRegistry = val;
+    } else if (key === "CEOSVG_HSS_GROUP_MASTER_V1" && Array.isArray(val) && val.length > 0) {
+      hssGroupMasterStore = val;
+      if (typeof EMIS_STUDENT_DATA !== "undefined") {
+        EMIS_STUDENT_DATA.hssGroupTemplates = val;
+      }
+      if (typeof refreshHssGroupDropdownsEverywhere === "function") refreshHssGroupDropdownsEverywhere();
+      if (typeof renderAdminHssGroupMasterTable === "function") renderAdminHssGroupMasterTable();
     } else if (key === "CEOSVG_DIGNITARIES_PHOTO_VAULT" && val && typeof val === "object") {
       const curVault = safeGetStorage("CEOSVG_DIGNITARIES_PHOTO_VAULT", {}) || {};
-      safeSetStorage("CEOSVG_DIGNITARIES_PHOTO_VAULT", Object.assign({}, curVault, val), true);
+      const mergedVault = Object.assign({}, curVault, val);
+      safeSetStorage("CEOSVG_DIGNITARIES_PHOTO_VAULT", mergedVault, true);
       if (Array.isArray(dignitariesMemoryStore)) {
         dignitariesMemoryStore = migrateDignitariesList(dignitariesMemoryStore);
       }
+      if (typeof saveToIndexedDbDignitariesVault === "function") {
+        saveToIndexedDbDignitariesVault(dignitariesMemoryStore, mergedVault);
+      }
+      if (typeof updateDignitaryStorageStatusBadge === "function") updateDignitaryStorageStatusBadge();
+    } else if (key === "CEOSVG_STAFF_OVERRIDES" && val && typeof val === "object") {
+      districtFlattenedStaffCache = null;
     } else if (key === "CEOSVG_EMIS_STUDENT_DATA" && typeof val === "object" && typeof EMIS_STUDENT_DATA !== "undefined") {
-      if (val.version === "3.5") {
+      if (val.schoolEnrollments) {
         Object.assign(EMIS_STUDENT_DATA, val);
       }
     }
@@ -11051,13 +11091,21 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       });
 
       setProg(75, "🚀 படி 3/4: முக்கியப் பிரமுகர்கள், சுற்றறிக்கைகள், நீக்கக் கோரிக்கைகள் & பிரிவுகள் பதிவேற்றப்படுகின்றன...");
+      const currentDigs = typeof getDignitariesList === "function" ? getDignitariesList() : [];
+      const currentVault = typeof buildPermanentPhotoVaultFromAllSources === "function"
+        ? buildPermanentPhotoVaultFromAllSources(currentDigs)
+        : (safeGetStorage("CEOSVG_DIGNITARIES_PHOTO_VAULT", {}) || {});
       const storesPayload = {
         CEOSVG_MASTER_SCHOOLS: masterSchools,
         CEOSVG_DELETE_REQUESTS: staffDeleteRequests,
         CEOSVG_CIRCULARS: districtCirculars,
         CEOSVG_DIVISIONS: divisionsRegistry,
-        CEOSVG_DIGNITARIES_V1: typeof getDignitariesList === "function" ? getDignitariesList() : [],
-        CEOSVG_STAFF_OVERRIDES: safeGetStorage("CEOSVG_STAFF_OVERRIDES", {})
+        CEOSVG_HSS_GROUP_MASTER_V1: typeof getHssGroupMasterList === "function" ? getHssGroupMasterList() : [],
+        CEOSVG_DIGNITARIES_DATA_V3: currentDigs,
+        CEOSVG_DIGNITARIES_V1: currentDigs,
+        CEOSVG_DIGNITARIES_PHOTO_VAULT: currentVault,
+        CEOSVG_STAFF_OVERRIDES: safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}),
+        CEOSVG_EMIS_STUDENT_DATA: typeof EMIS_STUDENT_DATA !== "undefined" ? EMIS_STUDENT_DATA : {}
       };
       await fetch(buildFirebaseEndpoint("ceosvg_live/stores"), {
         method: "PUT",
@@ -14209,10 +14257,34 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   function executeEmisDataSync() {
+    if (Array.isArray(_stagedStaffUploadRecords) && _stagedStaffUploadRecords.length > 0) {
+      const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+      const udiseToUNo = {};
+      masterSchools.forEach(s => {
+        if (s && s.udiseNo) udiseToUNo[String(s.udiseNo).trim()] = String(s.uNo);
+      });
+      _stagedStaffUploadRecords.forEach(rec => {
+        if (!rec || !rec.staffId) return;
+        const cleanUdise = String(rec.udise || "").replace(/\.0$/, "").trim();
+        const matchedUNo = udiseToUNo[cleanUdise] || "";
+        staffOverrides[String(rec.staffId)] = Object.assign({}, staffOverrides[String(rec.staffId)] || {}, {
+          staffId: String(rec.staffId),
+          name: rec.name,
+          desig: rec.desig,
+          subject: rec.subject,
+          isTeaching: Boolean(rec.isTeach),
+          dojSchool: rec.doj,
+          uNo: matchedUNo || (staffOverrides[String(rec.staffId)] && staffOverrides[String(rec.staffId)].uNo) || "201"
+        });
+      });
+      safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
+      sendToAppsScript({ action: "syncTeachersEmisUpload", count: _stagedStaffUploadRecords.length });
+    }
     if (typeof EMIS_STAFF_DATA !== "undefined") {
       EMIS_STAFF_DATA.lastUpdated = new Date().toISOString().split("T")[0];
       safeSetStorage("CEOSVG_EMIS_LAST_SYNC", EMIS_STAFF_DATA.lastUpdated);
     }
+    districtFlattenedStaffCache = null;
     const resBox = document.getElementById("emisSyncResultBox");
     const resHead = document.getElementById("emisSyncResultHeading");
     const resDet = document.getElementById("emisSyncResultDetail");
@@ -14824,6 +14896,37 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   // 7. Execute Group-Wise Sync
   function executeEmisGroupDataSync() {
+    if (typeof EMIS_STUDENT_DATA !== "undefined" && EMIS_STUDENT_DATA.schoolEnrollments && Array.isArray(_stagedGroupRecords) && _stagedGroupRecords.length > 0) {
+      const touchedUNos = new Set();
+      const bySchoolStd = {};
+      _stagedGroupRecords.forEach(r => {
+        const uNo = String(r.uNo || "").trim();
+        const std = String(r.std || "").trim();
+        const code = String(r.code || "").trim();
+        if (!uNo || !EMIS_STUDENT_DATA.schoolEnrollments[uNo] || (std !== "11" && std !== "12") || !/^\d{4}$/.test(code)) return;
+        if (!bySchoolStd[uNo]) bySchoolStd[uNo] = { "11": [], "12": [] };
+        bySchoolStd[uNo][std].push({
+          code: code,
+          tm_b: Number(r.tm_b || 0),
+          tm_g: Number(r.tm_g || 0),
+          em_b: Number(r.em_b || 0),
+          em_g: Number(r.em_g || 0)
+        });
+        touchedUNos.add(uNo);
+      });
+      touchedUNos.forEach(uNo => {
+        const sch = EMIS_STUDENT_DATA.schoolEnrollments[uNo];
+        if (!sch.hssGroups) sch.hssGroups = { "11": [], "12": [] };
+        if (bySchoolStd[uNo]["11"].length > 0) sch.hssGroups["11"] = bySchoolStd[uNo]["11"];
+        if (bySchoolStd[uNo]["12"].length > 0) sch.hssGroups["12"] = bySchoolStd[uNo]["12"];
+        if (typeof schoolExtraDataStore !== "undefined" && schoolExtraDataStore[uNo]) {
+          schoolExtraDataStore[uNo].hssGroups = JSON.parse(JSON.stringify(sch.hssGroups));
+          schoolExtraDataStore[uNo].hssGroupsV35 = true;
+        }
+      });
+      safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+      sendToAppsScript({ action: "syncGroupWiseStudents", updatedSchools: touchedUNos.size });
+    }
     if (typeof safeSetStorage === "function" && typeof EMIS_STUDENT_DATA !== "undefined") {
       safeSetStorage("CEOSVG_EMIS_STUDENT_DATA", EMIS_STUDENT_DATA);
     }
