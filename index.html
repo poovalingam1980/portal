@@ -2464,9 +2464,6 @@
       <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 10px; background:#f8fafc; border-bottom:1px solid #e2e8f0; gap:8px; flex-wrap:wrap;">
         <span style="font-size:0.74rem; font-weight:800; color:#475569;">🏛️ முக்கியப் பிரமுகர்கள் &amp; கல்வித்துறை அலுவலர்கள்</span>
         <div style="display:flex; align-items:center; gap:6px;">
-          <button type="button" class="dignitary-toggle-btn" onclick="openAdminAddDignitaryModal()" title="புதிய அதிகாரி / பிரமுகர் சேர்க்க" style="padding:2px 8px; font-size:0.72rem; color:#15803d; border-color:#bbf7d0; background:#f0fdf4;">
-            ➕ அதிகாரி சேர்
-          </button>
           <button type="button" class="dignitary-toggle-btn" onclick="toggleDignitariesView()" id="dignitaryToggleBtn" title="விவரங்களை சுருக்குக / விரிக்க" style="padding:2px 8px; font-size:0.72rem;">
             <span id="dignitaryToggleIcon">▲</span> <span id="dignitaryToggleText">சுருக்குக</span>
           </button>
@@ -2483,9 +2480,9 @@
     <nav class="school-topmenu-container" aria-label="School Dashboard Top Navigation">
       <div class="school-topmenu-bar" id="schoolTopMenuBar">
         <button type="button" class="school-topmenu-item active" id="schTabBtnStaffStrength" onclick="switchSchoolTab('staffStrength')">
-          <span class="topmenu-icon">👨‍🏫</span>
-          <span class="topmenu-label"><span class="topmenu-num">1.</span> <span class="topmenu-title">பதவி வாரியான ஆசிரியர் எண்ணிக்கை</span></span>
-          <span class="topmenu-en">(Staff Strength)</span>
+          <span class="topmenu-icon">📊</span>
+          <span class="topmenu-label"><span class="topmenu-num">1.</span> <span class="topmenu-title">பள்ளித்தகவல் பலகை</span></span>
+          <span class="topmenu-en">(School Dashboard)</span>
         </button>
 
         <button type="button" class="school-topmenu-item" id="schTabBtnProfile" onclick="switchSchoolTab('profile')">
@@ -2494,27 +2491,21 @@
           <span class="topmenu-en">(School Profile)</span>
         </button>
 
-        <button type="button" class="school-topmenu-item" id="schTabBtnStudents" onclick="switchSchoolTab('students')">
-          <span class="topmenu-icon">👨‍🎓</span>
-          <span class="topmenu-label"><span class="topmenu-num">3.</span> <span class="topmenu-title">மாணவர் எண்ணிக்கை</span></span>
-          <span class="topmenu-en">(Student Strength)</span>
-        </button>
-
         <button type="button" class="school-topmenu-item" id="schTabBtnStaff" onclick="switchSchoolTab('staff')">
           <span class="topmenu-icon">👥</span>
-          <span class="topmenu-label"><span class="topmenu-num">4.</span> <span class="topmenu-title">ஆசிரியர் &amp; பணியாளர் பதிவேடு</span></span>
+          <span class="topmenu-label"><span class="topmenu-num">3.</span> <span class="topmenu-title">ஆசிரியர் &amp; பணியாளர் பதிவேடு</span></span>
           <span class="topmenu-en">(Staff Roster)</span>
         </button>
 
         <button type="button" class="school-topmenu-item" id="schTabBtnNeeds" onclick="switchSchoolTab('needs')">
           <span class="topmenu-icon">🏗️</span>
-          <span class="topmenu-label"><span class="topmenu-num">5.</span> <span class="topmenu-title">அடிப்படைத் தேவைகள் &amp; சுற்றறிக்கை</span></span>
+          <span class="topmenu-label"><span class="topmenu-num">4.</span> <span class="topmenu-title">அடிப்படைத் தேவைகள் &amp; சுற்றறிக்கை</span></span>
           <span class="topmenu-en">(Needs &amp; Circulars)</span>
         </button>
 
         <button type="button" class="school-topmenu-item" id="schTabBtnSecurity" onclick="switchSchoolTab('security')">
           <span class="topmenu-icon">🔑</span>
-          <span class="topmenu-label"><span class="topmenu-num">6.</span> <span class="topmenu-title">கடவுச்சொல் மாற்றம்</span></span>
+          <span class="topmenu-label"><span class="topmenu-num">5.</span> <span class="topmenu-title">கடவுச்சொல் மாற்றம்</span></span>
           <span class="topmenu-en">(Change Password)</span>
         </button>
       </div>
@@ -2550,9 +2541,7 @@
             <button type="button" class="btn btn-success btn-sm" onclick="exportSchoolStudentDashboardCsv()" style="padding:4px 10px; font-size:0.78rem; font-weight:800;">
               📥 Excel / CSV பதிவிறக்கு
             </button>
-            <button type="button" class="btn btn-primary btn-sm" onclick="switchSchoolTab('students')" style="padding:4px 10px; font-size:0.78rem; font-weight:800;">
-              ✏️ மாணவர் விவரம் திருத்துதல் (Edit)
-            </button>
+
           </div>
         </div>
 
@@ -2913,7 +2902,7 @@
         <span>👨‍🏫 Teacher Master – பள்ளியின் ஆசிரியர்கள் &amp; அலுவலகப் பணியாளர்கள் முதன்மைப் பதிவேடு (EMIS Linked)</span>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <span style="font-size:0.86rem; background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:999px; font-weight:900;">மொத்தப் பணியாளர்கள்: <span id="schStaffCountBadge">0</span></span>
-          <button type="button" class="btn btn-primary btn-sm" onclick="switchSchoolTab('staffStrength')">📊 1. பதவி வாரியான எண்ணிக்கை காண்க</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="switchSchoolTab('staffStrength')">📊 1. பள்ளித்தகவல் பலகை காண்க</button>
         </div>
       </div>
       <div id="teacherMasterDesignationSummary" style="background:#f0fdf4; border:1.5px solid #22c55e; border-left:5px solid #15803d; border-radius:8px; padding:10px 14px; margin-bottom:14px; font-size:0.84rem; color:#14532d; font-weight:700;"></div>
@@ -3152,10 +3141,10 @@
             <div style="font-size:1.45rem; font-weight:900; color:#581c87;">92</div>
             <div style="font-size:0.70rem; color:#6b21a8; font-weight:700;">DGE பொதுத்தேர்வு மையங்கள்</div>
           </div>
-          <div onclick="switchAdminTab('deleteReqs')" style="cursor:pointer; background:#fffbeb; border:1.5px solid #fde68a; border-left:4px solid #d97706; border-radius:8px; padding:8px 12px;">
-            <div style="font-size:0.72rem; font-weight:800; color:#92400e;">நீக்கக் கோரிக்கைகள் (REQUESTS)</div>
-            <div style="font-size:1.45rem; font-weight:900; color:#b45309;" id="admExecDelReqCount">1</div>
-            <div style="font-size:0.70rem; color:#92400e; font-weight:700;">மாவட்ட நிர்வாகி ஒப்புதலுக்கு</div>
+          <div onclick="openAdminModule('dignitaries')" style="cursor:pointer; background:#fffbeb; border:1.5px solid #fde68a; border-left:4px solid #d97706; border-radius:8px; padding:8px 12px;">
+            <div style="font-size:0.72rem; font-weight:800; color:#92400e;">முக்கியப் பிரமுகர்கள் (OFFICIALS)</div>
+            <div style="font-size:1.45rem; font-weight:900; color:#b45309;">12</div>
+            <div style="font-size:0.70rem; color:#92400e; font-weight:700;">நிர்வாகி கட்டுப்பாட்டுப் பகுதி</div>
           </div>
         </div>
 
@@ -3329,7 +3318,7 @@
           <div class="stat-num" style="color:#0284c7;" id="admStatRegSchools">282</div>
           <div class="stat-label">கடவுச்சொல் பதிவு</div>
         </div>
-        <div class="stat-card" onclick="switchAdminTab('deleteReqs')">
+        <div class="stat-card" onclick="switchAdminTab('deleteReqs')" style="display:none;">
           <div class="stat-num" style="color:#dc2626;" id="admStatDeleteReqs">1</div>
           <div class="stat-label">நீக்கக் கோரிக்கைகள்</div>
         </div>
@@ -3346,7 +3335,7 @@
         <button type="button" class="nav-pill-btn" id="admTabBtnEmisSync" onclick="switchAdminTab('emisSync')">📥 7. EMIS Excel பதிவேற்றம் (Upload &amp; Sync)</button>
         <button type="button" class="nav-pill-btn" id="admTabBtnStudentsMaster" onclick="switchAdminTab('studentsMaster')" style="border-color:#10b981; background:#ecfdf5; color:#065f46; font-weight:800;">👨‍🎓 8. Students Master &amp; மாணவர் பதிவேடு (Student Search)</button>
         <button type="button" class="nav-pill-btn" id="admTabBtnDignitaries" onclick="switchAdminTab('dignitaries')" style="border-color:#d97706; background:#fffbeb; color:#b45309; font-weight:800;">🏛️ 9. முக்கியப் பிரமுகர்கள் &amp; அதிகாரிகள் மேலாண்மை</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnDeleteReqs" onclick="switchAdminTab('deleteReqs')" style="border-color:#dc2626; background:#fef2f2; color:#991b1b; font-weight:800;">🗑️ 10. பணியாளர் நீக்கக் கோரிக்கைகள் (<span id="admNavDelReqBadge">1</span>)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnDeleteReqs" onclick="switchAdminTab('deleteReqs')" style="display:none;">🗑️ 10. பணியாளர் நீக்கக் கோரிக்கைகள் (<span id="admNavDelReqBadge">0</span>)</button>
       </div>
 
       <!-- ADMIN SUB-TAB 1: DIRECTORY & FILTER -->
@@ -3796,20 +3785,30 @@
             </div>
           </div>
 
-          <!-- DEDICATED 5-CRITERIA CONFIGURATION PANEL (Collapsible / Expandable) -->
+          <!-- DEDICATED PROGRESSIVE CRITERIA CONFIGURATION PANEL (Collapsible / Expandable) -->
           <div id="senConfigDetailsPanel" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:14px; margin-top:8px;">
-            <div style="font-size:0.86rem; font-weight:900; color:#0f294a; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-              <span>⚙️ முன்னுரிமை நிர்ணயத்திற்கான 5 அடிப்படைக் கூறுகள் (5 Configurable Criteria):</span>
-              <button type="button" class="btn btn-outline btn-sm" onclick="resetSeniorityCriteriaToDefault()" style="font-size:0.74rem; padding:2px 8px;">
-                🔄 இயல்பு நிலைக்கு மீட்டமை (Reset)
-              </button>
+            <div style="font-size:0.86rem; font-weight:900; color:#0f294a; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span>⚙️ முன்னுரிமை நிர்ணயக் கூறுகள் (Progressive Multi-Criteria Selection):</span>
+                <span style="font-size:0.74rem; font-weight:700; color:#0369a1; background:#e0f2fe; border:1px solid #bae6fd; padding:2px 8px; border-radius:999px; margin-left:6px;">
+                  💡 2-வது, 3-வது, 4-வது கூறுகள் தேவையிருந்தால் மட்டுமே தேர்ந்தெடுக்கவும்
+                </span>
+              </div>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="clearOptionalSeniorityCriteria()" style="font-size:0.73rem; padding:2px 8px; color:#b45309; border-color:#fcd34d; background:#fffbeb;">
+                  🥇 முதன்மைக் கூறு மட்டும் (Primary Only)
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="resetSeniorityCriteriaToDefault()" style="font-size:0.74rem; padding:2px 8px;">
+                  🔄 இயல்பு நிலைக்கு மீட்டமை (Reset)
+                </button>
+              </div>
             </div>
 
-            <div class="grid-4" style="margin-bottom:12px; gap:10px;">
-              <!-- Component 1: Administrative Purpose -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); margin-bottom:12px; gap:10px; align-items:end;">
+              <!-- Administrative Purpose -->
               <div>
                 <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#78350f;">
-                  🏷️ கூறு 1: முன்னுரிமைப் பணி நோக்கம் (Purpose):
+                  🏷️ முன்னுரிமைப் பணி நோக்கம் (Purpose):
                 </label>
                 <select id="senCfgPurpose" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityPurposeChange(this.value)">
                   <option value="transfer">🚀 பொது மாறுதல் கலந்தாய்வு (Transfer)</option>
@@ -3822,12 +3821,12 @@
                 </select>
               </div>
 
-              <!-- Component 2: Primary Criterion -->
-              <div>
-                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e40af;">
-                  🥇 கூறு 2: முதன்மை காரணி (Primary Sort):
+              <!-- Criterion 1: Primary Criterion (Always Required) -->
+              <div id="senCfgWrapPrimary" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:8px;">
+                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e40af; margin-bottom:4px;">
+                  🥇 1-வது கூறு (Primary - கட்டாயம்):
                 </label>
-                <select id="senCfgPrimary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange()">
+                <select id="senCfgPrimary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange('primary')">
                   <option value="dojPresPost">📌 தற்போதைய பதவியில் சேர்ந்த நாள் (DOJ Present Post)</option>
                   <option value="dojSchool">🏫 இப்பள்ளியில் சேர்ந்த நாள் (DOJ Station/School)</option>
                   <option value="dojService">🥇 அரசுப் பணியில் சேர்ந்த நாள் (DOJ Service)</option>
@@ -3836,28 +3835,54 @@
                 </select>
               </div>
 
-              <!-- Component 3: Secondary Factor (Tie-Breaker 1) -->
-              <div>
-                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#15803d;">
-                  🥈 கூறு 3: இரண்டாம் நிலை காரணி (Tie-Breaker 1):
+              <!-- Criterion 2: Secondary Factor (Optional - Select only if needed) -->
+              <div id="senCfgWrapSecondary" style="background:#f0fdf4; border:1px dashed #86efac; border-radius:8px; padding:8px;">
+                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#15803d; margin-bottom:4px; display:flex; justify-content:space-between;">
+                  <span>🥈 2-வது கூறு (தேவையெனில் மட்டும்):</span>
+                  <span style="font-size:0.68rem; color:#16a34a;">(Optional)</span>
                 </label>
-                <select id="senCfgSecondary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange()">
+                <select id="senCfgSecondary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange('secondary')">
+                  <option value="none">— தேவையில்லை (2-வது கூறு வேண்டாம்) —</option>
                   <option value="dojPresPost">📌 தற்போதைய பதவியில் சேர்ந்த நாள் (DOJ Present Post)</option>
                   <option value="dojService">🥇 அரசுப் பணியில் சேர்ந்த நாள் (DOJ Service)</option>
                   <option value="dojSchool">🏫 இப்பள்ளியில் சேர்ந்த நாள் (DOJ Station)</option>
                   <option value="dob">🎂 பிறந்த தேதி / வயது மூப்பு (DOB / Age)</option>
-                  <option value="staffId">🆔 Staff ID வரிசை (Ascending)</option>
+                  <option value="qualification">🎓 கல்வித் தகுதி (Qualification)</option>
+                  <option value="staffId">🆔 Staff ID எண் வரிசை</option>
+                  <option value="name">🔤 ஆசிரியர் பெயர் அகரவரிசை (A-Z)</option>
                 </select>
               </div>
 
-              <!-- Component 4: Tertiary Factor (Tie-Breaker 2) & Direction -->
-              <div>
-                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#9333ea;">
-                  🥉 கூறு 4: மூன்றாம் நிலை காரணி (Tie-Breaker 2):
+              <!-- Criterion 3: Tertiary Factor (Optional - Appears ONLY when 2nd criterion is selected) -->
+              <div id="senCfgWrapTertiary" style="display:none; background:#faf5ff; border:1px dashed #d8b4fe; border-radius:8px; padding:8px;">
+                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#9333ea; margin-bottom:4px; display:flex; justify-content:space-between;">
+                  <span>🥉 3-வது கூறு (தேவையெனில் மட்டும்):</span>
+                  <span style="font-size:0.68rem; color:#9333ea;">(Optional)</span>
                 </label>
-                <select id="senCfgTertiary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange()">
+                <select id="senCfgTertiary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange('tertiary')">
+                  <option value="none">— தேவையில்லை (3-வது கூறு வேண்டாம்) —</option>
                   <option value="dojPresPost">📌 தற்போதைய பதவியில் சேர்ந்த நாள் (DOJ Present Post)</option>
-                  <option value="dob">🎂 பிறந்த தேதி / வயது மூப்பு (Older First)</option>
+                  <option value="dojService">🥇 அரசுப் பணியில் சேர்ந்த நாள் (DOJ Service)</option>
+                  <option value="dojSchool">🏫 இப்பள்ளியில் சேர்ந்த நாள் (DOJ Station)</option>
+                  <option value="dob">🎂 பிறந்த தேதி / வயது மூப்பு (DOB / Age)</option>
+                  <option value="qualification">🎓 கல்வித் தகுதி (Qualification)</option>
+                  <option value="staffId">🆔 Staff ID எண் வரிசை</option>
+                  <option value="name">🔤 ஆசிரியர் பெயர் அகரவரிசை (A-Z)</option>
+                </select>
+              </div>
+
+              <!-- Criterion 4: Quaternary Factor (Optional - Appears ONLY when 3rd criterion is selected) -->
+              <div id="senCfgWrapQuaternary" style="display:none; background:#fff7ed; border:1px dashed #fdba74; border-radius:8px; padding:8px;">
+                <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#c2410c; margin-bottom:4px; display:flex; justify-content:space-between;">
+                  <span>🏅 4-வது கூறு (தேவையெனில் மட்டும்):</span>
+                  <span style="font-size:0.68rem; color:#c2410c;">(Optional)</span>
+                </label>
+                <select id="senCfgQuaternary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange('quaternary')">
+                  <option value="none">— தேவையில்லை (4-வது கூறு வேண்டாம்) —</option>
+                  <option value="dojPresPost">📌 தற்போதைய பதவியில் சேர்ந்த நாள் (DOJ Present Post)</option>
+                  <option value="dojService">🥇 அரசுப் பணியில் சேர்ந்த நாள் (DOJ Service)</option>
+                  <option value="dojSchool">🏫 இப்பள்ளியில் சேர்ந்த நாள் (DOJ Station)</option>
+                  <option value="dob">🎂 பிறந்த தேதி / வயது மூப்பு (DOB / Age)</option>
                   <option value="staffId">🆔 Staff ID எண் வரிசை</option>
                   <option value="name">🔤 ஆசிரியர் பெயர் அகரவரிசை (A-Z)</option>
                 </select>
@@ -4047,6 +4072,35 @@
           </div>
         </div>
 
+        <!-- CUSTOMIZABLE COLUMNS SELECTOR FOR TEACHERS TABLE -->
+        <div style="background:#ffffff; border:1.5px solid #bae6fd; border-radius:10px; padding:10px 14px; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span style="font-size:0.84rem; font-weight:900; color:#0369a1;">🛠️ அட்டவணை நெடுவரிசைகள் தேர்வு (Customize Table Columns):</span>
+              <span style="font-size:0.74rem; color:#475569; font-weight:600;">கீழேயுள்ள அட்டவணையில் தேவையான நெடுவரிசைகளைத் தேர்ந்தெடுக்கவும்</span>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="setAllAdminStaffColumns(true)" style="font-size:0.73rem; padding:2px 8px;">☑️ அனைத்தும் (Select All)</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStaffColumnsDefault()" style="font-size:0.73rem; padding:2px 8px;">🔄 இயல்பு நிலை (Default)</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="toggleAdminColCustomizer('admStaffColCheckboxesWrap')" style="font-size:0.73rem; padding:2px 8px;">👁️ சுருக்கு / விரி</button>
+            </div>
+          </div>
+          <div id="admStaffColCheckboxesWrap" style="display:flex; flex-wrap:wrap; gap:10px 14px; margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1; font-size:0.79rem;">
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="rank" checked onchange="onAdminStaffColToggle(this)"> மு.எண் / வ.எண்</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="nameId" checked onchange="onAdminStaffColToggle(this)"> ஆசிரியர் பெயர் &amp; Staff ID</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="gender" onchange="onAdminStaffColToggle(this)"> பாலினம் (Gender)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="desig" checked onchange="onAdminStaffColToggle(this)"> பதவி (Designation)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="subject" checked onchange="onAdminStaffColToggle(this)"> பாடம் &amp; கல்வித் தகுதி</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="school" checked onchange="onAdminStaffColToggle(this)"> பள்ளி விவரம் (School &amp; UDISE)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="blockMgmt" checked onchange="onAdminStaffColToggle(this)"> ஒன்றியம் &amp; நிர்வாகம்</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="doj" checked onchange="onAdminStaffColToggle(this)"> பணியில் சேர்ந்த நாள் (DOJ)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="dob" checked onchange="onAdminStaffColToggle(this)"> பிறந்த தேதி (DOB)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="natureDuty" onchange="onAdminStaffColToggle(this)"> நியமனத் தன்மை &amp; தேர்வுப் பணி</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="mobile" checked onchange="onAdminStaffColToggle(this)"> கைபேசி எண்</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="actions" checked onchange="onAdminStaffColToggle(this)"> செயல்கள்</label>
+          </div>
+        </div>
+
         <!-- Table Information & Pagination Top Bar -->
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; font-size:0.84rem;">
           <div style="color:#475569; font-weight:700;">
@@ -4067,7 +4121,7 @@
         <!-- Data Table Container -->
         <div class="table-wrap" style="max-height:580px;">
           <table class="data-table" style="font-size:0.82rem;">
-            <thead>
+            <thead id="admStaffMasterTableHead">
               <tr style="position:sticky; top:0; z-index:5;">
                 <th style="width:55px; text-align:center;" id="thStaffRank">மு.எண்</th>
                 <th style="min-width:180px;">ஆசிரியர் பெயர் &amp; Staff ID</th>
@@ -4750,10 +4804,39 @@
           </div>
         </div>
 
+        <!-- CUSTOMIZABLE COLUMNS SELECTOR FOR STUDENTS TABLE -->
+        <div style="background:#ffffff; border:1.5px solid #86efac; border-radius:10px; padding:10px 14px; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span style="font-size:0.84rem; font-weight:900; color:#166534;">🛠️ அட்டவணை நெடுவரிசைகள் தேர்வு (Customize Student Table Columns):</span>
+              <span style="font-size:0.74rem; color:#475569; font-weight:600;">கீழேயுள்ள மாணவர் அட்டவணையில் தேவையான நெடுவரிசைகளைத் தேர்ந்தெடுக்கவும்</span>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="setAllAdminStudentColumns(true)" style="font-size:0.73rem; padding:2px 8px;">☑️ அனைத்தும் (Select All)</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStudentColumnsDefault()" style="font-size:0.73rem; padding:2px 8px;">🔄 இயல்பு நிலை (Default)</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="toggleAdminColCustomizer('admStudentColCheckboxesWrap')" style="font-size:0.73rem; padding:2px 8px;">👁️ சுருக்கு / விரி</button>
+            </div>
+          </div>
+          <div id="admStudentColCheckboxesWrap" style="display:flex; flex-wrap:wrap; gap:10px 14px; margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1; font-size:0.79rem;">
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="sno" checked onchange="onAdminStudentColToggle(this)"> வ.எண் (S.No)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="unoUdise" checked onchange="onAdminStudentColToggle(this)"> U.No &amp; UDISE எண்</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="schoolBlock" checked onchange="onAdminStudentColToggle(this)"> பள்ளி பெயர் &amp; ஒன்றியம்</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="levelMgmt" checked onchange="onAdminStudentColToggle(this)"> நிலை / நிர்வாகம்</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="medium" checked onchange="onAdminStudentColToggle(this)"> பயிற்று மொழி (TM / EM)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="groups" checked onchange="onAdminStudentColToggle(this)"> பாடப்பிரிவு / குழு (Groups)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="gender" checked onchange="onAdminStudentColToggle(this)"> பாலினம் (👦 ஆண் / 👧 பெண்)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="class6to10" onchange="onAdminStudentColToggle(this)"> உயர்நிலை (6-10 வகுப்பு)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="class11to12" onchange="onAdminStudentColToggle(this)"> மேல்நிலை (11-12 வகுப்பு)</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="filteredCount" checked onchange="onAdminStudentColToggle(this)"> தேர்ந்தெடுக்கப்பட்ட எண்ணிக்கை</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="totalStudents" checked onchange="onAdminStudentColToggle(this)"> பள்ளி மொத்தம்</label>
+            <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-std-col="actions" checked onchange="onAdminStudentColToggle(this)"> விவரம் (Actions)</label>
+          </div>
+        </div>
+
         <!-- SCHOOL-WISE STUDENTS DATA TABLE -->
         <div class="table-wrap">
           <table class="data-table" id="admStudentsTable">
-            <thead>
+            <thead id="admStudentsTableThead">
               <tr>
                 <th style="width:40px; text-align:center;">வ.எண்</th>
                 <th style="width:110px;">U.No &amp; UDISE</th>
@@ -6710,10 +6793,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       <div class="dignitary-card ${d.tier || 'tier-district'}" id="digCard_${d.id}" style="position:relative;">
         <div class="dignitary-card-top">
           <span class="dignitary-hon-badge ${d.honorificClass || getHonorificClass(d.honorific)}">${d.honorific || ''}</span>
-          <div style="display:flex; align-items:center; gap:4px;">
-            <span class="dignitary-tier-tag">${d.tierBadge || ''}</span>
-            <button type="button" onclick="openAdminEditDignitaryModal('${safeId}')" title="இப்பிரமுகர் விவரங்களைத் திருத்துக (Edit)" style="border:1px solid #bae6fd; background:#f0f9ff; color:#0369a1; border-radius:4px; padding:1px 5px; font-size:0.65rem; font-weight:800; cursor:pointer; line-height:1.2;">✏️ திருத்து</button>
-          </div>
+          <span class="dignitary-tier-tag">${d.tierBadge || ''}</span>
         </div>
         <div class="dignitary-card-body">
           <div class="dignitary-avatar" style="background:${d.avatarBg || '#e0f2fe'}; overflow:hidden;" aria-hidden="true">
@@ -6911,7 +6991,20 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     renderAdminDignitariesManager();
   }
 
+  function isAdminAuthorizedForDignitaries() {
+    const viewAdm = document.getElementById("viewAdmin");
+    if (viewAdm && viewAdm.classList.contains("active")) return true;
+    const sess = safeGetStorage("CEOSVG_ACTIVE_SESSION", null);
+    if (sess && sess.role === "admin") return true;
+    if (activeSchoolSession && activeSchoolSession.isAdminInspection) return true;
+    return false;
+  }
+
   function openAdminEditDignitaryModal(id) {
+    if (!isAdminAuthorizedForDignitaries()) {
+      showToast("🔒 முக்கியப் பிரமுகர்கள் விவரங்களை மாவட்ட நிர்வாகி (CEO Admin) மட்டுமே திருத்த முடியும்!", "#ef4444");
+      return;
+    }
     const list = getDignitariesList();
     const d = list.find(item => String(item.id) === String(id));
     if (!d) {
@@ -6973,6 +7066,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   function openAdminAddDignitaryModal() {
+    if (!isAdminAuthorizedForDignitaries()) {
+      showToast("🔒 புதிய அதிகாரி சேர்க்கும் அதிகாரம் மாவட்ட நிர்வாகிக்கு (CEO Admin) மட்டுமே உள்ளது!", "#ef4444");
+      return;
+    }
     const idEl = document.getElementById("admDigFormId");
     const honEl = document.getElementById("admDigFormHonorific");
     const roleEl = document.getElementById("admDigFormRole");
@@ -7995,12 +8092,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         <td>${st.firstApp || "TRB"} (${st.nature || "Regular"})</td>
         <td style="font-size:0.80rem;">தேர்வு: <strong>${st.examDuty || "-"}</strong><br>முகாம்: ${st.campDuty || "-"} (${st.campOption || "-"})</td>
         <td><strong style="color:#0284c7;">${st.mobile || "-"}</strong></td>
-        <td style="white-space:nowrap;">
+        <td style="white-space:nowrap; text-align:center;">
           <button type="button" class="btn btn-primary btn-sm" onclick="editStaffMember('${st.id}')">✏️ திருத்து</button>
-          ${st.deleteReqStatus === "PENDING"
-            ? `<span style="display:inline-block; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 6px; border-radius:4px; font-size:0.72rem; font-weight:800; margin-left:4px;">⏳ நீக்கக் கோரிக்கை</span><button type="button" class="btn btn-outline btn-sm" style="margin-left:4px;" onclick="cancelSchoolDeleteRequest('STF', '${st.id}')">↩️</button>`
-            : `<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" onclick="openDeleteRequestModal('STF', '${st.id}')">🗑️ நீக்கக் கோரிக்கை</button>`
-          }
         </td>
       </tr>
     `).join("");
@@ -9851,9 +9944,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   let isSeniorityMode = true; // Default ON
   let seniorityCriteria = {
     purpose: "transfer",       // "transfer", "promotion", "examDuty", "campDuty", "stationIncharge", "general", "custom"
-    primary: "dojSchool",      // "dojSchool", "dojService", "dob", "qualification"
-    secondary: "dojService",   // "dojService", "dojSchool", "dob", "staffId"
-    tertiary: "dob",           // "dob", "staffId", "name"
+    primary: "dojSchool",      // "dojPresPost", "dojSchool", "dojService", "dob", "qualification"
+    secondary: "none",         // "none" or factor key (selected only if needed)
+    tertiary: "none",          // "none" or factor key (selected only if needed)
+    quaternary: "none",        // "none" or factor key (selected only if needed)
     sortDirection: "asc",      // "asc", "desc"
     age55Priority: true,       // true: Age 55+ gets top priority
     femalePriority: false,     // true: Female staff preference
@@ -9910,6 +10004,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   function getSeniorityFactorLabel(key) {
     const map = {
+      none: "தேவையில்லை (None)",
       dojPresPost: "தற்போதைய பதவியில் சேர்ந்த நாள் (DOJ Present Post)",
       dojSchool: "இப்பள்ளியில் சேர்ந்த நாள் (Station Seniority)",
       dojService: "அரசுப் பணியில் சேர்ந்த நாள் (DOJ Service)",
@@ -9921,13 +10016,101 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     return map[key] || key;
   }
 
+  function updateProgressiveCriteriaVisibility() {
+    const cfg = seniorityCriteria;
+    const secEl = document.getElementById("senCfgSecondary");
+    const terEl = document.getElementById("senCfgTertiary");
+    const quatEl = document.getElementById("senCfgQuaternary");
+    const wrapTer = document.getElementById("senCfgWrapTertiary");
+    const wrapQuat = document.getElementById("senCfgWrapQuaternary");
+
+    // Disable already chosen options in subsequent dropdowns to avoid duplicates
+    const chosen1 = cfg.primary || "dojSchool";
+    if (secEl) {
+      Array.from(secEl.options).forEach(opt => {
+        if (opt.value !== "none") {
+          opt.disabled = (opt.value === chosen1);
+        }
+      });
+      if (cfg.secondary === chosen1) {
+        cfg.secondary = "none";
+        secEl.value = "none";
+      }
+    }
+
+    const hasSecondary = Boolean(cfg.secondary && cfg.secondary !== "none");
+    if (!hasSecondary) {
+      cfg.tertiary = "none";
+      cfg.quaternary = "none";
+      if (terEl) terEl.value = "none";
+      if (quatEl) quatEl.value = "none";
+    }
+    if (wrapTer) {
+      wrapTer.style.display = hasSecondary ? "block" : "none";
+    }
+
+    if (terEl && hasSecondary) {
+      Array.from(terEl.options).forEach(opt => {
+        if (opt.value !== "none") {
+          opt.disabled = (opt.value === chosen1 || opt.value === cfg.secondary);
+        }
+      });
+      if (cfg.tertiary === chosen1 || cfg.tertiary === cfg.secondary) {
+        cfg.tertiary = "none";
+        terEl.value = "none";
+      }
+    }
+
+    const hasTertiary = Boolean(hasSecondary && cfg.tertiary && cfg.tertiary !== "none");
+    if (!hasTertiary) {
+      cfg.quaternary = "none";
+      if (quatEl) quatEl.value = "none";
+    }
+    if (wrapQuat) {
+      wrapQuat.style.display = hasTertiary ? "block" : "none";
+    }
+
+    if (quatEl && hasTertiary) {
+      Array.from(quatEl.options).forEach(opt => {
+        if (opt.value !== "none") {
+          opt.disabled = (opt.value === chosen1 || opt.value === cfg.secondary || opt.value === cfg.tertiary);
+        }
+      });
+      if (cfg.quaternary === chosen1 || cfg.quaternary === cfg.secondary || cfg.quaternary === cfg.tertiary) {
+        cfg.quaternary = "none";
+        quatEl.value = "none";
+      }
+    }
+  }
+
+  function clearOptionalSeniorityCriteria() {
+    seniorityCriteria.secondary = "none";
+    seniorityCriteria.tertiary = "none";
+    seniorityCriteria.quaternary = "none";
+    syncSeniorityCriteriaToUI();
+    updateSeniorityFormulaBadge();
+    adminStaffCurrentPage = 1;
+    applyAdminStaffFiltersAndRender();
+    showToast("🥇 முதன்மைக் கூறு (1-வது கூறு) மட்டுமே முன்னுரிமைக்குத் தேர்ந்தெடுக்கப்பட்டுள்ளது.", "#0284c7");
+  }
+
   function updateSeniorityFormulaBadge() {
     const fBadge = document.getElementById("senActiveFormulaBadge");
     const cBadge = document.getElementById("senActiveConcessionsBadge");
     const cfg = seniorityCriteria;
 
     if (fBadge) {
-      fBadge.textContent = `[பணி: ${getSeniorityPurposeLabel(cfg.purpose)}] ➔ 1. ${getSeniorityFactorLabel(cfg.primary)} ➔ 2. ${getSeniorityFactorLabel(cfg.secondary)} ➔ 3. ${getSeniorityFactorLabel(cfg.tertiary)}`;
+      const steps = [`1. ${getSeniorityFactorLabel(cfg.primary)}`];
+      if (cfg.secondary && cfg.secondary !== "none") {
+        steps.push(`2. ${getSeniorityFactorLabel(cfg.secondary)}`);
+        if (cfg.tertiary && cfg.tertiary !== "none") {
+          steps.push(`3. ${getSeniorityFactorLabel(cfg.tertiary)}`);
+          if (cfg.quaternary && cfg.quaternary !== "none") {
+            steps.push(`4. ${getSeniorityFactorLabel(cfg.quaternary)}`);
+          }
+        }
+      }
+      fBadge.textContent = `[பணி: ${getSeniorityPurposeLabel(cfg.purpose)}] ➔ ` + steps.join(" ➔ ");
     }
     if (cBadge) {
       const parts = [];
@@ -9946,12 +10129,14 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     setVal("senCfgPurpose", cfg.purpose);
     setVal("senCfgPrimary", cfg.primary);
-    setVal("senCfgSecondary", cfg.secondary);
-    setVal("senCfgTertiary", cfg.tertiary);
+    setVal("senCfgSecondary", cfg.secondary || "none");
+    setVal("senCfgTertiary", cfg.tertiary || "none");
+    setVal("senCfgQuaternary", cfg.quaternary || "none");
     setChk("chkSenAge55", cfg.age55Priority);
     setChk("chkSenFemale", cfg.femalePriority);
     setChk("chkSenRegularOnly", cfg.regularOnly);
     setVal("selSenMinYears", cfg.minStationYears);
+    updateProgressiveCriteriaVisibility();
   }
 
   function applySeniorityDutyPreset(dutyKey) {
@@ -10047,7 +10232,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }
   }
 
-  function onSeniorityCriteriaChange() {
+  function onSeniorityCriteriaChange(changedLevel) {
     isSeniorityMode = true;
     updateSeniorityModeUI();
 
@@ -10055,14 +10240,16 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const getChk = id => Boolean((document.getElementById(id) || {}).checked);
 
     seniorityCriteria.primary = getVal("senCfgPrimary") || "dojSchool";
-    seniorityCriteria.secondary = getVal("senCfgSecondary") || "dojService";
-    seniorityCriteria.tertiary = getVal("senCfgTertiary") || "dob";
+    seniorityCriteria.secondary = getVal("senCfgSecondary") || "none";
+    seniorityCriteria.tertiary = getVal("senCfgTertiary") || "none";
+    seniorityCriteria.quaternary = getVal("senCfgQuaternary") || "none";
     seniorityCriteria.age55Priority = getChk("chkSenAge55");
     seniorityCriteria.femalePriority = getChk("chkSenFemale");
     seniorityCriteria.regularOnly = getChk("chkSenRegularOnly");
     seniorityCriteria.minStationYears = getVal("selSenMinYears") || "0";
     seniorityCriteria.purpose = getVal("senCfgPurpose") || "custom";
 
+    updateProgressiveCriteriaVisibility();
     updateSeniorityFormulaBadge();
     adminStaffCurrentPage = 1;
     applyAdminStaffFiltersAndRender();
@@ -10116,26 +10303,38 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       return "";
     }
 
-    // 3. Primary Factor
+    // 3. Primary Factor (Always evaluated)
     const pA = getFactorVal(a, cfg.primary);
     const pB = getFactorVal(b, cfg.primary);
     let pCmp = pA.localeCompare(pB);
     if (cfg.sortDirection === "desc") pCmp = -pCmp;
     if (pCmp !== 0) return pCmp;
 
-    // 4. Secondary Factor (Tie-Breaker 1)
-    const sA = getFactorVal(a, cfg.secondary);
-    const sB = getFactorVal(b, cfg.secondary);
-    const sCmp = sA.localeCompare(sB);
-    if (sCmp !== 0) return sCmp;
+    // 4. Secondary Factor (Evaluated ONLY if selected)
+    if (cfg.secondary && cfg.secondary !== "none") {
+      const sA = getFactorVal(a, cfg.secondary);
+      const sB = getFactorVal(b, cfg.secondary);
+      const sCmp = sA.localeCompare(sB);
+      if (sCmp !== 0) return sCmp;
 
-    // 5. Tertiary Factor (Tie-Breaker 2)
-    const tA = getFactorVal(a, cfg.tertiary);
-    const tB = getFactorVal(b, cfg.tertiary);
-    const tCmp = tA.localeCompare(tB);
-    if (tCmp !== 0) return tCmp;
+      // 5. Tertiary Factor (Evaluated ONLY if selected)
+      if (cfg.tertiary && cfg.tertiary !== "none") {
+        const tA = getFactorVal(a, cfg.tertiary);
+        const tB = getFactorVal(b, cfg.tertiary);
+        const tCmp = tA.localeCompare(tB);
+        if (tCmp !== 0) return tCmp;
 
-    // 6. Final Tie-Breaker
+        // 6. Quaternary Factor (Evaluated ONLY if selected)
+        if (cfg.quaternary && cfg.quaternary !== "none") {
+          const qA = getFactorVal(a, cfg.quaternary);
+          const qB = getFactorVal(b, cfg.quaternary);
+          const qCmp = qA.localeCompare(qB);
+          if (qCmp !== 0) return qCmp;
+        }
+      }
+    }
+
+    // Final Tie-Breaker
     return a.staffId.localeCompare(b.staffId);
   }
 
@@ -10203,6 +10402,119 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     renderAdminStaffTablePage();
   }
 
+
+  // =========================================================================
+  // ADMIN CUSTOMIZABLE TABLE COLUMNS STATE & CONTROLS (TEACHERS & STUDENTS)
+  // =========================================================================
+  const DEFAULT_ADMIN_STAFF_COLS = {
+    rank: true,
+    nameId: true,
+    gender: false,
+    desig: true,
+    subject: true,
+    school: true,
+    blockMgmt: true,
+    doj: true,
+    dob: true,
+    natureDuty: false,
+    mobile: true,
+    actions: true
+  };
+  let adminStaffVisibleCols = Object.assign({}, DEFAULT_ADMIN_STAFF_COLS);
+
+  const DEFAULT_ADMIN_STUDENT_COLS = {
+    sno: true,
+    unoUdise: true,
+    schoolBlock: true,
+    levelMgmt: true,
+    medium: true,
+    groups: true,
+    gender: true,
+    class6to10: false,
+    class11to12: false,
+    filteredCount: true,
+    totalStudents: true,
+    actions: true
+  };
+  let adminStudentVisibleCols = Object.assign({}, DEFAULT_ADMIN_STUDENT_COLS);
+
+  function getAdminStaffVisibleCols() {
+    return adminStaffVisibleCols;
+  }
+
+  function getAdminStudentVisibleCols() {
+    return adminStudentVisibleCols;
+  }
+
+  function toggleAdminColCustomizer(wrapId) {
+    const el = document.getElementById(wrapId);
+    if (!el) return;
+    el.style.display = (el.style.display === "none") ? "flex" : "none";
+  }
+
+  function onAdminStaffColToggle(cb) {
+    if (!cb) return;
+    const key = cb.getAttribute("data-staff-col");
+    if (!key) return;
+    adminStaffVisibleCols[key] = Boolean(cb.checked);
+    // Ensure at least 1 column stays checked
+    if (Object.values(adminStaffVisibleCols).filter(Boolean).length === 0) {
+      adminStaffVisibleCols[key] = true;
+      cb.checked = true;
+      showToast("⚠️ குறைந்தபட்சம் ஒரு நெடுவரிசையாவது தேர்ந்தெடுக்கப்பட வேண்டும்.", "#f59e0b");
+      return;
+    }
+    renderAdminStaffTablePage();
+  }
+
+  function setAllAdminStaffColumns(val) {
+    Object.keys(adminStaffVisibleCols).forEach(k => { adminStaffVisibleCols[k] = Boolean(val); });
+    document.querySelectorAll('input[data-staff-col]').forEach(cb => { cb.checked = Boolean(val); });
+    renderAdminStaffTablePage();
+    showToast("✅ ஆசிரியர் அட்டவணையில் அனைத்து நெடுவரிசைகளும் காண்பிக்கப்படுகின்றன.", "#0284c7");
+  }
+
+  function resetAdminStaffColumnsDefault() {
+    adminStaffVisibleCols = Object.assign({}, DEFAULT_ADMIN_STAFF_COLS);
+    document.querySelectorAll('input[data-staff-col]').forEach(cb => {
+      const k = cb.getAttribute("data-staff-col");
+      cb.checked = Boolean(adminStaffVisibleCols[k]);
+    });
+    renderAdminStaffTablePage();
+    showToast("🔄 ஆசிரியர் அட்டவணை நெடுவரிசைகள் இயல்பு நிலைக்கு மாற்றப்பட்டன.", "#0284c7");
+  }
+
+  function onAdminStudentColToggle(cb) {
+    if (!cb) return;
+    const key = cb.getAttribute("data-std-col");
+    if (!key) return;
+    adminStudentVisibleCols[key] = Boolean(cb.checked);
+    if (Object.values(adminStudentVisibleCols).filter(Boolean).length === 0) {
+      adminStudentVisibleCols[key] = true;
+      cb.checked = true;
+      showToast("⚠️ குறைந்தபட்சம் ஒரு நெடுவரிசையாவது தேர்ந்தெடுக்கப்பட வேண்டும்.", "#f59e0b");
+      return;
+    }
+    renderAdminStudentsTablePage();
+  }
+
+  function setAllAdminStudentColumns(val) {
+    Object.keys(adminStudentVisibleCols).forEach(k => { adminStudentVisibleCols[k] = Boolean(val); });
+    document.querySelectorAll('input[data-std-col]').forEach(cb => { cb.checked = Boolean(val); });
+    renderAdminStudentsTablePage();
+    showToast("✅ மாணவர் அட்டவணையில் அனைத்து நெடுவரிசைகளும் காண்பிக்கப்படுகின்றன.", "#16a34a");
+  }
+
+  function resetAdminStudentColumnsDefault() {
+    adminStudentVisibleCols = Object.assign({}, DEFAULT_ADMIN_STUDENT_COLS);
+    document.querySelectorAll('input[data-std-col]').forEach(cb => {
+      const k = cb.getAttribute("data-std-col");
+      cb.checked = Boolean(adminStudentVisibleCols[k]);
+    });
+    renderAdminStudentsTablePage();
+    showToast("🔄 மாணவர் அட்டவணை நெடுவரிசைகள் இயல்பு நிலைக்கு மாற்றப்பட்டன.", "#16a34a");
+  }
+
   function renderAdminStaffTablePage() {
     const total = adminStaffFilteredList.length;
     const pageSize = adminStaffPageSize;
@@ -10244,12 +10556,34 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const rBot = document.getElementById("admStaffPaginationRangeBottom");
     if (rBot) rBot.textContent = `காண்பிக்கப்படுவது ${rangeText} / மொத்தம் ${totalText} பணியாளர்கள்`;
 
-    // Render Table Rows
+    // Render Dynamic Table Headers & Rows based on adminStaffVisibleCols
+    const thead = document.getElementById("admStaffMasterTableHead");
     const tbody = document.getElementById("admStaffMasterTableBody");
     if (!tbody) return;
 
+    const cols = getAdminStaffVisibleCols();
+    if (thead) {
+      let thHtml = `<tr style="position:sticky; top:0; z-index:5;">`;
+      if (cols.rank) thHtml += `<th style="width:55px; text-align:center;" id="thStaffRank">${isSeniorityMode ? "மு.எண் (Rank)" : "வ.எண்"}</th>`;
+      if (cols.nameId) thHtml += `<th style="min-width:180px;">ஆசிரியர் பெயர் &amp; Staff ID</th>`;
+      if (cols.gender) thHtml += `<th style="min-width:75px; text-align:center;">பாலினம்</th>`;
+      if (cols.desig) thHtml += `<th style="min-width:160px;">பதவி (Designation)</th>`;
+      if (cols.subject) thHtml += `<th style="min-width:120px;">பாடம் (Subject)</th>`;
+      if (cols.school) thHtml += `<th style="min-width:190px;">பள்ளி விவரம் (School Name)</th>`;
+      if (cols.blockMgmt) thHtml += `<th style="min-width:115px;">ஒன்றியம் &amp; நிர்வாகம்</th>`;
+      if (cols.doj) thHtml += `<th style="min-width:110px; text-align:center;">பணியில் சேர்ந்த நாள் (DOJ)</th>`;
+      if (cols.dob) thHtml += `<th style="min-width:95px; text-align:center;">பிறந்த தேதி (DOB)</th>`;
+      if (cols.natureDuty) thHtml += `<th style="min-width:125px; text-align:center;">நியமனம் &amp; பணி</th>`;
+      if (cols.mobile) thHtml += `<th style="min-width:95px;">கைபேசி</th>`;
+      if (cols.actions) thHtml += `<th style="min-width:110px; text-align:center;">செயல்கள்</th>`;
+      thHtml += `</tr>`;
+      thead.innerHTML = thHtml;
+    }
+
+    const activeColCount = Object.values(cols).filter(Boolean).length || 1;
+
     if (total === 0) {
-      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:32px; color:#64748b; font-size:0.95rem;">
+      tbody.innerHTML = `<tr><td colspan="${activeColCount}" style="text-align:center; padding:32px; color:#64748b; font-size:0.95rem;">
         🔍 கொடுக்கப்பட்ட வடிகட்டிகளுக்குப் பொருந்தும் ஆசிரியர்கள் அல்லது பணியாளர்கள் எவரும் இல்லை.<br>
         <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStaffFilters()" style="margin-top:10px;">வடிகட்டிகளை மீட்டமை (Reset Filters)</button>
       </td></tr>`;
@@ -10274,7 +10608,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         ? `<span style="font-size:0.68rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 6px; border-radius:4px; font-weight:800;">Teaching</span>`
         : `<span style="font-size:0.68rem; background:#fefce8; color:#854d0e; border:1px solid #fde047; padding:1px 6px; border-radius:4px; font-weight:800;">Non-Teaching</span>`;
 
-      // Priority Concession Badges
       let conBadges = "";
       if (st.hasAgePriority) {
         conBadges += `<span style="display:inline-block; font-size:0.68rem; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:1px 5px; border-radius:4px; font-weight:800; margin-left:3px;" title="55 வயது கடந்த ஆசிரியர் சிறப்பு முன்னுரிமை">👴 55+</span>`;
@@ -10283,7 +10616,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         conBadges += `<span style="display:inline-block; font-size:0.68rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 5px; border-radius:4px; font-weight:800; margin-left:3px;" title="பெண் ஆசிரியர் முன்னுரிமை">👩 பெண்</span>`;
       }
 
-      // Visual Highlight on Primary Sorting Factor
       let dojCellHtml = "";
       if (isSeniorityMode && cfg.primary === "dojPresPost") {
         dojCellHtml = `
@@ -10322,7 +10654,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         `;
       }
 
-      // DOB cell highlight if DOB is primary factor
       let dobCellHtml = "";
       if (isSeniorityMode && cfg.primary === "dob") {
         dobCellHtml = `
@@ -10334,55 +10665,74 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         dobCellHtml = `<span style="font-size:0.78rem;">${st.dob || "-"}</span>`;
       }
 
-      return `
-        <tr style="border-bottom:1px solid #e2e8f0;">
-          <td style="text-align:center;">
-            ${rankBadge}
-            ${conBadges}
-          </td>
-          <td>
-            <div style="font-weight:800; color:#0f294a;">${st.name}</div>
-            <div style="font-size:0.74rem; color:#475569; font-weight:600; margin-top:1px;">
-              ID: <strong style="color:#1d4ed8;">${st.staffId}</strong> | ${st.gender}
-            </div>
-          </td>
-          <td>
-            <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.desig}</div>
-            <div style="margin-top:2px;">${catBadge}</div>
-          </td>
-          <td>
-            <strong style="color:#1e40af;">${st.subject || "-"}</strong>
-            ${st.qualification && st.qualification !== "-" ? `<div style="font-size:0.72rem; color:#64748b;">${st.qualification}</div>` : ""}
-          </td>
-          <td>
-            <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.schoolNameTa || st.schoolNameEn}</div>
-            <div style="font-size:0.72rem; color:#64748b;">U.NO: <strong>${st.uNo}</strong> | UDISE: ${st.udiseNo}</div>
-          </td>
-          <td>
-            <div style="font-weight:700; color:#1e293b;">${st.block}</div>
-            <div style="font-size:0.74rem; margin-top:1px;">
-              <span class="${getMgmtBadgeClass(st.mgmt1)}" style="padding:1px 6px;">${st.mgmt1}</span>
-            </div>
-          </td>
-          <td style="text-align:center;">
-            ${dojCellHtml}
-          </td>
-          <td style="text-align:center;">
-            ${dobCellHtml}
-          </td>
-          <td>
-            <strong style="color:#0284c7; font-size:0.80rem;">${st.mobile || "-"}</strong>
-          </td>
-          <td style="text-align:center; white-space:nowrap;">
-            <button type="button" class="btn btn-primary btn-sm" onclick="openAdminEditStaffModal('${st.staffId}')" style="font-size:0.74rem; padding:3px 8px; margin-right:4px;" title="ஆசிரியர் விவரங்களைத் திருத்துக">
-              ✏️ திருத்து
-            </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="adminInspectSchoolPortal('${st.uNo}')" style="font-size:0.74rem; padding:3px 8px;" title="பள்ளி முகப்பிற்குச் செல்ல">
-              👁️ பள்ளி
-            </button>
-          </td>
-        </tr>
-      `;
+      let rowHtml = `<tr style="border-bottom:1px solid #e2e8f0;">`;
+      if (cols.rank) {
+        rowHtml += `<td style="text-align:center;">${rankBadge}${conBadges}</td>`;
+      }
+      if (cols.nameId) {
+        rowHtml += `<td>
+          <div style="font-weight:800; color:#0f294a;">${st.name}</div>
+          <div style="font-size:0.74rem; color:#475569; font-weight:600; margin-top:1px;">
+            ID: <strong style="color:#1d4ed8;">${st.staffId}</strong> | ${st.gender}
+          </div>
+        </td>`;
+      }
+      if (cols.gender) {
+        rowHtml += `<td style="text-align:center; font-weight:700; color:${st.gender === 'Female' ? '#be185d' : '#1d4ed8'};">${st.gender === "Female" ? "👧 பெண்" : "👦 ஆண்"}</td>`;
+      }
+      if (cols.desig) {
+        rowHtml += `<td>
+          <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.desig}</div>
+          <div style="margin-top:2px;">${catBadge}</div>
+        </td>`;
+      }
+      if (cols.subject) {
+        rowHtml += `<td>
+          <strong style="color:#1e40af;">${st.subject || "-"}</strong>
+          ${st.qualification && st.qualification !== "-" ? `<div style="font-size:0.72rem; color:#64748b;">${st.qualification}</div>` : ""}
+        </td>`;
+      }
+      if (cols.school) {
+        rowHtml += `<td>
+          <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.schoolNameTa || st.schoolNameEn}</div>
+          <div style="font-size:0.72rem; color:#64748b;">U.NO: <strong>${st.uNo}</strong> | UDISE: ${st.udiseNo}</div>
+        </td>`;
+      }
+      if (cols.blockMgmt) {
+        rowHtml += `<td>
+          <div style="font-weight:700; color:#1e293b;">${st.block}</div>
+          <div style="font-size:0.74rem; margin-top:1px;">
+            <span class="${getMgmtBadgeClass(st.mgmt1)}" style="padding:1px 6px;">${st.mgmt1}</span>
+          </div>
+        </td>`;
+      }
+      if (cols.doj) {
+        rowHtml += `<td style="text-align:center;">${dojCellHtml}</td>`;
+      }
+      if (cols.dob) {
+        rowHtml += `<td style="text-align:center;">${dobCellHtml}</td>`;
+      }
+      if (cols.natureDuty) {
+        rowHtml += `<td style="text-align:center; font-size:0.76rem;">
+          <span style="font-weight:800; color:#15803d;">${st.nature || "Regular"}</span>
+          <div style="color:#475569;">${st.examDuty || "CS / Hall Supt"}</div>
+        </td>`;
+      }
+      if (cols.mobile) {
+        rowHtml += `<td><strong style="color:#0284c7; font-size:0.80rem;">${st.mobile || "-"}</strong></td>`;
+      }
+      if (cols.actions) {
+        rowHtml += `<td style="text-align:center; white-space:nowrap;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="openAdminEditStaffModal('${st.staffId}')" style="font-size:0.74rem; padding:3px 8px; margin-right:4px;" title="ஆசிரியர் விவரங்களைத் திருத்துக">
+            ✏️ திருத்து
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="adminInspectSchoolPortal('${st.uNo}')" style="font-size:0.74rem; padding:3px 8px;" title="பள்ளி முகப்பிற்குச் செல்ல">
+            👁️ பள்ளி
+          </button>
+        </td>`;
+      }
+      rowHtml += `</tr>`;
+      return rowHtml;
     }).join("");
   }
 
@@ -11198,12 +11548,34 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const endIndex = Math.min(startIndex + pageSize, total);
     const pageItems = adminSchoolStrengthFilteredList.slice(startIndex, endIndex);
 
+    const thead = document.getElementById("admStudentsTableThead");
     const tbody = document.getElementById("admStudentsTableTbody");
     const tfoot = document.getElementById("admStudentsTableTfoot");
     if (!tbody) return;
 
+    const cols = getAdminStudentVisibleCols();
+    if (thead) {
+      let thHtml = `<tr>`;
+      if (cols.sno) thHtml += `<th style="width:40px; text-align:center;">வ.எண்</th>`;
+      if (cols.unoUdise) thHtml += `<th style="width:110px;">U.No &amp; UDISE</th>`;
+      if (cols.schoolBlock) thHtml += `<th>பள்ளி பெயர் &amp; ஒன்றியம்</th>`;
+      if (cols.levelMgmt) thHtml += `<th style="text-align:center; width:90px;">நிலை / நிர்வாகம்</th>`;
+      if (cols.medium) thHtml += `<th style="text-align:center; min-width:130px;">பயிற்று மொழி (Medium)</th>`;
+      if (cols.groups) thHtml += `<th style="min-width:210px;">பாடப்பிரிவு / குழு (Groups)</th>`;
+      if (cols.gender) thHtml += `<th style="text-align:center; min-width:105px;">பாலினம் (Gender)</th>`;
+      if (cols.class6to10) thHtml += `<th style="text-align:center; min-width:85px;">வகுப்பு 6-10</th>`;
+      if (cols.class11to12) thHtml += `<th style="text-align:center; min-width:85px;">வகுப்பு 11-12</th>`;
+      if (cols.filteredCount) thHtml += `<th style="text-align:center; min-width:90px; background:#f0fdf4; color:#166534;">தேர்ந்தெடுக்கப்பட்ட எண்ணிக்கை</th>`;
+      if (cols.totalStudents) thHtml += `<th style="text-align:center; min-width:85px;">பள்ளி மொத்தம்</th>`;
+      if (cols.actions) thHtml += `<th style="text-align:center; width:90px;">விவரம்</th>`;
+      thHtml += `</tr>`;
+      thead.innerHTML = thHtml;
+    }
+
+    const activeColCount = Object.values(cols).filter(Boolean).length || 1;
+
     if (pageItems.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:30px; color:#64748b; font-weight:700;">⚠️ தேடப்பட்ட நிபந்தனைகளுக்கு ஏற்ப பள்ளிகள் எதுவும் கண்டறியப்படவில்லை.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="${activeColCount}" style="text-align:center; padding:30px; color:#64748b; font-weight:700;">⚠️ தேடப்பட்ட நிபந்தனைகளுக்கு ஏற்ப பள்ளிகள் எதுவும் கண்டறியப்படவில்லை.</td></tr>`;
       if (tfoot) tfoot.innerHTML = "";
       const pageInfo = document.getElementById("admStudentsPageInfo");
       if (pageInfo) pageInfo.textContent = "முடிவுகள் இல்லை (0 பள்ளிகள்)";
@@ -11221,7 +11593,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
       const mgmtBadge = `<span style="background:#f8fafc; border:1px solid #cbd5e1; padding:2px 5px; border-radius:4px; font-size:0.72rem; font-weight:800;">${sch.mgmt1}</span>`;
 
-      // Groups badges for this school
       let groupBadges = [];
       if (sch.groups) {
         if (sch.groups.GEN && sch.groups.GEN.total > 0) {
@@ -11244,56 +11615,59 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         }
       }
 
-      return `
-        <tr>
-          <td style="text-align:center; font-weight:800; color:#64748b;">#${sNo}</td>
-          <td>
-            <div style="font-family:monospace; font-weight:900; color:#0f294a;">[${sch.uNo}]</div>
-            <div style="font-size:0.72rem; color:#64748b;">UDISE: ${sch.udise}</div>
-          </td>
-          <td>
-            <div style="font-weight:800; color:#0f294a;">${sch.nameTa}</div>
-            <div style="font-size:0.74rem; color:#475569;">${sch.nameEn} &bull; <span style="color:#0284c7; font-weight:700;">${sch.block}</span></div>
-          </td>
-          <td style="text-align:center;">
-            <div>${lvlBadge}</div>
-            <div style="margin-top:3px;">${mgmtBadge}</div>
-          </td>
-          <td style="text-align:center;">
-            <div style="display:flex; justify-content:center; gap:4px; flex-wrap:wrap;">
-              <span style="background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px; font-size:0.74rem; font-weight:800;">TM: ${sch.totalTM}</span>
-              <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.74rem; font-weight:800;">EM: ${sch.totalEM}</span>
-            </div>
-          </td>
-          <td>
-            <div style="display:flex; gap:4px; flex-wrap:wrap;">
-              ${groupBadges.join("")}
-            </div>
-          </td>
-          <td style="text-align:center;">
-            <div style="font-size:0.75rem; color:#334155;">
-              <span style="color:#1d4ed8; font-weight:700;">👦 ${sch.totalBoys}</span> | <span style="color:#a16207; font-weight:700;">👧 ${sch.totalGirls}</span>
-            </div>
-          </td>
-          <td style="text-align:center; background:#f0fdf4;">
-            <span style="display:inline-block; font-size:1.05rem; font-weight:900; color:#15803d;">
-              ${sch.filteredCount.toLocaleString("en-IN")}
-            </span>
-          </td>
-          <td style="text-align:center; font-weight:800; color:#0f294a;">
-            ${sch.totalStudents.toLocaleString("en-IN")}
-          </td>
-          <td style="text-align:center;">
-            <button type="button" class="btn btn-outline btn-sm" onclick="openSchoolStudentStrengthModal('${sch.uNo}')" style="padding:4px 8px; font-size:0.75rem; color:#1d4ed8; border-color:#93c5fd; background:#eff6ff; font-weight:800;">
-              📊 முழு விவரம்
-            </button>
-          </td>
-        </tr>
-      `;
+      let c6_10 = 0, c11_12 = 0;
+      if (sch.classes) {
+        ["6","7","8","9","10"].forEach(k => { if (sch.classes[k]) c6_10 += Number(sch.classes[k].boys || 0) + Number(sch.classes[k].girls || 0); });
+        ["11","12"].forEach(k => { if (sch.classes[k]) c11_12 += Number(sch.classes[k].boys || 0) + Number(sch.classes[k].girls || 0); });
+      }
+
+      let rowHtml = `<tr>`;
+      if (cols.sno) rowHtml += `<td style="text-align:center; font-weight:800; color:#64748b;">#${sNo}</td>`;
+      if (cols.unoUdise) rowHtml += `<td>
+        <div style="font-family:monospace; font-weight:900; color:#0f294a;">[${sch.uNo}]</div>
+        <div style="font-size:0.72rem; color:#64748b;">UDISE: ${sch.udise}</div>
+      </td>`;
+      if (cols.schoolBlock) rowHtml += `<td>
+        <div style="font-weight:800; color:#0f294a;">${sch.nameTa}</div>
+        <div style="font-size:0.74rem; color:#475569;">${sch.nameEn} &bull; <span style="color:#0284c7; font-weight:700;">${sch.block}</span></div>
+      </td>`;
+      if (cols.levelMgmt) rowHtml += `<td style="text-align:center;">
+        <div>${lvlBadge}</div>
+        <div style="margin-top:3px;">${mgmtBadge}</div>
+      </td>`;
+      if (cols.medium) rowHtml += `<td style="text-align:center;">
+        <div style="display:flex; justify-content:center; gap:4px; flex-wrap:wrap;">
+          <span style="background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px; font-size:0.74rem; font-weight:800;">TM: ${sch.totalTM}</span>
+          <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.74rem; font-weight:800;">EM: ${sch.totalEM}</span>
+        </div>
+      </td>`;
+      if (cols.groups) rowHtml += `<td><div style="display:flex; gap:4px; flex-wrap:wrap;">${groupBadges.join("")}</div></td>`;
+      if (cols.gender) rowHtml += `<td style="text-align:center;">
+        <div style="font-size:0.75rem; color:#334155;">
+          <span style="color:#1d4ed8; font-weight:700;">👦 ${sch.totalBoys}</span> | <span style="color:#a16207; font-weight:700;">👧 ${sch.totalGirls}</span>
+        </div>
+      </td>`;
+      if (cols.class6to10) rowHtml += `<td style="text-align:center; font-weight:800; color:#334155;">${c6_10.toLocaleString("en-IN")}</td>`;
+      if (cols.class11to12) rowHtml += `<td style="text-align:center; font-weight:800; color:#7e22ce;">${isHSS ? c11_12.toLocaleString("en-IN") : "-"}</td>`;
+      if (cols.filteredCount) rowHtml += `<td style="text-align:center; background:#f0fdf4;">
+        <span style="display:inline-block; font-size:1.05rem; font-weight:900; color:#15803d;">
+          ${sch.filteredCount.toLocaleString("en-IN")}
+        </span>
+      </td>`;
+      if (cols.totalStudents) rowHtml += `<td style="text-align:center; font-weight:800; color:#0f294a;">
+        ${sch.totalStudents.toLocaleString("en-IN")}
+      </td>`;
+      if (cols.actions) rowHtml += `<td style="text-align:center;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="openSchoolStudentStrengthModal('${sch.uNo}')" style="padding:4px 8px; font-size:0.75rem; color:#1d4ed8; border-color:#93c5fd; background:#eff6ff; font-weight:800;">
+          📊 முழு விவரம்
+        </button>
+      </td>`;
+      rowHtml += `</tr>`;
+      return rowHtml;
     }).join("");
 
     // Calculate sum of currently filtered list
-    let fTotStudents = 0, fTotBoys = 0, fTotGirls = 0, fTotTM = 0, fTotEM = 0, fFilteredSum = 0;
+    let fTotStudents = 0, fTotBoys = 0, fTotGirls = 0, fTotTM = 0, fTotEM = 0, fFilteredSum = 0, fC6_10 = 0, fC11_12 = 0;
     adminSchoolStrengthFilteredList.forEach(s => {
       fFilteredSum += s.filteredCount;
       fTotStudents += s.totalStudents;
@@ -11301,30 +11675,28 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       fTotGirls += s.totalGirls;
       fTotTM += s.totalTM;
       fTotEM += s.totalEM;
+      if (s.classes) {
+        ["6","7","8","9","10"].forEach(k => { if (s.classes[k]) fC6_10 += Number(s.classes[k].boys || 0) + Number(s.classes[k].girls || 0); });
+        ["11","12"].forEach(k => { if (s.classes[k]) fC11_12 += Number(s.classes[k].boys || 0) + Number(s.classes[k].girls || 0); });
+      }
     });
 
     if (tfoot) {
-      tfoot.innerHTML = `
-        <tr>
-          <td colspan="4" style="text-align:right; padding:10px; font-weight:900; color:#0f294a;">
-            வடிகட்டப்பட்ட ${total} பள்ளிகளின் கூட்டு மொத்தம் (Total Aggregate):
-          </td>
-          <td style="text-align:center; font-weight:900; color:#065f46;">
-            TM: ${fTotTM.toLocaleString("en-IN")} | EM: ${fTotEM.toLocaleString("en-IN")}
-          </td>
-          <td style="font-size:0.75rem; color:#475569;">அனைத்துப் பாடப்பிரிவுகளும் உள்ளடக்கியது</td>
-          <td style="text-align:center; font-weight:900; color:#1e40af;">
-            👦 ${fTotBoys.toLocaleString("en-IN")}<br>👧 ${fTotGirls.toLocaleString("en-IN")}
-          </td>
-          <td style="text-align:center; font-size:1.15rem; font-weight:900; color:#15803d; background:#dcfce7;">
-            ${fFilteredSum.toLocaleString("en-IN")}
-          </td>
-          <td style="text-align:center; font-size:1.05rem; font-weight:900; color:#0f294a;">
-            ${fTotStudents.toLocaleString("en-IN")}
-          </td>
-          <td></td>
-        </tr>
-      `;
+      let tfHtml = `<tr>`;
+      if (cols.sno) tfHtml += `<td style="text-align:center; font-weight:900; color:#0f294a;">Σ</td>`;
+      if (cols.unoUdise) tfHtml += `<td style="font-weight:900; color:#0f294a;">மொத்தம்</td>`;
+      if (cols.schoolBlock) tfHtml += `<td style="font-weight:900; color:#0f294a;">வடிகட்டப்பட்ட ${total} பள்ளிகளின் கூட்டு மொத்தம்:</td>`;
+      if (cols.levelMgmt) tfHtml += `<td style="text-align:center; font-weight:800; color:#475569;">${total} பள்ளிகள்</td>`;
+      if (cols.medium) tfHtml += `<td style="text-align:center; font-weight:900; color:#065f46;">TM: ${fTotTM.toLocaleString("en-IN")} | EM: ${fTotEM.toLocaleString("en-IN")}</td>`;
+      if (cols.groups) tfHtml += `<td style="font-size:0.75rem; color:#475569;">அனைத்துப் பாடப்பிரிவுகள்</td>`;
+      if (cols.gender) tfHtml += `<td style="text-align:center; font-weight:900; color:#1e40af;">👦 ${fTotBoys.toLocaleString("en-IN")}<br>👧 ${fTotGirls.toLocaleString("en-IN")}</td>`;
+      if (cols.class6to10) tfHtml += `<td style="text-align:center; font-weight:900; color:#334155;">${fC6_10.toLocaleString("en-IN")}</td>`;
+      if (cols.class11to12) tfHtml += `<td style="text-align:center; font-weight:900; color:#7e22ce;">${fC11_12.toLocaleString("en-IN")}</td>`;
+      if (cols.filteredCount) tfHtml += `<td style="text-align:center; font-size:1.15rem; font-weight:900; color:#15803d; background:#dcfce7;">${fFilteredSum.toLocaleString("en-IN")}</td>`;
+      if (cols.totalStudents) tfHtml += `<td style="text-align:center; font-size:1.05rem; font-weight:900; color:#0f294a;">${fTotStudents.toLocaleString("en-IN")}</td>`;
+      if (cols.actions) tfHtml += `<td></td>`;
+      tfHtml += `</tr>`;
+      tfoot.innerHTML = tfHtml;
     }
 
     // Update Pagination Bar
