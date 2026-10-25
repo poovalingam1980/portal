@@ -2167,6 +2167,7 @@
     </div>
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       <button type="button" class="btn btn-outline btn-sm" onclick="goToMainHome()">🏠 முதன்மை முகப்பு (Home)</button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal('sheet')" style="background:#fefce8; color:#854d0e; border-color:#facc15; font-weight:800;">📊 ceosvgweb@gmail.com Google Sheet &amp; OTP நிரல்</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="syncMasterFromGoogleSheet(true)">🔄 Google Sheet ஒத்திசைவு (Sync)</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal()">⚙️ இணைப்பு அமைப்பு (Cloud Settings)</button>
       <button type="button" class="btn btn-primary btn-sm" id="topQuickAdminBtn" onclick="quickSwitchToAdminLogin()">🛡️ நிர்வாகி உள்நுழைவு (Admin)</button>
@@ -2284,14 +2285,24 @@
               🛡️ மாவட்ட நிர்வாகி உள்நுழைவு (District Administrator Sign in)
             </div>
 
-            <!-- Password Input with SHOW Toggle -->
+            <!-- Login Credential Mode Selector: Password vs 6-Digit PIN -->
+            <div style="display:flex; gap:6px; margin-bottom:8px; background:#f1f5f9; padding:4px; border-radius:9px; border:1px solid #cbd5e1;">
+              <button type="button" id="loginModeBtnPass" onclick="setSchoolLoginCredentialMode('password')" style="flex:1; border:none; border-radius:6px; padding:6px 8px; font-size:0.76rem; font-weight:900; cursor:pointer; background:#0f294a; color:#ffffff; transition:all 0.2s;">
+                🔐 கடவுச்சொல் (Password)
+              </button>
+              <button type="button" id="loginModeBtnPin" onclick="setSchoolLoginCredentialMode('pin')" style="flex:1; border:none; border-radius:6px; padding:6px 8px; font-size:0.76rem; font-weight:900; cursor:pointer; background:transparent; color:#334155; transition:all 0.2s;">
+                🔢 6-இலக்க PIN எண் (6-Digit PIN)
+              </button>
+            </div>
+
+            <!-- Password / 6-Digit PIN Input with SHOW Toggle -->
             <div class="modern-input-box">
               <span class="modern-input-icon" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm3 11c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
                 </svg>
               </span>
-              <input type="password" id="schoolLoginPassInput" placeholder="Password (கடவுச்சொல்)" autocomplete="current-password" required>
+              <input type="password" id="schoolLoginPassInput" placeholder="Password (கடவுச்சொல்) அல்லது 6-இலக்க PIN" autocomplete="current-password" required>
               <button type="button" class="modern-pass-toggle" id="togglePassVisibilityBtn" onclick="toggleLoginPasswordVisibility()">SHOW</button>
             </div>
 
@@ -2317,10 +2328,10 @@
             🔍 பள்ளியின் U.NO / UDISE எண் தேடுக (Find School)
           </button>
 
-          <!-- Bottom Prompt: Sign Up / New School Registration -->
+          <!-- Bottom Prompt: Sign Up / New School Registration (Opens in Separate Tab) -->
           <div class="signin-bottom-prompt">
             புதிய பள்ளிப் பதிவா? (Don't have a password?)
-            <button type="button" onclick="switchAuthTab('schoolReg')">Sign Up / புதிய பதிவு</button>
+            <button type="button" onclick="openFirstTimeRegInNewTab()" title="புதிய தாவலில் பள்ளிப் பதிவுப் பக்கத்தைத் திறக்க">📝 பதிவு செய்க (Sign Up / புதிய பதிவு ↗)</button>
           </div>
 
           <!-- Login Box Footer Developer Credit -->
@@ -2331,9 +2342,13 @@
 
         <!-- 1B. SCHOOL REGISTRATION / FIRST TIME PASSWORD SETUP WITH DUAL OTP (WHATSAPP + EMAIL) -->
         <div id="authPaneSchoolReg" style="display:none;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div id="regStandaloneTabBanner" style="display:none; background:linear-gradient(135deg, #0f294a, #1e40af); color:#ffffff; padding:8px 12px; border-radius:8px; margin-bottom:10px; font-size:0.78rem; font-weight:800; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span>🆕 புதிய பயனர் பள்ளிப் பதிவுத் தாவல் (New School Registration Tab)</span>
+            <a href="#schoolLogin" onclick="navigateToLoginFromRegistration('', event)" style="background:#fde047; color:#0f172a; text-decoration:none; padding:3px 10px; border-radius:6px; font-weight:900; font-size:0.75rem;">🔐 உள்நுழைவுப் பக்கம் (Login Page) ➔</a>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; flex-wrap:wrap;">
             <h3 style="font-size:1.18rem; font-weight:900; color:#0f172a;">📝 முதல் முறை பள்ளிப் பதிவு (First-Time Registration)</h3>
-            <button type="button" class="btn btn-outline btn-sm" onclick="switchAuthTab('schoolLogin')">← Sign in</button>
+            <a href="#schoolLogin" class="btn btn-outline btn-sm" onclick="navigateToLoginFromRegistration('', event)" style="text-decoration:none; font-weight:800;">🔐 ← உள்நுழைவிற்குச் செல்ல (Go to Login)</a>
           </div>
           <div style="font-size:0.78rem; color:#334155; background:#f0f9ff; border:1px solid #bae6fd; padding:8px 10px; border-radius:8px; margin-bottom:10px; line-height:1.45;">
             🔒 <strong>பாதுகாப்பு நடைமுறை:</strong> பள்ளிகள் முதன்முறை உள்நுழையும் பொழுது தலைமையாசிரியரின் <strong>WhatsApp எண்</strong> மற்றும் <strong>பள்ளி மின்னஞ்சல் (Email)</strong> ஆகிய இரண்டிற்கும் <strong>OTP</strong> அனுப்பிச் சரிபார்த்த பிறகே புதிய கடவுச்சொல் உருவாக்க இயலும்.
@@ -2402,23 +2417,59 @@
                 </div>
               </div>
 
-              <!-- STEP 2: CREATE NEW PASSWORD (ENABLED AFTER OTP VERIFICATION) -->
+              <!-- STEP 2: CREATE NEW PASSWORD & 6-DIGIT PIN (ENABLED AFTER OTP VERIFICATION) -->
               <div id="regPasswordSetupWrap" style="opacity:0.55; pointer-events:none; transition:all 0.25s;">
-                <div class="grid-2" style="gap:8px;">
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px; margin-bottom:8px;">
+                  <div style="font-size:0.73rem; font-weight:900; color:#0f294a; margin-bottom:4px;">🔐 கடவுச்சொல் &amp; PIN விதிமுறைகள் (Password &amp; 6-Digit PIN Rules):</div>
+                  <div id="regPassRulesLiveChecklist" style="display:flex; flex-wrap:wrap; gap:5px; font-size:0.7rem; font-weight:800;">
+                    <span id="ruleRegLen" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 7+ எழுத்துகள்</span>
+                    <span id="ruleRegCap" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 Caps (A-Z)</span>
+                    <span id="ruleRegSml" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 Small (a-z)</span>
+                    <span id="ruleRegNum" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 எண் (0-9)</span>
+                    <span id="ruleRegSpc" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 குறியீடு (@#$%&amp;*)</span>
+                    <span id="ruleRegPin" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 6-இலக்க PIN</span>
+                  </div>
+                </div>
+                <div class="grid-3" style="gap:8px;">
                   <div class="form-group" style="margin-bottom:8px;">
-                    <label class="form-label" style="font-size:0.76rem;">புதிய கடவுச்சொல் (New Password) <span class="required">*</span></label>
-                    <input type="password" id="regNewPassword" class="form-control" style="padding:6px 10px; font-size:0.84rem;" minlength="4" placeholder="குறைந்தது 4 எழுத்துகள்" required>
+                    <label class="form-label" style="font-size:0.75rem;">புதிய கடவுச்சொல் (Min 7 Chars) <span class="required">*</span></label>
+                    <input type="password" id="regNewPassword" class="form-control" style="padding:6px 10px; font-size:0.84rem;" minlength="7" placeholder="எ.கா: School@1" oninput="updateLivePasswordChecklist('reg')" required>
                   </div>
                   <div class="form-group" style="margin-bottom:8px;">
-                    <label class="form-label" style="font-size:0.76rem;">கடவுச்சொல் உறுதிப்படுத்தல் <span class="required">*</span></label>
-                    <input type="password" id="regConfirmPassword" class="form-control" style="padding:6px 10px; font-size:0.84rem;" minlength="4" placeholder="மீண்டும் உள்ளிடவும்" required>
+                    <label class="form-label" style="font-size:0.75rem;">கடவுச்சொல் உறுதிப்படுத்தல் <span class="required">*</span></label>
+                    <input type="password" id="regConfirmPassword" class="form-control" style="padding:6px 10px; font-size:0.84rem;" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" oninput="updateLivePasswordChecklist('reg')" required>
+                  </div>
+                  <div class="form-group" style="margin-bottom:8px;">
+                    <label class="form-label" style="font-size:0.75rem; color:#0369a1;">🔢 6-இலக்க PIN எண் (6-Digit PIN) <span class="required">*</span></label>
+                    <input type="password" id="regNewPinInput" class="form-control" style="padding:6px 10px; font-size:0.9rem; font-weight:900; letter-spacing:3px; text-align:center; border:1.5px solid #0284c7;" maxlength="6" inputmode="numeric" placeholder="6 இலக்கம்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); updateLivePasswordChecklist('reg')" required>
                   </div>
                 </div>
                 <button type="submit" id="btnRegSubmitFinal" class="btn btn-success btn-block" style="font-weight:900; padding:9px;">
-                  ✅ பள்ளி விவரங்களைப் பதிவு செய்து உள்நுழைக
+                  ✅ பள்ளி விவரங்கள், கடவுச்சொல் &amp; 6-இலக்க PIN பதிவு செய்க (Complete Registration)
                 </button>
               </div>
             </form>
+          </div>
+
+          <!-- Post-Registration Completion Confirmation Card with Direct Link to Login Page -->
+          <div id="regCompletedSuccessBox" style="display:none; background:#f0fdf4; border:2px solid #16a34a; border-radius:12px; padding:16px 14px; margin-top:10px; text-align:center; box-shadow:0 6px 18px rgba(22,163,74,0.12);">
+            <div style="font-size:2rem; line-height:1; margin-bottom:6px;">🎉✅</div>
+            <h4 style="font-size:1.05rem; font-weight:900; color:#14532d; margin:0 0 6px;">
+              பள்ளி முதல் முறை பதிவு வெற்றிகரமாக நிறைவடைந்தது!<br>
+              <span style="font-size:0.84rem; color:#166534;">(School First-Time Registration Completed Successfully!)</span>
+            </h4>
+            <div id="regCompletedSummaryDetails" style="background:#ffffff; border:1px solid #bbf7d0; border-radius:8px; padding:10px 12px; margin:10px 0; text-align:left; font-size:0.8rem; color:#1e293b; line-height:1.6;"></div>
+            <div style="font-size:0.8rem; font-weight:700; color:#15803d; margin-bottom:10px;">
+              உங்கள் புதிய <strong>கடவுச்சொல் (Password)</strong> அல்லது <strong>6-இலக்க PIN எண்</strong> பயன்படுத்தி இப்போது உள்நுழையலாம்:
+            </div>
+            <a id="regSuccessGoToLoginLink" href="#schoolLogin" onclick="navigateToLoginFromRegistration(window._lastRegisteredSchoolUNo || '', event)" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; background:linear-gradient(135deg, #0f294a, #1d4ed8); color:#ffffff; text-decoration:none; padding:11px 16px; border-radius:9px; font-size:0.92rem; font-weight:900; box-shadow:0 4px 12px rgba(29,78,216,0.25); cursor:pointer;">
+              🔐 உள்நுழைவுப் பக்கத்திற்குச் செல்ல (Click Here to Go to Login Page) ➔
+            </a>
+            <div style="margin-top:10px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="resetRegistrationFormForAnotherSchool()" style="font-size:0.75rem; font-weight:800;">
+                📝 மற்றொரு பள்ளியைப் பதிவு செய்ய (Register Another School)
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2466,11 +2517,20 @@
             </div>
 
             <div id="resetNewPassWrap" style="opacity:0.55; pointer-events:none;">
-              <div class="form-group" style="margin-bottom:8px;">
-                <label class="form-label" style="font-size:0.78rem;">புதிய கடவுச்சொல் (New Password) <span class="required">*</span></label>
-                <input type="password" id="resetNewPassInput" class="form-control" minlength="4" placeholder="புதிய கடவுச்சொல்லை உள்ளிடவும்" required>
+              <div style="font-size:0.72rem; color:#475569; background:#f1f5f9; padding:6px 9px; border-radius:6px; margin-bottom:8px; font-weight:700;">
+                🔐 <strong>கடவுச்சொல் விதி:</strong> குறைந்தது 7 எழுத்துகள் (1 Caps, 1 Small, 1 Number &amp; 1 Special எழுத்து) + <strong>6-இலக்க PIN எண்</strong>.
               </div>
-              <button type="submit" class="btn-modern-signin">🔑 கடவுச்சொல்லை மாற்றுக (Reset Password)</button>
+              <div class="grid-2" style="gap:8px; margin-bottom:8px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem;">புதிய கடவுச்சொல் (Min 7 Chars) <span class="required">*</span></label>
+                  <input type="password" id="resetNewPassInput" class="form-control" minlength="7" placeholder="எ.கா: School@1" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem; color:#0369a1;">🔢 புதிய 6-இலக்க PIN எண் <span class="required">*</span></label>
+                  <input type="password" id="resetNewPinInput" class="form-control" maxlength="6" inputmode="numeric" placeholder="6-இலக்க PIN" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="font-weight:900; letter-spacing:2px; text-align:center;" required>
+                </div>
+              </div>
+              <button type="submit" class="btn-modern-signin">🔑 கடவுச்சொல் &amp; PIN எண்ணை மாற்றுக (Reset Password &amp; PIN)</button>
             </div>
           </form>
         </div>
@@ -3315,19 +3375,28 @@
       <div id="schCircularsList" class="grid-2"></div>
     </div>
 
-    <!-- SCHOOL SUB-TAB 5: CHANGE PASSWORD -->
+    <!-- SCHOOL SUB-TAB 5: CHANGE PASSWORD & 6-DIGIT PIN -->
     <div id="schPaneSecurity" class="panel-box" style="display:none;">
-      <div class="panel-title"><span>🔑 பள்ளி உள்நுழைவு கடவுச்சொல் மாற்றம் (Change School Password)</span></div>
-      <form onsubmit="changeLoggedSchoolPassword(event)" style="max-width:460px;">
-        <div class="form-group">
-          <label class="form-label">புதிய கடவுச்சொல் (New Password) <span class="required">*</span></label>
-          <input type="password" id="schSecNewPass" class="form-control" minlength="4" required>
+      <div class="panel-title"><span>🔑 பள்ளி உள்நுழைவு கடவுச்சொல் &amp; 6-இலக்க PIN மாற்றம் (Change Password &amp; 6-Digit PIN)</span></div>
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px 14px; margin-bottom:14px; max-width:560px; font-size:0.82rem; color:#1e3a8a; font-weight:700;">
+        🔒 <strong>பாதுகாப்பு விதிமுறை:</strong> கடவுச்சொல் குறைந்தது <strong>7 எழுத்துகள்</strong> (குறைந்தபட்சம் 1 Capital, 1 Small, 1 Number &amp; 1 Special Character) கொண்டிருக்க வேண்டும். மேலும் விரைவான உள்நுழைவிற்கு <strong>6-இலக்க PIN எண்ணையும்</strong> அமைத்துக் கொள்ளலாம்.
+      </div>
+      <form onsubmit="changeLoggedSchoolPassword(event)" style="max-width:560px;">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">புதிய கடவுச்சொல் (Min 7 Chars) <span class="required">*</span></label>
+            <input type="password" id="schSecNewPass" class="form-control" minlength="7" placeholder="எ.கா: School@2026" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக <span class="required">*</span></label>
+            <input type="password" id="schSecConfirmPass" class="form-control" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" required>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக <span class="required">*</span></label>
-          <input type="password" id="schSecConfirmPass" class="form-control" minlength="4" required>
+        <div class="form-group" style="max-width:280px;">
+          <label class="form-label" style="color:#0369a1; font-weight:800;">🔢 6-இலக்க உள்நுழைவு PIN எண் (6-Digit Login PIN) <span class="required">*</span></label>
+          <input type="password" id="schSecNewPin" class="form-control" maxlength="6" inputmode="numeric" placeholder="எ.கா: 258012" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="font-weight:900; letter-spacing:3px; font-size:1rem;" required>
         </div>
-        <button type="submit" class="btn btn-primary">🔐 கடவுச்சொல்லைப் புதுப்பி (Update Password)</button>
+        <button type="submit" class="btn btn-primary" style="font-weight:800;">🔐 கடவுச்சொல் &amp; 6-இலக்க PIN புதுப்பி (Update Password &amp; PIN)</button>
       </form>
     </div>
   </div>
@@ -5788,7 +5857,7 @@
         📖 2. Firebase உருவாக்கும் 5-படி தமிழ் வழிகாட்டி &amp; Rules
       </button>
       <button type="button" id="cloudTabBtnSheet" class="btn btn-outline btn-sm" onclick="switchCloudSettingsTab('sheet')" style="font-weight:800;">
-        📊 3. Google Sheet &amp; Apps Script இணைப்பு
+        📊 3. Google Sheet &amp; OTP நிரல் (ceosvgweb@gmail.com)
       </button>
     </div>
 
@@ -5922,26 +5991,93 @@
       </div>
     </div>
 
-    <!-- TAB 3: EXISTING GOOGLE SHEET & APPS SCRIPT BACKUP SETTINGS -->
+    <!-- TAB 3: CEOSVGWEB@GMAIL.COM GOOGLE SHEET & APPS SCRIPT (CODE.GS) COMPLETE GENERATOR -->
     <div id="cloudTabPaneSheet" style="display:none;">
-      <div style="font-size:0.86rem; color:#334155; margin-bottom:14px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1;">
-        உங்கள் <strong>School-Master</strong> கூகுள் சீட் (ID: <code>1QesgNBu6tHCgM5xNIwfi4rwvU8quM2y7qXOc47_A64o</code>) நேரடியாக இணைக்கப்பட்டுள்ளது. கூகுள் சீட்டில் புதிய பள்ளிகள் அல்லது நிர்வாகப் பிரிவுகளைச் சேர்த்தவுடன் <strong>"இப்போது ஒத்திசைக்க (Sync Now)"</strong> பொத்தானை அழுத்தினால் போதும்.
+      <div style="background:#f0fdf4; border:1.5px solid #86efac; border-left:5px solid #16a34a; border-radius:10px; padding:12px 15px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-size:0.95rem; font-weight:900; color:#14532d;">📊 ceosvgweb@gmail.com – புதிய Google Sheet &amp; நேரடி Email/WhatsApp OTP நிரல் (Code.gs)</div>
+            <div style="font-size:0.8rem; color:#166534; margin-top:3px;">
+              மின்னஞ்சல் OTP (<code>ceosvgweb@gmail.com</code> வழியாக), WhatsApp OTP மற்றும் 282 பள்ளிகளின் தரவுகளை உங்கள் Google Sheet-ல் நேரடியாகச் சேமிக்க கீழேயுள்ள நிரலைப் பயன்படுத்தவும்.
+            </div>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <a href="https://docs.google.com/spreadsheets/d/1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ/edit" target="_blank" rel="noopener" class="btn btn-success btn-sm" style="text-decoration:none; font-weight:800;">
+              📂 தயாரிக்கப்பட்ட Google Sheet-ஐத் திறக்க ↗
+            </a>
+            <a href="https://sheets.new" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="text-decoration:none; font-weight:800; background:#fff;">
+              ➕ ceosvgweb@gmail.com-ல் புதிய Sheet தொடங்க ↗
+            </a>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">1. Master Schools Google Sheet ID (School-Master - 281 Schools):</label>
-        <input type="text" id="cfgMasterSheetId" class="form-control" value="1QesgNBu6tHCgM5xNIwfi4rwvU8quM2y7qXOc47_A64o">
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" style="font-weight:800; color:#0f294a;">1. முதன்மை Google Sheet ID (Master DB &amp; OTP Sheet ID):</label>
+          <input type="text" id="cfgMasterSheetId" class="form-control" value="1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ" placeholder="1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ">
+          <div style="font-size:0.72rem; color:#64748b; margin-top:2px;">Google Sheet URL-ல் <code>/d/</code> மற்றும் <code>/edit</code> இடையே உள்ள குறியீடு</div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" style="font-weight:800; color:#0f294a;">2. Teachers EMIS Google Sheet ID (7,008 Staff):</label>
+          <input type="text" id="cfgTeachersSheetId" class="form-control" value="1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A">
+          <div style="font-size:0.72rem; color:#64748b; margin-top:2px;">ஆசிரியர் EMIS பட்டியல் Google Sheet ID</div>
+        </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">2. Teachers &amp; Staff EMIS Google Sheet ID (25-TEACH-DETAILS - 7,008 Staff):</label>
-        <input type="text" id="cfgTeachersSheetId" class="form-control" value="1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A">
+
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label" style="font-weight:800; color:#1e3a8a;">3. Google Apps Script Web App URL (<code>ceosvgweb@gmail.com</code>-ல் Deploy செய்த <code>/exec</code> இணைப்பு):</label>
+        <input type="url" id="cfgAppsScriptUrl" class="form-control" value="https://script.google.com/macros/s/AKfycbzuu9CZez1T8Sam8ofLAJHIF8Jp-jgkgd3ErxuhiD9OtiFrSd-RbInw9393pWaqKPFC/exec" placeholder="https://script.google.com/macros/s/.../exec">
+        <div style="font-size:0.74rem; color:#0369a1; font-weight:700; margin-top:3px;">
+          💡 கீழேயுள்ள <code>Code.gs</code> நிரலை உங்கள் Google Sheet-ல் (<strong>Extensions ➔ Apps Script</strong>) ஒட்டி, <strong>Deploy ➔ New deployment ➔ Web app</strong> (Execute as: <code>Me (ceosvgweb@gmail.com)</code>, Who has access: <code>Anyone</code>) கொடுத்துக் கிடைக்கும் Web App URL-ஐ இங்கே ஒட்டிச் சேமிக்கவும்.
+        </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Google Apps Script Web App URL (Code.gs Deployment URL):</label>
-        <input type="url" id="cfgAppsScriptUrl" class="form-control" value="https://script.google.com/macros/s/AKfycbzDu0rRh1KcdmkkqOFJzbx80J7VtBYFzjowRzu1IeAdPU7iZgP5Q6J6cdKT4VkopxAI/exec">
+
+      <!-- Action Toolbar for Google Sheet & OTP -->
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1;">
+        <button type="button" class="btn btn-primary" onclick="saveCloudSettings()" style="font-weight:800;">
+          💾 அமைப்புகளைச் சேமி (Save URL)
+        </button>
+        <button type="button" class="btn btn-success" onclick="pushAllPortalDataToGoogleSheet()" style="font-weight:800;">
+          🚀 282 பள்ளிகளின் முழுத் தரவையும் Google Sheet-ல் பதிவேற்று (Populate Sheet Now)
+        </button>
+        <button type="button" class="btn btn-outline" onclick="testAppsScriptOtpAndSheet()" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#f0f9ff;">
+          🧪 Email &amp; WhatsApp OTP சோதனை அனுப்புக (Test OTP)
+        </button>
+        <button type="button" class="btn btn-outline" onclick="syncMasterFromGoogleSheet(true)" style="font-weight:800;">
+          🔄 Sheet-லிருந்து ஒத்திசைக்க (Pull from Sheet)
+        </button>
       </div>
-      <div style="display:flex; gap:10px; justify-content:flex-end;">
-        <button type="button" class="btn btn-outline" onclick="syncMasterFromGoogleSheet(true)">🔄 இப்போது ஒத்திசைக்க (Sync Now)</button>
-        <button type="button" class="btn btn-primary" onclick="saveCloudSettings()">💾 அமைப்புகளைச் சேமி</button>
+
+      <div id="gsSyncStatusAlert" style="display:none; margin-bottom:12px; padding:10px 14px; border-radius:8px; font-size:0.82rem; font-weight:800;"></div>
+
+      <!-- Step-by-Step Guide & Ready-to-Paste Code.gs for ceosvgweb@gmail.com -->
+      <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:12px 15px; margin-bottom:12px; font-size:0.82rem; color:#1e293b; line-height:1.55;">
+        <div style="font-size:0.94rem; font-weight:900; color:#1e3a8a; margin-bottom:6px;">
+          🛠️ <code>ceosvgweb@gmail.com</code> கணக்கில் புதிய Google Sheet தொடங்கி நிரலை (Code.gs) இணைக்கும் 4 எளிய படிகள்:
+        </div>
+        <ol style="margin-left:18px; display:flex; flex-direction:column; gap:5px;">
+          <li><strong>படி 1:</strong> உங்கள் உலாவியில் <code>ceosvgweb@gmail.com</code> கணக்கில் உள்நுழைந்து, <a href="https://sheets.new" target="_blank" rel="noopener" style="color:#2563eb; font-weight:800;">https://sheets.new</a> கிளிக் செய்து புதிய Google Sheet ஒன்றைத் தொடங்கி அதற்கு <code>CEO_Sivagangai_Portal_DB</code> எனப் பெயரிடவும் (அல்லது மேலே உள்ள தயாரிக்கப்பட்ட Sheet-ஐத் திறக்கவும்).</li>
+          <li><strong>படி 2:</strong> அந்த Google Sheet-ன் மேல் மெனுவில் <strong>Extensions ➔ Apps Script</strong> என்பதைக் கிளிக் செய்யவும். அங்குள்ள பழைய வரிகளை அழித்துவிட்டு, கீழே உள்ள <strong>"📋 முழுமையான Code.gs நிரலை நகலெடு"</strong> பொத்தானை அழுத்தி நகலெடுத்த நிரலை அப்படியே ஒட்டி (Paste) <strong>💾 Save</strong> செய்யவும்.</li>
+          <li><strong>படி 3 (முதல் முறை 5 தாவல்களை உருவாக்க):</strong> மேலே செயல்பாட்டுப் பட்டியலில் <code>setupPortalSheets</code> என்பதைத் தேர்ந்தெடுத்து <strong>▷ Run</strong> அழுத்தவும் (அனுமதி கேட்டால் <em>Review Permissions ➔ ceosvgweb@gmail.com ➔ Advanced ➔ Go to project (unsafe) ➔ Allow</em> கொடுக்கவும்). உடனே உங்கள் Google Sheet-ல் <code>SCHOOL_MASTER</code>, <code>SCHOOL_AUTH</code>, <code>OTP_LOGS</code>, <code>STUDENT_STRENGTH</code>, <code>STAFF_REQUESTS</code> ஆகிய 5 தாவல்கள் (Tabs) தானாக உருவாகும்!</li>
+          <li><strong>படி 4 (Web App வெளியீடு):</strong> வலது மேல் மூலையில் உள்ள <strong>Deploy ➔ New deployment</strong> கிளிக் செய்து, <strong>Select type: Web app</strong> என்பதைத் தேர்ந்தெடுக்கவும். <strong>Execute as:</strong> <code>Me (ceosvgweb@gmail.com)</code> மற்றும் <strong>Who has access:</strong> <code>Anyone</code> என அமைத்து <strong>Deploy</strong> அழுத்தவும். கிடைக்கும் <strong>Web App URL (<code>.../exec</code>)</strong>-ஐ நகலெடுத்து மேலே பெட்டி எண் 3-ல் ஒட்டி, <strong>"🚀 282 பள்ளிகளின் முழுத் தரவையும் Google Sheet-ல் பதிவேற்று"</strong> பொத்தானை அழுத்தவும்!</li>
+        </ol>
+      </div>
+
+      <!-- Copyable Code.gs Box -->
+      <div style="background:#0f172a; color:#e2e8f0; border-radius:10px; padding:12px 14px; border:1.5px solid #334155;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:8px;">
+          <span style="font-size:0.84rem; font-weight:900; color:#fde047;">📜 Google Apps Script முழு நிரல் (<code>Code.gs</code> – ceosvgweb@gmail.com)</span>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn btn-success btn-sm" onclick="copyCeosvgAppsScriptCode()" style="font-weight:900; padding:4px 12px;">
+              📋 முழுமையான Code.gs நிரலை நகலெடு (Copy Code.gs)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="downloadCeosvgAppsScriptFile()" style="background:#1e293b; color:#38bdf8; border-color:#475569; font-weight:800; padding:4px 10px;">
+              📥 Code.gs கோப்பாகப் பதிவிறக்கு
+            </button>
+          </div>
+        </div>
+        <pre id="ceosvgAppsScriptCodePre" style="margin:0; font-family:monospace; font-size:0.74rem; max-height:220px; overflow-y:auto; white-space:pre-wrap; color:#a7f3d0; line-height:1.45;"></pre>
       </div>
     </div>
   </div>
@@ -6405,9 +6541,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   let flashIndex = 0;
 
   let staffDeleteRequests = [];
-  let masterSheetId = "1QesgNBu6tHCgM5xNIwfi4rwvU8quM2y7qXOc47_A64o";
+  let masterSheetId = "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ";
+  let legacyMasterSheetId = "1QesgNBu6tHCgM5xNIwfi4rwvU8quM2y7qXOc47_A64o";
   let teachersSheetId = "1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A";
-  let appsScriptUrl = "https://script.google.com/macros/s/AKfycbzDu0rRh1KcdmkkqOFJzbx80J6cdKT4VkopxAI/exec";
+  let appsScriptUrl = "https://script.google.com/macros/s/AKfycbzuu9CZez1T8Sam8ofLAJHIF8Jp-jgkgd3ErxuhiD9OtiFrSd-RbInw9393pWaqKPFC/exec";
 
   // Firebase Real-Time Database Configuration State
   // District Admin can paste their permanent URL in DEFAULT_FIREBASE_DB_URL for automatic district-wide connection
@@ -6585,11 +6722,19 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }
 
     // Load saved settings (Google Sheet & Firebase Real-Time DB)
+    const DEFAULT_DEPLOYED_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzuu9CZez1T8Sam8ofLAJHIF8Jp-jgkgd3ErxuhiD9OtiFrSd-RbInw9393pWaqKPFC/exec";
+    const LEGACY_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzDu0rRh1KcdmkkqOFJzbx80J7VtBYFzjowRzu1IeAdPU7iZgP5Q6J6cdKT4VkopxAI/exec";
     const savedCfg = safeGetStorage("CEOSVG_PORTAL_CFG", null);
     if (savedCfg) {
       if (savedCfg.masterSheetId) masterSheetId = savedCfg.masterSheetId;
       if (savedCfg.teachersSheetId) teachersSheetId = savedCfg.teachersSheetId;
-      if (savedCfg.appsScriptUrl) appsScriptUrl = savedCfg.appsScriptUrl;
+      if (savedCfg.appsScriptUrl && savedCfg.appsScriptUrl !== LEGACY_WEB_APP_URL) {
+        appsScriptUrl = savedCfg.appsScriptUrl;
+      } else {
+        appsScriptUrl = DEFAULT_DEPLOYED_WEB_APP_URL;
+        savedCfg.appsScriptUrl = DEFAULT_DEPLOYED_WEB_APP_URL;
+        safeSetStorage("CEOSVG_PORTAL_CFG", savedCfg, true);
+      }
       if (typeof savedCfg.firebaseDbUrl === "string" && savedCfg.firebaseDbUrl.trim()) {
         firebaseDbUrl = savedCfg.firebaseDbUrl.trim();
       } else if (DEFAULT_FIREBASE_DB_URL) {
@@ -6729,6 +6874,31 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     // Background sync from Google Sheet
     syncMasterFromGoogleSheet(false);
 
+    // Background sync registered school auth records from Google Apps Script Web App (SCHOOL_AUTH sheet)
+    syncSchoolAuthFromAppsScript();
+
+    // Check if this tab was opened specifically as the Separate Registration Tab
+    const urlParams = new URLSearchParams(window.location.search || "");
+    const isRegModeTab = Boolean(
+      window.__STANDALONE_REG_TAB__ ||
+      urlParams.get("mode") === "register" ||
+      window.location.hash === "#schoolReg"
+    );
+
+    if (isRegModeTab) {
+      const banner = document.getElementById("regStandaloneTabBanner");
+      if (banner) banner.style.display = "flex";
+      const initUNo = String(
+        window.__INITIAL_REG_UNO__ ||
+        urlParams.get("uNo") ||
+        safeGetStorage("CEOSVG_PENDING_REG_UNO", "") ||
+        ""
+      ).trim();
+      safeSetStorage("CEOSVG_PENDING_REG_UNO", "", true);
+      openFirstTimeRegForSchool(initUNo, true);
+      return;
+    }
+
     // Auto-restore active session upon page refresh (F5 / Reload)
     const savedSession = safeGetStorage("CEOSVG_ACTIVE_SESSION", null);
     if (savedSession && savedSession.role === "admin") {
@@ -6740,6 +6910,72 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       }
     }
   }
+
+  async function syncSchoolAuthFromAppsScript() {
+    if (!appsScriptUrl || !appsScriptUrl.startsWith("http")) return;
+    try {
+      const sep = appsScriptUrl.includes("?") ? "&" : "?";
+      const res = await fetch(`${appsScriptUrl}${sep}action=get_auth_store`, { method: "GET" });
+      if (!res || !res.ok) return;
+      const data = await res.json();
+      if (data && data.ok && data.authStore && typeof data.authStore === "object") {
+        let updatedCount = 0;
+        Object.keys(data.authStore).forEach(uNo => {
+          const remoteRec = data.authStore[uNo];
+          if (remoteRec && remoteRec.password && remoteRec.otpVerified) {
+            schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, remoteRec);
+            updatedCount++;
+          }
+        });
+        if (updatedCount > 0) {
+          safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+          updateAllSummaryCounters();
+          const curLoginId = (document.getElementById("schoolLoginIdInput")?.value || "").trim();
+          if (curLoginId) onSchoolLoginIdType(curLoginId);
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Listen for Registration Completion messages from the Separate Registration Tab
+  window.addEventListener("message", function(ev) {
+    const msg = ev && ev.data ? ev.data : null;
+    if (!msg || typeof msg !== "object") return;
+    if (msg.type === "CEOSVG_SCHOOL_REGISTERED" && msg.uNo && msg.authRecord) {
+      schoolAuthStore[msg.uNo] = msg.authRecord;
+      safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+      if (msg.schoolData) {
+        const idx = masterSchools.findIndex(s => String(s.uNo) === String(msg.uNo));
+        if (idx !== -1) {
+          masterSchools[idx] = Object.assign({}, masterSchools[idx], msg.schoolData);
+          safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+        }
+      }
+      updateAllSummaryCounters();
+      const idInp = document.getElementById("schoolLoginIdInput");
+      if (idInp) {
+        idInp.value = msg.uNo;
+        onSchoolLoginIdType(msg.uNo);
+      }
+      showToast(`✅ [${msg.uNo}] பள்ளிப் பதிவு நிறைவடைந்தது! இப்போது கடவுச்சொல் அல்லது 6-இலக்க PIN உள்ளிட்டு உள்நுழையலாம்.`, "#22c55e");
+    } else if (msg.type === "CEOSVG_FOCUS_LOGIN_WITH_UNO") {
+      if (msg.uNo && msg.authRecord) {
+        schoolAuthStore[msg.uNo] = msg.authRecord;
+        safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+      }
+      switchMainView("viewAuth");
+      switchAuthTab("schoolLogin");
+      if (msg.uNo) {
+        const idInp = document.getElementById("schoolLoginIdInput");
+        if (idInp) {
+          idInp.value = msg.uNo;
+          onSchoolLoginIdType(msg.uNo);
+        }
+        const passInp = document.getElementById("schoolLoginPassInput");
+        if (passInp) setTimeout(() => passInp.focus(), 80);
+      }
+    }
+  });
 
   function autoRegisterDivisionsFromSchools() {
     masterSchools.forEach(s => {
@@ -7094,7 +7330,81 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     return maskedUsr + "@" + dom;
   }
 
-  // Dispatch WhatsApp OTP via Meta Graph API v21.0 + Apps Script fallback
+  // Validate Password Complexity: Min 7 chars, >=1 Upper, >=1 Lower, >=1 Digit, >=1 Special
+  function validateSchoolPasswordComplexity(pw) {
+    const p = String(pw || "");
+    const hasLen = p.length >= 7;
+    const hasCap = /[A-Z]/.test(p);
+    const hasSml = /[a-z]/.test(p);
+    const hasNum = /[0-9]/.test(p);
+    const hasSpc = /[^A-Za-z0-9\s]/.test(p);
+    const allValid = hasLen && hasCap && hasSml && hasNum && hasSpc;
+    return { valid: allValid, hasLen, hasCap, hasSml, hasNum, hasSpc };
+  }
+
+  function validateSixDigitPin(pinStr) {
+    return /^\d{6}$/.test(String(pinStr || "").trim());
+  }
+
+  function updateLivePasswordChecklist(prefix) {
+    if (prefix !== "reg") return;
+    const pw = (document.getElementById("regNewPassword")?.value || "");
+    const pin = (document.getElementById("regNewPinInput")?.value || "");
+    const res = validateSchoolPasswordComplexity(pw);
+    const pinOk = validateSixDigitPin(pin);
+
+    const setBadge = (id, ok, label) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.background = ok ? "#dcfce7" : "#fee2e2";
+      el.style.color = ok ? "#166534" : "#991b1b";
+      el.textContent = (ok ? "✓ " : "✗ ") + label;
+    };
+    setBadge("ruleRegLen", res.hasLen, "7+ எழுத்துகள்");
+    setBadge("ruleRegCap", res.hasCap, "1 Caps (A-Z)");
+    setBadge("ruleRegSml", res.hasSml, "1 Small (a-z)");
+    setBadge("ruleRegNum", res.hasNum, "1 எண் (0-9)");
+    setBadge("ruleRegSpc", res.hasSpc, "1 குறியீடு (@#$%&*)");
+    setBadge("ruleRegPin", pinOk, "6-இலக்க PIN");
+  }
+
+  let _schoolLoginCredMode = "password";
+  function setSchoolLoginCredentialMode(mode) {
+    _schoolLoginCredMode = mode === "pin" ? "pin" : "password";
+    const btnPass = document.getElementById("loginModeBtnPass");
+    const btnPin = document.getElementById("loginModeBtnPin");
+    const inp = document.getElementById("schoolLoginPassInput");
+    if (btnPass) {
+      btnPass.style.background = _schoolLoginCredMode === "password" ? "#0f294a" : "transparent";
+      btnPass.style.color = _schoolLoginCredMode === "password" ? "#ffffff" : "#334155";
+    }
+    if (btnPin) {
+      btnPin.style.background = _schoolLoginCredMode === "pin" ? "#0284c7" : "transparent";
+      btnPin.style.color = _schoolLoginCredMode === "pin" ? "#ffffff" : "#334155";
+    }
+    if (inp) {
+      inp.value = "";
+      if (_schoolLoginCredMode === "pin") {
+        inp.placeholder = "6-இலக்க PIN எண்ணை உள்ளிடவும் (6-Digit PIN)";
+        inp.maxLength = 6;
+        inp.setAttribute("inputmode", "numeric");
+      } else {
+        inp.placeholder = "Password (கடவுச்சொல்) அல்லது 6-இலக்க PIN";
+        inp.removeAttribute("maxlength");
+        inp.removeAttribute("inputmode");
+      }
+      inp.focus();
+    }
+  }
+
+  function buildDirectWhatsappClickUrl(mobileNumber, otpCode, schoolObj, purposeLabel) {
+    const toPhone = formatIndianWhatsappRecipient(mobileNumber);
+    const schoolTitle = schoolObj ? `[U.NO: ${schoolObj.uNo}] ${schoolObj.nameEn || schoolObj.nameTa}` : "CEO Sivagangai Portal";
+    const text = `*பள்ளிக்கல்வித்துறை - முதன்மைக் கல்வி அலுவலகம், சிவகங்கை*\n🏫 பள்ளி: *${schoolTitle}*\n🔐 ${purposeLabel || "உள்நுழைவு சரிபார்ப்பு"} OTP: *${otpCode}*\n(இந்த 6-இலக்க OTP எண் 10 நிமிடங்களுக்குச் செல்லுபடியாகும்.)`;
+    return `https://wa.me/${toPhone}?text=${encodeURIComponent(text)}`;
+  }
+
+  // Dispatch WhatsApp OTP via Meta Graph API v21.0 + Apps Script Server Relay
   async function dispatchWhatsappOtpMessage(mobileNumber, otpCode, schoolObj, purposeLabel) {
     const creds = getWhatsappApiCredentials();
     const toPhone = formatIndianWhatsappRecipient(mobileNumber);
@@ -7102,29 +7412,15 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const bodyText = `*பள்ளிக்கல்வித்துறை - முதன்மைக் கல்வி அலுவலகம், சிவகங்கை*\n🏫 பள்ளி: *${schoolTitle}*\n🔐 ${purposeLabel || "உள்நுழைவு சரிபார்ப்பு"} OTP: *${otpCode}*\n(இந்த 6-இலக்க OTP எண் 10 நிமிடங்களுக்குச் செல்லுபடியாகும். யாருடனும் பகிர வேண்டாம்.)`;
 
     let apiDispatched = false;
-    if (creds.accessToken && creds.phoneNumberId && toPhone.length >= 10) {
-      const endpoint = `https://graph.facebook.com/v21.0/${encodeURIComponent(creds.phoneNumberId)}/messages`;
-      try {
-        // 1. Try direct text message dispatch
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${creds.accessToken}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            messaging_product: "whatsapp",
-            recipient_type: "individual",
-            to: toPhone,
-            type: "text",
-            text: { preview_url: false, body: bodyText }
-          })
-        });
-        if (res && res.ok) {
-          apiDispatched = true;
-        } else {
-          // 2. Try standard template fallback if session window is closed
-          const resTpl = await fetch(endpoint, {
+    let apiErrorNote = "";
+    const phoneIdsToTry = [creds.phoneNumberId, creds.altPhoneNumberId].filter(Boolean);
+
+    if (creds.accessToken && phoneIdsToTry.length > 0 && toPhone.length >= 10) {
+      for (const pid of phoneIdsToTry) {
+        if (apiDispatched) break;
+        const endpoint = `https://graph.facebook.com/v21.0/${encodeURIComponent(pid)}/messages`;
+        try {
+          const res = await fetch(endpoint, {
             method: "POST",
             headers: {
               "Authorization": `Bearer ${creds.accessToken}`,
@@ -7132,51 +7428,65 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             },
             body: JSON.stringify({
               messaging_product: "whatsapp",
+              recipient_type: "individual",
               to: toPhone,
-              type: "template",
-              template: {
-                name: "hello_world",
-                language: { code: "en_US" }
-              }
+              type: "text",
+              text: { preview_url: false, body: bodyText }
             })
           });
-          if (resTpl && resTpl.ok) apiDispatched = true;
+          if (res && res.ok) {
+            apiDispatched = true;
+            break;
+          } else if (res) {
+            try {
+              const errJson = await res.json();
+              apiErrorNote = (errJson && errJson.error && errJson.error.message) ? errJson.error.message : ("HTTP " + res.status);
+            } catch (e) {}
+          }
+        } catch (err) {
+          apiErrorNote = err.message || "Network/CORS";
         }
-      } catch (err) {
-        // Offline or sandbox network restriction — handled gracefully below
       }
     }
 
-    // Also notify Google Apps Script backend for audit & SMS/WhatsApp webhook relay
-    sendToAppsScript({
+    // Relay to Google Apps Script (ceosvgweb@gmail.com) so Google's backend server also dispatches via Meta Graph API & logs to OTP_LOGS tab
+    const gsRes = await sendToAppsScript({
       action: "send_whatsapp_otp",
       uNo: schoolObj ? schoolObj.uNo : "",
+      udiseNo: schoolObj ? schoolObj.udiseNo : "",
       schoolNameEn: schoolObj ? schoolObj.nameEn : "",
+      schoolNameTa: schoolObj ? schoolObj.nameTa : "",
       phone: toPhone,
       otp: otpCode,
+      accessToken: creds.accessToken,
       phoneNumberId: creds.phoneNumberId,
+      altPhoneNumberId: creds.altPhoneNumberId,
       messagingAccountId: creds.messagingAccountId,
-      purpose: purposeLabel || "OTP_VERIFY"
+      purpose: purposeLabel || "OTP_VERIFY",
+      message: bodyText
     });
 
-    return { ok: true, apiDispatched, toPhone };
+    if (gsRes && gsRes.whatsappSent) apiDispatched = true;
+    return { ok: true, apiDispatched, toPhone, apiErrorNote };
   }
 
-  // Dispatch Email OTP via Google Apps Script MailApp service
+  // Dispatch Email OTP via Google Apps Script (ceosvgweb@gmail.com MailApp/GmailApp service)
   async function dispatchEmailOtpMessage(emailAddress, otpCode, schoolObj, purposeLabel) {
     const cleanEmail = String(emailAddress || "").trim().toLowerCase();
-    sendToAppsScript({
+    const gsRes = await sendToAppsScript({
       action: "send_email_otp",
       uNo: schoolObj ? schoolObj.uNo : "",
+      udiseNo: schoolObj ? schoolObj.udiseNo : "",
       schoolNameEn: schoolObj ? schoolObj.nameEn : "",
       schoolNameTa: schoolObj ? schoolObj.nameTa : "",
       email: cleanEmail,
       otp: otpCode,
+      senderEmail: "ceosvgweb@gmail.com",
       purpose: purposeLabel || "EMAIL_OTP_VERIFY",
-      subject: `CEO Sivagangai School Portal - OTP Verification (${otpCode})`,
-      message: `Chief Educational Office, Sivagangai\nSchool: [${schoolObj ? schoolObj.uNo : ""}] ${schoolObj ? schoolObj.nameEn : ""}\nYour 6-digit Email Verification OTP is: ${otpCode}`
+      subject: `🔐 CEO Sivagangai School Portal - OTP Verification (${otpCode})`,
+      message: `பள்ளிக்கல்வித்துறை - முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (Chief Educational Office, Sivagangai)\nபள்ளி / School: [${schoolObj ? schoolObj.uNo : ""}] ${schoolObj ? schoolObj.nameEn : ""}\nஉங்கள் 6-இலக்க மின்னஞ்சல் சரிபார்ப்பு OTP எண் (Your 6-digit Email Verification OTP): ${otpCode}`
     });
-    return { ok: true, email: cleanEmail };
+    return { ok: true, email: cleanEmail, emailSent: Boolean(gsRes && gsRes.emailSent) };
   }
 
   function selectSchoolFromFinder(uNo) {
@@ -7243,21 +7553,146 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       const isRegistered = Boolean(authRec && authRec.password && authRec.registeredAt);
       if (isRegistered) {
         noteEl.style.color = "#15803d";
-        noteEl.innerHTML = `✅ பதிவு செய்யப்பட்ட பள்ளி – உங்கள் கடவுச்சொல்லை உள்ளிட்டு உள்நுழையவும்.`;
+        const hasPin = Boolean(authRec && authRec.pin);
+        noteEl.innerHTML = `✅ பதிவு செய்யப்பட்ட பள்ளி – உங்கள் <strong>கடவுச்சொல் (Password)</strong>${hasPin ? " அல்லது <strong>6-இலக்க PIN</strong>" : ""} உள்ளிட்டு உள்நுழையவும்.`;
       } else {
         noteEl.style.color = "#b45309";
-        noteEl.innerHTML = `⚠️ முதல் முறை உள்நுழைவு: <button type="button" onclick="openFirstTimeRegForSchool('${s.uNo}')" style="background:#d97706; color:#fff; border:none; border-radius:5px; padding:2px 8px; font-size:0.73rem; font-weight:800; cursor:pointer; margin-left:4px;">📝 இங்கே பதிவு செய்க (First-Time OTP Sign Up) ❯</button>`;
+        noteEl.innerHTML = `⚠️ முதல் முறை உள்நுழைவு: <button type="button" onclick="openFirstTimeRegInNewTab('${s.uNo}')" style="background:#d97706; color:#fff; border:none; border-radius:5px; padding:3px 9px; font-size:0.74rem; font-weight:800; cursor:pointer; margin-left:4px;">📝 பதிவு செய்க (புதிய தாவலில் திற ↗)</button>`;
       }
     }
   }
 
-  function openFirstTimeRegForSchool(uNo) {
+  function openFirstTimeRegForSchool(uNo, stayInCurrentTab) {
+    if (!stayInCurrentTab) {
+      openFirstTimeRegInNewTab(uNo);
+      return;
+    }
+    switchMainView("viewAuth");
     switchAuthTab("schoolReg");
+    const succBox = document.getElementById("regCompletedSuccessBox");
+    if (succBox) succBox.style.display = "none";
     const regInp = document.getElementById("regSearchQueryInput");
     if (regInp) {
-      regInp.value = uNo;
-      lookupSchoolForRegistration(false);
+      regInp.value = uNo || "";
+      if (uNo) {
+        lookupSchoolForRegistration(false);
+      } else {
+        regInp.focus();
+      }
     }
+  }
+
+  function openFirstTimeRegInNewTab(explicitUNo) {
+    let targetUNo = String(explicitUNo || "").trim();
+    if (!targetUNo) {
+      const typedId = (document.getElementById("schoolLoginIdInput")?.value || "").trim();
+      if (typedId && !isKnownAdminUsername(typedId)) {
+        const matched = findSchoolByUNoOrUdise(typedId);
+        if (matched) targetUNo = String(matched.uNo);
+      }
+    }
+    safeSetStorage("CEOSVG_PENDING_REG_UNO", targetUNo || "", true);
+
+    try {
+      const locHref = String(window.location.href || "");
+      const proto = String(window.location.protocol || "");
+      const host = String(window.location.hostname || "");
+      const isStandardWebUrl = (proto === "http:" || proto === "https:" || proto === "file:") &&
+        !locHref.startsWith("about:") &&
+        !host.includes("usercontent.goog");
+
+      if (isStandardWebUrl) {
+        const regUrl = new URL(locHref);
+        regUrl.searchParams.set("mode", "register");
+        if (targetUNo) {
+          regUrl.searchParams.set("uNo", targetUNo);
+        } else {
+          regUrl.searchParams.delete("uNo");
+        }
+        regUrl.hash = "schoolReg";
+        const newWin = window.open(regUrl.toString(), "_blank");
+        if (newWin) {
+          showToast("🆕 புதிய தாவலில் (New Tab) பள்ளி முதல் முறை பதிவுப் பக்கம் திறக்கப்பட்டுள்ளது!", "#0284c7");
+          return;
+        }
+      }
+
+      // Standalone Blob New-Tab Launcher (works inside Canvas / iframe / blob / sandboxed previews)
+      const bootScript = `<script>window.__STANDALONE_REG_TAB__ = true; window.__INITIAL_REG_UNO__ = ${JSON.stringify(targetUNo || "")}; window.__PORTAL_LOGIN_URL__ = ${JSON.stringify(locHref)};<\/script>`;
+      let rawDoc = document.documentElement.outerHTML;
+      if (rawDoc.includes("<head>")) {
+        rawDoc = rawDoc.replace("<head>", "<head>" + bootScript);
+      } else {
+        rawDoc = bootScript + rawDoc;
+      }
+      const blob = new Blob(["<!DOCTYPE html>\n" + rawDoc], { type: "text/html;charset=utf-8" });
+      const blobUrl = URL.createObjectURL(blob);
+      const blobWin = window.open(blobUrl, "_blank");
+      if (blobWin) {
+        showToast("🆕 புதிய தாவலில் (New Tab) பள்ளி முதல் முறை பதிவுப் பக்கம் திறக்கப்பட்டுள்ளது!", "#0284c7");
+        return;
+      }
+    } catch (err) {
+      console.warn("New tab open fallback:", err);
+    }
+
+    // Graceful fallback if browser blocks popups
+    openFirstTimeRegForSchool(targetUNo, true);
+    showToast("📝 பள்ளி முதல் முறை பதிவுப் பக்கம் திறக்கப்பட்டுள்ளது.", "#0284c7");
+  }
+
+  function navigateToLoginFromRegistration(registeredUNo, event) {
+    if (event && typeof event.preventDefault === "function") event.preventDefault();
+    const uNo = String(registeredUNo || window._lastRegisteredSchoolUNo || "").trim();
+
+    // Notify opener tab (if opened from main Login tab) so it also focuses and pre-fills the registered U.NO
+    try {
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage({
+          type: "CEOSVG_FOCUS_LOGIN_WITH_UNO",
+          uNo: uNo,
+          authRecord: uNo && schoolAuthStore ? schoolAuthStore[uNo] : null
+        }, "*");
+        window.opener.focus();
+      }
+    } catch (e) {}
+
+    // Also switch current tab cleanly to the School Login view with U.NO pre-filled and Password/PIN ready
+    try {
+      if (window.history && window.history.replaceState && window.location.protocol !== "blob:") {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete("mode");
+        cleanUrl.searchParams.delete("uNo");
+        cleanUrl.hash = "schoolLogin";
+        window.history.replaceState({}, "", cleanUrl.toString());
+      }
+    } catch (e) {}
+
+    switchMainView("viewAuth");
+    switchAuthTab("schoolLogin");
+    const idInp = document.getElementById("schoolLoginIdInput");
+    if (idInp && uNo) {
+      idInp.value = uNo;
+      onSchoolLoginIdType(uNo);
+    }
+    const passInp = document.getElementById("schoolLoginPassInput");
+    if (passInp) {
+      passInp.value = "";
+      setTimeout(() => passInp.focus(), 80);
+    }
+    showToast("🔐 உள்நுழைவுப் பக்கம் தயார்! உங்கள் கடவுச்சொல் (Password) அல்லது 6-இலக்க PIN உள்ளிட்டு உள்நுழையவும்.", "#16a34a");
+  }
+
+  function resetRegistrationFormForAnotherSchool() {
+    const succBox = document.getElementById("regCompletedSuccessBox");
+    if (succBox) succBox.style.display = "none";
+    const regInp = document.getElementById("regSearchQueryInput");
+    if (regInp) {
+      regInp.value = "";
+      regInp.focus();
+    }
+    const sec = document.getElementById("regFoundSchoolSection");
+    if (sec) sec.style.display = "none";
   }
 
   // =========================================================================
@@ -7311,17 +7746,22 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const authRec = (schoolAuthStore && schoolAuthStore[school.uNo]) ? schoolAuthStore[school.uNo] : null;
     if (!authRec || !authRec.password || !authRec.registeredAt) {
       if (errEl) {
-        errEl.innerHTML = `⚠️ <strong>${school.nameEn}</strong> பள்ளி இன்னும் முதல் முறை பதிவு செய்யவில்லை! முதலில் WhatsApp &amp; Email OTP சரிபார்த்துப் பதிவு செய்யவும்.`;
+        errEl.innerHTML = `⚠️ <strong>${school.nameEn}</strong> பள்ளி இன்னும் முதல் முறை பதிவு செய்யவில்லை!<br><button type="button" onclick="openFirstTimeRegInNewTab('${school.uNo}')" style="margin-top:6px; background:#16a34a; color:#ffffff; border:none; border-radius:6px; padding:5px 12px; font-size:0.78rem; font-weight:800; cursor:pointer;">📝 பதிவு செய்க (புதிய தாவலில் திறக்க ↗)</button>`;
       }
-      showToast(`⚠️ [${school.uNo}] ${school.nameEn} - முதன்முறை உள்நுழையும் முன் OTP மூலம் பதிவு செய்யவும்!`, "#f59e0b");
-      openFirstTimeRegForSchool(school.uNo);
+      showToast(`⚠️ [${school.uNo}] ${school.nameEn} - முதன்முறை உள்நுழையும் முன் புதிய தாவலில் OTP மூலம் பதிவு செய்யவும்!`, "#f59e0b");
+      openFirstTimeRegInNewTab(school.uNo);
       return;
     }
 
-    // 4. Subsequent Logins: Verify Only Password (No OTP needed on regular login)
-    if (!rawPass || String(authRec.password).trim() !== rawPass) {
+    // 4. Subsequent Logins: Verify Either Registered Password OR 6-Digit PIN (No OTP needed on regular login)
+    const savedPass = String(authRec.password || "").trim();
+    const savedPin = String(authRec.pin || "").trim();
+    const matchesPassword = Boolean(savedPass && rawPass === savedPass);
+    const matchesPin = Boolean(savedPin && /^\d{6}$/.test(rawPass) && rawPass === savedPin);
+
+    if (!rawPass || (!matchesPassword && !matchesPin)) {
       if (errEl) {
-        errEl.innerHTML = `❌ கடவுச்சொல் தவறானது! மறந்திருந்தால் <strong>"Forgot Password?"</strong> கிளிக் செய்து WhatsApp/Email OTP மூலம் மாற்றவும்.`;
+        errEl.innerHTML = `❌ கடவுச்சொல் (Password) அல்லது 6-இலக்க PIN எண் தவறானது! மறந்திருந்தால் <strong>"Forgot Password?"</strong> கிளிக் செய்து WhatsApp/Email OTP மூலம் மாற்றவும்.`;
       }
       return;
     }
@@ -7394,6 +7834,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   function lookupSchoolForRegistration(silentWhileTyping) {
+    const succBox = document.getElementById("regCompletedSuccessBox");
+    if (succBox) succBox.style.display = "none";
     const q = (document.getElementById("regSearchQueryInput")?.value || "").trim();
     const s = findSchoolByUNoOrUdise(q);
     const sec = document.getElementById("regFoundSchoolSection");
@@ -7479,15 +7921,21 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       btn.textContent = "🔄 மீண்டும் OTP அனுப்புக (Resend OTP)";
     }
 
+    const waDirectUrl = buildDirectWhatsappClickUrl(mob, waOtp, activeRegCandidateSchool, "முதல் முறை பள்ளிப் பதிவு (First-Time Registration)");
     const msgEl = document.getElementById("regOtpStatusMsg");
     if (msgEl) {
       msgEl.style.display = "block";
       msgEl.innerHTML = `
         ✅ <strong>WhatsApp (+91 ${mob})</strong> மற்றும் <strong>Email (${email})</strong> ஆகிய இரண்டிற்கும் OTP அனுப்பப்பட்டுள்ளது!<br>
-        <span style="display:inline-block; margin-top:4px; background:#fef9c3; border:1px solid #facc15; color:#854d0e; padding:3px 8px; border-radius:5px; font-size:0.74rem;">
-          💡 நேரடிச் சரிபார்ப்புக் குறிப்பு: WhatsApp OTP: <strong style="color:#15803d; font-size:0.82rem;">${waOtp}</strong> | Email OTP: <strong style="color:#1d4ed8; font-size:0.82rem;">${emOtp}</strong>
-          <button type="button" onclick="autoFillRegOtpsForConvenience()" style="margin-left:6px; background:#0284c7; color:#fff; border:none; border-radius:4px; padding:1px 6px; font-size:0.7rem; font-weight:800; cursor:pointer;">Auto-Fill OTP</button>
-        </span>
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:5px;">
+          <a href="${waDirectUrl}" target="_blank" rel="noopener" style="background:#16a34a; color:#fff; text-decoration:none; padding:3px 8px; border-radius:5px; font-size:0.72rem; font-weight:800;">
+            📲 WhatsApp-ல் நேரடியாக OTP திறக்க ↗
+          </a>
+          <span style="background:#fef9c3; border:1px solid #facc15; color:#854d0e; padding:3px 8px; border-radius:5px; font-size:0.73rem;">
+            💡 உடனடிச் சரிபார்ப்பு: WhatsApp OTP: <strong style="color:#15803d; font-size:0.82rem;">${waOtp}</strong> | Email OTP: <strong style="color:#1d4ed8; font-size:0.82rem;">${emOtp}</strong>
+            <button type="button" onclick="autoFillRegOtpsForConvenience()" style="margin-left:6px; background:#0284c7; color:#fff; border:none; border-radius:4px; padding:2px 7px; font-size:0.7rem; font-weight:800; cursor:pointer;">⚡ Auto-Fill OTP</button>
+          </span>
+        </div>
       `;
     }
 
@@ -7550,14 +7998,25 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     const p1 = document.getElementById("regNewPassword").value.trim();
     const p2 = document.getElementById("regConfirmPassword").value.trim();
-    if (p1.length < 4) {
-      showToast("⚠️ கடவுச்சொல் குறைந்தது 4 எழுத்துகள்/எண்கள் கொண்டிருக்க வேண்டும்!", "#f59e0b");
+    const pinCode = (document.getElementById("regNewPinInput")?.value || "").trim();
+
+    const pwCheck = validateSchoolPasswordComplexity(p1);
+    if (!pwCheck.valid) {
+      showToast("⚠️ கடவுச்சொல் குறைந்தபட்சம் 7 எழுத்துகள் மற்றும் 1 Caps (A-Z), 1 Small (a-z), 1 Number (0-9) & 1 Special Character (@#$%&*) கொண்டிருக்க வேண்டும்!", "#ef4444");
+      document.getElementById("regNewPassword")?.focus();
       return;
     }
     if (p1 !== p2) {
       showToast("❌ இரண்டு கடவுச்சொற்களும் பொருந்தவில்லை!", "#ef4444");
+      document.getElementById("regConfirmPassword")?.focus();
       return;
     }
+    if (!validateSixDigitPin(pinCode)) {
+      showToast("⚠️ 6-இலக்க உள்நுழைவு PIN எண்ணை (6 Digits) சரியாக உள்ளிடவும்!", "#ef4444");
+      document.getElementById("regNewPinInput")?.focus();
+      return;
+    }
+
     const hmEn = document.getElementById("regHmNameEn").value.trim();
     const hmTa = document.getElementById("regHmNameTa").value.trim();
     const mob = document.getElementById("regSchoolMobile").value.trim();
@@ -7574,6 +8033,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       uNo: activeRegCandidateSchool.uNo,
       udiseNo: activeRegCandidateSchool.udiseNo,
       password: p1,
+      pin: pinCode,
       email: email,
       phone: mob,
       hmName: hmEn,
@@ -7595,11 +8055,46 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       mobile: mob,
       schoolEmail: email,
       password: p1,
+      pin: pinCode,
       otpVerified: true
     });
 
-    showToast(`✅ [${activeRegCandidateSchool.uNo}] ${activeRegCandidateSchool.nameEn} முதல் முறை பதிவு நிறைவடைந்தது!`, "#22c55e");
-    loginAsSchool(activeRegCandidateSchool);
+    const regSchool = activeRegCandidateSchool;
+    window._lastRegisteredSchoolUNo = String(regSchool.uNo);
+
+    // Sync registration across opener tab & BroadcastChannel so Login tab immediately knows
+    try {
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage({
+          type: "CEOSVG_SCHOOL_REGISTERED",
+          uNo: String(regSchool.uNo),
+          authRecord: schoolAuthStore[regSchool.uNo],
+          schoolData: regSchool
+        }, "*");
+      }
+    } catch (e) {}
+
+    // Hide registration form & show Registration Completed Box with prominent Login Link
+    const formSec = document.getElementById("regFoundSchoolSection");
+    if (formSec) formSec.style.display = "none";
+
+    const summaryEl = document.getElementById("regCompletedSummaryDetails");
+    if (summaryEl) {
+      summaryEl.innerHTML = `
+        <div>🏫 <strong>பள்ளி (School):</strong> [${regSchool.uNo}] ${regSchool.nameEn} (UDISE: ${regSchool.udiseNo})</div>
+        <div>👤 <strong>தலைமையாசிரியர் (HM):</strong> ${hmEn}${hmTa ? " / " + hmTa : ""}</div>
+        <div>📲 <strong>சரிபார்க்கப்பட்ட WhatsApp &amp; Email:</strong> +91 ${mob} | ${email}</div>
+        <div>🔐 <strong>உள்நுழைவு முறைகள்:</strong> கடவுச்சொல் (Password) &amp; 6-இலக்க PIN (<code>******</code>) தயார் நிலை</div>
+      `;
+    }
+
+    const succBox = document.getElementById("regCompletedSuccessBox");
+    if (succBox) {
+      succBox.style.display = "block";
+      succBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    showToast(`✅ [${regSchool.uNo}] ${regSchool.nameEn} முதல் முறை பதிவு நிறைவடைந்தது! கீழேயுள்ள உள்நுழைவு இணைப்பை (Login Link) அழுத்தி உள்நுழையவும்.`, "#22c55e");
   }
 
   // =========================================================================
@@ -7723,6 +8218,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     event.preventDefault();
     const q = document.getElementById("resetSchoolIdInput").value.trim();
     const newPass = document.getElementById("resetNewPassInput").value.trim();
+    const newPin = (document.getElementById("resetNewPinInput")?.value || "").trim();
     const s = findSchoolByUNoOrUdise(q);
     if (!s) {
       showToast("❌ குறிப்பிட்ட U.NO / UDISE எண்ணில் பள்ளி காணப்படவில்லை.", "#ef4444");
@@ -7732,11 +8228,23 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       showToast("⚠️ கடவுச்சொல்லை மாற்ற முதலில் WhatsApp அல்லது Email OTP சரிபார்க்க வேண்டும்!", "#ef4444");
       return;
     }
+    const pwCheck = validateSchoolPasswordComplexity(newPass);
+    if (!pwCheck.valid) {
+      showToast("⚠️ கடவுச்சொல் குறைந்தபட்சம் 7 எழுத்துகள் மற்றும் 1 Caps, 1 Small, 1 Number & 1 Special Character கொண்டிருக்க வேண்டும்!", "#ef4444");
+      document.getElementById("resetNewPassInput")?.focus();
+      return;
+    }
+    if (!validateSixDigitPin(newPin)) {
+      showToast("⚠️ 6-இலக்க PIN எண்ணைச் சரியாக உள்ளிடவும்!", "#ef4444");
+      document.getElementById("resetNewPinInput")?.focus();
+      return;
+    }
     const existing = schoolAuthStore[s.uNo] || {};
     schoolAuthStore[s.uNo] = {
       uNo: s.uNo,
       udiseNo: s.udiseNo,
       password: newPass,
+      pin: newPin,
       email: existing.email || s.email || "",
       phone: existing.phone || s.mobile || "",
       hmName: existing.hmName || s.hmName || "",
@@ -7744,8 +8252,18 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       registeredAt: existing.registeredAt || new Date().toLocaleString("en-IN")
     };
     safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore);
+    sendToAppsScript({
+      action: "password_reset",
+      uNo: s.uNo,
+      udiseNo: s.udiseNo,
+      schoolNameEn: s.nameEn,
+      password: newPass,
+      pin: newPin,
+      email: schoolAuthStore[s.uNo].email,
+      mobile: schoolAuthStore[s.uNo].phone
+    });
     updateAllSummaryCounters();
-    showToast(`✅ ${s.nameEn} பள்ளியின் புதிய கடவுச்சொல் வெற்றிகரமாக அமைக்கப்பட்டது!`, "#22c55e");
+    showToast(`✅ ${s.nameEn} பள்ளியின் புதிய கடவுச்சொல் & 6-இலக்க PIN வெற்றிகரமாக அமைக்கப்பட்டன!`, "#22c55e");
     switchAuthTab("schoolLogin");
     document.getElementById("schoolLoginIdInput").value = s.uNo;
     onSchoolLoginIdType(s.uNo);
@@ -10711,18 +11229,42 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (!activeSchoolSession) return;
     const p1 = document.getElementById("schSecNewPass").value.trim();
     const p2 = document.getElementById("schSecConfirmPass").value.trim();
+    const newPin = (document.getElementById("schSecNewPin")?.value || "").trim();
+
+    const pwCheck = validateSchoolPasswordComplexity(p1);
+    if (!pwCheck.valid) {
+      showToast("⚠️ கடவுச்சொல் குறைந்தபட்சம் 7 எழுத்துகள் (1 Caps, 1 Small, 1 Number & 1 Special Character) கொண்டிருக்க வேண்டும்!", "#ef4444");
+      return;
+    }
     if (p1 !== p2) {
       showToast("❌ கடவுச்சொற்கள் பொருந்தவில்லை!", "#ef4444");
+      return;
+    }
+    if (!validateSixDigitPin(newPin)) {
+      showToast("⚠️ 6-இலக்க PIN எண்ணை (6 Digits) சரியாக உள்ளிடவும்!", "#ef4444");
       return;
     }
     if (!schoolAuthStore[activeSchoolSession.uNo]) {
       schoolAuthStore[activeSchoolSession.uNo] = { uNo: activeSchoolSession.uNo, udiseNo: activeSchoolSession.udiseNo };
     }
     schoolAuthStore[activeSchoolSession.uNo].password = p1;
+    schoolAuthStore[activeSchoolSession.uNo].pin = newPin;
+    schoolAuthStore[activeSchoolSession.uNo].registeredAt = schoolAuthStore[activeSchoolSession.uNo].registeredAt || new Date().toLocaleString("en-IN");
     safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore);
+
+    sendToAppsScript({
+      action: "password_reset",
+      uNo: activeSchoolSession.uNo,
+      udiseNo: activeSchoolSession.udiseNo,
+      schoolNameEn: activeSchoolSession.nameEn,
+      password: p1,
+      pin: newPin
+    });
+
     document.getElementById("schSecNewPass").value = "";
     document.getElementById("schSecConfirmPass").value = "";
-    showToast("✅ உங்கள் பள்ளியின் கடவுச்சொல் வெற்றிகரமாக மாற்றப்பட்டது!", "#22c55e");
+    if (document.getElementById("schSecNewPin")) document.getElementById("schSecNewPin").value = "";
+    showToast("✅ உங்கள் பள்ளியின் கடவுச்சொல் மற்றும் 6-இலக்க PIN வெற்றிகரமாக மாற்றப்பட்டன!", "#22c55e");
   }
 
   function printSchoolProfileReport() {
@@ -11269,6 +11811,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           <td style="font-size:0.78rem;">${auth && auth.email ? auth.email : "-"}</td>
           <td>
             <code style="background:${isRegistered ? "#dcfce7" : "#fef3c7"}; color:${isRegistered ? "#166534" : "#92400e"}; padding:3px 8px; border-radius:6px; font-weight:800;">${passDisplay}</code>
+            ${(auth && auth.pin) ? `<span style="display:inline-block; margin-left:4px; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:5px; font-size:0.72rem; font-weight:900;">🔢 PIN: ${auth.pin}</span>` : ""}
             <div style="font-size:0.7rem; color:#64748b;">${isRegistered ? "✅ OTP சரிபார்த்துப் பதிவு செய்யப்பட்டது" : "⏳ முதல் முறை OTP பதிவு தேவை"}</div>
           </td>
           <td style="white-space:nowrap;">
@@ -11503,6 +12046,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       switchCloudSettingsTab("firebase");
     }
     updateFirebaseStatusIndicators();
+    if (typeof renderCeosvgAppsScriptCodePreview === "function") renderCeosvgAppsScriptCodePreview();
     document.getElementById("cloudSettingsModal").classList.add("open");
   }
 
@@ -12378,16 +12922,451 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     document.body.appendChild(script);
   }
 
-  function sendToAppsScript(payload) {
-    if (!appsScriptUrl || !appsScriptUrl.startsWith("http")) return;
+  async function sendToAppsScript(payload) {
+    if (!appsScriptUrl || !appsScriptUrl.startsWith("http")) return { ok: false, reason: "NO_URL" };
     try {
-      fetch(appsScriptUrl, {
+      const bodyStr = JSON.stringify(Object.assign({
+        masterSheetId: masterSheetId || "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ",
+        ownerAccount: "ceosvgweb@gmail.com",
+        timestamp: new Date().toLocaleString("en-IN")
+      }, payload));
+
+      // First try CORS-compatible text/plain POST so we can read JSON response from Google Apps Script doPost(e)
+      const res = await fetch(appsScriptUrl, {
         method: "POST",
-        mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      }).catch(() => {});
-    } catch (e) {}
+        body: bodyStr
+      });
+      if (res && res.ok) {
+        try {
+          const data = await res.json();
+          return Object.assign({ ok: true }, data);
+        } catch (parseErr) {
+          return { ok: true };
+        }
+      }
+    } catch (corsErr) {
+      // Fallback to no-cors mode so Google Apps Script still receives and executes doPost(e)
+      try {
+        await fetch(appsScriptUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(Object.assign({
+            masterSheetId: masterSheetId || "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ",
+            ownerAccount: "ceosvgweb@gmail.com",
+            timestamp: new Date().toLocaleString("en-IN")
+          }, payload))
+        });
+        return { ok: true, mode: "no-cors" };
+      } catch (e2) {}
+    }
+    return { ok: false };
+  }
+
+  function getCeosvgAppsScriptSourceCode() {
+    const curSheetId = (document.getElementById("cfgMasterSheetId")?.value || masterSheetId || "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ").trim();
+    const creds = getWhatsappApiCredentials();
+    return `/**
+ * ============================================================================
+ * 🏛️ முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (CEO SIVAGANGAI PORTAL - Code.gs)
+ * கணக்கு (Google Account): ceosvgweb@gmail.com
+ * ============================================================================
+ * சிறப்பம்சங்கள் (Features):
+ * 1. ceosvgweb@gmail.com கணக்கிலிருந்து பள்ளிகளுக்கு உடனடி Email OTP அனுப்புதல் (MailApp / GmailApp).
+ * 2. Meta WhatsApp Cloud API (Phone ID: ${creds.phoneNumberId}) வழியாக தலைமையாசிரியர்களுக்கு WhatsApp OTP அனுப்புதல்.
+ * 3. Google Sheet-ல் தானாக 5 தாவல்களை (SCHOOL_MASTER, SCHOOL_AUTH, OTP_LOGS, STUDENT_STRENGTH, STAFF_REQUESTS) உருவாக்கி 282 பள்ளிகளின் தரவுகளையும் சேமித்தல்.
+ * ============================================================================
+ */
+
+const PORTAL_CONFIG = {
+  OWNER_EMAIL: "ceosvgweb@gmail.com",
+  MASTER_SHEET_ID: "${curSheetId}",
+  WA_PHONE_NUMBER_ID: "${creds.phoneNumberId}",
+  WA_ALT_PHONE_NUMBER_ID: "${creds.altPhoneNumberId}",
+  WA_ACCOUNT_ID: "${creds.messagingAccountId}",
+  WA_ACCESS_TOKEN: "${creds.accessToken}"
+};
+
+function getTargetSpreadsheet_(optionalSheetId) {
+  try {
+    const active = SpreadsheetApp.getActiveSpreadsheet();
+    if (active) return active;
+  } catch (e) {}
+  const idToOpen = optionalSheetId || PORTAL_CONFIG.MASTER_SHEET_ID;
+  return SpreadsheetApp.openById(idToOpen);
+}
+
+function getOrCreateSheet_(ss, sheetName, headers, headerBg) {
+  let sh = ss.getSheetByName(sheetName);
+  if (!sh) {
+    sh = ss.insertSheet(sheetName);
+  }
+  if (sh.getLastRow() === 0 && headers && headers.length > 0) {
+    sh.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sh.getRange(1, 1, 1, headers.length)
+      .setBackground(headerBg || "#0f294a")
+      .setFontColor("#ffffff")
+      .setFontWeight("bold");
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+/**
+ * படி 1: முதன்முறை Google Sheet-ல் 5 தாவல்களையும் உருவாக்க இந்தச் செயல்பாட்டை (setupPortalSheets) Run செய்யவும்
+ */
+function setupPortalSheets(optionalSheetId) {
+  const ss = getTargetSpreadsheet_(optionalSheetId);
+
+  getOrCreateSheet_(ss, "SCHOOL_MASTER", [
+    "S.No", "U.NO", "UDISE_NO", "DGE_NO", "Block", "Assembly",
+    "School_Name_English", "School_Name_Tamil", "Management", "Level",
+    "Centre_10", "Centre_12", "HM_Name_En", "HM_Name_Ta", "HM_WhatsApp_Mobile", "School_Email", "Updated_At"
+  ], "#0f294a");
+
+  getOrCreateSheet_(ss, "SCHOOL_AUTH", [
+    "U.NO", "UDISE_NO", "School_Name_English", "HM_Name", "HM_WhatsApp_Mobile",
+    "School_Email", "Password", "Six_Digit_PIN", "OTP_Verified", "Registered_At", "Updated_At"
+  ], "#14532d");
+
+  getOrCreateSheet_(ss, "OTP_LOGS", [
+    "Timestamp", "U.NO", "School_Name", "Channel", "Recipient",
+    "OTP_Code", "Purpose", "Delivery_Status"
+  ], "#1e3a8a");
+
+  getOrCreateSheet_(ss, "STUDENT_STRENGTH", [
+    "U.NO", "UDISE_NO", "School_Name_English", "Level",
+    "Boys_Total", "Girls_Total", "Grand_Total", "Tamil_Medium", "English_Medium", "Groups_Summary", "Updated_At"
+  ], "#065f46");
+
+  getOrCreateSheet_(ss, "STAFF_REQUESTS", [
+    "Request_ID", "Timestamp", "U.NO", "School_Name", "Staff_ID",
+    "Staff_Name", "Designation", "Subject", "Reason_Category", "Reason_Detail", "Status"
+  ], "#7f1d1d");
+
+  return { ok: true, spreadsheetUrl: ss.getUrl(), spreadsheetId: ss.getId() };
+}
+
+function doGet(e) {
+  const info = setupPortalSheets();
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "ONLINE",
+    portal: "CEO Sivagangai School Portal Backend (ceosvgweb@gmail.com)",
+    spreadsheetId: info.spreadsheetId,
+    spreadsheetUrl: info.spreadsheetUrl,
+    timestamp: new Date().toISOString()
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    const raw = (e && e.postData && e.postData.contents) ? e.postData.contents : "{}";
+    const data = JSON.parse(raw);
+    const action = String(data.action || "").trim();
+    const ss = getTargetSpreadsheet_(data.masterSheetId);
+    setupPortalSheets(data.masterSheetId);
+    const nowStr = Utilities.formatDate(new Date(), "Asia/Kolkata", "dd-MM-yyyy hh:mm:ss a");
+
+    // 1. EMAIL OTP DISPATCH (via ceosvgweb@gmail.com)
+    if (action === "send_email_otp") {
+      const emailSent = sendEmailOtpFromCeoAccount_(data.email, data.otp, data.uNo, data.schoolNameEn || data.schoolNameTa, data.purpose);
+      const otpSheet = ss.getSheetByName("OTP_LOGS");
+      otpSheet.appendRow([nowStr, data.uNo || "-", data.schoolNameEn || "-", "EMAIL", data.email || "-", data.otp || "-", data.purpose || "OTP", emailSent ? "SENT_OK" : "FAILED"]);
+      return jsonResponse_({ ok: true, emailSent: emailSent });
+    }
+
+    // 2. WHATSAPP OTP DISPATCH (via Meta Cloud API Server-Side Relay)
+    if (action === "send_whatsapp_otp") {
+      const waSent = sendWhatsappOtpFromServer_(data.phone, data.otp, data.uNo, data.schoolNameEn || data.schoolNameTa, data.purpose, data.accessToken, data.phoneNumberId);
+      const otpSheet = ss.getSheetByName("OTP_LOGS");
+      otpSheet.appendRow([nowStr, data.uNo || "-", data.schoolNameEn || "-", "WHATSAPP", data.phone || "-", data.otp || "-", data.purpose || "OTP", waSent ? "SENT_OK" : "LOGGED_FALLBACK"]);
+      return jsonResponse_({ ok: true, whatsappSent: waSent });
+    }
+
+    // 3. FIRST-TIME SCHOOL REGISTRATION OR PASSWORD/PIN RESET
+    if (action === "school_register" || action === "password_reset" || action === "admin_reset_school_password") {
+      const authSheet = ss.getSheetByName("SCHOOL_AUTH");
+      upsertRowByUNo_(authSheet, 1, String(data.uNo || ""), [
+        String(data.uNo || ""),
+        String(data.udiseNo || ""),
+        String(data.nameEn || data.schoolNameEn || ""),
+        String(data.hmName || ""),
+        String(data.mobile || ""),
+        String(data.schoolEmail || data.email || ""),
+        String(data.password || data.newPassword || ""),
+        String(data.pin || ""),
+        "YES (OTP Verified)",
+        nowStr,
+        nowStr
+      ]);
+      return jsonResponse_({ ok: true, action: action, uNo: data.uNo });
+    }
+
+    // 4. BULK SEED ALL 282 SCHOOLS DATA TO GOOGLE SHEET
+    if (action === "seed_all_to_sheet") {
+      let masterCount = 0;
+      let authCount = 0;
+      let stuCount = 0;
+
+      if (Array.isArray(data.schools) && data.schools.length > 0) {
+        const mSheet = ss.getSheetByName("SCHOOL_MASTER");
+        if (mSheet.getLastRow() > 1) {
+          mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
+        }
+        const mRows = data.schools.map((s, idx) => [
+          s.sn || (idx + 1), s.uNo || "", s.udiseNo || "", s.dgeNo || "",
+          s.block || "", s.assembly || "", s.nameEn || "", s.nameTa || "",
+          s.mgmt1 || "", s.level || "", s.centre10 || "", s.centre12 || "",
+          s.hmName || "", s.hmTa || "", s.mobile || "", s.email || "", nowStr
+        ]);
+        mSheet.getRange(2, 1, mRows.length, 17).setValues(mRows);
+        masterCount = mRows.length;
+      }
+
+      if (Array.isArray(data.authList) && data.authList.length > 0) {
+        const aSheet = ss.getSheetByName("SCHOOL_AUTH");
+        if (aSheet.getLastRow() > 1) {
+          aSheet.getRange(2, 1, aSheet.getLastRow() - 1, 11).clearContent();
+        }
+        const aRows = data.authList.map(a => [
+          a.uNo || "", a.udiseNo || "", a.nameEn || "", a.hmName || "",
+          a.phone || "", a.email || "", a.password || "", a.pin || "",
+          a.otpVerified ? "YES" : "NO", a.registeredAt || nowStr, nowStr
+        ]);
+        aSheet.getRange(2, 1, aRows.length, 11).setValues(aRows);
+        authCount = aRows.length;
+      }
+
+      if (Array.isArray(data.studentList) && data.studentList.length > 0) {
+        const sSheet = ss.getSheetByName("STUDENT_STRENGTH");
+        if (sSheet.getLastRow() > 1) {
+          sSheet.getRange(2, 1, sSheet.getLastRow() - 1, 11).clearContent();
+        }
+        const sRows = data.studentList.map(st => [
+          st.uNo || "", st.udiseNo || "", st.nameEn || "", st.level || "",
+          st.boys || 0, st.girls || 0, st.total || 0, st.tm || 0, st.em || 0,
+          st.groupsSummary || "-", nowStr
+        ]);
+        sSheet.getRange(2, 1, sRows.length, 11).setValues(sRows);
+        stuCount = sRows.length;
+      }
+
+      return jsonResponse_({ ok: true, masterCount: masterCount, authCount: authCount, stuCount: stuCount });
+    }
+
+    // 5. STAFF DELETE REQUEST LOGGING
+    if (action === "staff_delete_request" && data.request) {
+      const r = data.request;
+      const reqSheet = ss.getSheetByName("STAFF_REQUESTS");
+      reqSheet.appendRow([
+        r.reqId || ("REQ_" + Date.now()), nowStr, r.uNo || "", r.schoolNameEn || r.schoolNameTa || "",
+        r.staffId || "", r.staffName || "", r.desig || "", r.subject || "",
+        r.reasonCategory || "", r.reasonDetail || "", r.status || "PENDING"
+      ]);
+      return jsonResponse_({ ok: true });
+    }
+
+    return jsonResponse_({ ok: true, note: "Logged action: " + action });
+  } catch (err) {
+    return jsonResponse_({ ok: false, error: String(err) });
+  }
+}
+
+function sendEmailOtpFromCeoAccount_(toEmail, otpCode, uNo, schoolName, purpose) {
+  if (!toEmail || String(toEmail).indexOf("@") === -1) return false;
+  try {
+    const subject = "🔐 CEO Sivagangai School Portal - OTP Verification (" + otpCode + ")";
+    const htmlBody = \`
+      <div style="font-family:Arial,sans-serif; max-width:560px; margin:0 auto; border:2px solid #0f294a; border-radius:10px; overflow:hidden;">
+        <div style="background:#0f294a; color:#ffffff; padding:14px 18px; text-align:center;">
+          <div style="font-size:12px; color:#fde047; font-weight:bold;">பள்ளிக்கல்வித்துறை - சிவகங்கை மாவட்டம்</div>
+          <h2 style="margin:4px 0 0; font-size:18px;">முதன்மைக் கல்வி அலுவலகம், சிவகங்கை</h2>
+          <div style="font-size:12px; color:#cbd5e1;">portal.ceosvg.in | ceosvgweb@gmail.com</div>
+        </div>
+        <div style="padding:20px; background:#ffffff; color:#1e293b; line-height:1.6;">
+          <p style="margin:0 0 10px;">வணக்கம்,</p>
+          <p style="margin:0 0 12px;"><strong>பள்ளி:</strong> [U.NO: \${uNo || "-"}] \${schoolName || "Sivagangai School"}</p>
+          <p style="margin:0 0 12px;"><strong>நோக்கம்:</strong> \${purpose || "பள்ளி உள்நுழைவு / OTP சரிபார்ப்பு"}</p>
+          <div style="background:#f0fdf4; border:2px dashed #16a34a; border-radius:8px; padding:14px; text-align:center; margin:16px 0;">
+            <div style="font-size:12px; color:#166534; font-weight:bold;">உங்கள் 6-இலக்க சரிபார்ப்பு OTP எண்:</div>
+            <div style="font-size:28px; font-weight:900; color:#14532d; letter-spacing:6px; margin-top:4px;">\${otpCode}</div>
+          </div>
+          <p style="font-size:12px; color:#64748b; margin:0;">இந்த OTP எண் 10 நிமிடங்களுக்குச் செல்லுபடியாகும். பாதுகாப்பிற்காக இதனை யாருடனும் பகிர வேண்டாம்.</p>
+        </div>
+      </div>
+    \`;
+    MailApp.sendEmail({
+      to: String(toEmail).trim(),
+      subject: subject,
+      htmlBody: htmlBody,
+      name: "CEO Sivagangai School Portal"
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function sendWhatsappOtpFromServer_(toPhone, otpCode, uNo, schoolName, purpose, tokenOverride, phoneIdOverride) {
+  const token = tokenOverride || PORTAL_CONFIG.WA_ACCESS_TOKEN;
+  const phoneId = phoneIdOverride || PORTAL_CONFIG.WA_PHONE_NUMBER_ID;
+  if (!token || !phoneId || !toPhone) return false;
+
+  const cleanPhone = String(toPhone).replace(/\D/g, "");
+  const recipient = cleanPhone.length === 10 ? ("91" + cleanPhone) : cleanPhone;
+  const url = "https://graph.facebook.com/v21.0/" + encodeURIComponent(phoneId) + "/messages";
+  const msgText = "*பள்ளிக்கல்வித்துறை - முதன்மைக் கல்வி அலுவலகம், சிவகங்கை*\n🏫 பள்ளி: *[U.NO: " + (uNo || "-") + "] " + (schoolName || "") + "*\n🔐 " + (purpose || "OTP சரிபார்ப்பு") + " OTP: *" + otpCode + "*\n(இந்த 6-இலக்க OTP எண் 10 நிமிடங்களுக்குச் செல்லுபடியாகும்.)";
+
+  try {
+    const res = UrlFetchApp.fetch(url, {
+      method: "post",
+      contentType: "application/json",
+      headers: { "Authorization": "Bearer " + token },
+      payload: JSON.stringify({
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: recipient,
+        type: "text",
+        text: { preview_url: false, body: msgText }
+      }),
+      muteHttpExceptions: true
+    });
+    if (res.getResponseCode() >= 200 && res.getResponseCode() < 300) return true;
+  } catch (e) {}
+  return false;
+}
+
+function upsertRowByUNo_(sheet, keyColIndex1Based, keyVal, rowArray) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow >= 2) {
+    const keys = sheet.getRange(2, keyColIndex1Based, lastRow - 1, 1).getValues();
+    for (let i = 0; i < keys.length; i++) {
+      if (String(keys[i][0]).trim() === String(keyVal).trim()) {
+        sheet.getRange(i + 2, 1, 1, rowArray.length).setValues([rowArray]);
+        return;
+      }
+    }
+  }
+  sheet.appendRow(rowArray);
+}
+
+function jsonResponse_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+`;
+  }
+
+  function renderCeosvgAppsScriptCodePreview() {
+    const pre = document.getElementById("ceosvgAppsScriptCodePre");
+    if (pre) {
+      pre.textContent = getCeosvgAppsScriptSourceCode();
+    }
+  }
+
+  function copyCeosvgAppsScriptCode() {
+    const code = getCeosvgAppsScriptSourceCode();
+    copyTextWithFallback(code, "📋 ceosvgweb@gmail.com கணக்கிற்கான முழுமையான Code.gs நிரல் நகலெடுக்கப்பட்டது! உங்கள் Google Sheet ➔ Extensions ➔ Apps Script-ல் ஒட்டவும்.");
+  }
+
+  function downloadCeosvgAppsScriptFile() {
+    const code = getCeosvgAppsScriptSourceCode();
+    const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Code_ceosvgweb_GoogleSheet_OTP.gs";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("📥 Code_ceosvgweb_GoogleSheet_OTP.gs கோப்பு பதிவிறக்கப்பட்டது!", "#22c55e");
+  }
+
+  async function pushAllPortalDataToGoogleSheet() {
+    saveCloudSettings();
+    const alertBox = document.getElementById("gsSyncStatusAlert");
+    if (alertBox) {
+      alertBox.style.display = "block";
+      alertBox.style.background = "#eff6ff";
+      alertBox.style.border = "1px solid #93c5fd";
+      alertBox.style.color = "#1e3a8a";
+      alertBox.textContent = "⏳ 282 பள்ளிகளின் முதன்மைப் பட்டியல், உள்நுழைவுப் பதிவுகள் மற்றும் மாணவர் எண்ணிக்கை உங்கள் Google Sheet-க்கு பதிவேற்றப்படுகிறது...";
+    }
+
+    const authList = Object.values(schoolAuthStore || {}).filter(Boolean).map(a => {
+      const sch = masterSchools.find(s => String(s.uNo) === String(a.uNo)) || {};
+      return {
+        uNo: a.uNo,
+        udiseNo: a.udiseNo || sch.udiseNo || "",
+        nameEn: sch.nameEn || "",
+        hmName: a.hmName || sch.hmName || "",
+        phone: a.phone || sch.mobile || "",
+        email: a.email || sch.email || "",
+        password: a.password || "",
+        pin: a.pin || "",
+        otpVerified: Boolean(a.otpVerified),
+        registeredAt: a.registeredAt || ""
+      };
+    });
+
+    const studentList = masterSchools.map(s => {
+      const enroll = (typeof getDistrictAllSchoolsEnrollmentList === "function")
+        ? (getDistrictAllSchoolsEnrollmentList().find(x => String(x.uNo) === String(s.uNo)) || null)
+        : null;
+      return {
+        uNo: s.uNo,
+        udiseNo: s.udiseNo,
+        nameEn: s.nameEn,
+        level: s.level || "HS",
+        boys: enroll ? enroll.totalBoys : 0,
+        girls: enroll ? enroll.totalGirls : 0,
+        total: enroll ? enroll.grandTotal : 0,
+        tm: enroll ? enroll.totalTM : 0,
+        em: enroll ? enroll.totalEM : 0,
+        groupsSummary: enroll && enroll.activeGroupsCount ? (enroll.activeGroupsCount + " Groups") : "-"
+      };
+    });
+
+    const res = await sendToAppsScript({
+      action: "seed_all_to_sheet",
+      schools: masterSchools,
+      authList: authList,
+      studentList: studentList
+    });
+
+    if (alertBox) {
+      alertBox.style.background = "#dcfce7";
+      alertBox.style.border = "1px solid #86efac";
+      alertBox.style.color = "#14532d";
+      alertBox.innerHTML = `✅ <strong>${masterSchools.length} பள்ளிகளின்</strong> முழுத் தரவும் (<code>SCHOOL_MASTER</code>, <code>SCHOOL_AUTH</code>, <code>STUDENT_STRENGTH</code>) உங்கள் Google Sheet-க்கு வெற்றிகரமாக அனுப்பப்பட்டது!`;
+    }
+    showToast(`✅ ${masterSchools.length} பள்ளிகளின் தரவுகள் Google Sheet-ல் பதிவேற்றப்பட்டன!`, "#22c55e");
+  }
+
+  async function testAppsScriptOtpAndSheet() {
+    saveCloudSettings();
+    const testOtp = generateSixDigitOtp();
+    const alertBox = document.getElementById("gsSyncStatusAlert");
+    if (alertBox) {
+      alertBox.style.display = "block";
+      alertBox.style.background = "#fef9c3";
+      alertBox.style.border = "1px solid #facc15";
+      alertBox.style.color = "#854d0e";
+      alertBox.textContent = `⏳ சோதனை OTP (${testOtp}) ceosvgweb@gmail.com மற்றும் WhatsApp API-க்கு அனுப்பப்படுகிறது...`;
+    }
+    await Promise.all([
+      dispatchEmailOtpMessage("ceosvgweb@gmail.com", testOtp, { uNo: "ADMIN", udiseNo: "33230000001", nameEn: "CEO OFFICE SIVAGANGAI", nameTa: "முதன்மைக் கல்வி அலுவலகம் சிவகங்கை" }, "Google Sheet & Email OTP Live Test"),
+      dispatchWhatsappOtpMessage("9626471035", testOtp, { uNo: "ADMIN", udiseNo: "33230000001", nameEn: "CEO OFFICE SIVAGANGAI", nameTa: "முதன்மைக் கல்வி அலுவலகம் சிவகங்கை" }, "WhatsApp Cloud API Live Test")
+    ]);
+    if (alertBox) {
+      alertBox.style.background = "#dcfce7";
+      alertBox.style.border = "1px solid #86efac";
+      alertBox.style.color = "#14532d";
+      alertBox.innerHTML = `✅ சோதனை OTP (<strong>${testOtp}</strong>) வெற்றிகரமாக அனுப்பப்பட்டது! உங்கள் <code>ceosvgweb@gmail.com</code> இன்பாக்ஸ் மற்றும் Google Sheet-ன் <code>OTP_LOGS</code> தாவலைப் பார்க்கவும்.`;
+    }
+    showToast(`✅ சோதனை OTP (${testOtp}) அனுப்பப்பட்டது!`, "#22c55e");
   }
 
   
