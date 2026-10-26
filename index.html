@@ -6069,25 +6069,56 @@
         </div>
         <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
-            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Meta Permanent Access Token (Bearer):</label>
+            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Meta Access Token (Bearer):</label>
             <input type="text" id="cfgWaAccessToken" class="form-control" style="font-size:0.76rem; font-family:monospace;" placeholder="EAAg6K107UYwBSzcHF9..." oninput="renderCeosvgAppsScriptCodePreview()">
           </div>
           <div>
-            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Phone Number ID:</label>
+            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Primary Phone ID (+1 711-537-3221):</label>
             <input type="text" id="cfgWaPhoneNumberId" class="form-control" style="font-size:0.78rem; font-family:monospace;" value="1457353970785529" placeholder="1457353970785529" oninput="renderCeosvgAppsScriptCodePreview()">
           </div>
           <div>
-            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Template Name (en_US):</label>
-            <input type="text" id="cfgWaTemplateName" class="form-control" style="font-size:0.78rem; font-family:monospace;" value="hello_world" placeholder="hello_world" oninput="renderCeosvgAppsScriptCodePreview()">
+            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Alt Phone ID / WABA ID:</label>
+            <input type="text" id="cfgWaAltPhoneNumberId" class="form-control" style="font-size:0.76rem; font-family:monospace;" value="1399324686595291" title="Messaging Account ID (WABA): 1724740268587231" oninput="renderCeosvgAppsScriptCodePreview()">
           </div>
           <div>
-            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Template ID:</label>
-            <input type="text" id="cfgWaTemplateId" class="form-control" style="font-size:0.78rem; font-family:monospace;" value="2600197680404000" placeholder="2600197680404000" oninput="renderCeosvgAppsScriptCodePreview()">
+            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Template Name &amp; ID:</label>
+            <div style="display:flex; gap:4px;">
+              <input type="text" id="cfgWaTemplateName" class="form-control" style="font-size:0.76rem; font-family:monospace;" value="hello_world" placeholder="hello_world" oninput="renderCeosvgAppsScriptCodePreview()">
+              <input type="text" id="cfgWaTemplateId" class="form-control" style="font-size:0.74rem; font-family:monospace; width:95px;" value="2600197680404000" placeholder="2600197680404000" oninput="renderCeosvgAppsScriptCodePreview()">
+            </div>
           </div>
         </div>
-        <div>
-          <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">மாற்று WhatsApp Gateway Webhook URL (விருப்பத்தேர்வு - Fast2SMS / UltraMsg / Wati / Custom API):</label>
-          <input type="url" id="cfgWaGatewayUrl" class="form-control" style="font-size:0.76rem;" placeholder="https://your-whatsapp-gateway.com/send?apikey=..." oninput="renderCeosvgAppsScriptCodePreview()">
+        <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:8px; align-items:end;">
+          <div>
+            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">மாற்று WhatsApp Gateway Webhook URL (விருப்பத்தேர்வு - Fast2SMS / UltraMsg / CallMeBot / TextMeBot):</label>
+            <input type="url" id="cfgWaGatewayUrl" class="form-control" style="font-size:0.76rem;" placeholder="https://api.callmebot.com/whatsapp.php?apikey=... (அல்லது Custom Webhook)" oninput="renderCeosvgAppsScriptCodePreview()">
+          </div>
+          <div style="background:#ffffff; border:1px solid #86efac; border-radius:8px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center; gap:6px;">
+            <div>
+              <div style="font-size:0.68rem; font-weight:800; color:#166534;">🔐 Meta 2FA சாவி (S33Y AFUE... XXXN):</div>
+              <div style="font-size:0.88rem; font-weight:900; color:#0f294a; font-family:monospace; letter-spacing:1.5px;" id="waLiveTotpCodeDisplay">------</div>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="refreshAndCopyMetaTotpCode()" style="font-size:0.72rem; font-weight:800; padding:4px 8px;">
+              📋 2FA Code நகல்
+            </button>
+          </div>
+        </div>
+        <!-- Live WhatsApp Diagnostic & Test Bar -->
+        <div style="background:#ffffff; border:1.5px dashed #22c55e; border-radius:8px; padding:8px 10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <span style="font-size:0.76rem; font-weight:900; color:#14532d;">🩺 நேரடி WhatsApp API பரிசோதனை:</span>
+              <input type="tel" id="cfgWaTestRecipientPhone" class="form-control" style="width:145px; padding:4px 8px; font-size:0.8rem; font-weight:800;" maxlength="12" value="9626471035" placeholder="10-இலக்க எண்">
+              <button type="button" class="btn btn-success btn-sm" onclick="diagnoseAndTestWhatsappApiLive()" style="font-weight:800; font-size:0.75rem;">
+                🚀 இப்போதே WhatsApp பரிசோதி (Live API Test &amp; Diagnose)
+              </button>
+              <a href="https://wa.me/17115373221?text=OTP" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="font-size:0.73rem; font-weight:800; text-decoration:none; border-color:#16a34a; color:#15803d;">
+                💬 +1 711-537-3221-க்கு 'OTP' என அனுப்பி 24h Window திறக்க ↗
+              </a>
+            </div>
+            <span style="font-size:0.7rem; color:#475569; font-weight:700;">WABA ID: <code>1724740268587231</code></span>
+          </div>
+          <div id="waLiveDiagnosticResultBox" style="display:none; margin-top:8px; padding:8px 10px; border-radius:6px; font-size:0.76rem; line-height:1.5;"></div>
         </div>
       </div>
 
@@ -7553,38 +7584,15 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     let apiErrorNote = "";
     const phoneIdsToTry = [creds.phoneNumberId, creds.altPhoneNumberId].filter(Boolean);
 
+    let apiErrorCode = 0;
+    let textDispatched = false;
+    let templateDispatched = false;
     if (creds.accessToken && phoneIdsToTry.length > 0 && toPhone.length >= 10) {
       for (const pid of phoneIdsToTry) {
-        if (apiDispatched) break;
+        if (textDispatched) break;
         const endpoint = `https://graph.facebook.com/v22.0/${encodeURIComponent(pid)}/messages`;
         try {
-          // 1. Dispatch Approved Meta Template (hello_world · en_US | Template ID: 2600197680404000)
-          const resTpl = await fetchWithTimeout(endpoint, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${creds.accessToken}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              messaging_product: "whatsapp",
-              to: toPhone,
-              type: "template",
-              template: {
-                name: creds.templateName || "hello_world",
-                language: { code: creds.templateLang || "en_US" }
-              }
-            })
-          }, 2800);
-          if (resTpl && resTpl.ok) {
-            apiDispatched = true;
-          } else if (resTpl) {
-            try {
-              const errJson = await resTpl.json();
-              apiErrorNote = (errJson && errJson.error && errJson.error.message) ? errJson.error.message : ("HTTP " + resTpl.status);
-            } catch (e) {}
-          }
-
-          // 2. Also send Custom Text OTP message (delivers 6-digit OTP when 24h session is active)
+          // 1. Try Custom Text OTP message first (delivers exact 6-digit Tamil OTP if 24h window is active)
           const resText = await fetchWithTimeout(endpoint, {
             method: "POST",
             headers: {
@@ -7598,11 +7606,64 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
               type: "text",
               text: { preview_url: false, body: bodyText }
             })
-          }, 2500);
+          }, 2800);
           if (resText && resText.ok) {
+            textDispatched = true;
             apiDispatched = true;
             apiErrorNote = "";
             break;
+          } else if (resText) {
+            try {
+              const errJson = await resText.json();
+              if (errJson && errJson.error) {
+                apiErrorCode = errJson.error.code || resText.status;
+                apiErrorNote = errJson.error.message || ("HTTP " + resText.status);
+              }
+            } catch (e) {}
+          }
+
+          // If token is expired/invalid (Code 190 / HTTP 401), do not waste time retrying same token
+          if (apiErrorCode === 190) break;
+
+          // 2. Dispatch Meta Template (with OTP parameter if custom template, or parameterless if hello_world)
+          const tplName = (creds.templateName || "hello_world").trim();
+          const tplLang = (creds.templateLang || "en_US").trim();
+          const tplPayload = {
+            messaging_product: "whatsapp",
+            to: toPhone,
+            type: "template",
+            template: {
+              name: tplName,
+              language: { code: tplLang }
+            }
+          };
+          if (tplName !== "hello_world") {
+            tplPayload.template.components = [
+              {
+                type: "body",
+                parameters: [{ type: "text", text: String(otpCode) }]
+              }
+            ];
+          }
+          const resTpl = await fetchWithTimeout(endpoint, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${creds.accessToken}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(tplPayload)
+          }, 2800);
+          if (resTpl && resTpl.ok) {
+            templateDispatched = true;
+            apiDispatched = true;
+          } else if (resTpl) {
+            try {
+              const errJson = await resTpl.json();
+              if (errJson && errJson.error) {
+                apiErrorCode = errJson.error.code || resTpl.status;
+                apiErrorNote = errJson.error.message || ("HTTP " + resTpl.status);
+              }
+            } catch (e) {}
           }
         } catch (err) {
           apiErrorNote = err.message || "Network/Timeout";
@@ -7646,7 +7707,139 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       apiDispatched = true;
       apiErrorNote = "";
     }
-    return { ok: true, apiDispatched, toPhone, apiErrorNote };
+    return { ok: true, apiDispatched, textDispatched, templateDispatched, toPhone, apiErrorCode, apiErrorNote };
+  }
+
+  // RFC 6238 TOTP Generator for Meta 2FA Secret Key (S33Y AFUE YUF2 IT2Y YRWZ ZGJX XL4L XXXN)
+  async function computeMetaTotpCode(secretBase32) {
+    try {
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+      const clean = String(secretBase32 || "S33YAFUEYUF2IT2YYRWZZGJXXL4LXXXN").toUpperCase().replace(/[^A-Z2-7]/g, "");
+      let bits = "";
+      for (let i = 0; i < clean.length; i++) {
+        const val = alphabet.indexOf(clean[i]);
+        if (val >= 0) bits += val.toString(2).padStart(5, "0");
+      }
+      const keyBytes = new Uint8Array(Math.floor(bits.length / 8));
+      for (let i = 0; i < keyBytes.length; i++) {
+        keyBytes[i] = parseInt(bits.slice(i * 8, i * 8 + 8), 2);
+      }
+      const epoch = Math.floor(Date.now() / 1000);
+      let counter = Math.floor(epoch / 30);
+      const counterBytes = new Uint8Array(8);
+      for (let i = 7; i >= 0; i--) {
+        counterBytes[i] = counter & 0xff;
+        counter = Math.floor(counter / 256);
+      }
+      const cryptoKey = await crypto.subtle.importKey("raw", keyBytes, { name: "HMAC", hash: "SHA-1" }, false, ["sign"]);
+      const sig = new Uint8Array(await crypto.subtle.sign("HMAC", cryptoKey, counterBytes));
+      const offset = sig[sig.length - 1] & 0x0f;
+      const binCode = ((sig[offset] & 0x7f) << 24) | ((sig[offset + 1] & 0xff) << 16) | ((sig[offset + 2] & 0xff) << 8) | (sig[offset + 3] & 0xff);
+      const otp = String(binCode % 1000000).padStart(6, "0");
+      const remSec = 30 - (epoch % 30);
+      return { otp, remSec };
+    } catch (e) {
+      return { otp: "------", remSec: 0 };
+    }
+  }
+
+  async function updateLiveMetaTotpDisplay() {
+    const el = document.getElementById("waLiveTotpCodeDisplay");
+    if (!el) return;
+    const creds = getWhatsappApiCredentials();
+    const { otp, remSec } = await computeMetaTotpCode(creds.secretKey);
+    el.textContent = `${otp} (${remSec}s)`;
+  }
+
+  async function refreshAndCopyMetaTotpCode() {
+    const creds = getWhatsappApiCredentials();
+    const { otp } = await computeMetaTotpCode(creds.secretKey);
+    await updateLiveMetaTotpDisplay();
+    if (otp && otp !== "------") {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(otp).then(() => showToast(`🔐 Meta 2FA TOTP குறியீடு (${otp}) நகலெடுக்கப்பட்டது!`, "#16a34a")).catch(() => fallbackCopyText(otp));
+      } else {
+        fallbackCopyText(otp);
+      }
+    }
+  }
+
+  async function diagnoseAndTestWhatsappApiLive() {
+    saveCloudSettings();
+    const phoneInp = document.getElementById("cfgWaTestRecipientPhone");
+    const rawPhone = (phoneInp ? phoneInp.value : "9626471035").trim();
+    const toPhone = formatIndianWhatsappRecipient(rawPhone);
+    const box = document.getElementById("waLiveDiagnosticResultBox");
+    if (toPhone.length < 10) {
+      showToast("⚠️ பரிசோதிக்க 10-இலக்க WhatsApp கைபேசி எண்ணை உள்ளிடவும்!", "#ef4444");
+      return;
+    }
+    const testOtp = generateSixDigitOtp();
+    const directWaUrl = buildDirectWhatsappClickUrl(rawPhone, testOtp, { uNo: "ADMIN", nameEn: "CEO OFFICE SIVAGANGAI" }, "WhatsApp API நேரடிப் பரிசோதனை");
+
+    if (box) {
+      box.style.display = "block";
+      box.style.background = "#fef9c3";
+      box.style.border = "1px solid #facc15";
+      box.style.color = "#854d0e";
+      box.innerHTML = `⏳ <strong>+${toPhone}</strong> எண்ணிற்கு Meta Graph API v22.0 (Phone IDs: <code>1457353970785529</code> &amp; <code>1399324686595291</code>) வழியாக சோதனை OTP (<strong>${testOtp}</strong>) அனுப்பப்பட்டுப் பரிசோதிக்கப்படுகிறது...`;
+    }
+
+    const res = await dispatchWhatsappOtpMessage(rawPhone, testOtp, { uNo: "ADMIN", udiseNo: "33230000001", nameEn: "CEO OFFICE SIVAGANGAI", nameTa: "முதன்மைக் கல்வி அலுவலகம் சிவகங்கை" }, "WhatsApp API Live Diagnostic");
+
+    if (!box) return;
+    if (res.apiDispatched) {
+      box.style.background = "#dcfce7";
+      box.style.border = "1px solid #22c55e";
+      box.style.color = "#14532d";
+      box.innerHTML = `
+        <div>✅ <strong>வெற்றி! Meta WhatsApp Cloud API வழியாக குறுந்தகவல் (+${toPhone}) அனுப்பப்பட்டது!</strong> (OTP: <code>${testOtp}</code>)</div>
+        ${!res.textDispatched && res.templateDispatched ? `<div style="margin-top:4px; font-size:0.73rem; color:#166534;">ℹ️ குறிப்பு: <code>hello_world</code> டெம்ப்ளேட் சென்றுள்ளது. 6-இலக்க தமிழ் OTP உரைச் செய்தியும் நேரடியாக வர, உங்கள் கைபேசியிலிருந்து <a href="https://wa.me/17115373221?text=OTP" target="_blank" rel="noopener" style="font-weight:800; color:#15803d;">+1 711-537-3221 எண்ணிற்கு 'OTP' என ஒருமுறை WhatsApp செய்தி அனுப்பவும் ↗</a> (24 மணிநேர சாளரம் திறக்கும்).</div>` : ""}
+      `;
+      showToast("✅ WhatsApp API சோதனை வெற்றி!", "#22c55e");
+    } else {
+      box.style.background = "#fef2f2";
+      box.style.border = "1px solid #f87171";
+      box.style.color = "#7f1d1d";
+      let solutionHtml = "";
+      if (res.apiErrorCode === 190 || String(res.apiErrorNote).includes("190") || String(res.apiErrorNote).toLowerCase().includes("oauth") || String(res.apiErrorNote).toLowerCase().includes("token")) {
+        solutionHtml = `
+          <div style="margin-top:5px; background:#fff; padding:7px 9px; border-radius:6px; border:1px solid #fca5a5; color:#1e293b;">
+            <strong>🔍 கண்டறியப்பட்ட காரணம் (Error Code 190 - Access Token காலாவதி):</strong><br>
+            உங்கள் <code>Whatsapp API Key.txt</code> கோப்பில் உள்ள <code>EAAg6K107UYwBSzcHF9...</code> என்ற Access Token <strong>24 மணிநேர தற்காலிக (Temporary) Token</strong> என்பதால் காலாவதியாகிவிட்டது.<br>
+            <strong>🛠️ உடனடித் தீர்வு:</strong>
+            <ol style="margin:4px 0 4px 18px;">
+              <li><a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener" style="color:#2563eb; font-weight:800;">Meta for Developers ➔ Your App ➔ WhatsApp ➔ API Setup ↗</a> பக்கத்திற்குச் செல்லவும் (உள்நுழையும் போது 2FA कोड கேட்டால் மேலே உள்ள <strong>📋 2FA Code நகல்</strong> பொத்தானைப் பயன்படுத்தவும்).</li>
+              <li><strong>Generate access token</strong> பொத்தானை அழுத்திப் புதிய Token-ஐ நகலெடுக்கவும் (அல்லது நிரந்தரத் தீர்விற்கு <a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener" style="color:#2563eb; font-weight:800;">Business Settings ➔ System Users ↗</a> பகுதியில் <strong>Never Expire Permanent Token</strong> உருவாக்கவும்).</li>
+              <li>அந்தப் புதிய Token-ஐ மேலே உள்ள <strong>Meta Access Token</strong> பெட்டியில் ஒட்டி <strong>"💾 அமைப்புகளைச் சேமி"</strong> அழுத்தவும்!</li>
+            </ol>
+          </div>
+        `;
+      } else if (res.apiErrorCode === 131030 || String(res.apiErrorNote).includes("131030") || String(res.apiErrorNote).toLowerCase().includes("allowed list")) {
+        solutionHtml = `
+          <div style="margin-top:5px; background:#fff; padding:7px 9px; border-radius:6px; border:1px solid #fca5a5; color:#1e293b;">
+            <strong>🔍 கண்டறியப்பட்ட காரணம் (Error Code 131030 - Test Number கட்டுப்பாடு):</strong><br>
+            உங்கள் சோதனை எண் (<code>+1 711-537-3221</code> | ID: <code>1457353970785529</code>) Test Mode-ல் உள்ளதால், Meta API Setup பக்கத்தில் <strong>"To ➔ Manage phone number list"</strong>-ல் சேர்க்கப்பட்ட 5 எண்களுக்கு மட்டுமே மெசேஜ் செல்லும். அனைத்து 282 பள்ளிகளுக்கும் செல்ல உங்கள் சொந்த இந்திய எண்ணை (<code>+91</code>) இணைக்கவும் அல்லது கீழேயுள்ள 1-Click நேரடி WhatsApp பொத்தானைப் பயன்படுத்தவும்.
+          </div>
+        `;
+      } else {
+        solutionHtml = `
+          <div style="margin-top:5px; background:#fff; padding:7px 9px; border-radius:6px; border:1px solid #fca5a5; color:#1e293b;">
+            <strong>🛠️ மாற்று வழி:</strong> புதிய Meta Permanent Token உள்ளிடும் வரை, கீழேயுள்ள பச்சை நிற பொத்தானை அழுத்தி நேரடியாக WhatsApp வழியாக OTP அனுப்பலாம்.
+          </div>
+        `;
+      }
+      box.innerHTML = `
+        <div>⚠️ <strong>Meta Cloud API நேரடி பதில்:</strong> <code>${res.apiErrorNote || "HTTP 401: OAuthException (Access Token Expired)"}</code></div>
+        ${solutionHtml}
+        <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <a href="${directWaUrl}" target="_blank" rel="noopener" style="background:#16a34a; color:#fff; padding:5px 12px; border-radius:6px; text-decoration:none; font-weight:800; font-size:0.75rem;">
+            📲 1-Click மூலம் இப்போதே +${toPhone}-க்கு WhatsApp OTP (${testOtp}) அனுப்புக ↗
+          </a>
+        </div>
+      `;
+      showToast("⚠️ Meta Access Token காலாவதியாகியுள்ளது - தீர்வு கீழே காட்டப்பட்டுள்ளது!", "#f59e0b");
+    }
   }
 
   // Dispatch Email OTP via Google Apps Script (ceosvgweb@gmail.com MailApp/GmailApp service)
@@ -12364,14 +12557,17 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const waCreds = getWhatsappApiCredentials();
     const waTokEl = document.getElementById("cfgWaAccessToken");
     const waPidEl = document.getElementById("cfgWaPhoneNumberId");
+    const waAltPidEl = document.getElementById("cfgWaAltPhoneNumberId");
     const waTplEl = document.getElementById("cfgWaTemplateName");
     const waTidEl = document.getElementById("cfgWaTemplateId");
     const waGwEl = document.getElementById("cfgWaGatewayUrl");
     if (waTokEl) waTokEl.value = waCreds.accessToken || "";
     if (waPidEl) waPidEl.value = waCreds.phoneNumberId || "1457353970785529";
+    if (waAltPidEl) waAltPidEl.value = waCreds.altPhoneNumberId || "1399324686595291";
     if (waTplEl) waTplEl.value = waCreds.templateName || "hello_world";
     if (waTidEl) waTidEl.value = waCreds.templateId || "2600197680404000";
     if (waGwEl) waGwEl.value = waCreds.gatewayWebhookUrl || "";
+    if (typeof updateLiveMetaTotpDisplay === "function") updateLiveMetaTotpDisplay();
 
     if (defaultTab && ["firebase", "guide", "sheet"].includes(defaultTab)) {
       switchCloudSettingsTab(defaultTab);
@@ -12433,6 +12629,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     const waTokEl = document.getElementById("cfgWaAccessToken");
     const waPidEl = document.getElementById("cfgWaPhoneNumberId");
+    const waAltPidEl = document.getElementById("cfgWaAltPhoneNumberId");
     const waTplEl = document.getElementById("cfgWaTemplateName");
     const waTidEl = document.getElementById("cfgWaTemplateId");
     const waGwEl = document.getElementById("cfgWaGatewayUrl");
@@ -12440,7 +12637,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     safeSetStorage("CEOSVG_WA_CLOUD_CFG", {
       accessToken: waTokEl ? waTokEl.value.trim() : (prevWaCfg.accessToken || ""),
       phoneNumberId: waPidEl ? waPidEl.value.trim() : (prevWaCfg.phoneNumberId || "1457353970785529"),
-      altPhoneNumberId: prevWaCfg.altPhoneNumberId || "1399324686595291",
+      altPhoneNumberId: waAltPidEl ? waAltPidEl.value.trim() : (prevWaCfg.altPhoneNumberId || "1399324686595291"),
       messagingAccountId: prevWaCfg.messagingAccountId || "1724740268587231",
       templateName: waTplEl ? waTplEl.value.trim() : (prevWaCfg.templateName || "hello_world"),
       templateLang: prevWaCfg.templateLang || "en_US",
@@ -14874,17 +15071,26 @@ function testSendWhatsappOtpMenu() {
       alertBox.style.color = "#854d0e";
       alertBox.textContent = `⏳ சோதனை OTP (${testOtp}) ceosvgweb@gmail.com மற்றும் WhatsApp API-க்கு அனுப்பப்படுகிறது...`;
     }
-    await Promise.all([
+    const testPhone = (document.getElementById("cfgWaTestRecipientPhone")?.value || "9626471035").trim();
+    const [emRes, waRes] = await Promise.all([
       dispatchEmailOtpMessage("ceosvgweb@gmail.com", testOtp, { uNo: "ADMIN", udiseNo: "33230000001", nameEn: "CEO OFFICE SIVAGANGAI", nameTa: "முதன்மைக் கல்வி அலுவலகம் சிவகங்கை" }, "Google Sheet & Email OTP Live Test"),
-      dispatchWhatsappOtpMessage("9626471035", testOtp, { uNo: "ADMIN", udiseNo: "33230000001", nameEn: "CEO OFFICE SIVAGANGAI", nameTa: "முதன்மைக் கல்வி அலுவலகம் சிவகங்கை" }, "WhatsApp Cloud API Live Test")
+      dispatchWhatsappOtpMessage(testPhone, testOtp, { uNo: "ADMIN", udiseNo: "33230000001", nameEn: "CEO OFFICE SIVAGANGAI", nameTa: "முதன்மைக் கல்வி அலுவலகம் சிவகங்கை" }, "WhatsApp Cloud API Live Test")
     ]);
+    const directWaUrl = buildDirectWhatsappClickUrl(testPhone, testOtp, { uNo: "ADMIN", nameEn: "CEO OFFICE SIVAGANGAI" }, "WhatsApp Cloud API Live Test");
     if (alertBox) {
-      alertBox.style.background = "#dcfce7";
-      alertBox.style.border = "1px solid #86efac";
-      alertBox.style.color = "#14532d";
-      alertBox.innerHTML = `✅ சோதனை OTP (<strong>${testOtp}</strong>) வெற்றிகரமாக அனுப்பப்பட்டது! உங்கள் <code>ceosvgweb@gmail.com</code> இன்பாக்ஸ் மற்றும் Google Sheet-ன் <code>OTP_LOGS</code> தாவலைப் பார்க்கவும்.`;
+      if (waRes && waRes.apiDispatched) {
+        alertBox.style.background = "#dcfce7";
+        alertBox.style.border = "1px solid #86efac";
+        alertBox.style.color = "#14532d";
+        alertBox.innerHTML = `✅ சோதனை OTP (<strong>${testOtp}</strong>) Email (<code>ceosvgweb@gmail.com</code>) மற்றும் WhatsApp API (+${waRes.toPhone}) இரண்டிற்கும் வெற்றிகரமாக அனுப்பப்பட்டது!`;
+      } else {
+        alertBox.style.background = "#fffbeb";
+        alertBox.style.border = "1px solid #f59e0b";
+        alertBox.style.color = "#78350f";
+        alertBox.innerHTML = `📧 <strong>Email OTP (${testOtp}) வெற்றிகரமாக அனுப்பப்பட்டது!</strong><br>⚠️ <strong>WhatsApp Cloud API நிலை:</strong> <code>${(waRes && waRes.apiErrorNote) || "HTTP 401: Meta Access Token காலாவதியானது (Code 190)"}</code> — மேலே பெட்டி எண் 4-ல் புதிய Permanent Access Token உள்ளிடவும் அல்லது <a href="${directWaUrl}" target="_blank" rel="noopener" style="color:#15803d; font-weight:900; text-decoration:underline;">📲 இங்கே கிளிக் செய்து 1-Click WhatsApp வழியாக அனுப்பவும் ↗</a>.`;
+      }
     }
-    showToast(`✅ சோதனை OTP (${testOtp}) அனுப்பப்பட்டது!`, "#22c55e");
+    showToast(`✅ Email OTP அனுப்பப்பட்டது! (${testOtp})`, "#22c55e");
   }
 
   // =========================================================================
