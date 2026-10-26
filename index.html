@@ -747,6 +747,88 @@
       margin: 0 !important;
     }
 
+    /* =======================================================================
+       CLEAN STANDARD PAGE MODE FOR NEW SCHOOL REGISTRATION (body.reg-page-mode)
+       Normal page with top header banner and standard form - No map, No blue frame
+       ======================================================================= */
+    body.reg-page-mode {
+      background: #f1f5f9 !important;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    body.reg-page-mode .container {
+      background: #f1f5f9 !important;
+      min-height: 100vh;
+      display: flex !important;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    body.reg-page-mode .top-system-bar,
+    body.reg-page-mode .flash-ticker-bar,
+    body.reg-page-mode #viewSchool,
+    body.reg-page-mode #viewAdmin,
+    body.reg-page-mode .creator-card,
+    body.reg-page-mode .portal-footer,
+    body.reg-page-mode .portal-header .header-right-box,
+    body.reg-page-mode .modern-signin-left,
+    body.reg-page-mode .welcome-header-ribbon,
+    body.reg-page-mode #regStandaloneTabBanner {
+      display: none !important;
+    }
+    body.reg-page-mode .portal-header {
+      display: flex !important;
+      padding: 10px 24px !important;
+      justify-content: center !important;
+      gap: 16px !important;
+    }
+    body.reg-page-mode .portal-header .header-center-content {
+      flex: 0 1 auto !important;
+    }
+    body.reg-page-mode #viewAuth.view-section.active {
+      display: block !important;
+      width: 100%;
+      padding: 16px 14px 28px !important;
+      margin: 0 auto !important;
+    }
+    body.reg-page-mode .modern-signin-shell {
+      display: block !important;
+      max-width: 960px !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      background: #ffffff !important;
+      border-radius: 10px !important;
+      border: 1px solid #cbd5e1 !important;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05) !important;
+      min-height: auto !important;
+      overflow: visible !important;
+    }
+    body.reg-page-mode .modern-signin-right {
+      padding: 18px 22px !important;
+      display: block !important;
+      background: #ffffff !important;
+      border-radius: 10px !important;
+    }
+    .reg-form-grid-4 {
+      display: grid;
+      grid-template-columns: 1.15fr 1.15fr 0.9fr 1.3fr;
+      gap: 10px;
+    }
+    @media (max-width: 860px) {
+      .reg-form-grid-4 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 540px) {
+      .reg-form-grid-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* Split Card Wrapper matching Original Design */
     .modern-signin-shell {
       width: 100%;
@@ -2342,86 +2424,105 @@
 
         <!-- 1B. SCHOOL REGISTRATION / FIRST TIME PASSWORD SETUP WITH EMAIL OTP -->
         <div id="authPaneSchoolReg" style="display:none;">
-          <div id="regStandaloneTabBanner" style="display:none; background:linear-gradient(135deg, #0f294a, #1e40af); color:#ffffff; padding:8px 12px; border-radius:8px; margin-bottom:10px; font-size:0.78rem; font-weight:800; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
-            <span>🆕 புதிய பயனர் பள்ளிப் பதிவுத் தாவல் (New School Registration Tab)</span>
-            <a href="#schoolLogin" onclick="navigateToLoginFromRegistration('', event)" style="background:#fde047; color:#0f172a; text-decoration:none; padding:3px 10px; border-radius:6px; font-weight:900; font-size:0.75rem;">🔐 உள்நுழைவுப் பக்கம் (Login Page) ➔</a>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; flex-wrap:wrap;">
-            <h3 style="font-size:1.12rem; font-weight:900; color:#0f172a;">📝 புதிய பள்ளிப் பதிவு &amp; கடவுச்சொல் உருவாக்கம் (First-Time School Registration)</h3>
-            <a href="#schoolLogin" class="btn btn-outline btn-sm" onclick="navigateToLoginFromRegistration('', event)" style="text-decoration:none; font-weight:800;">← உள்நுழைவு (Back to Login)</a>
-          </div>
-          <div style="font-size:0.78rem; color:#334155; background:#f0f9ff; border:1px solid #bae6fd; padding:8px 10px; border-radius:8px; margin-bottom:10px; line-height:1.45;">
-            🔒 <strong>பாதுகாப்பு நடைமுறை:</strong> பள்ளிகள் முதன்முறை உள்நுழையும் பொழுது <strong>பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (School Email ID)</strong> முகவரிக்கு <strong>6-இலக்க OTP</strong> அனுப்பிச் சரிபார்த்த பிறகே புதிய கடவுச்சொல் மற்றும் 6-இலக்க PIN உருவாக்க இயலும்.
-          </div>
-          <div class="form-group" style="margin-bottom:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:9px; padding:10px;">
-            <label class="form-label" style="font-size:0.78rem; font-weight:900; color:#0f294a; margin-bottom:6px; display:block;">1. உங்கள் பள்ளியைத் தேர்ந்தெடுக்கவும் (Select School - U.No / UDISE / Name) <span class="required">*</span></label>
-            <div class="grid-2" style="gap:8px; margin-bottom:6px;">
-              <div style="display:flex; gap:6px;">
-                <input type="text" id="regSearchQueryInput" class="form-control" placeholder="U.No / UDISE / பள்ளிப் பெயர் தட்டச்சு செய்து தேடுக (எ.கா: 101)..." oninput="lookupSchoolForRegistration(true)" onkeydown="if(event.key==='Enter'){event.preventDefault(); lookupSchoolForRegistration(false);}" style="font-size:0.82rem;">
-                <button type="button" class="btn btn-primary btn-sm" onclick="lookupSchoolForRegistration(false)" style="white-space:nowrap;">🔍 தேடுக</button>
-              </div>
-              <select id="regSchoolSelectDropdown" class="form-control" onchange="onRegSchoolDropdownSelect(this.value)" style="font-size:0.82rem; font-weight:800; color:#0f294a;">
-                <option value="">-- உங்கள் பள்ளியைத் தேர்ந்தெடுக்கவும் (282 பள்ளிகள்) --</option>
-              </select>
+          <div id="regStandaloneTabBanner" style="display:none;"></div>
+
+          <!-- Clean Form Header Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:10px; margin-bottom:12px; border-bottom:1.5px solid #e2e8f0; gap:10px; flex-wrap:wrap;">
+            <div>
+              <h3 style="font-size:1.08rem; font-weight:900; color:#0f172a; margin:0;">📝 புதிய பயனர் பள்ளிப் பதிவு படிவம் (New School Registration Form)</h3>
+              <div style="font-size:0.76rem; color:#475569; font-weight:600; margin-top:2px;">பள்ளியைத் தேர்ந்தெடுத்து, பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (Email ID) OTP சரிபார்த்து புதிய கடவுச்சொல் &amp; 6-இலக்க PIN அமைக்கவும்.</div>
             </div>
+            <a href="#schoolLogin" class="btn btn-outline btn-sm" onclick="navigateToLoginFromRegistration('', event)" style="text-decoration:none; font-weight:800; white-space:nowrap;">← உள்நுழைவுப் பக்கம் (Back to Sign in)</a>
           </div>
 
-          <div id="regFoundSchoolSection" style="display:none;">
-            <div class="school-preview-box" id="regFoundSchoolCard" style="padding:9px 12px; margin:4px 0 10px; background:#f0fdf4; border:1.5px solid #22c55e;"></div>
-            <form onsubmit="handleSchoolRegistrationSubmit(event)">
-              <div class="grid-2" style="gap:8px;">
-                <div class="form-group" style="margin-bottom:8px;">
-                  <label class="form-label" style="font-size:0.76rem;">HM Name (English) <span class="required">*</span></label>
-                  <input type="text" id="regHmNameEn" class="form-control" style="padding:6px 10px; font-size:0.84rem;" required>
-                </div>
-                <div class="form-group" style="margin-bottom:8px;">
-                  <label class="form-label" style="font-size:0.76rem;">HM பெயர் (தமிழில்)</label>
-                  <input type="text" id="regHmNameTa" class="form-control" style="padding:6px 10px; font-size:0.84rem;">
+          <!-- Step 1: School Selection Row -->
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+            <div class="grid-2" style="gap:10px; align-items:end;">
+              <div>
+                <label class="form-label" style="font-size:0.78rem; font-weight:800; color:#1e293b; margin-bottom:4px;">1. பள்ளி U.No / UDISE எண் தேடல் (Quick Search)</label>
+                <div style="display:flex; gap:6px;">
+                  <input type="text" id="regSearchQueryInput" class="form-control" placeholder="U.No / UDISE / பள்ளிப் பெயர் (எ.கா: 101)..." oninput="lookupSchoolForRegistration(true)" onkeydown="if(event.key==='Enter'){event.preventDefault(); lookupSchoolForRegistration(false);}" style="padding:7px 10px; font-size:0.84rem;">
+                  <button type="button" class="btn btn-primary btn-sm" onclick="lookupSchoolForRegistration(false)" style="white-space:nowrap; padding:7px 12px;">🔍 தேடுக</button>
                 </div>
               </div>
-              <div class="grid-2" style="gap:8px; grid-template-columns: 175px 1fr;">
-                <div class="form-group" style="margin-bottom:8px;">
-                  <label class="form-label" style="font-size:0.75rem;">2. தலைமையாசிரியர் கைபேசி எண் (HM Mobile) <span class="required">*</span></label>
-                  <input type="tel" id="regSchoolMobile" class="form-control" style="padding:6px 9px; font-size:0.84rem; font-weight:800;" maxlength="10" inputmode="numeric" placeholder="10-இலக்க எண்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" required>
+              <div>
+                <label class="form-label" style="font-size:0.78rem; font-weight:800; color:#1e293b; margin-bottom:4px;">பள்ளியின் பெயரைத் தேர்ந்தெடுக்கவும் (Select School) <span class="required">*</span></label>
+                <select id="regSchoolSelectDropdown" class="form-control" onchange="onRegSchoolDropdownSelect(this.value)" style="padding:7px 10px; font-size:0.84rem; font-weight:800; color:#0f172a;">
+                  <option value="">-- உங்கள் பள்ளியைத் தேர்ந்தெடுக்கவும் (282 பள்ளிகள்) --</option>
+                </select>
+              </div>
+            </div>
+            <div class="school-preview-box" id="regFoundSchoolCard" style="display:none; padding:7px 12px; margin:8px 0 0; background:#f0fdf4; border:1px solid #22c55e; border-radius:6px;"></div>
+          </div>
+
+          <!-- Main Registration Form Fields (Visible as a normal form) -->
+          <div id="regFoundSchoolSection" style="display:block;">
+            <form onsubmit="handleSchoolRegistrationSubmit(event)">
+              <!-- Step 2 & 3: HM Name & Contact Details in a compact 4-column row -->
+              <div class="reg-form-grid-4" style="margin-bottom:12px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem; font-weight:800;">2. HM Name (English) <span class="required">*</span></label>
+                  <input type="text" id="regHmNameEn" class="form-control" style="padding:7px 10px; font-size:0.84rem;" placeholder="HM Name in English" required>
                 </div>
-                <div class="form-group" style="margin-bottom:8px;">
-                  <label class="form-label" style="font-size:0.75rem;">3. பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (School Email ID) <span class="required">*</span></label>
-                  <input type="email" id="regSchoolEmail" class="form-control" style="padding:6px 9px; font-size:0.82rem; font-weight:700;" placeholder="school@gmail.com" oninput="resetRegOtpStateOnContactChange()" onblur="this.value=normalizeAndRepairSchoolEmail(this.value)" required>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem; font-weight:800;">HM பெயர் (தமிழில்)</label>
+                  <input type="text" id="regHmNameTa" class="form-control" style="padding:7px 10px; font-size:0.84rem;" placeholder="தலைமையாசிரியர் பெயர்">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem; font-weight:800;">3. HM கைபேசி எண் (Mobile) <span class="required">*</span></label>
+                  <input type="tel" id="regSchoolMobile" class="form-control" style="padding:7px 10px; font-size:0.84rem; font-weight:800;" maxlength="10" inputmode="numeric" placeholder="10-இலக்க எண்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="font-size:0.76rem; font-weight:800;">4. பள்ளி மின்னஞ்சல் (School Email ID) <span class="required">*</span></label>
+                  <input type="email" id="regSchoolEmail" class="form-control" style="padding:7px 10px; font-size:0.84rem; font-weight:700;" placeholder="school@gmail.com" oninput="resetRegOtpStateOnContactChange()" onblur="this.value=normalizeAndRepairSchoolEmail(this.value)" required>
                 </div>
               </div>
 
-              <!-- STEP 4: SEND EMAIL OTP ONLY (NO WHATSAPP OTP, NO DIRECT OTP DISPLAY) -->
-              <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:9px; padding:10px; margin-bottom:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-                  <span style="font-size:0.79rem; font-weight:900; color:#1e3a8a;">4. பள்ளி மின்னஞ்சல் OTP சரிபார்ப்பு (School Email OTP Verification) <span class="required">*</span></span>
-                  <button type="button" id="btnSendRegDualOtp" class="btn btn-primary btn-sm" onclick="sendRegistrationDualOtp()" style="background:linear-gradient(135deg, #1d4ed8, #0284c7); border:none; font-weight:800; font-size:0.76rem; padding:5px 12px;">
+              <!-- Step 4: Email OTP Verification (Clean neutral box, no blue frame) -->
+              <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                  <span style="font-size:0.8rem; font-weight:800; color:#0f172a;">5. பள்ளி மின்னஞ்சல் OTP சரிபார்ப்பு (Email OTP Verification) <span class="required">*</span></span>
+                  <button type="button" id="btnSendRegDualOtp" class="btn btn-primary btn-sm" onclick="sendRegistrationDualOtp()" style="font-weight:800; font-size:0.78rem; padding:6px 14px;">
                     📧 பள்ளி Email-க்கு OTP அனுப்புக (Send Email OTP)
                   </button>
                 </div>
 
                 <!-- Email OTP Input Box -->
-                <div id="regOtpVerifyInputWrap" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #93c5fd;">
-                  <div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
-                    <div style="flex:1; min-width:190px;">
-                      <label class="form-label" style="font-size:0.74rem; color:#1d4ed8; font-weight:800;">🔵 Email 6-இலக்க OTP <span class="required">*</span></label>
-                      <input type="text" id="regEmailOtpInput" class="form-control" maxlength="6" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" placeholder="6-இலக்க Email OTP உள்ளிடவும்" style="padding:7px 10px; font-size:0.92rem; font-weight:900; letter-spacing:3px; text-align:center; border:1.5px solid #3b82f6;">
-                    </div>
-                    <button type="button" class="btn btn-success btn-sm" onclick="verifyRegistrationDualOtp()" style="font-weight:900; padding:8px 18px; height:38px; white-space:nowrap;">
+                <div id="regOtpVerifyInputWrap" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1;">
+                  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <label class="form-label" style="font-size:0.78rem; color:#0f172a; font-weight:800; margin:0;">6-இலக்க Email OTP <span class="required">*</span>:</label>
+                    <input type="text" id="regEmailOtpInput" class="form-control" maxlength="6" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" placeholder="OTP உள்ளிடவும்" style="max-width:180px; padding:6px 10px; font-size:0.9rem; font-weight:900; letter-spacing:3px; text-align:center;">
+                    <button type="button" class="btn btn-success btn-sm" onclick="verifyRegistrationDualOtp()" style="font-weight:900; padding:7px 16px; white-space:nowrap;">
                       ✓ OTP சரிபார்க்க
                     </button>
                   </div>
                 </div>
                 <div id="regOtpStatusMsg" style="font-size:0.76rem; font-weight:700; color:#0f766e; margin-top:6px; display:none;"></div>
-                <div id="regOtpVerifiedBadge" style="display:none; margin-top:6px; background:#dcfce7; border:1px solid #22c55e; color:#14532d; padding:6px 10px; border-radius:6px; font-size:0.78rem; font-weight:900; text-align:center;">
+                <div id="regOtpVerifiedBadge" style="display:none; margin-top:6px; background:#dcfce7; border:1px solid #22c55e; color:#14532d; padding:5px 10px; border-radius:6px; font-size:0.78rem; font-weight:800; text-align:center;">
                   ✅ பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (Email ID) OTP மூலம் வெற்றிகரமாக உறுதிப்படுத்தப்பட்டது!
                 </div>
               </div>
 
-              <!-- STEP 2: CREATE NEW PASSWORD & 6-DIGIT PIN (ENABLED AFTER OTP VERIFICATION) -->
+              <!-- Step 5: Password & 6-Digit PIN Setup -->
               <div id="regPasswordSetupWrap" style="opacity:0.55; pointer-events:none; transition:all 0.25s;">
-                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px; margin-bottom:8px;">
-                  <div style="font-size:0.73rem; font-weight:900; color:#0f294a; margin-bottom:4px;">🔐 கடவுச்சொல் &amp; PIN விதிமுறைகள் (Password &amp; 6-Digit PIN Rules):</div>
-                  <div id="regPassRulesLiveChecklist" style="display:flex; flex-wrap:wrap; gap:5px; font-size:0.7rem; font-weight:800;">
+                <div class="grid-3" style="gap:10px; margin-bottom:8px;">
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" style="font-size:0.76rem; font-weight:800;">6. புதிய கடவுச்சொல் (New Password) <span class="required">*</span></label>
+                    <input type="password" id="regNewPassword" class="form-control" style="padding:7px 10px; font-size:0.84rem;" minlength="7" placeholder="எ.கா: School@1" oninput="updateLivePasswordChecklist('reg')" required>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" style="font-size:0.76rem; font-weight:800;">கடவுச்சொல் உறுதிப்படுத்தல் (Confirm) <span class="required">*</span></label>
+                    <input type="password" id="regConfirmPassword" class="form-control" style="padding:7px 10px; font-size:0.84rem;" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" oninput="updateLivePasswordChecklist('reg')" required>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" style="font-size:0.76rem; font-weight:800;">7. 6-இலக்க PIN எண் (6-Digit PIN) <span class="required">*</span></label>
+                    <input type="password" id="regNewPinInput" class="form-control" style="padding:7px 10px; font-size:0.88rem; font-weight:900; letter-spacing:3px; text-align:center;" maxlength="6" inputmode="numeric" placeholder="6 இலக்கம்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); updateLivePasswordChecklist('reg')" required>
+                  </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px;">
+                  <div id="regPassRulesLiveChecklist" style="display:flex; flex-wrap:wrap; align-items:center; gap:5px; font-size:0.7rem; font-weight:800;">
+                    <span style="color:#475569; margin-right:2px;">விதிமுறைகள்:</span>
                     <span id="ruleRegLen" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 7+ எழுத்துகள்</span>
                     <span id="ruleRegCap" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 Caps (A-Z)</span>
                     <span id="ruleRegSml" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 Small (a-z)</span>
@@ -2429,43 +2530,28 @@
                     <span id="ruleRegSpc" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 குறியீடு (@#$%&amp;*)</span>
                     <span id="ruleRegPin" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 6-இலக்க PIN</span>
                   </div>
+                  <button type="submit" id="btnRegSubmitFinal" class="btn btn-success" style="font-weight:900; padding:8px 20px; font-size:0.86rem; white-space:nowrap;">
+                    ✅ பதிவு செய்க (Complete Registration)
+                  </button>
                 </div>
-                <div class="grid-3" style="gap:8px;">
-                  <div class="form-group" style="margin-bottom:8px;">
-                    <label class="form-label" style="font-size:0.75rem;">புதிய கடவுச்சொல் (Min 7 Chars) <span class="required">*</span></label>
-                    <input type="password" id="regNewPassword" class="form-control" style="padding:6px 10px; font-size:0.84rem;" minlength="7" placeholder="எ.கா: School@1" oninput="updateLivePasswordChecklist('reg')" required>
-                  </div>
-                  <div class="form-group" style="margin-bottom:8px;">
-                    <label class="form-label" style="font-size:0.75rem;">கடவுச்சொல் உறுதிப்படுத்தல் <span class="required">*</span></label>
-                    <input type="password" id="regConfirmPassword" class="form-control" style="padding:6px 10px; font-size:0.84rem;" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" oninput="updateLivePasswordChecklist('reg')" required>
-                  </div>
-                  <div class="form-group" style="margin-bottom:8px;">
-                    <label class="form-label" style="font-size:0.75rem; color:#0369a1;">🔢 6-இலக்க PIN எண் (6-Digit PIN) <span class="required">*</span></label>
-                    <input type="password" id="regNewPinInput" class="form-control" style="padding:6px 10px; font-size:0.9rem; font-weight:900; letter-spacing:3px; text-align:center; border:1.5px solid #0284c7;" maxlength="6" inputmode="numeric" placeholder="6 இலக்கம்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); updateLivePasswordChecklist('reg')" required>
-                  </div>
-                </div>
-                <button type="submit" id="btnRegSubmitFinal" class="btn btn-success btn-block" style="font-weight:900; padding:9px;">
-                  ✅ பள்ளி விவரங்கள், கடவுச்சொல் &amp; 6-இலக்க PIN பதிவு செய்க (Complete Registration)
-                </button>
               </div>
             </form>
           </div>
 
           <!-- Post-Registration Completion Confirmation Card with Direct Link to Login Page -->
-          <div id="regCompletedSuccessBox" style="display:none; background:#f0fdf4; border:2px solid #16a34a; border-radius:12px; padding:16px 14px; margin-top:10px; text-align:center; box-shadow:0 6px 18px rgba(22,163,74,0.12);">
-            <div style="font-size:2rem; line-height:1; margin-bottom:6px;">🎉✅</div>
-            <h4 style="font-size:1.05rem; font-weight:900; color:#14532d; margin:0 0 6px;">
-              பள்ளி முதல் முறை பதிவு வெற்றிகரமாக நிறைவடைந்தது!<br>
-              <span style="font-size:0.84rem; color:#166534;">(School First-Time Registration Completed Successfully!)</span>
+          <div id="regCompletedSuccessBox" style="display:none; background:#f0fdf4; border:2px solid #16a34a; border-radius:10px; padding:16px 14px; margin-top:10px; text-align:center;">
+            <div style="font-size:1.8rem; line-height:1; margin-bottom:6px;">🎉✅</div>
+            <h4 style="font-size:1.02rem; font-weight:900; color:#14532d; margin:0 0 6px;">
+              பள்ளி முதல் முறை பதிவு வெற்றிகரமாக நிறைவடைந்தது! (Registration Completed Successfully)
             </h4>
             <div id="regCompletedSummaryDetails" style="background:#ffffff; border:1px solid #bbf7d0; border-radius:8px; padding:10px 12px; margin:10px 0; text-align:left; font-size:0.8rem; color:#1e293b; line-height:1.6;"></div>
             <div style="font-size:0.8rem; font-weight:700; color:#15803d; margin-bottom:10px;">
               உங்கள் புதிய <strong>கடவுச்சொல் (Password)</strong> அல்லது <strong>6-இலக்க PIN எண்</strong> பயன்படுத்தி இப்போது உள்நுழையலாம்:
             </div>
-            <a id="regSuccessGoToLoginLink" href="#schoolLogin" onclick="navigateToLoginFromRegistration(window._lastRegisteredSchoolUNo || '', event)" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; background:linear-gradient(135deg, #0f294a, #1d4ed8); color:#ffffff; text-decoration:none; padding:11px 16px; border-radius:9px; font-size:0.92rem; font-weight:900; box-shadow:0 4px 12px rgba(29,78,216,0.25); cursor:pointer;">
-              🔐 உள்நுழைவுப் பக்கத்திற்குச் செல்ல (Click Here to Go to Login Page) ➔
+            <a id="regSuccessGoToLoginLink" href="#schoolLogin" onclick="navigateToLoginFromRegistration(window._lastRegisteredSchoolUNo || '', event)" class="btn btn-primary" style="text-decoration:none; padding:10px 20px; font-size:0.9rem; font-weight:900;">
+              🔐 உள்நுழைவுப் பக்கத்திற்குச் செல்ல (Go to Sign in Page) ➔
             </a>
-            <div style="margin-top:10px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <div style="margin-top:8px;">
               <button type="button" class="btn btn-outline btn-sm" onclick="resetRegistrationFormForAnotherSchool()" style="font-size:0.75rem; font-weight:800;">
                 📝 மற்றொரு பள்ளியைப் பதிவு செய்ய (Register Another School)
               </button>
@@ -7278,7 +7364,15 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const target = document.getElementById(viewName);
     if (target) target.classList.add("active");
     if (document.body) {
-      document.body.classList.toggle("auth-mode", viewName === "viewAuth");
+      if (viewName !== "viewAuth") {
+        document.body.classList.remove("auth-mode");
+        document.body.classList.remove("reg-page-mode");
+      } else {
+        const regPane = document.getElementById("authPaneSchoolReg");
+        const isRegActive = Boolean(regPane && regPane.style.display !== "none");
+        document.body.classList.toggle("reg-page-mode", isRegActive);
+        document.body.classList.toggle("auth-mode", !isRegActive);
+      }
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -7297,9 +7391,22 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       if (btn) btn.classList.toggle("active", k === tabKey);
       if (pane) pane.style.display = k === tabKey ? "block" : "none";
     });
+    if (document.body) {
+      const isAuthView = document.getElementById("viewAuth")?.classList.contains("active");
+      if (isAuthView) {
+        if (tabKey === "schoolReg") {
+          document.body.classList.remove("auth-mode");
+          document.body.classList.add("reg-page-mode");
+          populateRegSchoolDropdown();
+        } else {
+          document.body.classList.remove("reg-page-mode");
+          document.body.classList.add("auth-mode");
+        }
+      }
+    }
     if (tabKey === "students") {
       renderSchoolStudentsRosterUI();
-        if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
+      if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
     }
   }
 
@@ -8060,13 +8167,17 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   function resetRegistrationFormForAnotherSchool() {
     const succBox = document.getElementById("regCompletedSuccessBox");
     if (succBox) succBox.style.display = "none";
+    const sec = document.getElementById("regFoundSchoolSection");
+    if (sec) sec.style.display = "block";
+    const card = document.getElementById("regFoundSchoolCard");
+    if (card) card.style.display = "none";
+    const sel = document.getElementById("regSchoolSelectDropdown");
+    if (sel) sel.value = "";
     const regInp = document.getElementById("regSearchQueryInput");
     if (regInp) {
       regInp.value = "";
       regInp.focus();
     }
-    const sec = document.getElementById("regFoundSchoolSection");
-    if (sec) sec.style.display = "none";
   }
 
   // =========================================================================
@@ -8215,8 +8326,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (uNo) {
       lookupSchoolForRegistration(false);
     } else {
-      const sec = document.getElementById("regFoundSchoolSection");
-      if (sec) sec.style.display = "none";
+      activeRegCandidateSchool = null;
+      const card = document.getElementById("regFoundSchoolCard");
+      if (card) card.style.display = "none";
     }
   }
 
@@ -8235,11 +8347,14 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     populateRegSchoolDropdown();
     const succBox = document.getElementById("regCompletedSuccessBox");
     if (succBox) succBox.style.display = "none";
+    const sec = document.getElementById("regFoundSchoolSection");
+    if (sec) sec.style.display = "block";
+    const card = document.getElementById("regFoundSchoolCard");
     const q = (document.getElementById("regSearchQueryInput")?.value || "").trim();
     const s = findSchoolByUNoOrUdise(q);
-    const sec = document.getElementById("regFoundSchoolSection");
     if (!s) {
-      if (sec) sec.style.display = "none";
+      activeRegCandidateSchool = null;
+      if (card) card.style.display = "none";
       if (!silentWhileTyping && q) {
         showToast("❌ குறிப்பிட்ட U.NO / UDISE எண்ணில் பள்ளி காணப்படவில்லை.", "#ef4444");
       }
@@ -8248,12 +8363,13 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     activeRegCandidateSchool = s;
     const sel = document.getElementById("regSchoolSelectDropdown");
     if (sel && sel.value !== String(s.uNo)) sel.value = String(s.uNo);
-    if (sec) sec.style.display = "block";
-    const card = document.getElementById("regFoundSchoolCard");
     if (card) {
+      card.style.display = "block";
       card.innerHTML = `
-        <div style="font-size:0.92rem; font-weight:900; color:#14532d;">தேர்ந்தெடுக்கப்பட்ட பள்ளி: [${s.uNo}] ${s.nameEn}</div>
-        <div style="font-size:0.78rem; color:#166534; font-weight:700; margin-top:2px;">UDISE: <strong>${s.udiseNo}</strong> | ஒன்றியம்: <strong>${s.block || "-"}</strong></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+          <span style="font-size:0.86rem; font-weight:900; color:#14532d;">🏫 தேர்ந்தெடுக்கப்பட்ட பள்ளி: [${s.uNo}] ${s.nameEn}</span>
+          <span style="font-size:0.78rem; color:#166534; font-weight:800;">UDISE: <strong>${s.udiseNo}</strong> | ஒன்றியம்: <strong>${s.block || "-"}</strong></span>
+        </div>
       `;
     }
     const authRec = schoolAuthStore[s.uNo] || {};
