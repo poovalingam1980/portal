@@ -2159,16 +2159,16 @@
   <div class="top-system-bar">
     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
       <span class="domain-pill" onclick="goToMainHome()" style="cursor:pointer;" title="முதன்மை முகப்பு பக்கத்திற்கு செல்ல">🌐 portal.ceosvg.in</span>
-      <span><span class="status-dot" id="sheetSyncDot"></span><strong id="sheetSyncStatusText">School-Master Google Sheet இணைக்கப்பட்டுள்ளது (281 பள்ளிகள்)</strong></span>
-      <span id="firebaseLiveBadge" onclick="openCloudSettingsModal('firebase')" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#fff7ed; border:1.5px solid #fdba74; color:#c2410c; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:800; transition:all 0.2s;" title="Firebase நேரடி மேகக்கணித் தரவுத்தள அமைப்புகளைத் திறக்க கிளிக் செய்க">
-        <span id="firebaseStatusDot" style="width:8px; height:8px; border-radius:50%; background:#f97316; display:inline-block; box-shadow:0 0 6px #f97316;"></span>
-        <span id="firebaseStatusText">🟢 Firebase நேரடி இணைப்பு (Live RTDB)</span>
+      <span onclick="openCloudSettingsModal('sheet')" style="cursor:pointer;" title="Google Sheet ஒத்திசைவு விவரங்களைக் காண கிளிக் செய்க"><span class="status-dot" id="sheetSyncDot"></span><strong id="sheetSyncStatusText">📊 Google Sheet நேரடி ஒத்திசைவு தயார் (282 பள்ளிகள்)</strong></span>
+      <span id="firebaseLiveBadge" onclick="openCloudSettingsModal('firebase')" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#f0fdf4; border:1.5px solid #86efac; color:#15803d; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:800; transition:all 0.2s;" title="Firebase + Google Sheet Auto Dual-Sync அமைப்புகளைத் திறக்க கிளிக் செய்க">
+        <span id="firebaseStatusDot" style="width:8px; height:8px; border-radius:50%; background:#16a34a; display:inline-block; box-shadow:0 0 8px #16a34a;"></span>
+        <span id="firebaseStatusText">⚡ Auto Dual-Sync: Firebase + Google Sheet</span>
       </span>
     </div>
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       <button type="button" class="btn btn-outline btn-sm" onclick="goToMainHome()">🏠 முதன்மை முகப்பு (Home)</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal('sheet')" style="background:#fefce8; color:#854d0e; border-color:#facc15; font-weight:800;">📊 ceosvgweb@gmail.com Google Sheet &amp; OTP நிரல்</button>
-      <button type="button" class="btn btn-outline btn-sm" onclick="syncMasterFromGoogleSheet(true)">🔄 Google Sheet ஒத்திசைவு (Sync)</button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="pullAllPortalDataFromBothClouds(true)" title="Firebase மற்றும் Google Sheet இரண்டிலிருந்தும் சமீபத்திய தரவுகளை உடனடியாக ஒத்திசைக்க">🔄 இருவழி ஒத்திசைவு (Dual Sync)</button>
       <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal()">⚙️ இணைப்பு அமைப்பு (Cloud Settings)</button>
       <button type="button" class="btn btn-primary btn-sm" id="topQuickAdminBtn" onclick="quickSwitchToAdminLogin()">🛡️ நிர்வாகி உள்நுழைவு (Admin)</button>
     </div>
@@ -5891,19 +5891,28 @@
         <textarea id="cfgFirebaseRawJson" class="form-control" rows="2" placeholder="const firebaseConfig = { apiKey: &quot;AIza...&quot;, databaseURL: &quot;https://ceosvg-portal-default-rtdb.asia-southeast1.firebasedatabase.app&quot;, projectId: &quot;ceosvg-portal&quot; };" oninput="autoExtractFirebaseConfigFromText(this.value)" style="font-family:monospace; font-size:0.78rem;"></textarea>
       </div>
 
-      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:8px; padding:10px 14px; margin-bottom:14px;">
-        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.85rem; font-weight:800; color:#14532d;">
-          <input type="checkbox" id="cfgFirebaseAutoSync" checked style="width:17px; height:17px; accent-color:#16a34a;">
-          <span>⚡ தலைமையாசிரியர் &amp; நிர்வாகி சேமிக்கும் மாற்றங்களை அதே வினாடியில் நேரடியாக ஒத்திசைக்க (Instant Live SSE + REST Push)</span>
-        </label>
-        <button type="button" class="btn btn-outline btn-sm" onclick="disconnectFirebaseDatabase()" style="font-size:0.75rem; border-color:#ef4444; color:#dc2626; background:#fff;">
-          🔌 இணைப்பைத் துண்டி (Reset URL)
-        </button>
+      <div style="display:flex; flex-direction:column; gap:8px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:8px; padding:10px 14px; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.85rem; font-weight:800; color:#14532d;">
+            <input type="checkbox" id="cfgFirebaseAutoSync" checked style="width:17px; height:17px; accent-color:#16a34a;">
+            <span>🔥 Firebase நேரடி ஒத்திசைவு (Instant Live SSE + REST Push)</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.85rem; font-weight:800; color:#0f294a;">
+            <input type="checkbox" id="cfgGoogleSheetAutoSync" checked style="width:17px; height:17px; accent-color:#0284c7;">
+            <span>📊 Google Sheet தானியங்கி ஒத்திசைவு (Auto Dual-Sync to Google Sheet)</span>
+          </label>
+          <button type="button" class="btn btn-outline btn-sm" onclick="disconnectFirebaseDatabase()" style="font-size:0.75rem; border-color:#ef4444; color:#dc2626; background:#fff;">
+            🔌 இணைப்பைத் துண்டி (Reset URL)
+          </button>
+        </div>
+        <div style="font-size:0.76rem; color:#166534; font-weight:700;">
+          ✅ <strong>Auto Dual-Sync செயலில் உள்ளது:</strong> பள்ளித் தலைமையாசிரியர் அல்லது மாவட்ட நிர்வாகி சேமிக்கும் எந்தவொரு தரவும் (பள்ளி சுயவிவரம், மாணவர் எண்ணிக்கை, பாடப்பிரிவுகள், ஆசிரியர் பதிவேடு, நீக்கக் கோரிக்கை, சுற்றறிக்கை, கடவுச்சொல்) ஒரே நேரத்தில் <strong>Firebase</strong> மற்றும் <strong>Google Sheet</strong> இரண்டிலும் தானாகச் சேமிக்கப்படும்!
+        </div>
       </div>
 
       <!-- Progress Bar for Seeding 282 Schools -->
       <div id="fbSeedProgressBox" style="display:none; background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px; padding:10px 14px; margin-bottom:14px;">
-        <div id="fbSeedProgressText" style="font-size:0.82rem; font-weight:800; color:#1e3a8a; margin-bottom:6px;">🚀 Firebase மேகக்கணிக்குத் தரவுகள் பதிவேற்றப்படுகின்றன...</div>
+        <div id="fbSeedProgressText" style="font-size:0.82rem; font-weight:800; color:#1e3a8a; margin-bottom:6px;">🚀 மேகக்கணிக்குத் தரவுகள் பதிவேற்றப்படுகின்றன...</div>
         <div style="width:100%; height:10px; background:#dbeafe; border-radius:999px; overflow:hidden;">
           <div id="fbSeedProgressBar" style="width:0%; height:100%; background:linear-gradient(90deg, #2563eb, #10b981); transition:width 0.3s;"></div>
         </div>
@@ -5914,17 +5923,17 @@
         <button type="button" class="btn btn-primary" onclick="saveCloudSettings()" style="font-weight:800;">
           💾 அமைப்புகளைச் சேமி &amp; இணை (Save &amp; Connect)
         </button>
+        <button type="button" class="btn btn-success" onclick="seedAllPortalDataToBothClouds()" style="font-weight:800; background:linear-gradient(135deg,#15803d,#0284c7); border:none;">
+          🚀 ஒரே கிளிக்கில் Firebase + Google Sheet இரண்டிலும் பதிவேற்று (Dual Seed All)
+        </button>
+        <button type="button" class="btn btn-outline" onclick="pullAllPortalDataFromBothClouds(true)" style="font-weight:800; border-color:#7c3aed; color:#6d28d9; background:#f5f3ff;">
+          📥 இரண்டிலிருந்தும் சமீபத்திய தரவைப் பெறு (Dual Pull Now)
+        </button>
         <button type="button" class="btn btn-outline" onclick="testFirebaseConnection()" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#f0f9ff;">
           🔌 இணைப்பைச் சோதி (Test Connection)
         </button>
-        <button type="button" class="btn btn-success" onclick="seedAllPortalDataToFirebase()" style="font-weight:800;">
-          🚀 282 பள்ளிகளின் முழுத் தரவையும் Firebase-க்கு பதிவேற்று (Initial Seed)
-        </button>
-        <button type="button" class="btn btn-outline" onclick="pullAllPortalDataFromFirebase(true)" style="font-weight:800; border-color:#7c3aed; color:#6d28d9; background:#f5f3ff;">
-          📥 Firebase-லிருந்து தரவைப் பெறு (Pull Now)
-        </button>
         <button type="button" class="btn btn-outline" onclick="simulateLiveSchoolToCeoSync()" style="font-weight:800; border-color:#ea580c; color:#c2410c; background:#fff7ed;">
-          ⚡ நேரடி ஒத்திசைவு மாதிரிச் சோதனை (Simulate HM ➔ CEO)
+          ⚡ நேரடி Dual-Sync மாதிரிச் சோதனை (Simulate HM ➔ CEO)
         </button>
       </div>
 
@@ -6041,11 +6050,14 @@
         <button type="button" class="btn btn-success" onclick="pushAllPortalDataToGoogleSheet()" style="font-weight:800;">
           🚀 282 பள்ளிகளின் முழுத் தரவையும் Google Sheet-ல் பதிவேற்று (Populate Sheet Now)
         </button>
+        <button type="button" class="btn btn-outline" onclick="pullAllPortalDataFromGoogleSheet(true)" style="font-weight:800; border-color:#7c3aed; color:#6d28d9; background:#f5f3ff;">
+          📥 Google Sheet-லிருந்து முழுத் தரவையும் பெறு (Pull Full Sheet Snapshot)
+        </button>
         <button type="button" class="btn btn-outline" onclick="testAppsScriptOtpAndSheet()" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#f0f9ff;">
           🧪 Email &amp; WhatsApp OTP சோதனை அனுப்புக (Test OTP)
         </button>
-        <button type="button" class="btn btn-outline" onclick="syncMasterFromGoogleSheet(true)" style="font-weight:800;">
-          🔄 Sheet-லிருந்து ஒத்திசைக்க (Pull from Sheet)
+        <button type="button" class="btn btn-outline" onclick="exportCompleteStandalonePortalHtml()" style="font-weight:800; border-color:#0f294a; color:#0f294a; background:#fff;">
+          💾 முழுமையான index.html பதிவிறக்கு (Export Standalone HTML)
         </button>
       </div>
 
@@ -6552,6 +6564,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   let firebaseDbUrl = DEFAULT_FIREBASE_DB_URL;
   let firebaseApiKey = "";
   let firebaseAutoSyncEnabled = true;
+  let googleSheetAutoSyncEnabled = true;
+  let lastGoogleSheetSyncTimeStr = "";
+  let _gsAutoSyncTimers = {};
+  let _dualSyncRetryTimer = null;
   let firebaseSseSource = null;
   let firebasePollTimer = null;
   let realtimeBroadcastChannel = null;
@@ -6745,6 +6761,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       }
       if (typeof savedCfg.firebaseAutoSyncEnabled === "boolean") {
         firebaseAutoSyncEnabled = savedCfg.firebaseAutoSyncEnabled;
+      }
+      if (typeof savedCfg.googleSheetAutoSyncEnabled === "boolean") {
+        googleSheetAutoSyncEnabled = savedCfg.googleSheetAutoSyncEnabled;
       }
     }
 
@@ -8123,6 +8142,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     activeRegCandidateSchool.hmTa = hmTa;
     activeRegCandidateSchool.mobile = mob;
     activeRegCandidateSchool.email = email;
+    window._activeSyncTargetUNo = String(activeRegCandidateSchool.uNo);
     safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
 
     const nowStr = new Date().toLocaleString("en-IN");
@@ -8137,6 +8157,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       otpVerified: true,
       registeredAt: nowStr
     };
+    window._activeSyncTargetUNo = String(activeRegCandidateSchool.uNo);
     safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore);
     updateAllSummaryCounters();
 
@@ -8355,6 +8376,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       otpVerified: true,
       registeredAt: existing.registeredAt || new Date().toLocaleString("en-IN")
     };
+    window._activeSyncTargetUNo = String(s.uNo);
     safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore);
     sendToAppsScript({
       action: "password_reset",
@@ -8463,7 +8485,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             isTeaching: isTeach
           };
         });
-        safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+        safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
       }
     }
   }
@@ -8571,7 +8593,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           delete schoolExtraDataStore[uNo].hssGroups;
         }
         schoolExtraDataStore[uNo].studentsEmisV35 = true;
-        safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+        safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
       }
       // For High Schools, ensure 11 and 12 are not present in students object
       if (!isHSS && schoolExtraDataStore[uNo].students) {
@@ -11727,6 +11749,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       showToast(`✅ புதிய பள்ளி (U.NO: ${uNo} - ${newSchool.nameTa}) வெற்றிகரமாகச் சேர்க்கப்பட்டது!`, "#22c55e");
     }
 
+    window._activeSyncTargetUNo = String(uNo);
     safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
     autoRegisterDivisionsFromSchools();
     populateAllDynamicDropdowns();
@@ -11882,6 +11905,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       hmName: existing.hmName || s.hmName || "",
       registeredAt: new Date().toLocaleString("en-IN")
     };
+    window._activeSyncTargetUNo = String(s.uNo);
     safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore);
     updateAllSummaryCounters();
     renderAdminCredentialsTable();
@@ -12136,6 +12160,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
     const fbKeyEl = document.getElementById("cfgFirebaseApiKey");
     const fbAutoEl = document.getElementById("cfgFirebaseAutoSync");
+    const gsAutoEl = document.getElementById("cfgGoogleSheetAutoSync");
 
     if (mSheetEl) mSheetEl.value = masterSheetId;
     if (tSheetEl) tSheetEl.value = teachersSheetId;
@@ -12143,6 +12168,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (fbUrlEl) fbUrlEl.value = firebaseDbUrl || "";
     if (fbKeyEl) fbKeyEl.value = firebaseApiKey || "";
     if (fbAutoEl) fbAutoEl.checked = firebaseAutoSyncEnabled !== false;
+    if (gsAutoEl) gsAutoEl.checked = googleSheetAutoSyncEnabled !== false;
 
     if (defaultTab && ["firebase", "guide", "sheet"].includes(defaultTab)) {
       switchCloudSettingsTab(defaultTab);
@@ -12161,7 +12187,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   function normalizeFirebaseDbUrl(rawUrl) {
     if (!rawUrl) return "";
     let u = String(rawUrl).trim();
-    // Strip trailing slashes or .json paths if user pasted a deeper path
     u = u.replace(/\/ceosvg_live.*$/i, "").replace(/\/+\.json$/i, "").replace(/\/+$/, "");
     if (u && !/^https?:\/\//i.test(u)) {
       u = "https://" + u;
@@ -12193,6 +12218,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
     const fbKeyEl = document.getElementById("cfgFirebaseApiKey");
     const fbAutoEl = document.getElementById("cfgFirebaseAutoSync");
+    const gsAutoEl = document.getElementById("cfgGoogleSheetAutoSync");
 
     if (mSheetEl && mSheetEl.value.trim()) masterSheetId = mSheetEl.value.trim();
     if (tSheetEl && tSheetEl.value.trim()) teachersSheetId = tSheetEl.value.trim();
@@ -12200,6 +12226,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (fbUrlEl) firebaseDbUrl = normalizeFirebaseDbUrl(fbUrlEl.value);
     if (fbKeyEl) firebaseApiKey = fbKeyEl.value.trim();
     if (fbAutoEl) firebaseAutoSyncEnabled = fbAutoEl.checked;
+    if (gsAutoEl) googleSheetAutoSyncEnabled = gsAutoEl.checked;
 
     safeSetStorage("CEOSVG_PORTAL_CFG", {
       masterSheetId,
@@ -12207,17 +12234,18 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       appsScriptUrl,
       firebaseDbUrl,
       firebaseApiKey,
-      firebaseAutoSyncEnabled
+      firebaseAutoSyncEnabled,
+      googleSheetAutoSyncEnabled
     }, true);
 
     updateFirebaseStatusIndicators();
     if (firebaseDbUrl) {
       startFirebaseRealtimeListener();
-      pullAllPortalDataFromFirebase(false);
-      showToast("🔥 Firebase நேரடி மேகக்கணித் தரவுத்தள இணைப்பு சேமிக்கப்பட்டு நேரடி ஒத்திசைவு தொடங்கப்பட்டது!", "#22c55e");
+      pullAllPortalDataFromBothClouds(false);
+      showToast("⚡ Auto Dual-Sync (Firebase + Google Sheet) அமைப்புகள் சேமிக்கப்பட்டு நேரடி ஒத்திசைவு தொடங்கப்பட்டது!", "#22c55e");
     } else {
       stopFirebaseRealtimeListener();
-      syncMasterFromGoogleSheet(true);
+      pullAllPortalDataFromGoogleSheet(true);
     }
   }
 
@@ -12226,10 +12254,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     firebaseApiKey = "";
     const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
     const fbKeyEl = document.getElementById("cfgFirebaseApiKey");
-    const fbRawEl = document.getElementById("cfgFirebaseRawJson");
     if (fbUrlEl) fbUrlEl.value = "";
     if (fbKeyEl) fbKeyEl.value = "";
-    if (fbRawEl) fbRawEl.value = "";
     stopFirebaseRealtimeListener();
     safeSetStorage("CEOSVG_PORTAL_CFG", {
       masterSheetId,
@@ -12237,39 +12263,48 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       appsScriptUrl,
       firebaseDbUrl: "",
       firebaseApiKey: "",
-      firebaseAutoSyncEnabled
+      firebaseAutoSyncEnabled,
+      googleSheetAutoSyncEnabled
     }, true);
-    updateFirebaseStatusIndicators();
-    showToast("ℹ️ Firebase URL நீக்கப்பட்டது. உள்ளூர் & Multi-Tab பயன்முறை செயலில் உள்ளது.", "#38bdf8");
+    updateFirebaseStatusIndicators(false);
+    appendFirebaseActivityLog("🔌 Firebase இணைப்பு துண்டிக்கப்பட்டது. Google Sheet + உள்ளூர் ஒத்திசைவு செயலில் உள்ளது.", "#f97316");
+    showToast("ℹ️ Firebase இணைப்பு துண்டிக்கப்பட்டது.", "#f59e0b");
   }
 
-  function buildFirebaseEndpoint(path) {
+  function buildFirebaseEndpoint(pathStr) {
     const base = normalizeFirebaseDbUrl(firebaseDbUrl);
     if (!base) return "";
-    const cleanPath = String(path || "").replace(/^\/+/, "");
-    const q = firebaseApiKey ? `?auth=${encodeURIComponent(firebaseApiKey)}` : "";
-    return `${base}/${cleanPath}.json${q}`;
+    const cleanPath = String(pathStr || "").replace(/^\/+/, "");
+    const authParam = firebaseApiKey ? `?auth=${encodeURIComponent(firebaseApiKey)}` : "";
+    return `${base}/${cleanPath}.json${authParam}`;
   }
 
   function appendFirebaseActivityLog(msg, colorHex) {
-    const timeNow = new Date().toLocaleTimeString("en-IN");
-    const entry = `[${timeNow}] ${msg}`;
-    fbLiveActivityLog.unshift({ text: entry, color: colorHex || "#38bdf8" });
-    if (fbLiveActivityLog.length > 25) fbLiveActivityLog.pop();
+    const timeStr = new Date().toLocaleTimeString("en-IN");
+    fbLiveActivityLog.unshift({ time: timeStr, msg: msg, color: colorHex || "#e2e8f0" });
+    if (fbLiveActivityLog.length > 50) fbLiveActivityLog.pop();
 
     const box = document.getElementById("fbLiveActivityLogBox");
     if (box) {
       box.innerHTML = fbLiveActivityLog.map(item =>
-        `<div style="color:${item.color}; border-bottom:1px dashed rgba(148,163,184,0.2); padding-bottom:3px;">${item.text}</div>`
+        `<div style="color:${item.color};">[$${item.time}] ${item.msg}</div>`.replace("[$", "[")
       ).join("");
     }
-    const feedMsg = document.getElementById("adminLiveSyncLastMsg");
-    if (feedMsg) {
-      feedMsg.textContent = entry;
+    const lastBadge = document.getElementById("fbLastSyncBadge");
+    if (lastBadge) {
+      lastBadge.textContent = "கடைசி Dual-Sync: " + timeStr;
     }
-    const badge = document.getElementById("fbLastSyncBadge");
-    if (badge) {
-      badge.textContent = `கடைசி ஒத்திசைவு: ${timeNow}`;
+  }
+
+  function updateGoogleSheetSyncBadge(statusText, isOk) {
+    const sDot = document.getElementById("sheetSyncDot");
+    const sTxt = document.getElementById("sheetSyncStatusText");
+    if (sDot) {
+      sDot.style.background = isOk === false ? "#f59e0b" : "#16a34a";
+      sDot.style.boxShadow = isOk === false ? "0 0 8px #f59e0b" : "0 0 8px rgba(22, 163, 74, 0.7)";
+    }
+    if (sTxt && statusText) {
+      sTxt.textContent = statusText;
     }
   }
 
@@ -12281,15 +12316,20 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const head = document.getElementById("fbModalStatusHeadline");
     const sub = document.getElementById("fbModalStatusSubtext");
 
-    const hasUrl = Boolean(normalizeFirebaseDbUrl(firebaseDbUrl));
-    const isLive = isConnectedOverride !== undefined ? isConnectedOverride : hasUrl;
+    const hasFbUrl = Boolean(normalizeFirebaseDbUrl(firebaseDbUrl));
+    const hasGsUrl = Boolean(appsScriptUrl && appsScriptUrl.startsWith("http"));
+    const isLive = isConnectedOverride !== undefined ? isConnectedOverride : hasFbUrl;
 
-    if (hasUrl && isLive) {
+    if (hasFbUrl && isLive) {
       if (dot) {
         dot.style.background = "#16a34a";
         dot.style.boxShadow = "0 0 8px #16a34a";
       }
-      if (txt) txt.textContent = "🟢 Firebase நேரடி இணைப்பு (Live RTDB)";
+      if (txt) {
+        txt.textContent = (hasGsUrl && googleSheetAutoSyncEnabled)
+          ? "🟢⚡ Auto Dual-Sync: Firebase + Google Sheet"
+          : "🟢 Firebase நேரடி இணைப்பு (Live RTDB)";
+      }
       if (badge) {
         badge.style.background = "#f0fdf4";
         badge.style.borderColor = "#86efac";
@@ -12302,22 +12342,26 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       }
       if (head) {
         head.style.color = "#14532d";
-        head.textContent = `🟢 நிலை: Firebase நேரடி மேகக்கணித் தரவுத்தளம் இணைக்கப்பட்டுள்ளது (${normalizeFirebaseDbUrl(firebaseDbUrl)})`;
+        head.textContent = (hasGsUrl && googleSheetAutoSyncEnabled)
+          ? "🟢⚡ நிலை: Auto Dual-Sync (Firebase Realtime DB + Google Sheet) முழு வீச்சில் செயலில் உள்ளது!"
+          : "🟢 நிலை: Firebase Realtime Database நேரடி இணைப்பு செயலில் உள்ளது (Live SSE + REST)";
       }
       if (sub) {
         sub.style.color = "#166534";
-        sub.textContent = "பள்ளிகளில் தலைமையாசிரியர்கள் சேமிக்கும் விவரங்கள் அதே வினாடியில் முதன்மைக் கல்வி அலுவலர் (CEO) முகப்பில் நேரடியாக ஒத்திசைக்கப்படுகின்றன.";
+        sub.textContent = "பள்ளிகளில் தலைமையாசிரியர்கள் மற்றும் மாவட்ட நிர்வாகி சேமிக்கும் அனைத்துத் தரவுகளும் ஒரே நேரத்தில் Firebase மற்றும் Google Sheet இரண்டிற்கும் தானாக ஒத்திசைக்கப்படுகின்றன.";
       }
     } else {
       if (dot) {
-        dot.style.background = "#f97316";
-        dot.style.boxShadow = "0 0 6px #f97316";
+        dot.style.background = hasGsUrl ? "#0284c7" : "#f97316";
+        dot.style.boxShadow = hasGsUrl ? "0 0 6px #0284c7" : "0 0 6px #f97316";
       }
-      if (txt) txt.textContent = "🔥 Firebase நேரடி இணைப்பு: தயார் நிலை (Setup)";
+      if (txt) {
+        txt.textContent = hasGsUrl ? "📊 Google Sheet Auto-Sync செயலில்" : "🔥 Dual-Sync: தயார் நிலை (Setup)";
+      }
       if (badge) {
-        badge.style.background = "#fff7ed";
-        badge.style.borderColor = "#fdba74";
-        badge.style.color = "#c2410c";
+        badge.style.background = hasGsUrl ? "#f0f9ff" : "#fff7ed";
+        badge.style.borderColor = hasGsUrl ? "#7dd3fc" : "#fdba74";
+        badge.style.color = hasGsUrl ? "#0369a1" : "#c2410c";
       }
       if (banner) {
         banner.style.background = "#fff7ed";
@@ -12326,11 +12370,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       }
       if (head) {
         head.style.color = "#9a3412";
-        head.textContent = "🟡 நிலை: உள்ளூர் + Multi-Tab நேரடி ஒத்திசைவு செயலில் உள்ளது (Firebase URL இன்னும் இணைக்கப்படவில்லை)";
+        head.textContent = "🟡 நிலை: Google Sheet + Multi-Tab ஒத்திசைவு செயலில் உள்ளது (Firebase URL இணைக்கப்படவில்லை)";
       }
       if (sub) {
         sub.style.color = "#7c2d12";
-        sub.textContent = "கீழே உங்கள் Firebase Realtime Database URL-ஐ உள்ளிட்டு '💾 அமைப்புகளைச் சேமி & இணை' அழுத்தியவுடன், 282 பள்ளிகளும் நேரடி மேகக்கணியில் இணையும்.";
+        sub.textContent = "கீழே உங்கள் Firebase Realtime Database URL-ஐ உள்ளிட்டு '💾 அமைப்புகளைச் சேமி & இணை' அழுத்தியவுடன், Firebase + Google Sheet Auto Dual-Sync இணையும்.";
       }
     }
   }
@@ -12339,51 +12383,314 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const schLabel = (uNo && uNo !== "ADMIN") ? `[U.No: ${uNo}] ${schoolName || ""}` : "மாவட்ட நிர்வாகி (CEO Admin)";
     if (key === "CEOSVG_SCHOOL_EXTRA_V6") return `${schLabel} – மாணவர் எண்ணிக்கை / பணியாளர் / அடிப்படைத் தேவை விவரம் புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_MASTER_SCHOOLS") return `${schLabel} – பள்ளி சுயவிவரம் / முதன்மைப் பட்டியல் புதுப்பிக்கப்பட்டது`;
-    if (key === "CEOSVG_SCHOOL_AUTH") return `${schLabel} – உள்நுழைவு / தொடர்பு விவரம் புதுப்பிக்கப்பட்டது`;
+    if (key === "CEOSVG_SCHOOL_AUTH") return `${schLabel} – உள்நுழைவு / கடவுச்சொல் / தொடர்பு விவரம் புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_DELETE_REQUESTS") return `${schLabel} – பணியாளர் நீக்கக் கோரிக்கை (Delete Request) புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_DIGNITARIES_V1" || key === "CEOSVG_DIGNITARIES_DATA_V2" || key === "CEOSVG_DIGNITARIES_DATA_V3") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் (Dignitaries) விவரம் புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_DIGNITARIES_PHOTO_VAULT") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் புகைப்படப் பெட்டகம் (Photo Vault) ஒத்திசைக்கப்பட்டது`;
     if (key === "CEOSVG_HSS_GROUP_MASTER_V1") return `மாவட்ட நிர்வாகி – மேல்நிலைப் பாடப்பிரிவு வார்ப்புரு (HSS Group Template) புதுப்பிக்கப்பட்டது`;
-    if (key === "CEOSVG_CIRCULARS") return `மாவட்ட நிர்வாகி – புதிய சுற்றறிக்கை (Circular) வெளியிடப்பட்டது`;
+    if (key === "CEOSVG_CIRCULARS") return `மாவட்ட நிர்வாகி – சுற்றறிக்கை (Circular) பட்டியல் புதுப்பிக்கப்பட்டது`;
     if (key === "CEOSVG_DIVISIONS") return `மாவட்ட நிர்வாகி – நிர்வாகப் பிரிவுகள் (Divisions) புதுப்பிக்கப்பட்டன`;
-    if (key === "CEOSVG_STAFF_OVERRIDES" || key === "CEOSVG_UPLOADED_EMIS_STAFF") return `மாவட்ட நிர்வாகி – EMIS ஆசிரியர் & பணியாளர் விவரம் (Staff Master) ஒத்திசைக்கப்பட்டது`;
+    if (key === "CEOSVG_STAFF_OVERRIDES" || key === "CEOSVG_UPLOADED_EMIS_STAFF") return `${schLabel} – ஆசிரியர் & பணியாளர் விவரம் (Staff Master) ஒத்திசைக்கப்பட்டது`;
     if (key === "CEOSVG_EMIS_STUDENT_DATA") return `மாவட்ட நிர்வாகி – EMIS மாணவர் எண்ணிக்கை (Medium & Group-wise) முழுமையாக ஒத்திசைக்கப்பட்டது`;
     return `${schLabel} – தரவு (${key}) புதுப்பிக்கப்பட்டது`;
   }
 
-  // Triggered automatically whenever safeSetStorage(key, val) is called
+  // Helper: Compute a single school's student strength summary row for Google Sheet (STUDENT_STRENGTH tab)
+  function buildSingleSchoolStudentStrengthRow(uNo) {
+    const s = masterSchools.find(x => String(x.uNo) === String(uNo)) || { uNo: uNo, udiseNo: "", nameEn: "", level: "HS" };
+    const extra = schoolExtraDataStore[String(uNo)] || {};
+    const classes = extra.students || {};
+    let boys = 0, girls = 0, tm = 0, em = 0;
+    Object.values(classes).forEach(c => {
+      if (c && typeof c === "object") {
+        boys += Number(c.boys || 0);
+        girls += Number(c.girls || 0);
+        tm += Number(c.tm || 0);
+        em += Number(c.em || 0);
+      }
+    });
+    if (boys === 0 && girls === 0 && typeof EMIS_STUDENT_DATA !== "undefined" && EMIS_STUDENT_DATA.schoolEnrollments && EMIS_STUDENT_DATA.schoolEnrollments[String(uNo)]) {
+      const emSch = EMIS_STUDENT_DATA.schoolEnrollments[String(uNo)];
+      boys = Number(emSch.totalBoys || 0);
+      girls = Number(emSch.totalGirls || 0);
+      tm = Number(emSch.totalTM || 0);
+      em = Number(emSch.totalEM || 0);
+    }
+    const hssGroups = extra.hssGroups || (typeof EMIS_STUDENT_DATA !== "undefined" && EMIS_STUDENT_DATA.schoolEnrollments && EMIS_STUDENT_DATA.schoolEnrollments[String(uNo)] ? EMIS_STUDENT_DATA.schoolEnrollments[String(uNo)].hssGroups : null);
+    let grpCount = 0;
+    if (hssGroups && typeof hssGroups === "object") {
+      const g11 = Array.isArray(hssGroups["11"]) ? hssGroups["11"].length : 0;
+      const g12 = Array.isArray(hssGroups["12"]) ? hssGroups["12"].length : 0;
+      grpCount = Math.max(g11, g12);
+    }
+    return {
+      uNo: String(s.uNo || uNo),
+      udiseNo: String(s.udiseNo || ""),
+      nameEn: String(s.nameEn || ""),
+      level: String(s.level || "HS"),
+      boys: boys,
+      girls: girls,
+      total: boys + girls,
+      tm: tm,
+      em: em,
+      groupsSummary: grpCount > 0 ? (grpCount + " Groups") : "-"
+    };
+  }
+
+  function buildAllSchoolsStudentStrengthList() {
+    return masterSchools.map(s => buildSingleSchoolStudentStrengthRow(s.uNo));
+  }
+
+  function buildAllSchoolsAuthList() {
+    return Object.values(schoolAuthStore || {}).filter(Boolean).map(a => {
+      const sch = masterSchools.find(s => String(s.uNo) === String(a.uNo)) || {};
+      return {
+        uNo: String(a.uNo || ""),
+        udiseNo: String(a.udiseNo || sch.udiseNo || ""),
+        nameEn: String(sch.nameEn || a.nameEn || ""),
+        hmName: String(a.hmName || sch.hmName || ""),
+        phone: String(a.phone || sch.mobile || ""),
+        email: String(a.email || sch.email || ""),
+        password: String(a.password || ""),
+        pin: String(a.pin || ""),
+        otpVerified: Boolean(a.otpVerified),
+        registeredAt: String(a.registeredAt || "")
+      };
+    });
+  }
+
+  // Offline / Failed Dual-Sync Retry Queue Management
+  function enqueueDualSyncRetry(key, targetUNo) {
+    try {
+      const q = safeGetStorage("CEOSVG_DUAL_SYNC_QUEUE", []) || [];
+      const filtered = q.filter(item => !(item.key === key && item.targetUNo === targetUNo));
+      filtered.push({ key: key, targetUNo: targetUNo || "ADMIN", ts: Date.now() });
+      while (filtered.length > 40) filtered.shift();
+      safeSetStorage("CEOSVG_DUAL_SYNC_QUEUE", filtered, true);
+    } catch (e) {}
+  }
+
+  async function flushDualSyncRetryQueue() {
+    const q = safeGetStorage("CEOSVG_DUAL_SYNC_QUEUE", []) || [];
+    if (!Array.isArray(q) || q.length === 0) return;
+    safeSetStorage("CEOSVG_DUAL_SYNC_QUEUE", [], true);
+    for (const item of q) {
+      if (!item || !item.key) continue;
+      const currentVal = safeGetStorage(item.key, null);
+      if (currentVal !== null) {
+        window._activeSyncTargetUNo = item.targetUNo || "ADMIN";
+        triggerRealtimeSyncForStorageKey(item.key, currentVal);
+      }
+    }
+  }
+
+  // Build Google Sheet Auto-Sync Payload for any Storage Key
+  function buildGoogleSheetAutoSyncPayload(key, val, targetUNo, evt) {
+    const hasSpecificSchool = Boolean(targetUNo && targetUNo !== "ADMIN");
+    const foundSch = hasSpecificSchool ? (masterSchools.find(s => String(s.uNo) === String(targetUNo)) || null) : null;
+
+    if (key === "CEOSVG_MASTER_SCHOOLS") {
+      if (hasSpecificSchool && foundSch) {
+        return {
+          action: "auto_dual_sync",
+          syncType: "school_master_single",
+          uNo: targetUNo,
+          school: foundSch,
+          summary: evt.summary
+        };
+      }
+      return {
+        action: "auto_dual_sync",
+        syncType: "school_master_bulk",
+        schools: masterSchools,
+        summary: evt.summary
+      };
+    }
+
+    if (key === "CEOSVG_SCHOOL_AUTH") {
+      if (hasSpecificSchool && val && val[targetUNo]) {
+        const a = val[targetUNo];
+        return {
+          action: "auto_dual_sync",
+          syncType: "school_auth_single",
+          uNo: targetUNo,
+          auth: {
+            uNo: targetUNo,
+            udiseNo: a.udiseNo || (foundSch ? foundSch.udiseNo : ""),
+            nameEn: (foundSch ? foundSch.nameEn : "") || a.nameEn || "",
+            hmName: a.hmName || (foundSch ? foundSch.hmName : ""),
+            phone: a.phone || (foundSch ? foundSch.mobile : ""),
+            email: a.email || (foundSch ? foundSch.email : ""),
+            password: a.password || "",
+            pin: a.pin || "",
+            otpVerified: Boolean(a.otpVerified),
+            registeredAt: a.registeredAt || new Date().toLocaleString("en-IN")
+          },
+          summary: evt.summary
+        };
+      }
+      return {
+        action: "auto_dual_sync",
+        syncType: "school_auth_bulk",
+        authList: buildAllSchoolsAuthList(),
+        summary: evt.summary
+      };
+    }
+
+    if (key === "CEOSVG_SCHOOL_EXTRA_V6") {
+      if (hasSpecificSchool && val && val[targetUNo]) {
+        return {
+          action: "auto_dual_sync",
+          syncType: "school_extra_single",
+          uNo: targetUNo,
+          udiseNo: foundSch ? foundSch.udiseNo : "",
+          schoolNameEn: foundSch ? foundSch.nameEn : "",
+          studentRow: buildSingleSchoolStudentStrengthRow(targetUNo),
+          extraData: val[targetUNo],
+          summary: evt.summary
+        };
+      }
+      return {
+        action: "auto_dual_sync",
+        syncType: "student_strength_bulk",
+        studentList: buildAllSchoolsStudentStrengthList(),
+        summary: evt.summary
+      };
+    }
+
+    if (key === "CEOSVG_EMIS_STUDENT_DATA") {
+      return {
+        action: "auto_dual_sync",
+        syncType: "student_strength_bulk",
+        studentList: buildAllSchoolsStudentStrengthList(),
+        summary: evt.summary
+      };
+    }
+
+    if (key === "CEOSVG_DELETE_REQUESTS") {
+      return {
+        action: "auto_dual_sync",
+        syncType: "staff_delete_requests",
+        requests: Array.isArray(val) ? val : staffDeleteRequests,
+        summary: evt.summary
+      };
+    }
+
+    if (key === "CEOSVG_HSS_GROUP_MASTER_V1") {
+      return {
+        action: "auto_dual_sync",
+        syncType: "hss_group_master",
+        groups: Array.isArray(val) ? val : [],
+        summary: evt.summary
+      };
+    }
+
+    if (key === "CEOSVG_CIRCULARS") {
+      return {
+        action: "auto_dual_sync",
+        syncType: "circulars",
+        circulars: Array.isArray(val) ? val : districtCirculars,
+        summary: evt.summary
+      };
+    }
+
+    if (key === "CEOSVG_STAFF_OVERRIDES" || key === "CEOSVG_DIGNITARIES_DATA_V3" || key === "CEOSVG_DIVISIONS") {
+      return {
+        action: "auto_dual_sync",
+        syncType: "portal_store",
+        storeKey: key,
+        storeData: val,
+        summary: evt.summary
+      };
+    }
+
+    return null;
+  }
+
+  function scheduleAutoGoogleSheetSyncForKey(key, val, targetUNo, evt) {
+    if (!googleSheetAutoSyncEnabled || !appsScriptUrl || !appsScriptUrl.startsWith("http")) return;
+    if (key === "CEOSVG_DIGNITARIES_PHOTO_VAULT" || key === "CEOSVG_DIGNITARIES_DATA_V2" || key === "CEOSVG_DIGNITARIES_DATA_V1" || key === "CEOSVG_DIGNITARIES_V1") return;
+
+    const timerKey = key + ":" + (targetUNo || "ADMIN");
+    if (_gsAutoSyncTimers[timerKey]) {
+      clearTimeout(_gsAutoSyncTimers[timerKey]);
+    }
+
+    _gsAutoSyncTimers[timerKey] = setTimeout(async () => {
+      delete _gsAutoSyncTimers[timerKey];
+      const payload = buildGoogleSheetAutoSyncPayload(key, val, targetUNo, evt);
+      if (!payload) return;
+
+      try {
+        const res = await sendToAppsScript(payload);
+        if (res && res.ok) {
+          lastGoogleSheetSyncTimeStr = new Date().toLocaleTimeString("en-IN");
+          updateGoogleSheetSyncBadge(`📊 Google Sheet ஒத்திசைவு: ${lastGoogleSheetSyncTimeStr} (${masterSchools.length} பள்ளிகள்)`, true);
+          appendFirebaseActivityLog(`📊 Google Sheet ஒத்திசைவு வெற்றி: ${evt.summary}`, "#38bdf8");
+        } else {
+          enqueueDualSyncRetry(key, targetUNo);
+          updateGoogleSheetSyncBadge("⚠️ Google Sheet ஒத்திசைவு காத்திருப்பில் (Retry Queued)", false);
+        }
+      } catch (err) {
+        enqueueDualSyncRetry(key, targetUNo);
+        appendFirebaseActivityLog(`⚠️ Google Sheet ஒத்திசைவு தற்காலிகத் தடை (Queued): ${err.message || "Network"}`, "#fbbf24");
+      }
+    }, 320);
+  }
+
+  // Triggered automatically whenever safeSetStorage(key, val) is called by School or Admin
   function triggerRealtimeSyncForStorageKey(key, val) {
-    const ignoredKeys = ["CEOSVG_ACTIVE_SESSION", "CEOSVG_PORTAL_CFG", "CEOSVG_FIREBASE_CFG"];
+    const ignoredKeys = [
+      "CEOSVG_ACTIVE_SESSION",
+      "CEOSVG_PORTAL_CFG",
+      "CEOSVG_FIREBASE_CFG",
+      "CEOSVG_DUAL_SYNC_QUEUE",
+      "CEOSVG_PENDING_REG_UNO",
+      "CEOSVG_AUTH_RESET_V37_DONE",
+      "CEOSVG_CIRCULARS_PURGED_V32"
+    ];
     if (ignoredKeys.includes(key)) return;
 
+    const explicitTargetUNo = window._activeSyncTargetUNo ? String(window._activeSyncTargetUNo).trim() : "";
+    window._activeSyncTargetUNo = "";
+
     const isSchoolActor = Boolean(activeSchoolSession && activeSchoolSession.uNo);
-    const uNo = isSchoolActor ? String(activeSchoolSession.uNo) : "ADMIN";
-    const schoolName = isSchoolActor ? (activeSchoolSession.nameTa || activeSchoolSession.nameEn || "") : "CEO Admin";
+    const targetUNo = isSchoolActor
+      ? String(activeSchoolSession.uNo)
+      : (explicitTargetUNo && explicitTargetUNo !== "ADMIN" ? explicitTargetUNo : "ADMIN");
+
+    const targetSchObj = (targetUNo !== "ADMIN" && Array.isArray(masterSchools))
+      ? masterSchools.find(s => String(s.uNo) === targetUNo)
+      : null;
+    const schoolName = isSchoolActor
+      ? (activeSchoolSession.nameTa || activeSchoolSession.nameEn || "")
+      : (targetSchObj ? (targetSchObj.nameTa || targetSchObj.nameEn || "") : "CEO Admin");
+
     const evt = {
       eventId: "EVT_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
       ts: Date.now(),
       timeStr: new Date().toLocaleTimeString("en-IN"),
-      actor: isSchoolActor ? ("SCHOOL_" + uNo) : "CEO_ADMIN",
-      uNo: uNo,
+      actor: isSchoolActor ? ("SCHOOL_" + targetUNo) : "CEO_ADMIN",
+      uNo: targetUNo,
       schoolName: schoolName,
       key: key,
-      summary: getFriendlySyncSummaryTa(key, uNo, schoolName)
+      summary: getFriendlySyncSummaryTa(key, targetUNo, schoolName)
     };
 
     lastProcessedRealtimeEventId = evt.eventId;
-    appendFirebaseActivityLog(`📤 அனுப்பப்பட்டது: ${evt.summary}`, "#4ade80");
+    appendFirebaseActivityLog(`📤 Dual-Sync அனுப்பப்படுகிறது: ${evt.summary}`, "#4ade80");
 
     // 1. Instant Multi-Tab BroadcastChannel Push (<10ms across open browser tabs)
     if (realtimeBroadcastChannel) {
       try {
         let granularPayload = null;
-        if (key === "CEOSVG_SCHOOL_EXTRA_V6" && isSchoolActor && val && val[uNo]) {
-          granularPayload = { type: "school_extra", uNo: uNo, data: val[uNo] };
-        } else if (key === "CEOSVG_MASTER_SCHOOLS" && isSchoolActor && Array.isArray(val)) {
-          const foundSch = val.find(s => String(s.uNo) === uNo);
-          if (foundSch) granularPayload = { type: "master_school_single", uNo: uNo, data: foundSch };
-        } else if (key === "CEOSVG_SCHOOL_AUTH" && isSchoolActor && val && val[uNo]) {
-          granularPayload = { type: "school_auth_single", uNo: uNo, data: val[uNo] };
+        if (key === "CEOSVG_SCHOOL_EXTRA_V6" && targetUNo !== "ADMIN" && val && val[targetUNo]) {
+          granularPayload = { type: "school_extra", uNo: targetUNo, data: val[targetUNo] };
+        } else if (key === "CEOSVG_MASTER_SCHOOLS" && targetUNo !== "ADMIN" && Array.isArray(val)) {
+          const foundSch = val.find(s => String(s.uNo) === targetUNo);
+          if (foundSch) granularPayload = { type: "master_school_single", uNo: targetUNo, data: foundSch };
+        } else if (key === "CEOSVG_SCHOOL_AUTH" && targetUNo !== "ADMIN" && val && val[targetUNo]) {
+          granularPayload = { type: "school_auth_single", uNo: targetUNo, data: val[targetUNo] };
         }
         realtimeBroadcastChannel.postMessage({
           evt: evt,
@@ -12393,32 +12700,71 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       } catch (e) {}
     }
 
-    // 2. Instant Firebase Realtime Database Cloud Push (if configured)
+    // 2. Concurrent Automatic Google Sheet Sync (via Apps Script Web App)
+    scheduleAutoGoogleSheetSyncForKey(key, val, targetUNo, evt);
+
+    // 3. Instant Firebase Realtime Database Cloud Push (if configured)
     const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
     if (!cleanUrl || !firebaseAutoSyncEnabled) return;
 
     (async () => {
       try {
-        if (key === "CEOSVG_SCHOOL_EXTRA_V6" && isSchoolActor && val && val[uNo]) {
-          await fetch(buildFirebaseEndpoint(`ceosvg_live/school_extra/${encodeURIComponent(uNo)}`), {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(val[uNo])
-          });
-        } else if (key === "CEOSVG_MASTER_SCHOOLS" && isSchoolActor && Array.isArray(val)) {
-          const foundSch = val.find(s => String(s.uNo) === uNo);
-          if (foundSch) {
-            await fetch(buildFirebaseEndpoint(`ceosvg_live/master_schools_by_uno/${encodeURIComponent(uNo)}`), {
+        if (key === "CEOSVG_SCHOOL_EXTRA_V6") {
+          if (targetUNo !== "ADMIN" && val && val[targetUNo]) {
+            await fetch(buildFirebaseEndpoint(`ceosvg_live/school_extra/${encodeURIComponent(targetUNo)}`), {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(foundSch)
+              body: JSON.stringify(val[targetUNo])
+            });
+          } else if (val && typeof val === "object") {
+            await fetch(buildFirebaseEndpoint("ceosvg_live/school_extra"), {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(val)
             });
           }
-        } else if (key === "CEOSVG_SCHOOL_AUTH" && isSchoolActor && val && val[uNo]) {
-          await fetch(buildFirebaseEndpoint(`ceosvg_live/school_auth/${encodeURIComponent(uNo)}`), {
+        } else if (key === "CEOSVG_MASTER_SCHOOLS" && Array.isArray(val)) {
+          if (targetUNo !== "ADMIN") {
+            const foundSch = val.find(s => String(s.uNo) === targetUNo);
+            if (foundSch) {
+              await fetch(buildFirebaseEndpoint(`ceosvg_live/master_schools_by_uno/${encodeURIComponent(targetUNo)}`), {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(foundSch)
+              });
+            }
+          } else {
+            const schoolsByUNo = {};
+            val.forEach(s => { if (s && s.uNo) schoolsByUNo[String(s.uNo)] = s; });
+            await fetch(buildFirebaseEndpoint("ceosvg_live/master_schools_by_uno"), {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(schoolsByUNo)
+            });
+          }
+          await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_MASTER_SCHOOLS"), {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(val[uNo])
+            body: JSON.stringify(val)
+          });
+        } else if (key === "CEOSVG_SCHOOL_AUTH" && val && typeof val === "object") {
+          if (targetUNo !== "ADMIN" && val[targetUNo]) {
+            await fetch(buildFirebaseEndpoint(`ceosvg_live/school_auth/${encodeURIComponent(targetUNo)}`), {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(val[targetUNo])
+            });
+          } else {
+            await fetch(buildFirebaseEndpoint("ceosvg_live/school_auth"), {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(val)
+            });
+          }
+          await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_SCHOOL_AUTH"), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(val)
           });
         } else {
           await fetch(buildFirebaseEndpoint(`ceosvg_live/stores/${encodeURIComponent(key)}`), {
@@ -12434,8 +12780,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(evt)
         });
+        appendFirebaseActivityLog(`🔥 Firebase மேகக்கணி ஒத்திசைவு வெற்றி: ${evt.summary}`, "#4ade80");
       } catch (err) {
-        appendFirebaseActivityLog(`⚠️ Firebase மேகக்கணி அனுப்புதலில் தற்காலிகத் தடை: ${err.message || "Network Error"}`, "#fbbf24");
+        enqueueDualSyncRetry(key, targetUNo);
+        appendFirebaseActivityLog(`⚠️ Firebase மேகக்கணி அனுப்புதலில் தற்காலிகத் தடை (Queued): ${err.message || "Network Error"}`, "#fbbf24");
       }
     })();
   }
@@ -12465,7 +12813,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
         }
       } else if (cleanUrl) {
-        // Fetch granular node or store from Firebase
         if (key === "CEOSVG_SCHOOL_EXTRA_V6" && uNo && uNo !== "ADMIN") {
           const r = await fetch(buildFirebaseEndpoint(`ceosvg_live/school_extra/${encodeURIComponent(uNo)}`));
           if (r.ok) {
@@ -12506,7 +12853,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           }
         }
       } else {
-        // Reload directly from localStorage for same-browser storage events
         const localVal = safeGetStorage(key, null);
         if (localVal !== null) {
           reloadInMemoryStoreFromKey(key, localVal);
@@ -12619,12 +12965,25 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       }
     });
 
+    // 3. Auto-retry queued dual-sync items on network recovery
+    window.addEventListener("online", function() {
+      appendFirebaseActivityLog("🌐 இணைய இணைப்பு மீட்டமைக்கப்பட்டது – நிலுவையிலுள்ள Dual-Sync தரவுகள் ஒத்திசைக்கப்படுகின்றன...", "#4ade80");
+      flushDualSyncRetryQueue();
+    });
+    if (_dualSyncRetryTimer) clearInterval(_dualSyncRetryTimer);
+    _dualSyncRetryTimer = setInterval(() => {
+      if (navigator.onLine !== false) flushDualSyncRetryQueue();
+    }, 20000);
+
     updateFirebaseStatusIndicators();
 
-    // 3. If Firebase URL is configured, start real-time SSE stream & initial pull
+    // 4. Start real-time Firebase SSE stream & pull latest snapshot from both Firebase & Google Sheet
     if (normalizeFirebaseDbUrl(firebaseDbUrl)) {
       startFirebaseRealtimeListener();
-      setTimeout(() => pullAllPortalDataFromFirebase(false), 600);
+      setTimeout(() => pullAllPortalDataFromFirebase(false), 500);
+    }
+    if (appsScriptUrl && appsScriptUrl.startsWith("http")) {
+      setTimeout(() => pullAllPortalDataFromGoogleSheet(false), 1100);
     }
   }
 
@@ -12645,7 +13004,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (!cleanUrl) return;
 
     const eventEndpoint = buildFirebaseEndpoint("ceosvg_live/last_event");
-    // 1. Native Firebase Server-Sent Events (SSE) stream for sub-second push updates
     if (typeof EventSource !== "undefined") {
       try {
         firebaseSseSource = new EventSource(eventEndpoint);
@@ -12669,7 +13027,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       } catch (e) {}
     }
 
-    // 2. Lightweight 5-second heartbeat poller fallback (in case school firewall blocks SSE)
     firebasePollTimer = setInterval(async () => {
       if (!normalizeFirebaseDbUrl(firebaseDbUrl) || !firebaseAutoSyncEnabled) return;
       try {
@@ -12703,6 +13060,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       const pingPayload = {
         status: "ONLINE",
         portal: "portal.ceosvg.in",
+        mode: "AUTO_DUAL_SYNC",
         testedAt: new Date().toISOString()
       };
       const res = await fetch(buildFirebaseEndpoint("ceosvg_live/connection_test"), {
@@ -12731,7 +13089,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     if (!firebaseDbUrl) {
       showToast("⚠️ முதலில் உங்கள் Firebase Realtime Database URL-ஐ உள்ளிடவும்!", "#f59e0b");
-      return;
+      return false;
     }
 
     const progBox = document.getElementById("fbSeedProgressBox");
@@ -12744,7 +13102,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     };
 
     try {
-      setProg(15, "🚀 படி 1/4: 282 பள்ளிகளின் முதன்மைப் பட்டியல் (Master Schools) பதிவேற்றப்படுகிறது...");
+      setProg(15, "🚀 படி 1/4: 282 பள்ளிகளின் முதன்மைப் பட்டியல் (Master Schools) Firebase-க்கு பதிவேற்றப்படுகிறது...");
       const schoolsByUNo = {};
       masterSchools.forEach(s => { if (s && s.uNo) schoolsByUNo[String(s.uNo)] = s; });
 
@@ -12795,10 +13153,40 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       appendFirebaseActivityLog(`🚀 282 பள்ளிகளின் முழுத் தரவும் Firebase மேகக்கணியில் வெற்றிகரமாகப் பதிவேற்றப்பட்டது!`, "#4ade80");
       showToast("🎉 282 பள்ளிகளின் முழுத் தரவும் Firebase Realtime Database-ல் பதிவேற்றப்பட்டது!", "#22c55e");
       setTimeout(() => { if (progBox) progBox.style.display = "none"; }, 3500);
+      return true;
     } catch (err) {
       setProg(0, "❌ பதிவேற்றப் பிழை: " + err.message);
       appendFirebaseActivityLog(`❌ Seed பிழை: ${err.message}`, "#f87171");
       showToast(`❌ Firebase பதிவேற்றம் தோல்வி: ${err.message}`, "#ef4444");
+      return false;
+    }
+  }
+
+  // Dual Seed: Push all 282 schools data concurrently to BOTH Firebase & Google Sheet
+  async function seedAllPortalDataToBothClouds() {
+    saveCloudSettings();
+    appendFirebaseActivityLog("🚀 Dual-Seed தொடங்கப்பட்டது: Firebase + Google Sheet இரண்டிற்கும் 282 பள்ளிகளின் முழுத் தரவும் பதிவேற்றப்படுகிறது...", "#fde047");
+    await Promise.all([
+      seedAllPortalDataToFirebase(),
+      pushAllPortalDataToGoogleSheet()
+    ]);
+    appendFirebaseActivityLog("🎉 Dual-Seed வெற்றி: Firebase மற்றும் Google Sheet இரண்டிலும் 282 பள்ளிகளின் முழுத் தரவும் ஒத்திசைக்கப்பட்டது!", "#4ade80");
+    showToast("🎉 Firebase + Google Sheet இரண்டிலும் 282 பள்ளிகளின் முழுத் தரவும் வெற்றிகரமாகப் பதிவேற்றப்பட்டது!", "#16a34a");
+  }
+
+  // Dual Pull: Pull latest data from BOTH Firebase & Google Sheet
+  async function pullAllPortalDataFromBothClouds(showNotification) {
+    if (showNotification) {
+      showToast("🔄 Firebase மற்றும் Google Sheet இரண்டிலிருந்தும் சமீபத்திய தரவுகள் ஒத்திசைக்கப்படுகின்றன...", "#0284c7");
+    }
+    await Promise.all([
+      pullAllPortalDataFromFirebase(false),
+      pullAllPortalDataFromGoogleSheet(false),
+      new Promise(resolve => { syncMasterFromGoogleSheet(false); setTimeout(resolve, 600); })
+    ]);
+    refreshAllActivePortalViews();
+    if (showNotification) {
+      showToast("✅ Firebase + Google Sheet இருவழி ஒத்திசைவு (Dual-Sync) வெற்றிகரமாக நிறைவடைந்தது!", "#16a34a");
     }
   }
 
@@ -12814,7 +13202,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       if (!res.ok) throw new Error("HTTP " + res.status);
       const rootData = await res.json();
       if (!rootData) {
-        if (showNotification) showToast("ℹ️ Firebase தரவுத்தளம் காலியாக உள்ளது. 'Initial Seed' பொத்தானை அழுத்திப் பதிவேற்றவும்.", "#38bdf8");
+        if (showNotification) showToast("ℹ️ Firebase தரவுத்தளம் காலியாக உள்ளது. 'Dual Seed All' பொத்தானை அழுத்திப் பதிவேற்றவும்.", "#38bdf8");
         return;
       }
 
@@ -12870,7 +13258,111 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }
   }
 
-  // Simulate a Headmaster saving data in School 201 (GHSS Karisalpatti) and reflecting immediately in CEO Admin Dashboard
+  // Pull full snapshot from Google Sheet via Apps Script Web App (doGet?action=get_full_portal_snapshot)
+  async function pullAllPortalDataFromGoogleSheet(showNotification) {
+    if (!appsScriptUrl || !appsScriptUrl.startsWith("http")) {
+      if (showNotification) showToast("⚠️ முதலில் Google Apps Script Web App URL-ஐ அமைக்கவும்!", "#f59e0b");
+      return;
+    }
+
+    try {
+      const sep = appsScriptUrl.includes("?") ? "&" : "?";
+      const effectiveSheetId = (masterSheetId && masterSheetId !== "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ") ? masterSheetId : "";
+      const url = `${appsScriptUrl}${sep}action=get_full_portal_snapshot&masterSheetId=${encodeURIComponent(effectiveSheetId)}&t=${Date.now()}`;
+      const res = await fetch(url, { method: "GET" });
+      if (!res || !res.ok) throw new Error("HTTP " + (res ? res.status : "ERR"));
+      const data = await res.json();
+      if (!data || !data.ok) {
+        syncSchoolAuthFromAppsScript();
+        return;
+      }
+
+      isApplyingRemoteRealtimeUpdate = true;
+      let changed = false;
+
+      if (data.authStore && typeof data.authStore === "object") {
+        Object.keys(data.authStore).forEach(uNo => {
+          const rec = data.authStore[uNo];
+          if (rec && rec.password) {
+            schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, rec);
+            changed = true;
+          }
+        });
+        safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+      }
+
+      if (Array.isArray(data.schools) && data.schools.length > 0) {
+        data.schools.forEach(remoteSch => {
+          if (!remoteSch || !remoteSch.uNo) return;
+          const idx = masterSchools.findIndex(s => String(s.uNo) === String(remoteSch.uNo));
+          if (idx >= 0) {
+            masterSchools[idx] = Object.assign({}, masterSchools[idx], remoteSch);
+          } else {
+            masterSchools.push(remoteSch);
+          }
+        });
+        safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+        changed = true;
+      }
+
+      if (data.schoolExtraMap && typeof data.schoolExtraMap === "object") {
+        Object.keys(data.schoolExtraMap).forEach(uNo => {
+          const extObj = data.schoolExtraMap[uNo];
+          if (extObj && typeof extObj === "object") {
+            schoolExtraDataStore[uNo] = Object.assign({}, schoolExtraDataStore[uNo] || {}, extObj);
+            changed = true;
+          }
+        });
+        safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+      }
+
+      if (Array.isArray(data.deleteRequests) && data.deleteRequests.length > 0) {
+        staffDeleteRequests = data.deleteRequests;
+        safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests, true);
+        changed = true;
+      }
+
+      if (Array.isArray(data.circulars) && data.circulars.length > 0) {
+        districtCirculars = data.circulars;
+        safeSetStorage("CEOSVG_CIRCULARS", districtCirculars, true);
+        changed = true;
+      }
+
+      if (Array.isArray(data.hssGroups) && data.hssGroups.length > 0) {
+        hssGroupMasterStore = data.hssGroups;
+        safeSetStorage("CEOSVG_HSS_GROUP_MASTER_V1", hssGroupMasterStore, true);
+        changed = true;
+      }
+
+      if (data.portalStores && typeof data.portalStores === "object") {
+        Object.entries(data.portalStores).forEach(([k, v]) => {
+          if (v !== null && v !== undefined) {
+            safeSetStorage(k, v, true);
+            reloadInMemoryStoreFromKey(k, v);
+            changed = true;
+          }
+        });
+      }
+
+      sanitizeAllPortalStores();
+      isApplyingRemoteRealtimeUpdate = false;
+
+      if (changed) {
+        refreshAllActivePortalViews();
+      }
+      lastGoogleSheetSyncTimeStr = new Date().toLocaleTimeString("en-IN");
+      updateGoogleSheetSyncBadge(`📊 Google Sheet ஒத்திசைவு: ${lastGoogleSheetSyncTimeStr} (${masterSchools.length} பள்ளிகள்)`, true);
+      appendFirebaseActivityLog("📥 Google Sheet-லிருந்து அனைத்துப் பள்ளிகளின் சமீபத்திய தரவுகளும் ஒத்திசைக்கப்பட்டன!", "#38bdf8");
+      if (showNotification) {
+        showToast("✅ Google Sheet-லிருந்து சமீபத்திய தரவுகள் வெற்றிகரமாகப் பெறப்பட்டன!", "#22c55e");
+      }
+    } catch (err) {
+      isApplyingRemoteRealtimeUpdate = false;
+      syncMasterFromGoogleSheet(showNotification);
+    }
+  }
+
+  // Simulate a Headmaster saving data in School 201 (GHSS Karisalpatti) and reflecting immediately in both Firebase & Google Sheet
   function simulateLiveSchoolToCeoSync() {
     const sampleUNo = "201";
     const sch = masterSchools.find(s => String(s.uNo) === sampleUNo) || masterSchools[0];
@@ -12878,38 +13370,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     const extra = getSchoolExtra(sch.uNo);
     extra.lastLiveSyncTestAt = new Date().toLocaleTimeString("en-IN");
-    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+    window._activeSyncTargetUNo = String(sch.uNo);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 
-    const simEvt = {
-      eventId: "SIM_" + Date.now(),
-      ts: Date.now(),
-      timeStr: new Date().toLocaleTimeString("en-IN"),
-      actor: "SCHOOL_" + sch.uNo,
-      uNo: String(sch.uNo),
-      schoolName: sch.nameTa,
-      key: "CEOSVG_SCHOOL_EXTRA_V6",
-      summary: `[U.No: ${sch.uNo}] ${sch.nameTa} – தலைமையாசிரியர் சேமித்த மாணவர் & பணியாளர் விவரம் அதே வினாடியில் CEO முகப்பில் ஒத்திசைக்கப்பட்டது!`
-    };
-
-    appendFirebaseActivityLog(`⚡ நேரடி ஒத்திசைவு சோதனை வெற்றி: ${simEvt.summary}`, "#4ade80");
-    if (realtimeBroadcastChannel) {
-      try {
-        realtimeBroadcastChannel.postMessage({
-          evt: simEvt,
-          key: "CEOSVG_SCHOOL_EXTRA_V6",
-          granular: { type: "school_extra", uNo: String(sch.uNo), data: extra }
-        });
-      } catch (e) {}
-    }
-    if (normalizeFirebaseDbUrl(firebaseDbUrl)) {
-      fetch(buildFirebaseEndpoint("ceosvg_live/last_event"), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(simEvt)
-      }).catch(() => {});
-    }
     refreshAllActivePortalViews();
-    showToast(`⚡ நேரடி ஒத்திசைவு வெற்றி! [U.No: ${sch.uNo}] ${sch.nameTa} விவரம் அதே வினாடியில் CEO முகப்பில் பிரதிபலித்தது!`, "#10b981");
+    showToast(`⚡ Dual-Sync சோதனை வெற்றி! [U.No: ${sch.uNo}] ${sch.nameTa} விவரம் Firebase மற்றும் Google Sheet இரண்டிற்கும் அனுப்பப்பட்டது!`, "#10b981");
   }
 
   function copyTextWithFallback(textToCopy, successMsg) {
@@ -12950,6 +13415,43 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const urlVal = normalizeFirebaseDbUrl(document.getElementById("cfgFirebaseDbUrl")?.value || firebaseDbUrl) || "https://YOUR-PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app";
     const snippet = `const DEFAULT_FIREBASE_DB_URL = "${urlVal}";`;
     copyTextWithFallback(snippet, "📋 நிரந்தர Firebase Config வரி நகலெடுக்கப்பட்டது!");
+  }
+
+  // Export complete standalone index.html with all latest EMIS Staff, Student, Master Schools & Dignitaries embedded
+  function exportCompleteStandalonePortalHtml() {
+    let fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    try {
+      const currentDigs = typeof getDignitariesList === "function" ? getDignitariesList() : [];
+      const sDig = fullHtml.indexOf("const DEFAULT_DIGNITARIES = [");
+      const eDig = fullHtml.indexOf("const DIGNITARIES_STORAGE_KEY =", sDig);
+      if (sDig !== -1 && eDig !== -1) {
+        fullHtml = fullHtml.substring(0, sDig) + "const DEFAULT_DIGNITARIES = " + JSON.stringify(currentDigs, null, 4) + ";\n\n  " + fullHtml.substring(eDig);
+      }
+      if (typeof EMIS_STAFF_DATA !== "undefined") {
+        const sStf = fullHtml.indexOf("var EMIS_STAFF_DATA = {");
+        const eStf = fullHtml.indexOf("<" + "/script>", sStf);
+        if (sStf !== -1 && eStf !== -1) {
+          fullHtml = fullHtml.substring(0, sStf) + "var EMIS_STAFF_DATA = " + JSON.stringify(EMIS_STAFF_DATA) + ";\nif (typeof window !== \"undefined\") { window.EMIS_STAFF_DATA = EMIS_STAFF_DATA; }\n" + fullHtml.substring(eStf);
+        }
+      }
+      if (typeof EMIS_STUDENT_DATA !== "undefined") {
+        const sStu = fullHtml.indexOf("var EMIS_STUDENT_DATA = {");
+        const eStu = fullHtml.indexOf("<" + "/script>", sStu);
+        if (sStu !== -1 && eStu !== -1) {
+          fullHtml = fullHtml.substring(0, sStu) + "var EMIS_STUDENT_DATA = " + JSON.stringify(EMIS_STUDENT_DATA) + ";\nif (typeof window !== \"undefined\") { window.EMIS_STUDENT_DATA = EMIS_STUDENT_DATA; }\n" + fullHtml.substring(eStu);
+        }
+      }
+    } catch (e) {}
+    const blob = new Blob([fullHtml], { type: "text/html;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "index.html";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("💾 புதுப்பிக்கப்பட்ட முழுமையான index.html ஒற்றைக் கோப்பு பதிவிறக்கம் செய்யப்பட்டது!", "#16a34a");
   }
 
   function syncMasterFromGoogleSheet(showNotification) {
@@ -12997,17 +13499,18 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             newCount++;
           }
         });
-        safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
+        safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
         autoRegisterDivisionsFromSchools();
         populateAllDynamicDropdowns();
         updateAllSummaryCounters();
         renderPublicQuickFinder();
         renderAdminDirectoryTable();
+        updateGoogleSheetSyncBadge(`📊 Google Sheet இணைக்கப்பட்டுள்ளது (${masterSchools.length} பள்ளிகள்)`, true);
         if (showNotification) {
           showToast(`✅ School-Master கூகுள் சீட் ஒத்திசைவு வெற்றி! மொத்தம் ${masterSchools.length} பள்ளிகள் (${newCount} புதியவை).`, "#22c55e");
         }
       } catch (err) {
-        if (showNotification) showToast("ℹ️ உள்ளூர் தரவுத்தளம் (281 பள்ளிகள்) செயலில் உள்ளது.", "#38bdf8");
+        if (showNotification) showToast("ℹ️ உள்ளூர் தரவுத்தளம் (282 பள்ளிகள்) செயலில் உள்ளது.", "#38bdf8");
       }
     };
 
@@ -13036,7 +13539,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }, payload);
     const bodyStr = JSON.stringify(fullPayload);
 
-    // For OTP actions, also fire a non-blocking GET query-string request so even if POST redirects are blocked in blob/sandboxed tabs, doGet(e) delivers the OTP
     const act = String(fullPayload.action || "");
     if (act === "send_dual_otp" || act === "send_email_otp" || act === "send_whatsapp_otp") {
       try {
@@ -13053,7 +13555,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           purpose: String(fullPayload.purpose || "OTP_VERIFY"),
           t: String(Date.now())
         });
-        fetchWithTimeout(`${appsScriptUrl}${sep}${qp.toString()}`, { method: "GET", mode: "no-cors" }, 3200).catch(() => {});
+        fetchWithTimeout(`${appsScriptUrl}${sep}${qp.toString()}`, { method: "GET", mode: "no-cors" }, 3500).catch(() => {});
       } catch (ge) {}
     }
 
@@ -13062,7 +13564,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: bodyStr
-      }, 3200);
+      }, 4500);
       if (res && res.ok) {
         try {
           const data = await res.json();
@@ -13078,9 +13580,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: bodyStr
-        }, 2800);
+        }, 3800);
         return { ok: true, mode: "no-cors" };
-      } catch (e2) {}
+      } catch (e2) {
+        return { ok: false, error: String(e2) };
+      }
     }
     return { ok: true, fallback: true };
   }
@@ -13088,8 +13592,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   function getCeosvgAppsScriptSourceCode() {
     return `/**
  * ============================================================================
- * 🏛️ முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (CEO SIVAGANGAI SCHOOL PORTAL)
+ * 🏛️ முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (CEO SIVAGANGAI SCHOOL PORTAL v3.8)
  * Google Apps Script Backend (\`Code.gs\`) – Account: ceosvgweb@gmail.com
+ * AUTO DUAL-SYNC EDITION (Firebase + Google Sheet Real-Time Bi-Directional Sync)
  * ============================================================================
  *
  * சிறப்பம்சங்கள் (Features):
@@ -13097,32 +13602,21 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
  *    அதிகாரப்பூர்வ மின்னஞ்சல் முகவரிக்கு 6-இலக்க OTP அனுப்புதல் (\`MailApp\`).
  * 2. வாட்ஸ்ஆப் OTP (WhatsApp OTP): Meta WhatsApp Cloud API (v21.0) வழியாக
  *    தலைமையாசிரியர்களின் கைபேசி எண்ணிற்கு 6-இலக்க OTP அனுப்புதல் (\`UrlFetchApp\`).
- *    (Text Message + \`hello_world\` / OTP Template Fallback வசதியுடன்).
- * 3. தானியங்கி Google Sheet கட்டமைப்பு (\`setupPortalSheets\`):
- *    - \`SCHOOL_MASTER\`    : 282 பள்ளிகளின் முதன்மை விவரங்கள் (10th & 12th Exam Centre உட்பட)
- *    - \`SCHOOL_AUTH\`      : பள்ளிகளின் கடவுச்சொல் (Password), 6-இலக்க PIN & OTP சரிபார்ப்பு நிலை
- *    - \`OTP_LOGS\`         : அனுப்பப்பட்ட அனைத்து Email & WhatsApp OTP பதிவுகள்
- *    - \`STUDENT_STRENGTH\` : பள்ளி வாரியான மாணவர் எண்ணிக்கை (தமிழ்வழி / ஆங்கிலவழி / மொத்தம்)
- *    - \`HSS_GROUP_MASTER\` : மேல்நிலைப்பள்ளி பாடப்பிரிவுகள் (Group Code, Category, Subjects)
- *    - \`STAFF_REQUESTS\`   : ஆசிரியர் திருத்தம் / நீக்கக் கோரிக்கைகள்
- *
- * ============================================================================
- * 🛠️ பயன்படுத்தும் முறை (Quick Setup in \`ceosvgweb@gmail.com\`):
- * 1. \`ceosvgweb@gmail.com\` கணக்கில் புதிய Google Sheet ஒன்றைத் தொடங்கவும் (https://sheets.new).
- * 2. மேல் மெனுவில் \`Extensions ➔ Apps Script\` கிளிக் செய்யவும்.
- * 3. அங்கிருக்கும் பழைய குறியீட்டை அழித்துவிட்டு, இந்த \`Code.gs\` முழு நிரலையும் ஒட்டி \`Save (Ctrl+S)\` செய்யவும்.
- * 4. மேலே செயல்பாட்டுப் பட்டியலில் \`setupPortalSheets\` என்பதைத் தேர்ந்தெடுத்து \`▷ Run\` அழுத்தி அனுமதி (Allow) வழங்கவும்.
- * 5. வலது மேல் மூலையில் \`Deploy ➔ New deployment ➔ Select type: Web app\` தேர்வு செய்யவும்:
- *    - Execute as: \`Me (ceosvgweb@gmail.com)\`
- *    - Who has access: \`Anyone\`
- * 6. \`Deploy\` அழுத்திக் கிடைக்கும் \`Web App URL (.../exec)\`-ஐ நகலெடுத்து, இணையதளத்தின்
- *    \`⚙️ இணைப்பு அமைப்பு (Cloud Settings) ➔ Tab 3\`-ல் ஒட்டிச் சேமிக்கவும்.
+ * 3. தானியங்கி 9-தாவல் Google Sheet கட்டமைப்பு (\`setupPortalSheets\`):
+ *    - \`SCHOOL_MASTER\`     : 282 பள்ளிகளின் முதன்மை விவரங்கள்
+ *    - \`SCHOOL_AUTH\`       : பள்ளிகளின் கடவுச்சொல், 6-இலக்க PIN & OTP சரிபார்ப்பு நிலை
+ *    - \`OTP_LOGS\`          : அனுப்பப்பட்ட அனைத்து Email & WhatsApp OTP பதிவுகள்
+ *    - \`STUDENT_STRENGTH\`  : பள்ளி வாரியான மாணவர் எண்ணிக்கை (தமிழ்வழி / ஆங்கிலவழி / மொத்தம்)
+ *    - \`SCHOOL_EXTRA_LIVE\` : பள்ளி வாரியான வகுப்பு/பாடப்பிரிவு மாணவர்கள், ஆசிரியர்கள் & அடிப்படைத் தேவைகள் (JSON)
+ *    - \`HSS_GROUP_MASTER\`  : மேல்நிலைப்பள்ளி பாடப்பிரிவுகள் (Group Code, Category, Subjects)
+ *    - \`STAFF_REQUESTS\`    : ஆசிரியர் நீக்கக் கோரிக்கைகள் மற்றும் நிர்வாகி ஒப்புதல் நிலை
+ *    - \`CIRCULARS\`         : முதன்மைக் கல்வி அலுவலர் சுற்றறிக்கைகள் மற்றும் அறிவிப்புகள்
+ *    - \`PORTAL_STORES\`     : பிரமுகர்கள், நிர்வாகப் பிரிவுகள் மற்றும் ஆசிரியர் திருத்தங்கள்
  * ============================================================================
  */
 
 const PORTAL_CONFIG = {
   OWNER_EMAIL: "ceosvgweb@gmail.com",
-  // உங்கள் புதிய Google Sheet ID-ஐ இங்கே மாற்றிக் கொள்ளலாம் (அல்லது Active Sheet தானாகவே எடுத்துக்கொள்ளப்படும்)
   MASTER_SHEET_ID: "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ",
 
   // Meta WhatsApp Cloud API Configuration
@@ -13134,25 +13628,17 @@ const PORTAL_CONFIG = {
   WA_ACCESS_TOKEN: "EAAg6K107UYwBSzcHF9ZCyRGF0cvbTTaKh0oZCb2PsBUbD2Dkaqobr3vSMX9lEhsKgitlomBrvHXgWhnLW8lHbW5AiUZBv4U9ymNb7oo8UKwzZBrDVCdsvAQl9L4mkDEV3X8CGGpC9TIbUXKrFi7r9bVbVNkliBkbsiK0NTmZCFhdZAvZCPh2Wrv7ZCAZAFZCZANX4btWZB8n6acNIeKf5quFCdNvM8YVS0RoX8q26rMyEvnRNoQhs5fQqLtIyhY1Y6BIZBx4kwRPaZCZBNeqUESw9EEv8AMx7ZAI"
 };
 
-/**
- * Google Sheet திறக்கும் பொழுது மேல் மெனுவில் "🏛️ CEO Sivagangai Portal" மெனுவை உருவாக்குகிறது
- */
 function onOpen() {
   try {
     SpreadsheetApp.getUi()
       .createMenu("🏛️ CEO Sivagangai Portal")
-      .addItem("🛠️ 1. அனைத்து தாவல்களையும் உருவாக்கு (Setup All Tabs)", "setupPortalSheets")
+      .addItem("🛠️ 1. அனைத்து 9 தாவல்களையும் உருவாக்கு (Setup All Tabs)", "setupPortalSheets")
       .addItem("📧 2. சோதனை Email OTP அனுப்புக (Test Email OTP)", "testSendEmailOtpMenu")
       .addItem("📲 3. சோதனை WhatsApp OTP அனுப்புக (Test WhatsApp OTP)", "testSendWhatsappOtpMenu")
       .addToUi();
-  } catch (e) {
-    // Script Editor-லிருந்து நேரடியாக Run செய்யும்போது UI மெனு தேவையில்லை
-  }
+  } catch (e) {}
 }
 
-/**
- * இலக்கு Google Spreadsheet-ஐப் பெறுகிறது (Container-bound Sheet அல்லது Sheet ID வழியாக)
- */
 function getTargetSpreadsheet_(optionalSheetId) {
   try {
     const active = SpreadsheetApp.getActiveSpreadsheet();
@@ -13163,12 +13649,9 @@ function getTargetSpreadsheet_(optionalSheetId) {
   if (targetId) {
     return SpreadsheetApp.openById(targetId);
   }
-  throw new Error("Google Sheet ID கிடைக்கவில்லை. இந்த நிரலை Google Sheet-ன் Extensions -> Apps Script வழியாக இணைக்கவும்.");
+  throw new Error("Google Sheet ID கிடைக்கவில்லை.");
 }
 
-/**
- * குறிப்பிட்ட பெயரில் தாள் (Sheet Tab) இல்லையெனில் உருவாக்கி, தலைப்பு வரிசையை (Header Row) அமைக்கிறது
- */
 function getOrCreateSheet_(ss, sheetName, headers, headerBg) {
   let sh = ss.getSheetByName(sheetName);
   if (!sh) {
@@ -13186,131 +13669,98 @@ function getOrCreateSheet_(ss, sheetName, headers, headerBg) {
   return sh;
 }
 
-/**
- * படி 1: முதன்முறை Google Sheet-ல் அனைத்து 6 தாவல்களையும் உருவாக்க இந்தச் செயல்பாட்டை Run செய்யவும்
- */
 function setupPortalSheets(optionalSheetId) {
   const ss = getTargetSpreadsheet_(optionalSheetId);
 
-  // 1. SCHOOL_MASTER (282 Schools with 10th & 12th Exam Centre Details)
   getOrCreateSheet_(ss, "SCHOOL_MASTER", [
-    "S.No",
-    "U.NO",
-    "UDISE_NO",
-    "DGE_NO",
-    "Block",
-    "Assembly",
-    "School_Name_English",
-    "School_Name_Tamil",
-    "Management",
-    "Level",
-    "10th_Exam_Centre_No",
-    "12th_Exam_Centre_No",
-    "HM_Name_English",
-    "HM_Name_Tamil",
-    "HM_WhatsApp_Mobile",
-    "School_Email",
-    "Updated_At"
+    "S.No", "U.NO", "UDISE_NO", "DGE_NO", "Block", "Assembly",
+    "School_Name_English", "School_Name_Tamil", "Management", "Level",
+    "10th_Exam_Centre_No", "12th_Exam_Centre_No", "HM_Name_English",
+    "HM_Name_Tamil", "HM_WhatsApp_Mobile", "School_Email", "Updated_At"
   ], "#0f294a");
 
-  // 2. SCHOOL_AUTH (School Registration, Complex Password, 6-Digit PIN & OTP Status)
   getOrCreateSheet_(ss, "SCHOOL_AUTH", [
-    "U.NO",
-    "UDISE_NO",
-    "School_Name_English",
-    "HM_Name",
-    "HM_WhatsApp_Mobile",
-    "School_Email",
-    "Password",
-    "Six_Digit_PIN",
-    "OTP_Verified",
-    "Registered_At",
-    "Updated_At"
+    "U.NO", "UDISE_NO", "School_Name_English", "HM_Name",
+    "HM_WhatsApp_Mobile", "School_Email", "Password",
+    "Six_Digit_PIN", "OTP_Verified", "Registered_At", "Updated_At"
   ], "#14532d");
 
-  // 3. OTP_LOGS (Audit Log of all Email & WhatsApp OTPs dispatched)
   getOrCreateSheet_(ss, "OTP_LOGS", [
-    "Timestamp",
-    "U.NO",
-    "School_Name",
-    "Channel",
-    "Recipient",
-    "OTP_Code",
-    "Purpose",
-    "Delivery_Status",
-    "API_Response"
+    "Timestamp", "U.NO", "School_Name", "Channel",
+    "Recipient", "OTP_Code", "Purpose", "Delivery_Status", "API_Response"
   ], "#1e3a8a");
 
-  // 4. STUDENT_STRENGTH (School-wise Tamil/English Medium & Boys/Girls Totals)
   getOrCreateSheet_(ss, "STUDENT_STRENGTH", [
-    "U.NO",
-    "UDISE_NO",
-    "School_Name_English",
-    "Level",
-    "Boys_Total",
-    "Girls_Total",
-    "Grand_Total",
-    "Tamil_Medium_Total",
-    "English_Medium_Total",
-    "Groups_Summary",
-    "Updated_At"
+    "U.NO", "UDISE_NO", "School_Name_English", "Level",
+    "Boys_Total", "Girls_Total", "Grand_Total",
+    "Tamil_Medium_Total", "English_Medium_Total", "Groups_Summary", "Updated_At"
   ], "#065f46");
 
-  // 5. HSS_GROUP_MASTER (Higher Secondary Group Codes & Subjects Template)
+  getOrCreateSheet_(ss, "SCHOOL_EXTRA_LIVE", [
+    "U.NO", "UDISE_NO", "School_Name_English",
+    "Extra_Data_JSON", "Updated_At"
+  ], "#0369a1");
+
   getOrCreateSheet_(ss, "HSS_GROUP_MASTER", [
-    "GROUP_CODE",
-    "CAT_CODE",
-    "CATEGORY",
-    "GROUP_NAME",
-    "MAJOR_SUBJECTS",
-    "SUB_1",
-    "SUB_2",
-    "SUB_3",
-    "SUB_4",
-    "SUB_5",
-    "SUB_6",
-    "Updated_At"
+    "GROUP_CODE", "CAT_CODE", "CATEGORY", "GROUP_NAME", "MAJOR_SUBJECTS",
+    "SUB_1", "SUB_2", "SUB_3", "SUB_4", "SUB_5", "SUB_6", "Updated_At"
   ], "#581c87");
 
-  // 6. STAFF_REQUESTS (Staff Edit / Deletion Requests from Schools)
   getOrCreateSheet_(ss, "STAFF_REQUESTS", [
-    "Request_ID",
-    "Timestamp",
-    "U.NO",
-    "School_Name",
-    "Staff_ID",
-    "Staff_Name",
-    "Designation",
-    "Subject",
-    "Reason_Category",
-    "Reason_Detail",
-    "Status"
+    "Request_ID", "Timestamp", "U.NO", "School_Name", "Staff_ID",
+    "Staff_Name", "Designation", "Subject", "Reason_Category", "Reason_Detail", "Status"
   ], "#7f1d1d");
+
+  getOrCreateSheet_(ss, "CIRCULARS", [
+    "Circular_ID", "Date", "Title", "Target_Group", "Description", "Link", "Updated_At"
+  ], "#9a3412");
+
+  getOrCreateSheet_(ss, "PORTAL_STORES", [
+    "Store_Key", "Store_JSON", "Summary", "Updated_At"
+  ], "#334155");
 
   return {
     ok: true,
     spreadsheetId: ss.getId(),
     spreadsheetUrl: ss.getUrl(),
-    sheets: ["SCHOOL_MASTER", "SCHOOL_AUTH", "OTP_LOGS", "STUDENT_STRENGTH", "HSS_GROUP_MASTER", "STAFF_REQUESTS"]
+    sheets: [
+      "SCHOOL_MASTER", "SCHOOL_AUTH", "OTP_LOGS", "STUDENT_STRENGTH",
+      "SCHOOL_EXTRA_LIVE", "HSS_GROUP_MASTER", "STAFF_REQUESTS",
+      "CIRCULARS", "PORTAL_STORES"
+    ]
   };
 }
 
-/**
- * Web App GET Endpoint: உலாவியில் Web App URL-ஐத் திறக்கும்போது இணைப்பு நிலையைக் காட்டுகிறது
- */
 function doGet(e) {
   try {
-    const action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action).trim() : "status";
-    const ss = getTargetSpreadsheet_(e && e.parameter ? e.parameter.masterSheetId : "");
+    const p = (e && e.parameter) ? e.parameter : {};
+    const action = p.action ? String(p.action).trim() : "status";
+    const ss = getTargetSpreadsheet_(p.masterSheetId || "");
     const info = setupPortalSheets(ss.getId());
+    const nowStr = Utilities.formatDate(new Date(), "Asia/Kolkata", "dd-MM-yyyy hh:mm:ss a");
 
-    if (action === "get_auth_store") {
+    // GET-based OTP dispatch fallback
+    if (action === "send_dual_otp" || action === "send_email_otp" || action === "send_whatsapp_otp") {
+      const otpSheet = ss.getSheetByName("OTP_LOGS");
+      let emRes = { sent: false }, waRes = { sent: false };
+      if ((action === "send_dual_otp" || action === "send_email_otp") && p.email) {
+        const eOtp = p.emailOtp || p.otp || "";
+        emRes = sendEmailOtpFromCeoAccount_(p.email, eOtp, p.uNo, p.schoolNameEn, p.purpose);
+        otpSheet.appendRow([nowStr, p.uNo || "-", p.schoolNameEn || "-", "EMAIL", p.email, eOtp, p.purpose || "OTP", emRes.sent ? "SENT_OK" : "FAILED", emRes.detail || ""]);
+      }
+      if ((action === "send_dual_otp" || action === "send_whatsapp_otp") && p.phone) {
+        const wOtp = p.whatsappOtp || p.otp || "";
+        waRes = sendWhatsappOtpFromServer_(p.phone, wOtp, p.uNo, p.schoolNameEn, p.purpose);
+        otpSheet.appendRow([nowStr, p.uNo || "-", p.schoolNameEn || "-", "WHATSAPP", p.phone, wOtp, p.purpose || "OTP", waRes.sent ? "SENT_OK" : "API_WARN", waRes.detail || ""]);
+      }
+      return jsonResponse_({ ok: true, emailSent: emRes.sent, whatsappSent: waRes.sent });
+    }
+
+    if (action === "get_auth_store" || action === "get_full_portal_snapshot") {
       const authSheet = ss.getSheetByName("SCHOOL_AUTH");
-      const rows = authSheet.getLastRow() > 1
-        ? authSheet.getRange(2, 1, authSheet.getLastRow() - 1, 11).getValues()
-        : [];
+      const aRows = authSheet.getLastRow() > 1 ? authSheet.getRange(2, 1, authSheet.getLastRow() - 1, 11).getValues() : [];
       const authMap = {};
-      rows.forEach(function(r) {
+      aRows.forEach(function(r) {
         const uNo = String(r[0] || "").trim();
         if (uNo) {
           authMap[uNo] = {
@@ -13327,11 +13777,103 @@ function doGet(e) {
           };
         }
       });
-      return jsonResponse_({ ok: true, authStore: authMap });
+
+      if (action === "get_auth_store") {
+        return jsonResponse_({ ok: true, authStore: authMap });
+      }
+
+      // Full portal snapshot for bi-directional Dual-Sync
+      const mSheet = ss.getSheetByName("SCHOOL_MASTER");
+      const mRows = mSheet.getLastRow() > 1 ? mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).getValues() : [];
+      const schools = mRows.map(function(r) {
+        return {
+          sn: Number(r[0]) || 0,
+          uNo: String(r[1] || "").trim(),
+          udiseNo: String(r[2] || "").trim(),
+          dgeNo: String(r[3] || "").trim(),
+          block: String(r[4] || "").trim(),
+          assembly: String(r[5] || "").trim(),
+          nameEn: String(r[6] || "").trim(),
+          nameTa: String(r[7] || "").trim(),
+          mgmt1: String(r[8] || "1G").trim(),
+          level: String(r[9] || "HS").trim(),
+          centre10: String(r[10] || "").trim(),
+          centre12: String(r[11] || "").trim(),
+          hmName: String(r[12] || "").trim(),
+          hmTa: String(r[13] || "").trim(),
+          mobile: String(r[14] || "").trim(),
+          email: String(r[15] || "").trim()
+        };
+      }).filter(function(s) { return Boolean(s.uNo); });
+
+      const exSheet = ss.getSheetByName("SCHOOL_EXTRA_LIVE");
+      const exRows = exSheet.getLastRow() > 1 ? exSheet.getRange(2, 1, exSheet.getLastRow() - 1, 5).getValues() : [];
+      const schoolExtraMap = {};
+      exRows.forEach(function(r) {
+        const uNo = String(r[0] || "").trim();
+        const rawJson = String(r[3] || "").trim();
+        if (uNo && rawJson) {
+          try { schoolExtraMap[uNo] = JSON.parse(rawJson); } catch (e) {}
+        }
+      });
+
+      const reqSheet = ss.getSheetByName("STAFF_REQUESTS");
+      const reqRows = reqSheet.getLastRow() > 1 ? reqSheet.getRange(2, 1, reqSheet.getLastRow() - 1, 11).getValues() : [];
+      const deleteRequests = reqRows.map(function(r) {
+        return {
+          reqId: String(r[0] || ""),
+          requestedAt: String(r[1] || ""),
+          uNo: String(r[2] || ""),
+          schoolName: String(r[3] || ""),
+          staffRecordId: String(r[4] || ""),
+          emisId: String(r[4] || ""),
+          staffName: String(r[5] || ""),
+          desig: String(r[6] || ""),
+          subject: String(r[7] || ""),
+          reasonCategory: String(r[8] || ""),
+          reasonDetail: String(r[9] || ""),
+          status: String(r[10] || "PENDING")
+        };
+      }).filter(function(r) { return Boolean(r.reqId); });
+
+      const cirSheet = ss.getSheetByName("CIRCULARS");
+      const cirRows = cirSheet.getLastRow() > 1 ? cirSheet.getRange(2, 1, cirSheet.getLastRow() - 1, 7).getValues() : [];
+      const circulars = cirRows.map(function(r) {
+        return {
+          id: String(r[0] || ""),
+          date: String(r[1] || ""),
+          title: String(r[2] || ""),
+          target: String(r[3] || ""),
+          desc: String(r[4] || ""),
+          link: String(r[5] || "")
+        };
+      }).filter(function(c) { return Boolean(c.id); });
+
+      const stSheet = ss.getSheetByName("PORTAL_STORES");
+      const stRows = stSheet.getLastRow() > 1 ? stSheet.getRange(2, 1, stSheet.getLastRow() - 1, 4).getValues() : [];
+      const portalStores = {};
+      stRows.forEach(function(r) {
+        const k = String(r[0] || "").trim();
+        const j = String(r[1] || "").trim();
+        if (k && j) {
+          try { portalStores[k] = JSON.parse(j); } catch (e) {}
+        }
+      });
+
+      return jsonResponse_({
+        ok: true,
+        authStore: authMap,
+        schools: schools,
+        schoolExtraMap: schoolExtraMap,
+        deleteRequests: deleteRequests,
+        circulars: circulars,
+        portalStores: portalStores
+      });
     }
 
     return jsonResponse_({
       status: "ONLINE",
+      mode: "AUTO_DUAL_SYNC_V38",
       portal: "CEO Sivagangai School Portal Backend (ceosvgweb@gmail.com)",
       ownerAccount: PORTAL_CONFIG.OWNER_EMAIL,
       spreadsheetId: info.spreadsheetId,
@@ -13344,9 +13886,6 @@ function doGet(e) {
   }
 }
 
-/**
- * Web App POST Endpoint: இணையதளத்திலிருந்து வரும் அனைத்து OTP மற்றும் தரவு ஒத்திசைவு கோரிக்கைகளையும் கையாளுகிறது
- */
 function doPost(e) {
   try {
     const raw = (e && e.postData && e.postData.contents) ? e.postData.contents : "{}";
@@ -13356,188 +13895,223 @@ function doPost(e) {
     setupPortalSheets(ss.getId());
     const nowStr = Utilities.formatDate(new Date(), "Asia/Kolkata", "dd-MM-yyyy hh:mm:ss a");
 
-    // =========================================================================
-    // 1. மின்னஞ்சல் OTP அனுப்புதல் (SEND EMAIL OTP via ceosvgweb@gmail.com)
-    // =========================================================================
+    // 1. EMAIL OTP
     if (action === "send_email_otp") {
-      const emailResult = sendEmailOtpFromCeoAccount_(
-        data.email,
-        data.otp,
-        data.uNo,
-        data.schoolNameEn || data.schoolNameTa,
-        data.purpose
-      );
+      const emailResult = sendEmailOtpFromCeoAccount_(data.email, data.otp, data.uNo, data.schoolNameEn || data.schoolNameTa, data.purpose);
       const otpSheet = ss.getSheetByName("OTP_LOGS");
-      otpSheet.appendRow([
-        nowStr,
-        data.uNo || "-",
-        data.schoolNameEn || data.schoolNameTa || "-",
-        "EMAIL",
-        data.email || "-",
-        data.otp || "-",
-        data.purpose || "EMAIL_OTP_VERIFY",
-        emailResult.sent ? "SENT_OK" : "FAILED",
-        emailResult.detail || ""
-      ]);
-      return jsonResponse_({
-        ok: true,
-        emailSent: emailResult.sent,
-        detail: emailResult.detail
-      });
+      otpSheet.appendRow([nowStr, data.uNo || "-", data.schoolNameEn || data.schoolNameTa || "-", "EMAIL", data.email || "-", data.otp || "-", data.purpose || "EMAIL_OTP_VERIFY", emailResult.sent ? "SENT_OK" : "FAILED", emailResult.detail || ""]);
+      return jsonResponse_({ ok: true, emailSent: emailResult.sent, detail: emailResult.detail });
     }
 
-    // =========================================================================
-    // 2. வாட்ஸ்ஆப் OTP அனுப்புதல் (SEND WHATSAPP OTP via Meta Cloud API)
-    // =========================================================================
+    // 2. WHATSAPP OTP
     if (action === "send_whatsapp_otp") {
-      const waResult = sendWhatsappOtpFromServer_(
-        data.phone,
-        data.otp,
-        data.uNo,
-        data.schoolNameEn || data.schoolNameTa,
-        data.purpose,
-        data.accessToken,
-        data.phoneNumberId,
-        data.altPhoneNumberId
-      );
+      const waResult = sendWhatsappOtpFromServer_(data.phone, data.otp, data.uNo, data.schoolNameEn || data.schoolNameTa, data.purpose, data.accessToken, data.phoneNumberId, data.altPhoneNumberId);
       const otpSheet = ss.getSheetByName("OTP_LOGS");
-      otpSheet.appendRow([
-        nowStr,
-        data.uNo || "-",
-        data.schoolNameEn || data.schoolNameTa || "-",
-        "WHATSAPP",
-        data.phone || "-",
-        data.otp || "-",
-        data.purpose || "WHATSAPP_OTP_VERIFY",
-        waResult.sent ? "SENT_OK" : "API_WARN",
-        waResult.detail || ""
-      ]);
-      return jsonResponse_({
-        ok: true,
-        whatsappSent: waResult.sent,
-        detail: waResult.detail
-      });
+      otpSheet.appendRow([nowStr, data.uNo || "-", data.schoolNameEn || data.schoolNameTa || "-", "WHATSAPP", data.phone || "-", data.otp || "-", data.purpose || "WHATSAPP_OTP_VERIFY", waResult.sent ? "SENT_OK" : "API_WARN", waResult.detail || ""]);
+      return jsonResponse_({ ok: true, whatsappSent: waResult.sent, detail: waResult.detail });
     }
 
-    // =========================================================================
-    // 3. முதல் முறை பள்ளிப் பதிவு / கடவுச்சொல் & 6-இலக்க PIN மாற்றம்
-    // =========================================================================
-    if (
-      action === "school_register" ||
-      action === "password_reset" ||
-      action === "admin_reset_school_password"
-    ) {
+    // 3. AUTO DUAL-SYNC ENGINE HANDLER (Handles all automatic School & Admin saves)
+    if (action === "auto_dual_sync") {
+      const syncType = String(data.syncType || "").trim();
+
+      if (syncType === "school_master_single" && data.school) {
+        const s = data.school;
+        const uNoStr = String(s.uNo || "").trim();
+        if (uNoStr) {
+          upsertRowByKey_(ss.getSheetByName("SCHOOL_MASTER"), 2, uNoStr, [
+            s.sn || "", uNoStr, String(s.udiseNo || ""), String(s.dgeNo || ""),
+            String(s.block || ""), String(s.assembly || ""), String(s.nameEn || ""),
+            String(s.nameTa || ""), String(s.mgmt1 || ""), String(s.level || ""),
+            String(s.centre10 || ""), String(s.centre12 || ""), String(s.hmName || ""),
+            String(s.hmTa || ""), String(s.mobile || ""), String(s.email || ""), nowStr
+          ]);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
+      }
+
+      if (syncType === "school_master_bulk" && Array.isArray(data.schools)) {
+        const mSheet = ss.getSheetByName("SCHOOL_MASTER");
+        if (mSheet.getLastRow() > 1) mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
+        if (data.schools.length > 0) {
+          const mRows = data.schools.map(function(s, idx) {
+            return [
+              s.sn || (idx + 1), s.uNo || "", s.udiseNo || "", s.dgeNo || "",
+              s.block || "", s.assembly || "", s.nameEn || "", s.nameTa || "",
+              s.mgmt1 || "", s.level || "", s.centre10 || "", s.centre12 || "",
+              s.hmName || "", s.hmTa || "", s.mobile || "", s.email || "", nowStr
+            ];
+          });
+          mSheet.getRange(2, 1, mRows.length, 17).setValues(mRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.schools.length });
+      }
+
+      if (syncType === "school_auth_single" && data.auth) {
+        const a = data.auth;
+        const uNoStr = String(a.uNo || data.uNo || "").trim();
+        if (uNoStr) {
+          upsertRowByKey_(ss.getSheetByName("SCHOOL_AUTH"), 1, uNoStr, [
+            uNoStr, String(a.udiseNo || ""), String(a.nameEn || ""),
+            String(a.hmName || ""), String(a.phone || ""), String(a.email || ""),
+            String(a.password || ""), String(a.pin || ""),
+            a.otpVerified ? "YES (OTP Verified)" : "YES",
+            String(a.registeredAt || nowStr), nowStr
+          ]);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
+      }
+
+      if (syncType === "school_auth_bulk" && Array.isArray(data.authList)) {
+        const aSheet = ss.getSheetByName("SCHOOL_AUTH");
+        if (aSheet.getLastRow() > 1) aSheet.getRange(2, 1, aSheet.getLastRow() - 1, 11).clearContent();
+        if (data.authList.length > 0) {
+          const aRows = data.authList.map(function(a) {
+            return [
+              a.uNo || "", a.udiseNo || "", a.nameEn || "", a.hmName || "",
+              a.phone || "", a.email || "", a.password || "", a.pin || "",
+              a.otpVerified ? "YES (OTP Verified)" : "NO", a.registeredAt || nowStr, nowStr
+            ];
+          });
+          aSheet.getRange(2, 1, aRows.length, 11).setValues(aRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.authList.length });
+      }
+
+      if (syncType === "school_extra_single" && data.uNo) {
+        const uNoStr = String(data.uNo).trim();
+        if (data.studentRow) {
+          const st = data.studentRow;
+          upsertRowByKey_(ss.getSheetByName("STUDENT_STRENGTH"), 1, uNoStr, [
+            uNoStr, String(st.udiseNo || ""), String(st.nameEn || ""),
+            String(st.level || "HS"), Number(st.boys || 0), Number(st.girls || 0),
+            Number(st.total || 0), Number(st.tm || 0), Number(st.em || 0),
+            String(st.groupsSummary || "-"), nowStr
+          ]);
+        }
+        if (data.extraData) {
+          upsertRowByKey_(ss.getSheetByName("SCHOOL_EXTRA_LIVE"), 1, uNoStr, [
+            uNoStr, String(data.udiseNo || ""), String(data.schoolNameEn || ""),
+            JSON.stringify(data.extraData), nowStr
+          ]);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
+      }
+
+      if (syncType === "student_strength_bulk" && Array.isArray(data.studentList)) {
+        const sSheet = ss.getSheetByName("STUDENT_STRENGTH");
+        if (sSheet.getLastRow() > 1) sSheet.getRange(2, 1, sSheet.getLastRow() - 1, 11).clearContent();
+        if (data.studentList.length > 0) {
+          const sRows = data.studentList.map(function(st) {
+            return [
+              st.uNo || "", st.udiseNo || "", st.nameEn || "", st.level || "",
+              st.boys || 0, st.girls || 0, st.total || 0, st.tm || 0, st.em || 0,
+              st.groupsSummary || "-", nowStr
+            ];
+          });
+          sSheet.getRange(2, 1, sRows.length, 11).setValues(sRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.studentList.length });
+      }
+
+      if (syncType === "staff_delete_requests" && Array.isArray(data.requests)) {
+        const rSheet = ss.getSheetByName("STAFF_REQUESTS");
+        if (rSheet.getLastRow() > 1) rSheet.getRange(2, 1, rSheet.getLastRow() - 1, 11).clearContent();
+        if (data.requests.length > 0) {
+          const rRows = data.requests.map(function(r) {
+            return [
+              r.reqId || "", r.requestedAt || nowStr, r.uNo || "",
+              r.schoolName || r.schoolNameTa || r.schoolNameEn || "",
+              r.emisId || r.staffRecordId || "", r.staffName || r.staffNameTa || "",
+              r.desig || "", r.subject || "", r.reasonCategory || "",
+              r.reasonDetail || r.reason || "", r.status || "PENDING"
+            ];
+          });
+          rSheet.getRange(2, 1, rRows.length, 11).setValues(rRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.requests.length });
+      }
+
+      if (syncType === "hss_group_master" && Array.isArray(data.groups)) {
+        const gSheet = ss.getSheetByName("HSS_GROUP_MASTER");
+        if (gSheet.getLastRow() > 1) gSheet.getRange(2, 1, gSheet.getLastRow() - 1, 12).clearContent();
+        if (data.groups.length > 0) {
+          const gRows = data.groups.map(function(g) {
+            return [
+              g.groupCode || "", g.catCode || "", g.category || "", g.groupName || "",
+              g.majorSubjects || "", g.sub1 || "LANGUAGE", g.sub2 || "ENGLISH",
+              g.sub3 || "", g.sub4 || "", g.sub5 || "", g.sub6 || "", nowStr
+            ];
+          });
+          gSheet.getRange(2, 1, gRows.length, 12).setValues(gRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.groups.length });
+      }
+
+      if (syncType === "circulars" && Array.isArray(data.circulars)) {
+        const cSheet = ss.getSheetByName("CIRCULARS");
+        if (cSheet.getLastRow() > 1) cSheet.getRange(2, 1, cSheet.getLastRow() - 1, 7).clearContent();
+        if (data.circulars.length > 0) {
+          const cRows = data.circulars.map(function(c) {
+            return [
+              c.id || "", c.date || "", c.title || "", c.target || "All Schools",
+              c.desc || "", c.link || "", nowStr
+            ];
+          });
+          cSheet.getRange(2, 1, cRows.length, 7).setValues(cRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.circulars.length });
+      }
+
+      if (syncType === "portal_store" && data.storeKey) {
+        upsertRowByKey_(ss.getSheetByName("PORTAL_STORES"), 1, String(data.storeKey), [
+          String(data.storeKey), JSON.stringify(data.storeData || {}),
+          String(data.summary || ""), nowStr
+        ]);
+        return jsonResponse_({ ok: true, syncType: syncType, storeKey: data.storeKey });
+      }
+    }
+
+    // 4. Direct Legacy Actions (school_register, password_reset, update_school_profile, seed_all_to_sheet)
+    if (action === "school_register" || action === "password_reset" || action === "admin_reset_school_password") {
       const authSheet = ss.getSheetByName("SCHOOL_AUTH");
       const uNoStr = String(data.uNo || "").trim();
       upsertRowByKey_(authSheet, 1, uNoStr, [
-        uNoStr,
-        String(data.udiseNo || ""),
-        String(data.nameEn || data.schoolNameEn || ""),
-        String(data.hmName || ""),
-        String(data.mobile || ""),
-        String(data.schoolEmail || data.email || ""),
-        String(data.password || data.newPassword || ""),
-        String(data.pin || ""),
-        "YES (OTP Verified)",
-        nowStr,
-        nowStr
+        uNoStr, String(data.udiseNo || ""), String(data.nameEn || data.schoolNameEn || ""),
+        String(data.hmName || ""), String(data.mobile || ""), String(data.schoolEmail || data.email || ""),
+        String(data.password || data.newPassword || ""), String(data.pin || ""),
+        "YES (OTP Verified)", nowStr, nowStr
       ]);
       return jsonResponse_({ ok: true, action: action, uNo: uNoStr });
     }
 
-    // =========================================================================
-    // 4. பள்ளி சுயவிவரம் புதுப்பித்தல் / நிர்வாகி பள்ளி விவரம் சேர்த்தல்
-    // =========================================================================
     if (action === "update_school_profile" || action === "admin_upsert_school") {
       const s = data.school || {};
       const uNoStr = String(s.uNo || "").trim();
       if (uNoStr) {
-        const mSheet = ss.getSheetByName("SCHOOL_MASTER");
-        upsertRowByKey_(mSheet, 2, uNoStr, [
-          s.sn || "",
-          uNoStr,
-          String(s.udiseNo || ""),
-          String(s.dgeNo || ""),
-          String(s.block || ""),
-          String(s.assembly || ""),
-          String(s.nameEn || ""),
-          String(s.nameTa || ""),
-          String(s.mgmt1 || ""),
-          String(s.level || ""),
-          String(s.centre10 || ""),
-          String(s.centre12 || ""),
-          String(s.hmName || ""),
-          String(s.hmTa || ""),
-          String(s.mobile || ""),
-          String(data.email || s.email || ""),
-          nowStr
+        upsertRowByKey_(ss.getSheetByName("SCHOOL_MASTER"), 2, uNoStr, [
+          s.sn || "", uNoStr, String(s.udiseNo || ""), String(s.dgeNo || ""),
+          String(s.block || ""), String(s.assembly || ""), String(s.nameEn || ""),
+          String(s.nameTa || ""), String(s.mgmt1 || ""), String(s.level || ""),
+          String(s.centre10 || ""), String(s.centre12 || ""), String(s.hmName || ""),
+          String(s.hmTa || ""), String(s.mobile || ""), String(data.email || s.email || ""), nowStr
         ]);
       }
       return jsonResponse_({ ok: true, action: action, uNo: uNoStr });
     }
 
-    // =========================================================================
-    // 5. மேல்நிலைப்பள்ளி Group Template பட்டியலைப் பதிவேற்றுதல்
-    // =========================================================================
-    if (action === "syncHssGroupMaster" && Array.isArray(data.groups)) {
-      const gSheet = ss.getSheetByName("HSS_GROUP_MASTER");
-      if (gSheet.getLastRow() > 1) {
-        gSheet.getRange(2, 1, gSheet.getLastRow() - 1, 12).clearContent();
-      }
-      if (data.groups.length > 0) {
-        const gRows = data.groups.map(function(g) {
-          return [
-            g.groupCode || "",
-            g.catCode || "",
-            g.category || "",
-            g.groupName || "",
-            g.majorSubjects || "",
-            g.sub1 || "LANGUAGE",
-            g.sub2 || "ENGLISH",
-            g.sub3 || "",
-            g.sub4 || "",
-            g.sub5 || "",
-            g.sub6 || "",
-            nowStr
-          ];
-        });
-        gSheet.getRange(2, 1, gRows.length, 12).setValues(gRows);
-      }
-      return jsonResponse_({ ok: true, groupCount: data.groups.length });
-    }
-
-    // =========================================================================
-    // 6. அனைத்து 282 பள்ளிகளின் முழுத் தரவையும் Google Sheet-ல் பதிவேற்றுதல்
-    // =========================================================================
     if (action === "seed_all_to_sheet") {
-      let masterCount = 0;
-      let authCount = 0;
-      let stuCount = 0;
+      let masterCount = 0, authCount = 0, stuCount = 0;
 
       if (Array.isArray(data.schools) && data.schools.length > 0) {
         const mSheet = ss.getSheetByName("SCHOOL_MASTER");
-        if (mSheet.getLastRow() > 1) {
-          mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
-        }
+        if (mSheet.getLastRow() > 1) mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
         const mRows = data.schools.map(function(s, idx) {
           return [
-            s.sn || (idx + 1),
-            s.uNo || "",
-            s.udiseNo || "",
-            s.dgeNo || "",
-            s.block || "",
-            s.assembly || "",
-            s.nameEn || "",
-            s.nameTa || "",
-            s.mgmt1 || "",
-            s.level || "",
-            s.centre10 || "",
-            s.centre12 || "",
-            s.hmName || "",
-            s.hmTa || "",
-            s.mobile || "",
-            s.email || "",
-            nowStr
+            s.sn || (idx + 1), s.uNo || "", s.udiseNo || "", s.dgeNo || "",
+            s.block || "", s.assembly || "", s.nameEn || "", s.nameTa || "",
+            s.mgmt1 || "", s.level || "", s.centre10 || "", s.centre12 || "",
+            s.hmName || "", s.hmTa || "", s.mobile || "", s.email || "", nowStr
           ];
         });
         mSheet.getRange(2, 1, mRows.length, 17).setValues(mRows);
@@ -13546,22 +14120,12 @@ function doPost(e) {
 
       if (Array.isArray(data.authList) && data.authList.length > 0) {
         const aSheet = ss.getSheetByName("SCHOOL_AUTH");
-        if (aSheet.getLastRow() > 1) {
-          aSheet.getRange(2, 1, aSheet.getLastRow() - 1, 11).clearContent();
-        }
+        if (aSheet.getLastRow() > 1) aSheet.getRange(2, 1, aSheet.getLastRow() - 1, 11).clearContent();
         const aRows = data.authList.map(function(a) {
           return [
-            a.uNo || "",
-            a.udiseNo || "",
-            a.nameEn || "",
-            a.hmName || "",
-            a.phone || "",
-            a.email || "",
-            a.password || "",
-            a.pin || "",
-            a.otpVerified ? "YES (OTP Verified)" : "NO",
-            a.registeredAt || nowStr,
-            nowStr
+            a.uNo || "", a.udiseNo || "", a.nameEn || "", a.hmName || "",
+            a.phone || "", a.email || "", a.password || "", a.pin || "",
+            a.otpVerified ? "YES (OTP Verified)" : "NO", a.registeredAt || nowStr, nowStr
           ];
         });
         aSheet.getRange(2, 1, aRows.length, 11).setValues(aRows);
@@ -13570,56 +14134,42 @@ function doPost(e) {
 
       if (Array.isArray(data.studentList) && data.studentList.length > 0) {
         const sSheet = ss.getSheetByName("STUDENT_STRENGTH");
-        if (sSheet.getLastRow() > 1) {
-          sSheet.getRange(2, 1, sSheet.getLastRow() - 1, 11).clearContent();
-        }
+        if (sSheet.getLastRow() > 1) sSheet.getRange(2, 1, sSheet.getLastRow() - 1, 11).clearContent();
         const sRows = data.studentList.map(function(st) {
           return [
-            st.uNo || "",
-            st.udiseNo || "",
-            st.nameEn || "",
-            st.level || "",
-            st.boys || 0,
-            st.girls || 0,
-            st.total || 0,
-            st.tm || 0,
-            st.em || 0,
-            st.groupsSummary || "-",
-            nowStr
+            st.uNo || "", st.udiseNo || "", st.nameEn || "", st.level || "",
+            st.boys || 0, st.girls || 0, st.total || 0, st.tm || 0, st.em || 0,
+            st.groupsSummary || "-", nowStr
           ];
         });
         sSheet.getRange(2, 1, sRows.length, 11).setValues(sRows);
         stuCount = sRows.length;
       }
 
-      return jsonResponse_({
-        ok: true,
-        masterCount: masterCount,
-        authCount: authCount,
-        stuCount: stuCount
-      });
-    }
+      if (Array.isArray(data.deleteRequests) && data.deleteRequests.length > 0) {
+        const rSheet = ss.getSheetByName("STAFF_REQUESTS");
+        if (rSheet.getLastRow() > 1) rSheet.getRange(2, 1, rSheet.getLastRow() - 1, 11).clearContent();
+        const rRows = data.deleteRequests.map(function(r) {
+          return [
+            r.reqId || "", r.requestedAt || nowStr, r.uNo || "",
+            r.schoolName || r.schoolNameTa || "", r.emisId || r.staffRecordId || "",
+            r.staffName || r.staffNameTa || "", r.desig || "", r.subject || "",
+            r.reasonCategory || "", r.reasonDetail || "", r.status || "PENDING"
+          ];
+        });
+        rSheet.getRange(2, 1, rRows.length, 11).setValues(rRows);
+      }
 
-    // =========================================================================
-    // 7. ஆசிரியர் நீக்கக் கோரிக்கையைப் பதிவு செய்தல் (STAFF_REQUESTS)
-    // =========================================================================
-    if (action === "staff_delete_request" && data.request) {
-      const r = data.request;
-      const reqSheet = ss.getSheetByName("STAFF_REQUESTS");
-      reqSheet.appendRow([
-        r.reqId || ("REQ_" + Date.now()),
-        nowStr,
-        r.uNo || "",
-        r.schoolNameEn || r.schoolNameTa || "",
-        r.staffId || "",
-        r.staffName || "",
-        r.desig || "",
-        r.subject || "",
-        r.reasonCategory || "",
-        r.reasonDetail || "",
-        r.status || "PENDING"
-      ]);
-      return jsonResponse_({ ok: true });
+      if (Array.isArray(data.circulars) && data.circulars.length > 0) {
+        const cSheet = ss.getSheetByName("CIRCULARS");
+        if (cSheet.getLastRow() > 1) cSheet.getRange(2, 1, cSheet.getLastRow() - 1, 7).clearContent();
+        const cRows = data.circulars.map(function(c) {
+          return [c.id || "", c.date || "", c.title || "", c.target || "All Schools", c.desc || "", c.link || "", nowStr];
+        });
+        cSheet.getRange(2, 1, cRows.length, 7).setValues(cRows);
+      }
+
+      return jsonResponse_({ ok: true, masterCount: masterCount, authCount: authCount, stuCount: stuCount });
     }
 
     return jsonResponse_({ ok: true, note: "Handled action: " + action });
@@ -13628,9 +14178,6 @@ function doPost(e) {
   }
 }
 
-/**
- * \`ceosvgweb@gmail.com\` கணக்கிலிருந்து பள்ளி மின்னஞ்சலுக்கு OTP அனுப்புகிறது (\`MailApp\`)
- */
 function sendEmailOtpFromCeoAccount_(toEmail, otpCode, uNo, schoolName, purpose) {
   const cleanEmail = String(toEmail || "").trim();
   if (!cleanEmail || cleanEmail.indexOf("@") === -1) {
@@ -13669,9 +14216,6 @@ function sendEmailOtpFromCeoAccount_(toEmail, otpCode, uNo, schoolName, purpose)
   }
 }
 
-/**
- * Meta WhatsApp Cloud API (v21.0) வழியாக தலைமையாசிரியர் எண்ணிற்கு OTP அனுப்புகிறது
- */
 function sendWhatsappOtpFromServer_(toPhone, otpCode, uNo, schoolName, purpose, tokenOverride, phoneIdOverride, altPhoneIdOverride) {
   const token = String(tokenOverride || PORTAL_CONFIG.WA_ACCESS_TOKEN || "").trim();
   const phoneIds = [
@@ -13697,7 +14241,6 @@ function sendWhatsappOtpFromServer_(toPhone, otpCode, uNo, schoolName, purpose, 
     const endpoint = "https://graph.facebook.com/v21.0/" + encodeURIComponent(pid) + "/messages";
 
     try {
-      // 1. Direct WhatsApp Text Message
       const resText = UrlFetchApp.fetch(endpoint, {
         method: "post",
         contentType: "application/json",
@@ -13717,7 +14260,6 @@ function sendWhatsappOtpFromServer_(toPhone, otpCode, uNo, schoolName, purpose, 
       }
       lastError = "HTTP " + code1 + ": " + resText.getContentText();
 
-      // 2. Template Fallback (\`hello_world\`) if 24-hr customer window is not yet open
       const resTpl = UrlFetchApp.fetch(endpoint, {
         method: "post",
         contentType: "application/json",
@@ -13745,9 +14287,6 @@ function sendWhatsappOtpFromServer_(toPhone, otpCode, uNo, schoolName, purpose, 
   return { sent: false, detail: lastError || "WA_DISPATCH_FAILED" };
 }
 
-/**
- * தாள் வரிசையை U.NO அடிப்படையில் புதுப்பிக்கிறது அல்லது புதிய வரிசையாகச் சேர்க்கிறது
- */
 function upsertRowByKey_(sheet, keyColIndex1Based, keyVal, rowArray) {
   const lastRow = sheet.getLastRow();
   if (lastRow >= 2) {
@@ -13762,41 +14301,20 @@ function upsertRowByKey_(sheet, keyColIndex1Based, keyVal, rowArray) {
   sheet.appendRow(rowArray);
 }
 
-/**
- * JSON வெளியீட்டை உருவாக்குகிறது
- */
 function jsonResponse_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-/**
- * சோதனை செயல்பாடு 1: Apps Script Editor-லிருந்து நேரடியாக Email OTP சோதிக்க
- */
 function testSendEmailOtpMenu() {
   const testOtp = String(Math.floor(100000 + Math.random() * 900000));
-  const res = sendEmailOtpFromCeoAccount_(
-    PORTAL_CONFIG.OWNER_EMAIL,
-    testOtp,
-    "ADMIN",
-    "CEO OFFICE SIVAGANGAI",
-    "Google Sheet Code.gs Email OTP Test"
-  );
+  const res = sendEmailOtpFromCeoAccount_(PORTAL_CONFIG.OWNER_EMAIL, testOtp, "ADMIN", "CEO OFFICE SIVAGANGAI", "Google Sheet Code.gs Email OTP Test");
   Logger.log("Email OTP Test Result: " + JSON.stringify(res));
 }
 
-/**
- * சோதனை செயல்பாடு 2: Apps Script Editor-லிருந்து நேரடியாக WhatsApp OTP சோதிக்க
- */
 function testSendWhatsappOtpMenu() {
   const testOtp = String(Math.floor(100000 + Math.random() * 900000));
-  const res = sendWhatsappOtpFromServer_(
-    "919626471035",
-    testOtp,
-    "ADMIN",
-    "CEO OFFICE SIVAGANGAI",
-    "Google Sheet Code.gs WhatsApp OTP Test"
-  );
+  const res = sendWhatsappOtpFromServer_("919626471035", testOtp, "ADMIN", "CEO OFFICE SIVAGANGAI", "Google Sheet Code.gs WhatsApp OTP Test");
   Logger.log("WhatsApp OTP Test Result: " + JSON.stringify(res));
 }`;
   }
@@ -13810,7 +14328,7 @@ function testSendWhatsappOtpMenu() {
 
   function copyCeosvgAppsScriptCode() {
     const code = getCeosvgAppsScriptSourceCode();
-    copyTextWithFallback(code, "📋 ceosvgweb@gmail.com கணக்கிற்கான முழுமையான Code.gs நிரல் நகலெடுக்கப்பட்டது! உங்கள் Google Sheet ➔ Extensions ➔ Apps Script-ல் ஒட்டவும்.");
+    copyTextWithFallback(code, "📋 ceosvgweb@gmail.com கணக்கிற்கான முழுமையான Auto Dual-Sync Code.gs நிரல் நகலெடுக்கப்பட்டது! உங்கள் Google Sheet ➔ Extensions ➔ Apps Script-ல் ஒட்டவும்.");
   }
 
   function downloadCeosvgAppsScriptFile() {
@@ -13819,12 +14337,12 @@ function testSendWhatsappOtpMenu() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "Code_ceosvgweb_GoogleSheet_OTP.gs";
+    a.download = "Code_ceosvgweb_GoogleSheet_AutoDualSync.gs";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast("📥 Code_ceosvgweb_GoogleSheet_OTP.gs கோப்பு பதிவிறக்கப்பட்டது!", "#22c55e");
+    showToast("📥 Code_ceosvgweb_GoogleSheet_AutoDualSync.gs கோப்பு பதிவிறக்கப்பட்டது!", "#22c55e");
   }
 
   async function pushAllPortalDataToGoogleSheet() {
@@ -13835,57 +14353,33 @@ function testSendWhatsappOtpMenu() {
       alertBox.style.background = "#eff6ff";
       alertBox.style.border = "1px solid #93c5fd";
       alertBox.style.color = "#1e3a8a";
-      alertBox.textContent = "⏳ 282 பள்ளிகளின் முதன்மைப் பட்டியல், உள்நுழைவுப் பதிவுகள் மற்றும் மாணவர் எண்ணிக்கை உங்கள் Google Sheet-க்கு பதிவேற்றப்படுகிறது...";
+      alertBox.textContent = "⏳ 282 பள்ளிகளின் முதன்மைப் பட்டியல், உள்நுழைவுப் பதிவுகள், மாணவர் எண்ணிக்கை, நீக்கக் கோரிக்கைகள் மற்றும் சுற்றறிக்கைகள் உங்கள் Google Sheet-க்கு பதிவேற்றப்படுகின்றன...";
     }
 
-    const authList = Object.values(schoolAuthStore || {}).filter(Boolean).map(a => {
-      const sch = masterSchools.find(s => String(s.uNo) === String(a.uNo)) || {};
-      return {
-        uNo: a.uNo,
-        udiseNo: a.udiseNo || sch.udiseNo || "",
-        nameEn: sch.nameEn || "",
-        hmName: a.hmName || sch.hmName || "",
-        phone: a.phone || sch.mobile || "",
-        email: a.email || sch.email || "",
-        password: a.password || "",
-        pin: a.pin || "",
-        otpVerified: Boolean(a.otpVerified),
-        registeredAt: a.registeredAt || ""
-      };
-    });
-
-    const studentList = masterSchools.map(s => {
-      const enroll = (typeof getDistrictAllSchoolsEnrollmentList === "function")
-        ? (getDistrictAllSchoolsEnrollmentList().find(x => String(x.uNo) === String(s.uNo)) || null)
-        : null;
-      return {
-        uNo: s.uNo,
-        udiseNo: s.udiseNo,
-        nameEn: s.nameEn,
-        level: s.level || "HS",
-        boys: enroll ? enroll.totalBoys : 0,
-        girls: enroll ? enroll.totalGirls : 0,
-        total: enroll ? enroll.grandTotal : 0,
-        tm: enroll ? enroll.totalTM : 0,
-        em: enroll ? enroll.totalEM : 0,
-        groupsSummary: enroll && enroll.activeGroupsCount ? (enroll.activeGroupsCount + " Groups") : "-"
-      };
-    });
+    const authList = buildAllSchoolsAuthList();
+    const studentList = buildAllSchoolsStudentStrengthList();
 
     const res = await sendToAppsScript({
       action: "seed_all_to_sheet",
       schools: masterSchools,
       authList: authList,
-      studentList: studentList
+      studentList: studentList,
+      deleteRequests: staffDeleteRequests,
+      circulars: districtCirculars
     });
+
+    lastGoogleSheetSyncTimeStr = new Date().toLocaleTimeString("en-IN");
+    updateGoogleSheetSyncBadge(`📊 Google Sheet ஒத்திசைவு: ${lastGoogleSheetSyncTimeStr} (${masterSchools.length} பள்ளிகள்)`, true);
 
     if (alertBox) {
       alertBox.style.background = "#dcfce7";
       alertBox.style.border = "1px solid #86efac";
       alertBox.style.color = "#14532d";
-      alertBox.innerHTML = `✅ <strong>${masterSchools.length} பள்ளிகளின்</strong> முழுத் தரவும் (<code>SCHOOL_MASTER</code>, <code>SCHOOL_AUTH</code>, <code>STUDENT_STRENGTH</code>) உங்கள் Google Sheet-க்கு வெற்றிகரமாக அனுப்பப்பட்டது!`;
+      alertBox.innerHTML = `✅ <strong>${masterSchools.length} பள்ளிகளின்</strong> முழுத் தரவும் (<code>SCHOOL_MASTER</code>, <code>SCHOOL_AUTH</code>, <code>STUDENT_STRENGTH</code>, <code>STAFF_REQUESTS</code>, <code>CIRCULARS</code>) உங்கள் Google Sheet-க்கு வெற்றிகரமாக அனுப்பப்பட்டது!`;
     }
+    appendFirebaseActivityLog(`📊 282 பள்ளிகளின் முழுத் தரவும் Google Sheet-ல் வெற்றிகரமாகப் பதிவேற்றப்பட்டது!`, "#38bdf8");
     showToast(`✅ ${masterSchools.length} பள்ளிகளின் தரவுகள் Google Sheet-ல் பதிவேற்றப்பட்டன!`, "#22c55e");
+    return res;
   }
 
   async function testAppsScriptOtpAndSheet() {
@@ -13911,9 +14405,6 @@ function testSendWhatsappOtpMenu() {
     }
     showToast(`✅ சோதனை OTP (${testOtp}) அனுப்பப்பட்டது!`, "#22c55e");
   }
-
-  
-
 
   // =========================================================================
   // ADMIN TEACHER MASTER & ADVANCED MULTI-SELECT & SENIORITY PANEL ENGINE
@@ -15142,6 +15633,7 @@ function testSendWhatsappOtpMenu() {
     };
 
     staffOverrides[staffId] = updatedData;
+    window._activeSyncTargetUNo = String(targetUNo);
     safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
 
     // Also sync to extra data store if exists
@@ -15153,6 +15645,7 @@ function testSendWhatsappOtpMenu() {
       } else {
         extra.staff.push(Object.assign({}, updatedData, { id: staffId }));
       }
+      window._activeSyncTargetUNo = String(targetUNo);
       safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     }
 
@@ -17769,9 +18262,11 @@ function testSendWhatsappOtpMenu() {
         const st = extra.staff.find(item => String(item.id) === String(req.staffRecordId) || String(item.id) === String(req.emisId));
         if (st) delete st.deleteReqStatus;
       }
+      window._activeSyncTargetUNo = String(req.uNo);
       safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     }
 
+    window._activeSyncTargetUNo = String(req.uNo);
     safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
     updateAllSummaryCounters();
     renderAdminDeleteRequestsTable();
