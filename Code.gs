@@ -1,0 +1,930 @@
+/**
+ * ============================================================================
+ * 🏛️ முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (CEO SIVAGANGAI SCHOOL PORTAL v3.9)
+ * Google Apps Script Backend (`Code.gs`) – Account: ceosvgweb@gmail.com
+ * AUTO DUAL-SYNC EDITION (10 Tabs + Single-OTP Deduplication + Group Strength)
+ * ============================================================================
+ *
+ * சிறப்பம்சங்கள் (Features):
+ * 1. மின்னஞ்சல் OTP (Email OTP): `ceosvgweb@gmail.com` கணக்கிலிருந்து பள்ளிகளின்
+ *    அதிகாரப்பூர்வ மின்னஞ்சல் முகவரிக்கு ஒரே ஒரு முறை (Single Dispatch) 6-இலக்க OTP அனுப்புதல்.
+ * 2. வாட்ஸ்ஆப் OTP (WhatsApp OTP): Meta WhatsApp Cloud API (v21.0) / Template / Gateway வழியாக
+ *    தலைமையாசிரியர்களின் கைபேசி எண்ணிற்கு 6-இலக்க OTP அனுப்புதல்.
+ * 3. தானியங்கி 10-தாவல் Google Sheet கட்டமைப்பு (`setupPortalSheets`):
+ *    - `SCHOOL_MASTER`       : 282 பள்ளிகளின் முதன்மை விவரங்கள் (10th & 12th Exam Centre Nos உட்பட)
+ *    - `SCHOOL_AUTH`         : பள்ளிகளின் கடவுச்சொல், 6-இலக்க PIN & OTP சரிபார்ப்பு நிலை
+ *    - `OTP_LOGS`            : அனுப்பப்பட்ட அனைத்து Email & WhatsApp OTP பதிவுகள் (Single Dispatch)
+ *    - `STUDENT_STRENGTH`    : பள்ளி வாரியான மாணவர் எண்ணிக்கை (தமிழ்வழி / ஆங்கிலவழி / மொத்தம்)
+ *    - `GROUP_WISE_STRENGTH` : மேல்நிலைப்பள்ளி பாடப்பிரிவு வாரியான (+1 & +2) மாணவர் எண்ணிக்கை
+ *    - `HSS_GROUP_MASTER`    : மேல்நிலைப்பள்ளி 16 பாடப்பிரிவுகள் (Group Code, Category, Subjects)
+ *    - `SCHOOL_EXTRA_LIVE`   : பள்ளி வாரியான வகுப்பு/பாடப்பிரிவு மாணவர்கள், ஆசிரியர்கள் & அடிப்படைத் தேவைகள்
+ *    - `STAFF_REQUESTS`      : ஆசிரியர் நீக்கக் கோரிக்கைகள் மற்றும் நிர்வாகி ஒப்புதல் நிலை
+ *    - `CIRCULARS`           : முதன்மைக் கல்வி அலுவலர் சுற்றறிக்கைகள் மற்றும் அறிவிப்புகள்
+ *    - `PORTAL_STORES`       : பிரமுகர்கள், நிர்வாகப் பிரிவுகள் மற்றும் ஆசிரியர் திருத்தங்கள்
+ * ============================================================================
+ */
+
+const PORTAL_CONFIG = {
+  OWNER_EMAIL: "ceosvgweb@gmail.com",
+  MASTER_SHEET_ID: "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ",
+
+  // Meta WhatsApp Cloud API Configuration (Phone Number ID: 1457353970785529 | Template: hello_world [en_US] | ID: 2600197680404000)
+  WA_PHONE_NUMBER_ID: "1457353970785529",
+  WA_ALT_PHONE_NUMBER_ID: "1399324686595291",
+  WA_MESSAGING_ACCOUNT_ID: "1724740268587231",
+  WA_TEMPLATE_NAME: "hello_world",
+  WA_TEMPLATE_LANG: "en_US",
+  WA_TEMPLATE_ID: "2600197680404000",
+  WA_GATEWAY_WEBHOOK_URL: "",
+  WA_ACCESS_TOKEN: "EAAg6K107UYwBSzcHF9ZCyRGF0cvbTTaKh0oZCb2PsBUbD2Dkaqobr3vSMX9lEhsKgitlomBrvHXgWhnLW8lHbW5AiUZBv4U9ymNb7oo8UKwzZBrDVCdsvAQl9L4mkDEV3X8CGGpC9TIbUXKrFi7r9bVbVNkliBkbsiK0NTmZCFhdZAvZCPh2Wrv7ZCAZAFZCZANX4btWZB8n6acNIeKf5quFCdNvM8YVS0RoX8q26rMyEvnRNoQhs5fQqLtIyhY1Y6BIZBx4kwRPaZCZBNeqUESw9EEv8AMx7ZAI"
+};
+
+const DEFAULT_HSS_GROUPS_SEED = [
+  ["2502", 1, "SCIENCE", "COMPUTER-MATHS", "PHY/CHE/MAT/COMPUTER SCIENCE", "LANGUAGE", "ENGLISH", "PHYSICS", "CHEMISTRY", "COMPUTER SCIENCE", "MATHEMATICS"],
+  ["2503", 1, "SCIENCE", "BIO-MATHS", "PHY/CHE/MAT/BIOLOGY", "LANGUAGE", "ENGLISH", "PHYSICS", "CHEMISTRY", "BIOLOGY", "MATHEMATICS"],
+  ["2601", 1, "SCIENCE", "BIO-COMPUTER", "PHY/CHE/BIOLOGY/COMPUTER SCIENCE", "LANGUAGE", "ENGLISH", "PHYSICS", "CHEMISTRY", "BIOLOGY", "COMPUTER SCIENCE"],
+  ["2602", 1, "SCIENCE", "MICRO BIOLOGY", "PHY/CHE/BIOLOGY/MICRO BIOLOGY", "LANGUAGE", "ENGLISH", "PHYSICS", "CHEMISTRY", "BIOLOGY", "MICRO BIOLOGY"],
+  ["2608", 1, "SCIENCE", "PURESCIENCE", "PHY/CHE/BOTANY/ZOOLOGY", "LANGUAGE", "ENGLISH", "PHYSICS", "CHEMISTRY", "BOTANY", "ZOOLOGY"],
+  ["2702", 2, "ARTS", "COMMERCE-COM.APP.", "ECO/COM/ACC/COM.APPLICATIONS", "LANGUAGE", "ENGLISH", "ECONOMICS", "COMMERCE", "ACCOUNTANCY", "COMPUTER APPLICATIONS"],
+  ["2704", 2, "ARTS", "ARTS", "HIS/ECO/COM/ACC", "LANGUAGE", "ENGLISH", "HISTORY", "ECONOMICS", "COMMERCE", "ACCOUNTANCY"],
+  ["2707", 2, "ARTS", "COMMERCE-ADV.TAMIL", "ECO/COM/ACC/ADVANCED TAMIL", "LANGUAGE", "ENGLISH", "ECONOMICS", "COMMERCE", "ACCOUNTANCY", "ADVANCED TAMIL"],
+  ["2708", 2, "ARTS", "BUSINEES MATHS", "ECO/COM/ACC/BUSINESS MATHS", "LANGUAGE", "ENGLISH", "ECONOMICS", "COMMERCE", "ACCOUNTANCY", "BUSINESS MATHEMATICS"],
+  ["2971", 3, "VOCATIONAL", "MECHANICAL", "BASIC MECHANICAL ENGINEERING", "LANGUAGE", "ENGLISH", "MATHEMATICS", "BASIC MECHANICAL ENGINEERING THE", "BASIC MECHANICAL ENGINEERING PRA", "EMPLOYABILITY SKILLS"],
+  ["2972", 3, "VOCATIONAL", "ELECTIRCAL", "BASIC ELECTRICAL ENGINEERING", "LANGUAGE", "ENGLISH", "MATHEMATICS", "BASIC ELECTRICAL ENGINEERING THE", "BASIC ELECTRICAL ENGINEERING PRA", "EMPLOYABILITY SKILLS"],
+  ["2973", 3, "VOCATIONAL", "ELECTRONICS", "BASIC ELECTRONICS ENGINEERING", "LANGUAGE", "ENGLISH", "MATHEMATICS", "BASIC ELECTRONICS ENGINEERING THE", "BASIC ELECTRONICS ENGINEERING PRA", "EMPLOYABILITY SKILLS"],
+  ["2977", 3, "VOCATIONAL", "NURSING-VOCATIONAL", "NURSING- VOCATIONAL", "LANGUAGE", "ENGLISH", "BIOLOGY", "NURSING-THE-VOCATIONAL", "NURSING-PRA-VOCATIONAL", "EMPLOYABILITY SKILLS"],
+  ["2980", 3, "VOCATIONAL", "AGRI", "AGRICULTURAL SCIENCE", "LANGUAGE", "ENGLISH", "BIOLOGY", "AGRICULTURAL SCIENCE THE", "AGRICULTURAL SCIENCE PRA", "EMPLOYABILITY SKILLS"],
+  ["2981", 3, "VOCATIONAL", "TYPOGRAPHY", "TYPOGRAPHY AND COMPUTER SKILLS", "LANGUAGE", "ENGLISH", "COMMERCE", "ACCOUNTANCY", "OFFICE MANAGEMENT", "TYPOGRAPHY AND COMPUTER SKILLS"],
+  ["2982", 3, "VOCATIONAL", "AUDIT", "AUDITING", "LANGUAGE", "ENGLISH", "COMMERCE", "ACCOUNTANCY", "AUDITING PRACTICAL", "EMPLOYABILITY SKILLS"]
+];
+
+function onOpen() {
+  try {
+    SpreadsheetApp.getUi()
+      .createMenu("🏛️ CEO Sivagangai Portal")
+      .addItem("🛠️ 1. அனைத்து 10 தாவல்களையும் உருவாக்கு (Setup All 10 Tabs)", "setupPortalSheets")
+      .addItem("📧 2. சோதனை Email OTP அனுப்புக (Test Email OTP)", "testSendEmailOtpMenu")
+      .addItem("📲 3. சோதனை WhatsApp OTP அனுப்புக (Test WhatsApp OTP)", "testSendWhatsappOtpMenu")
+      .addToUi();
+  } catch (e) {}
+}
+
+function getTargetSpreadsheet_(optionalSheetId) {
+  try {
+    const active = SpreadsheetApp.getActiveSpreadsheet();
+    if (active) return active;
+  } catch (e) {}
+
+  const targetId = String(optionalSheetId || PORTAL_CONFIG.MASTER_SHEET_ID || "").trim();
+  if (targetId) {
+    return SpreadsheetApp.openById(targetId);
+  }
+  throw new Error("Google Sheet ID கிடைக்கவில்லை.");
+}
+
+function getOrCreateSheet_(ss, sheetName, headers, headerBg) {
+  let sh = ss.getSheetByName(sheetName);
+  if (!sh) {
+    sh = ss.insertSheet(sheetName);
+  }
+  if (sh.getLastRow() === 0 && Array.isArray(headers) && headers.length > 0) {
+    sh.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sh.getRange(1, 1, 1, headers.length)
+      .setBackground(headerBg || "#0f294a")
+      .setFontColor("#ffffff")
+      .setFontWeight("bold")
+      .setHorizontalAlignment("center");
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function setupPortalSheets(optionalSheetId) {
+  const ss = getTargetSpreadsheet_(optionalSheetId);
+  const nowStr = Utilities.formatDate(new Date(), "Asia/Kolkata", "dd-MM-yyyy hh:mm:ss a");
+
+  getOrCreateSheet_(ss, "SCHOOL_MASTER", [
+    "S.No", "U.NO", "UDISE_NO", "DGE_NO", "Block", "Assembly",
+    "School_Name_English", "School_Name_Tamil", "Management", "Level",
+    "10th_Exam_Centre_No", "12th_Exam_Centre_No", "HM_Name_English",
+    "HM_Name_Tamil", "HM_WhatsApp_Mobile", "School_Email", "Updated_At"
+  ], "#0f294a");
+
+  getOrCreateSheet_(ss, "SCHOOL_AUTH", [
+    "U.NO", "UDISE_NO", "School_Name_English", "HM_Name",
+    "HM_WhatsApp_Mobile", "School_Email", "Password",
+    "Six_Digit_PIN", "OTP_Verified", "Registered_At", "Updated_At"
+  ], "#14532d");
+
+  getOrCreateSheet_(ss, "OTP_LOGS", [
+    "Timestamp", "U.NO", "School_Name", "Channel",
+    "Recipient", "OTP_Code", "Purpose", "Delivery_Status", "API_Response"
+  ], "#1e3a8a");
+
+  getOrCreateSheet_(ss, "STUDENT_STRENGTH", [
+    "U.NO", "UDISE_NO", "School_Name_English", "Level",
+    "Boys_Total", "Girls_Total", "Grand_Total",
+    "Tamil_Medium_Total", "English_Medium_Total", "Groups_Summary", "Updated_At"
+  ], "#065f46");
+
+  getOrCreateSheet_(ss, "GROUP_WISE_STRENGTH", [
+    "U.NO", "UDISE_NO", "School_Name_English", "Block", "Management",
+    "GROUP_CODE", "CATEGORY", "GROUP_NAME", "MAJOR_SUBJECTS",
+    "11_TM_Boys", "11_TM_Girls", "11_EM_Boys", "11_EM_Girls", "11_Total",
+    "12_TM_Boys", "12_TM_Girls", "12_EM_Boys", "12_EM_Girls", "12_Total",
+    "Group_Grand_Total", "Updated_At"
+  ], "#0f766e");
+
+  const hssMasterSheet = getOrCreateSheet_(ss, "HSS_GROUP_MASTER", [
+    "GROUP_CODE", "CAT_CODE", "CATEGORY", "GROUP_NAME", "MAJOR_SUBJECTS",
+    "SUB_1", "SUB_2", "SUB_3", "SUB_4", "SUB_5", "SUB_6", "Updated_At"
+  ], "#581c87");
+
+  // Auto-seed default 16 HSS groups if HSS_GROUP_MASTER has only header row
+  if (hssMasterSheet.getLastRow() <= 1) {
+    const seedRows = DEFAULT_HSS_GROUPS_SEED.map(function(r) {
+      return r.concat([nowStr]);
+    });
+    hssMasterSheet.getRange(2, 1, seedRows.length, 12).setValues(seedRows);
+  }
+
+  getOrCreateSheet_(ss, "SCHOOL_EXTRA_LIVE", [
+    "U.NO", "UDISE_NO", "School_Name_English",
+    "Extra_Data_JSON", "Updated_At"
+  ], "#0369a1");
+
+  getOrCreateSheet_(ss, "STAFF_REQUESTS", [
+    "Request_ID", "Timestamp", "U.NO", "School_Name", "Staff_ID",
+    "Staff_Name", "Designation", "Subject", "Reason_Category", "Reason_Detail", "Status"
+  ], "#7f1d1d");
+
+  getOrCreateSheet_(ss, "CIRCULARS", [
+    "Circular_ID", "Date", "Title", "Target_Group", "Description", "Link", "Updated_At"
+  ], "#9a3412");
+
+  getOrCreateSheet_(ss, "PORTAL_STORES", [
+    "Store_Key", "Store_JSON", "Summary", "Updated_At"
+  ], "#334155");
+
+  return {
+    ok: true,
+    spreadsheetId: ss.getId(),
+    spreadsheetUrl: ss.getUrl(),
+    sheets: [
+      "SCHOOL_MASTER", "SCHOOL_AUTH", "OTP_LOGS", "STUDENT_STRENGTH",
+      "GROUP_WISE_STRENGTH", "HSS_GROUP_MASTER", "SCHOOL_EXTRA_LIVE",
+      "STAFF_REQUESTS", "CIRCULARS", "PORTAL_STORES"
+    ]
+  };
+}
+
+// Prevent duplicate OTP dispatch within 20 seconds for the same Channel + Recipient + OTP_Code
+function isDuplicateOtpRecentlyLogged_(otpSheet, channel, recipient, otpCode) {
+  try {
+    const lastRow = otpSheet.getLastRow();
+    if (lastRow <= 1) return false;
+    const startRow = Math.max(2, lastRow - 12);
+    const numRows = lastRow - startRow + 1;
+    const rows = otpSheet.getRange(startRow, 1, numRows, 6).getValues();
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const ch = String(rows[i][3] || "").trim().toUpperCase();
+      const rec = String(rows[i][4] || "").trim().toLowerCase();
+      const code = String(rows[i][5] || "").trim();
+      if (ch === String(channel).toUpperCase() && rec === String(recipient).trim().toLowerCase() && code === String(otpCode).trim()) {
+        return true;
+      }
+    }
+  } catch (e) {}
+  return false;
+}
+
+function doGet(e) {
+  try {
+    const p = (e && e.parameter) ? e.parameter : {};
+    const action = p.action ? String(p.action).trim() : "status";
+    const ss = getTargetSpreadsheet_(p.masterSheetId || "");
+    const info = setupPortalSheets(ss.getId());
+    const nowStr = Utilities.formatDate(new Date(), "Asia/Kolkata", "dd-MM-yyyy hh:mm:ss a");
+
+    if (action === "send_dual_otp" || action === "send_email_otp" || action === "send_whatsapp_otp") {
+      const otpSheet = ss.getSheetByName("OTP_LOGS");
+      let emRes = { sent: false }, waRes = { sent: false };
+      if ((action === "send_dual_otp" || action === "send_email_otp") && p.email) {
+        const eOtp = p.emailOtp || p.otp || "";
+        if (!isDuplicateOtpRecentlyLogged_(otpSheet, "EMAIL", p.email, eOtp)) {
+          emRes = sendEmailOtpFromCeoAccount_(p.email, eOtp, p.uNo, p.schoolNameEn, p.purpose);
+          otpSheet.appendRow([nowStr, p.uNo || "-", p.schoolNameEn || "-", "EMAIL", p.email, eOtp, p.purpose || "OTP", emRes.sent ? "SENT_OK" : "FAILED", emRes.detail || ""]);
+        } else {
+          emRes = { sent: true, detail: "DEDUP_SKIPPED" };
+        }
+      }
+      if ((action === "send_dual_otp" || action === "send_whatsapp_otp") && p.phone) {
+        const wOtp = p.whatsappOtp || p.otp || "";
+        if (!isDuplicateOtpRecentlyLogged_(otpSheet, "WHATSAPP", p.phone, wOtp)) {
+          waRes = sendWhatsappOtpFromServer_(p.phone, wOtp, p.uNo, p.schoolNameEn, p.purpose);
+          otpSheet.appendRow([nowStr, p.uNo || "-", p.schoolNameEn || "-", "WHATSAPP", p.phone, wOtp, p.purpose || "OTP", waRes.sent ? "SENT_OK" : "FALLBACK_READY", waRes.detail || ""]);
+        } else {
+          waRes = { sent: true, detail: "DEDUP_SKIPPED" };
+        }
+      }
+      return jsonResponse_({ ok: true, emailSent: emRes.sent, whatsappSent: waRes.sent });
+    }
+
+    if (action === "get_auth_store" || action === "get_full_portal_snapshot") {
+      const authSheet = ss.getSheetByName("SCHOOL_AUTH");
+      const aRows = authSheet.getLastRow() > 1 ? authSheet.getRange(2, 1, authSheet.getLastRow() - 1, 11).getValues() : [];
+      const authMap = {};
+      aRows.forEach(function(r) {
+        const uNo = String(r[0] || "").trim();
+        if (uNo) {
+          authMap[uNo] = {
+            uNo: uNo,
+            udiseNo: String(r[1] || ""),
+            nameEn: String(r[2] || ""),
+            hmName: String(r[3] || ""),
+            phone: String(r[4] || ""),
+            email: String(r[5] || ""),
+            password: String(r[6] || ""),
+            pin: String(r[7] || ""),
+            otpVerified: String(r[8] || "").indexOf("YES") !== -1,
+            registeredAt: String(r[9] || "")
+          };
+        }
+      });
+
+      if (action === "get_auth_store") {
+        return jsonResponse_({ ok: true, authStore: authMap });
+      }
+
+      const mSheet = ss.getSheetByName("SCHOOL_MASTER");
+      const mRows = mSheet.getLastRow() > 1 ? mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).getValues() : [];
+      const schools = mRows.map(function(r) {
+        return {
+          sn: Number(r[0]) || 0,
+          uNo: String(r[1] || "").trim(),
+          udiseNo: String(r[2] || "").trim(),
+          dgeNo: String(r[3] || "").trim(),
+          block: String(r[4] || "").trim(),
+          assembly: String(r[5] || "").trim(),
+          nameEn: String(r[6] || "").trim(),
+          nameTa: String(r[7] || "").trim(),
+          mgmt1: String(r[8] || "1G").trim(),
+          level: String(r[9] || "HS").trim(),
+          centre10: String(r[10] || "").trim(),
+          centre12: String(r[11] || "").trim(),
+          hmName: String(r[12] || "").trim(),
+          hmTa: String(r[13] || "").trim(),
+          mobile: String(r[14] || "").trim(),
+          email: String(r[15] || "").trim()
+        };
+      }).filter(function(s) { return Boolean(s.uNo); });
+
+      const gSheet = ss.getSheetByName("HSS_GROUP_MASTER");
+      const gRows = gSheet.getLastRow() > 1 ? gSheet.getRange(2, 1, gSheet.getLastRow() - 1, 11).getValues() : [];
+      const hssGroups = gRows.map(function(r) {
+        return {
+          groupCode: String(r[0] || "").trim(),
+          catCode: Number(r[1]) || 1,
+          category: String(r[2] || "SCIENCE").trim(),
+          groupName: String(r[3] || "").trim(),
+          majorSubjects: String(r[4] || "").trim(),
+          sub1: String(r[5] || "LANGUAGE").trim(),
+          sub2: String(r[6] || "ENGLISH").trim(),
+          sub3: String(r[7] || "").trim(),
+          sub4: String(r[8] || "").trim(),
+          sub5: String(r[9] || "").trim(),
+          sub6: String(r[10] || "").trim()
+        };
+      }).filter(function(g) { return Boolean(g.groupCode); });
+
+      const exSheet = ss.getSheetByName("SCHOOL_EXTRA_LIVE");
+      const exRows = exSheet.getLastRow() > 1 ? exSheet.getRange(2, 1, exSheet.getLastRow() - 1, 5).getValues() : [];
+      const schoolExtraMap = {};
+      exRows.forEach(function(r) {
+        const uNo = String(r[0] || "").trim();
+        const rawJson = String(r[3] || "").trim();
+        if (uNo && rawJson) {
+          try { schoolExtraMap[uNo] = JSON.parse(rawJson); } catch (e) {}
+        }
+      });
+
+      const reqSheet = ss.getSheetByName("STAFF_REQUESTS");
+      const reqRows = reqSheet.getLastRow() > 1 ? reqSheet.getRange(2, 1, reqSheet.getLastRow() - 1, 11).getValues() : [];
+      const deleteRequests = reqRows.map(function(r) {
+        return {
+          reqId: String(r[0] || ""),
+          requestedAt: String(r[1] || ""),
+          uNo: String(r[2] || ""),
+          schoolName: String(r[3] || ""),
+          staffRecordId: String(r[4] || ""),
+          emisId: String(r[4] || ""),
+          staffName: String(r[5] || ""),
+          desig: String(r[6] || ""),
+          subject: String(r[7] || ""),
+          reasonCategory: String(r[8] || ""),
+          reasonDetail: String(r[9] || ""),
+          status: String(r[10] || "PENDING")
+        };
+      }).filter(function(r) { return Boolean(r.reqId); });
+
+      const cirSheet = ss.getSheetByName("CIRCULARS");
+      const cirRows = cirSheet.getLastRow() > 1 ? cirSheet.getRange(2, 1, cirSheet.getLastRow() - 1, 7).getValues() : [];
+      const circulars = cirRows.map(function(r) {
+        return {
+          id: String(r[0] || ""),
+          date: String(r[1] || ""),
+          title: String(r[2] || ""),
+          target: String(r[3] || ""),
+          desc: String(r[4] || ""),
+          link: String(r[5] || "")
+        };
+      }).filter(function(c) { return Boolean(c.id); });
+
+      const stSheet = ss.getSheetByName("PORTAL_STORES");
+      const stRows = stSheet.getLastRow() > 1 ? stSheet.getRange(2, 1, stSheet.getLastRow() - 1, 4).getValues() : [];
+      const portalStores = {};
+      stRows.forEach(function(r) {
+        const k = String(r[0] || "").trim();
+        const j = String(r[1] || "").trim();
+        if (k && j) {
+          try { portalStores[k] = JSON.parse(j); } catch (e) {}
+        }
+      });
+
+      return jsonResponse_({
+        ok: true,
+        authStore: authMap,
+        schools: schools,
+        hssGroups: hssGroups,
+        schoolExtraMap: schoolExtraMap,
+        deleteRequests: deleteRequests,
+        circulars: circulars,
+        portalStores: portalStores
+      });
+    }
+
+    return jsonResponse_({
+      status: "ONLINE",
+      mode: "AUTO_DUAL_SYNC_V39",
+      portal: "CEO Sivagangai School Portal Backend (ceosvgweb@gmail.com)",
+      ownerAccount: PORTAL_CONFIG.OWNER_EMAIL,
+      spreadsheetId: info.spreadsheetId,
+      spreadsheetUrl: info.spreadsheetUrl,
+      sheetsReady: info.sheets,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    return jsonResponse_({ status: "ERROR", error: String(err) });
+  }
+}
+
+function doPost(e) {
+  try {
+    const raw = (e && e.postData && e.postData.contents) ? e.postData.contents : "{}";
+    const data = JSON.parse(raw);
+    const action = String(data.action || "").trim();
+    const ss = getTargetSpreadsheet_(data.masterSheetId);
+    setupPortalSheets(ss.getId());
+    const nowStr = Utilities.formatDate(new Date(), "Asia/Kolkata", "dd-MM-yyyy hh:mm:ss a");
+
+    // 1. EMAIL OTP (Single Dispatch with Deduplication Guard)
+    if (action === "send_email_otp") {
+      const otpSheet = ss.getSheetByName("OTP_LOGS");
+      if (isDuplicateOtpRecentlyLogged_(otpSheet, "EMAIL", data.email, data.otp)) {
+        return jsonResponse_({ ok: true, emailSent: true, detail: "DEDUP_SINGLE_DISPATCH" });
+      }
+      const emailResult = sendEmailOtpFromCeoAccount_(data.email, data.otp, data.uNo, data.schoolNameEn || data.schoolNameTa, data.purpose);
+      otpSheet.appendRow([nowStr, data.uNo || "-", data.schoolNameEn || data.schoolNameTa || "-", "EMAIL", data.email || "-", data.otp || "-", data.purpose || "EMAIL_OTP_VERIFY", emailResult.sent ? "SENT_OK" : "FAILED", emailResult.detail || ""]);
+      return jsonResponse_({ ok: true, emailSent: emailResult.sent, detail: emailResult.detail });
+    }
+
+    // 2. WHATSAPP OTP (Single Dispatch with Deduplication Guard & Browser-Sent Check)
+    if (action === "send_whatsapp_otp") {
+      const otpSheet = ss.getSheetByName("OTP_LOGS");
+      if (isDuplicateOtpRecentlyLogged_(otpSheet, "WHATSAPP", data.phone, data.otp)) {
+        return jsonResponse_({ ok: true, whatsappSent: true, detail: "DEDUP_SINGLE_DISPATCH" });
+      }
+      if (data.browserAlreadySent) {
+        otpSheet.appendRow([nowStr, data.uNo || "-", data.schoolNameEn || data.schoolNameTa || "-", "WHATSAPP", data.phone || "-", data.otp || "-", data.purpose || "WHATSAPP_OTP_VERIFY", "SENT_OK", "Dispatched via Browser WhatsApp Cloud API"]);
+        return jsonResponse_({ ok: true, whatsappSent: true, detail: "LOGGED_BROWSER_SENT" });
+      }
+      const waResult = sendWhatsappOtpFromServer_(data.phone, data.otp, data.uNo, data.schoolNameEn || data.schoolNameTa, data.purpose, data.accessToken, data.phoneNumberId, data.altPhoneNumberId, data.templateName, data.templateLang, data.gatewayWebhookUrl);
+      otpSheet.appendRow([nowStr, data.uNo || "-", data.schoolNameEn || data.schoolNameTa || "-", "WHATSAPP", data.phone || "-", data.otp || "-", data.purpose || "WHATSAPP_OTP_VERIFY", waResult.sent ? "SENT_OK" : "WA_DIRECT_READY", waResult.detail || ""]);
+      return jsonResponse_({ ok: true, whatsappSent: waResult.sent, detail: waResult.detail });
+    }
+
+    // 2B. DIRECT HSS GROUP MASTER SYNC
+    if (action === "syncHssGroupMaster" && Array.isArray(data.groups)) {
+      writeHssGroupMasterRows_(ss.getSheetByName("HSS_GROUP_MASTER"), data.groups, nowStr);
+      return jsonResponse_({ ok: true, count: data.groups.length });
+    }
+
+    // 3. AUTO DUAL-SYNC ENGINE HANDLER (Handles all automatic School & Admin saves)
+    if (action === "auto_dual_sync") {
+      const syncType = String(data.syncType || "").trim();
+
+      if (syncType === "school_master_single" && data.school) {
+        const s = data.school;
+        const uNoStr = String(s.uNo || "").trim();
+        if (uNoStr) {
+          upsertRowByKey_(ss.getSheetByName("SCHOOL_MASTER"), 2, uNoStr, [
+            s.sn || "", uNoStr, String(s.udiseNo || ""), String(s.dgeNo || ""),
+            String(s.block || ""), String(s.assembly || ""), String(s.nameEn || ""),
+            String(s.nameTa || ""), String(s.mgmt1 || ""), String(s.level || ""),
+            String(s.centre10 || ""), String(s.centre12 || ""), String(s.hmName || ""),
+            String(s.hmTa || ""), String(s.mobile || ""), String(s.email || ""), nowStr
+          ]);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
+      }
+
+      if (syncType === "school_master_bulk" && Array.isArray(data.schools)) {
+        const mSheet = ss.getSheetByName("SCHOOL_MASTER");
+        if (mSheet.getLastRow() > 1) mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
+        if (data.schools.length > 0) {
+          const mRows = data.schools.map(function(s, idx) {
+            return [
+              s.sn || (idx + 1), s.uNo || "", s.udiseNo || "", s.dgeNo || "",
+              s.block || "", s.assembly || "", s.nameEn || "", s.nameTa || "",
+              s.mgmt1 || "", s.level || "", s.centre10 || "", s.centre12 || "",
+              s.hmName || "", s.hmTa || "", s.mobile || "", s.email || "", nowStr
+            ];
+          });
+          mSheet.getRange(2, 1, mRows.length, 17).setValues(mRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.schools.length });
+      }
+
+      if (syncType === "school_auth_single" && data.auth) {
+        const a = data.auth;
+        const uNoStr = String(a.uNo || data.uNo || "").trim();
+        if (uNoStr) {
+          upsertRowByKey_(ss.getSheetByName("SCHOOL_AUTH"), 1, uNoStr, [
+            uNoStr, String(a.udiseNo || ""), String(a.nameEn || ""),
+            String(a.hmName || ""), String(a.phone || ""), String(a.email || ""),
+            String(a.password || ""), String(a.pin || ""),
+            a.otpVerified ? "YES (OTP Verified)" : "YES",
+            String(a.registeredAt || nowStr), nowStr
+          ]);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
+      }
+
+      if (syncType === "school_auth_bulk" && Array.isArray(data.authList)) {
+        const aSheet = ss.getSheetByName("SCHOOL_AUTH");
+        if (aSheet.getLastRow() > 1) aSheet.getRange(2, 1, aSheet.getLastRow() - 1, 11).clearContent();
+        if (data.authList.length > 0) {
+          const aRows = data.authList.map(function(a) {
+            return [
+              a.uNo || "", a.udiseNo || "", a.nameEn || "", a.hmName || "",
+              a.phone || "", a.email || "", a.password || "", a.pin || "",
+              a.otpVerified ? "YES (OTP Verified)" : "NO", a.registeredAt || nowStr, nowStr
+            ];
+          });
+          aSheet.getRange(2, 1, aRows.length, 11).setValues(aRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.authList.length });
+      }
+
+      if (syncType === "school_extra_single" && data.uNo) {
+        const uNoStr = String(data.uNo).trim();
+        if (data.studentRow) {
+          const st = data.studentRow;
+          upsertRowByKey_(ss.getSheetByName("STUDENT_STRENGTH"), 1, uNoStr, [
+            uNoStr, String(st.udiseNo || ""), String(st.nameEn || ""),
+            String(st.level || "HS"), Number(st.boys || 0), Number(st.girls || 0),
+            Number(st.total || 0), Number(st.tm || 0), Number(st.em || 0),
+            String(st.groupsSummary || "-"), nowStr
+          ]);
+        }
+        if (Array.isArray(data.groupRows)) {
+          upsertSchoolGroupStrengthRows_(ss.getSheetByName("GROUP_WISE_STRENGTH"), uNoStr, data.groupRows, nowStr);
+        }
+        if (data.extraData) {
+          upsertRowByKey_(ss.getSheetByName("SCHOOL_EXTRA_LIVE"), 1, uNoStr, [
+            uNoStr, String(data.udiseNo || ""), String(data.schoolNameEn || ""),
+            JSON.stringify(data.extraData), nowStr
+          ]);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
+      }
+
+      if (syncType === "student_strength_bulk" && Array.isArray(data.studentList)) {
+        const sSheet = ss.getSheetByName("STUDENT_STRENGTH");
+        if (sSheet.getLastRow() > 1) sSheet.getRange(2, 1, sSheet.getLastRow() - 1, 11).clearContent();
+        if (data.studentList.length > 0) {
+          const sRows = data.studentList.map(function(st) {
+            return [
+              st.uNo || "", st.udiseNo || "", st.nameEn || "", st.level || "",
+              st.boys || 0, st.girls || 0, st.total || 0, st.tm || 0, st.em || 0,
+              st.groupsSummary || "-", nowStr
+            ];
+          });
+          sSheet.getRange(2, 1, sRows.length, 11).setValues(sRows);
+        }
+        if (Array.isArray(data.groupStrengthList) && data.groupStrengthList.length > 0) {
+          writeBulkGroupWiseStrengthRows_(ss.getSheetByName("GROUP_WISE_STRENGTH"), data.groupStrengthList, nowStr);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.studentList.length });
+      }
+
+      if (syncType === "staff_delete_requests" && Array.isArray(data.requests)) {
+        const rSheet = ss.getSheetByName("STAFF_REQUESTS");
+        if (rSheet.getLastRow() > 1) rSheet.getRange(2, 1, rSheet.getLastRow() - 1, 11).clearContent();
+        if (data.requests.length > 0) {
+          const rRows = data.requests.map(function(r) {
+            return [
+              r.reqId || "", r.requestedAt || nowStr, r.uNo || "",
+              r.schoolName || r.schoolNameTa || r.schoolNameEn || "",
+              r.emisId || r.staffRecordId || "", r.staffName || r.staffNameTa || "",
+              r.desig || "", r.subject || "", r.reasonCategory || "",
+              r.reasonDetail || r.reason || "", r.status || "PENDING"
+            ];
+          });
+          rSheet.getRange(2, 1, rRows.length, 11).setValues(rRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.requests.length });
+      }
+
+      if (syncType === "hss_group_master" && Array.isArray(data.groups)) {
+        writeHssGroupMasterRows_(ss.getSheetByName("HSS_GROUP_MASTER"), data.groups, nowStr);
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.groups.length });
+      }
+
+      if (syncType === "circulars" && Array.isArray(data.circulars)) {
+        const cSheet = ss.getSheetByName("CIRCULARS");
+        if (cSheet.getLastRow() > 1) cSheet.getRange(2, 1, cSheet.getLastRow() - 1, 7).clearContent();
+        if (data.circulars.length > 0) {
+          const cRows = data.circulars.map(function(c) {
+            return [
+              c.id || "", c.date || c.createdAt || "", c.title || c.headline || "", c.target || "All Schools",
+              c.desc || "", c.link || "", nowStr
+            ];
+          });
+          cSheet.getRange(2, 1, cRows.length, 7).setValues(cRows);
+        }
+        return jsonResponse_({ ok: true, syncType: syncType, count: data.circulars.length });
+      }
+
+      if (syncType === "portal_store" && data.storeKey) {
+        upsertRowByKey_(ss.getSheetByName("PORTAL_STORES"), 1, String(data.storeKey), [
+          String(data.storeKey), JSON.stringify(data.storeData || {}),
+          String(data.summary || ""), nowStr
+        ]);
+        return jsonResponse_({ ok: true, syncType: syncType, storeKey: data.storeKey });
+      }
+    }
+
+    // 4. Direct Legacy Actions (school_register, password_reset, update_school_profile, seed_all_to_sheet)
+    if (action === "school_register" || action === "password_reset" || action === "admin_reset_school_password") {
+      const authSheet = ss.getSheetByName("SCHOOL_AUTH");
+      const uNoStr = String(data.uNo || "").trim();
+      upsertRowByKey_(authSheet, 1, uNoStr, [
+        uNoStr, String(data.udiseNo || ""), String(data.nameEn || data.schoolNameEn || ""),
+        String(data.hmName || ""), String(data.mobile || ""), String(data.schoolEmail || data.email || ""),
+        String(data.password || data.newPassword || ""), String(data.pin || ""),
+        "YES (OTP Verified)", nowStr, nowStr
+      ]);
+      return jsonResponse_({ ok: true, action: action, uNo: uNoStr });
+    }
+
+    if (action === "update_school_profile" || action === "admin_upsert_school") {
+      const s = data.school || {};
+      const uNoStr = String(s.uNo || "").trim();
+      if (uNoStr) {
+        upsertRowByKey_(ss.getSheetByName("SCHOOL_MASTER"), 2, uNoStr, [
+          s.sn || "", uNoStr, String(s.udiseNo || ""), String(s.dgeNo || ""),
+          String(s.block || ""), String(s.assembly || ""), String(s.nameEn || ""),
+          String(s.nameTa || ""), String(s.mgmt1 || ""), String(s.level || ""),
+          String(s.centre10 || ""), String(s.centre12 || ""), String(s.hmName || ""),
+          String(s.hmTa || ""), String(s.mobile || ""), String(data.email || s.email || ""), nowStr
+        ]);
+      }
+      return jsonResponse_({ ok: true, action: action, uNo: uNoStr });
+    }
+
+    if (action === "seed_all_to_sheet") {
+      let masterCount = 0, authCount = 0, stuCount = 0, grpMasterCount = 0, grpStrengthCount = 0;
+
+      if (Array.isArray(data.schools) && data.schools.length > 0) {
+        const mSheet = ss.getSheetByName("SCHOOL_MASTER");
+        if (mSheet.getLastRow() > 1) mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
+        const mRows = data.schools.map(function(s, idx) {
+          return [
+            s.sn || (idx + 1), s.uNo || "", s.udiseNo || "", s.dgeNo || "",
+            s.block || "", s.assembly || "", s.nameEn || "", s.nameTa || "",
+            s.mgmt1 || "", s.level || "", s.centre10 || "", s.centre12 || "",
+            s.hmName || "", s.hmTa || "", s.mobile || "", s.email || "", nowStr
+          ];
+        });
+        mSheet.getRange(2, 1, mRows.length, 17).setValues(mRows);
+        masterCount = mRows.length;
+      }
+
+      if (Array.isArray(data.authList) && data.authList.length > 0) {
+        const aSheet = ss.getSheetByName("SCHOOL_AUTH");
+        if (aSheet.getLastRow() > 1) aSheet.getRange(2, 1, aSheet.getLastRow() - 1, 11).clearContent();
+        const aRows = data.authList.map(function(a) {
+          return [
+            a.uNo || "", a.udiseNo || "", a.nameEn || "", a.hmName || "",
+            a.phone || "", a.email || "", a.password || "", a.pin || "",
+            a.otpVerified ? "YES (OTP Verified)" : "NO", a.registeredAt || nowStr, nowStr
+          ];
+        });
+        aSheet.getRange(2, 1, aRows.length, 11).setValues(aRows);
+        authCount = aRows.length;
+      }
+
+      if (Array.isArray(data.studentList) && data.studentList.length > 0) {
+        const sSheet = ss.getSheetByName("STUDENT_STRENGTH");
+        if (sSheet.getLastRow() > 1) sSheet.getRange(2, 1, sSheet.getLastRow() - 1, 11).clearContent();
+        const sRows = data.studentList.map(function(st) {
+          return [
+            st.uNo || "", st.udiseNo || "", st.nameEn || "", st.level || "",
+            st.boys || 0, st.girls || 0, st.total || 0, st.tm || 0, st.em || 0,
+            st.groupsSummary || "-", nowStr
+          ];
+        });
+        sSheet.getRange(2, 1, sRows.length, 11).setValues(sRows);
+        stuCount = sRows.length;
+      }
+
+      if (Array.isArray(data.hssGroups) && data.hssGroups.length > 0) {
+        writeHssGroupMasterRows_(ss.getSheetByName("HSS_GROUP_MASTER"), data.hssGroups, nowStr);
+        grpMasterCount = data.hssGroups.length;
+      }
+
+      if (Array.isArray(data.groupStrengthList) && data.groupStrengthList.length > 0) {
+        writeBulkGroupWiseStrengthRows_(ss.getSheetByName("GROUP_WISE_STRENGTH"), data.groupStrengthList, nowStr);
+        grpStrengthCount = data.groupStrengthList.length;
+      }
+
+      if (Array.isArray(data.deleteRequests) && data.deleteRequests.length > 0) {
+        const rSheet = ss.getSheetByName("STAFF_REQUESTS");
+        if (rSheet.getLastRow() > 1) rSheet.getRange(2, 1, rSheet.getLastRow() - 1, 11).clearContent();
+        const rRows = data.deleteRequests.map(function(r) {
+          return [
+            r.reqId || "", r.requestedAt || nowStr, r.uNo || "",
+            r.schoolName || r.schoolNameTa || "", r.emisId || r.staffRecordId || "",
+            r.staffName || r.staffNameTa || "", r.desig || "", r.subject || "",
+            r.reasonCategory || "", r.reasonDetail || "", r.status || "PENDING"
+          ];
+        });
+        rSheet.getRange(2, 1, rRows.length, 11).setValues(rRows);
+      }
+
+      if (Array.isArray(data.circulars) && data.circulars.length > 0) {
+        const cSheet = ss.getSheetByName("CIRCULARS");
+        if (cSheet.getLastRow() > 1) cSheet.getRange(2, 1, cSheet.getLastRow() - 1, 7).clearContent();
+        const cRows = data.circulars.map(function(c) {
+          return [c.id || "", c.date || c.createdAt || "", c.title || c.headline || "", c.target || "All Schools", c.desc || "", c.link || "", nowStr];
+        });
+        cSheet.getRange(2, 1, cRows.length, 7).setValues(cRows);
+      }
+
+      return jsonResponse_({
+        ok: true,
+        masterCount: masterCount,
+        authCount: authCount,
+        stuCount: stuCount,
+        grpMasterCount: grpMasterCount,
+        grpStrengthCount: grpStrengthCount
+      });
+    }
+
+    return jsonResponse_({ ok: true, note: "Handled action: " + action });
+  } catch (err) {
+    return jsonResponse_({ ok: false, error: String(err) });
+  }
+}
+
+function writeHssGroupMasterRows_(gSheet, groups, nowStr) {
+  if (!gSheet || !Array.isArray(groups)) return;
+  if (gSheet.getLastRow() > 1) gSheet.getRange(2, 1, gSheet.getLastRow() - 1, 12).clearContent();
+  if (groups.length > 0) {
+    const gRows = groups.map(function(g) {
+      return [
+        g.groupCode || "", g.catCode || 1, g.category || "SCIENCE", g.groupName || "",
+        g.majorSubjects || "", g.sub1 || "LANGUAGE", g.sub2 || "ENGLISH",
+        g.sub3 || "", g.sub4 || "", g.sub5 || "", g.sub6 || "", nowStr
+      ];
+    });
+    gSheet.getRange(2, 1, gRows.length, 12).setValues(gRows);
+  }
+}
+
+function writeBulkGroupWiseStrengthRows_(gwSheet, list, nowStr) {
+  if (!gwSheet || !Array.isArray(list)) return;
+  if (gwSheet.getLastRow() > 1) gwSheet.getRange(2, 1, gwSheet.getLastRow() - 1, 21).clearContent();
+  if (list.length > 0) {
+    const rows = list.map(function(r) {
+      return [
+        r.uNo || "", r.udiseNo || "", r.schoolNameEn || "", r.block || "", r.mgmt || "",
+        r.groupCode || "", r.category || "", r.groupName || "", r.majorSubjects || "",
+        Number(r.c11_tm_b || 0), Number(r.c11_tm_g || 0), Number(r.c11_em_b || 0), Number(r.c11_em_g || 0), Number(r.c11_tot || 0),
+        Number(r.c12_tm_b || 0), Number(r.c12_tm_g || 0), Number(r.c12_em_b || 0), Number(r.c12_em_g || 0), Number(r.c12_tot || 0),
+        Number(r.grandTotal || 0), nowStr
+      ];
+    });
+    gwSheet.getRange(2, 1, rows.length, 21).setValues(rows);
+  }
+}
+
+function upsertSchoolGroupStrengthRows_(gwSheet, uNoStr, schoolGroupRows, nowStr) {
+  if (!gwSheet) return;
+  const lastRow = gwSheet.getLastRow();
+  let keptRows = [];
+  if (lastRow > 1) {
+    const existing = gwSheet.getRange(2, 1, lastRow - 1, 21).getValues();
+    keptRows = existing.filter(function(r) {
+      return String(r[0] || "").trim() !== String(uNoStr).trim();
+    });
+    gwSheet.getRange(2, 1, lastRow - 1, 21).clearContent();
+  }
+  const newRows = (schoolGroupRows || []).map(function(r) {
+    return [
+      r.uNo || uNoStr, r.udiseNo || "", r.schoolNameEn || "", r.block || "", r.mgmt || "",
+      r.groupCode || "", r.category || "", r.groupName || "", r.majorSubjects || "",
+      Number(r.c11_tm_b || 0), Number(r.c11_tm_g || 0), Number(r.c11_em_b || 0), Number(r.c11_em_g || 0), Number(r.c11_tot || 0),
+      Number(r.c12_tm_b || 0), Number(r.c12_tm_g || 0), Number(r.c12_em_b || 0), Number(r.c12_em_g || 0), Number(r.c12_tot || 0),
+      Number(r.grandTotal || 0), nowStr
+    ];
+  });
+  const combined = keptRows.concat(newRows);
+  if (combined.length > 0) {
+    gwSheet.getRange(2, 1, combined.length, 21).setValues(combined);
+  }
+}
+
+function sendEmailOtpFromCeoAccount_(toEmail, otpCode, uNo, schoolName, purpose) {
+  const cleanEmail = String(toEmail || "").trim();
+  if (!cleanEmail || cleanEmail.indexOf("@") === -1) {
+    return { sent: false, detail: "INVALID_EMAIL" };
+  }
+  try {
+    const subject = "🔐 CEO Sivagangai School Portal - OTP Verification (" + otpCode + ")";
+    const htmlBody =
+      '<div style="font-family:Arial,sans-serif; max-width:560px; margin:0 auto; border:2px solid #0f294a; border-radius:10px; overflow:hidden;">' +
+        '<div style="background:#0f294a; color:#ffffff; padding:14px 18px; text-align:center;">' +
+          '<div style="font-size:12px; color:#fde047; font-weight:bold;">பள்ளிக்கல்வித்துறை - சிவகங்கை மாவட்டம்</div>' +
+          '<h2 style="margin:4px 0 0; font-size:18px;">முதன்மைக் கல்வி அலுவலகம், சிவகங்கை</h2>' +
+          '<div style="font-size:12px; color:#cbd5e1;">portal.ceosvg.in | ' + PORTAL_CONFIG.OWNER_EMAIL + '</div>' +
+        '</div>' +
+        '<div style="padding:20px; background:#ffffff; color:#1e293b; line-height:1.6;">' +
+          '<p style="margin:0 0 10px;">வணக்கம்,</p>' +
+          '<p style="margin:0 0 10px;"><strong>பள்ளி (School):</strong> [U.NO: ' + (uNo || "-") + '] ' + (schoolName || "Sivagangai School") + '</p>' +
+          '<p style="margin:0 0 12px;"><strong>நோக்கம் (Purpose):</strong> ' + (purpose || "பள்ளி உள்நுழைவு / OTP சரிபார்ப்பு") + '</p>' +
+          '<div style="background:#f0fdf4; border:2px dashed #16a34a; border-radius:8px; padding:14px; text-align:center; margin:16px 0;">' +
+            '<div style="font-size:12px; color:#166534; font-weight:bold;">உங்கள் 6-இலக்க சரிபார்ப்பு OTP எண் (Your 6-Digit OTP):</div>' +
+            '<div style="font-size:28px; font-weight:900; color:#14532d; letter-spacing:6px; margin-top:4px;">' + otpCode + '</div>' +
+          '</div>' +
+          '<p style="font-size:12px; color:#64748b; margin:0;">இந்த OTP எண் 10 நிமிடங்களுக்குச் செல்லுபடியாகும். பாதுகாப்பிற்காக இதனை யாருடனும் பகிர வேண்டாம்.</p>' +
+        '</div>' +
+      '</div>';
+
+    MailApp.sendEmail({
+      to: cleanEmail,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: "CEO Sivagangai School Portal"
+    });
+    return { sent: true, detail: "Sent via MailApp (" + PORTAL_CONFIG.OWNER_EMAIL + ")" };
+  } catch (err) {
+    return { sent: false, detail: String(err) };
+  }
+}
+
+function sendWhatsappOtpFromServer_(toPhone, otpCode, uNo, schoolName, purpose, tokenOverride, phoneIdOverride, altPhoneIdOverride, tplNameOverride, tplLangOverride, gatewayOverride) {
+  const token = String(tokenOverride || PORTAL_CONFIG.WA_ACCESS_TOKEN || "").trim();
+  const phoneIds = [
+    String(phoneIdOverride || PORTAL_CONFIG.WA_PHONE_NUMBER_ID || "1457353970785529").trim(),
+    String(altPhoneIdOverride || PORTAL_CONFIG.WA_ALT_PHONE_NUMBER_ID || "1399324686595291").trim()
+  ].filter(Boolean);
+  const tplName = String(tplNameOverride || PORTAL_CONFIG.WA_TEMPLATE_NAME || "hello_world").trim();
+  const tplLang = String(tplLangOverride || PORTAL_CONFIG.WA_TEMPLATE_LANG || "en_US").trim();
+  const tplId = String(PORTAL_CONFIG.WA_TEMPLATE_ID || "2600197680404000").trim();
+  const gwUrl = String(gatewayOverride || PORTAL_CONFIG.WA_GATEWAY_WEBHOOK_URL || "").trim();
+
+  const cleanDigits = String(toPhone || "").replace(/[^0-9]/g, "");
+  if (cleanDigits.length < 10) {
+    return { sent: false, detail: "INVALID_PHONE" };
+  }
+
+  const recipient = cleanDigits.length === 10 ? ("91" + cleanDigits) : cleanDigits;
+  const msgLines = [
+    "*பள்ளிக்கல்வித்துறை - முதன்மைக் கல்வி அலுவலகம், சிவகங்கை*",
+    "🏫 பள்ளி: *[U.NO: " + (uNo || "-") + "] " + (schoolName || "") + "*",
+    "🔐 " + (purpose || "பள்ளி உள்நுழைவு சரிபார்ப்பு") + " OTP: *" + otpCode + "*",
+    "(இந்த 6-இலக்க OTP எண் 10 நிமிடங்களுக்குச் செல்லுபடியாகும். யாருடனும் பகிர வேண்டாம்.)"
+  ];
+  const msgText = msgLines.join(String.fromCharCode(10));
+
+  // 1. Optional Custom WhatsApp Gateway Webhook (if configured)
+  if (gwUrl && gwUrl.indexOf("http") === 0) {
+    try {
+      const sep = gwUrl.indexOf("?") !== -1 ? "&" : "?";
+      const fullGw = gwUrl + sep + "phone=" + encodeURIComponent(recipient) + "&text=" + encodeURIComponent(msgText) + "&otp=" + encodeURIComponent(otpCode);
+      const gwRes = UrlFetchApp.fetch(fullGw, { muteHttpExceptions: true });
+      if (gwRes.getResponseCode() >= 200 && gwRes.getResponseCode() < 300) {
+        return { sent: true, detail: "Sent via Custom WhatsApp Gateway" };
+      }
+    } catch (gwErr) {}
+  }
+
+  // 2. Meta WhatsApp Cloud API (v22.0) - Template (hello_world · en_US · 2600197680404000) + Text OTP
+  let lastError = "";
+  if (token && phoneIds.length > 0) {
+    for (let i = 0; i < phoneIds.length; i++) {
+      const pid = phoneIds[i];
+      const endpoint = "https://graph.facebook.com/v22.0/" + encodeURIComponent(pid) + "/messages";
+
+      try {
+        let templateSentOk = false;
+        const resTpl = UrlFetchApp.fetch(endpoint, {
+          method: "post",
+          contentType: "application/json",
+          headers: { "Authorization": "Bearer " + token },
+          payload: JSON.stringify({
+            messaging_product: "whatsapp",
+            to: recipient,
+            type: "template",
+            template: {
+              name: tplName,
+              language: { code: tplLang }
+            }
+          }),
+          muteHttpExceptions: true
+        });
+        const codeTpl = resTpl.getResponseCode();
+        if (codeTpl >= 200 && codeTpl < 300) {
+          templateSentOk = true;
+        } else {
+          const errBody = resTpl.getContentText();
+          if (codeTpl === 401 || errBody.indexOf("OAuthException") !== -1) {
+            lastError = "META_TOKEN_EXPIRED (Update Permanent Token in Cloud Settings; Direct wa.me Link Active)";
+            continue;
+          } else {
+            lastError = "HTTP " + codeTpl + ": " + errBody;
+          }
+        }
+
+        // Send 6-Digit OTP Text Message as well
+        const resText = UrlFetchApp.fetch(endpoint, {
+          method: "post",
+          contentType: "application/json",
+          headers: { "Authorization": "Bearer " + token },
+          payload: JSON.stringify({
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: recipient,
+            type: "text",
+            text: { preview_url: false, body: msgText }
+          }),
+          muteHttpExceptions: true
+        });
+        const codeText = resText.getResponseCode();
+        if (codeText >= 200 && codeText < 300) {
+          return { sent: true, detail: "WhatsApp OTP Text + Template (" + tplName + " [" + tplId + "]) Sent (PhoneID: " + pid + ")" };
+        }
+        if (templateSentOk) {
+          return { sent: true, detail: "WhatsApp Template (" + tplName + " [" + tplId + "]) Sent (PhoneID: " + pid + ")" };
+        }
+      } catch (err) {
+        lastError = String(err);
+      }
+    }
+  }
+
+  return { sent: false, detail: lastError || "WA_DIRECT_LINK_READY" };
+}
+
+function upsertRowByKey_(sheet, keyColIndex1Based, keyVal, rowArray) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow >= 2) {
+    const keys = sheet.getRange(2, keyColIndex1Based, lastRow - 1, 1).getValues();
+    for (let i = 0; i < keys.length; i++) {
+      if (String(keys[i][0]).trim() === String(keyVal).trim()) {
+        sheet.getRange(i + 2, 1, 1, rowArray.length).setValues([rowArray]);
+        return;
+      }
+    }
+  }
+  sheet.appendRow(rowArray);
+}
+
+function jsonResponse_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function testSendEmailOtpMenu() {
+  const testOtp = String(Math.floor(100000 + Math.random() * 900000));
+  const res = sendEmailOtpFromCeoAccount_(PORTAL_CONFIG.OWNER_EMAIL, testOtp, "ADMIN", "CEO OFFICE SIVAGANGAI", "Google Sheet Code.gs Email OTP Test");
+  Logger.log("Email OTP Test Result: " + JSON.stringify(res));
+}
+
+function testSendWhatsappOtpMenu() {
+  const testOtp = String(Math.floor(100000 + Math.random() * 900000));
+  const res = sendWhatsappOtpFromServer_("919626471035", testOtp, "ADMIN", "CEO OFFICE SIVAGANGAI", "Google Sheet Code.gs WhatsApp OTP Test");
+  Logger.log("WhatsApp OTP Test Result: " + JSON.stringify(res));
+}
