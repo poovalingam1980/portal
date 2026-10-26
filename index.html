@@ -4139,32 +4139,45 @@
       <div id="admPaneCredentials" class="panel-box" style="display:none;">
       <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <span>🔑 பள்ளி உள்நுழைவு விவரங்கள் &amp; கடவுச்சொல் மீட்டமைப்பு (School Credentials &amp; OTP Security Control)</span>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
           <span style="font-size:0.76rem; background:#dcfce7; color:#14532d; border:1px solid #86efac; padding:4px 10px; border-radius:999px; font-weight:800;">
-            🟢 WhatsApp Cloud API இணைக்கப்பட்டுள்ளது (Phone ID: 1457353970785529 | Template: hello_world [2600197680404000])
+            🟢 WhatsApp &amp; Email OTP பாதுகாப்பு செயலில் உள்ளது
           </span>
-          <button type="button" class="btn btn-danger btn-sm" onclick="adminResetAllSchoolsPasswords()" style="font-weight:800;">
-            🔄 அனைத்து 282 பள்ளிகளின் கடவுச்சொல்லையும் Reset செய்க (Require First-Time OTP Registration)
-          </button>
+          <span style="font-size:0.76rem; background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; padding:4px 10px; border-radius:999px; font-weight:800;">
+            🛡️ குறிப்பிட்ட பள்ளி மட்டும் கடவுச்சொல் Reset வசதி (Single-School Targeted Reset)
+          </span>
         </div>
       </div>
       <div style="background:#f0f9ff; border:1.5px solid #0284c7; border-radius:10px; padding:16px; margin-bottom:18px;">
-        <div style="font-weight:800; color:#0c4a6e; margin-bottom:10px;">🔧 குறிப்பிட்ட பள்ளியின் கடவுச்சொல்லை உடனடியாக மாற்ற (Admin Instant Password Reset):</div>
+        <div style="font-weight:800; color:#0c4a6e; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <span>🔧 குறிப்பிட்ட பள்ளியின் கடவுச்சொல்லை மட்டும் Reset செய்ய / மாற்ற (Single-School Password Reset &amp; OTP Re-registration):</span>
+          <span style="font-size:0.75rem; color:#0369a1; font-weight:700;">💡 U.NO / UDISE உள்ளிட்டு நேரடியாக புதிய கடவுச்சொல் அமைக்கலாம் அல்லது முதல் முறை OTP பதிவிற்கு Reset செய்யலாம்</span>
+        </div>
         <div class="grid-3">
           <div class="form-group">
-            <label class="form-label">U.NO அல்லது UDISE எண்</label>
-            <input type="text" id="admPassResetQuery" class="form-control" placeholder="எ.கா: 101 அல்லது 33231106101" oninput="previewAdminPassResetSchool(this.value)">
+            <label class="form-label">1️⃣ பள்ளித் தேர்வு / U.NO அல்லது UDISE எண்</label>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="admPassResetQuery" class="form-control" placeholder="எ.கா: 101 அல்லது 33231106101" oninput="previewAdminPassResetSchool(this.value)" style="flex:1;">
+              <select id="admPassResetSchoolSelect" class="form-control" onchange="onAdminPassResetDropdownSelect(this.value)" style="max-width:190px; font-size:0.78rem;">
+                <option value="">-- பள்ளி பட்டியல் --</option>
+              </select>
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label">புதிய கடவுச்சொல் (New Password)</label>
-            <input type="text" id="admPassResetNewVal" class="form-control" placeholder="எ.கா: Svg@2026 அல்லது U.NO">
+            <label class="form-label">2️⃣ புதிய கடவுச்சொல் (நேரடியாக அமைக்க விரும்பினால்)</label>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="admPassResetNewVal" class="form-control" placeholder="எ.கா: Svg@2026 அல்லது U.NO" style="flex:1;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="setAdminPassInputToUNo()" title="பள்ளியின் U.NO எண்ணையே கடவுச்சொல்லாக நிரப்புக" style="white-space:nowrap;">U.NO-வை கடவுச்சொல்லாக்கு</button>
+            </div>
           </div>
-          <div class="form-group" style="display:flex; align-items:flex-end; gap:6px;">
-            <button type="button" class="btn btn-primary" onclick="executeAdminPasswordReset()">💾 கடவுச்சொல் அமை</button>
-            <button type="button" class="btn btn-outline" onclick="setAdminPassInputToUNo()">U.NO-வை கடவுச்சொல்லாக்கு</button>
+          <div class="form-group" style="display:flex; align-items:flex-end; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" onclick="executeAdminPasswordReset()" style="font-weight:800;">💾 கடவுச்சொல் அமை</button>
+            <button type="button" class="btn btn-danger" onclick="adminResetSingleSchoolOtpRegistration()" style="font-weight:800;" title="இந்த ஒரு பள்ளியின் கடவுச்சொல்லை மட்டும் நீக்கி மீண்டும் முதல் முறை OTP பதிவு செய்ய வைக்கும்">
+              🔄 இப்பள்ளியை மட்டும் OTP பதிவிற்கு Reset செய்க
+            </button>
           </div>
         </div>
-        <div id="admPassResetPreviewText" style="font-size:0.85rem; font-weight:700; color:#15803d;"></div>
+        <div id="admPassResetPreviewText" style="font-size:0.85rem; font-weight:700; color:#15803d; margin-top:6px;"></div>
       </div>
 
       <div class="table-wrap">
@@ -7123,8 +7136,12 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         let updatedCount = 0;
         Object.keys(data.authStore).forEach(uNo => {
           const remoteRec = data.authStore[uNo];
-          if (remoteRec && remoteRec.password && remoteRec.otpVerified) {
+          if (!remoteRec) return;
+          if (remoteRec.password && remoteRec.otpVerified) {
             schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, remoteRec);
+            updatedCount++;
+          } else if (remoteRec.password === "" && !remoteRec.otpVerified && schoolAuthStore[uNo] && schoolAuthStore[uNo].password) {
+            schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, remoteRec, { password: "", pin: "", otpVerified: false, registeredAt: "" });
             updatedCount++;
           }
         });
@@ -7318,7 +7335,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const c1G = masterSchools.filter(s => s.mgmt1 === "1G").length;
     const c2A = masterSchools.filter(s => s.mgmt1 === "2A").length;
     const c3P = masterSchools.filter(s => s.mgmt1 === "3P").length;
-    const regCount = Object.keys(schoolAuthStore).length;
+    const regCount = Object.values(schoolAuthStore || {}).filter(a => a && a.password && a.registeredAt).length;
     const totalDivs = divisionsRegistry.mgmt1.length + divisionsRegistry.mgmt2.length + divisionsRegistry.mgmt3.length;
 
     const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -12265,32 +12282,70 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }).join("");
   }
 
+  function populateAdminPassResetSchoolDropdown() {
+    const sel = document.getElementById("admPassResetSchoolSelect");
+    if (!sel || !Array.isArray(masterSchools)) return;
+    const currentVal = sel.value;
+    const sorted = [...masterSchools].sort((a, b) => (Number(a.uNo) || 0) - (Number(b.uNo) || 0));
+    sel.innerHTML = `<option value="">-- பள்ளி தேர்வு (${sorted.length}) --</option>` + sorted.map(s => {
+      const auth = schoolAuthStore[s.uNo];
+      const isReg = Boolean(auth && auth.password && auth.registeredAt);
+      const statusIcon = isReg ? "✅" : "⏳";
+      return `<option value="${s.uNo}">${statusIcon} [${s.uNo}] ${s.nameTa || s.nameEn}</option>`;
+    }).join("");
+    if (currentVal) sel.value = currentVal;
+  }
+
+  function onAdminPassResetDropdownSelect(uNo) {
+    const inp = document.getElementById("admPassResetQuery");
+    if (inp) inp.value = uNo || "";
+    previewAdminPassResetSchool(uNo || "");
+  }
+
   function previewAdminPassResetSchool(q) {
     const s = findSchoolByUNoOrUdise(q);
     const el = document.getElementById("admPassResetPreviewText");
+    const sel = document.getElementById("admPassResetSchoolSelect");
     if (!el) return;
     if (!s) {
       el.textContent = "";
+      if (sel) sel.value = "";
       return;
     }
+    if (sel && sel.value !== String(s.uNo)) {
+      sel.value = String(s.uNo);
+    }
     const auth = schoolAuthStore[s.uNo];
-    el.textContent = `✅ தேர்ந்தெடுக்கப்பட்ட பள்ளி: [U.NO: ${s.uNo}] ${s.nameTa} | தற்போதைய கடவுச்சொல்: ${auth ? auth.password : s.uNo + " (Default U.NO)"}`;
+    const isRegistered = Boolean(auth && auth.password && auth.registeredAt);
+    const statusText = isRegistered
+      ? `கடவுச்சொல்: ${auth.password}${auth.pin ? ` | PIN: ${auth.pin}` : ""} (✅ OTP பதிவு முடிந்தது)`
+      : `⏳ Reset நிலை (முதல் முறை OTP பதிவு நிலுவையில் உள்ளது)`;
+    el.textContent = `🏫 தேர்ந்தெடுக்கப்பட்ட பள்ளி: [U.NO: ${s.uNo} | UDISE: ${s.udiseNo}] ${s.nameTa} (${s.nameEn}) — ${statusText}`;
   }
 
   function setAdminPassInputToUNo() {
-    const q = document.getElementById("admPassResetQuery").value.trim();
+    const q = (document.getElementById("admPassResetQuery")?.value || "").trim();
     const s = findSchoolByUNoOrUdise(q);
-    if (s) {
-      document.getElementById("admPassResetNewVal").value = s.uNo;
+    if (!s) {
+      showToast("⚠️ முதலில் பள்ளியின் U.NO அல்லது UDISE எண்ணைத் தேர்ந்தெடுக்கவும்!", "#f59e0b");
+      return;
     }
+    const passInp = document.getElementById("admPassResetNewVal");
+    if (passInp) passInp.value = s.uNo;
   }
 
   function executeAdminPasswordReset() {
-    const q = document.getElementById("admPassResetQuery").value.trim();
-    const newPass = document.getElementById("admPassResetNewVal").value.trim();
+    const q = (document.getElementById("admPassResetQuery")?.value || "").trim();
+    const newPass = (document.getElementById("admPassResetNewVal")?.value || "").trim();
     const s = findSchoolByUNoOrUdise(q);
-    if (!s || !newPass) {
-      showToast("⚠️ பள்ளியின் U.NO/UDISE மற்றும் புதிய கடவுச்சொல்லை உள்ளிடவும்.", "#f59e0b");
+    if (!s) {
+      showToast("⚠️ முதலில் பள்ளியின் U.NO அல்லது UDISE எண்ணை உள்ளிடவும்.", "#f59e0b");
+      document.getElementById("admPassResetQuery")?.focus();
+      return;
+    }
+    if (!newPass) {
+      showToast("⚠️ புதிய கடவுச்சொல்லை உள்ளிடவும் (அல்லது '🔄 இப்பள்ளியை மட்டும் OTP பதிவிற்கு Reset செய்க' பொத்தானை அழுத்தவும்).", "#f59e0b");
+      document.getElementById("admPassResetNewVal")?.focus();
       return;
     }
     const existing = schoolAuthStore[s.uNo] || {};
@@ -12298,9 +12353,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       uNo: s.uNo,
       udiseNo: s.udiseNo,
       password: newPass,
-      email: existing.email || "",
+      pin: existing.pin || "",
+      email: existing.email || s.email || "",
       phone: existing.phone || s.mobile || "",
       hmName: existing.hmName || s.hmName || "",
+      otpVerified: true,
       registeredAt: new Date().toLocaleString("en-IN")
     };
     window._activeSyncTargetUNo = String(s.uNo);
@@ -12308,19 +12365,74 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     updateAllSummaryCounters();
     renderAdminCredentialsTable();
     previewAdminPassResetSchool(s.uNo);
-    sendToAppsScript({ action: "admin_reset_school_password", uNo: s.uNo, udiseNo: s.udiseNo, newPassword: newPass });
-    showToast(`✅ ${s.nameTa} (U.NO: ${s.uNo}) கடவுச்சொல் "${newPass}" என மாற்றப்பட்டது!`, "#22c55e");
+    sendToAppsScript({
+      action: "admin_reset_school_password",
+      uNo: s.uNo,
+      udiseNo: s.udiseNo,
+      schoolNameEn: s.nameEn,
+      hmName: schoolAuthStore[s.uNo].hmName,
+      mobile: schoolAuthStore[s.uNo].phone,
+      email: schoolAuthStore[s.uNo].email,
+      newPassword: newPass,
+      pin: schoolAuthStore[s.uNo].pin
+    });
+    showToast(`✅ [${s.uNo}] ${s.nameTa} பள்ளியின் கடவுச்சொல் "${newPass}" என மாற்றப்பட்டு Firebase & Google Sheet-ல் ஒத்திசைக்கப்பட்டது!`, "#22c55e");
+  }
+
+  function adminResetSingleSchoolOtpRegistration(passedUNo) {
+    const q = passedUNo ? String(passedUNo).trim() : (document.getElementById("admPassResetQuery")?.value || "").trim();
+    const s = findSchoolByUNoOrUdise(q);
+    if (!s) {
+      showToast("⚠️ கடவுச்சொல் Reset செய்ய வேண்டிய பள்ளியின் U.NO அல்லது UDISE எண்ணைத் தேர்ந்தெடுக்கவும்!", "#f59e0b");
+      document.getElementById("admPassResetQuery")?.focus();
+      return;
+    }
+    const existing = schoolAuthStore[s.uNo] || {};
+    schoolAuthStore[s.uNo] = {
+      uNo: s.uNo,
+      udiseNo: s.udiseNo,
+      password: "",
+      pin: "",
+      email: existing.email || s.email || "",
+      phone: existing.phone || s.mobile || "",
+      hmName: existing.hmName || s.hmName || "",
+      otpVerified: false,
+      registeredAt: ""
+    };
+    if (activeSchoolSession && String(activeSchoolSession.uNo) === String(s.uNo)) {
+      activeSchoolSession = null;
+      safeSetStorage("CEOSVG_ACTIVE_SESSION", null, true);
+    }
+    window._activeSyncTargetUNo = String(s.uNo);
+    safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore);
+    const qInp = document.getElementById("admPassResetQuery");
+    if (qInp) qInp.value = s.uNo;
+    const passInp = document.getElementById("admPassResetNewVal");
+    if (passInp) passInp.value = "";
+    updateAllSummaryCounters();
+    renderAdminCredentialsTable();
+    previewAdminPassResetSchool(s.uNo);
+    sendToAppsScript({
+      action: "admin_reset_school_password",
+      uNo: s.uNo,
+      udiseNo: s.udiseNo,
+      schoolNameEn: s.nameEn,
+      hmName: schoolAuthStore[s.uNo].hmName,
+      mobile: schoolAuthStore[s.uNo].phone,
+      email: schoolAuthStore[s.uNo].email,
+      newPassword: "",
+      pin: "",
+      requireOtpReset: true
+    });
+    showToast(`🔄 [U.NO: ${s.uNo}] ${s.nameTa} பள்ளியின் கடவுச்சொல் மட்டும் Reset செய்யப்பட்டது! இப்பள்ளி மீண்டும் முதல் முறை OTP மூலம் பதிவு செய்து உள்நுழையலாம்.`, "#22c55e");
   }
 
   function adminResetAllSchoolsPasswords() {
-    schoolAuthStore = {};
-    safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore);
-    updateAllSummaryCounters();
-    renderAdminCredentialsTable();
-    showToast("🔄 அனைத்து 282 பள்ளிகளின் கடவுச்சொற்களும் Reset செய்யப்பட்டன! இனி பள்ளிகள் முதல் முறை OTP மூலம் பதிவு செய்து உள்நுழைய வேண்டும்.", "#22c55e");
+    adminResetSingleSchoolOtpRegistration();
   }
 
   function renderAdminCredentialsTable() {
+    populateAdminPassResetSchoolDropdown();
     const tbody = document.getElementById("admCredentialsTableBody");
     if (!tbody) return;
     tbody.innerHTML = masterSchools.map(s => {
@@ -12334,15 +12446,16 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           <td><strong>${s.nameEn}</strong><br><span style="font-size:0.75rem; color:#64748b;">${s.nameTa} | ${s.block}</span></td>
           <td><span class="${getMgmtBadgeClass(s.mgmt1)}">${s.mgmt1} (M2:${s.mgmt2})</span></td>
           <td>${s.hmTa || s.hmName || "-"}<br><span style="color:#0284c7; font-weight:700;">${(auth && auth.phone) || s.mobile || "-"}</span></td>
-          <td style="font-size:0.78rem;">${auth && auth.email ? auth.email : "-"}</td>
+          <td style="font-size:0.78rem;">${(auth && auth.email) || s.email || "-"}</td>
           <td>
             <code style="background:${isRegistered ? "#dcfce7" : "#fef3c7"}; color:${isRegistered ? "#166534" : "#92400e"}; padding:3px 8px; border-radius:6px; font-weight:800;">${passDisplay}</code>
-            ${(auth && auth.pin) ? `<span style="display:inline-block; margin-left:4px; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:5px; font-size:0.72rem; font-weight:900;">🔢 PIN: ${auth.pin}</span>` : ""}
+            ${(isRegistered && auth && auth.pin) ? `<span style="display:inline-block; margin-left:4px; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:5px; font-size:0.72rem; font-weight:900;">🔢 PIN: ${auth.pin}</span>` : ""}
             <div style="font-size:0.7rem; color:#64748b;">${isRegistered ? "✅ OTP சரிபார்த்துப் பதிவு செய்யப்பட்டது" : "⏳ முதல் முறை OTP பதிவு தேவை"}</div>
           </td>
           <td style="white-space:nowrap;">
             <button type="button" class="btn btn-outline btn-sm" onclick="copySchoolWhatsappCredentials('${s.uNo}')">📲 WhatsApp நகல்</button>
             <button type="button" class="btn btn-primary btn-sm" onclick="selectSchoolForAdminReset('${s.uNo}')">🔑 மாற்று</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="adminResetSingleSchoolOtpRegistration('${s.uNo}')" title="இந்தப் பள்ளியின் கடவுச்சொல்லை மட்டும் Reset செய்க">🔄 Reset</button>
           </td>
         </tr>
       `;
@@ -12354,7 +12467,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (inp) {
       inp.value = uNo;
       previewAdminPassResetSchool(uNo);
-      document.getElementById("admPassResetNewVal").focus();
+      const passInp = document.getElementById("admPassResetNewVal");
+      if (passInp) {
+        passInp.focus();
+        passInp.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     }
   }
 
@@ -13094,8 +13211,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             email: a.email || (foundSch ? foundSch.email : ""),
             password: a.password || "",
             pin: a.pin || "",
-            otpVerified: Boolean(a.otpVerified),
-            registeredAt: a.registeredAt || new Date().toLocaleString("en-IN")
+            otpVerified: Boolean(a.otpVerified && a.password),
+            registeredAt: a.password ? (a.registeredAt || new Date().toLocaleString("en-IN")) : "" 
           },
           summary: evt.summary
         };
@@ -13857,8 +13974,12 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       if (data.authStore && typeof data.authStore === "object") {
         Object.keys(data.authStore).forEach(uNo => {
           const rec = data.authStore[uNo];
-          if (rec && rec.password) {
+          if (!rec) return;
+          if (rec.password) {
             schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, rec);
+            changed = true;
+          } else if (rec.password === "" && !rec.otpVerified && schoolAuthStore[uNo] && schoolAuthStore[uNo].password) {
+            schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, rec, { password: "", pin: "", otpVerified: false, registeredAt: "" });
             changed = true;
           }
         });
@@ -14621,8 +14742,8 @@ function doPost(e) {
             uNoStr, String(a.udiseNo || ""), String(a.nameEn || ""),
             String(a.hmName || ""), String(a.phone || ""), String(a.email || ""),
             String(a.password || ""), String(a.pin || ""),
-            a.otpVerified ? "YES (OTP Verified)" : "YES",
-            String(a.registeredAt || nowStr), nowStr
+            (a.otpVerified && a.password) ? "YES (OTP Verified)" : "NO (OTP Reset Required)",
+            a.password ? String(a.registeredAt || nowStr) : "", nowStr
           ]);
         }
         return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
@@ -14737,11 +14858,14 @@ function doPost(e) {
     if (action === "school_register" || action === "password_reset" || action === "admin_reset_school_password") {
       const authSheet = ss.getSheetByName("SCHOOL_AUTH");
       const uNoStr = String(data.uNo || "").trim();
+      const passStr = String(data.password !== undefined ? data.password : (data.newPassword || ""));
+      const isOtpReset = Boolean(data.requireOtpReset || !passStr);
       upsertRowByKey_(authSheet, 1, uNoStr, [
         uNoStr, String(data.udiseNo || ""), String(data.nameEn || data.schoolNameEn || ""),
         String(data.hmName || ""), String(data.mobile || ""), String(data.schoolEmail || data.email || ""),
-        String(data.password || data.newPassword || ""), String(data.pin || ""),
-        "YES (OTP Verified)", nowStr, nowStr
+        passStr, isOtpReset ? "" : String(data.pin || ""),
+        isOtpReset ? "NO (OTP Reset Required)" : "YES (OTP Verified)",
+        isOtpReset ? "" : nowStr, nowStr
       ]);
       return jsonResponse_({ ok: true, action: action, uNo: uNoStr });
     }
