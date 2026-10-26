@@ -2340,28 +2340,34 @@
           </div>
         </div>
 
-        <!-- 1B. SCHOOL REGISTRATION / FIRST TIME PASSWORD SETUP WITH DUAL OTP (WHATSAPP + EMAIL) -->
+        <!-- 1B. SCHOOL REGISTRATION / FIRST TIME PASSWORD SETUP WITH EMAIL OTP -->
         <div id="authPaneSchoolReg" style="display:none;">
           <div id="regStandaloneTabBanner" style="display:none; background:linear-gradient(135deg, #0f294a, #1e40af); color:#ffffff; padding:8px 12px; border-radius:8px; margin-bottom:10px; font-size:0.78rem; font-weight:800; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
             <span>🆕 புதிய பயனர் பள்ளிப் பதிவுத் தாவல் (New School Registration Tab)</span>
             <a href="#schoolLogin" onclick="navigateToLoginFromRegistration('', event)" style="background:#fde047; color:#0f172a; text-decoration:none; padding:3px 10px; border-radius:6px; font-weight:900; font-size:0.75rem;">🔐 உள்நுழைவுப் பக்கம் (Login Page) ➔</a>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; flex-wrap:wrap;">
-            <h3 style="font-size:1.18rem; font-weight:900; color:#0f172a;">📝 முதல் முறை பள்ளிப் பதிவு (First-Time Registration)</h3>
-            <a href="#schoolLogin" class="btn btn-outline btn-sm" onclick="navigateToLoginFromRegistration('', event)" style="text-decoration:none; font-weight:800;">🔐 ← உள்நுழைவிற்குச் செல்ல (Go to Login)</a>
+            <h3 style="font-size:1.12rem; font-weight:900; color:#0f172a;">📝 புதிய பள்ளிப் பதிவு &amp; கடவுச்சொல் உருவாக்கம் (First-Time School Registration)</h3>
+            <a href="#schoolLogin" class="btn btn-outline btn-sm" onclick="navigateToLoginFromRegistration('', event)" style="text-decoration:none; font-weight:800;">← உள்நுழைவு (Back to Login)</a>
           </div>
           <div style="font-size:0.78rem; color:#334155; background:#f0f9ff; border:1px solid #bae6fd; padding:8px 10px; border-radius:8px; margin-bottom:10px; line-height:1.45;">
-            🔒 <strong>பாதுகாப்பு நடைமுறை:</strong> பள்ளிகள் முதன்முறை உள்நுழையும் பொழுது தலைமையாசிரியரின் <strong>WhatsApp எண்</strong> மற்றும் <strong>பள்ளி மின்னஞ்சல் (Email)</strong> ஆகிய இரண்டிற்கும் <strong>OTP</strong> அனுப்பிச் சரிபார்த்த பிறகே புதிய கடவுச்சொல் உருவாக்க இயலும்.
+            🔒 <strong>பாதுகாப்பு நடைமுறை:</strong> பள்ளிகள் முதன்முறை உள்நுழையும் பொழுது <strong>பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (School Email ID)</strong> முகவரிக்கு <strong>6-இலக்க OTP</strong> அனுப்பிச் சரிபார்த்த பிறகே புதிய கடவுச்சொல் மற்றும் 6-இலக்க PIN உருவாக்க இயலும்.
           </div>
-          <div class="form-group" style="margin-bottom:10px;">
-            <div style="display:flex; gap:8px;">
-              <input type="text" id="regSearchQueryInput" class="form-control" placeholder="பள்ளி U.NO அல்லது UDISE எண் (எ.கா: 101)" oninput="lookupSchoolForRegistration(true)" onkeydown="if(event.key==='Enter'){event.preventDefault(); lookupSchoolForRegistration(false);}">
-              <button type="button" class="btn btn-primary" onclick="lookupSchoolForRegistration(false)">🔍 தேடுக</button>
+          <div class="form-group" style="margin-bottom:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:9px; padding:10px;">
+            <label class="form-label" style="font-size:0.78rem; font-weight:900; color:#0f294a; margin-bottom:6px; display:block;">1. உங்கள் பள்ளியைத் தேர்ந்தெடுக்கவும் (Select School - U.No / UDISE / Name) <span class="required">*</span></label>
+            <div class="grid-2" style="gap:8px; margin-bottom:6px;">
+              <div style="display:flex; gap:6px;">
+                <input type="text" id="regSearchQueryInput" class="form-control" placeholder="U.No / UDISE / பள்ளிப் பெயர் தட்டச்சு செய்து தேடுக (எ.கா: 101)..." oninput="lookupSchoolForRegistration(true)" onkeydown="if(event.key==='Enter'){event.preventDefault(); lookupSchoolForRegistration(false);}" style="font-size:0.82rem;">
+                <button type="button" class="btn btn-primary btn-sm" onclick="lookupSchoolForRegistration(false)" style="white-space:nowrap;">🔍 தேடுக</button>
+              </div>
+              <select id="regSchoolSelectDropdown" class="form-control" onchange="onRegSchoolDropdownSelect(this.value)" style="font-size:0.82rem; font-weight:800; color:#0f294a;">
+                <option value="">-- உங்கள் பள்ளியைத் தேர்ந்தெடுக்கவும் (282 பள்ளிகள்) --</option>
+              </select>
             </div>
           </div>
 
           <div id="regFoundSchoolSection" style="display:none;">
-            <div class="school-preview-box" id="regFoundSchoolCard" style="padding:9px 12px; margin:6px 0 10px; background:#f0fdf4; border:1.5px solid #22c55e;"></div>
+            <div class="school-preview-box" id="regFoundSchoolCard" style="padding:9px 12px; margin:4px 0 10px; background:#f0fdf4; border:1.5px solid #22c55e;"></div>
             <form onsubmit="handleSchoolRegistrationSubmit(event)">
               <div class="grid-2" style="gap:8px;">
                 <div class="form-group" style="margin-bottom:8px;">
@@ -2373,47 +2379,41 @@
                   <input type="text" id="regHmNameTa" class="form-control" style="padding:6px 10px; font-size:0.84rem;">
                 </div>
               </div>
-              <div class="grid-2" style="gap:8px; grid-template-columns: 150px 1fr;">
+              <div class="grid-2" style="gap:8px; grid-template-columns: 175px 1fr;">
                 <div class="form-group" style="margin-bottom:8px;">
-                  <label class="form-label" style="font-size:0.75rem;">HM WhatsApp எண் (10 இலக்கம்) <span class="required">*</span></label>
-                  <input type="tel" id="regSchoolMobile" class="form-control" style="padding:6px 9px; font-size:0.84rem; font-weight:800;" maxlength="10" inputmode="numeric" placeholder="9876543210" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10); resetRegOtpStateOnContactChange()" required>
+                  <label class="form-label" style="font-size:0.75rem;">2. தலைமையாசிரியர் கைபேசி எண் (HM Mobile) <span class="required">*</span></label>
+                  <input type="tel" id="regSchoolMobile" class="form-control" style="padding:6px 9px; font-size:0.84rem; font-weight:800;" maxlength="10" inputmode="numeric" placeholder="10-இலக்க எண்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" required>
                 </div>
                 <div class="form-group" style="margin-bottom:8px;">
-                  <label class="form-label" style="font-size:0.75rem;">பள்ளி மின்னஞ்சல் (Email ID) <span class="required">*</span></label>
+                  <label class="form-label" style="font-size:0.75rem;">3. பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (School Email ID) <span class="required">*</span></label>
                   <input type="email" id="regSchoolEmail" class="form-control" style="padding:6px 9px; font-size:0.82rem; font-weight:700;" placeholder="school@gmail.com" oninput="resetRegOtpStateOnContactChange()" onblur="this.value=normalizeAndRepairSchoolEmail(this.value)" required>
                 </div>
               </div>
 
-              <!-- STEP 1: SEND DUAL OTP (WHATSAPP + EMAIL) -->
+              <!-- STEP 4: SEND EMAIL OTP ONLY (NO WHATSAPP OTP, NO DIRECT OTP DISPLAY) -->
               <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:9px; padding:10px; margin-bottom:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-                  <span style="font-size:0.78rem; font-weight:900; color:#1e3a8a;">📲 படி 1: WhatsApp &amp; Email OTP சரிபார்ப்பு</span>
-                  <button type="button" id="btnSendRegDualOtp" class="btn btn-primary btn-sm" onclick="sendRegistrationDualOtp()" style="background:linear-gradient(135deg, #16a34a, #0284c7); border:none; font-weight:800; font-size:0.76rem; padding:5px 12px;">
-                    📲📧 WhatsApp &amp; Email-க்கு OTP அனுப்புக
+                  <span style="font-size:0.79rem; font-weight:900; color:#1e3a8a;">4. பள்ளி மின்னஞ்சல் OTP சரிபார்ப்பு (School Email OTP Verification) <span class="required">*</span></span>
+                  <button type="button" id="btnSendRegDualOtp" class="btn btn-primary btn-sm" onclick="sendRegistrationDualOtp()" style="background:linear-gradient(135deg, #1d4ed8, #0284c7); border:none; font-weight:800; font-size:0.76rem; padding:5px 12px;">
+                    📧 பள்ளி Email-க்கு OTP அனுப்புக (Send Email OTP)
                   </button>
                 </div>
-                <div id="regOtpStatusMsg" style="font-size:0.75rem; font-weight:700; color:#0f766e; margin-top:5px; display:none;"></div>
 
-                <!-- OTP Input Boxes -->
+                <!-- Email OTP Input Box -->
                 <div id="regOtpVerifyInputWrap" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #93c5fd;">
-                  <div class="grid-2" style="gap:8px; margin-bottom:8px;">
-                    <div>
-                      <label class="form-label" style="font-size:0.73rem; color:#15803d; font-weight:800;">🟢 WhatsApp OTP (6 இலக்கம்) *</label>
-                      <input type="text" id="regWhatsappOtpInput" class="form-control" maxlength="6" placeholder="WhatsApp OTP" style="padding:6px 10px; font-size:0.9rem; font-weight:900; letter-spacing:2px; text-align:center; border:1.5px solid #22c55e;">
+                  <div style="display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:190px;">
+                      <label class="form-label" style="font-size:0.74rem; color:#1d4ed8; font-weight:800;">🔵 Email 6-இலக்க OTP <span class="required">*</span></label>
+                      <input type="text" id="regEmailOtpInput" class="form-control" maxlength="6" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" placeholder="6-இலக்க Email OTP உள்ளிடவும்" style="padding:7px 10px; font-size:0.92rem; font-weight:900; letter-spacing:3px; text-align:center; border:1.5px solid #3b82f6;">
                     </div>
-                    <div>
-                      <label class="form-label" style="font-size:0.73rem; color:#1d4ed8; font-weight:800;">🔵 Email OTP (6 இலக்கம்) *</label>
-                      <input type="text" id="regEmailOtpInput" class="form-control" maxlength="6" placeholder="Email OTP" style="padding:6px 10px; font-size:0.9rem; font-weight:900; letter-spacing:2px; text-align:center; border:1.5px solid #3b82f6;">
-                    </div>
-                  </div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <button type="button" class="btn btn-success btn-sm" onclick="verifyRegistrationDualOtp()" style="font-weight:900; width:100%; padding:6px 12px;">
-                      ✅ OTP சரிபார்க்க (Verify Both OTPs)
+                    <button type="button" class="btn btn-success btn-sm" onclick="verifyRegistrationDualOtp()" style="font-weight:900; padding:8px 18px; height:38px; white-space:nowrap;">
+                      ✓ OTP சரிபார்க்க
                     </button>
                   </div>
                 </div>
+                <div id="regOtpStatusMsg" style="font-size:0.76rem; font-weight:700; color:#0f766e; margin-top:6px; display:none;"></div>
                 <div id="regOtpVerifiedBadge" style="display:none; margin-top:6px; background:#dcfce7; border:1px solid #22c55e; color:#14532d; padding:6px 10px; border-radius:6px; font-size:0.78rem; font-weight:900; text-align:center;">
-                  ✅ தலைமையாசிரியர் WhatsApp எண் மற்றும் பள்ளி Email இரண்டும் OTP மூலம் உறுதிப்படுத்தப்பட்டன!
+                  ✅ பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (Email ID) OTP மூலம் வெற்றிகரமாக உறுதிப்படுத்தப்பட்டது!
                 </div>
               </div>
 
@@ -2473,14 +2473,14 @@
           </div>
         </div>
 
-        <!-- 1C. PASSWORD RESET WITH OTP VERIFICATION (WHATSAPP OR EMAIL) -->
+        <!-- 1C. PASSWORD RESET WITH EMAIL OTP VERIFICATION -->
         <div id="authPanePassReset" style="display:none;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <h3 style="font-size:1.2rem; font-weight:900; color:#0f172a;">🔑 கடவுச்சொல் மீட்பு (Forgot Password - OTP)</h3>
+            <h3 style="font-size:1.2rem; font-weight:900; color:#0f172a;">🔑 கடவுச்சொல் மீட்பு (Forgot Password - Email OTP)</h3>
             <button type="button" class="btn btn-outline btn-sm" onclick="switchAuthTab('schoolLogin')">← Sign in</button>
           </div>
           <div style="font-size:0.78rem; color:#334155; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:8px; margin-bottom:10px; line-height:1.45;">
-            🔐 ஏற்கனவே பதிவு செய்த பள்ளிகள் தங்களின் <strong>HM WhatsApp எண்</strong> அல்லது <strong>மின்னஞ்சல் (Email)</strong> ஏதேனும் ஒன்றிற்கு <strong>OTP</strong> பெற்றுச் சரிபார்த்த பின் புதிய கடவுச்சொல்லை அமைக்கலாம்.
+            🔐 ஏற்கனவே பதிவு செய்த பள்ளிகள் தங்களின் <strong>பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (School Email ID)</strong> முகவரிக்கு <strong>6-இலக்க OTP</strong> பெற்றுச் சரிபார்த்த பின் புதிய கடவுச்சொல்லை அமைக்கலாம்.
           </div>
           <form onsubmit="handlePasswordResetSubmit(event)">
             <div class="form-group" style="margin-bottom:8px;">
@@ -2489,21 +2489,17 @@
             </div>
             <div id="resetSchoolPreview" style="font-size:0.84rem; font-weight:800; color:#15803d; margin-bottom:8px;"></div>
 
-            <!-- OTP Channel Selection & Verification Box -->
+            <!-- Email OTP Verification Box -->
             <div id="resetOtpSectionWrap" style="display:none; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:9px; padding:10px; margin-bottom:10px;">
-              <div style="font-size:0.76rem; font-weight:800; color:#0f294a; margin-bottom:6px;">OTP பெற விரும்பும் முறையைத் தேர்ந்தெடுக்கவும்:</div>
-              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
-                <label style="display:flex; align-items:center; gap:5px; font-size:0.78rem; font-weight:800; color:#15803d; cursor:pointer;">
-                  <input type="radio" name="resetOtpChannel" value="whatsapp" checked>
-                  <span>🟢 WhatsApp OTP (<span id="resetMaskedPhone">-</span>)</span>
-                </label>
-                <label style="display:flex; align-items:center; gap:5px; font-size:0.78rem; font-weight:800; color:#1d4ed8; cursor:pointer;">
-                  <input type="radio" name="resetOtpChannel" value="email">
-                  <span>🔵 Email OTP (<span id="resetMaskedEmail">-</span>)</span>
-                </label>
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+                <span style="font-size:0.78rem; font-weight:800; color:#1d4ed8;">
+                  <input type="radio" name="resetOtpChannel" value="email" checked style="display:none;">
+                  🔵 பள்ளி மின்னஞ்சல் (Email OTP): <strong id="resetMaskedEmail">-</strong>
+                  <span id="resetMaskedPhone" style="display:none;">-</span>
+                </span>
               </div>
               <button type="button" class="btn btn-primary btn-sm" onclick="sendPasswordResetOtp()" style="width:100%; font-weight:800; font-size:0.78rem;">
-                📲 OTP அனுப்புக (Send Reset OTP)
+                📧 பள்ளி Email-க்கு OTP அனுப்புக (Send Reset OTP)
               </button>
               <div id="resetOtpStatusMsg" style="font-size:0.74rem; font-weight:700; color:#0f766e; margin-top:6px; display:none;"></div>
 
@@ -2537,6 +2533,11 @@
 
         <!-- Hidden compatibility DOM nodes so existing scripts never fail -->
         <div style="display:none;" aria-hidden="true">
+          <input type="text" id="regWhatsappOtpInput">
+          <button type="button" onclick="sendRegistrationDualOtp()">📲📧 WhatsApp &amp; Email-க்கு OTP அனுப்புக</button>
+          <button type="button" onclick="verifyRegistrationDualOtp()">✅ OTP சரிபார்க்க (Verify Both OTPs)</button>
+          <button type="button" onclick="sendPasswordResetOtp()">📲 OTP அனுப்புக (Send Reset OTP)</button>
+          <button type="button" onclick="sendProfileContactChangeOtp()">📲📧 புதிய எண்ணிற்கு / Email-க்கு OTP அனுப்புக</button>
           <div id="tabBtnSchoolLogin"></div>
           <div id="tabBtnSchoolReg"></div>
           <div id="tabBtnPassReset"></div>
@@ -3126,15 +3127,15 @@
           </div>
         </div>
 
-        <!-- OTP Verification Box when HM Mobile or School Email is modified inside School Profile -->
+        <!-- OTP Verification Box when School Email is modified inside School Profile -->
         <div id="schProfileContactOtpBox" style="display:none; background:#fffbeb; border:2px solid #f59e0b; border-radius:10px; padding:12px 16px; margin-top:12px; margin-bottom:12px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
             <div>
-              <div style="font-size:0.9rem; font-weight:900; color:#92400e;">🔐 தலைமையாசிரியர் WhatsApp எண் / பள்ளி Email மாற்றம் – OTP சரிபார்ப்பு அவசியம்!</div>
-              <div style="font-size:0.78rem; color:#78350f;">நீங்கள் மாற்றிய புதிய தொடர்பு விவரத்திற்கு OTP அனுப்பிச் சரிபார்த்த பிறகே சுயவிவரத்தைச் சேமிக்க இயலும்.</div>
+              <div style="font-size:0.9rem; font-weight:900; color:#92400e;">🔐 பள்ளி அதிகாரப்பூர்வ Email மாற்றம் – Email OTP சரிபார்ப்பு அவசியம்!</div>
+              <div style="font-size:0.78rem; color:#78350f;">நீங்கள் மாற்றிய பள்ளி மின்னஞ்சல் முகவரிக்கு OTP அனுப்பிச் சரிபார்த்த பிறகே சுயவிவரத்தைச் சேமிக்க இயலும்.</div>
             </div>
             <button type="button" class="btn btn-primary btn-sm" onclick="sendProfileContactChangeOtp()" style="background:#d97706; border:none; font-weight:800;">
-              📲📧 புதிய எண்ணிற்கு / Email-க்கு OTP அனுப்புக
+              📧 பள்ளி Email-க்கு OTP அனுப்புக
             </button>
           </div>
           <div id="schProfileOtpStatusText" style="font-size:0.78rem; font-weight:800; color:#15803d; margin-bottom:8px; display:none;"></div>
@@ -7199,6 +7200,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     fillSelect("admAddMgmt1", divisionsRegistry.mgmt1, null);
     fillSelect("admAddMgmt2", divisionsRegistry.mgmt2, null);
     fillSelect("admAddMgmt3", divisionsRegistry.mgmt3, null);
+    if (typeof populateRegSchoolDropdown === "function") populateRegSchoolDropdown();
   }
 
   function renderStaffFormDropdowns() {
@@ -8133,7 +8135,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     if (!rawPass || (!matchesPassword && !matchesPin)) {
       if (errEl) {
-        errEl.innerHTML = `❌ கடவுச்சொல் (Password) அல்லது 6-இலக்க PIN எண் தவறானது! மறந்திருந்தால் <strong>"Forgot Password?"</strong> கிளிக் செய்து WhatsApp/Email OTP மூலம் மாற்றவும்.`;
+        errEl.innerHTML = `❌ கடவுச்சொல் (Password) அல்லது 6-இலக்க PIN எண் தவறானது! மறந்திருந்தால் <strong>"Forgot Password?"</strong> கிளிக் செய்து Email OTP மூலம் மாற்றவும்.`;
       }
       return;
     }
@@ -8194,6 +8196,30 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     showToast("பள்ளி முகப்பிலிருந்து வெளியேறியுள்ளீர்கள்.", "#38bdf8");
   }
 
+  function populateRegSchoolDropdown() {
+    const sel = document.getElementById("regSchoolSelectDropdown");
+    if (!sel || !Array.isArray(masterSchools)) return;
+    const cur = sel.value;
+    let html = '<option value="">-- உங்கள் பள்ளியைத் தேர்ந்தெடுக்கவும் (282 பள்ளிகள்) --</option>';
+    masterSchools.forEach(s => {
+      if (!s || !s.uNo) return;
+      html += `<option value="${s.uNo}">[${s.uNo}] ${s.nameEn || s.nameTa} (${s.udiseNo || "-"})</option>`;
+    });
+    sel.innerHTML = html;
+    if (cur) sel.value = cur;
+  }
+
+  function onRegSchoolDropdownSelect(uNo) {
+    const qInp = document.getElementById("regSearchQueryInput");
+    if (qInp) qInp.value = uNo || "";
+    if (uNo) {
+      lookupSchoolForRegistration(false);
+    } else {
+      const sec = document.getElementById("regFoundSchoolSection");
+      if (sec) sec.style.display = "none";
+    }
+  }
+
   function resetRegOtpStateOnContactChange() {
     _regOtpSession.verified = false;
     const vBadge = document.getElementById("regOtpVerifiedBadge");
@@ -8206,6 +8232,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   function lookupSchoolForRegistration(silentWhileTyping) {
+    populateRegSchoolDropdown();
     const succBox = document.getElementById("regCompletedSuccessBox");
     if (succBox) succBox.style.display = "none";
     const q = (document.getElementById("regSearchQueryInput")?.value || "").trim();
@@ -8219,12 +8246,14 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       return;
     }
     activeRegCandidateSchool = s;
+    const sel = document.getElementById("regSchoolSelectDropdown");
+    if (sel && sel.value !== String(s.uNo)) sel.value = String(s.uNo);
     if (sec) sec.style.display = "block";
     const card = document.getElementById("regFoundSchoolCard");
     if (card) {
       card.innerHTML = `
-        <div style="font-size:0.96rem; font-weight:900; color:#14532d;">🏫 ${s.nameEn}</div>
-        <div style="font-size:0.78rem; color:#166534; font-weight:700; margin-top:2px;">U.NO: <strong>${s.uNo}</strong> | UDISE: <strong>${s.udiseNo}</strong></div>
+        <div style="font-size:0.92rem; font-weight:900; color:#14532d;">தேர்ந்தெடுக்கப்பட்ட பள்ளி: [${s.uNo}] ${s.nameEn}</div>
+        <div style="font-size:0.78rem; color:#166534; font-weight:700; margin-top:2px;">UDISE: <strong>${s.udiseNo}</strong> | ஒன்றியம்: <strong>${s.block || "-"}</strong></div>
       `;
     }
     const authRec = schoolAuthStore[s.uNo] || {};
@@ -8243,6 +8272,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (inpWrap) inpWrap.style.display = "none";
     const msgEl = document.getElementById("regOtpStatusMsg");
     if (msgEl) msgEl.style.display = "none";
+    const eInp = document.getElementById("regEmailOtpInput");
+    if (eInp) eInp.value = "";
     resetRegOtpStateOnContactChange();
   }
 
@@ -8259,7 +8290,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }
 
     if (mob.length !== 10) {
-      showToast("⚠️ தலைமையாசிரியரின் 10-இலக்க WhatsApp கைபேசி எண்ணைச் சரியாக உள்ளிடவும்!", "#ef4444");
+      showToast("⚠️ தலைமையாசிரியரின் 10-இலக்க கைபேசி எண்ணைச் சரியாக உள்ளிடவும்!", "#ef4444");
       document.getElementById("regSchoolMobile")?.focus();
       return;
     }
@@ -8269,11 +8300,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       return;
     }
 
-    const waOtp = generateSixDigitOtp();
     const emOtp = generateSixDigitOtp();
     _regOtpSession = {
       uNo: activeRegCandidateSchool.uNo,
-      whatsappOtp: waOtp,
+      whatsappOtp: emOtp,
       emailOtp: emOtp,
       phone: mob,
       email: email,
@@ -8281,10 +8311,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       sentAt: Date.now()
     };
 
-    const waDirectUrl = buildDirectWhatsappClickUrl(mob, waOtp, activeRegCandidateSchool, "முதல் முறை பள்ளிப் பதிவு (First-Time Registration)");
-    const mailtoFallbackUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent("CEO Sivagangai Portal OTP: " + emOtp)}&body=${encodeURIComponent("பள்ளி: [" + activeRegCandidateSchool.uNo + "] " + activeRegCandidateSchool.nameEn + "\nஉங்கள் 6-இலக்க Email OTP: " + emOtp)}`;
-
-    // 1. Immediately reveal OTP input boxes & status card (ZERO UI hang!)
+    // Reveal Email OTP input box & clean delivery message (NO on-screen OTP display, NO WhatsApp OTP)
     const inpWrap = document.getElementById("regOtpVerifyInputWrap");
     if (inpWrap) inpWrap.style.display = "block";
 
@@ -8292,28 +8319,12 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const renderStatusCard = (statusLabelHtml) => {
       if (!msgEl) return;
       msgEl.style.display = "block";
-      msgEl.innerHTML = `
-        <div style="margin-bottom:5px;">${statusLabelHtml}</div>
-        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:4px;">
-          <a href="${waDirectUrl}" target="_blank" rel="noopener" style="background:#16a34a; color:#fff; text-decoration:none; padding:4px 9px; border-radius:5px; font-size:0.72rem; font-weight:800;">
-            📲 WhatsApp-ல் நேரடியாக OTP திறக்க ↗
-          </a>
-          <a href="${mailtoFallbackUrl}" style="background:#1d4ed8; color:#fff; text-decoration:none; padding:4px 9px; border-radius:5px; font-size:0.72rem; font-weight:800;">
-            📧 Email OTP திறக்க ↗
-          </a>
-          <span style="background:#fef9c3; border:1.5px solid #eab308; color:#854d0e; padding:4px 9px; border-radius:6px; font-size:0.74rem; display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap;">
-            <span>🟢 WhatsApp OTP: <strong style="color:#15803d; font-size:0.86rem; letter-spacing:1px;">${waOtp}</strong></span>
-            <span>|</span>
-            <span>🔵 Email OTP: <strong style="color:#1d4ed8; font-size:0.86rem; letter-spacing:1px;">${emOtp}</strong></span>
-            <button type="button" onclick="autoFillRegOtpsForConvenience()" style="background:#0284c7; color:#fff; border:none; border-radius:4px; padding:3px 8px; font-size:0.72rem; font-weight:800; cursor:pointer;">⚡ Auto-Fill &amp; Verify OTP</button>
-          </span>
-        </div>
-      `;
+      msgEl.innerHTML = `<div style="padding:6px 10px; background:#f0fdf4; border:1px solid #86efac; border-radius:6px; color:#166534;">${statusLabelHtml}</div>`;
     };
 
-    renderStatusCard(`📡 <strong>WhatsApp (+91 ${mob})</strong> மற்றும் <strong>Email (${email})</strong> முகவரிக்கு OTP அனுப்பப்படுகிறது... (கீழேயுள்ள பெட்டிகளில் OTP-ஐ உள்ளிடலாம்)`);
-    document.getElementById("regWhatsappOtpInput")?.focus();
-    showToast(`📲 WhatsApp (${mob}) & Email (${email}) OTP உருவாக்கப்பட்டு அனுப்பப்படுகிறது!`, "#0284c7");
+    renderStatusCard(`📡 பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (<strong>${email}</strong>) முகவரிக்கு 6-இலக்க OTP அனுப்பப்படுகிறது...`);
+    document.getElementById("regEmailOtpInput")?.focus();
+    showToast(`📧 பள்ளி Email (${email}) முகவரிக்கு OTP அனுப்பப்படுகிறது!`, "#0284c7");
 
     const btn = document.getElementById("btnSendRegDualOtp");
     if (btn) {
@@ -8323,44 +8334,31 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     try {
       await Promise.race([
-        Promise.allSettled([
-          dispatchWhatsappOtpMessage(mob, waOtp, activeRegCandidateSchool, "முதல் முறை பள்ளிப் பதிவு (First-Time Registration)"),
-          dispatchEmailOtpMessage(email, emOtp, activeRegCandidateSchool, "First-Time School Registration")
-        ]),
+        dispatchEmailOtpMessage(email, emOtp, activeRegCandidateSchool, "First-Time School Registration"),
         new Promise(resolve => setTimeout(resolve, 4200))
       ]);
     } catch (e) {}
 
     if (btn) {
       btn.disabled = false;
-      btn.textContent = "🔄 மீண்டும் OTP அனுப்புக (Resend OTP)";
+      btn.textContent = "🔄 மீண்டும் OTP அனுப்புக (Resend Email OTP)";
     }
-    renderStatusCard(`✅ <strong>WhatsApp (+91 ${mob})</strong> மற்றும் <strong>Email (${email})</strong> ஆகிய இரண்டிற்கும் OTP அனுப்பப்பட்டுள்ளது!`);
+    renderStatusCard(`✅ பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (<strong>${email}</strong>) முகவரிக்கு 6-இலக்க OTP அனுப்பப்பட்டுள்ளது! உங்கள் மின்னஞ்சல் Inbox / Spam கோப்புறையைப் பார்த்து மேலேயுள்ள பெட்டியில் உள்ளிடவும்.`);
   }
 
   function autoFillRegOtpsForConvenience() {
-    const wInp = document.getElementById("regWhatsappOtpInput");
-    const eInp = document.getElementById("regEmailOtpInput");
-    if (wInp && _regOtpSession.whatsappOtp) wInp.value = _regOtpSession.whatsappOtp;
-    if (eInp && _regOtpSession.emailOtp) eInp.value = _regOtpSession.emailOtp;
     verifyRegistrationDualOtp();
   }
 
   function verifyRegistrationDualOtp() {
-    const enteredWa = (document.getElementById("regWhatsappOtpInput")?.value || "").trim();
     const enteredEm = (document.getElementById("regEmailOtpInput")?.value || "").trim();
 
-    if (!_regOtpSession.whatsappOtp || !_regOtpSession.emailOtp) {
+    if (!_regOtpSession.emailOtp) {
       showToast("⚠️ முதலில் 'OTP அனுப்புக' பொத்தானை அழுத்தவும்!", "#f59e0b");
       return;
     }
-    if (enteredWa !== _regOtpSession.whatsappOtp) {
-      showToast("❌ WhatsApp OTP எண் தவறானது! சரியான 6-இலக்க எண்ணை உள்ளிடவும்.", "#ef4444");
-      document.getElementById("regWhatsappOtpInput")?.focus();
-      return;
-    }
     if (enteredEm !== _regOtpSession.emailOtp) {
-      showToast("❌ Email OTP எண் தவறானது! சரியான 6-இலக்க எண்ணை உள்ளிடவும்.", "#ef4444");
+      showToast("❌ Email OTP எண் தவறானது! உங்கள் மின்னஞ்சலுக்கு வந்த 6-இலக்க எண்ணை உள்ளிடவும்.", "#ef4444");
       document.getElementById("regEmailOtpInput")?.focus();
       return;
     }
@@ -8368,6 +8366,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     _regOtpSession.verified = true;
     const inpWrap = document.getElementById("regOtpVerifyInputWrap");
     if (inpWrap) inpWrap.style.display = "none";
+    const msgEl = document.getElementById("regOtpStatusMsg");
+    if (msgEl) msgEl.style.display = "none";
     const vBadge = document.getElementById("regOtpVerifiedBadge");
     if (vBadge) vBadge.style.display = "block";
 
@@ -8377,7 +8377,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       passWrap.style.pointerEvents = "auto";
     }
     document.getElementById("regNewPassword")?.focus();
-    showToast("✅ WhatsApp மற்றும் Email OTP இரண்டும் வெற்றிகரமாக உறுதிப்படுத்தப்பட்டன!", "#22c55e");
+    showToast("✅ பள்ளி மின்னஞ்சல் (Email) OTP வெற்றிகரமாக உறுதிப்படுத்தப்பட்டது!", "#22c55e");
   }
 
   function handleSchoolRegistrationSubmit(event) {
@@ -8385,7 +8385,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (!activeRegCandidateSchool) return;
 
     if (!_regOtpSession.verified || _regOtpSession.uNo !== activeRegCandidateSchool.uNo) {
-      showToast("⚠️ பதிவு செய்யும் முன் தலைமையாசிரியர் WhatsApp எண் மற்றும் பள்ளி Email-க்கு OTP அனுப்பிச் சரிபார்க்கவும்!", "#ef4444");
+      showToast("⚠️ பதிவு செய்யும் முன் பள்ளி அதிகாரப்பூர்வ Email-க்கு OTP அனுப்பிச் சரிபார்க்கவும்!", "#ef4444");
       return;
     }
 
@@ -8478,7 +8478,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       summaryEl.innerHTML = `
         <div>🏫 <strong>பள்ளி (School):</strong> [${regSchool.uNo}] ${regSchool.nameEn} (UDISE: ${regSchool.udiseNo})</div>
         <div>👤 <strong>தலைமையாசிரியர் (HM):</strong> ${hmEn}${hmTa ? " / " + hmTa : ""}</div>
-        <div>📲 <strong>சரிபார்க்கப்பட்ட WhatsApp &amp; Email:</strong> +91 ${mob} | ${email}</div>
+        <div>📧 <strong>சரிபார்க்கப்பட்ட பள்ளி Email &amp; HM கைபேசி:</strong> ${email} | +91 ${mob}</div>
         <div>🔐 <strong>உள்நுழைவு முறைகள்:</strong> கடவுச்சொல் (Password) &amp; 6-இலக்க PIN (<code>******</code>) தயார் நிலை</div>
       `;
     }
@@ -8540,18 +8540,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       return;
     }
     const authRec = schoolAuthStore[s.uNo] || {};
-    const phone = (authRec.phone || s.mobile || "").replace(/\D/g, "").slice(-10);
     const email = normalizeAndRepairSchoolEmail(authRec.email || s.email || "");
 
-    const selectedRadio = document.querySelector('input[name="resetOtpChannel"]:checked');
-    const channel = selectedRadio ? selectedRadio.value : "whatsapp";
-
-    if (channel === "whatsapp" && phone.length < 10) {
-      showToast("⚠️ இப்பள்ளிக்கு WhatsApp எண் பதிவு செய்யப்படவில்லை! முதலில் 'Sign Up / புதிய பதிவு' செய்யவும்.", "#ef4444");
-      return;
-    }
-    if (channel === "email" && !isValidSchoolEmailFormat(email)) {
-      showToast("⚠️ இப்பள்ளிக்கு Email முகவரி இன்னும் பதிவு செய்யப்படவில்லை! WhatsApp OTP-ஐத் தேர்ந்தெடுக்கவும் அல்லது 'Sign Up' செய்யவும்.", "#ef4444");
+    if (!isValidSchoolEmailFormat(email)) {
+      showToast("⚠️ இப்பள்ளிக்கு Email முகவரி இன்னும் பதிவு செய்யப்படவில்லை! முதலில் 'Sign Up / புதிய பதிவு' செய்யவும்.", "#ef4444");
       return;
     }
 
@@ -8559,8 +8551,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     _resetOtpSession = {
       uNo: s.uNo,
       otpCode: otp,
-      channel: channel,
-      target: channel === "whatsapp" ? phone : email,
+      channel: "email",
+      target: email,
       verified: false,
       sentAt: Date.now()
     };
@@ -8568,32 +8560,24 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const inpBox = document.getElementById("resetOtpInputBox");
     if (inpBox) inpBox.style.display = "flex";
     const msgEl = document.getElementById("resetOtpStatusMsg");
-    const targetDesc = channel === "whatsapp" ? `WhatsApp (+91 ${maskPhoneForDisplay(phone)})` : `Email (${maskEmailForDisplay(email)})`;
+    const targetDesc = `Email (${maskEmailForDisplay(email)})`;
     const renderResetMsg = (prefixText) => {
       if (!msgEl) return;
       msgEl.style.display = "block";
-      msgEl.innerHTML = `
-        ${prefixText} <strong>${targetDesc}</strong> முகவரிக்கு 6-இலக்க OTP அனுப்பப்பட்டுள்ளது!<br>
-        <span style="display:inline-block; margin-top:4px; background:#fef9c3; border:1px solid #facc15; color:#854d0e; padding:2px 8px; border-radius:4px; font-size:0.73rem;">
-          💡 சரிபார்ப்பு OTP: <strong style="color:#15803d;">${otp}</strong>
-          <button type="button" onclick="document.getElementById('resetOtpCodeInput').value='${otp}'; verifyPasswordResetOtp();" style="margin-left:6px; background:#0284c7; color:#fff; border:none; border-radius:4px; padding:1px 6px; font-size:0.7rem; font-weight:800; cursor:pointer;">⚡ Auto-Fill</button>
-        </span>
-      `;
+      msgEl.innerHTML = `${prefixText} <strong>${targetDesc}</strong> முகவரிக்கு 6-இலக்க OTP அனுப்பப்பட்டுள்ளது! மின்னஞ்சல் Inbox / Spam கோப்புறையைப் பார்த்து கீழே உள்ளிடவும்.`;
     };
-    renderResetMsg("📡 உங்கள்");
+    renderResetMsg("📡 உங்கள் பள்ளி");
     document.getElementById("resetOtpCodeInput")?.focus();
-    showToast(`📲 கடவுச்சொல் மீட்பு OTP அனுப்பப்படுகிறது!`, "#0284c7");
+    showToast(`📧 கடவுச்சொல் மீட்பு Email OTP அனுப்பப்படுகிறது!`, "#0284c7");
 
     try {
       await Promise.race([
-        channel === "whatsapp"
-          ? dispatchWhatsappOtpMessage(phone, otp, s, "கடவுச்சொல் மீட்பு (Password Reset)")
-          : dispatchEmailOtpMessage(email, otp, s, "Password Reset OTP"),
+        dispatchEmailOtpMessage(email, otp, s, "Password Reset OTP"),
         new Promise(resolve => setTimeout(resolve, 3200))
       ]);
     } catch (e) {}
 
-    renderResetMsg("✅ உங்கள்");
+    renderResetMsg("✅ உங்கள் பள்ளி");
   }
 
   function verifyPasswordResetOtp() {
@@ -8627,7 +8611,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       return;
     }
     if (!_resetOtpSession.verified || _resetOtpSession.uNo !== s.uNo) {
-      showToast("⚠️ கடவுச்சொல்லை மாற்ற முதலில் WhatsApp அல்லது Email OTP சரிபார்க்க வேண்டும்!", "#ef4444");
+      showToast("⚠️ கடவுச்சொல்லை மாற்ற முதலில் பள்ளி Email OTP சரிபார்க்க வேண்டும்!", "#ef4444");
       return;
     }
     const pwCheck = validateSchoolPasswordComplexity(newPass);
@@ -11387,22 +11371,17 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       verified: false
     };
 
-    const promises = [];
-    if (newMobile.replace(/\D/g, "").length >= 10) {
-      promises.push(dispatchWhatsappOtpMessage(newMobile, otp, s, "தொடர்பு எண் மாற்றம் (Profile Contact Update)"));
-    }
     if (newEmail && newEmail.includes("@")) {
-      promises.push(dispatchEmailOtpMessage(newEmail, otp, s, "Profile Contact Update OTP"));
+      await dispatchEmailOtpMessage(newEmail, otp, s, "Profile Contact Update OTP");
     }
-    await Promise.all(promises);
 
     const stEl = document.getElementById("schProfileOtpStatusText");
     if (stEl) {
       stEl.style.display = "block";
-      stEl.innerHTML = `✅ புதிய WhatsApp (${newMobile}) / Email (${newEmail})-க்கு OTP அனுப்பப்பட்டுள்ளது! (சரிபார்ப்பு OTP: <strong>${otp}</strong> <button type="button" onclick="document.getElementById('schProfileOtpInput').value='${otp}'; verifyProfileContactChangeOtp();" style="background:#0284c7; color:#fff; border:none; border-radius:4px; padding:1px 6px; font-size:0.7rem; cursor:pointer;">Auto-Fill</button>)`;
+      stEl.innerHTML = `✅ பள்ளி மின்னஞ்சல் (<strong>${newEmail}</strong>) முகவரிக்கு 6-இலக்க OTP அனுப்பப்பட்டுள்ளது! மின்னஞ்சலில் வந்த OTP-ஐ கீழே உள்ளிட்டு உறுதிப்படுத்தவும்.`;
     }
     document.getElementById("schProfileOtpInput")?.focus();
-    showToast("📲 புதிய தொடர்பு விவரத்திற்கு OTP அனுப்பப்பட்டது!", "#22c55e");
+    showToast("📧 பள்ளி மின்னஞ்சல் முகவரிக்கு OTP அனுப்பப்பட்டது!", "#22c55e");
   }
 
   function verifyProfileContactChangeOtp() {
