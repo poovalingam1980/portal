@@ -1168,6 +1168,47 @@
       color: #002663;
       text-decoration: underline;
     }
+    .pw-field-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .pw-field-wrap .form-control {
+      width: 100%;
+      padding-right: 78px !important;
+    }
+    .pw-eye-toggle-btn {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+      line-height: 1.2;
+      transition: all 0.15s ease;
+      z-index: 3;
+    }
+    .pw-eye-toggle-btn:hover {
+      background: #dbeafe;
+      color: #1e40af;
+      border-color: #93c5fd;
+    }
+    .pw-eye-toggle-btn.is-showing {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
 
     .signin-meta-row {
       display: flex;
@@ -2385,7 +2426,10 @@
                 </svg>
               </span>
               <input type="password" id="schoolLoginPassInput" placeholder="Password (கடவுச்சொல்) அல்லது 6-இலக்க PIN" autocomplete="current-password" required>
-              <button type="button" class="modern-pass-toggle" id="togglePassVisibilityBtn" onclick="toggleLoginPasswordVisibility()">SHOW</button>
+              <button type="button" class="modern-pass-toggle" id="togglePassVisibilityBtn" onclick="toggleLoginPasswordVisibility()" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide Password)" style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:4px 9px; text-transform:none;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>SHOW</span>
+              </button>
             </div>
 
             <!-- Remember Me & Forgot Password -->
@@ -2429,8 +2473,8 @@
           <!-- Clean Form Header Bar -->
           <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:10px; margin-bottom:12px; border-bottom:1.5px solid #e2e8f0; gap:10px; flex-wrap:wrap;">
             <div>
-              <h3 style="font-size:1.08rem; font-weight:900; color:#0f172a; margin:0;">📝 புதிய பயனர் பள்ளிப் பதிவு படிவம் (New School Registration Form)</h3>
-              <div style="font-size:0.76rem; color:#475569; font-weight:600; margin-top:2px;">பள்ளியைத் தேர்ந்தெடுத்து, பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (Email ID) OTP சரிபார்த்து புதிய கடவுச்சொல் &amp; 6-இலக்க PIN அமைக்கவும்.</div>
+              <h3 style="font-size:1.08rem; font-weight:900; color:#0f172a; margin:0;">📝 புதிய பள்ளி கடவுச்சொல் உருவாக்கம் &amp; முதல் முறை பதிவு (First Time Setup)</h3>
+              <div style="font-size:0.76rem; color:#475569; font-weight:600; margin-top:2px;">பள்ளியின் UDISE எண் (11 இலக்கங்கள்) அல்லது U.NO எண்ணைத் தேர்ந்தெடுத்து, புதிய கடவுச்சொல்லை (குறைந்தது 7 எழுத்துகள், 1 பெரிய &amp; 1 சிறிய எழுத்து) உருவாக்கவும்.</div>
             </div>
             <a href="#schoolLogin" class="btn btn-outline btn-sm" onclick="navigateToLoginFromRegistration('', event)" style="text-decoration:none; font-weight:800; white-space:nowrap;">← உள்நுழைவுப் பக்கம் (Back to Sign in)</a>
           </div>
@@ -2503,36 +2547,59 @@
                 </div>
               </div>
 
-              <!-- Step 5: Password & 6-Digit PIN Setup -->
-              <div id="regPasswordSetupWrap" style="opacity:0.55; pointer-events:none; transition:all 0.25s;">
+              <!-- Step 5: Password & 6-Digit PIN Setup (Always active with Eye / Show Toggle) -->
+              <div id="regPasswordSetupWrap" style="opacity:1; pointer-events:auto; transition:all 0.25s;">
                 <div class="grid-3" style="gap:10px; margin-bottom:8px;">
                   <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label" style="font-size:0.76rem; font-weight:800;">6. புதிய கடவுச்சொல் (New Password) <span class="required">*</span></label>
-                    <input type="password" id="regNewPassword" class="form-control" style="padding:7px 10px; font-size:0.84rem;" minlength="7" placeholder="எ.கா: School@1" oninput="updateLivePasswordChecklist('reg')" required>
+                    <label class="form-label" style="font-size:0.76rem; font-weight:800;">6. புதிய கடவுச்சொல் (குறைந்தது 7 எழுத்துகள், 1 பெரிய &amp; 1 சிறிய எழுத்து) <span class="required">*</span></label>
+                    <div class="pw-field-wrap">
+                      <input type="password" id="regNewPassword" class="form-control" style="padding:7px 10px; font-size:0.84rem;" minlength="7" placeholder="எ.கா: School123" oninput="updateLivePasswordChecklist('reg')" required>
+                      <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('regNewPassword', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>Show</span>
+                      </button>
+                    </div>
                   </div>
                   <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label" style="font-size:0.76rem; font-weight:800;">கடவுச்சொல் உறுதிப்படுத்தல் (Confirm) <span class="required">*</span></label>
-                    <input type="password" id="regConfirmPassword" class="form-control" style="padding:7px 10px; font-size:0.84rem;" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" oninput="updateLivePasswordChecklist('reg')" required>
+                    <label class="form-label" style="font-size:0.76rem; font-weight:800;">கடவுச்சொல்லை உறுதிப்படுத்துக (Confirm Password) <span class="required">*</span></label>
+                    <div class="pw-field-wrap">
+                      <input type="password" id="regConfirmPassword" class="form-control" style="padding:7px 10px; font-size:0.84rem;" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" oninput="updateLivePasswordChecklist('reg')" required>
+                      <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('regConfirmPassword', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>Show</span>
+                      </button>
+                    </div>
                   </div>
                   <div class="form-group" style="margin-bottom:0;">
-                    <label class="form-label" style="font-size:0.76rem; font-weight:800;">7. 6-இலக்க PIN எண் (6-Digit PIN) <span class="required">*</span></label>
-                    <input type="password" id="regNewPinInput" class="form-control" style="padding:7px 10px; font-size:0.88rem; font-weight:900; letter-spacing:3px; text-align:center;" maxlength="6" inputmode="numeric" placeholder="6 இலக்கம்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); updateLivePasswordChecklist('reg')" required>
+                    <label class="form-label" style="font-size:0.76rem; font-weight:800;">7. 6-இலக்க PIN எண் (விரும்பினால் / Optional)</label>
+                    <div class="pw-field-wrap">
+                      <input type="password" id="regNewPinInput" class="form-control" style="padding:7px 10px; font-size:0.88rem; font-weight:900; letter-spacing:3px; text-align:center;" maxlength="6" inputmode="numeric" placeholder="6 இலக்கம்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); updateLivePasswordChecklist('reg')">
+                      <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('regNewPinInput', this)" title="PIN எண்ணைப் பார்க்க / மறைக்க (Show / Hide)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>Show</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
+                <div id="regInlinePassStatusAlert" style="display:none; margin-bottom:8px; padding:8px 12px; border-radius:8px; font-size:0.8rem; font-weight:800;"></div>
+
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px;">
-                  <div id="regPassRulesLiveChecklist" style="display:flex; flex-wrap:wrap; align-items:center; gap:5px; font-size:0.7rem; font-weight:800;">
-                    <span style="color:#475569; margin-right:2px;">விதிமுறைகள்:</span>
-                    <span id="ruleRegLen" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 7+ எழுத்துகள்</span>
-                    <span id="ruleRegCap" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 Caps (A-Z)</span>
-                    <span id="ruleRegSml" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 Small (a-z)</span>
-                    <span id="ruleRegNum" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 எண் (0-9)</span>
-                    <span id="ruleRegSpc" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 1 குறியீடு (@#$%&amp;*)</span>
-                    <span id="ruleRegPin" style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">✗ 6-இலக்க PIN</span>
+                  <div id="regPassRulesLiveChecklist" style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; font-size:0.73rem; font-weight:800;">
+                    <span style="color:#475569; margin-right:2px;">கடவுச்சொல் விதிமுறைகள்:</span>
+                    <span id="ruleRegLen" style="background:#fee2e2; color:#991b1b; padding:3px 8px; border-radius:5px;">✗ குறைந்தது 7 எழுத்துகள் (Min 7 Chars)</span>
+                    <span id="ruleRegCap" style="background:#fee2e2; color:#991b1b; padding:3px 8px; border-radius:5px;">✗ 1 பெரிய எழுத்து (A-Z)</span>
+                    <span id="ruleRegSml" style="background:#fee2e2; color:#991b1b; padding:3px 8px; border-radius:5px;">✗ 1 சிறிய எழுத்து (a-z)</span>
+                    <span id="ruleRegMatch" style="background:#f1f5f9; color:#475569; padding:3px 8px; border-radius:5px;">• கடவுச்சொல் உறுதிப்படுத்தல்</span>
+                    <span id="ruleRegNum" style="display:none;"></span>
+                    <span id="ruleRegSpc" style="display:none;"></span>
+                    <span id="ruleRegPin" style="display:none;"></span>
                   </div>
-                  <button type="submit" id="btnRegSubmitFinal" class="btn btn-success" style="font-weight:900; padding:8px 20px; font-size:0.86rem; white-space:nowrap;">
-                    ✅ பதிவு செய்க (Complete Registration)
-                  </button>
+                  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button type="submit" id="btnRegSubmitFinal" class="btn btn-success" style="font-weight:900; padding:9px 20px; font-size:0.86rem; white-space:nowrap;">
+                      ✅ பதிவு செய்க (Complete Registration)
+                    </button>
+                  </div>
                 </div>
               </div>
             </form>
@@ -2598,21 +2665,33 @@
               </div>
             </div>
 
-            <div id="resetNewPassWrap" style="opacity:0.55; pointer-events:none;">
-              <div style="font-size:0.72rem; color:#475569; background:#f1f5f9; padding:6px 9px; border-radius:6px; margin-bottom:8px; font-weight:700;">
-                🔐 <strong>கடவுச்சொல் விதி:</strong> குறைந்தது 7 எழுத்துகள் (1 Caps, 1 Small, 1 Number &amp; 1 Special எழுத்து) + <strong>6-இலக்க PIN எண்</strong>.
+            <div id="resetNewPassWrap" style="opacity:1; pointer-events:auto;">
+              <div style="font-size:0.74rem; color:#1e3a8a; background:#eff6ff; border:1px solid #bfdbfe; padding:7px 10px; border-radius:6px; margin-bottom:8px; font-weight:700;">
+                🔐 <strong>கடவுச்சொல் விதி:</strong> குறைந்தது <strong>7 எழுத்துகள்</strong>, குறைந்தபட்சம் <strong>ஒரு பெரிய எழுத்து (A-Z)</strong> மற்றும் <strong>ஒரு சிறிய எழுத்து (a-z)</strong> கொண்டிருக்க வேண்டும்.
               </div>
               <div class="grid-2" style="gap:8px; margin-bottom:8px;">
                 <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.76rem;">புதிய கடவுச்சொல் (Min 7 Chars) <span class="required">*</span></label>
-                  <input type="password" id="resetNewPassInput" class="form-control" minlength="7" placeholder="எ.கா: School@1" required>
+                  <label class="form-label" style="font-size:0.76rem;">புதிய கடவுச்சொல் (Min 7 Chars, 1 A-Z, 1 a-z) <span class="required">*</span></label>
+                  <div class="pw-field-wrap">
+                    <input type="password" id="resetNewPassInput" class="form-control" minlength="7" placeholder="எ.கா: School123" required>
+                    <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('resetNewPassInput', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <span>Show</span>
+                    </button>
+                  </div>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label" style="font-size:0.76rem; color:#0369a1;">🔢 புதிய 6-இலக்க PIN எண் <span class="required">*</span></label>
-                  <input type="password" id="resetNewPinInput" class="form-control" maxlength="6" inputmode="numeric" placeholder="6-இலக்க PIN" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="font-weight:900; letter-spacing:2px; text-align:center;" required>
+                  <label class="form-label" style="font-size:0.76rem; color:#0369a1;">🔢 புதிய 6-இலக்க PIN எண் (விரும்பினால்)</label>
+                  <div class="pw-field-wrap">
+                    <input type="password" id="resetNewPinInput" class="form-control" maxlength="6" inputmode="numeric" placeholder="6-இலக்க PIN" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="font-weight:900; letter-spacing:2px; text-align:center;">
+                    <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('resetNewPinInput', this)" title="PIN எண்ணைப் பார்க்க / மறைக்க (Show / Hide)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <span>Show</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-              <button type="submit" class="btn-modern-signin">🔑 கடவுச்சொல் &amp; PIN எண்ணை மாற்றுக (Reset Password &amp; PIN)</button>
+              <button type="submit" class="btn-modern-signin">🔑 கடவுச்சொல்லை மாற்றுக (Reset Password)</button>
             </div>
           </form>
         </div>
@@ -3465,23 +3544,41 @@
     <!-- SCHOOL SUB-TAB 5: CHANGE PASSWORD & 6-DIGIT PIN -->
     <div id="schPaneSecurity" class="panel-box" style="display:none;">
       <div class="panel-title"><span>🔑 பள்ளி உள்நுழைவு கடவுச்சொல் &amp; 6-இலக்க PIN மாற்றம் (Change Password &amp; 6-Digit PIN)</span></div>
-      <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px 14px; margin-bottom:14px; max-width:560px; font-size:0.82rem; color:#1e3a8a; font-weight:700;">
-        🔒 <strong>பாதுகாப்பு விதிமுறை:</strong> கடவுச்சொல் குறைந்தது <strong>7 எழுத்துகள்</strong> (குறைந்தபட்சம் 1 Capital, 1 Small, 1 Number &amp; 1 Special Character) கொண்டிருக்க வேண்டும். மேலும் விரைவான உள்நுழைவிற்கு <strong>6-இலக்க PIN எண்ணையும்</strong> அமைத்துக் கொள்ளலாம்.
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px 14px; margin-bottom:14px; max-width:620px; font-size:0.82rem; color:#1e3a8a; font-weight:700;">
+        🔒 <strong>பாதுகாப்பு விதிமுறை:</strong> கடவுச்சொல் குறைந்தது <strong>7 எழுத்துகள்</strong>, குறைந்தபட்சம் <strong>ஒரு பெரிய எழுத்து (A-Z)</strong> மற்றும் <strong>ஒரு சிறிய எழுத்து (a-z)</strong> கொண்டிருக்க வேண்டும். மேலும் விரைவான உள்நுழைவிற்கு <strong>6-இலக்க PIN எண்ணையும்</strong> அமைத்துக் கொள்ளலாம்.
       </div>
-      <form onsubmit="changeLoggedSchoolPassword(event)" style="max-width:560px;">
+      <form onsubmit="changeLoggedSchoolPassword(event)" style="max-width:620px;">
         <div class="grid-2">
           <div class="form-group">
-            <label class="form-label">புதிய கடவுச்சொல் (Min 7 Chars) <span class="required">*</span></label>
-            <input type="password" id="schSecNewPass" class="form-control" minlength="7" placeholder="எ.கா: School@2026" required>
+            <label class="form-label">புதிய கடவுச்சொல் (குறைந்தது 7 எழுத்துகள், 1 பெரிய &amp; 1 சிறிய எழுத்து) <span class="required">*</span></label>
+            <div class="pw-field-wrap">
+              <input type="password" id="schSecNewPass" class="form-control" minlength="7" placeholder="எ.கா: School2026" required>
+              <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('schSecNewPass', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>Show</span>
+              </button>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக <span class="required">*</span></label>
-            <input type="password" id="schSecConfirmPass" class="form-control" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" required>
+            <div class="pw-field-wrap">
+              <input type="password" id="schSecConfirmPass" class="form-control" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" required>
+              <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('schSecConfirmPass', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>Show</span>
+              </button>
+            </div>
           </div>
         </div>
-        <div class="form-group" style="max-width:280px;">
-          <label class="form-label" style="color:#0369a1; font-weight:800;">🔢 6-இலக்க உள்நுழைவு PIN எண் (6-Digit Login PIN) <span class="required">*</span></label>
-          <input type="password" id="schSecNewPin" class="form-control" maxlength="6" inputmode="numeric" placeholder="எ.கா: 258012" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="font-weight:900; letter-spacing:3px; font-size:1rem;" required>
+        <div class="form-group" style="max-width:300px;">
+          <label class="form-label" style="color:#0369a1; font-weight:800;">🔢 6-இலக்க உள்நுழைவு PIN எண் (விரும்பினால் / Optional)</label>
+          <div class="pw-field-wrap">
+            <input type="password" id="schSecNewPin" class="form-control" maxlength="6" inputmode="numeric" placeholder="எ.கா: 258012" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="font-weight:900; letter-spacing:3px; font-size:1rem;">
+            <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('schSecNewPin', this)" title="PIN எண்ணைப் பார்க்க / மறைக்க (Show / Hide)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>Show</span>
+            </button>
+          </div>
         </div>
         <button type="submit" class="btn btn-primary" style="font-weight:800;">🔐 கடவுச்சொல் &amp; 6-இலக்க PIN புதுப்பி (Update Password &amp; PIN)</button>
       </form>
@@ -7434,17 +7531,26 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (inp) inp.focus();
   }
 
+  const SVG_EYE_OPEN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const SVG_EYE_OFF = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+  function togglePasswordVisibilityById(inputId, btnEl) {
+    const inp = document.getElementById(inputId);
+    if (!inp) return;
+    const isNowVisible = inp.type === "password";
+    inp.type = isNowVisible ? "text" : "password";
+    if (btnEl) {
+      btnEl.classList.toggle("is-showing", isNowVisible);
+      btnEl.innerHTML = (isNowVisible ? SVG_EYE_OFF : SVG_EYE_OPEN) + `<span>${isNowVisible ? "Hide" : "Show"}</span>`;
+    }
+    inp.focus();
+  }
+
   function toggleLoginPasswordVisibility() {
     const passInp = document.getElementById("schoolLoginPassInput");
     const btn = document.getElementById("togglePassVisibilityBtn");
     if (!passInp || !btn) return;
-    if (passInp.type === "password") {
-      passInp.type = "text";
-      btn.textContent = "HIDE";
-    } else {
-      passInp.type = "password";
-      btn.textContent = "SHOW";
-    }
+    togglePasswordVisibilityById("schoolLoginPassInput", btn);
   }
 
   function openQuickFinderModal() {
@@ -7584,28 +7690,33 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     return maskedUsr + "@" + dom;
   }
 
-  // Validate Password Complexity: Min 7 chars, >=1 Upper, >=1 Lower, >=1 Digit, >=1 Special
+  // Validate Password Complexity: Min 7 chars, >=1 Capital Letter (A-Z), >=1 Small Letter (a-z)
+  // Numbers and special characters are allowed (optional) and never cause false errors.
   function validateSchoolPasswordComplexity(pw) {
-    const p = String(pw || "");
+    const p = String(pw || "").trim();
     const hasLen = p.length >= 7;
     const hasCap = /[A-Z]/.test(p);
     const hasSml = /[a-z]/.test(p);
     const hasNum = /[0-9]/.test(p);
     const hasSpc = /[^A-Za-z0-9\s]/.test(p);
-    const allValid = hasLen && hasCap && hasSml && hasNum && hasSpc;
+    const allValid = hasLen && hasCap && hasSml;
     return { valid: allValid, hasLen, hasCap, hasSml, hasNum, hasSpc };
   }
 
   function validateSixDigitPin(pinStr) {
-    return /^\d{6}$/.test(String(pinStr || "").trim());
+    const s = String(pinStr || "").trim();
+    if (!s) return true; // Optional if left empty
+    return /^\d{6}$/.test(s);
   }
 
   function updateLivePasswordChecklist(prefix) {
     if (prefix !== "reg") return;
-    const pw = (document.getElementById("regNewPassword")?.value || "");
-    const pin = (document.getElementById("regNewPinInput")?.value || "");
+    const pw = (document.getElementById("regNewPassword")?.value || "").trim();
+    const pw2 = (document.getElementById("regConfirmPassword")?.value || "").trim();
+    const pin = (document.getElementById("regNewPinInput")?.value || "").trim();
     const res = validateSchoolPasswordComplexity(pw);
-    const pinOk = validateSixDigitPin(pin);
+    const pinOk = pin.length === 6 && /^\d{6}$/.test(pin);
+    const matchOk = Boolean(pw && pw2 && pw === pw2);
 
     const setBadge = (id, ok, label) => {
       const el = document.getElementById(id);
@@ -7614,12 +7725,40 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       el.style.color = ok ? "#166534" : "#991b1b";
       el.textContent = (ok ? "✓ " : "✗ ") + label;
     };
-    setBadge("ruleRegLen", res.hasLen, "7+ எழுத்துகள்");
-    setBadge("ruleRegCap", res.hasCap, "1 Caps (A-Z)");
-    setBadge("ruleRegSml", res.hasSml, "1 Small (a-z)");
+    setBadge("ruleRegLen", res.hasLen, "குறைந்தது 7 எழுத்துகள் (Min 7 Chars)");
+    setBadge("ruleRegCap", res.hasCap, "1 பெரிய எழுத்து (A-Z)");
+    setBadge("ruleRegSml", res.hasSml, "1 சிறிய எழுத்து (a-z)");
+    setBadge("ruleRegMatch", matchOk, matchOk ? "கடவுச்சொல் பொருந்துகிறது" : "கடவுச்சொல் உறுதிப்படுத்தல்");
     setBadge("ruleRegNum", res.hasNum, "1 எண் (0-9)");
     setBadge("ruleRegSpc", res.hasSpc, "1 குறியீடு (@#$%&*)");
     setBadge("ruleRegPin", pinOk, "6-இலக்க PIN");
+
+    const alertEl = document.getElementById("regInlinePassStatusAlert");
+    if (alertEl) {
+      if (!pw && !pw2) {
+        alertEl.style.display = "none";
+      } else if (!res.valid) {
+        alertEl.style.display = "block";
+        alertEl.style.background = "#fef2f2";
+        alertEl.style.border = "1px solid #fca5a5";
+        alertEl.style.color = "#991b1b";
+        alertEl.textContent = "⚠️ கடவுச்சொல் குறைந்தது 7 எழுத்துகள், ஒரு பெரிய எழுத்து (A-Z) மற்றும் ஒரு சிறிய எழுத்து (a-z) கொண்டிருக்க வேண்டும்.";
+      } else if (pw2 && pw !== pw2) {
+        alertEl.style.display = "block";
+        alertEl.style.background = "#fffbeb";
+        alertEl.style.border = "1px solid #fde68a";
+        alertEl.style.color = "#92400e";
+        alertEl.textContent = "⚠️ இரண்டு கடவுச்சொற்களும் ஒரே மாதிரியாக இருக்க வேண்டும் (Passwords must match).";
+      } else if (res.valid && matchOk) {
+        alertEl.style.display = "block";
+        alertEl.style.background = "#f0fdf4";
+        alertEl.style.border = "1px solid #86efac";
+        alertEl.style.color = "#166534";
+        alertEl.textContent = "✅ கடவுச்சொல் விதிமுறைகள் அனைத்தும் சரியாக உள்ளன! இப்போது 'கடவுச்சொல்லை உருவாக்கி உள்நுழைக' பொத்தானை அழுத்தலாம்.";
+      } else {
+        alertEl.style.display = "none";
+      }
+    }
   }
 
   let _schoolLoginCredMode = "password";
@@ -8355,8 +8494,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (vBadge) vBadge.style.display = "none";
     const passWrap = document.getElementById("regPasswordSetupWrap");
     if (passWrap) {
-      passWrap.style.opacity = "0.55";
-      passWrap.style.pointerEvents = "none";
+      passWrap.style.opacity = "1";
+      passWrap.style.pointerEvents = "auto";
     }
   }
 
@@ -8515,30 +8654,37 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
   function handleSchoolRegistrationSubmit(event) {
     event.preventDefault();
-    if (!activeRegCandidateSchool) return;
-
-    if (!_regOtpSession.verified || _regOtpSession.uNo !== activeRegCandidateSchool.uNo) {
-      showToast("⚠️ பதிவு செய்யும் முன் பள்ளி அதிகாரப்பூர்வ Email-க்கு OTP அனுப்பிச் சரிபார்க்கவும்!", "#ef4444");
+    if (!activeRegCandidateSchool) {
+      const typedQ = (document.getElementById("regSearchQueryInput")?.value || document.getElementById("regSchoolSelectDropdown")?.value || "").trim();
+      if (typedQ) {
+        activeRegCandidateSchool = findSchoolByUNoOrUdise(typedQ);
+      }
+    }
+    if (!activeRegCandidateSchool) {
+      showToast("⚠️ முதலில் பள்ளியின் UDISE எண் (11 இலக்கங்கள்) அல்லது U.NO எண்ணைத் தேர்ந்தெடுக்கவும்!", "#ef4444");
+      document.getElementById("regSearchQueryInput")?.focus();
       return;
     }
 
-    const p1 = document.getElementById("regNewPassword").value.trim();
-    const p2 = document.getElementById("regConfirmPassword").value.trim();
+    const p1 = (document.getElementById("regNewPassword")?.value || "").trim();
+    const p2 = (document.getElementById("regConfirmPassword")?.value || "").trim();
     const pinCode = (document.getElementById("regNewPinInput")?.value || "").trim();
 
     const pwCheck = validateSchoolPasswordComplexity(p1);
     if (!pwCheck.valid) {
-      showToast("⚠️ கடவுச்சொல் குறைந்தபட்சம் 7 எழுத்துகள் மற்றும் 1 Caps (A-Z), 1 Small (a-z), 1 Number (0-9) & 1 Special Character (@#$%&*) கொண்டிருக்க வேண்டும்!", "#ef4444");
+      updateLivePasswordChecklist("reg");
+      showToast("⚠️ கடவுச்சொல் குறைந்தது 7 எழுத்துகள், ஒரு பெரிய எழுத்து (A-Z) மற்றும் ஒரு சிறிய எழுத்து (a-z) கொண்டிருக்க வேண்டும்!", "#ef4444");
       document.getElementById("regNewPassword")?.focus();
       return;
     }
     if (p1 !== p2) {
-      showToast("❌ இரண்டு கடவுச்சொற்களும் பொருந்தவில்லை!", "#ef4444");
+      updateLivePasswordChecklist("reg");
+      showToast("❌ இரண்டு கடவுச்சொற்களும் பொருந்தவில்லை! (Passwords do not match)", "#ef4444");
       document.getElementById("regConfirmPassword")?.focus();
       return;
     }
-    if (!validateSixDigitPin(pinCode)) {
-      showToast("⚠️ 6-இலக்க உள்நுழைவு PIN எண்ணை (6 Digits) சரியாக உள்ளிடவும்!", "#ef4444");
+    if (pinCode && !validateSixDigitPin(pinCode)) {
+      showToast("⚠️ 6-இலக்க உள்நுழைவு PIN எண்ணை (6 Digits) சரியாக உள்ளிடவும் அல்லது காலியாக விடவும்!", "#ef4444");
       document.getElementById("regNewPinInput")?.focus();
       return;
     }
@@ -8636,8 +8782,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     _resetOtpSession = { uNo: "", otpCode: "", channel: "whatsapp", target: "", verified: false, sentAt: 0 };
 
     if (passWrap) {
-      passWrap.style.opacity = "0.55";
-      passWrap.style.pointerEvents = "none";
+      passWrap.style.opacity = "1";
+      passWrap.style.pointerEvents = "auto";
     }
     const vBadge = document.getElementById("resetOtpVerifiedBadge");
     if (vBadge) vBadge.style.display = "none";
@@ -8749,11 +8895,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }
     const pwCheck = validateSchoolPasswordComplexity(newPass);
     if (!pwCheck.valid) {
-      showToast("⚠️ கடவுச்சொல் குறைந்தபட்சம் 7 எழுத்துகள் மற்றும் 1 Caps, 1 Small, 1 Number & 1 Special Character கொண்டிருக்க வேண்டும்!", "#ef4444");
+      showToast("⚠️ கடவுச்சொல் குறைந்தது 7 எழுத்துகள், ஒரு பெரிய எழுத்து (A-Z) மற்றும் ஒரு சிறிய எழுத்து (a-z) கொண்டிருக்க வேண்டும்!", "#ef4444");
       document.getElementById("resetNewPassInput")?.focus();
       return;
     }
-    if (!validateSixDigitPin(newPin)) {
+    if (newPin && !validateSixDigitPin(newPin)) {
       showToast("⚠️ 6-இலக்க PIN எண்ணைச் சரியாக உள்ளிடவும்!", "#ef4444");
       document.getElementById("resetNewPinInput")?.focus();
       return;
@@ -11770,14 +11916,14 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     const pwCheck = validateSchoolPasswordComplexity(p1);
     if (!pwCheck.valid) {
-      showToast("⚠️ கடவுச்சொல் குறைந்தபட்சம் 7 எழுத்துகள் (1 Caps, 1 Small, 1 Number & 1 Special Character) கொண்டிருக்க வேண்டும்!", "#ef4444");
+      showToast("⚠️ கடவுச்சொல் குறைந்தது 7 எழுத்துகள், ஒரு பெரிய எழுத்து (A-Z) மற்றும் ஒரு சிறிய எழுத்து (a-z) கொண்டிருக்க வேண்டும்!", "#ef4444");
       return;
     }
     if (p1 !== p2) {
       showToast("❌ கடவுச்சொற்கள் பொருந்தவில்லை!", "#ef4444");
       return;
     }
-    if (!validateSixDigitPin(newPin)) {
+    if (newPin && !validateSixDigitPin(newPin)) {
       showToast("⚠️ 6-இலக்க PIN எண்ணை (6 Digits) சரியாக உள்ளிடவும்!", "#ef4444");
       return;
     }
