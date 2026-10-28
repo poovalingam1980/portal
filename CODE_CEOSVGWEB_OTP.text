@@ -1,17 +1,21 @@
 /**
  * ============================================================================
- * 🏛️ முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (CEO SIVAGANGAI SCHOOL PORTAL v3.9)
+ * 🏛️ முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (CEO SIVAGANGAI SCHOOL PORTAL v4.0)
  * Google Apps Script Backend (`Code.gs`) – Account: ceosvgweb@gmail.com
- * AUTO DUAL-SYNC EDITION (10 Tabs + Single-OTP Deduplication + Group Strength)
+ * DUAL-SPREADSHEET EDITION:
+ *   1. `CEO_Sivagangai_School_Portal_Master_DB` (12 Tabs including `10_Ex_Cen` & `12_Ex_Cen`)
+ *   2. `CEO_Sivagangai_Teachers_Master_DB` (Dedicated 4-Tab Google Sheet for 7,081 Staff)
  * ============================================================================
  *
  * சிறப்பம்சங்கள் (Features):
  * 1. மின்னஞ்சல் OTP (Email OTP): `ceosvgweb@gmail.com` கணக்கிலிருந்து பள்ளிகளின்
  *    அதிகாரப்பூர்வ மின்னஞ்சல் முகவரிக்கு ஒரே ஒரு முறை (Single Dispatch) 6-இலக்க OTP அனுப்புதல்.
- * 2. வாட்ஸ்ஆப் OTP (WhatsApp OTP): Meta WhatsApp Cloud API (v21.0) / Template / Gateway வழியாக
+ * 2. வாட்ஸ்ஆப் OTP (WhatsApp OTP): Meta WhatsApp Cloud API (v22.0) / Template / Gateway வழியாக
  *    தலைமையாசிரியர்களின் கைபேசி எண்ணிற்கு 6-இலக்க OTP அனுப்புதல்.
- * 3. தானியங்கி 10-தாவல் Google Sheet கட்டமைப்பு (`setupPortalSheets`):
+ * 3. முதன்மை Google Sheet (`CEO_Sivagangai_School_Portal_Master_DB` - 12 தாவல்கள்):
  *    - `SCHOOL_MASTER`       : 282 பள்ளிகளின் முதன்மை விவரங்கள் (10th & 12th Exam Centre Nos உட்பட)
+ *    - `10_Ex_Cen`           : 10-ஆம் வகுப்பு பொதுத்தேர்வு மையங்கள் பட்டியல் (113 மையங்கள்)
+ *    - `12_Ex_Cen`           : 12-ஆம் வகுப்பு பொதுத்தேர்வு மையங்கள் பட்டியல் (91 மையங்கள்)
  *    - `SCHOOL_AUTH`         : பள்ளிகளின் கடவுச்சொல், 6-இலக்க PIN & OTP சரிபார்ப்பு நிலை
  *    - `OTP_LOGS`            : அனுப்பப்பட்ட அனைத்து Email & WhatsApp OTP பதிவுகள் (Single Dispatch)
  *    - `STUDENT_STRENGTH`    : பள்ளி வாரியான மாணவர் எண்ணிக்கை (தமிழ்வழி / ஆங்கிலவழி / மொத்தம்)
@@ -21,12 +25,18 @@
  *    - `STAFF_REQUESTS`      : ஆசிரியர் நீக்கக் கோரிக்கைகள் மற்றும் நிர்வாகி ஒப்புதல் நிலை
  *    - `CIRCULARS`           : முதன்மைக் கல்வி அலுவலர் சுற்றறிக்கைகள் மற்றும் அறிவிப்புகள்
  *    - `PORTAL_STORES`       : பிரமுகர்கள், நிர்வாகப் பிரிவுகள் மற்றும் ஆசிரியர் திருத்தங்கள்
+ * 4. தனி ஆசிரியர் Google Sheet (`CEO_Sivagangai_Teachers_Master_DB` - 4 தாவல்கள், 7,081 பணியாளர்கள்):
+ *    - `TEACHERS_MASTER`      : 7,081 ஆசிரியர்கள் & பணியாளர்களின் முழுப் பட்டியல் (24 நெடுவரிசைகள்)
+ *    - `SCHOOL_STAFF_SUMMARY` : 282 பள்ளிகளின் பள்ளி வாரியான ஆசிரியர் & பணியாளர் எண்ணிக்கை சுருக்கம்
+ *    - `STAFF_LIVE_EDITS`     : தலைமையாசிரியர் & நிர்வாகி செய்யும் நேரடித் திருத்தங்கள் / சேர்க்கைகள்
+ *    - `STAFF_DELETE_REQUESTS`: ஆசிரியர் நீக்கக் கோரிக்கைகள் மற்றும் நிர்வாகி ஒப்புதல் நிலை
  * ============================================================================
  */
 
 const PORTAL_CONFIG = {
   OWNER_EMAIL: "ceosvgweb@gmail.com",
   MASTER_SHEET_ID: "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ",
+  TEACHERS_SHEET_ID: "1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A",
 
   // Meta WhatsApp Cloud API Configuration (Phone Number ID: 1457353970785529 | Template: hello_world [en_US] | ID: 2600197680404000)
   WA_PHONE_NUMBER_ID: "1457353970785529",
@@ -59,29 +69,273 @@ const DEFAULT_HSS_GROUPS_SEED = [
   ["2982", 3, "VOCATIONAL", "AUDIT", "AUDITING", "LANGUAGE", "ENGLISH", "COMMERCE", "ACCOUNTANCY", "AUDITING PRACTICAL", "EMPLOYABILITY SKILLS"]
 ];
 
+const DEFAULT_EXAM_CENTRES_10_SEED = [
+  [1, "231", "208001", "06 Kannangudi", "GOVT. HSS , ANUMANTHAKUDI"],
+  [2, "227", "208002", "05 Sakkottai", "GOVT. MODEL HSS, PEERKALAIKADU"],
+  [3, "230", "208003", "05 Sakkottai", "GOVT. HSS , ARIYAGUDI"],
+  [4, "235", "208004", "07 Devakottai", "GOVT. HSS , THIRUVEGAMPET"],
+  [5, "225", "208005", "05 Sakkottai", "MV GOVT. HSS, KARAIKUDI"],
+  [6, "407", "208006", "05 Sakkottai", "SM GIRLS HSS, KARAIKUDI"],
+  [7, "409", "208007", "05 Sakkottai", "ALAGAPPA MODEL HSS, KARAIKUDI"],
+  [8, "411", "208008", "05 Sakkottai", "AC HSS, PALLATHUR"],
+  [9, "410", "208009", "05 Sakkottai", "CC GIRLS HSS, KOTTAIYUR"],
+  [10, "417", "208010", "07 Devakottai", "DE BRITTO HSS, DEVAKOTTAI"],
+  [11, "418", "208011", "07 Devakottai", "NSMVPS HSS, DEVAKOTTAI"],
+  [12, "412", "208012", "05 Sakkottai", "RC HSS, PUDUVAYAL"],
+  [13, "408", "208013", "05 Sakkottai", "SMSV HSS, KARAIKUDI"],
+  [14, "419", "208014", "07 Devakottai", "ST.MARY'S G HSS, DEVAKOTTAI"],
+  [15, "421", "208015", "07 Devakottai", "PETHAL ACHI G HSS, DEVAKOTTAI"],
+  [16, "413", "208016", "05 Sakkottai", "SCGR HSS, AMARAVATHIPUDUR"],
+  [17, "416", "208017", "05 Sakkottai", "SSV GIRLS HSS, PUDUVAYAL"],
+  [18, "420", "208018", "07 Devakottai", "ST.JOHN'S G HSS, DEVAKOTTAI"],
+  [19, "422", "208019", "07 Devakottai", "ST.JOSEPH'S HSS, SEKKAKUDI"],
+  [20, "616", "208020", "05 Sakkottai", "ALAGAPPA MHSS, KARAIKUDI"],
+  [21, "628", "208021", "05 Sakkottai", "KARAIKUDI MAHARISHI VIDYA MANDDIR MHSS, T.T NAGAR, KARAIKUDI"],
+  [22, "624", "208022", "05 Sakkottai", "MUTHIAH ALAGAPPA MHSS, KOTTAIYUR"],
+  [23, "630", "208023", "07 Devakottai", "INFANT JESUS MHSS, DEVAKOTTAI"],
+  [24, "627", "208024", "05 Sakkottai", "SHRI VIDHYAA GIRI MHSS, PUDUVAYAL"],
+  [25, "308", "208025", "05 Sakkottai", "CAM HS, KANDANUR"],
+  [26, "415", "208026", "05 Sakkottai", "LFRC HSS, KARAIKUDI"],
+  [27, "614", "208027", "05 Sakkottai", "KARAIKUDI MAHARISHI VIDYA MANDDIR MHSS, INDIRA NAGAR"],
+  [28, "623", "208028", "05 Sakkottai", "VIDHYA GIRI MHSS, KARAIKUDI"],
+  [29, "237", "208029", "08 Kalayarkoil", "GOVT. HSS , MARAVAMANGALAM"],
+  [30, "236", "208030", "08 Kalayarkoil", "GOVT. HSS , KALAIYARKOVIL"],
+  [31, "240", "208031", "08 Kalayarkoil", "GOVT. HSS , PAGANERI"],
+  [32, "291", "208032", "08 Kalayarkoil", "GOVT. (ADW) HSS , MALLAL"],
+  [33, "424", "208033", "08 Kalayarkoil", "SRM HSS, NATTARASAN KOTTAI"],
+  [34, "425", "208034", "08 Kalayarkoil", "SAHAYARANI GIRLS HSS, SUSAIAPPARPATTANAM"],
+  [35, "802", "208035", "08 Kalayarkoil", "SAMBAVIGA HSS, RAHINIPATTI"],
+  [36, "626", "208036", "05 Sakkottai", "SRI KALAIMAGAL VIDYALAYA MHSS, PUDUVAYAL"],
+  [37, "233", "208037", "07 Devakottai", "VNT GOVT. HSS, Shanmuganathapattinam"],
+  [38, "182", "208038", "05 Sakkottai", "R C MUNICIPAL HS, KARAIKUDI"],
+  [39, "229", "208039", "05 Sakkottai", "GOVT. HSS , O.SIRUVAYAL"],
+  [40, "242", "208040", "09 Ilayangudi", "GOVT. HSS , SALAIGRAMAM"],
+  [41, "251", "208041", "11 Thiruppuvanam", "GOVT. BOYS HSS , THIRUPPUVANAM"],
+  [42, "257", "208042", "12 Sivagangai", "GOVT. GIRLS HSS, SIVAGANGAI"],
+  [43, "244", "208043", "10 Manamadurai", "GOVT. GIRLS HSS, MANAMADURAI"],
+  [44, "252", "208044", "11 Thiruppuvanam", "GOVT. GIRLS HSS, THIRUPPUVANAM"],
+  [45, "266", "208045", "12 Sivagangai", "GOVT. HSS , Arasanoor Thirumanjolai"],
+  [46, "255", "208046", "11 Thiruppuvanam", "GOVT. HSS , THIRUPPACHETHI"],
+  [47, "259", "208047", "12 Sivagangai", "GOVT. MODEL HSS, KEELAPOONGUDI"],
+  [48, "246", "208048", "10 Manamadurai", "GOVT. HSS , IDAIKATTUR"],
+  [49, "264", "208049", "12 Sivagangai", "GOVT. HSS , IDAYAMELUR"],
+  [50, "262", "208050", "12 Sivagangai", "GOVT. HSS , ALAVAKOTTAI"],
+  [51, "254", "208051", "11 Thiruppuvanam", "GOVT. HSS , PAZHAYANOOR"],
+  [52, "267", "208052", "12 Sivagangai", "GOVT. HSS , MANGUDI"],
+  [53, "427", "208053", "09 Ilayangudi", "HAJEE KK I A HSS, PUDUR"],
+  [54, "426", "208054", "09 Ilayangudi", "ILAYANGUDI HSS, ILAYANGUDI"],
+  [55, "431", "208055", "10 Manamadurai", "OVC HSS, MANAMADURAI"],
+  [56, "433", "208056", "12 Sivagangai", "MANNAR HSS, SIVAGANGAI"],
+  [57, "434", "208057", "12 Sivagangai", "ST.JUSTIN'S GIRLS HSS, SIVAGANGAI"],
+  [58, "436", "208058", "12 Sivagangai", "KSPR HSS, SIVAGANGAI"],
+  [59, "428", "208059", "09 Ilayangudi", "MELLAPALLI VASAL GIRLS HSS, ILAIYANGUDI"],
+  [60, "435", "208060", "12 Sivagangai", "SC HSS, OKKUR"],
+  [61, "430", "208061", "09 Ilayangudi", "ST.JAMES HSS, SURANAM"],
+  [62, "437", "208062", "12 Sivagangai", "ST.JOSEPH'S HSS, SIVAGANGAI"],
+  [63, "432", "208063", "10 Manamadurai", "ST. MARY'S HSS, RAJAGAMBEERAM"],
+  [64, "804", "208064", "12 Sivagangai", "SRI RAMANA VIKASS HSS, CHOLAPURAM"],
+  [65, "651", "208065", "12 Sivagangai", "21ST CENTURY MHSS, SIVAGANGAI"],
+  [66, "645", "208066", "11 Thiruppuvanam", "ALAGUMALAR MHSS, MANALUR"],
+  [67, "653", "208067", "12 Sivagangai", "ST JUSTIN'S MHSS, SIVAGANGAI"],
+  [68, "648", "208068", "11 Thiruppuvanam", "VELAMMAL MHSS, THIRUPPUVANAM"],
+  [69, "317", "208069", "09 Ilayangudi", "ST.ANTONY'S HS, KALLADITHIDAL"],
+  [70, "319", "208070", "11 Thiruppuvanam", "ST.MARY'S HS, MICHAELPATTINAM"],
+  [71, "515", "208071", "10 Manamadurai", "GOOD WILL MS, MANAMADURAI"],
+  [72, "241", "208072", "09 Ilayangudi", "GOVT. HSS , MUNAIVENDRI"],
+  [73, "640", "208073", "09 Ilayangudi", "ST.ANNES MHSS, ILAYANGUDI"],
+  [74, "641", "208074", "10 Manamadurai", "GOODWILL MHSS, M.KARISALKULAM"],
+  [75, "649", "208075", "12 Sivagangai", "ASVA MHSS, MELAVANIYANGUDI, SIVAGANGAI"],
+  [76, "219", "208076", "03 Thiruppathur", "AP GOVT. BOYS HSS, THIRUPPATHUR"],
+  [77, "211", "208077", "02 Singampunari", "GOVT. BOYS HSS , SINGAMPUNARI"],
+  [78, "205", "208079", "01 S.Pudur", "GOVT. HSS , PUZHUTHIPATTI"],
+  [79, "218", "208080", "03 Thiruppathur", "GOVT. HSS , THIRUKOSHTIYUR"],
+  [80, "203", "208082", "01 S.Pudur", "GOVT. MODEL HSS, S.PUDUR (KATTUKUDIPATTI)"],
+  [81, "220", "208083", "03 Thiruppathur", "NM GOVT. GIRLS HSS, THIRUPPATHUR"],
+  [82, "212", "208084", "02 Singampunari", "RM RM GOVT. GIRLS HSS, SINGAMPUNARI"],
+  [83, "402", "208089", "03 Thiruppathur", "SVK HSS , A THEKKUR"],
+  [84, "601", "208092", "02 Singampunari", "ANNAI VELANKANNI MHSS, SINGAMPUNARI"],
+  [85, "602", "208094", "02 Singampunari", "PARI VALLAL MHSS, SINGAMPUNARI"],
+  [86, "201", "208100", "01 S.Pudur", "GOVT. HSS , KARISALPATTI"],
+  [87, "406", "208087", "04 Kallal", "DKG HSS, KUNDRAKUDI"],
+  [88, "217", "208101", "03 Thiruppathur", "GOVT. HSS , S VELANGUDI"],
+  [89, "403", "208088", "03 Thiruppathur", "SMS HSS , KILASEVALPATTI"],
+  [90, "606", "208093", "03 Thiruppathur", "APSA MHSS, THIRUPPATHUR"],
+  [91, "404", "208091", "04 Kallal", "BRITTO HSS, KALLAL"],
+  [92, "209", "208078", "02 Singampunari", "GOVT. HSS , ERIYUR"],
+  [93, "207", "208081", "01 S.Pudur", "GOVT. HSS , V.PUDUR"],
+  [94, "215", "208085", "03 Thiruppathur", "SATHAPPA GOVT. HSS, NERKKUPPAI"],
+  [95, "609", "208095", "04 Kallal", "SHANTHI RANI MHSS, KALLAL"],
+  [96, "303", "208096", "04 Kallal", "SD HS, KANDRAMANICKAM"],
+  [97, "216", "208086", "03 Thiruppathur", "TM GOVT. HSS , POOLANKURICHI"],
+  [98, "117", "208099", "04 Kallal", "GOVT. HS , KOVILUR"],
+  [99, "401", "208090", "02 Singampunari", "VALLAL PARI HSS , PIRANMALAI"],
+  [100, "204", "208098", "01 S.Pudur", "GOVT. HSS , MUSUNDAPATTI"],
+  [101, "238", "208102", "08 Kalayarkoil", "GOVT. HSS , SILUKKUPATTI"],
+  [102, "243", "208103", "09 Ilayangudi", "GOVT. HSS , SATHANOOR"],
+  [103, "621", "208104", "05 Sakkottai", "SRI RAGHAVENDRA MHSS, KARAIKUDI"],
+  [104, "140", "208105", "10 Manamadurai", "GOVT. HS , KALKURICHI"],
+  [105, "655", "208106", "12 Sivagangai", "OXFORD MHSS, T.PUDUR, SIVAGANGAI"],
+  [106, "247", "208107", "10 Manamadurai", "GOVT. HSS , KATTIKULAM"],
+  [107, "112", "208108", "03 Thiruppathur", "GOVT. HS, T PUTHUPATTI"],
+  [108, "213", "208109", "02 Singampunari", "GOVT. HSS , SS KOTTAI"],
+  [109, "414", "208110", "05 Sakkottai", "MCTMCC HSS, KANADUKATHAN"],
+  [110, "619", "208111", "05 Sakkottai", "SAHAYAMATHA MHSS, KARAIKUDI"],
+  [111, "221", "208112", "04 Kallal", "MK GOVT. HSS , SEMBANUR"],
+  [112, "603", "208112", "03 Thiruppathur", "CHRISTHURAJA MHSS, K.VAIRAVANPATTI, THIRUPPATHUR"],
+  [113, "610", "208114", "04 Kallal", "SETHU IRANI MHSS, KANDRAMANICKAM"]
+];
+
+const DEFAULT_EXAM_CENTRES_12_SEED = [
+  [1, "230", "208001", "05 Sakkottai", "GOVT. HSS , ARIYAGUDI"],
+  [2, "225", "208002", "05 Sakkottai", "MV GOVT. HSS, KARAIKUDI"],
+  [3, "407", "208003", "05 Sakkottai", "SM GIRLS HSS, KARAIKUDI"],
+  [4, "409", "208004", "05 Sakkottai", "ALAGAPPA MODEL HSS, KARAIKUDI"],
+  [5, "410", "208005", "05 Sakkottai", "CC GIRLS HSS, KOTTAIYUR"],
+  [6, "417", "208006", "07 Devakottai", "DE BRITTO HSS, DEVAKOTTAI"],
+  [7, "418", "208007", "07 Devakottai", "NSMVPS HSS, DEVAKOTTAI"],
+  [8, "412", "208008", "05 Sakkottai", "RC HSS, PUDUVAYAL"],
+  [9, "408", "208009", "05 Sakkottai", "SMSV HSS, KARAIKUDI"],
+  [10, "419", "208010", "07 Devakottai", "ST.MARY'S G HSS, DEVAKOTTAI"],
+  [11, "421", "208011", "07 Devakottai", "PETHAL ACHI G HSS, DEVAKOTTAI"],
+  [12, "420", "208012", "07 Devakottai", "ST.JOHN'S G HSS, DEVAKOTTAI"],
+  [13, "422", "208013", "07 Devakottai", "ST.JOSEPH'S HSS, SEKKAKUDI"],
+  [14, "616", "208014", "05 Sakkottai", "ALAGAPPA MHSS, KARAIKUDI"],
+  [15, "628", "208015", "05 Sakkottai", "KARAIKUDI MAHARISHI VIDYA MANDDIR MHSS, T.T NAGAR, KARAIKUDI"],
+  [16, "624", "208016", "05 Sakkottai", "MUTHIAH ALAGAPPA MHSS, KOTTAIYUR"],
+  [17, "627", "208017", "05 Sakkottai", "SHRI VIDHYAA GIRI MHSS, PUDUVAYAL"],
+  [18, "614", "208018", "05 Sakkottai", "KARAIKUDI MAHARISHI VIDYA MANDDIR MHSS, INDIRA NAGAR"],
+  [19, "237", "208019", "08 Kalayarkoil", "GOVT. HSS , MARAVAMANGALAM"],
+  [20, "236", "208020", "08 Kalayarkoil", "GOVT. HSS , KALAIYARKOVIL"],
+  [21, "291", "208021", "08 Kalayarkoil", "GOVT. (ADW) HSS , MALLAL"],
+  [22, "423", "208022", "08 Kalayarkoil", "KMSC HSS, NATTARASAN KOTTAI"],
+  [23, "425", "208023", "08 Kalayarkoil", "SAHAYARANI GIRLS HSS, SUSAIAPPARPATTANAM"],
+  [24, "802", "208024", "08 Kalayarkoil", "SAMBAVIGA HSS, RAHINIPATTI"],
+  [25, "413", "208025", "05 Sakkottai", "SCGR HSS, AMARAVATHIPUDUR"],
+  [26, "623", "208026", "05 Sakkottai", "VIDHYA GIRI MHSS, KARAIKUDI"],
+  [27, "231", "208027", "06 Kannangudi", "GOVT. HSS , ANUMANTHAKUDI"],
+  [28, "235", "208028", "07 Devakottai", "GOVT. HSS , THIRUVEGAMPET"],
+  [29, "233", "208029", "07 Devakottai", "VNT GOVT. HSS, Shanmuganathapattinam"],
+  [30, "227", "208030", "05 Sakkottai", "GOVT. MODEL HSS, PEERKALAIKADU"],
+  [31, "626", "208031", "05 Sakkottai", "SRI KALAIMAGAL VIDYALAYA MHSS, PUDUVAYAL"],
+  [32, "229", "208032", "05 Sakkottai", "GOVT. HSS , O.SIRUVAYAL"],
+  [33, "630", "208033", "07 Devakottai", "INFANT JESUS MHSS, DEVAKOTTAI"],
+  [34, "240", "208034", "08 Kalayarkoil", "GOVT. HSS , PAGANERI"],
+  [35, "242", "208035", "09 Ilayangudi", "GOVT. HSS , SALAIGRAMAM"],
+  [36, "251", "208036", "11 Thiruppuvanam", "GOVT. BOYS HSS , THIRUPPUVANAM"],
+  [37, "257", "208037", "12 Sivagangai", "GOVT. GIRLS HSS, SIVAGANGAI"],
+  [38, "244", "208038", "10 Manamadurai", "GOVT. GIRLS HSS, MANAMADURAI"],
+  [39, "252", "208039", "11 Thiruppuvanam", "GOVT. GIRLS HSS, THIRUPPUVANAM"],
+  [40, "255", "208040", "11 Thiruppuvanam", "GOVT. HSS , THIRUPPACHETHI"],
+  [41, "259", "208041", "12 Sivagangai", "GOVT. MODEL HSS, KEELAPOONGUDI"],
+  [42, "246", "208042", "10 Manamadurai", "GOVT. HSS , IDAIKATTUR"],
+  [43, "264", "208043", "12 Sivagangai", "GOVT. HSS , IDAYAMELUR"],
+  [44, "254", "208044", "11 Thiruppuvanam", "GOVT. HSS , PAZHAYANOOR"],
+  [45, "267", "208045", "12 Sivagangai", "GOVT. HSS , MANGUDI"],
+  [46, "427", "208046", "09 Ilayangudi", "HAJEE KK I A HSS, PUDUR"],
+  [47, "426", "208047", "09 Ilayangudi", "ILAYANGUDI HSS, ILAYANGUDI"],
+  [48, "431", "208048", "10 Manamadurai", "OVC HSS, MANAMADURAI"],
+  [49, "433", "208049", "12 Sivagangai", "MANNAR HSS, SIVAGANGAI"],
+  [50, "434", "208050", "12 Sivagangai", "ST.JUSTIN'S GIRLS HSS, SIVAGANGAI"],
+  [51, "430", "208051", "09 Ilayangudi", "ST.JAMES HSS, SURANAM"],
+  [52, "437", "208052", "12 Sivagangai", "ST.JOSEPH'S HSS, SIVAGANGAI"],
+  [53, "432", "208053", "10 Manamadurai", "ST. MARY'S HSS, RAJAGAMBEERAM"],
+  [54, "804", "208054", "12 Sivagangai", "SRI RAMANA VIKASS HSS, CHOLAPURAM"],
+  [55, "651", "208055", "12 Sivagangai", "21ST CENTURY MHSS, SIVAGANGAI"],
+  [56, "645", "208056", "11 Thiruppuvanam", "ALAGUMALAR MHSS, MANALUR"],
+  [57, "648", "208057", "11 Thiruppuvanam", "VELAMMAL MHSS, THIRUPPUVANAM"],
+  [58, "266", "208058", "12 Sivagangai", "GOVT. HSS , Arasanoor Thirumanjolai"],
+  [59, "262", "208059", "12 Sivagangai", "GOVT. HSS , ALAVAKOTTAI"],
+  [60, "649", "208060", "12 Sivagangai", "ASVA MHSS, MELAVANIYANGUDI, SIVAGANGAI"],
+  [61, "219", "208061", "03 Thiruppathur", "AP GOVT. BOYS HSS, THIRUPPATHUR"],
+  [62, "211", "208062", "02 Singampunari", "GOVT. BOYS HSS , SINGAMPUNARI"],
+  [63, "204", "208075", "01 S.Pudur", "GOVT. HSS , MUSUNDAPATTI"],
+  [64, "206", "208082", "01 S.Pudur", "GOVT. HSS , ULAGAMPATTI"],
+  [65, "205", "208063", "01 S.Pudur", "GOVT. HSS , PUZHUTHIPATTI"],
+  [66, "203", "208064", "01 S.Pudur", "GOVT. MODEL HSS, S.PUDUR (KATTUKUDIPATTI)"],
+  [67, "220", "208065", "03 Thiruppathur", "NM GOVT. GIRLS HSS, THIRUPPATHUR"],
+  [68, "209", "208077", "02 Singampunari", "GOVT. HSS , ERIYUR"],
+  [69, "212", "208066", "02 Singampunari", "RM RM GOVT. GIRLS HSS, SINGAMPUNARI"],
+  [70, "601", "208083", "02 Singampunari", "ANNAI VELANKANNI MHSS, SINGAMPUNARI"],
+  [71, "404", "208071", "04 Kallal", "BRITTO HSS, KALLAL"],
+  [72, "403", "208068", "03 Thiruppathur", "SMS HSS , KILASEVALPATTI"],
+  [73, "609", "208073", "04 Kallal", "SHANTHI RANI MHSS, KALLAL"],
+  [74, "402", "208069", "03 Thiruppathur", "SVK HSS , A THEKKUR"],
+  [75, "216", "208067", "03 Thiruppathur", "TM GOVT. HSS , POOLANKURICHI"],
+  [76, "406", "208076", "04 Kallal", "DKG HSS, KUNDRAKUDI"],
+  [77, "401", "208070", "02 Singampunari", "VALLAL PARI HSS , PIRANMALAI"],
+  [78, "606", "208072", "03 Thiruppathur", "APSA MHSS, THIRUPPATHUR"],
+  [79, "602", "208078", "02 Singampunari", "PARI VALLAL MHSS, SINGAMPUNARI"],
+  [80, "268", "208080", "12 Sivagangai", "SIVAGANGAI DISTRICT MODEL SCHOOL, ENATHI-THIRUMANJOLAI"],
+  [81, "243", "208081", "09 Ilayangudi", "GOVT. HSS , SATHANOOR"],
+  [82, "215", "208074", "03 Thiruppathur", "SATHAPPA GOVT. HSS, NERKKUPPAI"],
+  [83, "218", "208079", "03 Thiruppathur", "GOVT. HSS , THIRUKOSHTIYUR"],
+  [84, "221", "208084", "04 Kallal", "MK GOVT. HSS , SEMBANUR"],
+  [85, "217", "208085", "03 Thiruppathur", "GOVT. HSS , S VELANGUDI"],
+  [86, "238", "208086", "08 Kalayarkoil", "GOVT. HSS , SILUKKUPATTI"],
+  [87, "241", "208087", "09 Ilayangudi", "GOVT. HSS , MUNAIVENDRI"],
+  [88, "247", "208088", "10 Manamadurai", "GOVT. HSS , KATTIKULAM"],
+  [89, "621", "208089", "05 Sakkottai", "SRI RAGHAVENDRA MHSS, KARAIKUDI"],
+  [90, "655", "208090", "12 Sivagangai", "OXFORD MHSS, T.PUDUR, SIVAGANGAI"],
+  [91, "415", "208091", "05 Sakkottai", "LFRC HSS, KARAIKUDI"]
+];
+
 function onOpen() {
   try {
     SpreadsheetApp.getUi()
       .createMenu("🏛️ CEO Sivagangai Portal")
-      .addItem("🛠️ 1. அனைத்து 10 தாவல்களையும் உருவாக்கு (Setup All 10 Tabs)", "setupPortalSheets")
-      .addItem("📧 2. சோதனை Email OTP அனுப்புக (Test Email OTP)", "testSendEmailOtpMenu")
-      .addItem("📲 3. சோதனை WhatsApp OTP அனுப்புக (Test WhatsApp OTP)", "testSendWhatsappOtpMenu")
-      .addItem("✨ 4. தமிழ் எழுத்துரு பிழைகளைத் தானாகச் சரிசெய் (Fix Tamil Font Mojibake)", "repairAllSheetTamilMojibakeMenu")
+      .addItem("🛠️ 1. அனைத்து 12 தாவல்களையும் உருவாக்கு (Setup Master DB + 10_Ex_Cen & 12_Ex_Cen)", "setupPortalSheets")
+      .addItem("👨‍🏫 2. ஆசிரியர் தனி Google Sheet உருவாக்கு / அமை (Setup Teachers Master DB)", "setupTeachersPortalSheetsMenu")
+      .addItem("✨ 3. தமிழ் எழுத்துரு சீரமைப்பு (Fix Tamil Font Mojibake)", "repairAllSheetTamilMojibakeMenu")
+      .addItem("📧 4. சோதனை Email OTP அனுப்புக (Test Email OTP)", "testSendEmailOtpMenu")
+      .addItem("📲 5. சோதனை WhatsApp OTP அனுப்புக (Test WhatsApp OTP)", "testSendWhatsappOtpMenu")
       .addToUi();
   } catch (e) {}
 }
 
 function getTargetSpreadsheet_(optionalSheetId) {
+  const targetId = String(optionalSheetId || PORTAL_CONFIG.MASTER_SHEET_ID || "").trim();
+  if (targetId) {
+    try {
+      return SpreadsheetApp.openById(targetId);
+    } catch (e) {}
+  }
   try {
     const active = SpreadsheetApp.getActiveSpreadsheet();
     if (active) return active;
   } catch (e) {}
+  throw new Error("Master Google Sheet ID கிடைக்கவில்லை.");
+}
 
-  const targetId = String(optionalSheetId || PORTAL_CONFIG.MASTER_SHEET_ID || "").trim();
-  if (targetId) {
-    return SpreadsheetApp.openById(targetId);
+function getOrCreateTeachersSpreadsheet_(optionalTeachersSheetId, forceCreateNew) {
+  let savedPropId = "";
+  try {
+    savedPropId = PropertiesService.getScriptProperties().getProperty("TEACHERS_SHEET_ID") || "";
+  } catch (e) {}
+
+  if (!forceCreateNew) {
+    const candidateIds = [
+      String(optionalTeachersSheetId || "").trim(),
+      String(savedPropId || "").trim(),
+      String(PORTAL_CONFIG.TEACHERS_SHEET_ID || "").trim()
+    ].filter(Boolean);
+
+    for (let i = 0; i < candidateIds.length; i++) {
+      try {
+        const ss = SpreadsheetApp.openById(candidateIds[i]);
+        if (ss) {
+          try { PropertiesService.getScriptProperties().setProperty("TEACHERS_SHEET_ID", ss.getId()); } catch (e2) {}
+          return ss;
+        }
+      } catch (err) {}
+    }
   }
-  throw new Error("Google Sheet ID கிடைக்கவில்லை.");
+
+  // Create a dedicated new Google Sheet for Teachers Master DB in ceosvgweb@gmail.com Drive
+  const newSs = SpreadsheetApp.create("CEO_Sivagangai_Teachers_Master_DB");
+  try {
+    PropertiesService.getScriptProperties().setProperty("TEACHERS_SHEET_ID", newSs.getId());
+  } catch (e) {}
+  return newSs;
 }
 
 function getOrCreateSheet_(ss, sheetName, headers, headerBg) {
@@ -111,6 +365,37 @@ function setupPortalSheets(optionalSheetId) {
     "10th_Exam_Centre_No", "12th_Exam_Centre_No", "HM_Name_English",
     "HM_Name_Tamil", "HM_WhatsApp_Mobile", "School_Email", "Updated_At"
   ], "#0f294a");
+
+  const ex10Sheet = getOrCreateSheet_(ss, "10_Ex_Cen", [
+    "SN", "UN", "CN", "BLOCK", "Exam Centre", "School_Name_Tamil", "UDISE_NO", "Updated_At"
+  ], "#1e40af");
+
+  const ex12Sheet = getOrCreateSheet_(ss, "12_Ex_Cen", [
+    "SN", "UN", "CN", "BLOCK", "NAME OF THE CENTRE", "School_Name_Tamil", "UDISE_NO", "Updated_At"
+  ], "#15803d");
+
+  // Auto-seed 10_Ex_Cen (113 centres) and 12_Ex_Cen (91 centres) if empty
+  if (ex10Sheet.getLastRow() <= 1 || ex12Sheet.getLastRow() <= 1) {
+    const existingSchools = readAndNormalizeSchoolMasterSheet_(ss, nowStr);
+    const schoolByUNo = {};
+    existingSchools.forEach(function(s) { schoolByUNo[String(s.uNo)] = s; });
+
+    if (ex10Sheet.getLastRow() <= 1 && DEFAULT_EXAM_CENTRES_10_SEED.length > 0) {
+      const rows10 = DEFAULT_EXAM_CENTRES_10_SEED.map(function(r) {
+        const sch = schoolByUNo[String(r[1])] || {};
+        return [r[0], r[1], r[2], r[3], r[4], sch.nameTa || "", sch.udiseNo || "", nowStr];
+      });
+      ex10Sheet.getRange(2, 1, rows10.length, 8).setValues(rows10);
+    }
+
+    if (ex12Sheet.getLastRow() <= 1 && DEFAULT_EXAM_CENTRES_12_SEED.length > 0) {
+      const rows12 = DEFAULT_EXAM_CENTRES_12_SEED.map(function(r) {
+        const sch = schoolByUNo[String(r[1])] || {};
+        return [r[0], r[1], r[2], r[3], r[4], sch.nameTa || "", sch.udiseNo || "", nowStr];
+      });
+      ex12Sheet.getRange(2, 1, rows12.length, 8).setValues(rows12);
+    }
+  }
 
   getOrCreateSheet_(ss, "SCHOOL_AUTH", [
     "U.NO", "UDISE_NO", "School_Name_English", "HM_Name",
@@ -142,7 +427,6 @@ function setupPortalSheets(optionalSheetId) {
     "SUB_1", "SUB_2", "SUB_3", "SUB_4", "SUB_5", "SUB_6", "Updated_At"
   ], "#581c87");
 
-  // Auto-seed default 16 HSS groups if HSS_GROUP_MASTER has only header row
   if (hssMasterSheet.getLastRow() <= 1) {
     const seedRows = DEFAULT_HSS_GROUPS_SEED.map(function(r) {
       return r.concat([nowStr]);
@@ -173,11 +457,259 @@ function setupPortalSheets(optionalSheetId) {
     spreadsheetId: ss.getId(),
     spreadsheetUrl: ss.getUrl(),
     sheets: [
-      "SCHOOL_MASTER", "SCHOOL_AUTH", "OTP_LOGS", "STUDENT_STRENGTH",
-      "GROUP_WISE_STRENGTH", "HSS_GROUP_MASTER", "SCHOOL_EXTRA_LIVE",
-      "STAFF_REQUESTS", "CIRCULARS", "PORTAL_STORES"
+      "SCHOOL_MASTER", "10_Ex_Cen", "12_Ex_Cen", "SCHOOL_AUTH", "OTP_LOGS",
+      "STUDENT_STRENGTH", "GROUP_WISE_STRENGTH", "HSS_GROUP_MASTER",
+      "SCHOOL_EXTRA_LIVE", "STAFF_REQUESTS", "CIRCULARS", "PORTAL_STORES"
     ]
   };
+}
+
+function setupTeachersPortalSheets(optionalTeachersSheetId, forceCreateNew) {
+  const tSs = getOrCreateTeachersSpreadsheet_(optionalTeachersSheetId, Boolean(forceCreateNew));
+
+  getOrCreateSheet_(tSs, "TEACHERS_MASTER", [
+    "S.No", "Staff_ID", "Staff_Name", "Category", "Designation", "Subject",
+    "Qualification", "Gender", "DOB", "Nature", "DOJ_Service", "DOJ_Present_Post",
+    "DOJ_School", "U.NO", "UDISE_NO", "School_Name_Tamil", "School_Name_English",
+    "Block", "Management", "Mobile", "Exam_Duty", "Camp_Duty", "Camp_Option", "Updated_At"
+  ], "#0f294a");
+
+  getOrCreateSheet_(tSs, "SCHOOL_STAFF_SUMMARY", [
+    "S.No", "U.NO", "UDISE_NO", "School_Name_Tamil", "School_Name_English",
+    "Block", "Teaching_Count", "Non_Teaching_Count", "Total_Staff_Count", "Updated_At"
+  ], "#065f46");
+
+  getOrCreateSheet_(tSs, "STAFF_LIVE_EDITS", [
+    "Staff_ID", "Staff_Name", "Category", "Designation", "Subject", "Qualification",
+    "Gender", "DOB", "Nature", "DOJ_Service", "DOJ_Present_Post", "DOJ_School",
+    "U.NO", "UDISE_NO", "School_Name_Tamil", "Block", "Mobile",
+    "Exam_Duty", "Camp_Duty", "Camp_Option", "Edited_By", "Updated_At"
+  ], "#1e3a8a");
+
+  getOrCreateSheet_(tSs, "STAFF_DELETE_REQUESTS", [
+    "Request_ID", "Timestamp", "U.NO", "School_Name", "Staff_ID",
+    "Staff_Name", "Designation", "Subject", "Reason_Category", "Reason_Detail", "Status"
+  ], "#7f1d1d");
+
+  // Remove default "Sheet1" if our 4 tabs exist
+  try {
+    const defaultSh = tSs.getSheetByName("Sheet1");
+    if (defaultSh && tSs.getSheets().length > 1) {
+      tSs.deleteSheet(defaultSh);
+    }
+  } catch (e) {}
+
+  return {
+    ok: true,
+    teachersSheetId: tSs.getId(),
+    teachersSheetUrl: tSs.getUrl(),
+    teachersSheetName: tSs.getName(),
+    tabs: ["TEACHERS_MASTER", "SCHOOL_STAFF_SUMMARY", "STAFF_LIVE_EDITS", "STAFF_DELETE_REQUESTS"]
+  };
+}
+
+function setupTeachersPortalSheetsMenu() {
+  const res = setupTeachersPortalSheets("", false);
+  Logger.log("Teachers Master DB Ready: " + JSON.stringify(res));
+}
+
+function writeExamCentresSheets_(ss, examCentres10, examCentres12, schoolsList, nowStr) {
+  const ex10Sheet = getOrCreateSheet_(ss, "10_Ex_Cen", [
+    "SN", "UN", "CN", "BLOCK", "Exam Centre", "School_Name_Tamil", "UDISE_NO", "Updated_At"
+  ], "#1e40af");
+  const ex12Sheet = getOrCreateSheet_(ss, "12_Ex_Cen", [
+    "SN", "UN", "CN", "BLOCK", "NAME OF THE CENTRE", "School_Name_Tamil", "UDISE_NO", "Updated_At"
+  ], "#15803d");
+
+  const schoolByUNo = {};
+  if (Array.isArray(schoolsList)) {
+    schoolsList.forEach(function(s) {
+      if (s && s.uNo) schoolByUNo[String(s.uNo).trim()] = s;
+    });
+  }
+
+  // Build 10_Ex_Cen rows
+  let list10 = Array.isArray(examCentres10) && examCentres10.length > 0 ? examCentres10 : [];
+  if (list10.length === 0) {
+    list10 = DEFAULT_EXAM_CENTRES_10_SEED.map(function(r) {
+      return { sn: r[0], uNo: r[1], centreNo: r[2], block: r[3], centreName: r[4] };
+    });
+  }
+  // Also include any school from schoolsList that has a centre10 not yet in list10
+  const seen10 = {};
+  list10.forEach(function(c) { seen10[String(c.uNo || c.UN || "").trim()] = true; });
+  if (Array.isArray(schoolsList)) {
+    schoolsList.forEach(function(s) {
+      const u = String(s.uNo || "").trim();
+      const c10 = cleanSheetCellStr_(s.centre10);
+      if (u && u !== "999" && c10 && c10 !== "-" && !seen10[u]) {
+        seen10[u] = true;
+        list10.push({
+          sn: list10.length + 1,
+          uNo: u,
+          centreNo: c10,
+          block: s.block || "",
+          centreName: s.nameEn || s.nameTa || "",
+          nameTa: s.nameTa || "",
+          udiseNo: s.udiseNo || ""
+        });
+      }
+    });
+  }
+
+  if (ex10Sheet.getLastRow() > 1) {
+    ex10Sheet.getRange(2, 1, ex10Sheet.getLastRow() - 1, Math.max(8, ex10Sheet.getLastColumn())).clearContent();
+  }
+  if (list10.length > 0) {
+    const rows10 = list10.map(function(c, idx) {
+      const uNo = cleanSheetCellStr_(c.uNo || c.UN);
+      const sch = schoolByUNo[uNo] || {};
+      const cNo = cleanSheetCellStr_(c.centreNo || c.CN || c.centre10 || sch.centre10);
+      const blk = cleanSheetCellStr_(c.block || c.BLOCK || sch.block);
+      const nameEn = cleanSheetCellStr_(c.centreName || c.examCentre || sch.nameEn);
+      const nameTa = cleanSheetCellStr_(c.nameTa || sch.nameTa);
+      const udise = cleanSheetCellStr_(c.udiseNo || sch.udiseNo);
+      return [Number(c.sn || c.SN) || (idx + 1), uNo, cNo, blk, nameEn, nameTa, udise, nowStr];
+    });
+    ex10Sheet.getRange(2, 1, rows10.length, 8).setValues(rows10);
+  }
+
+  // Build 12_Ex_Cen rows
+  let list12 = Array.isArray(examCentres12) && examCentres12.length > 0 ? examCentres12 : [];
+  if (list12.length === 0) {
+    list12 = DEFAULT_EXAM_CENTRES_12_SEED.map(function(r) {
+      return { sn: r[0], uNo: r[1], centreNo: r[2], block: r[3], centreName: r[4] };
+    });
+  }
+  const seen12 = {};
+  list12.forEach(function(c) { seen12[String(c.uNo || c.UN || "").trim()] = true; });
+  if (Array.isArray(schoolsList)) {
+    schoolsList.forEach(function(s) {
+      const u = String(s.uNo || "").trim();
+      const c12 = cleanSheetCellStr_(s.centre12);
+      if (u && u !== "999" && c12 && c12 !== "-" && !seen12[u]) {
+        seen12[u] = true;
+        list12.push({
+          sn: list12.length + 1,
+          uNo: u,
+          centreNo: c12,
+          block: s.block || "",
+          centreName: s.nameEn || s.nameTa || "",
+          nameTa: s.nameTa || "",
+          udiseNo: s.udiseNo || ""
+        });
+      }
+    });
+  }
+
+  if (ex12Sheet.getLastRow() > 1) {
+    ex12Sheet.getRange(2, 1, ex12Sheet.getLastRow() - 1, Math.max(8, ex12Sheet.getLastColumn())).clearContent();
+  }
+  if (list12.length > 0) {
+    const rows12 = list12.map(function(c, idx) {
+      const uNo = cleanSheetCellStr_(c.uNo || c.UN);
+      const sch = schoolByUNo[uNo] || {};
+      const cNo = cleanSheetCellStr_(c.centreNo || c.CN || c.centre12 || sch.centre12);
+      const blk = cleanSheetCellStr_(c.block || c.BLOCK || sch.block);
+      const nameEn = cleanSheetCellStr_(c.centreName || c.nameOfTheCentre || sch.nameEn);
+      const nameTa = cleanSheetCellStr_(c.nameTa || sch.nameTa);
+      const udise = cleanSheetCellStr_(c.udiseNo || sch.udiseNo);
+      return [Number(c.sn || c.SN) || (idx + 1), uNo, cNo, blk, nameEn, nameTa, udise, nowStr];
+    });
+    ex12Sheet.getRange(2, 1, rows12.length, 8).setValues(rows12);
+  }
+
+  return { count10: list10.length, count12: list12.length };
+}
+
+function readExamCentresSheets_(ss) {
+  function readTab(sheetName) {
+    const sh = ss.getSheetByName(sheetName);
+    if (!sh || sh.getLastRow() <= 1) return [];
+    const cols = Math.min(8, Math.max(5, sh.getLastColumn()));
+    const rows = sh.getRange(2, 1, sh.getLastRow() - 1, cols).getDisplayValues();
+    const list = [];
+    rows.forEach(function(r, idx) {
+      const uNo = cleanSheetCellStr_(r[1]);
+      const centreNo = cleanSheetCellStr_(r[2]);
+      const centreName = cleanSheetCellStr_(r[4]).replace(/\s+/g, " ");
+      if (!uNo && !centreNo) return;
+      if (centreName.toUpperCase() === "OTHER DISTRICT" && (uNo === "1" || !uNo)) return;
+      list.push({
+        sn: Number(cleanSheetCellStr_(r[0])) || (list.length + 1),
+        uNo: uNo,
+        centreNo: centreNo,
+        block: cleanSheetCellStr_(r[3]),
+        centreName: centreName,
+        nameTa: cleanSheetCellStr_(r[5] || ""),
+        udiseNo: cleanSheetCellStr_(r[6] || "")
+      });
+    });
+    return list;
+  }
+  return {
+    examCentres10: readTab("10_Ex_Cen"),
+    examCentres12: readTab("12_Ex_Cen")
+  };
+}
+
+function upsertSchoolStaffInTeachersSheet_(optionalTeachersSheetId, uNoStr, schoolStaffRows, schoolSummaryRow, nowStr) {
+  try {
+    const tSs = getOrCreateTeachersSpreadsheet_(optionalTeachersSheetId, false);
+    setupTeachersPortalSheets(tSs.getId(), false);
+
+    if (Array.isArray(schoolStaffRows) && schoolStaffRows.length > 0) {
+      const tmSheet = tSs.getSheetByName("TEACHERS_MASTER");
+      const leSheet = tSs.getSheetByName("STAFF_LIVE_EDITS");
+      schoolStaffRows.forEach(function(st) {
+        const staffId = cleanSheetCellStr_(st.staffId || st.id);
+        if (!staffId) return;
+        const masterRow = [
+          st.sn || "", staffId, cleanSheetCellStr_(st.name),
+          st.isTeaching !== false ? "Teaching" : "Non-Teaching",
+          cleanSheetCellStr_(st.desig), cleanSheetCellStr_(st.subject),
+          cleanSheetCellStr_(st.qualification), cleanSheetCellStr_(st.gender),
+          cleanSheetCellStr_(st.dob), cleanSheetCellStr_(st.nature),
+          cleanSheetCellStr_(st.dojService), cleanSheetCellStr_(st.dojPresPost),
+          cleanSheetCellStr_(st.dojSchool), uNoStr, cleanSheetCellStr_(st.udiseNo),
+          cleanSheetCellStr_(st.schoolNameTa), cleanSheetCellStr_(st.schoolNameEn),
+          cleanSheetCellStr_(st.block), cleanSheetCellStr_(st.mgmt1),
+          cleanSheetCellStr_(st.mobile), cleanSheetCellStr_(st.examDuty),
+          cleanSheetCellStr_(st.campDuty), cleanSheetCellStr_(st.campOption), nowStr
+        ];
+        upsertRowByKey_(tmSheet, 2, staffId, masterRow);
+
+        const editRow = [
+          staffId, cleanSheetCellStr_(st.name),
+          st.isTeaching !== false ? "Teaching" : "Non-Teaching",
+          cleanSheetCellStr_(st.desig), cleanSheetCellStr_(st.subject),
+          cleanSheetCellStr_(st.qualification), cleanSheetCellStr_(st.gender),
+          cleanSheetCellStr_(st.dob), cleanSheetCellStr_(st.nature),
+          cleanSheetCellStr_(st.dojService), cleanSheetCellStr_(st.dojPresPost),
+          cleanSheetCellStr_(st.dojSchool), uNoStr, cleanSheetCellStr_(st.udiseNo),
+          cleanSheetCellStr_(st.schoolNameTa), cleanSheetCellStr_(st.block),
+          cleanSheetCellStr_(st.mobile), cleanSheetCellStr_(st.examDuty),
+          cleanSheetCellStr_(st.campDuty), cleanSheetCellStr_(st.campOption),
+          cleanSheetCellStr_(st.editedBy || ("SCHOOL_" + uNoStr)), nowStr
+        ];
+        upsertRowByKey_(leSheet, 1, staffId, editRow);
+      });
+    }
+
+    if (schoolSummaryRow && schoolSummaryRow.uNo) {
+      const sumSheet = tSs.getSheetByName("SCHOOL_STAFF_SUMMARY");
+      upsertRowByKey_(sumSheet, 2, String(schoolSummaryRow.uNo), [
+        schoolSummaryRow.sn || "", String(schoolSummaryRow.uNo),
+        String(schoolSummaryRow.udiseNo || ""), String(schoolSummaryRow.schoolNameTa || ""),
+        String(schoolSummaryRow.schoolNameEn || ""), String(schoolSummaryRow.block || ""),
+        Number(schoolSummaryRow.teachingCount || 0), Number(schoolSummaryRow.nonTeachingCount || 0),
+        Number(schoolSummaryRow.totalCount || 0), nowStr
+      ]);
+    }
+    return { ok: true, teachersSheetId: tSs.getId() };
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
 }
 
 // Prevent duplicate OTP dispatch within 20 seconds for the same Channel + Recipient + OTP_Code
@@ -234,7 +766,71 @@ function doGet(e) {
 
     if (action === "get_school_master") {
       const schoolsOnly = readAndNormalizeSchoolMasterSheet_(ss, nowStr);
-      return jsonResponse_({ ok: true, schools: schoolsOnly, count: schoolsOnly.length, timestamp: nowStr });
+      const exCentres = readExamCentresSheets_(ss);
+      return jsonResponse_({
+        ok: true,
+        schools: schoolsOnly,
+        examCentres10: exCentres.examCentres10,
+        examCentres12: exCentres.examCentres12,
+        count: schoolsOnly.length,
+        timestamp: nowStr
+      });
+    }
+
+    if (action === "get_exam_centres") {
+      const exCentres = readExamCentresSheets_(ss);
+      return jsonResponse_({
+        ok: true,
+        examCentres10: exCentres.examCentres10,
+        examCentres12: exCentres.examCentres12,
+        timestamp: nowStr
+      });
+    }
+
+    if (action === "get_teachers_sheet_snapshot") {
+      const tInfo = setupTeachersPortalSheets(p.teachersSheetId || "", false);
+      const tSs = getOrCreateTeachersSpreadsheet_(tInfo.teachersSheetId, false);
+      const leSheet = tSs.getSheetByName("STAFF_LIVE_EDITS");
+      const leRows = leSheet.getLastRow() > 1 ? leSheet.getRange(2, 1, leSheet.getLastRow() - 1, 22).getDisplayValues() : [];
+      const liveEditsMap = {};
+      leRows.forEach(function(r) {
+        const sid = cleanSheetCellStr_(r[0]);
+        if (sid) {
+          liveEditsMap[sid] = {
+            staffId: sid,
+            name: cleanSheetCellStr_(r[1]),
+            isTeaching: String(r[2] || "").toLowerCase().indexOf("non") === -1,
+            desig: cleanSheetCellStr_(r[3]),
+            subject: cleanSheetCellStr_(r[4]),
+            qualification: cleanSheetCellStr_(r[5]),
+            gender: cleanSheetCellStr_(r[6]),
+            dob: cleanSheetCellStr_(r[7]),
+            nature: cleanSheetCellStr_(r[8]),
+            dojService: cleanSheetCellStr_(r[9]),
+            dojPresPost: cleanSheetCellStr_(r[10]),
+            dojSchool: cleanSheetCellStr_(r[11]),
+            uNo: cleanSheetCellStr_(r[12]),
+            udiseNo: cleanSheetCellStr_(r[13]),
+            schoolNameTa: cleanSheetCellStr_(r[14]),
+            block: cleanSheetCellStr_(r[15]),
+            mobile: cleanSheetCellStr_(r[16]),
+            examDuty: cleanSheetCellStr_(r[17]),
+            campDuty: cleanSheetCellStr_(r[18]),
+            campOption: cleanSheetCellStr_(r[19]),
+            updatedAt: cleanSheetCellStr_(r[21])
+          };
+        }
+      });
+      const tmSheet = tSs.getSheetByName("TEACHERS_MASTER");
+      const totalMasterRows = Math.max(0, tmSheet.getLastRow() - 1);
+      return jsonResponse_({
+        ok: true,
+        teachersSheetId: tSs.getId(),
+        teachersSheetUrl: tSs.getUrl(),
+        totalMasterRows: totalMasterRows,
+        staffOverrides: liveEditsMap,
+        timestamp: nowStr
+      });
     }
 
     if (action === "get_auth_store" || action === "get_full_portal_snapshot") {
@@ -264,6 +860,7 @@ function doGet(e) {
       }
 
       const schools = readAndNormalizeSchoolMasterSheet_(ss, nowStr);
+      const exCentres = readExamCentresSheets_(ss);
 
       const gSheet = ss.getSheetByName("HSS_GROUP_MASTER");
       const gRows = gSheet.getLastRow() > 1 ? gSheet.getRange(2, 1, gSheet.getLastRow() - 1, 11).getValues() : [];
@@ -341,6 +938,8 @@ function doGet(e) {
         ok: true,
         authStore: authMap,
         schools: schools,
+        examCentres10: exCentres.examCentres10,
+        examCentres12: exCentres.examCentres12,
         hssGroups: hssGroups,
         schoolExtraMap: schoolExtraMap,
         deleteRequests: deleteRequests,
@@ -351,11 +950,12 @@ function doGet(e) {
 
     return jsonResponse_({
       status: "ONLINE",
-      mode: "AUTO_DUAL_SYNC_V39",
+      mode: "AUTO_DUAL_SYNC_V40_DUAL_SHEET",
       portal: "CEO Sivagangai School Portal Backend (ceosvgweb@gmail.com)",
       ownerAccount: PORTAL_CONFIG.OWNER_EMAIL,
       spreadsheetId: info.spreadsheetId,
       spreadsheetUrl: info.spreadsheetUrl,
+      teachersSheetId: PORTAL_CONFIG.TEACHERS_SHEET_ID,
       sheetsReady: info.sheets,
       timestamp: new Date().toISOString()
     });
@@ -373,8 +973,7 @@ function doPost(e) {
     setupPortalSheets(ss.getId());
     const nowStr = Utilities.formatDate(new Date(), "Asia/Kolkata", "dd-MM-yyyy hh:mm:ss a");
 
-    
-    // 0. ADMIN SHA-256 AUTHENTICATION & SECRET VAULT (Security Best Practice)
+    // 0. ADMIN SHA-256 AUTHENTICATION & SECRET VAULT
     if (action === "verify_admin_auth") {
       const props = PropertiesService.getScriptProperties();
       const storedPassHash = props.getProperty("ADMIN_PASS_HASH") || PORTAL_CONFIG.ADMIN_PASS_HASH;
@@ -387,7 +986,126 @@ function doPost(e) {
       if (data.waAccessToken) props.setProperty("WA_ACCESS_TOKEN", String(data.waAccessToken).trim());
       if (data.waPhoneNumberId) props.setProperty("WA_PHONE_NUMBER_ID", String(data.waPhoneNumberId).trim());
       if (data.adminPassHash) props.setProperty("ADMIN_PASS_HASH", String(data.adminPassHash).trim());
+      if (data.teachersSheetId) props.setProperty("TEACHERS_SHEET_ID", String(data.teachersSheetId).trim());
       return jsonResponse_({ ok: true, savedToScriptProperties: true, updatedAt: nowStr });
+    }
+
+    // 0B. DEDICATED TEACHERS GOOGLE SHEET CREATION & BATCH SYNC (7,081 STAFF)
+    if (action === "create_teachers_spreadsheet") {
+      const tInfo = setupTeachersPortalSheets(data.teachersSheetId || "", Boolean(data.forceNew));
+      return jsonResponse_(tInfo);
+    }
+
+    if (action === "sync_teachers_master_batch") {
+      const tInfo = setupTeachersPortalSheets(data.teachersSheetId || "", false);
+      const tSs = getOrCreateTeachersSpreadsheet_(tInfo.teachersSheetId, false);
+      const tmSheet = tSs.getSheetByName("TEACHERS_MASTER");
+
+      if (data.isFirstBatch) {
+        if (tmSheet.getLastRow() > 1) {
+          tmSheet.getRange(2, 1, tmSheet.getLastRow() - 1, 24).clearContent();
+        }
+        if (Array.isArray(data.schoolSummaryRows) && data.schoolSummaryRows.length > 0) {
+          const sumSheet = tSs.getSheetByName("SCHOOL_STAFF_SUMMARY");
+          if (sumSheet.getLastRow() > 1) sumSheet.getRange(2, 1, sumSheet.getLastRow() - 1, 10).clearContent();
+          const sRows = data.schoolSummaryRows.map(function(s, idx) {
+            return [
+              s.sn || (idx + 1), String(s.uNo || ""), String(s.udiseNo || ""),
+              cleanSheetCellStr_(s.schoolNameTa), cleanSheetCellStr_(s.schoolNameEn),
+              cleanSheetCellStr_(s.block), Number(s.teachingCount || 0),
+              Number(s.nonTeachingCount || 0), Number(s.totalCount || 0), nowStr
+            ];
+          });
+          sumSheet.getRange(2, 1, sRows.length, 10).setValues(sRows);
+        }
+        if (Array.isArray(data.staffOverridesList) && data.staffOverridesList.length > 0) {
+          const leSheet = tSs.getSheetByName("STAFF_LIVE_EDITS");
+          if (leSheet.getLastRow() > 1) leSheet.getRange(2, 1, leSheet.getLastRow() - 1, 22).clearContent();
+          const oRows = data.staffOverridesList.map(function(st) {
+            return [
+              cleanSheetCellStr_(st.staffId || st.id), cleanSheetCellStr_(st.name),
+              st.isTeaching !== false ? "Teaching" : "Non-Teaching",
+              cleanSheetCellStr_(st.desig), cleanSheetCellStr_(st.subject),
+              cleanSheetCellStr_(st.qualification), cleanSheetCellStr_(st.gender),
+              cleanSheetCellStr_(st.dob), cleanSheetCellStr_(st.nature),
+              cleanSheetCellStr_(st.dojService), cleanSheetCellStr_(st.dojPresPost),
+              cleanSheetCellStr_(st.dojSchool), cleanSheetCellStr_(st.uNo),
+              cleanSheetCellStr_(st.udiseNo), cleanSheetCellStr_(st.schoolNameTa),
+              cleanSheetCellStr_(st.block), cleanSheetCellStr_(st.mobile),
+              cleanSheetCellStr_(st.examDuty), cleanSheetCellStr_(st.campDuty),
+              cleanSheetCellStr_(st.campOption), "ADMIN_OR_HM", nowStr
+            ];
+          });
+          leSheet.getRange(2, 1, oRows.length, 22).setValues(oRows);
+        }
+        if (Array.isArray(data.deleteRequests) && data.deleteRequests.length > 0) {
+          const drSheet = tSs.getSheetByName("STAFF_DELETE_REQUESTS");
+          if (drSheet.getLastRow() > 1) drSheet.getRange(2, 1, drSheet.getLastRow() - 1, 11).clearContent();
+          const dRows = data.deleteRequests.map(function(r) {
+            return [
+              r.reqId || "", r.requestedAt || nowStr, r.uNo || "",
+              cleanSheetCellStr_(r.schoolName || r.schoolNameTa),
+              r.emisId || r.staffRecordId || "", cleanSheetCellStr_(r.staffName || r.staffNameTa),
+              cleanSheetCellStr_(r.desig), cleanSheetCellStr_(r.subject),
+              cleanSheetCellStr_(r.reasonCategory), cleanSheetCellStr_(r.reasonDetail),
+              r.status || "PENDING"
+            ];
+          });
+          drSheet.getRange(2, 1, dRows.length, 11).setValues(dRows);
+        }
+      }
+
+      let writtenCount = 0;
+      if (Array.isArray(data.staffRows) && data.staffRows.length > 0) {
+        const startRow = data.isFirstBatch ? 2 : (tmSheet.getLastRow() + 1);
+        const formattedStaffRows = data.staffRows.map(function(r) {
+          if (Array.isArray(r)) {
+            const copy = r.slice(0, 23);
+            while (copy.length < 23) copy.push("");
+            copy.push(nowStr);
+            return copy;
+          }
+          return [
+            r.sn || "", cleanSheetCellStr_(r.staffId), cleanSheetCellStr_(r.name),
+            r.isTeaching !== false ? "Teaching" : "Non-Teaching",
+            cleanSheetCellStr_(r.desig), cleanSheetCellStr_(r.subject),
+            cleanSheetCellStr_(r.qualification), cleanSheetCellStr_(r.gender),
+            cleanSheetCellStr_(r.dob), cleanSheetCellStr_(r.nature),
+            cleanSheetCellStr_(r.dojService), cleanSheetCellStr_(r.dojPresPost),
+            cleanSheetCellStr_(r.dojSchool), cleanSheetCellStr_(r.uNo),
+            cleanSheetCellStr_(r.udiseNo), cleanSheetCellStr_(r.schoolNameTa),
+            cleanSheetCellStr_(r.schoolNameEn), cleanSheetCellStr_(r.block),
+            cleanSheetCellStr_(r.mgmt1), cleanSheetCellStr_(r.mobile),
+            cleanSheetCellStr_(r.examDuty), cleanSheetCellStr_(r.campDuty),
+            cleanSheetCellStr_(r.campOption), nowStr
+          ];
+        });
+        tmSheet.getRange(startRow, 1, formattedStaffRows.length, 24).setValues(formattedStaffRows);
+        writtenCount = formattedStaffRows.length;
+      }
+
+      return jsonResponse_({
+        ok: true,
+        teachersSheetId: tSs.getId(),
+        teachersSheetUrl: tSs.getUrl(),
+        batchIndex: data.batchIndex || 0,
+        writtenCount: writtenCount,
+        totalRowsInSheet: Math.max(0, tmSheet.getLastRow() - 1)
+      });
+    }
+
+    // 0C. SYNC 10_Ex_Cen & 12_Ex_Cen TABS DIRECTLY
+    if (action === "sync_exam_centres") {
+      const schools = Array.isArray(data.schools) && data.schools.length > 0
+        ? data.schools
+        : readAndNormalizeSchoolMasterSheet_(ss, nowStr);
+      const exCounts = writeExamCentresSheets_(ss, data.examCentres10, data.examCentres12, schools, nowStr);
+      return jsonResponse_({
+        ok: true,
+        count10: exCounts.count10,
+        count12: exCounts.count12,
+        updatedAt: nowStr
+      });
     }
 
     // 1. EMAIL OTP (Single Dispatch with Deduplication Guard)
@@ -432,18 +1150,39 @@ function doPost(e) {
         if (uNoStr) {
           upsertRowByKey_(ss.getSheetByName("SCHOOL_MASTER"), 2, uNoStr, [
             s.sn || "", uNoStr, String(s.udiseNo || ""), String(s.dgeNo || ""),
-            String(s.block || ""), String(s.assembly || ""), String(s.nameEn || ""),
-            String(s.nameTa || ""), String(s.mgmt1 || ""), String(s.level || ""),
-            String(s.centre10 || ""), String(s.centre12 || ""), String(s.hmName || ""),
-            String(s.hmTa || ""), String(s.mobile || ""), String(s.email || ""), nowStr
+            String(s.block || ""), String(s.assembly || ""), cleanSheetCellStr_(s.nameEn),
+            cleanSheetCellStr_(s.nameTa), String(s.mgmt1 || ""), String(s.level || ""),
+            String(s.centre10 || ""), String(s.centre12 || ""), cleanSheetCellStr_(s.hmName),
+            cleanSheetCellStr_(s.hmTa), String(s.mobile || ""), String(s.email || ""), nowStr
           ]);
+          if (s.centre10) {
+            upsertRowByKey_(ss.getSheetByName("10_Ex_Cen"), 2, uNoStr, [
+              s.sn || "", uNoStr, String(s.centre10), String(s.block || ""),
+              cleanSheetCellStr_(s.nameEn), cleanSheetCellStr_(s.nameTa), String(s.udiseNo || ""), nowStr
+            ]);
+          }
+          if (s.centre12) {
+            upsertRowByKey_(ss.getSheetByName("12_Ex_Cen"), 2, uNoStr, [
+              s.sn || "", uNoStr, String(s.centre12), String(s.block || ""),
+              cleanSheetCellStr_(s.nameEn), cleanSheetCellStr_(s.nameTa), String(s.udiseNo || ""), nowStr
+            ]);
+          }
         }
         return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
       }
 
       if (syncType === "school_master_bulk" && Array.isArray(data.schools)) {
         const mergedSchools = mergeAndWriteSchoolMasterSheet_(ss, data.schools, nowStr);
+        writeExamCentresSheets_(ss, data.examCentres10, data.examCentres12, mergedSchools, nowStr);
         return jsonResponse_({ ok: true, syncType: syncType, count: mergedSchools.length, mergedSchools: mergedSchools });
+      }
+
+      if (syncType === "exam_centres_bulk") {
+        const schools = Array.isArray(data.schools) && data.schools.length > 0
+          ? data.schools
+          : readAndNormalizeSchoolMasterSheet_(ss, nowStr);
+        const exCounts = writeExamCentresSheets_(ss, data.examCentres10, data.examCentres12, schools, nowStr);
+        return jsonResponse_({ ok: true, syncType: syncType, count10: exCounts.count10, count12: exCounts.count12 });
       }
 
       if (syncType === "school_auth_single" && data.auth) {
@@ -451,8 +1190,8 @@ function doPost(e) {
         const uNoStr = String(a.uNo || data.uNo || "").trim();
         if (uNoStr) {
           upsertRowByKey_(ss.getSheetByName("SCHOOL_AUTH"), 1, uNoStr, [
-            uNoStr, String(a.udiseNo || ""), String(a.nameEn || ""),
-            String(a.hmName || ""), String(a.phone || ""), String(a.email || ""),
+            uNoStr, String(a.udiseNo || ""), cleanSheetCellStr_(a.nameEn),
+            cleanSheetCellStr_(a.hmName), String(a.phone || ""), String(a.email || ""),
             String(a.password || ""), String(a.pin || ""),
             a.otpVerified ? "YES (OTP Verified)" : "YES",
             String(a.registeredAt || nowStr), nowStr
@@ -467,7 +1206,7 @@ function doPost(e) {
         if (data.authList.length > 0) {
           const aRows = data.authList.map(function(a) {
             return [
-              a.uNo || "", a.udiseNo || "", a.nameEn || "", a.hmName || "",
+              a.uNo || "", a.udiseNo || "", cleanSheetCellStr_(a.nameEn), cleanSheetCellStr_(a.hmName),
               a.phone || "", a.email || "", a.password || "", a.pin || "",
               a.otpVerified ? "YES (OTP Verified)" : "NO", a.registeredAt || nowStr, nowStr
             ];
@@ -482,7 +1221,7 @@ function doPost(e) {
         if (data.studentRow) {
           const st = data.studentRow;
           upsertRowByKey_(ss.getSheetByName("STUDENT_STRENGTH"), 1, uNoStr, [
-            uNoStr, String(st.udiseNo || ""), String(st.nameEn || ""),
+            uNoStr, String(st.udiseNo || ""), cleanSheetCellStr_(st.nameEn),
             String(st.level || "HS"), Number(st.boys || 0), Number(st.girls || 0),
             Number(st.total || 0), Number(st.tm || 0), Number(st.em || 0),
             String(st.groupsSummary || "-"), nowStr
@@ -493,9 +1232,12 @@ function doPost(e) {
         }
         if (data.extraData) {
           upsertRowByKey_(ss.getSheetByName("SCHOOL_EXTRA_LIVE"), 1, uNoStr, [
-            uNoStr, String(data.udiseNo || ""), String(data.schoolNameEn || ""),
+            uNoStr, String(data.udiseNo || ""), cleanSheetCellStr_(data.schoolNameEn),
             JSON.stringify(data.extraData), nowStr
           ]);
+        }
+        if (Array.isArray(data.schoolStaffRows) || data.schoolStaffSummaryRow) {
+          upsertSchoolStaffInTeachersSheet_(data.teachersSheetId, uNoStr, data.schoolStaffRows, data.schoolStaffSummaryRow, nowStr);
         }
         return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
       }
@@ -506,7 +1248,7 @@ function doPost(e) {
         if (data.studentList.length > 0) {
           const sRows = data.studentList.map(function(st) {
             return [
-              st.uNo || "", st.udiseNo || "", st.nameEn || "", st.level || "",
+              st.uNo || "", st.udiseNo || "", cleanSheetCellStr_(st.nameEn), st.level || "",
               st.boys || 0, st.girls || 0, st.total || 0, st.tm || 0, st.em || 0,
               st.groupsSummary || "-", nowStr
             ];
@@ -526,13 +1268,23 @@ function doPost(e) {
           const rRows = data.requests.map(function(r) {
             return [
               r.reqId || "", r.requestedAt || nowStr, r.uNo || "",
-              r.schoolName || r.schoolNameTa || r.schoolNameEn || "",
-              r.emisId || r.staffRecordId || "", r.staffName || r.staffNameTa || "",
-              r.desig || "", r.subject || "", r.reasonCategory || "",
-              r.reasonDetail || r.reason || "", r.status || "PENDING"
+              cleanSheetCellStr_(r.schoolName || r.schoolNameTa || r.schoolNameEn),
+              r.emisId || r.staffRecordId || "", cleanSheetCellStr_(r.staffName || r.staffNameTa),
+              cleanSheetCellStr_(r.desig), cleanSheetCellStr_(r.subject),
+              cleanSheetCellStr_(r.reasonCategory), cleanSheetCellStr_(r.reasonDetail || r.reason),
+              r.status || "PENDING"
             ];
           });
           rSheet.getRange(2, 1, rRows.length, 11).setValues(rRows);
+
+          // Also mirror delete requests to the dedicated Teachers Google Sheet
+          try {
+            const tSs = getOrCreateTeachersSpreadsheet_(data.teachersSheetId, false);
+            setupTeachersPortalSheets(tSs.getId(), false);
+            const drSheet = tSs.getSheetByName("STAFF_DELETE_REQUESTS");
+            if (drSheet.getLastRow() > 1) drSheet.getRange(2, 1, drSheet.getLastRow() - 1, 11).clearContent();
+            drSheet.getRange(2, 1, rRows.length, 11).setValues(rRows);
+          } catch (e) {}
         }
         return jsonResponse_({ ok: true, syncType: syncType, count: data.requests.length });
       }
@@ -548,8 +1300,8 @@ function doPost(e) {
         if (data.circulars.length > 0) {
           const cRows = data.circulars.map(function(c) {
             return [
-              c.id || "", c.date || c.createdAt || "", c.title || c.headline || "", c.target || "All Schools",
-              c.desc || "", c.link || "", nowStr
+              c.id || "", c.date || c.createdAt || "", cleanSheetCellStr_(c.title || c.headline),
+              c.target || "All Schools", cleanSheetCellStr_(c.desc), c.link || "", nowStr
             ];
           });
           cSheet.getRange(2, 1, cRows.length, 7).setValues(cRows);
@@ -562,6 +1314,9 @@ function doPost(e) {
           String(data.storeKey), JSON.stringify(data.storeData || {}),
           String(data.summary || ""), nowStr
         ]);
+        if (String(data.storeKey) === "CEOSVG_STAFF_OVERRIDES" && Array.isArray(data.schoolStaffRows)) {
+          upsertSchoolStaffInTeachersSheet_(data.teachersSheetId, String(data.uNo || ""), data.schoolStaffRows, data.schoolStaffSummaryRow, nowStr);
+        }
         return jsonResponse_({ ok: true, syncType: syncType, storeKey: data.storeKey });
       }
     }
@@ -571,8 +1326,8 @@ function doPost(e) {
       const authSheet = ss.getSheetByName("SCHOOL_AUTH");
       const uNoStr = String(data.uNo || "").trim();
       upsertRowByKey_(authSheet, 1, uNoStr, [
-        uNoStr, String(data.udiseNo || ""), String(data.nameEn || data.schoolNameEn || ""),
-        String(data.hmName || ""), String(data.mobile || ""), String(data.schoolEmail || data.email || ""),
+        uNoStr, String(data.udiseNo || ""), cleanSheetCellStr_(data.nameEn || data.schoolNameEn),
+        cleanSheetCellStr_(data.hmName), String(data.mobile || ""), String(data.schoolEmail || data.email || ""),
         String(data.password || data.newPassword || ""), String(data.pin || ""),
         "YES (OTP Verified)", nowStr, nowStr
       ]);
@@ -585,10 +1340,10 @@ function doPost(e) {
       if (uNoStr) {
         upsertRowByKey_(ss.getSheetByName("SCHOOL_MASTER"), 2, uNoStr, [
           s.sn || "", uNoStr, String(s.udiseNo || ""), String(s.dgeNo || ""),
-          String(s.block || ""), String(s.assembly || ""), String(s.nameEn || ""),
-          String(s.nameTa || ""), String(s.mgmt1 || ""), String(s.level || ""),
-          String(s.centre10 || ""), String(s.centre12 || ""), String(s.hmName || ""),
-          String(s.hmTa || ""), String(s.mobile || ""), String(data.email || s.email || ""), nowStr
+          String(s.block || ""), String(s.assembly || ""), cleanSheetCellStr_(s.nameEn),
+          cleanSheetCellStr_(s.nameTa), String(s.mgmt1 || ""), String(s.level || ""),
+          String(s.centre10 || ""), String(s.centre12 || ""), cleanSheetCellStr_(s.hmName),
+          cleanSheetCellStr_(s.hmTa), String(s.mobile || ""), String(data.email || s.email || ""), nowStr
         ]);
       }
       return jsonResponse_({ ok: true, action: action, uNo: uNoStr });
@@ -603,12 +1358,20 @@ function doPost(e) {
         masterCount = mergedSchoolsResult.length;
       }
 
+      const exCounts = writeExamCentresSheets_(
+        ss,
+        data.examCentres10,
+        data.examCentres12,
+        mergedSchoolsResult.length > 0 ? mergedSchoolsResult : data.schools,
+        nowStr
+      );
+
       if (Array.isArray(data.authList) && data.authList.length > 0) {
         const aSheet = ss.getSheetByName("SCHOOL_AUTH");
         if (aSheet.getLastRow() > 1) aSheet.getRange(2, 1, aSheet.getLastRow() - 1, 11).clearContent();
         const aRows = data.authList.map(function(a) {
           return [
-            a.uNo || "", a.udiseNo || "", a.nameEn || "", a.hmName || "",
+            a.uNo || "", a.udiseNo || "", cleanSheetCellStr_(a.nameEn), cleanSheetCellStr_(a.hmName),
             a.phone || "", a.email || "", a.password || "", a.pin || "",
             a.otpVerified ? "YES (OTP Verified)" : "NO", a.registeredAt || nowStr, nowStr
           ];
@@ -622,7 +1385,7 @@ function doPost(e) {
         if (sSheet.getLastRow() > 1) sSheet.getRange(2, 1, sSheet.getLastRow() - 1, 11).clearContent();
         const sRows = data.studentList.map(function(st) {
           return [
-            st.uNo || "", st.udiseNo || "", st.nameEn || "", st.level || "",
+            st.uNo || "", st.udiseNo || "", cleanSheetCellStr_(st.nameEn), st.level || "",
             st.boys || 0, st.girls || 0, st.total || 0, st.tm || 0, st.em || 0,
             st.groupsSummary || "-", nowStr
           ];
@@ -647,9 +1410,10 @@ function doPost(e) {
         const rRows = data.deleteRequests.map(function(r) {
           return [
             r.reqId || "", r.requestedAt || nowStr, r.uNo || "",
-            r.schoolName || r.schoolNameTa || "", r.emisId || r.staffRecordId || "",
-            r.staffName || r.staffNameTa || "", r.desig || "", r.subject || "",
-            r.reasonCategory || "", r.reasonDetail || "", r.status || "PENDING"
+            cleanSheetCellStr_(r.schoolName || r.schoolNameTa), r.emisId || r.staffRecordId || "",
+            cleanSheetCellStr_(r.staffName || r.staffNameTa), cleanSheetCellStr_(r.desig),
+            cleanSheetCellStr_(r.subject), cleanSheetCellStr_(r.reasonCategory),
+            cleanSheetCellStr_(r.reasonDetail), r.status || "PENDING"
           ];
         });
         rSheet.getRange(2, 1, rRows.length, 11).setValues(rRows);
@@ -659,7 +1423,7 @@ function doPost(e) {
         const cSheet = ss.getSheetByName("CIRCULARS");
         if (cSheet.getLastRow() > 1) cSheet.getRange(2, 1, cSheet.getLastRow() - 1, 7).clearContent();
         const cRows = data.circulars.map(function(c) {
-          return [c.id || "", c.date || c.createdAt || "", c.title || c.headline || "", c.target || "All Schools", c.desc || "", c.link || "", nowStr];
+          return [c.id || "", c.date || c.createdAt || "", cleanSheetCellStr_(c.title || c.headline), c.target || "All Schools", cleanSheetCellStr_(c.desc), c.link || "", nowStr];
         });
         cSheet.getRange(2, 1, cRows.length, 7).setValues(cRows);
       }
@@ -668,6 +1432,8 @@ function doPost(e) {
         ok: true,
         masterCount: masterCount,
         mergedSchools: mergedSchoolsResult,
+        examCentres10Count: exCounts.count10,
+        examCentres12Count: exCounts.count12,
         authCount: authCount,
         stuCount: stuCount,
         grpMasterCount: grpMasterCount,
@@ -681,82 +1447,49 @@ function doPost(e) {
   }
 }
 
-
-const CP1252_UNICODE_TO_BYTE_ = {
-  0x20AC: 0x80, 0x201A: 0x82, 0x0192: 0x83, 0x201E: 0x84, 0x2026: 0x85,
-  0x2020: 0x86, 0x2021: 0x87, 0x02C6: 0x88, 0x2030: 0x89, 0x0160: 0x8A,
-  0x2039: 0x8B, 0x0152: 0x8C, 0x017D: 0x8E, 0x2018: 0x91, 0x2019: 0x92,
-  0x201C: 0x93, 0x201D: 0x94, 0x2022: 0x95, 0x2013: 0x96, 0x2014: 0x97,
-  0x02DC: 0x98, 0x2122: 0x99, 0x0161: 0x9A, 0x203A: 0x9B, 0x0153: 0x9C,
-  0x017E: 0x9E, 0x0178: 0x9F
-};
-
-function decodeUtf8ByteArray_(bytes) {
-  let out = "", i = 0;
-  while (i < bytes.length) {
-    const b1 = bytes[i++];
-    if (b1 < 0x80) {
-      out += String.fromCharCode(b1);
-    } else if ((b1 & 0xE0) === 0xC0 && i < bytes.length) {
-      const b2 = bytes[i++];
-      out += String.fromCharCode(((b1 & 0x1F) << 6) | (b2 & 0x3F));
-    } else if ((b1 & 0xF0) === 0xE0 && i + 1 < bytes.length) {
-      const b2 = bytes[i++], b3 = bytes[i++];
-      out += String.fromCharCode(((b1 & 0x0F) << 12) | ((b2 & 0x3F) << 6) | (b3 & 0x3F));
-    } else if ((b1 & 0xF8) === 0xF0 && i + 2 < bytes.length) {
-      const b2 = bytes[i++], b3 = bytes[i++], b4 = bytes[i++];
-      const cp = ((b1 & 0x07) << 18) | ((b2 & 0x3F) << 12) | ((b3 & 0x3F) << 6) | (b4 & 0x3F);
-      out += String.fromCodePoint(cp);
-    }
-  }
-  return out;
-}
-
 function fixTamilMojibake_(val) {
   if (val === null || val === undefined) return "";
-  let s = String(val);
-  if (!s) return "";
+  const str = String(val);
+  if (str.indexOf("à®") === -1 && str.indexOf("à¯") === -1 && str.indexOf("Ã") === -1) {
+    return str;
+  }
+  const cp1252Map = {
+    0x20AC: 0x80, 0x201A: 0x82, 0x0192: 0x83, 0x201E: 0x84, 0x2026: 0x85,
+    0x2020: 0x86, 0x2021: 0x87, 0x02C6: 0x88, 0x2030: 0x89, 0x0160: 0x8A,
+    0x2039: 0x8B, 0x0152: 0x8C, 0x017D: 0x8E, 0x2018: 0x91, 0x2019: 0x92,
+    0x201C: 0x93, 0x201D: 0x94, 0x2022: 0x95, 0x2013: 0x96, 0x2014: 0x97,
+    0x02DC: 0x98, 0x2122: 0x99, 0x0161: 0x9A, 0x203A: 0x9B, 0x0153: 0x9C,
+    0x017E: 0x9E, 0x0178: 0x9F
+  };
+  let cur = str;
   for (let pass = 0; pass < 2; pass++) {
-    if (!/(\u00E0[\u00AE\u00AF]|\u00C3[\u0080-\u00BF]|\u00E2[\u0080-\u00BF\u20AC-\u2122])/.test(s)) {
-      break;
-    }
-    const rawBytes = [];
-    for (let i = 0; i < s.length; i++) {
-      const cp = s.charCodeAt(i);
-      if (CP1252_UNICODE_TO_BYTE_[cp] !== undefined) {
-        rawBytes.push(CP1252_UNICODE_TO_BYTE_[cp]);
-      } else if (cp <= 0xFF) {
-        rawBytes.push(cp);
+    if (cur.indexOf("à®") === -1 && cur.indexOf("à¯") === -1 && cur.indexOf("Ã") === -1) break;
+    const bytes = [];
+    let ok = true;
+    for (let i = 0; i < cur.length; i++) {
+      const code = cur.charCodeAt(i);
+      if (code <= 0xFF) {
+        bytes.push(code);
+      } else if (cp1252Map[code] !== undefined) {
+        bytes.push(cp1252Map[code]);
       } else {
-        const encoded = unescape(encodeURIComponent(s.charAt(i)));
-        for (let j = 0; j < encoded.length; j++) {
-          rawBytes.push(encoded.charCodeAt(j));
-        }
+        ok = false;
+        break;
       }
     }
-    const healedBytes = [];
-    for (let i = 0; i < rawBytes.length; i++) {
-      const b0 = rawBytes[i];
-      healedBytes.push(b0);
-      if (b0 === 0xE0 && i + 1 < rawBytes.length && (rawBytes[i + 1] === 0xAE || rawBytes[i + 1] === 0xAF)) {
-        const b1 = rawBytes[i + 1];
-        const b2 = rawBytes[i + 2];
-        const isCont = (b2 !== undefined && b2 >= 0x80 && b2 <= 0xBF);
-        if (!isCont) {
-          healedBytes.push(b1);
-          i += 1;
-          healedBytes.push(b1 === 0xAF ? 0x8D : 0x8F);
-        }
+    if (!ok) break;
+    try {
+      const decoded = Utilities.newBlob(bytes).getDataAsString("UTF-8");
+      if (decoded && decoded.indexOf("\uFFFD") === -1) {
+        cur = decoded;
+      } else {
+        break;
       }
-    }
-    const decoded = decodeUtf8ByteArray_(healedBytes);
-    if (decoded && decoded !== s && decoded.indexOf("\uFFFD") === -1) {
-      s = decoded;
-    } else {
+    } catch (e) {
       break;
     }
   }
-  return s;
+  return cur;
 }
 
 function cleanSheetCellStr_(val) {
@@ -766,6 +1499,29 @@ function cleanSheetCellStr_(val) {
     return String(val);
   }
   return fixTamilMojibake_(String(val).replace(/\.0$/, "").trim());
+}
+
+function repairAllSheetTamilMojibakeMenu() {
+  const ss = getTargetSpreadsheet_("");
+  const sh = ss.getSheetByName("SCHOOL_MASTER");
+  if (!sh || sh.getLastRow() <= 1) return;
+  const range = sh.getRange(2, 1, sh.getLastRow() - 1, sh.getLastColumn());
+  const vals = range.getDisplayValues();
+  let fixedCount = 0;
+  for (let r = 0; r < vals.length; r++) {
+    for (let c = 0; c < vals[r].length; c++) {
+      const orig = String(vals[r][c] || "");
+      const fixed = fixTamilMojibake_(orig);
+      if (fixed !== orig) {
+        vals[r][c] = fixed;
+        fixedCount++;
+      }
+    }
+  }
+  if (fixedCount > 0) {
+    range.setValues(vals);
+  }
+  Logger.log("Repaired cells in SCHOOL_MASTER: " + fixedCount);
 }
 
 function inferSchoolLevel_(rawLevel, nameEn, nameTa) {
@@ -809,8 +1565,6 @@ function readAndNormalizeSchoolMasterSheet_(ss, nowStr) {
   scanMaxUNo(mRows);
   scanMaxUNo(legRows);
 
-  let autoAssignedInMaster = false;
-
   function parseRowIntoSchoolObj(r, isLegacyTab, rowIdx0) {
     let uNo = cleanSheetCellStr_(r[1]);
     const udiseNo = cleanSheetCellStr_(r[2]).replace(/\s+/g, "");
@@ -820,7 +1574,6 @@ function readAndNormalizeSchoolMasterSheet_(ss, nowStr) {
     const nameEn = cleanSheetCellStr_(r[6]).replace(/\s+/g, " ");
     const nameTa = cleanSheetCellStr_(r[7]).replace(/\s+/g, " ");
 
-    // Skip empty rows or repeated header rows
     const uUpper = uNo.toUpperCase();
     if (uUpper === "U.NO" || uUpper === "UN. NO" || uUpper === "UN.NO" || uUpper === "S.NO" || udiseNo.toUpperCase() === "UDISE" || udiseNo.toUpperCase() === "UDISE_NO") {
       return null;
@@ -829,7 +1582,6 @@ function readAndNormalizeSchoolMasterSheet_(ss, nowStr) {
       return null;
     }
 
-    // If a new school was added in Google Sheet without U.NO, check if UDISE already matches or assign a new U.NO
     if (!uNo) {
       if (udiseNo && byUdise[udiseNo]) {
         uNo = byUdise[udiseNo].uNo;
@@ -842,7 +1594,6 @@ function readAndNormalizeSchoolMasterSheet_(ss, nowStr) {
             if (!cleanSheetCellStr_(r[0])) {
               mSheet.getRange(rowIdx0 + 2, 1).setValue(rowIdx0 + 1);
             }
-            autoAssignedInMaster = true;
           } catch (e) {}
         }
       }
@@ -909,6 +1660,23 @@ function readAndNormalizeSchoolMasterSheet_(ss, nowStr) {
     upsertInMap(parseRowIntoSchoolObj(r, true, idx));
   });
 
+  // Also enrich centre10 and centre12 from 10_Ex_Cen and 12_Ex_Cen tabs if present
+  try {
+    const exCentres = readExamCentresSheets_(ss);
+    exCentres.examCentres10.forEach(function(c) {
+      if (c.uNo && byUNo[c.uNo] && c.centreNo) {
+        byUNo[c.uNo].centre10 = c.centreNo;
+        byUNo[c.uNo].isExamCentre = true;
+      }
+    });
+    exCentres.examCentres12.forEach(function(c) {
+      if (c.uNo && byUNo[c.uNo] && c.centreNo) {
+        byUNo[c.uNo].centre12 = c.centreNo;
+        byUNo[c.uNo].isExamCentre = true;
+      }
+    });
+  } catch (e) {}
+
   orderedList.forEach(function(s, i) {
     if (!s.sn) s.sn = i + 1;
   });
@@ -933,7 +1701,6 @@ function mergeAndWriteSchoolMasterSheet_(ss, incomingSchools, nowStr) {
 
     const match = (uNo && byUNo[uNo]) ? byUNo[uNo] : (udiseNo && byUdise[udiseNo] ? byUdise[udiseNo] : null);
     if (match) {
-      // Preserve Sheet-added non-empty fields while applying incoming updates
       const fields = ["udiseNo", "dgeNo", "block", "assembly", "nameEn", "nameTa", "mgmt1", "mgmt2", "mgmt3", "level", "centre10", "centre12", "hmName", "hmTa", "mobile", "email"];
       fields.forEach(function(f) {
         const val = cleanSheetCellStr_(s[f]);
@@ -976,15 +1743,11 @@ function mergeAndWriteSchoolMasterSheet_(ss, incomingSchools, nowStr) {
     }
   }
 
-  // 1. First load all schools currently on the Google Sheet (so newly registered Sheet rows are NEVER lost!)
   existingOnSheet.forEach(function(s) { addOrMergeSchool(s, false); });
-
-  // 2. Then merge incoming schools from Portal
   if (Array.isArray(incomingSchools)) {
     incomingSchools.forEach(function(s) { addOrMergeSchool(s, true); });
   }
 
-  // 3. Write complete merged list back to SCHOOL_MASTER
   if (mSheet && mergedList.length > 0) {
     if (mSheet.getLastRow() > 1) {
       mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
@@ -1025,7 +1788,7 @@ function writeBulkGroupWiseStrengthRows_(gwSheet, list, nowStr) {
   if (list.length > 0) {
     const rows = list.map(function(r) {
       return [
-        r.uNo || "", r.udiseNo || "", r.schoolNameEn || "", r.block || "", r.mgmt || "",
+        r.uNo || "", r.udiseNo || "", cleanSheetCellStr_(r.schoolNameEn), r.block || "", r.mgmt || "",
         r.groupCode || "", r.category || "", r.groupName || "", r.majorSubjects || "",
         Number(r.c11_tm_b || 0), Number(r.c11_tm_g || 0), Number(r.c11_em_b || 0), Number(r.c11_em_g || 0), Number(r.c11_tot || 0),
         Number(r.c12_tm_b || 0), Number(r.c12_tm_g || 0), Number(r.c12_em_b || 0), Number(r.c12_em_g || 0), Number(r.c12_tot || 0),
@@ -1049,7 +1812,7 @@ function upsertSchoolGroupStrengthRows_(gwSheet, uNoStr, schoolGroupRows, nowStr
   }
   const newRows = (schoolGroupRows || []).map(function(r) {
     return [
-      r.uNo || uNoStr, r.udiseNo || "", r.schoolNameEn || "", r.block || "", r.mgmt || "",
+      r.uNo || uNoStr, r.udiseNo || "", cleanSheetCellStr_(r.schoolNameEn), r.block || "", r.mgmt || "",
       r.groupCode || "", r.category || "", r.groupName || "", r.majorSubjects || "",
       Number(r.c11_tm_b || 0), Number(r.c11_tm_g || 0), Number(r.c11_em_b || 0), Number(r.c11_em_g || 0), Number(r.c11_tot || 0),
       Number(r.c12_tm_b || 0), Number(r.c12_tm_g || 0), Number(r.c12_em_b || 0), Number(r.c12_em_g || 0), Number(r.c12_tot || 0),
@@ -1125,7 +1888,6 @@ function sendWhatsappOtpFromServer_(toPhone, otpCode, uNo, schoolName, purpose, 
   ];
   const msgText = msgLines.join(String.fromCharCode(10));
 
-  // 1. Optional Custom WhatsApp Gateway Webhook (if configured)
   if (gwUrl && gwUrl.indexOf("http") === 0) {
     try {
       const sep = gwUrl.indexOf("?") !== -1 ? "&" : "?";
@@ -1137,7 +1899,6 @@ function sendWhatsappOtpFromServer_(toPhone, otpCode, uNo, schoolName, purpose, 
     } catch (gwErr) {}
   }
 
-  // 2. Meta WhatsApp Cloud API (v22.0) - Template (hello_world · en_US · 2600197680404000) + Text OTP
   let lastError = "";
   if (token && phoneIds.length > 0) {
     for (let i = 0; i < phoneIds.length; i++) {
@@ -1174,7 +1935,6 @@ function sendWhatsappOtpFromServer_(toPhone, otpCode, uNo, schoolName, purpose, 
           }
         }
 
-        // Send 6-Digit OTP Text Message as well
         const resText = UrlFetchApp.fetch(endpoint, {
           method: "post",
           contentType: "application/json",
@@ -1233,11 +1993,4 @@ function testSendWhatsappOtpMenu() {
   const testOtp = String(Math.floor(100000 + Math.random() * 900000));
   const res = sendWhatsappOtpFromServer_("919626471035", testOtp, "ADMIN", "CEO OFFICE SIVAGANGAI", "Google Sheet Code.gs WhatsApp OTP Test");
   Logger.log("WhatsApp OTP Test Result: " + JSON.stringify(res));
-}
-
-function repairAllSheetTamilMojibakeMenu() {
-  const ss = getTargetSpreadsheet_("");
-  const nowStr = Utilities.formatDate(new Date(), "Asia/Kolkata", "dd-MM-yyyy hh:mm:ss a");
-  const merged = mergeAndWriteSchoolMasterSheet_(ss, [], nowStr);
-  Logger.log("Repaired SCHOOL_MASTER Tamil names for " + merged.length + " schools.");
 }
