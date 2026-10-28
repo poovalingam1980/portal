@@ -3988,9 +3988,14 @@
 
       <!-- ADMIN SUB-TAB 1: DIRECTORY & FILTER -->
       <div id="admPaneDirectory" class="panel-box">
-        <div class="panel-title">
+        <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
           <span>📋 சிவகங்கை மாவட்டப் பள்ளிகள் முதன்மைப் பட்டியல் (Master Schools Directory)</span>
-          <span style="font-size:0.85rem; color:#475569;">பொருந்திய பள்ளிகள்: <strong style="color:#1d4ed8;" id="admFilteredCountBadge">281</strong></span>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="repairAllSchoolMasterTamilNamesAndSync(true)" style="background:#f0fdf4; color:#15803d; border-color:#86efac; font-weight:800; font-size:0.78rem;" title="தமிழ் எழுத்துரு பிழைகளை (à®...) உடனடியாகச் சரிசெய்து Firebase & Google Sheet-ல் ஒத்திசைக்க">
+              ✨ தமிழ் பெயர்கள் சீரமைப்பு (Fix Tamil Font)
+            </button>
+            <span style="font-size:0.85rem; color:#475569;">பொருந்திய பள்ளிகள்: <strong style="color:#1d4ed8;" id="admFilteredCountBadge">282</strong></span>
+          </div>
         </div>
 
         <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:16px;">
@@ -5580,6 +5585,9 @@
           <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:8px;" onclick="event.stopPropagation();">
             <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('singleWinSchoolMasterFileInput').click()" style="font-weight:900;">
               📤 School Master Excel/CSV பதிவேற்று
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="repairAllSchoolMasterTamilNamesAndSync(true)" style="font-weight:800; background:#f0fdf4; color:#15803d; border-color:#86efac;">
+              ✨ தமிழ் எழுத்துரு சீரமைப்பு (Fix Tamil Font)
             </button>
             <button type="button" class="btn btn-outline btn-sm" onclick="syncMasterFromGoogleSheet(true)" style="font-weight:800; background:#fff;">
               🔄 Google Sheet-லிருந்து ஒத்திசை (Sync)
@@ -7230,12 +7238,242 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   
+  const CP1252_UNICODE_TO_BYTE = {
+    0x20AC: 0x80, 0x201A: 0x82, 0x0192: 0x83, 0x201E: 0x84, 0x2026: 0x85,
+    0x2020: 0x86, 0x2021: 0x87, 0x02C6: 0x88, 0x2030: 0x89, 0x0160: 0x8A,
+    0x2039: 0x8B, 0x0152: 0x8C, 0x017D: 0x8E, 0x2018: 0x91, 0x2019: 0x92,
+    0x201C: 0x93, 0x201D: 0x94, 0x2022: 0x95, 0x2013: 0x96, 0x2014: 0x97,
+    0x02DC: 0x98, 0x2122: 0x99, 0x0161: 0x9A, 0x203A: 0x9B, 0x0153: 0x9C,
+    0x017E: 0x9E, 0x0178: 0x9F
+  };
+
+  function hasTamilMojibake(val) {
+    if (!val || typeof val !== "string") return false;
+    return /(\u00E0[\u00AE\u00AF]|\u00C3[\u0080-\u00BF]|\u00E2[\u0080-\u00BF\u20AC-\u2122])/.test(val);
+  }
+
+  function decodeUtf8BytesToStr(bytes) {
+    if (typeof TextDecoder !== "undefined") {
+      try {
+        return new TextDecoder("utf-8", { fatal: false }).decode(new Uint8Array(bytes));
+      } catch (e) {}
+    }
+    let out = "", i = 0;
+    while (i < bytes.length) {
+      const b1 = bytes[i++];
+      if (b1 < 0x80) {
+        out += String.fromCharCode(b1);
+      } else if ((b1 & 0xE0) === 0xC0 && i < bytes.length) {
+        const b2 = bytes[i++];
+        out += String.fromCharCode(((b1 & 0x1F) << 6) | (b2 & 0x3F));
+      } else if ((b1 & 0xF0) === 0xE0 && i + 1 < bytes.length) {
+        const b2 = bytes[i++], b3 = bytes[i++];
+        out += String.fromCharCode(((b1 & 0x0F) << 12) | ((b2 & 0x3F) << 6) | (b3 & 0x3F));
+      } else if ((b1 & 0xF8) === 0xF0 && i + 2 < bytes.length) {
+        const b2 = bytes[i++], b3 = bytes[i++], b4 = bytes[i++];
+        const cp = ((b1 & 0x07) << 18) | ((b2 & 0x3F) << 12) | ((b3 & 0x3F) << 6) | (b4 & 0x3F);
+        out += String.fromCodePoint(cp);
+      }
+    }
+    return out;
+  }
+
+  function fixTamilMojibake(val) {
+    if (val === null || val === undefined) return "";
+    let s = String(val);
+    if (!s) return "";
+    for (let pass = 0; pass < 2; pass++) {
+      if (!hasTamilMojibake(s)) break;
+      const rawBytes = [];
+      for (let i = 0; i < s.length; i++) {
+        const cp = s.charCodeAt(i);
+        if (CP1252_UNICODE_TO_BYTE[cp] !== undefined) {
+          rawBytes.push(CP1252_UNICODE_TO_BYTE[cp]);
+        } else if (cp <= 0xFF) {
+          rawBytes.push(cp);
+        } else {
+          const encoded = unescape(encodeURIComponent(s.charAt(i)));
+          for (let j = 0; j < encoded.length; j++) {
+            rawBytes.push(encoded.charCodeAt(j));
+          }
+        }
+      }
+      const healedBytes = [];
+      for (let i = 0; i < rawBytes.length; i++) {
+        const b0 = rawBytes[i];
+        healedBytes.push(b0);
+        if (b0 === 0xE0 && i + 1 < rawBytes.length && (rawBytes[i + 1] === 0xAE || rawBytes[i + 1] === 0xAF)) {
+          const b1 = rawBytes[i + 1];
+          const b2 = rawBytes[i + 2];
+          const isCont = (b2 !== undefined && b2 >= 0x80 && b2 <= 0xBF);
+          if (!isCont) {
+            healedBytes.push(b1);
+            i += 1;
+            healedBytes.push(b1 === 0xAF ? 0x8D : 0x8F);
+          }
+        }
+      }
+      const decoded = decodeUtf8BytesToStr(healedBytes);
+      if (decoded && decoded !== s && !decoded.includes("\uFFFD")) {
+        s = decoded;
+      } else {
+        break;
+      }
+    }
+    return s;
+  }
+
+  function parseFullCsvOrTsvTextToAoa(rawText) {
+    const text = fixTamilMojibake(String(rawText || "").replace(/^\uFEFF/, ""));
+    const firstLineEnd = text.indexOf("\n");
+    const firstLine = firstLineEnd !== -1 ? text.slice(0, firstLineEnd) : text;
+    const tabCount = (firstLine.match(/\t/g) || []).length;
+    const commaCount = (firstLine.match(/,/g) || []).length;
+    const sep = (tabCount > commaCount && tabCount >= 2) ? "\t" : ",";
+
+    const rows = [];
+    let curRow = [];
+    let curVal = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (inQuotes) {
+        if (ch === "\"") {
+          if (i + 1 < text.length && text[i + 1] === "\"") {
+            curVal += "\"";
+            i++;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          curVal += ch;
+        }
+      } else {
+        if (ch === "\"") {
+          inQuotes = true;
+        } else if (ch === sep) {
+          curRow.push(fixTamilMojibake(curVal).trim());
+          curVal = "";
+        } else if (ch === "\r") {
+          if (i + 1 < text.length && text[i + 1] === "\n") i++;
+          curRow.push(fixTamilMojibake(curVal).trim());
+          if (curRow.some(c => c !== "")) rows.push(curRow);
+          curRow = [];
+          curVal = "";
+        } else if (ch === "\n") {
+          curRow.push(fixTamilMojibake(curVal).trim());
+          if (curRow.some(c => c !== "")) rows.push(curRow);
+          curRow = [];
+          curVal = "";
+        } else {
+          curVal += ch;
+        }
+      }
+    }
+    curRow.push(fixTamilMojibake(curVal).trim());
+    if (curRow.some(c => c !== "")) rows.push(curRow);
+    return rows;
+  }
+
+  function readUploadedSpreadsheetOrCsvToAoa(file, preferredSheetNames, onSuccess, onError) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const bytes = new Uint8Array(e.target.result);
+        const isZipXlsx = bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4B;
+        const isOleXls = bytes.length >= 4 && bytes[0] === 0xD0 && bytes[1] === 0xCF;
+        const isUtf16Le = bytes.length >= 2 && bytes[0] === 0xFF && bytes[1] === 0xFE;
+        const isUtf16Be = bytes.length >= 2 && bytes[0] === 0xFE && bytes[1] === 0xFF;
+
+        let aoa = [];
+        if ((isZipXlsx || isOleXls) && typeof XLSX !== "undefined") {
+          const wb = XLSX.read(bytes, { type: "array", codepage: 65001 });
+          let targetSheetName = wb.SheetNames[0];
+          if (Array.isArray(preferredSheetNames)) {
+            for (const pref of preferredSheetNames) {
+              const found = wb.SheetNames.find(n => n.trim().toLowerCase() === pref.toLowerCase());
+              if (found) { targetSheetName = found; break; }
+            }
+          }
+          const sheet = wb.Sheets[targetSheetName];
+          const rawAoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+          aoa = rawAoa.map(row => Array.isArray(row) ? row.map(cell => typeof cell === "string" ? fixTamilMojibake(cell) : cell) : []);
+        } else {
+          let decodedText = "";
+          if (typeof TextDecoder !== "undefined") {
+            const enc = isUtf16Le ? "utf-16le" : (isUtf16Be ? "utf-16be" : "utf-8");
+            decodedText = new TextDecoder(enc, { fatal: false }).decode(bytes);
+          } else {
+            decodedText = decodeUtf8BytesToStr(bytes);
+          }
+          aoa = parseFullCsvOrTsvTextToAoa(decodedText);
+        }
+        onSuccess(aoa);
+      } catch (err) {
+        if (typeof onError === "function") onError(err);
+      }
+    };
+    reader.onerror = function(err) {
+      if (typeof onError === "function") onError(err || new Error("File read failed"));
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  let _autoHealMojibakeTimer = null;
+  function scheduleAutoHealMojibakeSync() {
+    if (_autoHealMojibakeTimer) clearTimeout(_autoHealMojibakeTimer);
+    _autoHealMojibakeTimer = setTimeout(() => {
+      try {
+        safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+        if (normalizeFirebaseDbUrl(firebaseDbUrl) && firebaseAutoSyncEnabled) {
+          const schoolsByUNo = {};
+          masterSchools.forEach(s => { if (s && s.uNo) schoolsByUNo[String(s.uNo)] = s; });
+          fetch(buildFirebaseEndpoint("ceosvg_live/master_schools_by_uno"), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(schoolsByUNo)
+          }).catch(() => {});
+          fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_MASTER_SCHOOLS"), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(masterSchools)
+          }).catch(() => {});
+        }
+        if (appsScriptUrl && appsScriptUrl.startsWith("http") && googleSheetAutoSyncEnabled) {
+          sendToAppsScript({
+            action: "auto_dual_sync",
+            syncType: "school_master_bulk",
+            schools: masterSchools
+          }).catch(() => {});
+        }
+      } catch (e) {}
+    }, 600);
+  }
+
+  function repairAllSchoolMasterTamilNamesAndSync(showNotification) {
+    sanitizeAllPortalStores();
+    safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
+    scheduleAutoHealMojibakeSync();
+    populateAllDynamicDropdowns();
+    populateAdminDirectSchoolDropdowns();
+    updateAllSummaryCounters();
+    renderPublicQuickFinder();
+    renderAdminDirectoryTable();
+    renderAdminCredentialsTable();
+    if (typeof renderAdminInfraNeedsDashboard === "function") renderAdminInfraNeedsDashboard();
+    if (showNotification) {
+      showToast(`✅ அனைத்து ${masterSchools.length} பள்ளிகளின் தமிழ் பெயர்களும் சீரமைக்கப்பட்டு Firebase & Google Sheet-ல் ஒத்திசைக்கப்பட்டன!`, "#16a34a");
+    }
+  }
+
   function cleanSheetScalarVal(v) {
     if (v === null || v === undefined) return "";
     if (typeof v === "number") {
       return Math.floor(v) === v ? String(Math.round(v)) : String(v);
     }
-    return String(v).replace(/\.0$/, "").trim();
+    return fixTamilMojibake(String(v).replace(/\.0$/, "").trim());
   }
 
   function detectSchoolLevelFromNames(rawLevel, nameEn, nameTa) {
@@ -7402,15 +7640,62 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         }
       });
     }
-    // Always enrich 10th & 12th Exam Centre numbers from School-Master lookup maps
-    if (typeof EXAM_CENTRE_10_BY_UNO !== "undefined" && typeof EXAM_CENTRE_12_BY_UNO !== "undefined") {
-      masterSchools.forEach(sch => {
-        if (!sch || !sch.uNo) return;
-        const uKey = String(sch.uNo).trim();
-        if (!sch.centre10 && EXAM_CENTRE_10_BY_UNO[uKey]) sch.centre10 = EXAM_CENTRE_10_BY_UNO[uKey];
-        if (!sch.centre12 && EXAM_CENTRE_12_BY_UNO[uKey]) sch.centre12 = EXAM_CENTRE_12_BY_UNO[uKey];
-        if (sch.centre10 || sch.centre12) sch.isExamCentre = true;
+    // Build fast lookup maps from INITIAL_MASTER_SCHOOLS for Tamil name & UDISE self-healing
+    const initByUNo = {};
+    const initByUdise = {};
+    if (typeof INITIAL_MASTER_SCHOOLS !== "undefined" && Array.isArray(INITIAL_MASTER_SCHOOLS)) {
+      INITIAL_MASTER_SCHOOLS.forEach(is => {
+        if (!is) return;
+        if (is.uNo) initByUNo[String(is.uNo).trim()] = is;
+        if (is.udiseNo) initByUdise[String(is.udiseNo).trim()] = is;
       });
+    }
+
+    let repairedMojibakeCount = 0;
+
+    // Enrich 10th & 12th Exam Centre numbers AND auto-repair any UTF-8/CP1252/Latin-1 Tamil Mojibake
+    masterSchools.forEach(sch => {
+      if (!sch || !sch.uNo) return;
+      const uKey = String(sch.uNo).trim();
+      const initMatch = initByUNo[uKey] || (sch.udiseNo ? initByUdise[String(sch.udiseNo).trim()] : null);
+
+      // Heal placeholder UDISE/DGE on U.NO 101 if overwritten by legacy template
+      if (uKey === "101" && initMatch) {
+        if (String(sch.udiseNo) === "33230100101" || !sch.udiseNo) sch.udiseNo = initMatch.udiseNo;
+        if (String(sch.dgeNo) === "550101" || !sch.dgeNo) sch.dgeNo = initMatch.dgeNo;
+      }
+
+      ["nameTa", "nameEn", "hmTa", "hmName", "block", "assembly"].forEach(field => {
+        if (typeof sch[field] === "string" && sch[field]) {
+          const origVal = sch[field];
+          const fixedVal = fixTamilMojibake(origVal).replace(/\s+/g, " ").trim();
+          if (fixedVal !== origVal) {
+            sch[field] = fixedVal;
+            if (hasTamilMojibake(origVal)) repairedMojibakeCount++;
+          }
+        }
+      });
+
+      // Fallback to INITIAL_MASTER_SCHOOLS clean Tamil name if nameTa still lacks Tamil Unicode or has replacement chars
+      if (initMatch && initMatch.nameTa) {
+        const curTa = String(sch.nameTa || "").trim();
+        if (!curTa || curTa.includes("\uFFFD") || hasTamilMojibake(curTa) || (!/[\u0B80-\u0BFF]/.test(curTa) && curTa.toUpperCase() === String(sch.nameEn || "").trim().toUpperCase())) {
+          sch.nameTa = initMatch.nameTa.replace(/\s+/g, " ").trim();
+          repairedMojibakeCount++;
+        }
+      }
+      if (initMatch && initMatch.hmTa && sch.hmTa && (sch.hmTa.includes("\uFFFD") || hasTamilMojibake(sch.hmTa))) {
+        sch.hmTa = initMatch.hmTa.replace(/\s+/g, " ").trim();
+        repairedMojibakeCount++;
+      }
+
+      if (typeof EXAM_CENTRE_10_BY_UNO !== "undefined" && !sch.centre10 && EXAM_CENTRE_10_BY_UNO[uKey]) sch.centre10 = EXAM_CENTRE_10_BY_UNO[uKey];
+      if (typeof EXAM_CENTRE_12_BY_UNO !== "undefined" && !sch.centre12 && EXAM_CENTRE_12_BY_UNO[uKey]) sch.centre12 = EXAM_CENTRE_12_BY_UNO[uKey];
+      if (sch.centre10 || sch.centre12) sch.isExamCentre = true;
+    });
+
+    if (repairedMojibakeCount > 0 && typeof scheduleAutoHealMojibakeSync === "function") {
+      scheduleAutoHealMojibakeSync();
     }
 
     // 2. Sanitize schoolAuthStore (remove nulls from Firebase sparse array & keep PRESEEDED_SCHOOL_AUTH)
@@ -7436,6 +7721,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           const uKey = String(s.uNo).trim();
           const baseSch = cleanEnroll[uKey] || {};
           const merged = Object.assign({}, baseSch, s);
+          if (merged.nameTa) merged.nameTa = fixTamilMojibake(merged.nameTa);
+          if (merged.nameEn) merged.nameEn = fixTamilMojibake(merged.nameEn);
           merged.classes = sanitizeClassMapObject(s.classes, baseSch.classes);
           const cleanHss = sanitizeHssGroupsObject(s.hssGroups, baseSch.hssGroups);
           if (cleanHss) merged.hssGroups = cleanHss;
@@ -11101,7 +11388,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       reader.onload = function(e) {
         try {
           const data = new Uint8Array(e.target.result);
-          const wb = XLSX.read(data, { type: "array" });
+          const wb = XLSX.read(data, { type: "array", codepage: 65001 });
           const sheet = wb.Sheets[wb.SheetNames[0]];
           const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
           applyGroupRows(aoa);
@@ -19172,7 +19459,7 @@ function testSendWhatsappOtpMenu() {
         reader.onload = function(e) {
           try {
             const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
+            const workbook = XLSX.read(data, { type: "array", codepage: 65001 });
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             const json = XLSX.utils.sheet_to_json(sheet);
             setTimeout(() => finishStaffParsing(json), 500);
@@ -19276,66 +19563,103 @@ function testSendWhatsappOtpMenu() {
     const statusEl = document.getElementById("singleWinSchoolMasterStatus");
     if (statusEl) {
       statusEl.style.display = "block";
-      statusEl.textContent = `⏳ "${file.name}" படிக்கப்படுகிறது...`;
+      statusEl.textContent = `⏳ "${file.name}" (UTF-8 தமிழ் எழுத்துரு பாதுகாப்புடன்) படிக்கப்படுகிறது...`;
     }
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        let rows = [];
-        if (typeof XLSX !== "undefined") {
-          const data = new Uint8Array(e.target.result);
-          const wb = XLSX.read(data, { type: "array" });
-          const firstSheet = wb.Sheets[wb.SheetNames[0]];
-          rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: "" });
-        }
-        let added = 0, updated = 0;
-        rows.forEach((r, idx) => {
-          if (!Array.isArray(r) || r.length < 3 || idx === 0) return;
-          const uNo = String(r[1] || r[0] || "").trim().replace(/\.0$/, "");
-          const udise = String(r[2] || r[1] || "").trim().replace(/\.0$/, "");
-          if (!uNo || !/^\d+$/.test(uNo)) return;
-          const existing = masterSchools.find(s => String(s.uNo) === uNo || (udise && String(s.udiseNo) === udise));
-          if (existing) {
-            if (r[3]) existing.dgeNo = String(r[3]).trim();
-            if (r[4]) existing.block = String(r[4]).trim();
-            if (r[5]) existing.assembly = String(r[5]).trim();
-            if (r[6]) existing.nameEn = String(r[6]).trim();
-            if (r[7]) existing.nameTa = String(r[7]).trim();
-            if (r[8]) existing.mgmt1 = String(r[8]).trim();
-            updated++;
-          } else if (r[6] || r[7]) {
-            masterSchools.push({
-              sn: masterSchools.length + 1,
+    readUploadedSpreadsheetOrCsvToAoa(
+      file,
+      ["SCHOOL_MASTER", "SCHOOL", "School Master"],
+      function(rows) {
+        try {
+          if (!Array.isArray(rows) || rows.length < 2) {
+            if (statusEl) statusEl.textContent = "⚠️ கோப்பில் பள்ளி வரிசைகள் காணப்படவில்லை.";
+            showToast("⚠️ கோப்பில் பள்ளி வரிசைகள் காணப்படவில்லை.", "#f59e0b");
+            return;
+          }
+
+          // Detect header row column indices if custom headers are present
+          const hdr = (rows[0] || []).map(h => cleanSheetScalarVal(h).toLowerCase().replace(/[\s_.-]+/g, ""));
+          const findCol = (patterns, defaultIdx) => {
+            const idx = hdr.findIndex(h => patterns.some(p => h === p || h.includes(p)));
+            return idx !== -1 ? idx : defaultIdx;
+          };
+
+          const colSn = findCol(["sn", "sno", "வஎண்"], 0);
+          const colUNo = findCol(["uno", "unno", "uniqueno", "பள்ளிதனிஎண்"], 1);
+          const colUdise = findCol(["udise", "udiseno", "udisecode", "udiseஎண்"], 2);
+          const colDge = findCol(["dgeno", "dge"], 3);
+          const colBlock = findCol(["block", "ஒன்றியம்"], 4);
+          const colAssembly = findCol(["assembly", "assemply", "தொகுதி"], 5);
+          const colNameEn = findCol(["schoolnameenglish", "nameoftheschool", "schoolnameen", "ஆங்கிலம்"], 6);
+          const colNameTa = findCol(["schoolnametamil", "பள்ளியின்பெயர்", "schoolnameta", "தமிழ்"], 7);
+          const colMgmt1 = findCol(["management1", "managementcode", "management", "mgmt1", "வகை"], 8);
+          const colMgmt2OrLevel = findCol(["management2", "level", "நிலை"], 9);
+
+          const parsedSchools = [];
+          rows.slice(1).forEach((r, idx) => {
+            if (!Array.isArray(r) || r.length < 3) return;
+            const uNo = cleanSheetScalarVal(r[colUNo]);
+            const udise = cleanSheetScalarVal(r[colUdise]).replace(/\s+/g, "");
+            let nameEn = cleanSheetScalarVal(r[colNameEn]).replace(/\s+/g, " ");
+            let nameTa = cleanSheetScalarVal(r[colNameTa]).replace(/\s+/g, " ");
+
+            // If English and Tamil columns were swapped in the uploaded file, auto-correct them
+            if (/[\u0B80-\u0BFF]/.test(nameEn) && !/[\u0B80-\u0BFF]/.test(nameTa)) {
+              const tmp = nameEn; nameEn = nameTa; nameTa = tmp;
+            }
+
+            if (!uNo && !udise && !nameEn && !nameTa) return;
+            const col9Val = cleanSheetScalarVal(r[colMgmt2OrLevel]);
+            const isCol9Level = /^(HSS|HS|MS|PS)$/i.test(col9Val);
+
+            parsedSchools.push({
+              sn: Number(cleanSheetScalarVal(r[colSn])) || (idx + 1),
               uNo: uNo,
               udiseNo: udise,
-              dgeNo: String(r[3] || "").trim(),
-              block: String(r[4] || "01-Sivagangai").trim(),
-              assembly: String(r[5] || "186-Sivaganga").trim(),
-              nameEn: String(r[6] || r[7] || "").trim(),
-              nameTa: String(r[7] || r[6] || "").trim(),
-              mgmt1: String(r[8] || "1G").trim(),
-              mgmt2: String(r[9] || "1").trim(),
-              mgmt3: String(r[10] || "").trim(),
-              level: String(r[6] || "").toUpperCase().includes("HSS") ? "HSS" : "HS"
+              dgeNo: cleanSheetScalarVal(r[colDge]),
+              block: cleanSheetScalarVal(r[colBlock]),
+              assembly: cleanSheetScalarVal(r[colAssembly]),
+              nameEn: nameEn,
+              nameTa: nameTa,
+              mgmt1: cleanSheetScalarVal(r[colMgmt1]) || "1G",
+              mgmt2: isCol9Level ? "" : col9Val,
+              mgmt3: isCol9Level ? "" : cleanSheetScalarVal(r[10]),
+              level: isCol9Level ? col9Val.toUpperCase() : cleanSheetScalarVal(r[11]),
+              centre10: isCol9Level ? cleanSheetScalarVal(r[10]) : cleanSheetScalarVal(r[12]),
+              centre12: isCol9Level ? cleanSheetScalarVal(r[11]) : cleanSheetScalarVal(r[13]),
+              hmName: isCol9Level ? cleanSheetScalarVal(r[12]) : cleanSheetScalarVal(r[14]),
+              hmTa: isCol9Level ? cleanSheetScalarVal(r[13]) : cleanSheetScalarVal(r[15]),
+              mobile: isCol9Level ? cleanSheetScalarVal(r[14]) : cleanSheetScalarVal(r[16]),
+              email: isCol9Level ? cleanSheetScalarVal(r[15]) : cleanSheetScalarVal(r[17])
             });
-            added++;
+          });
+
+          const { added, updated } = mergeSchoolsIntoMasterList(parsedSchools, true);
+          sanitizeAllPortalStores();
+          safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
+          scheduleAutoHealMojibakeSync();
+          autoRegisterDivisionsFromSchools();
+          populateAllDynamicDropdowns();
+          populateAdminDirectSchoolDropdowns();
+          updateAllSummaryCounters();
+          renderPublicQuickFinder();
+          renderAdminDirectoryTable();
+          renderAdminCredentialsTable();
+          if (typeof renderAdminInfraNeedsDashboard === "function") renderAdminInfraNeedsDashboard();
+
+          if (statusEl) {
+            statusEl.textContent = `✅ "${file.name}" தமிழ் எழுத்துரு பாதுகாப்புடன் வெற்றிகரமாக ஒத்திசைக்கப்பட்டது! (புதுப்பிக்கப்பட்டவை: ${updated}, புதியவை: ${added}, மொத்தப் பள்ளிகள்: ${masterSchools.length})`;
           }
-        });
-        safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
-        populateAllDynamicDropdowns();
-        populateAdminDirectSchoolDropdowns();
-        updateAllSummaryCounters();
-        renderAdminDirectoryTable();
-        if (statusEl) {
-          statusEl.textContent = `✅ "${file.name}" வெற்றிகரமாக ஒத்திசைக்கப்பட்டது! (புதுப்பிக்கப்பட்டவை: ${updated}, புதியவை: ${added}, மொத்தப் பள்ளிகள்: ${masterSchools.length})`;
+          showToast(`✅ School Master கோப்பு ஒத்திசைவு வெற்றி! (புதுப்பிக்கப்பட்டவை: ${updated}, புதியவை: ${added})`, "#22c55e");
+        } catch (err) {
+          if (statusEl) statusEl.textContent = `❌ கோப்பு படிப்பதில் பிழை: ${err.message}`;
+          showToast(`❌ கோப்பு படிப்பதில் பிழை: ${err.message}`, "#ef4444");
         }
-        showToast(`✅ School Master கோப்பு ஒத்திசைவு வெற்றி! (புதுப்பிக்கப்பட்டவை: ${updated}, புதியவை: ${added})`, "#22c55e");
-      } catch (err) {
+      },
+      function(err) {
         if (statusEl) statusEl.textContent = `❌ கோப்பு படிப்பதில் பிழை: ${err.message}`;
         showToast(`❌ கோப்பு படிப்பதில் பிழை: ${err.message}`, "#ef4444");
       }
-    };
-    reader.readAsArrayBuffer(file);
+    );
   }
 
   // 2. Drag & Drop Event Handlers for Medium-Wise Upload
@@ -19632,7 +19956,7 @@ function testSendWhatsappOtpMenu() {
         reader.onload = function(e) {
           try {
             const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
+            const workbook = XLSX.read(data, { type: "array", codepage: 65001 });
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             const json = XLSX.utils.sheet_to_json(sheet);
             setTimeout(() => finishParsing(json), 400);
@@ -19873,7 +20197,7 @@ function testSendWhatsappOtpMenu() {
         reader.onload = function(e) {
           try {
             const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
+            const workbook = XLSX.read(data, { type: "array", codepage: 65001 });
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             const json = XLSX.utils.sheet_to_json(sheet);
             setTimeout(() => finishParsing(json), 600);

@@ -66,6 +66,7 @@ function onOpen() {
       .addItem("🛠️ 1. அனைத்து 10 தாவல்களையும் உருவாக்கு (Setup All 10 Tabs)", "setupPortalSheets")
       .addItem("📧 2. சோதனை Email OTP அனுப்புக (Test Email OTP)", "testSendEmailOtpMenu")
       .addItem("📲 3. சோதனை WhatsApp OTP அனுப்புக (Test WhatsApp OTP)", "testSendWhatsappOtpMenu")
+      .addItem("✨ 4. தமிழ் எழுத்துரு பிழைகளைத் தானாகச் சரிசெய் (Fix Tamil Font Mojibake)", "repairAllSheetTamilMojibakeMenu")
       .addToUi();
   } catch (e) {}
 }
@@ -681,13 +682,90 @@ function doPost(e) {
 }
 
 
+const CP1252_UNICODE_TO_BYTE_ = {
+  0x20AC: 0x80, 0x201A: 0x82, 0x0192: 0x83, 0x201E: 0x84, 0x2026: 0x85,
+  0x2020: 0x86, 0x2021: 0x87, 0x02C6: 0x88, 0x2030: 0x89, 0x0160: 0x8A,
+  0x2039: 0x8B, 0x0152: 0x8C, 0x017D: 0x8E, 0x2018: 0x91, 0x2019: 0x92,
+  0x201C: 0x93, 0x201D: 0x94, 0x2022: 0x95, 0x2013: 0x96, 0x2014: 0x97,
+  0x02DC: 0x98, 0x2122: 0x99, 0x0161: 0x9A, 0x203A: 0x9B, 0x0153: 0x9C,
+  0x017E: 0x9E, 0x0178: 0x9F
+};
+
+function decodeUtf8ByteArray_(bytes) {
+  let out = "", i = 0;
+  while (i < bytes.length) {
+    const b1 = bytes[i++];
+    if (b1 < 0x80) {
+      out += String.fromCharCode(b1);
+    } else if ((b1 & 0xE0) === 0xC0 && i < bytes.length) {
+      const b2 = bytes[i++];
+      out += String.fromCharCode(((b1 & 0x1F) << 6) | (b2 & 0x3F));
+    } else if ((b1 & 0xF0) === 0xE0 && i + 1 < bytes.length) {
+      const b2 = bytes[i++], b3 = bytes[i++];
+      out += String.fromCharCode(((b1 & 0x0F) << 12) | ((b2 & 0x3F) << 6) | (b3 & 0x3F));
+    } else if ((b1 & 0xF8) === 0xF0 && i + 2 < bytes.length) {
+      const b2 = bytes[i++], b3 = bytes[i++], b4 = bytes[i++];
+      const cp = ((b1 & 0x07) << 18) | ((b2 & 0x3F) << 12) | ((b3 & 0x3F) << 6) | (b4 & 0x3F);
+      out += String.fromCodePoint(cp);
+    }
+  }
+  return out;
+}
+
+function fixTamilMojibake_(val) {
+  if (val === null || val === undefined) return "";
+  let s = String(val);
+  if (!s) return "";
+  for (let pass = 0; pass < 2; pass++) {
+    if (!/(\u00E0[\u00AE\u00AF]|\u00C3[\u0080-\u00BF]|\u00E2[\u0080-\u00BF\u20AC-\u2122])/.test(s)) {
+      break;
+    }
+    const rawBytes = [];
+    for (let i = 0; i < s.length; i++) {
+      const cp = s.charCodeAt(i);
+      if (CP1252_UNICODE_TO_BYTE_[cp] !== undefined) {
+        rawBytes.push(CP1252_UNICODE_TO_BYTE_[cp]);
+      } else if (cp <= 0xFF) {
+        rawBytes.push(cp);
+      } else {
+        const encoded = unescape(encodeURIComponent(s.charAt(i)));
+        for (let j = 0; j < encoded.length; j++) {
+          rawBytes.push(encoded.charCodeAt(j));
+        }
+      }
+    }
+    const healedBytes = [];
+    for (let i = 0; i < rawBytes.length; i++) {
+      const b0 = rawBytes[i];
+      healedBytes.push(b0);
+      if (b0 === 0xE0 && i + 1 < rawBytes.length && (rawBytes[i + 1] === 0xAE || rawBytes[i + 1] === 0xAF)) {
+        const b1 = rawBytes[i + 1];
+        const b2 = rawBytes[i + 2];
+        const isCont = (b2 !== undefined && b2 >= 0x80 && b2 <= 0xBF);
+        if (!isCont) {
+          healedBytes.push(b1);
+          i += 1;
+          healedBytes.push(b1 === 0xAF ? 0x8D : 0x8F);
+        }
+      }
+    }
+    const decoded = decodeUtf8ByteArray_(healedBytes);
+    if (decoded && decoded !== s && decoded.indexOf("\uFFFD") === -1) {
+      s = decoded;
+    } else {
+      break;
+    }
+  }
+  return s;
+}
+
 function cleanSheetCellStr_(val) {
   if (val === null || val === undefined) return "";
   if (typeof val === "number") {
     if (Math.floor(val) === val) return String(Math.round(val));
     return String(val);
   }
-  return String(val).replace(/\.0$/, "").trim();
+  return fixTamilMojibake_(String(val).replace(/\.0$/, "").trim());
 }
 
 function inferSchoolLevel_(rawLevel, nameEn, nameTa) {
@@ -1155,4 +1233,11 @@ function testSendWhatsappOtpMenu() {
   const testOtp = String(Math.floor(100000 + Math.random() * 900000));
   const res = sendWhatsappOtpFromServer_("919626471035", testOtp, "ADMIN", "CEO OFFICE SIVAGANGAI", "Google Sheet Code.gs WhatsApp OTP Test");
   Logger.log("WhatsApp OTP Test Result: " + JSON.stringify(res));
+}
+
+function repairAllSheetTamilMojibakeMenu() {
+  const ss = getTargetSpreadsheet_("");
+  const nowStr = Utilities.formatDate(new Date(), "Asia/Kolkata", "dd-MM-yyyy hh:mm:ss a");
+  const merged = mergeAndWriteSchoolMasterSheet_(ss, [], nowStr);
+  Logger.log("Repaired SCHOOL_MASTER Tamil names for " + merged.length + " schools.");
 }
