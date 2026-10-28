@@ -3868,93 +3868,29 @@
 
       </div>
 
-      <!-- DEDICATED DIRECT CIRCULAR SENDING BOX ON ADMIN HOME DASHBOARD -->
-      <div id="adminHomeCircularDispatchBox" style="margin-top:20px; background:#ffffff; border:2px solid #dc2626; border-radius:12px; padding:18px; box-shadow:0 6px 20px rgba(220,38,38,0.08);">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-bottom:12px; border-bottom:2px solid #fee2e2; margin-bottom:14px;">
-          <div>
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <span style="font-size:1.15rem; font-weight:900; color:#991b1b;">📢 நிர்வாகி சுற்றறிக்கை அனுப்பும் பெட்டி (CEO / Admin Circular Dispatch Box)</span>
-              <span style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca; font-size:0.75rem; font-weight:900; padding:2px 10px; border-radius:999px;" id="admDirectBoxCirBadge">தற்போதைய சுற்றறிக்கைகள்: 0</span>
-            </div>
-            <div style="font-size:0.80rem; color:#64748b; margin-top:2px;">
-              இங்கிருந்து அனுப்பப்படும் சுற்றறிக்கைகள் உடனடியாக பள்ளிகளின் உள்நுழைவு முகப்பில் (பள்ளித்தகவல் பலகை மற்றும் சுற்றறிக்கை பகுதியில்) நேரடியாகக் காட்சிப்படுத்தப்படும்.
-            </div>
-          </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-danger btn-sm" onclick="clearAllDistrictCirculars()" style="font-weight:800;">
-              🗑️ அனைத்துச் சுற்றறிக்கைகளையும் நீக்கு (Clear All)
-            </button>
-          </div>
-        </div>
-
-        <div class="grid-2" style="gap:18px; align-items:start;">
-          <form onsubmit="handleAdminAddCircularFromBox(event, 'Home')" style="background:#fffafa; border:1.5px solid #fecaca; border-radius:10px; padding:14px;">
-            <div style="font-weight:900; color:#991b1b; font-size:0.92rem; margin-bottom:10px;">✍️ புதிய சுற்றறிக்கை உருவாக்கிப் பள்ளிகளுக்கு அனுப்புக:</div>
-            <div class="grid-2">
-              <div class="form-group">
-                <label class="form-label">சுற்றறிக்கை ந.க.எண் / பிரிவு (Category / Rc.No) <span class="required">*</span></label>
-                <input type="text" id="cirCategoryHome" class="form-control" placeholder="எ.கா: ந.க.எண்: 4210/அ1/2026 / CEO CIRCULAR" required>
-              </div>
-              <div class="form-group">
-                <label class="form-label">சுற்றறிக்கைத் தலைப்பு / கடைசி நாள் (Headline) <span class="required">*</span></label>
-                <input type="text" id="cirHeadlineHome" class="form-control" placeholder="எ.கா: நாள்: 24.10.2026 / உடனடி நடவடிக்கை" required>
-              </div>
-            </div>
-            <div class="grid-2">
-              <div class="form-group">
-                <label class="form-label">யாருக்கு அனுப்ப வேண்டும்? (Target Schools)</label>
-                <select id="cirTargetHome" class="form-control">
-                  <option value="ALL">அனைத்துப் பள்ளிகளுக்கும் (All 282 Schools)</option>
-                  <option value="1G">1G - அரசுப் பள்ளிகளுக்கு மட்டும் (Govt Schools Only)</option>
-                  <option value="2A">2A - அரசு உதவிபெறும் பள்ளிகளுக்கு மட்டும் (Aided Only)</option>
-                  <option value="3P">3P - தனியார் / மெட்ரிக் பள்ளிகளுக்கு மட்டும் (Private Only)</option>
-                  <option value="HSS">மேல்நிலைப்பள்ளிகளுக்கு மட்டும் (HSS Only)</option>
-                  <option value="HS">உயர்நிலைப்பள்ளிகளுக்கு மட்டும் (HS Only)</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">இணைப்பு முகவரி (Google Form / Sheet / PDF Link)</label>
-                <input type="url" id="cirLinkHome" class="form-control" placeholder="https://docs.google.com/...">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">விரிவான சுற்றறிக்கை விவரம் (Circular Message / Instructions) <span class="required">*</span></label>
-              <textarea id="cirDescHome" class="form-control" rows="3" placeholder="பள்ளிகளுக்கு அனுப்ப வேண்டிய சுற்றறிக்கை விவரத்தினை இங்கே உள்ளிடவும்..." required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block" style="background:#dc2626; border-color:#dc2626; font-weight:900; padding:10px;">
-              📢 பள்ளிகளுக்குச் சுற்றறிக்கை அனுப்பு (Send Circular Now)
-            </button>
-          </form>
-
-          <div>
-            <div style="font-weight:900; color:#0f294a; font-size:0.92rem; margin-bottom:8px;">📋 தற்போது பள்ளிகளுக்கு அனுப்பப்பட்டுள்ள சுற்றறிக்கைகள் பட்டியல்:</div>
-            <div id="admHomeCircularsManageList" style="max-height:320px; overflow-y:auto;"></div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- 2. ADMIN SECTION: SCHOOL MASTER & EMIS STAFF MANAGEMENT                   -->
+    <!-- 2. ADMIN SECTION: CONTEXTUAL MODULE WORKSPACE                             -->
     <!-- ========================================================================= -->
     <div id="admSectionSchoolMaster" style="display:none;">
-      <!-- Breadcrumb Bar -->
-      <div style="display:flex; justify-content:space-between; align-items:center; background:#eff6ff; border:2px solid #bfdbfe; border-radius:10px; padding:10px 16px; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+      <!-- Contextual Breadcrumb Bar -->
+      <div id="admModuleBreadcrumbBar" style="display:flex; justify-content:space-between; align-items:center; background:#eff6ff; border:2px solid #bfdbfe; border-radius:10px; padding:10px 16px; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
         <button type="button" class="btn btn-outline btn-sm" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff;">
           ⬅️ முதன்மை கட்டுப்பாட்டகம் (Back to Main Dashboard)
         </button>
-        <div style="font-size:1.15rem; font-weight:900; color:#0f294a; display:flex; align-items:center; gap:8px;">
+        <div id="admModuleHeaderTitle" style="font-size:1.15rem; font-weight:900; color:#0f294a; display:flex; align-items:center; gap:8px;">
           <span>🏫</span> 1. SCHOOL MASTER – சிவகங்கை மாவட்டப் பள்ளிகள் முதன்மை மேலாண்மை
         </div>
         <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
           <select id="admSecDirectSchoolSelect" style="display:none;"></select>
           <button type="button" class="btn btn-outline btn-sm" onclick="switchAdminTab('emisSync')" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#f0f9ff;">📥 அனைத்து Excel பதிவேற்றம் (Single Window)</button>
-          <button type="button" class="btn btn-primary btn-sm" onclick="switchAdminTab('addSchool')">➕ புதிய பள்ளி சேர்</button>
+          <button type="button" id="admHeaderAddSchoolBtn" class="btn btn-primary btn-sm" onclick="switchAdminTab('addSchool')">➕ புதிய பள்ளி சேர்</button>
         </div>
       </div>
 
-      <!-- Quick Summary Stat Cards -->
-      <div class="stat-grid">
+      <!-- Quick Summary Stat Cards (Shown only in 1. School Master Module) -->
+      <div class="stat-grid" id="admSchoolMasterStatGrid">
         <div class="stat-card" onclick="resetAdminDirectoryFilters()">
           <div class="stat-num" style="color:#0f294a;" id="admStatTotal">281</div>
           <div class="stat-label">மொத்தப் பள்ளிகள் (All)</div>
@@ -3985,20 +3921,34 @@
         </div>
       </div>
 
-      <!-- Navigation Sub-Tabs for School Master -->
-      <div class="nav-pills-bar" style="margin-bottom:16px;">
-        <button type="button" class="nav-pill-btn active" id="admTabBtnDirectory" onclick="switchAdminTab('directory')">📋 1. பள்ளிகள் பட்டியல் &amp; வடிகட்டி (Directory)</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnAddSchool" onclick="switchAdminTab('addSchool')">➕ 2. புதிய பள்ளிகள் &amp; Bulk Import</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnDivisions" onclick="switchAdminTab('divisions')">🗂️ 3. நிர்வாகப் பிரிவுகள் மேலாண்மை</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnCredentials" onclick="switchAdminTab('credentials')">🔑 4. பள்ளி கடவுச்சொல் மீட்பு</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnCentres" onclick="switchAdminTab('centres')">🏛️ 5. 10th &amp; 12th தேர்வு மையங்கள் (113 + 91)</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnTeacherMaster" onclick="switchAdminTab('teacherMaster')" style="border-color:#0284c7; background:#f0f9ff; color:#0369a1; font-weight:800;">👨‍🏫 6. Teacher Master &amp; தேடல் / வடிகட்டி (Staff Search)</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnEmisSync" onclick="switchAdminTab('emisSync')">📥 7. EMIS Excel பதிவேற்றம் (Upload &amp; Sync)</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnStudentsMaster" onclick="switchAdminTab('studentsMaster')" style="border-color:#10b981; background:#ecfdf5; color:#065f46; font-weight:800;">👨‍🎓 8. Students Master &amp; மாணவர் பதிவேடு (Student Search)</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnDignitaries" onclick="switchAdminTab('dignitaries')" style="border-color:#d97706; background:#fffbeb; color:#b45309; font-weight:800;">🏛️ 9. முக்கியப் பிரமுகர்கள் &amp; அதிகாரிகள் மேலாண்மை</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnCirculars" onclick="switchAdminTab('circulars')" style="border-color:#dc2626; background:#fef2f2; color:#b91c1c; font-weight:800;">📢 10. சுற்றறிக்கை அனுப்புதல் (Circulars)</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnHssGroups" onclick="switchAdminTab('hssGroups')" style="border-color:#0d9488; background:#f0fdfa; color:#0f766e; font-weight:800;">📚 11. HSS Group Master (மேல்நிலை பாடப்பிரிவுகள்)</button>
-        <button type="button" class="nav-pill-btn" id="admTabBtnDeleteReqs" onclick="switchAdminTab('deleteReqs')" style="display:none;">🗑️ 11. பணியாளர் நீக்கக் கோரிக்கைகள் (<span id="admNavDelReqBadge">0</span>)</button>
+      <!-- Contextual Sub-Navigation Bar (Shows only tabs belonging to the active Module) -->
+      <div class="nav-pills-bar" id="admContextualSubNavBar" style="margin-bottom:16px;">
+        <!-- GROUP 1: 1. SCHOOL MASTER (5 Tabs) -->
+        <button type="button" class="nav-pill-btn active" id="admTabBtnDirectory" data-mod-group="schoolMaster" onclick="switchAdminTab('directory')">📋 1. பள்ளிகள் பட்டியல் (Directory)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnAddSchool" data-mod-group="schoolMaster" onclick="switchAdminTab('addSchool')">➕ 2. புதிய பள்ளி சேர்த்தல் (Add School)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnDivisions" data-mod-group="schoolMaster" onclick="switchAdminTab('divisions')">🗂️ 3. நிர்வாகப் பிரிவுகள் (Divisions)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnCredentials" data-mod-group="schoolMaster" onclick="switchAdminTab('credentials')">🔑 4. கடவுச்சொல் விவரம் (Credentials)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnCentres" data-mod-group="schoolMaster" onclick="switchAdminTab('centres')">🏛️ 5. தேர்வு மையங்கள் (Exam Centres)</button>
+
+        <!-- GROUP 2: 2. EMIS STAFF MASTER (4 Tabs) -->
+        <button type="button" class="nav-pill-btn" id="admTabBtnTeacherMaster" data-mod-group="emisStaff" onclick="switchAdminTab('teacherMaster')" style="display:none;">👨‍🏫 1. பணியாளர் பதிவேடு (Staff Register)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnSeniorityList" data-mod-group="emisStaff" onclick="switchAdminTab('seniorityList')" style="display:none;">🎖️ 2. பணிமூப்புப் பட்டியல் (Seniority List)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnDeleteReqs" data-mod-group="emisStaff" onclick="switchAdminTab('deleteReqs')" style="display:none;">🗑️ 3. நீக்கக் கோரிக்கைகள் (<span id="admNavDelReqBadge">0</span>)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnStaffExcel" data-mod-group="emisStaff" onclick="switchAdminTab('staffExcelUpload')" style="display:none;">📥 4. Staff Excel பதிவேற்றம்</button>
+
+        <!-- GROUP 3: 3. STUDENTS MASTER (3 Tabs) -->
+        <button type="button" class="nav-pill-btn" id="admTabBtnStudentsMaster" data-mod-group="studentsMaster" onclick="switchAdminTab('studentsMaster')" style="display:none;">👨‍🎓 1. மாணவர் எண்ணிக்கை (Student Strength)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnHssGroups" data-mod-group="studentsMaster" onclick="switchAdminTab('hssGroups')" style="display:none;">📚 2. HSS Group Master (மேல்நிலை பாடப்பிரிவுகள்)</button>
+        <button type="button" class="nav-pill-btn" id="admTabBtnStudentExcel" data-mod-group="studentsMaster" onclick="switchAdminTab('studentExcelUpload')" style="display:none;">📥 3. Student Excel பதிவேற்றம்</button>
+
+        <!-- GROUP 4: 4. DIGNITARIES MANAGEMENT (Single Tab) -->
+        <button type="button" class="nav-pill-btn" id="admTabBtnDignitaries" data-mod-group="dignitaries" onclick="switchAdminTab('dignitaries')" style="display:none;">🏛️ முக்கியப் பிரமுகர்கள் &amp; அதிகாரிகள் மேலாண்மை</button>
+
+        <!-- GROUP 5: 5. CIRCULARS DISPATCH (Single Tab) -->
+        <button type="button" class="nav-pill-btn" id="admTabBtnCirculars" data-mod-group="circulars" onclick="switchAdminTab('circulars')" style="display:none;">📢 சுற்றறிக்கை அனுப்புதல் &amp; அறிவிப்புகள் மேலாண்மை (Circulars)</button>
+
+        <!-- GROUP 6: SINGLE-WINDOW ALL EXCEL SYNC -->
+        <button type="button" class="nav-pill-btn" id="admTabBtnEmisSync" data-mod-group="emisSync" onclick="switchAdminTab('emisSync')" style="display:none;">📥 அனைத்து Excel / CSV பதிவேற்ற மையம் (Single Window)</button>
       </div>
 
       <!-- ADMIN SUB-TAB 1: DIRECTORY & FILTER -->
@@ -4298,21 +4248,22 @@
 
     <!-- ADMIN SUB-TAB 5: 12_Ex_Cen EXAM CENTRES & CIRCULARS -->
 
-      <!-- ADMIN SUB-TAB 5: 10_Ex_Cen & 12_Ex_Cen EXAM CENTRES & CIRCULARS -->
+      <!-- ADMIN SUB-TAB 5: 10_Ex_Cen & 12_Ex_Cen EXAM CENTRES -->
       <div id="admPaneCentres" class="panel-box" style="display:none;">
-      <div class="grid-2">
         <div>
           <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
             <span>🏛️ 10-ஆம் வகுப்பு (113) &amp; 12-ஆம் வகுப்பு (91) பொதுத்தேர்வு மையங்கள் (School-Master)</span>
             <button type="button" class="btn btn-success btn-sm" onclick="exportExamCentresCsv()" style="font-weight:800;">📥 CSV பதிவிறக்கு</button>
           </div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
-            <button type="button" id="btnExamCenTabBoth" class="btn btn-primary btn-sm" onclick="setAdminExamCentreFilterMode('BOTH')" style="font-weight:800;">🏫 அனைத்து மையப் பள்ளிகள் (10th &amp; 12th)</button>
-            <button type="button" id="btnExamCenTab10" class="btn btn-outline btn-sm" onclick="setAdminExamCentreFilterMode('10')" style="font-weight:800;">📘 10th மையங்கள் (10_Ex_Cen: 113)</button>
-            <button type="button" id="btnExamCenTab12" class="btn btn-outline btn-sm" onclick="setAdminExamCentreFilterMode('12')" style="font-weight:800;">🎓 12th மையங்கள் (12_Ex_Cen: 91)</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" id="btnExamCenTabBoth" class="btn btn-primary btn-sm" onclick="setAdminExamCentreFilterMode('BOTH')" style="font-weight:800;">🏫 அனைத்து மையப் பள்ளிகள் (10th &amp; 12th)</button>
+              <button type="button" id="btnExamCenTab10" class="btn btn-outline btn-sm" onclick="setAdminExamCentreFilterMode('10')" style="font-weight:800;">📘 10th மையங்கள் (10_Ex_Cen: 113)</button>
+              <button type="button" id="btnExamCenTab12" class="btn btn-outline btn-sm" onclick="setAdminExamCentreFilterMode('12')" style="font-weight:800;">🎓 12th மையங்கள் (12_Ex_Cen: 91)</button>
+            </div>
+            <input type="text" id="admCentreSearch" class="form-control" style="max-width:380px;" placeholder="🔍 மைய எண் (208001), U.No, ஒன்றியம் அல்லது பள்ளிப் பெயர் தேடுக..." oninput="renderAdminExamCentresTable()">
           </div>
-          <input type="text" id="admCentreSearch" class="form-control" style="margin-bottom:10px;" placeholder="மைய எண் (208001), U.No, ஒன்றியம் அல்லது பள்ளிப் பெயர் தேடுக..." oninput="renderAdminExamCentresTable()">
-          <div class="table-wrap" style="max-height:430px;">
+          <div class="table-wrap" style="max-height:520px;">
             <table class="data-table">
               <thead>
                 <tr>
@@ -4328,37 +4279,15 @@
             </table>
           </div>
         </div>
-
-        <div>
-          <div class="panel-title"><span>📢 புதிய மாவட்ட சுற்றறிக்கை / விரைவுச் செய்தி வெளியிடுக</span></div>
-          <form onsubmit="handleAdminAddCircular(event)" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px; margin-bottom:14px;">
-            <div class="form-group">
-              <label class="form-label">செய்தி வகை / பிரிவு (Badge) <span class="required">*</span></label>
-              <input type="text" id="cirCategory" class="form-control" placeholder="எ.கா: CEO CIRCULAR / EXAM / SISF 2026" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">கடைசி நாள் / தலைப்பு (Headline) <span class="required">*</span></label>
-              <input type="text" id="cirHeadline" class="form-control" placeholder="எ.கா: LAST DATE: 30.10.2026" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">விரிவான அறிவிப்பு (Description) <span class="required">*</span></label>
-              <textarea id="cirDesc" class="form-control" rows="2" required></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">இணைப்பு முகவரி (Google Sheet / Form Link)</label>
-              <input type="url" id="cirLink" class="form-control" placeholder="https://docs.google.com/...">
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">📢 அறிவிப்பை வெளியிடு (Publish Circular)</button>
-          </form>
-          <div id="admCircularsManageList"></div>
-        </div>
       </div>
-    </div>
 
     <!-- ADMIN SUB-TAB 10: DEDICATED CIRCULARS DISPATCH BOX (#admPaneCirculars) -->
       <div id="admPaneCirculars" class="panel-box" style="display:none;">
-        <div class="panel-title">
-          <span>📢 பள்ளிகளுக்குச் சுற்றறிக்கை அனுப்பும் பெட்டி &amp; அறிவிப்புகள் மேலாண்மை (Admin Circulars Dispatch Center)</span>
+        <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span>📢 பள்ளிகளுக்குச் சுற்றறிக்கை அனுப்பும் பெட்டி &amp; அறிவிப்புகள் மேலாண்மை (Admin Circulars Dispatch Center)</span>
+            <span style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca; font-size:0.78rem; font-weight:900; padding:3px 12px; border-radius:999px;" id="admDirectBoxCirBadge">தற்போதைய சுற்றறிக்கைகள்: 0</span>
+          </div>
           <button type="button" class="btn btn-danger btn-sm" onclick="clearAllDistrictCirculars()" style="font-weight:800;">
             🗑️ அனைத்துச் சுற்றறிக்கைகளையும் நீக்கு (Clear All)
           </button>
@@ -4592,13 +4521,13 @@
       <!-- ADMIN SUB-TAB 6: TEACHER MASTER & ADVANCED SEARCH -->
       <div id="admPaneTeacherMaster" class="panel-box" style="display:none;">
         <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <span>👨‍🏫 Teacher Master – சிவகங்கை மாவட்ட ஆசிரியர்கள் &amp; பணியாளர்கள் முதன்மைப் பதிவேடு (7,081 Staff Roster)</span>
+          <span id="admTeacherMasterMainHeading">👨‍🏫 பணியாளர் பதிவேடு – சிவகங்கை மாவட்ட ஆசிரியர்கள் &amp; பணியாளர்கள் முதன்மைப் பதிவேடு (7,081 Staff Roster)</span>
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <span style="font-size:0.78rem; font-weight:800; background:#f0fdf4; color:#166534; padding:3px 10px; border-radius:999px; border:1px solid #bbf7d0;">
               🟢 TN EMIS நேரடித் தரவு (7,081 பணியாளர்கள்)
             </span>
-            <button type="button" class="btn btn-outline btn-sm" onclick="switchAdminTab('emisSync')">
-              📥 புதிய EMIS Excel பதிவேற்றம் ❯
+            <button type="button" class="btn btn-outline btn-sm" onclick="switchAdminTab('staffExcelUpload')">
+              📥 புதிய Staff Excel பதிவேற்றம் ❯
             </button>
           </div>
         </div>
@@ -5072,7 +5001,7 @@
       </div>
 
       <!-- Single-Window Stacked Excel Upload Banner & Quick Jump Navigation Bar -->
-      <div style="background:linear-gradient(135deg, #0f294a 0%, #1e3a8a 100%); color:#fff; border-radius:12px; padding:14px 18px; margin-bottom:18px; border-left:6px solid #f59e0b;">
+      <div id="admEmisSyncSingleWinBanner" style="background:linear-gradient(135deg, #0f294a 0%, #1e3a8a 100%); color:#fff; border-radius:12px; padding:14px 18px; margin-bottom:18px; border-left:6px solid #f59e0b;">
         <div style="font-size:1rem; font-weight:900; color:#fde047; margin-bottom:4px;">
           ⚡ அனைத்து Excel / CSV கோப்புகள் ஒற்றைச் சாளரப் பதிவேற்ற மையம் (All-in-One Single Window Excel Files Upload Center)
         </div>
@@ -5674,10 +5603,10 @@
             </div>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-sm" onclick="switchAdminTab('emisSync'); switchEmisSyncSubTab('medium');" style="background:#ffffff; color:#065f46; font-weight:800; border:none; padding:7px 15px; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.12); cursor:pointer;">
+            <button type="button" class="btn btn-sm" onclick="switchAdminTab('studentExcelUpload'); switchEmisSyncSubTab('medium');" style="background:#ffffff; color:#065f46; font-weight:800; border:none; padding:7px 15px; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.12); cursor:pointer;">
               🌐 பயிற்றுமொழி வாரியான கோப்பு பதிவேற்றம் (Medium-wise Upload) ❯
             </button>
-            <button type="button" class="btn btn-sm" onclick="switchAdminTab('emisSync'); switchEmisSyncSubTab('group');" style="background:#fef08a; color:#78350f; font-weight:800; border:none; padding:7px 15px; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.12); cursor:pointer;">
+            <button type="button" class="btn btn-sm" onclick="switchAdminTab('studentExcelUpload'); switchEmisSyncSubTab('group');" style="background:#fef08a; color:#78350f; font-weight:800; border:none; padding:7px 15px; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.12); cursor:pointer;">
               📚 பாடப்பிரிவு வாரியான கோப்பு பதிவேற்றம் (Group-wise Upload) ❯
             </button>
           </div>
@@ -12037,6 +11966,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  let currentAdminTabKey = "directory";
+
   function openAdminModule(modKey) {
     const chooser = document.getElementById("admMainPortalChooser");
     const secSch = document.getElementById("admSectionSchoolMaster");
@@ -12059,36 +11990,133 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function applyContextualEmisSyncFilter(mode) {
+    const banner = document.getElementById("admEmisSyncSingleWinBanner");
+    const sStaff = document.getElementById("secEmisStaffUpload");
+    const sMed = document.getElementById("secEmisMediumUpload");
+    const sGrp = document.getElementById("secEmisGroupUpload");
+    const sTpl = document.getElementById("secEmisHssGroupTemplateUpload");
+    const sSch = document.getElementById("secEmisSchoolMasterUpload");
+
+    if (mode === "staffExcelUpload") {
+      if (banner) banner.style.display = "none";
+      if (sStaff) sStaff.style.display = "block";
+      if (sMed) sMed.style.display = "none";
+      if (sGrp) sGrp.style.display = "none";
+      if (sTpl) sTpl.style.display = "none";
+      if (sSch) sSch.style.display = "none";
+    } else if (mode === "studentExcelUpload") {
+      if (banner) banner.style.display = "none";
+      if (sStaff) sStaff.style.display = "none";
+      if (sMed) sMed.style.display = "block";
+      if (sGrp) sGrp.style.display = "block";
+      if (sTpl) sTpl.style.display = "block";
+      if (sSch) sSch.style.display = "none";
+    } else {
+      if (banner) banner.style.display = "block";
+      if (sStaff) sStaff.style.display = "block";
+      if (sMed) sMed.style.display = "block";
+      if (sGrp) sGrp.style.display = "block";
+      if (sTpl) sTpl.style.display = "block";
+      if (sSch) sSch.style.display = "block";
+    }
+  }
+
   function switchAdminTab(tabKey) {
+    currentAdminTabKey = tabKey;
     const chooser = document.getElementById("admMainPortalChooser");
     const secSch = document.getElementById("admSectionSchoolMaster");
     if (chooser) chooser.style.display = "none";
     if (secSch) secSch.style.display = "block";
 
-    const map = {
-      directory: ["admTabBtnDirectory", "admPaneDirectory"],
-      addSchool: ["admTabBtnAddSchool", "admPaneAddSchool"],
-      divisions: ["admTabBtnDivisions", "admPaneDivisions"],
-      credentials: ["admTabBtnCredentials", "admPaneCredentials"],
-      centres: ["admTabBtnCentres", "admPaneCentres"],
-      teacherMaster: ["admTabBtnTeacherMaster", "admPaneTeacherMaster"],
-      emisSync: ["admTabBtnEmisSync", "admPaneEmisSync"],
-      studentsMaster: ["admTabBtnStudentsMaster", "admPaneStudentsMaster"],
-      dignitaries: ["admTabBtnDignitaries", "admPaneDignitaries"],
-      circulars: ["admTabBtnCirculars", "admPaneCirculars"],
-      hssGroups: ["admTabBtnHssGroups", "admPaneHssGroups"],
-      deleteReqs: ["admTabBtnDeleteReqs", "admPaneDeleteReqs"]
+    const tabConfig = {
+      // Group 1: School Master (5 Tabs)
+      directory:          { btn: "admTabBtnDirectory",      pane: "admPaneDirectory",      group: "schoolMaster" },
+      addSchool:          { btn: "admTabBtnAddSchool",      pane: "admPaneAddSchool",      group: "schoolMaster" },
+      divisions:          { btn: "admTabBtnDivisions",      pane: "admPaneDivisions",      group: "schoolMaster" },
+      credentials:        { btn: "admTabBtnCredentials",    pane: "admPaneCredentials",    group: "schoolMaster" },
+      centres:            { btn: "admTabBtnCentres",        pane: "admPaneCentres",        group: "schoolMaster" },
+      // Group 2: EMIS Staff Master (4 Tabs)
+      teacherMaster:      { btn: "admTabBtnTeacherMaster",  pane: "admPaneTeacherMaster",  group: "emisStaff" },
+      seniorityList:      { btn: "admTabBtnSeniorityList",  pane: "admPaneTeacherMaster",  group: "emisStaff" },
+      deleteReqs:         { btn: "admTabBtnDeleteReqs",     pane: "admPaneDeleteReqs",     group: "emisStaff" },
+      staffExcelUpload:   { btn: "admTabBtnStaffExcel",     pane: "admPaneEmisSync",       group: "emisStaff" },
+      // Group 3: Students Master (3 Tabs)
+      studentsMaster:     { btn: "admTabBtnStudentsMaster", pane: "admPaneStudentsMaster", group: "studentsMaster" },
+      hssGroups:          { btn: "admTabBtnHssGroups",      pane: "admPaneHssGroups",      group: "studentsMaster" },
+      studentExcelUpload: { btn: "admTabBtnStudentExcel",   pane: "admPaneEmisSync",       group: "studentsMaster" },
+      // Group 4: Dignitaries (MOD 04)
+      dignitaries:        { btn: "admTabBtnDignitaries",    pane: "admPaneDignitaries",    group: "dignitaries" },
+      // Group 5: Circulars (MOD 05)
+      circulars:          { btn: "admTabBtnCirculars",      pane: "admPaneCirculars",      group: "circulars" },
+      // Group 6: All-in-One Excel Sync
+      emisSync:           { btn: "admTabBtnEmisSync",       pane: "admPaneEmisSync",       group: "emisSync" }
     };
-    Object.keys(map).forEach(k => {
-      const [btnId, paneId] = map[k];
-      const btn = document.getElementById(btnId);
-      const pane = document.getElementById(paneId);
-      if (btn) btn.classList.toggle("active", k === tabKey);
-      if (pane) pane.style.display = (k === tabKey) ? "block" : "none";
+
+    const current = tabConfig[tabKey] || tabConfig.directory;
+    const activeGroup = current.group;
+
+    // 1. Update Contextual Sub-Navigation Pills (Show ONLY buttons in activeGroup)
+    const navBar = document.getElementById("admContextualSubNavBar");
+    if (navBar) {
+      const buttons = navBar.querySelectorAll(".nav-pill-btn[data-mod-group]");
+      buttons.forEach(btn => {
+        const g = btn.getAttribute("data-mod-group");
+        btn.style.display = (g === activeGroup) ? "inline-flex" : "none";
+        btn.classList.toggle("active", btn.id === current.btn);
+      });
+    }
+
+    // 2. Update Contextual Header Title & School Master Stat Grid visibility
+    const headerTitle = document.getElementById("admModuleHeaderTitle");
+    const statGrid = document.getElementById("admSchoolMasterStatGrid");
+    const addSchoolBtn = document.getElementById("admHeaderAddSchoolBtn");
+    const groupTitles = {
+      schoolMaster:   "<span>🏫</span> 1. SCHOOL MASTER – சிவகங்கை மாவட்டப் பள்ளிகள் முதன்மை மேலாண்மை",
+      emisStaff:      "<span>👨‍🏫</span> 2. EMIS STAFF MASTER – ஆசிரியர்கள் &amp; பணியாளர்கள் முதன்மை மேலாண்மை",
+      studentsMaster: "<span>👨‍🎓</span> 3. STUDENTS MASTER – மாணவர்கள் எண்ணிக்கை &amp; மேல்நிலை பாடப்பிரிவு மேலாண்மை",
+      dignitaries:    "<span>🏛️</span> 4. முக்கியப் பிரமுகர்கள் &amp; அதிகாரிகள் மேலாண்மை",
+      circulars:      "<span>📢</span> 5. சுற்றறிக்கை அனுப்புதல் – மாவட்ட சுற்றறிக்கை &amp; அறிவிப்புகள் கட்டுப்பாட்டகம்",
+      emisSync:       "<span>📥</span> அனைத்து Excel / CSV கோப்புகள் ஒற்றைச் சாளரப் பதிவேற்ற மையம்"
+    };
+    if (headerTitle && groupTitles[activeGroup]) {
+      headerTitle.innerHTML = groupTitles[activeGroup];
+    }
+    if (statGrid) {
+      statGrid.style.display = (activeGroup === "schoolMaster") ? "" : "none";
+    }
+    if (addSchoolBtn) {
+      addSchoolBtn.style.display = (activeGroup === "schoolMaster") ? "" : "none";
+    }
+
+    // 3. Show only the active Pane
+    const allPanes = [
+      "admPaneDirectory", "admPaneAddSchool", "admPaneDivisions", "admPaneCredentials",
+      "admPaneCentres", "admPaneTeacherMaster", "admPaneEmisSync", "admPaneStudentsMaster",
+      "admPaneDignitaries", "admPaneCirculars", "admPaneHssGroups", "admPaneDeleteReqs"
+    ];
+    allPanes.forEach(pId => {
+      const pane = document.getElementById(pId);
+      if (pane) pane.style.display = (pId === current.pane) ? "block" : "none";
     });
 
-    if (tabKey === "teacherMaster") {
+    // 4. Contextual Pane Setup & Render
+    if (tabKey === "teacherMaster" || tabKey === "seniorityList") {
+      const senBox = document.getElementById("admSeniorityConfigBox");
+      const headingEl = document.getElementById("admTeacherMasterMainHeading");
+      if (tabKey === "seniorityList") {
+        isSeniorityMode = true;
+        if (senBox) senBox.style.display = "block";
+        if (headingEl) headingEl.textContent = "🎖️ பணிமூப்புப் பட்டியல் – சிவகங்கை மாவட்ட ஆசிரியர் & பணியாளர் முன்னுரிமைப் பட்டியல் (Seniority Panel)";
+      } else {
+        isSeniorityMode = false;
+        if (senBox) senBox.style.display = "none";
+        if (headingEl) headingEl.textContent = "👨‍🏫 பணியாளர் பதிவேடு – சிவகங்கை மாவட்ட ஆசிரியர்கள் & பணியாளர்கள் முதன்மைப் பதிவேடு (7,081 Staff Roster)";
+      }
+      if (typeof updateSeniorityModeUI === "function") updateSeniorityModeUI();
       renderAdminTeacherMasterUI();
+    } else if (tabKey === "staffExcelUpload" || tabKey === "studentExcelUpload" || tabKey === "emisSync") {
+      applyContextualEmisSyncFilter(tabKey);
     } else if (tabKey === "studentsMaster") {
       renderAdminStudentsMasterUI();
     } else if (tabKey === "dignitaries") {
@@ -12744,25 +12772,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   }
 
   function handleAdminAddCircular(event) {
-    event.preventDefault();
-    const cir = {
-      id: "CIR-" + Date.now(),
-      category: document.getElementById("cirCategory").value.trim(),
-      headline: document.getElementById("cirHeadline").value.trim(),
-      target: "ALL",
-      desc: document.getElementById("cirDesc").value.trim(),
-      link: document.getElementById("cirLink").value.trim(),
-      createdAt: new Date().toLocaleString("en-IN")
-    };
-    districtCirculars.unshift(cir);
-    safeSetStorage("CEOSVG_CIRCULARS", districtCirculars);
-    document.getElementById("cirCategory").value = "";
-    document.getElementById("cirHeadline").value = "";
-    document.getElementById("cirDesc").value = "";
-    document.getElementById("cirLink").value = "";
-    renderAdminCircularsList();
-    cycleFlashNews();
-    showToast("📢 புதிய சுற்றறிக்கை பள்ளிகளுக்கு வெற்றிகரமாக அனுப்பப்பட்டது!", "#22c55e");
+    return handleAdminAddCircularFromBox(event, "Pane");
   }
 
   function handleAdminAddCircularFromBox(event, suffix) {
@@ -12850,10 +12860,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         </div>
       `).join("");
 
-    ["admCircularsManageList", "admHomeCircularsManageList", "admPaneCircularsManageList"].forEach(id => {
-      const box = document.getElementById(id);
-      if (box) box.innerHTML = htmlList;
-    });
+    const paneCirBox = document.getElementById("admPaneCircularsManageList");
+    if (paneCirBox) paneCirBox.innerHTML = htmlList;
   }
 
   function exportFilteredSchoolsCsv() {
@@ -18418,16 +18426,14 @@ function testSendWhatsappOtpMenu() {
       hssTemplate: ["subTabEmisHssTemplate", "secEmisHssGroupTemplateUpload"],
       schoolMaster: ["subTabEmisSchoolMaster", "secEmisSchoolMasterUpload"]
     };
-    // Keep ALL 5 upload sections visible in Single Window (ஒன்றன்கீழ் ஒன்றாக) and scroll smoothly to the requested section
-    Object.keys(map).forEach(k => {
-      const [, secId] = map[k];
-      const sec = document.getElementById(secId);
-      if (sec) sec.style.display = "block";
-    });
+    applyContextualEmisSyncFilter(currentAdminTabKey);
     if (subKey && map[subKey]) {
       const targetSec = document.getElementById(map[subKey][1]);
-      if (targetSec && typeof targetSec.scrollIntoView === "function") {
-        targetSec.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (targetSec) {
+        targetSec.style.display = "block";
+        if (typeof targetSec.scrollIntoView === "function") {
+          targetSec.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       }
     }
   }
