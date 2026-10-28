@@ -231,6 +231,11 @@ function doGet(e) {
       return jsonResponse_({ ok: true, emailSent: emRes.sent, whatsappSent: waRes.sent });
     }
 
+    if (action === "get_school_master") {
+      const schoolsOnly = readAndNormalizeSchoolMasterSheet_(ss, nowStr);
+      return jsonResponse_({ ok: true, schools: schoolsOnly, count: schoolsOnly.length, timestamp: nowStr });
+    }
+
     if (action === "get_auth_store" || action === "get_full_portal_snapshot") {
       const authSheet = ss.getSheetByName("SCHOOL_AUTH");
       const aRows = authSheet.getLastRow() > 1 ? authSheet.getRange(2, 1, authSheet.getLastRow() - 1, 11).getValues() : [];
@@ -257,28 +262,7 @@ function doGet(e) {
         return jsonResponse_({ ok: true, authStore: authMap });
       }
 
-      const mSheet = ss.getSheetByName("SCHOOL_MASTER");
-      const mRows = mSheet.getLastRow() > 1 ? mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).getValues() : [];
-      const schools = mRows.map(function(r) {
-        return {
-          sn: Number(r[0]) || 0,
-          uNo: String(r[1] || "").trim(),
-          udiseNo: String(r[2] || "").trim(),
-          dgeNo: String(r[3] || "").trim(),
-          block: String(r[4] || "").trim(),
-          assembly: String(r[5] || "").trim(),
-          nameEn: String(r[6] || "").trim(),
-          nameTa: String(r[7] || "").trim(),
-          mgmt1: String(r[8] || "1G").trim(),
-          level: String(r[9] || "HS").trim(),
-          centre10: String(r[10] || "").trim(),
-          centre12: String(r[11] || "").trim(),
-          hmName: String(r[12] || "").trim(),
-          hmTa: String(r[13] || "").trim(),
-          mobile: String(r[14] || "").trim(),
-          email: String(r[15] || "").trim()
-        };
-      }).filter(function(s) { return Boolean(s.uNo); });
+      const schools = readAndNormalizeSchoolMasterSheet_(ss, nowStr);
 
       const gSheet = ss.getSheetByName("HSS_GROUP_MASTER");
       const gRows = gSheet.getLastRow() > 1 ? gSheet.getRange(2, 1, gSheet.getLastRow() - 1, 11).getValues() : [];
@@ -347,7 +331,7 @@ function doGet(e) {
       stRows.forEach(function(r) {
         const k = String(r[0] || "").trim();
         const j = String(r[1] || "").trim();
-        if (k && j) {
+        if (k && k !== "CEOSVG_MASTER_SCHOOLS" && j) {
           try { portalStores[k] = JSON.parse(j); } catch (e) {}
         }
       });
@@ -457,20 +441,8 @@ function doPost(e) {
       }
 
       if (syncType === "school_master_bulk" && Array.isArray(data.schools)) {
-        const mSheet = ss.getSheetByName("SCHOOL_MASTER");
-        if (mSheet.getLastRow() > 1) mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
-        if (data.schools.length > 0) {
-          const mRows = data.schools.map(function(s, idx) {
-            return [
-              s.sn || (idx + 1), s.uNo || "", s.udiseNo || "", s.dgeNo || "",
-              s.block || "", s.assembly || "", s.nameEn || "", s.nameTa || "",
-              s.mgmt1 || "", s.level || "", s.centre10 || "", s.centre12 || "",
-              s.hmName || "", s.hmTa || "", s.mobile || "", s.email || "", nowStr
-            ];
-          });
-          mSheet.getRange(2, 1, mRows.length, 17).setValues(mRows);
-        }
-        return jsonResponse_({ ok: true, syncType: syncType, count: data.schools.length });
+        const mergedSchools = mergeAndWriteSchoolMasterSheet_(ss, data.schools, nowStr);
+        return jsonResponse_({ ok: true, syncType: syncType, count: mergedSchools.length, mergedSchools: mergedSchools });
       }
 
       if (syncType === "school_auth_single" && data.auth) {
@@ -624,19 +596,10 @@ function doPost(e) {
     if (action === "seed_all_to_sheet") {
       let masterCount = 0, authCount = 0, stuCount = 0, grpMasterCount = 0, grpStrengthCount = 0;
 
+      let mergedSchoolsResult = [];
       if (Array.isArray(data.schools) && data.schools.length > 0) {
-        const mSheet = ss.getSheetByName("SCHOOL_MASTER");
-        if (mSheet.getLastRow() > 1) mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
-        const mRows = data.schools.map(function(s, idx) {
-          return [
-            s.sn || (idx + 1), s.uNo || "", s.udiseNo || "", s.dgeNo || "",
-            s.block || "", s.assembly || "", s.nameEn || "", s.nameTa || "",
-            s.mgmt1 || "", s.level || "", s.centre10 || "", s.centre12 || "",
-            s.hmName || "", s.hmTa || "", s.mobile || "", s.email || "", nowStr
-          ];
-        });
-        mSheet.getRange(2, 1, mRows.length, 17).setValues(mRows);
-        masterCount = mRows.length;
+        mergedSchoolsResult = mergeAndWriteSchoolMasterSheet_(ss, data.schools, nowStr);
+        masterCount = mergedSchoolsResult.length;
       }
 
       if (Array.isArray(data.authList) && data.authList.length > 0) {
@@ -703,6 +666,7 @@ function doPost(e) {
       return jsonResponse_({
         ok: true,
         masterCount: masterCount,
+        mergedSchools: mergedSchoolsResult,
         authCount: authCount,
         stuCount: stuCount,
         grpMasterCount: grpMasterCount,
@@ -714,6 +678,252 @@ function doPost(e) {
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
   }
+}
+
+
+function cleanSheetCellStr_(val) {
+  if (val === null || val === undefined) return "";
+  if (typeof val === "number") {
+    if (Math.floor(val) === val) return String(Math.round(val));
+    return String(val);
+  }
+  return String(val).replace(/\.0$/, "").trim();
+}
+
+function inferSchoolLevel_(rawLevel, nameEn, nameTa) {
+  const lv = String(rawLevel || "").trim().toUpperCase();
+  if (lv === "HSS" || lv === "HS" || lv === "MS" || lv === "PS") return lv;
+  const combined = (String(nameEn || "") + " " + String(nameTa || "")).toUpperCase();
+  if (combined.indexOf("HSS") !== -1 || combined.indexOf("HR SEC") !== -1 || combined.indexOf("HIGHER SECONDARY") !== -1 || combined.indexOf("மேல்நிலை") !== -1) {
+    return "HSS";
+  }
+  if (combined.indexOf(" MS") !== -1 || combined.indexOf("MIDDLE") !== -1 || combined.indexOf("நடுநிலை") !== -1) {
+    return "MS";
+  }
+  return "HS";
+}
+
+function readAndNormalizeSchoolMasterSheet_(ss, nowStr) {
+  const mSheet = ss.getSheetByName("SCHOOL_MASTER");
+  const legacySheet = ss.getSheetByName("SCHOOL") || ss.getSheetByName("School Master");
+  const byUNo = {};
+  const byUdise = {};
+  const orderedList = [];
+  let maxNumericUNo = 385;
+
+  function scanMaxUNo(rows) {
+    rows.forEach(function(r) {
+      const u = cleanSheetCellStr_(r[1]);
+      const n = Number(u);
+      if (!isNaN(n) && n > 100 && n < 900 && n > maxNumericUNo) {
+        maxNumericUNo = n;
+      }
+    });
+  }
+
+  const mRows = (mSheet && mSheet.getLastRow() > 1)
+    ? mSheet.getRange(2, 1, mSheet.getLastRow() - 1, Math.min(17, Math.max(11, mSheet.getLastColumn()))).getDisplayValues()
+    : [];
+  const legRows = (legacySheet && legacySheet.getLastRow() > 1)
+    ? legacySheet.getRange(2, 1, legacySheet.getLastRow() - 1, Math.min(16, Math.max(11, legacySheet.getLastColumn()))).getDisplayValues()
+    : [];
+
+  scanMaxUNo(mRows);
+  scanMaxUNo(legRows);
+
+  let autoAssignedInMaster = false;
+
+  function parseRowIntoSchoolObj(r, isLegacyTab, rowIdx0) {
+    let uNo = cleanSheetCellStr_(r[1]);
+    const udiseNo = cleanSheetCellStr_(r[2]).replace(/\s+/g, "");
+    const dgeNo = cleanSheetCellStr_(r[3]);
+    const block = cleanSheetCellStr_(r[4]);
+    const assembly = cleanSheetCellStr_(r[5]);
+    const nameEn = cleanSheetCellStr_(r[6]).replace(/\s+/g, " ");
+    const nameTa = cleanSheetCellStr_(r[7]).replace(/\s+/g, " ");
+
+    // Skip empty rows or repeated header rows
+    const uUpper = uNo.toUpperCase();
+    if (uUpper === "U.NO" || uUpper === "UN. NO" || uUpper === "UN.NO" || uUpper === "S.NO" || udiseNo.toUpperCase() === "UDISE" || udiseNo.toUpperCase() === "UDISE_NO") {
+      return null;
+    }
+    if (!uNo && !udiseNo && !nameEn && !nameTa) {
+      return null;
+    }
+
+    // If a new school was added in Google Sheet without U.NO, check if UDISE already matches or assign a new U.NO
+    if (!uNo) {
+      if (udiseNo && byUdise[udiseNo]) {
+        uNo = byUdise[udiseNo].uNo;
+      } else {
+        maxNumericUNo++;
+        uNo = String(maxNumericUNo);
+        if (!isLegacyTab && mSheet) {
+          try {
+            mSheet.getRange(rowIdx0 + 2, 2).setValue(uNo);
+            if (!cleanSheetCellStr_(r[0])) {
+              mSheet.getRange(rowIdx0 + 2, 1).setValue(rowIdx0 + 1);
+            }
+            autoAssignedInMaster = true;
+          } catch (e) {}
+        }
+      }
+    }
+
+    const mgmt1 = cleanSheetCellStr_(r[8]) || "1G";
+    const col9 = cleanSheetCellStr_(r[9]);
+    const isCol9Level = /^(HSS|HS|MS|PS)$/i.test(col9);
+    const level = inferSchoolLevel_(isCol9Level ? col9 : "", nameEn, nameTa);
+    const mgmt2 = (!isCol9Level && col9) ? col9 : (mgmt1 === "1G" ? "1" : (mgmt1 === "2A" ? "5" : "7"));
+    const mgmt3 = isLegacyTab ? cleanSheetCellStr_(r[10]) : "";
+    const centre10 = !isLegacyTab ? cleanSheetCellStr_(r[10]) : "";
+    const centre12 = !isLegacyTab ? cleanSheetCellStr_(r[11]) : "";
+    const hmName = !isLegacyTab ? cleanSheetCellStr_(r[12]) : "";
+    const hmTa = !isLegacyTab ? cleanSheetCellStr_(r[13]) : "";
+    const mobile = !isLegacyTab ? cleanSheetCellStr_(r[14]) : "";
+    const email = !isLegacyTab ? cleanSheetCellStr_(r[15]) : "";
+
+    return {
+      sn: Number(cleanSheetCellStr_(r[0])) || (orderedList.length + 1),
+      uNo: uNo,
+      udiseNo: udiseNo,
+      dgeNo: dgeNo,
+      block: block,
+      assembly: assembly,
+      nameEn: nameEn || nameTa || ("SCHOOL " + uNo),
+      nameTa: nameTa || nameEn || ("பள்ளி " + uNo),
+      mgmt1: mgmt1,
+      mgmt2: mgmt2,
+      mgmt3: mgmt3,
+      level: level,
+      centre10: centre10,
+      centre12: centre12,
+      isExamCentre: Boolean(centre10 || centre12),
+      hmName: hmName,
+      hmTa: hmTa,
+      mobile: mobile,
+      email: email
+    };
+  }
+
+  function upsertInMap(sch) {
+    if (!sch || !sch.uNo) return;
+    const existing = byUNo[sch.uNo] || (sch.udiseNo ? byUdise[sch.udiseNo] : null);
+    if (existing) {
+      Object.keys(sch).forEach(function(k) {
+        if (sch[k] !== "" && sch[k] !== null && sch[k] !== undefined) {
+          existing[k] = sch[k];
+        }
+      });
+      byUNo[existing.uNo] = existing;
+      if (existing.udiseNo) byUdise[existing.udiseNo] = existing;
+    } else {
+      byUNo[sch.uNo] = sch;
+      if (sch.udiseNo) byUdise[sch.udiseNo] = sch;
+      orderedList.push(sch);
+    }
+  }
+
+  mRows.forEach(function(r, idx) {
+    upsertInMap(parseRowIntoSchoolObj(r, false, idx));
+  });
+  legRows.forEach(function(r, idx) {
+    upsertInMap(parseRowIntoSchoolObj(r, true, idx));
+  });
+
+  orderedList.forEach(function(s, i) {
+    if (!s.sn) s.sn = i + 1;
+  });
+
+  return orderedList;
+}
+
+function mergeAndWriteSchoolMasterSheet_(ss, incomingSchools, nowStr) {
+  const mSheet = ss.getSheetByName("SCHOOL_MASTER");
+  const existingOnSheet = readAndNormalizeSchoolMasterSheet_(ss, nowStr);
+  const byUNo = {};
+  const byUdise = {};
+  const mergedList = [];
+
+  function addOrMergeSchool(s, isFromIncoming) {
+    if (!s || typeof s !== "object") return;
+    const uNo = cleanSheetCellStr_(s.uNo);
+    const udiseNo = cleanSheetCellStr_(s.udiseNo).replace(/\s+/g, "");
+    const nameEn = cleanSheetCellStr_(s.nameEn).replace(/\s+/g, " ");
+    const nameTa = cleanSheetCellStr_(s.nameTa).replace(/\s+/g, " ");
+    if (!uNo && !udiseNo && !nameEn && !nameTa) return;
+
+    const match = (uNo && byUNo[uNo]) ? byUNo[uNo] : (udiseNo && byUdise[udiseNo] ? byUdise[udiseNo] : null);
+    if (match) {
+      // Preserve Sheet-added non-empty fields while applying incoming updates
+      const fields = ["udiseNo", "dgeNo", "block", "assembly", "nameEn", "nameTa", "mgmt1", "mgmt2", "mgmt3", "level", "centre10", "centre12", "hmName", "hmTa", "mobile", "email"];
+      fields.forEach(function(f) {
+        const val = cleanSheetCellStr_(s[f]);
+        if (val) {
+          if (isFromIncoming && !match[f]) {
+            match[f] = val;
+          } else if (isFromIncoming) {
+            match[f] = val;
+          }
+        }
+      });
+      match.isExamCentre = Boolean(match.centre10 || match.centre12);
+    } else {
+      const effectiveUNo = uNo || ("SCH_" + (mergedList.length + 1));
+      const mgmt1 = cleanSheetCellStr_(s.mgmt1) || "1G";
+      const obj = {
+        sn: Number(s.sn) || (mergedList.length + 1),
+        uNo: effectiveUNo,
+        udiseNo: udiseNo,
+        dgeNo: cleanSheetCellStr_(s.dgeNo),
+        block: cleanSheetCellStr_(s.block),
+        assembly: cleanSheetCellStr_(s.assembly),
+        nameEn: nameEn || nameTa || ("SCHOOL " + effectiveUNo),
+        nameTa: nameTa || nameEn || ("பள்ளி " + effectiveUNo),
+        mgmt1: mgmt1,
+        mgmt2: cleanSheetCellStr_(s.mgmt2) || (mgmt1 === "1G" ? "1" : (mgmt1 === "2A" ? "5" : "7")),
+        mgmt3: cleanSheetCellStr_(s.mgmt3),
+        level: inferSchoolLevel_(s.level, nameEn, nameTa),
+        centre10: cleanSheetCellStr_(s.centre10),
+        centre12: cleanSheetCellStr_(s.centre12),
+        isExamCentre: Boolean(s.centre10 || s.centre12),
+        hmName: cleanSheetCellStr_(s.hmName),
+        hmTa: cleanSheetCellStr_(s.hmTa),
+        mobile: cleanSheetCellStr_(s.mobile),
+        email: cleanSheetCellStr_(s.email)
+      };
+      byUNo[effectiveUNo] = obj;
+      if (udiseNo) byUdise[udiseNo] = obj;
+      mergedList.push(obj);
+    }
+  }
+
+  // 1. First load all schools currently on the Google Sheet (so newly registered Sheet rows are NEVER lost!)
+  existingOnSheet.forEach(function(s) { addOrMergeSchool(s, false); });
+
+  // 2. Then merge incoming schools from Portal
+  if (Array.isArray(incomingSchools)) {
+    incomingSchools.forEach(function(s) { addOrMergeSchool(s, true); });
+  }
+
+  // 3. Write complete merged list back to SCHOOL_MASTER
+  if (mSheet && mergedList.length > 0) {
+    if (mSheet.getLastRow() > 1) {
+      mSheet.getRange(2, 1, mSheet.getLastRow() - 1, 17).clearContent();
+    }
+    const mRows = mergedList.map(function(s, idx) {
+      s.sn = idx + 1;
+      return [
+        s.sn, s.uNo || "", s.udiseNo || "", s.dgeNo || "",
+        s.block || "", s.assembly || "", s.nameEn || "", s.nameTa || "",
+        s.mgmt1 || "1G", s.level || "HS", s.centre10 || "", s.centre12 || "",
+        s.hmName || "", s.hmTa || "", s.mobile || "", s.email || "", nowStr
+      ];
+    });
+    mSheet.getRange(2, 1, mRows.length, 17).setValues(mRows);
+  }
+
+  return mergedList;
 }
 
 function writeHssGroupMasterRows_(gSheet, groups, nowStr) {

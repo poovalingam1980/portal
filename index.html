@@ -3649,8 +3649,8 @@
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(155px, 1fr)); gap:10px;">
           <div onclick="openAdminModule('schoolMaster')" style="cursor:pointer; background:#eff6ff; border:1.5px solid #bfdbfe; border-left:4px solid #1d4ed8; border-radius:8px; padding:8px 12px;">
             <div style="font-size:0.72rem; font-weight:800; color:#1e40af;">மொத்தப் பள்ளிகள் (SCHOOLS)</div>
-            <div style="font-size:1.45rem; font-weight:900; color:#0f294a;">282</div>
-            <div style="font-size:0.70rem; color:#1e3a8a; font-weight:700;">1G: 138 | 2A: 59 | 3P: 85</div>
+            <div style="font-size:1.45rem; font-weight:900; color:#0f294a;" id="admExecTotalSchoolsNum">282</div>
+            <div style="font-size:0.70rem; color:#1e3a8a; font-weight:700;" id="admExecMgmtBreakdownText">1G: 138 | 2A: 59 | 3P: 85</div>
           </div>
           <div onclick="openAdminModule('emisStaff')" style="cursor:pointer; background:#f0f9ff; border:1.5px solid #bae6fd; border-left:4px solid #0284c7; border-radius:8px; padding:8px 12px;">
             <div style="font-size:0.72rem; font-weight:800; color:#0369a1;">மொத்தப் பணியாளர்கள் (STAFF)</div>
@@ -3734,11 +3734,11 @@
             <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px 12px; margin-bottom:16px;">
               <div style="font-size:0.75rem; font-weight:800; color:#64748b; margin-bottom:6px; text-transform:uppercase;">மேலாண்மை சுருக்கம் (Overview):</div>
               <div style="display:flex; flex-wrap:wrap; gap:6px; font-size:0.8rem; font-weight:800;">
-                <span style="background:#0f294a; color:#fff; padding:2px 8px; border-radius:6px;">🏫 281 பள்ளிகள்</span>
-                <span style="background:#16a34a; color:#fff; padding:2px 8px; border-radius:6px;">🏛️ 137 அரசு (1G)</span>
-                <span style="background:#2563eb; color:#fff; padding:2px 8px; border-radius:6px;">🤝 59 உதவி (2A)</span>
-                <span style="background:#9333ea; color:#fff; padding:2px 8px; border-radius:6px;">🏢 85 தனியார் (3P)</span>
-                <span style="background:#d97706; color:#fff; padding:2px 8px; border-radius:6px;">🗂️ 12 ஒன்றியங்கள்</span>
+                <span style="background:#0f294a; color:#fff; padding:2px 8px; border-radius:6px;" id="admMod1SchoolsBadge">🏫 282 பள்ளிகள்</span>
+                <span style="background:#16a34a; color:#fff; padding:2px 8px; border-radius:6px;" id="admMod1GovtBadge">🏛️ 138 அரசு (1G)</span>
+                <span style="background:#2563eb; color:#fff; padding:2px 8px; border-radius:6px;" id="admMod1AidedBadge">🤝 59 உதவி (2A)</span>
+                <span style="background:#9333ea; color:#fff; padding:2px 8px; border-radius:6px;" id="admMod1PrivateBadge">🏢 85 தனியார் (3P)</span>
+                <span style="background:#d97706; color:#fff; padding:2px 8px; border-radius:6px;" id="admMod1BlocksBadge">🗂️ 12 ஒன்றியங்கள்</span>
               </div>
             </div>
           </div>
@@ -7229,6 +7229,165 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     return (out["11"].length > 0 || out["12"].length > 0) ? out : undefined;
   }
 
+  
+  function cleanSheetScalarVal(v) {
+    if (v === null || v === undefined) return "";
+    if (typeof v === "number") {
+      return Math.floor(v) === v ? String(Math.round(v)) : String(v);
+    }
+    return String(v).replace(/\.0$/, "").trim();
+  }
+
+  function detectSchoolLevelFromNames(rawLevel, nameEn, nameTa) {
+    const lv = String(rawLevel || "").trim().toUpperCase();
+    if (lv === "HSS" || lv === "HS" || lv === "MS" || lv === "PS") return lv;
+    const combined = `${nameEn || ""} ${nameTa || ""}`.toUpperCase();
+    if (combined.includes("HSS") || combined.includes("HR SEC") || combined.includes("HIGHER SECONDARY") || combined.includes("மேல்நிலை")) return "HSS";
+    if (combined.includes(" MS") || combined.includes("MIDDLE") || combined.includes("நடுநிலை")) return "MS";
+    return "HS";
+  }
+
+  function ensureNewSchoolEmisAndExtraScaffold(sch) {
+    if (!sch || !sch.uNo) return;
+    const uKey = String(sch.uNo).trim();
+    if (typeof EMIS_STUDENT_DATA !== "undefined" && EMIS_STUDENT_DATA.schoolEnrollments && !EMIS_STUDENT_DATA.schoolEnrollments[uKey]) {
+      const emptyClasses = {
+        "6": { boys: 0, girls: 0, tm: 0, em: 0 },
+        "7": { boys: 0, girls: 0, tm: 0, em: 0 },
+        "8": { boys: 0, girls: 0, tm: 0, em: 0 },
+        "9": { boys: 0, girls: 0, tm: 0, em: 0 },
+        "10": { boys: 0, girls: 0, tm: 0, em: 0 }
+      };
+      if (sch.level === "HSS") {
+        emptyClasses["11"] = { boys: 0, girls: 0, tm: 0, em: 0 };
+        emptyClasses["12"] = { boys: 0, girls: 0, tm: 0, em: 0 };
+      }
+      EMIS_STUDENT_DATA.schoolEnrollments[uKey] = {
+        uNo: uKey,
+        udiseNo: sch.udiseNo || "",
+        nameEn: sch.nameEn || "",
+        nameTa: sch.nameTa || "",
+        block: sch.block || "",
+        mgmt: sch.mgmt1 || "1G",
+        level: sch.level || "HS",
+        classes: emptyClasses
+      };
+    }
+  }
+
+  // Non-destructively merges an array of school objects into masterSchools (matching by U.NO or UDISE_NO)
+  function mergeSchoolsIntoMasterList(incomingSchools, preferIncomingFields) {
+    if (!Array.isArray(incomingSchools) || incomingSchools.length === 0) {
+      return { added: 0, updated: 0 };
+    }
+    if (!Array.isArray(masterSchools)) {
+      masterSchools = [];
+    }
+
+    let maxNumericUNo = 385;
+    masterSchools.forEach(s => {
+      if (!s || !s.uNo) return;
+      const n = Number(String(s.uNo).trim());
+      if (!isNaN(n) && n > 100 && n < 900 && n > maxNumericUNo) maxNumericUNo = n;
+    });
+    incomingSchools.forEach(s => {
+      if (!s || !s.uNo) return;
+      const n = Number(cleanSheetScalarVal(s.uNo));
+      if (!isNaN(n) && n > 100 && n < 900 && n > maxNumericUNo) maxNumericUNo = n;
+    });
+
+    let added = 0;
+    let updated = 0;
+
+    incomingSchools.forEach(raw => {
+      if (!raw || typeof raw !== "object") return;
+      let uNo = cleanSheetScalarVal(raw.uNo);
+      const udiseNo = cleanSheetScalarVal(raw.udiseNo).replace(/\s+/g, "");
+      const nameEn = cleanSheetScalarVal(raw.nameEn).replace(/\s+/g, " ");
+      const nameTa = cleanSheetScalarVal(raw.nameTa).replace(/\s+/g, " ");
+
+      // Ignore header rows
+      const uUpper = uNo.toUpperCase();
+      if (uUpper === "U.NO" || uUpper === "UN. NO" || uUpper === "UN.NO" || uUpper === "S.NO" || udiseNo.toUpperCase() === "UDISE" || udiseNo.toUpperCase() === "UDISE_NO") {
+        return;
+      }
+      if (!uNo && !udiseNo && !nameEn && !nameTa) return;
+
+      // Find existing school by U.NO (normalized) or UDISE_NO (if >= 6 chars)
+      const cleanUNoKey = uNo.replace(/^0+/, "");
+      let existing = masterSchools.find(s => {
+        if (!s || !s.uNo) return false;
+        const sU = String(s.uNo).trim();
+        const sUClean = sU.replace(/^0+/, "");
+        if (uNo && (sU.toUpperCase() === uNo.toUpperCase() || (cleanUNoKey && sUClean === cleanUNoKey))) return true;
+        if (udiseNo && udiseNo.length >= 6 && String(s.udiseNo || "").trim() === udiseNo) return true;
+        return false;
+      });
+
+      if (!uNo) {
+        if (existing && existing.uNo) {
+          uNo = String(existing.uNo).trim();
+        } else {
+          maxNumericUNo++;
+          uNo = String(maxNumericUNo);
+        }
+      }
+
+      const mgmt1 = cleanSheetScalarVal(raw.mgmt1) || (existing ? existing.mgmt1 : "1G") || "1G";
+      const rawCol9 = cleanSheetScalarVal(raw.mgmt2 || raw.level || "");
+      const isCol9Level = /^(HSS|HS|MS|PS)$/i.test(rawCol9);
+      const level = detectSchoolLevelFromNames(raw.level || (isCol9Level ? rawCol9 : (existing ? existing.level : "")), nameEn || (existing ? existing.nameEn : ""), nameTa || (existing ? existing.nameTa : ""));
+      const defaultMgmt2 = mgmt1 === "1G" ? "1" : (mgmt1 === "2A" ? "5" : "7");
+      const mgmt2 = (!isCol9Level && cleanSheetScalarVal(raw.mgmt2)) ? cleanSheetScalarVal(raw.mgmt2) : ((existing && existing.mgmt2 && !/^(HSS|HS|MS|PS)$/i.test(existing.mgmt2)) ? existing.mgmt2 : defaultMgmt2);
+      const mgmt3 = cleanSheetScalarVal(raw.mgmt3) || (existing ? existing.mgmt3 : "") || "";
+
+      const centre10 = cleanSheetScalarVal(raw.centre10) || (existing ? existing.centre10 : "") || ((typeof EXAM_CENTRE_10_BY_UNO !== "undefined" && EXAM_CENTRE_10_BY_UNO[uNo]) ? EXAM_CENTRE_10_BY_UNO[uNo] : "");
+      const centre12 = cleanSheetScalarVal(raw.centre12) || (existing ? existing.centre12 : "") || ((typeof EXAM_CENTRE_12_BY_UNO !== "undefined" && EXAM_CENTRE_12_BY_UNO[uNo]) ? EXAM_CENTRE_12_BY_UNO[uNo] : "");
+
+      const normalizedObj = {
+        sn: Number(raw.sn) || (existing ? existing.sn : (masterSchools.length + 1)),
+        uNo: uNo,
+        udiseNo: udiseNo || (existing ? existing.udiseNo : ""),
+        dgeNo: cleanSheetScalarVal(raw.dgeNo) || (existing ? existing.dgeNo : ""),
+        block: cleanSheetScalarVal(raw.block) || (existing ? existing.block : "12 Sivagangai"),
+        assembly: cleanSheetScalarVal(raw.assembly) || (existing ? existing.assembly : "186 Sivagangai"),
+        nameEn: nameEn || (existing ? existing.nameEn : "") || nameTa || (`SCHOOL ${uNo}`),
+        nameTa: nameTa || (existing ? existing.nameTa : "") || nameEn || (`பள்ளி ${uNo}`),
+        mgmt1: mgmt1,
+        mgmt2: mgmt2,
+        mgmt3: mgmt3,
+        level: level,
+        centre10: centre10,
+        centre12: centre12,
+        isExamCentre: Boolean(centre10 || centre12),
+        hmName: cleanSheetScalarVal(raw.hmName) || (existing ? existing.hmName : ""),
+        hmTa: cleanSheetScalarVal(raw.hmTa) || (existing ? existing.hmTa : ""),
+        mobile: cleanSheetScalarVal(raw.mobile) || (existing ? existing.mobile : ""),
+        email: cleanSheetScalarVal(raw.email) || (existing ? existing.email : "")
+      };
+
+      if (existing) {
+        if (preferIncomingFields) {
+          Object.assign(existing, normalizedObj);
+        } else {
+          Object.keys(normalizedObj).forEach(k => {
+            if (!existing[k] && normalizedObj[k]) {
+              existing[k] = normalizedObj[k];
+            }
+          });
+        }
+        ensureNewSchoolEmisAndExtraScaffold(existing);
+        updated++;
+      } else {
+        masterSchools.push(normalizedObj);
+        ensureNewSchoolEmisAndExtraScaffold(normalizedObj);
+        added++;
+      }
+    });
+
+    return { added, updated };
+  }
+
   function sanitizeAllPortalStores() {
     // 1. Sanitize masterSchools (remove nulls from sparse arrays & ensure all 282 schools exist)
     if (!Array.isArray(masterSchools)) {
@@ -7359,12 +7518,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       divisionsRegistry = savedDivs;
     }
 
-    // Load schools (merge initial 281 + any locally added/updated schools)
+    // Load schools (merge initial 282 + any locally or Google Sheet added/updated schools)
+    masterSchools = JSON.parse(JSON.stringify(INITIAL_MASTER_SCHOOLS));
     const savedSchools = safeGetStorage("CEOSVG_MASTER_SCHOOLS", null);
-    if (Array.isArray(savedSchools) && savedSchools.length >= INITIAL_MASTER_SCHOOLS.length) {
-      masterSchools = savedSchools;
-    } else {
-      masterSchools = JSON.parse(JSON.stringify(INITIAL_MASTER_SCHOOLS));
+    if (Array.isArray(savedSchools) && savedSchools.length > 0) {
+      mergeSchoolsIntoMasterList(savedSchools, true);
     }
     if (!masterSchools.some(s => String(s.uNo) === "999")) {
       masterSchools.unshift(INITIAL_MASTER_SCHOOLS[0]);
@@ -7624,10 +7782,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     let q = String(rawQuery).trim();
     if (!q) return null;
     if (q.toUpperCase() === "DEMO" || q.toUpperCase() === "DEMOSCHOOL") q = "999";
-    const bracketMatch = q.match(/^\[?(\d{3})\]?\b/);
-    if (bracketMatch && q.length <= 6) q = bracketMatch[1];
+    const bracketMatch = q.match(/^\[?([A-Za-z0-9_-]{1,8})\]?\b/);
+    if (bracketMatch && q.length <= 8 && q.startsWith("[")) q = bracketMatch[1];
+    else if (/^\d{1,5}$/.test(q)) q = q;
     else {
-      const leadMatch = q.match(/^(\d{3})\s*[-–:|]/);
+      const leadMatch = q.match(/^\[?([A-Za-z0-9_-]{1,8})\]?\s*[-–:|]/);
       if (leadMatch) q = leadMatch[1];
     }
     const cleanQ = q.replace(/^0+/, "");
@@ -7746,6 +7905,14 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     setTxt("admStatDeleteReqs", pendingDelCount);
     setTxt("admNavDelReqBadge", pendingDelCount);
     setTxt("admExecDelReqCount", pendingDelCount);
+
+    setTxt("admExecTotalSchoolsNum", total);
+    setTxt("admExecMgmtBreakdownText", `1G: ${c1G} | 2A: ${c2A} | 3P: ${c3P}`);
+    setTxt("admMod1SchoolsBadge", `🏫 ${total} பள்ளிகள்`);
+    setTxt("admMod1GovtBadge", `🏛️ ${c1G} அரசு (1G)`);
+    setTxt("admMod1AidedBadge", `🤝 ${c2A} உதவி (2A)`);
+    setTxt("admMod1PrivateBadge", `🏢 ${c3P} தனியார் (3P)`);
+    setTxt("admMod1BlocksBadge", `🗂️ ${divisionsRegistry.block.length} ஒன்றியங்கள்`);
 
     setTxt("headerTotalSchoolsBadge", `${total} உயர் மற்றும் மேல்நிலைப்பள்ளிகள்`);
     setTxt("headerTotalDivisionsBadge", `${divisionsRegistry.block.length} ஒன்றியங்கள் | ${divisionsRegistry.mgmt1.length} முதன்மை நிர்வாகப் பிரிவுகள்`);
@@ -12905,40 +13072,39 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       return;
     }
     const lines = raw.split(/\r?\n/).filter(l => l.trim().length > 0);
-    let added = 0, updated = 0;
+    const parsedRows = [];
     lines.forEach(line => {
       const cols = line.includes("\t") ? line.split("\t") : line.split(",");
-      if (cols.length < 7) return;
-      const uNo = String(cols[1] || "").trim();
-      const udise = String(cols[2] || "").trim();
-      if (!uNo || uNo.toLowerCase().includes("un.")) return;
-      const schObj = {
-        sn: Number(cols[0]) || (masterSchools.length + 1),
+      if (cols.length < 4) return;
+      const uNo = cleanSheetScalarVal(cols[1]);
+      const udise = cleanSheetScalarVal(cols[2]);
+      const nameEn = cleanSheetScalarVal(cols[6] || cols[3] || "");
+      const nameTa = cleanSheetScalarVal(cols[7] || cols[6] || cols[4] || "");
+      if (uNo.toLowerCase().includes("un.") || uNo.toUpperCase() === "U.NO") return;
+      const col9 = cleanSheetScalarVal(cols[9]);
+      const isCol9Level = /^(HSS|HS|MS|PS)$/i.test(col9);
+      parsedRows.push({
+        sn: Number(cleanSheetScalarVal(cols[0])) || (masterSchools.length + parsedRows.length + 1),
         uNo: uNo,
         udiseNo: udise,
-        dgeNo: String(cols[3] || "").trim(),
-        block: String(cols[4] || "").trim(),
-        assembly: String(cols[5] || "").trim(),
-        nameEn: String(cols[6] || "").trim(),
-        nameTa: String(cols[7] || cols[6] || "").trim(),
-        mgmt1: String(cols[8] || "1G").trim(),
-        mgmt2: String(cols[9] || "1").trim(),
-        mgmt3: String(cols[10] || "").trim(),
-        level: String(cols[6] || "").toUpperCase().includes("HSS") ? "HSS" : "HS",
-        centre12: "",
-        hmName: "",
-        hmTa: "",
-        mobile: ""
-      };
-      const idx = masterSchools.findIndex(item => String(item.uNo) === uNo || (udise && String(item.udiseNo) === udise));
-      if (idx >= 0) {
-        masterSchools[idx] = Object.assign({}, masterSchools[idx], schObj);
-        updated++;
-      } else {
-        masterSchools.push(schObj);
-        added++;
-      }
+        dgeNo: cleanSheetScalarVal(cols[3]),
+        block: cleanSheetScalarVal(cols[4]),
+        assembly: cleanSheetScalarVal(cols[5]),
+        nameEn: nameEn,
+        nameTa: nameTa,
+        mgmt1: cleanSheetScalarVal(cols[8] || "1G"),
+        mgmt2: isCol9Level ? "" : (col9 || "1"),
+        mgmt3: isCol9Level ? "" : cleanSheetScalarVal(cols[10]),
+        level: isCol9Level ? col9.toUpperCase() : detectSchoolLevelFromNames("", nameEn, nameTa),
+        centre10: isCol9Level ? cleanSheetScalarVal(cols[10]) : "",
+        centre12: cleanSheetScalarVal(cols[11]),
+        hmName: cleanSheetScalarVal(cols[12]),
+        hmTa: cleanSheetScalarVal(cols[13]),
+        mobile: cleanSheetScalarVal(cols[14]),
+        email: cleanSheetScalarVal(cols[15])
+      });
     });
+    const { added, updated } = mergeSchoolsIntoMasterList(parsedRows, true);
     safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
     autoRegisterDivisionsFromSchools();
     populateAllDynamicDropdowns();
@@ -14019,6 +14185,17 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       try {
         const res = await sendToAppsScript(payload);
         if (res && res.ok) {
+          if (Array.isArray(res.mergedSchools) && res.mergedSchools.length > masterSchools.length) {
+            const mRes = mergeSchoolsIntoMasterList(res.mergedSchools, true);
+            if (mRes.added > 0) {
+              safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+              autoRegisterDivisionsFromSchools();
+              populateAllDynamicDropdowns();
+              populateAdminDirectSchoolDropdowns();
+              updateAllSummaryCounters();
+              renderAdminDirectoryTable();
+            }
+          }
           lastGoogleSheetSyncTimeStr = new Date().toLocaleTimeString("en-IN");
           updateGoogleSheetSyncBadge(`📊 Google Sheet ஒத்திசைவு: ${lastGoogleSheetSyncTimeStr} (${masterSchools.length} பள்ளிகள்)`, true);
           appendFirebaseActivityLog(`📊 Google Sheet ஒத்திசைவு வெற்றி: ${evt.summary}`, "#38bdf8");
@@ -14266,7 +14443,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   function reloadInMemoryStoreFromKey(key, val) {
     if (!val) return;
     if (key === "CEOSVG_MASTER_SCHOOLS" && Array.isArray(val)) {
-      masterSchools = val;
+      mergeSchoolsIntoMasterList(val, true);
     } else if (key === "CEOSVG_SCHOOL_EXTRA_V6" && typeof val === "object") {
       schoolExtraDataStore = val;
     } else if (key === "CEOSVG_SCHOOL_AUTH" && typeof val === "object") {
@@ -14604,12 +14781,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
       isApplyingRemoteRealtimeUpdate = true;
       if (rootData.master_schools_by_uno && typeof rootData.master_schools_by_uno === "object") {
-        Object.values(rootData.master_schools_by_uno).forEach(sch => {
-          if (!sch || !sch.uNo) return;
-          const idx = masterSchools.findIndex(s => String(s.uNo) === String(sch.uNo));
-          if (idx >= 0) masterSchools[idx] = Object.assign({}, masterSchools[idx], sch);
-          else masterSchools.push(sch);
-        });
+        mergeSchoolsIntoMasterList(Object.values(rootData.master_schools_by_uno), true);
         safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
       }
       if (rootData.school_extra && typeof rootData.school_extra === "object") {
@@ -14692,15 +14864,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       }
 
       if (Array.isArray(data.schools) && data.schools.length > 0) {
-        data.schools.forEach(remoteSch => {
-          if (!remoteSch || !remoteSch.uNo) return;
-          const idx = masterSchools.findIndex(s => String(s.uNo) === String(remoteSch.uNo));
-          if (idx >= 0) {
-            masterSchools[idx] = Object.assign({}, masterSchools[idx], remoteSch);
-          } else {
-            masterSchools.push(remoteSch);
-          }
-        });
+        mergeSchoolsIntoMasterList(data.schools, true);
         safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
         changed = true;
       }
@@ -14736,6 +14900,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
       if (data.portalStores && typeof data.portalStores === "object") {
         Object.entries(data.portalStores).forEach(([k, v]) => {
+          if (k === "CEOSVG_MASTER_SCHOOLS") return;
           if (v !== null && v !== undefined) {
             safeSetStorage(k, v, true);
             reloadInMemoryStoreFromKey(k, v);
@@ -14854,81 +15019,195 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     showToast("💾 புதுப்பிக்கப்பட்ட முழுமையான index.html ஒற்றைக் கோப்பு பதிவிறக்கம் செய்யப்பட்டது!", "#16a34a");
   }
 
-  function syncMasterFromGoogleSheet(showNotification) {
-    if (!masterSheetId) return;
-    const cbName = "gvizSchoolMasterCb_" + Date.now();
-    const script = document.createElement("script");
-    let finished = false;
-
-    window[cbName] = function(resp) {
-      finished = true;
-      delete window[cbName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-      try {
-        if (!resp || !resp.table || !resp.table.rows) return;
-        let newCount = 0;
-        resp.table.rows.forEach(r => {
-          const c = r.c || [];
-          const val = idx => (c[idx] && c[idx].v !== null && c[idx].v !== undefined) ? String(c[idx].v).trim() : "";
-          const uNo = val(1).replace(/\.0$/, "");
-          const udise = val(2).replace(/\.0$/, "");
-          if (!uNo || isNaN(Number(uNo))) return;
-          const existing = masterSchools.find(s => String(s.uNo) === uNo || (udise && String(s.udiseNo) === udise));
-          const schObj = {
-            sn: Number(val(0)) || (masterSchools.length + 1),
-            uNo: uNo,
-            udiseNo: udise,
-            dgeNo: val(3),
-            block: val(4),
-            assembly: val(5),
-            nameEn: val(6).replace(/\s+/g, " "),
-            nameTa: val(7).replace(/\s+/g, " "),
-            mgmt1: val(8) || "1G",
-            mgmt2: val(9).replace(/\.0$/, "") || "1",
-            mgmt3: val(10),
-            level: val(6).toUpperCase().includes("HSS") ? "HSS" : (val(6).toUpperCase().includes(" MS") ? "MS" : "HS"),
-            centre10: (existing && existing.centre10) ? existing.centre10 : ((typeof EXAM_CENTRE_10_BY_UNO !== "undefined" && EXAM_CENTRE_10_BY_UNO[uNo]) ? EXAM_CENTRE_10_BY_UNO[uNo] : ""),
-            centre12: (existing && existing.centre12) ? existing.centre12 : ((typeof EXAM_CENTRE_12_BY_UNO !== "undefined" && EXAM_CENTRE_12_BY_UNO[uNo]) ? EXAM_CENTRE_12_BY_UNO[uNo] : ""),
-            isExamCentre: Boolean((existing && (existing.centre10 || existing.centre12)) || (typeof EXAM_CENTRE_10_BY_UNO !== "undefined" && EXAM_CENTRE_10_BY_UNO[uNo]) || (typeof EXAM_CENTRE_12_BY_UNO !== "undefined" && EXAM_CENTRE_12_BY_UNO[uNo])),
-            hmName: existing ? existing.hmName : "",
-            hmTa: existing ? existing.hmTa : "",
-            mobile: existing ? existing.mobile : ""
-          };
-          if (existing) {
-            Object.assign(existing, schObj);
-          } else {
-            masterSchools.push(schObj);
-            newCount++;
-          }
-        });
-        safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
-        autoRegisterDivisionsFromSchools();
-        populateAllDynamicDropdowns();
-        updateAllSummaryCounters();
-        renderPublicQuickFinder();
-        renderAdminDirectoryTable();
-        updateGoogleSheetSyncBadge(`📊 Google Sheet இணைக்கப்பட்டுள்ளது (${masterSchools.length} பள்ளிகள்)`, true);
-        if (showNotification) {
-          showToast(`✅ School-Master கூகுள் சீட் ஒத்திசைவு வெற்றி! மொத்தம் ${masterSchools.length} பள்ளிகள் (${newCount} புதியவை).`, "#22c55e");
+  function parseGvizRowsToSchoolList(rows, isLegacyTab) {
+    if (!Array.isArray(rows)) return [];
+    const parsed = [];
+    rows.forEach((r, idx) => {
+      const c = (r && r.c) ? r.c : [];
+      const val = colIdx => {
+        const cell = c[colIdx];
+        if (!cell) return "";
+        if (cell.v !== null && cell.v !== undefined && String(cell.v).trim() !== "") {
+          return cleanSheetScalarVal(cell.v);
         }
-      } catch (err) {
-        if (showNotification) showToast("ℹ️ உள்ளூர் தரவுத்தளம் (282 பள்ளிகள்) செயலில் உள்ளது.", "#38bdf8");
+        if (cell.f !== null && cell.f !== undefined && String(cell.f).trim() !== "") {
+          return cleanSheetScalarVal(cell.f);
+        }
+        return "";
+      };
+      const uNo = val(1);
+      const udise = val(2).replace(/\s+/g, "");
+      const nameEn = val(6).replace(/\s+/g, " ");
+      const nameTa = val(7).replace(/\s+/g, " ");
+      const uUpper = uNo.toUpperCase();
+      if (uUpper === "U.NO" || uUpper === "UN. NO" || uUpper === "UN.NO" || uUpper === "S.NO" || udise.toUpperCase() === "UDISE" || udise.toUpperCase() === "UDISE_NO") {
+        return;
       }
-    };
+      if (!uNo && !udise && !nameEn && !nameTa) return;
 
-    script.onerror = function() {
-      if (!finished) {
+      const mgmt1 = val(8) || "1G";
+      const col9 = val(9);
+      const isCol9Level = /^(HSS|HS|MS|PS)$/i.test(col9);
+      parsed.push({
+        sn: Number(val(0)) || (idx + 1),
+        uNo: uNo,
+        udiseNo: udise,
+        dgeNo: val(3),
+        block: val(4),
+        assembly: val(5),
+        nameEn: nameEn,
+        nameTa: nameTa,
+        mgmt1: mgmt1,
+        mgmt2: (!isCol9Level && col9) ? col9 : (mgmt1 === "1G" ? "1" : (mgmt1 === "2A" ? "5" : "7")),
+        mgmt3: isLegacyTab ? val(10) : "",
+        level: isCol9Level ? col9.toUpperCase() : detectSchoolLevelFromNames("", nameEn, nameTa),
+        centre10: !isLegacyTab ? val(10) : "",
+        centre12: !isLegacyTab ? val(11) : "",
+        hmName: !isLegacyTab ? val(12) : "",
+        hmTa: !isLegacyTab ? val(13) : "",
+        mobile: !isLegacyTab ? val(14) : "",
+        email: !isLegacyTab ? val(15) : ""
+      });
+    });
+    return parsed;
+  }
+
+  function fetchGvizSheetTabSchools(sheetId, tabName, isLegacyTab) {
+    return new Promise(resolve => {
+      if (!sheetId) { resolve([]); return; }
+      const cbName = "gvizSchoolMasterCb_" + tabName.replace(/[^A-Za-z0-9]/g, "") + "_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+      const script = document.createElement("script");
+      let finished = false;
+      const timer = setTimeout(() => {
+        if (!finished) {
+          finished = true;
+          delete window[cbName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+          resolve([]);
+        }
+      }, 6500);
+
+      window[cbName] = function(resp) {
+        if (finished) return;
         finished = true;
+        clearTimeout(timer);
         delete window[cbName];
         if (script.parentNode) script.parentNode.removeChild(script);
-        if (showNotification) {
-          showToast("✅ School-Master தரவுத்தளம் தயார் நிலையில் உள்ளது (" + masterSchools.length + " பள்ளிகள்).", "#22c55e");
+        try {
+          if (!resp || !resp.table || !Array.isArray(resp.table.rows)) {
+            resolve([]);
+            return;
+          }
+          resolve(parseGvizRowsToSchoolList(resp.table.rows, isLegacyTab));
+        } catch (e) {
+          resolve([]);
         }
-      }
-    };
+      };
 
-    script.src = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(masterSheetId)}/gviz/tq?sheet=SCHOOL&tqx=out:json;responseHandler:${cbName}`;
-    document.body.appendChild(script);
+      script.onerror = function() {
+        if (!finished) {
+          finished = true;
+          clearTimeout(timer);
+          delete window[cbName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+          resolve([]);
+        }
+      };
+
+      script.src = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(sheetId)}/gviz/tq?sheet=${encodeURIComponent(tabName)}&tqx=out:json;responseHandler:${cbName}`;
+      document.body.appendChild(script);
+    });
+  }
+
+  async function syncMasterFromGoogleSheet(showNotification) {
+    if (showNotification) {
+      showToast("🔄 School Master Google Sheet-லிருந்து புதிய மற்றும் புதுப்பிக்கப்பட்ட பள்ளிகள் ஒத்திசைக்கப்படுகின்றன...", "#0284c7");
+    }
+    const beforeCount = Array.isArray(masterSchools) ? masterSchools.length : 0;
+    let totalAdded = 0;
+    let totalUpdated = 0;
+
+    // 1. Pull via Google Apps Script Web App (reads SCHOOL_MASTER + SCHOOL directly via SpreadsheetApp)
+    if (appsScriptUrl && appsScriptUrl.startsWith("http")) {
+      try {
+        const sep = appsScriptUrl.includes("?") ? "&" : "?";
+        const effectiveSheetId = (masterSheetId && masterSheetId !== "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ") ? masterSheetId : "";
+        const url = `${appsScriptUrl}${sep}action=get_full_portal_snapshot&masterSheetId=${encodeURIComponent(effectiveSheetId)}&t=${Date.now()}`;
+        const res = await fetch(url, { method: "GET" });
+        if (res && res.ok) {
+          const data = await res.json();
+          if (data && data.ok && Array.isArray(data.schools) && data.schools.length > 0) {
+            const m1 = mergeSchoolsIntoMasterList(data.schools, true);
+            totalAdded += m1.added;
+            totalUpdated += m1.updated;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 2. Pull directly from Google Sheet via gviz JSONP for BOTH 'SCHOOL_MASTER' and 'SCHOOL' tabs
+    if (masterSheetId) {
+      try {
+        const [masterTabSchools, legacyTabSchools] = await Promise.all([
+          fetchGvizSheetTabSchools(masterSheetId, "SCHOOL_MASTER", false),
+          fetchGvizSheetTabSchools(masterSheetId, "SCHOOL", true)
+        ]);
+        if (masterTabSchools.length > 0) {
+          const m2 = mergeSchoolsIntoMasterList(masterTabSchools, true);
+          totalAdded += m2.added;
+          totalUpdated += m2.updated;
+        }
+        if (legacyTabSchools.length > 0) {
+          const m3 = mergeSchoolsIntoMasterList(legacyTabSchools, false);
+          totalAdded += m3.added;
+          totalUpdated += m3.updated;
+        }
+      } catch (e) {}
+    }
+
+    sanitizeAllPortalStores();
+
+    // Save to localStorage; if new schools were added from Google Sheet, also push to Firebase so both clouds stay in sync!
+    const afterCount = masterSchools.length;
+    const newlyDiscovered = Math.max(totalAdded, afterCount - beforeCount);
+    safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, newlyDiscovered === 0);
+
+    if (newlyDiscovered > 0 && normalizeFirebaseDbUrl(firebaseDbUrl) && firebaseAutoSyncEnabled) {
+      try {
+        const schoolsByUNo = {};
+        masterSchools.forEach(s => { if (s && s.uNo) schoolsByUNo[String(s.uNo)] = s; });
+        fetch(buildFirebaseEndpoint("ceosvg_live/master_schools_by_uno"), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(schoolsByUNo)
+        }).catch(() => {});
+        fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_MASTER_SCHOOLS"), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(masterSchools)
+        }).catch(() => {});
+      } catch (e) {}
+    }
+
+    autoRegisterDivisionsFromSchools();
+    populateAllDynamicDropdowns();
+    populateAdminDirectSchoolDropdowns();
+    updateAllSummaryCounters();
+    renderPublicQuickFinder();
+    renderAdminDirectoryTable();
+    renderAdminCredentialsTable();
+    if (typeof renderAdminInfraNeedsDashboard === "function") renderAdminInfraNeedsDashboard();
+
+    lastGoogleSheetSyncTimeStr = new Date().toLocaleTimeString("en-IN");
+    updateGoogleSheetSyncBadge(`📊 Google Sheet இணைக்கப்பட்டுள்ளது (${masterSchools.length} பள்ளிகள்)`, true);
+
+    if (showNotification) {
+      if (newlyDiscovered > 0) {
+        showToast(`✅ School-Master கூகுள் சீட் ஒத்திசைவு வெற்றி! மொத்தம் ${masterSchools.length} பள்ளிகள் (${newlyDiscovered} புதிய பள்ளிகள் இணைக்கப்பட்டன).`, "#16a34a");
+      } else {
+        showToast(`✅ School-Master கூகுள் சீட் ஒத்திசைவு வெற்றி! மொத்தம் ${masterSchools.length} பள்ளிகள் தயார் நிலையில் உள்ளன.`, "#22c55e");
+      }
+    }
   }
 
   async function sendToAppsScript(payload) {
