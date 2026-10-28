@@ -285,7 +285,8 @@ function onOpen() {
       .createMenu("🏛️ CEO Sivagangai Portal")
       .addItem("🛠️ 1. அனைத்து 12 தாவல்களையும் உருவாக்கு (Setup Master DB + 10_Ex_Cen & 12_Ex_Cen)", "setupPortalSheets")
       .addItem("👨‍🏫 2. ஆசிரியர் தனி Google Sheet உருவாக்கு / அமை (Setup Teachers Master DB)", "setupTeachersPortalSheetsMenu")
-      .addItem("✨ 3. தமிழ் எழுத்துரு சீரமைப்பு (Fix Tamil Font Mojibake)", "repairAllSheetTamilMojibakeMenu")
+      .addItem("🧹 3. ஆசிரியர் வரிசைகள் சீரமைப்பு - 7,081 வரிசைகள் (Deduplicate Teachers Sheet)", "deduplicateTeachersMasterSheetMenu")
+      .addItem("✨ 4. தமிழ் எழுத்துரு சீரமைப்பு (Fix Tamil Font Mojibake)", "repairAllSheetTamilMojibakeMenu")
       .addItem("📧 4. சோதனை Email OTP அனுப்புக (Test Email OTP)", "testSendEmailOtpMenu")
       .addItem("📲 5. சோதனை WhatsApp OTP அனுப்புக (Test WhatsApp OTP)", "testSendWhatsappOtpMenu")
       .addToUi();
@@ -511,6 +512,71 @@ function setupTeachersPortalSheets(optionalTeachersSheetId, forceCreateNew) {
 function setupTeachersPortalSheetsMenu() {
   const res = setupTeachersPortalSheets("", false);
   Logger.log("Teachers Master DB Ready: " + JSON.stringify(res));
+}
+
+function deduplicateAndTrimTeachersSheet_(tmSheet, optionalExpectedStaffCount) {
+  if (!tmSheet) return { removedDuplicates: 0, finalStaffRows: 0 };
+  const lastRow = tmSheet.getLastRow();
+  if (lastRow <= 1) return { removedDuplicates: 0, finalStaffRows: 0 };
+
+  const numRows = lastRow - 1;
+  const allVals = tmSheet.getRange(2, 1, numRows, 24).getValues();
+  const seenKey = {};
+  const uniqueRows = [];
+
+  for (let i = 0; i < allVals.length; i++) {
+    const r = allVals[i];
+    const snVal = String(r[0] || "").trim();
+    const staffId = String(r[1] || "").trim();
+    const staffName = String(r[2] || "").trim();
+    if (!staffId && !staffName) continue;
+    const dedupKey = staffId ? ("ID_" + staffId) : ("SN_" + snVal + "_" + staffName);
+    if (seenKey[dedupKey] !== undefined) {
+      const existingIdx = seenKey[dedupKey];
+      r[0] = existingIdx + 1;
+      uniqueRows[existingIdx] = r;
+    } else {
+      const newIdx = uniqueRows.length;
+      seenKey[dedupKey] = newIdx;
+      r[0] = newIdx + 1;
+      uniqueRows.push(r);
+    }
+  }
+
+  const targetCount = (optionalExpectedStaffCount && optionalExpectedStaffCount > 0 && uniqueRows.length > optionalExpectedStaffCount)
+    ? optionalExpectedStaffCount
+    : uniqueRows.length;
+  const cleanRows = uniqueRows.slice(0, targetCount);
+
+  if (lastRow > 1) {
+    tmSheet.getRange(2, 1, lastRow - 1, 24).clearContent();
+  }
+  if (cleanRows.length > 0) {
+    tmSheet.getRange(2, 1, cleanRows.length, 24).setValues(cleanRows);
+  }
+
+  const desiredLastRow = cleanRows.length + 1;
+  const maxRows = tmSheet.getMaxRows();
+  if (maxRows > desiredLastRow + 5) {
+    try {
+      tmSheet.deleteRows(desiredLastRow + 1, maxRows - desiredLastRow);
+    } catch (e) {}
+  }
+
+  return {
+    previousRows: numRows,
+    finalStaffRows: cleanRows.length,
+    removedDuplicates: Math.max(0, numRows - cleanRows.length)
+  };
+}
+
+function deduplicateTeachersMasterSheetMenu() {
+  const tInfo = setupTeachersPortalSheets("", false);
+  const tSs = getOrCreateTeachersSpreadsheet_(tInfo.teachersSheetId, false);
+  const tmSheet = tSs.getSheetByName("TEACHERS_MASTER");
+  const res = deduplicateAndTrimTeachersSheet_(tmSheet, 0);
+  Logger.log("Deduplicated TEACHERS_MASTER: " + JSON.stringify(res));
+  return res;
 }
 
 function writeExamCentresSheets_(ss, examCentres10, examCentres12, schoolsList, nowStr) {
@@ -996,102 +1062,175 @@ function doPost(e) {
       return jsonResponse_(tInfo);
     }
 
-    if (action === "sync_teachers_master_batch") {
+    if (action === "deduplicate_teachers_sheet") {
       const tInfo = setupTeachersPortalSheets(data.teachersSheetId || "", false);
       const tSs = getOrCreateTeachersSpreadsheet_(tInfo.teachersSheetId, false);
       const tmSheet = tSs.getSheetByName("TEACHERS_MASTER");
-
-      if (data.isFirstBatch) {
-        if (tmSheet.getLastRow() > 1) {
-          tmSheet.getRange(2, 1, tmSheet.getLastRow() - 1, 24).clearContent();
-        }
-        if (Array.isArray(data.schoolSummaryRows) && data.schoolSummaryRows.length > 0) {
-          const sumSheet = tSs.getSheetByName("SCHOOL_STAFF_SUMMARY");
-          if (sumSheet.getLastRow() > 1) sumSheet.getRange(2, 1, sumSheet.getLastRow() - 1, 10).clearContent();
-          const sRows = data.schoolSummaryRows.map(function(s, idx) {
-            return [
-              s.sn || (idx + 1), String(s.uNo || ""), String(s.udiseNo || ""),
-              cleanSheetCellStr_(s.schoolNameTa), cleanSheetCellStr_(s.schoolNameEn),
-              cleanSheetCellStr_(s.block), Number(s.teachingCount || 0),
-              Number(s.nonTeachingCount || 0), Number(s.totalCount || 0), nowStr
-            ];
-          });
-          sumSheet.getRange(2, 1, sRows.length, 10).setValues(sRows);
-        }
-        if (Array.isArray(data.staffOverridesList) && data.staffOverridesList.length > 0) {
-          const leSheet = tSs.getSheetByName("STAFF_LIVE_EDITS");
-          if (leSheet.getLastRow() > 1) leSheet.getRange(2, 1, leSheet.getLastRow() - 1, 22).clearContent();
-          const oRows = data.staffOverridesList.map(function(st) {
-            return [
-              cleanSheetCellStr_(st.staffId || st.id), cleanSheetCellStr_(st.name),
-              st.isTeaching !== false ? "Teaching" : "Non-Teaching",
-              cleanSheetCellStr_(st.desig), cleanSheetCellStr_(st.subject),
-              cleanSheetCellStr_(st.qualification), cleanSheetCellStr_(st.gender),
-              cleanSheetCellStr_(st.dob), cleanSheetCellStr_(st.nature),
-              cleanSheetCellStr_(st.dojService), cleanSheetCellStr_(st.dojPresPost),
-              cleanSheetCellStr_(st.dojSchool), cleanSheetCellStr_(st.uNo),
-              cleanSheetCellStr_(st.udiseNo), cleanSheetCellStr_(st.schoolNameTa),
-              cleanSheetCellStr_(st.block), cleanSheetCellStr_(st.mobile),
-              cleanSheetCellStr_(st.examDuty), cleanSheetCellStr_(st.campDuty),
-              cleanSheetCellStr_(st.campOption), "ADMIN_OR_HM", nowStr
-            ];
-          });
-          leSheet.getRange(2, 1, oRows.length, 22).setValues(oRows);
-        }
-        if (Array.isArray(data.deleteRequests) && data.deleteRequests.length > 0) {
-          const drSheet = tSs.getSheetByName("STAFF_DELETE_REQUESTS");
-          if (drSheet.getLastRow() > 1) drSheet.getRange(2, 1, drSheet.getLastRow() - 1, 11).clearContent();
-          const dRows = data.deleteRequests.map(function(r) {
-            return [
-              r.reqId || "", r.requestedAt || nowStr, r.uNo || "",
-              cleanSheetCellStr_(r.schoolName || r.schoolNameTa),
-              r.emisId || r.staffRecordId || "", cleanSheetCellStr_(r.staffName || r.staffNameTa),
-              cleanSheetCellStr_(r.desig), cleanSheetCellStr_(r.subject),
-              cleanSheetCellStr_(r.reasonCategory), cleanSheetCellStr_(r.reasonDetail),
-              r.status || "PENDING"
-            ];
-          });
-          drSheet.getRange(2, 1, dRows.length, 11).setValues(dRows);
-        }
-      }
-
-      let writtenCount = 0;
-      if (Array.isArray(data.staffRows) && data.staffRows.length > 0) {
-        const startRow = data.isFirstBatch ? 2 : (tmSheet.getLastRow() + 1);
-        const formattedStaffRows = data.staffRows.map(function(r) {
-          if (Array.isArray(r)) {
-            const copy = r.slice(0, 23);
-            while (copy.length < 23) copy.push("");
-            copy.push(nowStr);
-            return copy;
-          }
-          return [
-            r.sn || "", cleanSheetCellStr_(r.staffId), cleanSheetCellStr_(r.name),
-            r.isTeaching !== false ? "Teaching" : "Non-Teaching",
-            cleanSheetCellStr_(r.desig), cleanSheetCellStr_(r.subject),
-            cleanSheetCellStr_(r.qualification), cleanSheetCellStr_(r.gender),
-            cleanSheetCellStr_(r.dob), cleanSheetCellStr_(r.nature),
-            cleanSheetCellStr_(r.dojService), cleanSheetCellStr_(r.dojPresPost),
-            cleanSheetCellStr_(r.dojSchool), cleanSheetCellStr_(r.uNo),
-            cleanSheetCellStr_(r.udiseNo), cleanSheetCellStr_(r.schoolNameTa),
-            cleanSheetCellStr_(r.schoolNameEn), cleanSheetCellStr_(r.block),
-            cleanSheetCellStr_(r.mgmt1), cleanSheetCellStr_(r.mobile),
-            cleanSheetCellStr_(r.examDuty), cleanSheetCellStr_(r.campDuty),
-            cleanSheetCellStr_(r.campOption), nowStr
-          ];
-        });
-        tmSheet.getRange(startRow, 1, formattedStaffRows.length, 24).setValues(formattedStaffRows);
-        writtenCount = formattedStaffRows.length;
-      }
-
+      const dedupRes = deduplicateAndTrimTeachersSheet_(tmSheet, Number(data.expectedStaffCount) || 0);
       return jsonResponse_({
         ok: true,
         teachersSheetId: tSs.getId(),
         teachersSheetUrl: tSs.getUrl(),
-        batchIndex: data.batchIndex || 0,
-        writtenCount: writtenCount,
-        totalRowsInSheet: Math.max(0, tmSheet.getLastRow() - 1)
+        previousRows: dedupRes.previousRows,
+        totalRowsInSheet: dedupRes.finalStaffRows,
+        removedDuplicates: dedupRes.removedDuplicates,
+        updatedAt: nowStr
       });
+    }
+
+    if (action === "sync_teachers_master_batch") {
+      const lock = LockService.getScriptLock();
+      try { lock.waitLock(25000); } catch (lockErr) {}
+      try {
+        const batchReqId = String(data.batchRequestId || "").trim();
+        if (batchReqId) {
+          try {
+            const cache = CacheService.getScriptCache();
+            if (cache.get("DONE_BATCH_" + batchReqId)) {
+              const tSsCached = getOrCreateTeachersSpreadsheet_(data.teachersSheetId || "", false);
+              const tmCached = tSsCached.getSheetByName("TEACHERS_MASTER");
+              return jsonResponse_({
+                ok: true,
+                deduplicatedRetry: true,
+                teachersSheetId: tSsCached.getId(),
+                teachersSheetUrl: tSsCached.getUrl(),
+                batchIndex: data.batchIndex || 0,
+                writtenCount: Array.isArray(data.staffRows) ? data.staffRows.length : 0,
+                totalRowsInSheet: tmCached ? Math.max(0, tmCached.getLastRow() - 1) : 0
+              });
+            }
+          } catch (ce) {}
+        }
+
+        const tInfo = setupTeachersPortalSheets(data.teachersSheetId || "", false);
+        const tSs = getOrCreateTeachersSpreadsheet_(tInfo.teachersSheetId, false);
+        const tmSheet = tSs.getSheetByName("TEACHERS_MASTER");
+
+        if (data.isFirstBatch) {
+          if (tmSheet.getLastRow() > 1) {
+            tmSheet.getRange(2, 1, tmSheet.getLastRow() - 1, 24).clearContent();
+          }
+          if (Array.isArray(data.schoolSummaryRows) && data.schoolSummaryRows.length > 0) {
+            const sumSheet = tSs.getSheetByName("SCHOOL_STAFF_SUMMARY");
+            if (sumSheet.getLastRow() > 1) sumSheet.getRange(2, 1, sumSheet.getLastRow() - 1, 10).clearContent();
+            const sRows = data.schoolSummaryRows.map(function(s, idx) {
+              return [
+                s.sn || (idx + 1), String(s.uNo || ""), String(s.udiseNo || ""),
+                cleanSheetCellStr_(s.schoolNameTa), cleanSheetCellStr_(s.schoolNameEn),
+                cleanSheetCellStr_(s.block), Number(s.teachingCount || 0),
+                Number(s.nonTeachingCount || 0), Number(s.totalCount || 0), nowStr
+              ];
+            });
+            sumSheet.getRange(2, 1, sRows.length, 10).setValues(sRows);
+          }
+          if (Array.isArray(data.staffOverridesList) && data.staffOverridesList.length > 0) {
+            const leSheet = tSs.getSheetByName("STAFF_LIVE_EDITS");
+            if (leSheet.getLastRow() > 1) leSheet.getRange(2, 1, leSheet.getLastRow() - 1, 22).clearContent();
+            const oRows = data.staffOverridesList.map(function(st) {
+              return [
+                cleanSheetCellStr_(st.staffId || st.id), cleanSheetCellStr_(st.name),
+                st.isTeaching !== false ? "Teaching" : "Non-Teaching",
+                cleanSheetCellStr_(st.desig), cleanSheetCellStr_(st.subject),
+                cleanSheetCellStr_(st.qualification), cleanSheetCellStr_(st.gender),
+                cleanSheetCellStr_(st.dob), cleanSheetCellStr_(st.nature),
+                cleanSheetCellStr_(st.dojService), cleanSheetCellStr_(st.dojPresPost),
+                cleanSheetCellStr_(st.dojSchool), cleanSheetCellStr_(st.uNo),
+                cleanSheetCellStr_(st.udiseNo), cleanSheetCellStr_(st.schoolNameTa),
+                cleanSheetCellStr_(st.block), cleanSheetCellStr_(st.mobile),
+                cleanSheetCellStr_(st.examDuty), cleanSheetCellStr_(st.campDuty),
+                cleanSheetCellStr_(st.campOption), "ADMIN_OR_HM", nowStr
+              ];
+            });
+            leSheet.getRange(2, 1, oRows.length, 22).setValues(oRows);
+          }
+          if (Array.isArray(data.deleteRequests) && data.deleteRequests.length > 0) {
+            const drSheet = tSs.getSheetByName("STAFF_DELETE_REQUESTS");
+            if (drSheet.getLastRow() > 1) drSheet.getRange(2, 1, drSheet.getLastRow() - 1, 11).clearContent();
+            const dRows = data.deleteRequests.map(function(r) {
+              return [
+                r.reqId || "", r.requestedAt || nowStr, r.uNo || "",
+                cleanSheetCellStr_(r.schoolName || r.schoolNameTa),
+                r.emisId || r.staffRecordId || "", cleanSheetCellStr_(r.staffName || r.staffNameTa),
+                cleanSheetCellStr_(r.desig), cleanSheetCellStr_(r.subject),
+                cleanSheetCellStr_(r.reasonCategory), cleanSheetCellStr_(r.reasonDetail),
+                r.status || "PENDING"
+              ];
+            });
+            drSheet.getRange(2, 1, dRows.length, 11).setValues(dRows);
+          }
+        }
+
+        let writtenCount = 0;
+        if (Array.isArray(data.staffRows) && data.staffRows.length > 0) {
+          // DETERMINISTIC ROW POSITIONING:
+          // Always compute exact target startRow from S.No / startRowOffset (Batch 0 -> row 2, Batch 1 -> row 1502, etc.)
+          // Never use tmSheet.getLastRow() + 1, which caused duplicate appended rows (12,663 rows) when a batch retried!
+          const firstRow = data.staffRows[0];
+          const firstSn = Array.isArray(firstRow) ? Number(firstRow[0]) : Number(firstRow && firstRow.sn);
+          const explicitOffset = (data.startRowOffset !== undefined && data.startRowOffset !== null)
+            ? Number(data.startRowOffset)
+            : (!isNaN(firstSn) && firstSn >= 1 ? (firstSn - 1) : (Number(data.batchIndex || 0) * 1500));
+          const startRow = 2 + Math.max(0, explicitOffset);
+
+          const formattedStaffRows = data.staffRows.map(function(r, idx) {
+            if (Array.isArray(r)) {
+              const copy = r.slice(0, 23);
+              copy[0] = explicitOffset + idx + 1;
+              while (copy.length < 23) copy.push("");
+              copy.push(nowStr);
+              return copy;
+            }
+            return [
+              explicitOffset + idx + 1, cleanSheetCellStr_(r.staffId), cleanSheetCellStr_(r.name),
+              r.isTeaching !== false ? "Teaching" : "Non-Teaching",
+              cleanSheetCellStr_(r.desig), cleanSheetCellStr_(r.subject),
+              cleanSheetCellStr_(r.qualification), cleanSheetCellStr_(r.gender),
+              cleanSheetCellStr_(r.dob), cleanSheetCellStr_(r.nature),
+              cleanSheetCellStr_(r.dojService), cleanSheetCellStr_(r.dojPresPost),
+              cleanSheetCellStr_(r.dojSchool), cleanSheetCellStr_(r.uNo),
+              cleanSheetCellStr_(r.udiseNo), cleanSheetCellStr_(r.schoolNameTa),
+              cleanSheetCellStr_(r.schoolNameEn), cleanSheetCellStr_(r.block),
+              cleanSheetCellStr_(r.mgmt1), cleanSheetCellStr_(r.mobile),
+              cleanSheetCellStr_(r.examDuty), cleanSheetCellStr_(r.campDuty),
+              cleanSheetCellStr_(r.campOption), nowStr
+            ];
+          });
+          tmSheet.getRange(startRow, 1, formattedStaffRows.length, 24).setValues(formattedStaffRows);
+          writtenCount = formattedStaffRows.length;
+
+          // If this is the last batch, clear & delete any leftover rows below the final teacher row (e.g. old rows 7083..12663)
+          if (data.isLastBatch) {
+            const expectedFinalRow = startRow + formattedStaffRows.length - 1;
+            const currentLastRow = tmSheet.getLastRow();
+            if (currentLastRow > expectedFinalRow) {
+              tmSheet.getRange(expectedFinalRow + 1, 1, currentLastRow - expectedFinalRow, 24).clearContent();
+            }
+            const maxRows = tmSheet.getMaxRows();
+            if (maxRows > expectedFinalRow + 5) {
+              try {
+                tmSheet.deleteRows(expectedFinalRow + 1, maxRows - expectedFinalRow);
+              } catch (delErr) {}
+            }
+          }
+        }
+
+        if (batchReqId) {
+          try {
+            CacheService.getScriptCache().put("DONE_BATCH_" + batchReqId, "1", 600);
+          } catch (ce2) {}
+        }
+
+        return jsonResponse_({
+          ok: true,
+          teachersSheetId: tSs.getId(),
+          teachersSheetUrl: tSs.getUrl(),
+          batchIndex: data.batchIndex || 0,
+          writtenCount: writtenCount,
+          totalRowsInSheet: Math.max(0, tmSheet.getLastRow() - 1)
+        });
+      } finally {
+        try { lock.releaseLock(); } catch (le) {}
+      }
     }
 
     // 0C. SYNC 10_Ex_Cen & 12_Ex_Cen TABS DIRECTLY
