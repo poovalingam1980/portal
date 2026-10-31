@@ -2511,6 +2511,7 @@
     }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="auth-mode">
 
@@ -7643,9 +7644,9 @@
       </div>
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
         <button type="button" class="btn btn-outline btn-sm" onclick="printCurrentModalEbsStaffForm()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900;">
-          🖨️ இவரது A4 படிவம் அச்சிடு / PDF
+          Download PDF
         </button>
-        <button type="button" class="btn btn-outline btn-sm" onclick="closeEbsStaffProfileModal()" style="font-weight:900;">✖ மூடு</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeEbsStaffProfileModal()" style="font-weight:900;">Close</button>
       </div>
     </div>
     <div id="ebsStaffModalBody"></div>
@@ -7660,17 +7661,17 @@
     <div style="background:#0f294a; color:#fff; padding:12px 18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
       <div>
         <div style="font-size:1.02rem; font-weight:900; color:#fef08a;" id="ebsA4PreviewTitle">📋 EBS 2026-27 A4 அதிகாரப்பூர்வ படிவ மாதிரி (Official A4 Form Preview)</div>
-        <div style="font-size:0.76rem; color:#cbd5e1;" id="ebsA4PreviewSub">பள்ளியின் விவரங்களைச் சரிபார்த்து நேரடியாக A4 தாளில் அச்சிடலாம் அல்லது கோப்பாகப் பதிவிறக்கலாம்</div>
+        <div style="font-size:0.76rem; color:#cbd5e1;" id="ebsA4PreviewSub">பள்ளியின் விவரங்களைச் சரிபார்த்து நேரடியாக A4 தாளில் அச்சிடலாம் அல்லது PDF கோப்பாகப் பதிவிறக்கலாம்</div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn btn-primary btn-sm" onclick="triggerDirectEbsA4Print()" style="background:#16a34a; border-color:#15803d; font-weight:900;">
-          🖨️ நேரடி A4 அச்சு / Save as PDF (Print)
+          Print
         </button>
-        <button type="button" class="btn btn-primary btn-sm" onclick="downloadStandaloneEbsA4Html()" style="background:#2563eb; border-color:#1d4ed8; font-weight:900;">
-          📥 A4 அறிக்கை பதிவிறக்கு (Download Printable A4 .html)
+        <button type="button" class="btn btn-primary btn-sm" id="ebsA4DownloadPdfBtn" onclick="downloadDirectEbsA4Pdf()" style="background:#2563eb; border-color:#1d4ed8; font-weight:900;">
+          Download PDF
         </button>
         <button type="button" class="btn btn-outline btn-sm" onclick="closeEbsA4PreviewModal()" style="background:#fff; color:#0f294a; font-weight:900;">
-          ✖ மூடு
+          Close
         </button>
       </div>
     </div>
@@ -10543,7 +10544,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           const desig = pool[r[3]] || (isTeach ? "TEACHER" : "OFFICE STAFF");
           const gender = r[4] === "F" ? "Female" : "Male";
           const dob = r[5] || "";
-          const nature = r[6] === "R" ? "Regular" : "Contract";
+          const nature = (String(s.mgmt1 || "").toUpperCase() === "3P") ? "Contract" : (r[6] === "R" ? "Regular (Govt.Salaried )" : "Contract");
           const subject = pool[r[7]] || (isTeach ? "General" : "-");
           const qualification = pool[r[9]] || "";
           const isHm = desig.toUpperCase().includes("HEAD") || desig.toUpperCase().includes("PRINCIPAL");
@@ -21680,6 +21681,17 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }
   }
 
+  function normalizeStaffNatureBySchoolMgmt(rawNature, mgmt1) {
+    if (String(mgmt1 || "").toUpperCase().trim() === "3P") {
+      return "Contract";
+    }
+    const n = String(rawNature || "").trim();
+    if (/Contract|Self|Consolidated|Part/i.test(n)) {
+      return "Contract";
+    }
+    return "Regular (Govt.Salaried )";
+  }
+
   // Ensure a school's fixed portal staff list has full EMIS dates (dojService, dojPresPost, dojSchool, classTaught)
   function getSchoolFixedPortalStaffList(uNo) {
     uNo = String(uNo || "").trim();
@@ -21710,7 +21722,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
               dojPresPost: r[11] || "",
               dojSchool: r[12] || r[10] || "",
               firstApp: "TRB",
-              nature: r[6] === "R" ? "Regular" : "Contract",
+              nature: normalizeStaffNatureBySchoolMgmt(r[6] === "R" ? "Regular (Govt.Salaried )" : "Contract", sch.mgmt1),
               examDuty: isTeach ? (isHm ? "Chief Superintendent" : (desig.toUpperCase().includes("P.G.") ? "Hall Superintendent / AE" : "Hall Superintendent")) : "",
               campDuty: isTeach ? (isHm ? "Camp Officer / CE" : (desig.toUpperCase().includes("P.G.") ? "AE / Tabulator" : "Examiner")) : "", 
               campOption: sch.block || "01-Sivagangai",
@@ -21737,7 +21749,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             desig: pool[r[3]] || "",
             gender: r[4] === "F" ? "Female" : "Male",
             dob: r[5] || "",
-            nature: r[6] === "R" ? "Regular" : "Contract",
+            nature: normalizeStaffNatureBySchoolMgmt(r[6] === "R" ? "Regular (Govt.Salaried )" : "Contract", sch.mgmt1),
             subject: pool[r[7]] || "-",
             classTaught: pool[r[8]] || "-",
             qualification: pool[r[9]] || "-",
@@ -21751,6 +21763,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
     const list = (extra.staff || []).map(st => {
       const sid = String(st.id || st.staffId || "").trim();
+      st.nature = normalizeStaffNatureBySchoolMgmt(st.nature, sch.mgmt1);
       const raw = rawMap[sid] || {};
       const ov = staffOverrides[sid] || {};
       const ebsProf = (extra.ebs2026 && extra.ebs2026.staffProfiles && extra.ebs2026.staffProfiles[sid]) ? extra.ebs2026.staffProfiles[sid] : {};
@@ -21770,7 +21783,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         qualification: ov.qualification || st.qualification || raw.qualification || "",
         subject: ov.subject || st.subject || raw.subject || "-",
         classTaught: st.classTaught || raw.classTaught || "-",
-        nature: ebsProf.nature || ov.nature || st.nature || raw.nature || "Regular (Govt.Salaried )",
+        nature: normalizeStaffNatureBySchoolMgmt(ebsProf.nature || ov.nature || st.nature || raw.nature || "Regular (Govt.Salaried )", sch.mgmt1),
         dojService: ebsProf.dojService || ov.dojService || st.dojService || raw.dojService || "",
         dojPresPost: ebsProf.dojPresPost || ov.dojPresPost || st.dojPresPost || raw.dojPresPost || "",
         dojSchool: ebsProf.dojSchool || ov.dojSchool || st.dojSchool || raw.dojSchool || "",
@@ -22801,6 +22814,52 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     container.innerHTML = renderExemptionDetailInputHtml(gVal, "");
   }
 
+  function closeAllEbsClassSubMenus(exceptCls) {
+    ["6","7","8","9","10","11","12"].forEach(c => {
+      if (String(c) === String(exceptCls || "")) return;
+      const m = document.getElementById("ebsClsSubMenu_" + c);
+      if (m) m.style.display = "none";
+    });
+  }
+
+  function toggleEbsClassSubDropdown(clsNumStr, evt) {
+    if (evt) evt.stopPropagation();
+    const menu = document.getElementById("ebsClsSubMenu_" + clsNumStr);
+    if (!menu) return;
+    const isOpening = menu.style.display === "none";
+    closeAllEbsClassSubMenus(clsNumStr);
+    menu.style.display = isOpening ? "block" : "none";
+  }
+
+  function onEbsClassSubCheckboxChange(clsNumStr) {
+    const chks = document.querySelectorAll(".ebs-cls-sub-chk-" + clsNumStr + ":checked");
+    const selected = Array.from(chks).map(el => el.value.trim()).filter(Boolean);
+    const joined = selected.join(", ");
+    const hiddenInput = document.getElementById("ebsClsSub_" + clsNumStr);
+    const lbl = document.getElementById("ebsClsSubLabel_" + clsNumStr);
+    const btn = document.getElementById("ebsClsSubBtn_" + clsNumStr);
+    if (hiddenInput) hiddenInput.value = joined;
+    if (lbl) {
+      lbl.textContent = joined || "-";
+      lbl.style.color = selected.length > 0 ? "#4c1d95" : "#64748b";
+    }
+    if (btn) {
+      btn.title = joined || "பாடங்களைத் தேர்வு செய்க (Multiple Selection)";
+      btn.style.borderColor = selected.length > 0 ? "#7c3aed" : "#cbd5e1";
+    }
+  }
+
+  function clearEbsClassSubSelection(clsNumStr, evt) {
+    if (evt) evt.stopPropagation();
+    const chks = document.querySelectorAll(".ebs-cls-sub-chk-" + clsNumStr);
+    chks.forEach(el => { el.checked = false; });
+    onEbsClassSubCheckboxChange(clsNumStr);
+  }
+
+  document.addEventListener("click", function() {
+    closeAllEbsClassSubMenus("");
+  });
+
   function openEbsStaffProfileModal(uNo, staffId) {
     uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "");
     const ctx = getOrInitSchoolEbs2026Data(uNo, false);
@@ -22851,25 +22910,69 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }));
     const distOpts = buildSelectOptionsWithCurrent(distItems, st.resDistrict || "Sivagangai", "-- மாவட்டம் தேர்வு செய்க --");
 
-    // 6. Nature of Appointment (Col O NATURE OF APPOINTMENT)
-    const natureOpts = buildSelectOptionsWithCurrent(dd.natureOfAppointments || ["Regular (Govt.Salaried )", "Contract"], st.nature, "");
+    // 6. Nature of Present Post (Col O):
+    //    - Private Schools (3P): only "Contract" (do NOT show "Regular (Govt.Salaried )")
+    //    - Govt (1G) & Aided (2A) Schools: strictly "Regular (Govt.Salaried )" and "Contract"
+    const isPrivateSchool = String(ctx.sch.mgmt1 || "").toUpperCase().trim() === "3P";
+    const allowedNatureItems = isPrivateSchool
+      ? ["Contract"]
+      : ["Regular (Govt.Salaried )", "Contract"];
+    const effectiveNature = normalizeStaffNatureBySchoolMgmt(st.nature, ctx.sch.mgmt1);
+    const natureOpts = buildSelectOptionsWithCurrent(allowedNatureItems, effectiveNature, "", true);
 
     // 7. Mode of First Appointment (Col P) & Mode of Present Post (Col Q)
     const modeFirstOpts = buildSelectOptionsWithCurrent(dd.modeFirstAppointments || ["TRB", "Employment Seniority", "Management", "Composinate Ground", "TNPSC", "Others"], st.modeFirstApp, "");
     const modePresOpts = buildSelectOptionsWithCurrent(dd.modePresentPosts || ["NEW APPOINTMENT", "PROMOTION"], st.modePresPost, "");
 
-    // 8. Handling Classes Subjects (Col H TEACHING_SUBJECT filtered by Col I TEACHING_SUBJECT_CLASS)
+    // 8. Handling Classes Multi-Select Subjects (Col H TEACHING_SUBJECT filtered by Col I TEACHING_SUBJECT_CLASS)
     const ch = st.classesHandling || getDefaultClassesHandlingForStaff(st.desig, st.subject, ctx.sch);
-    function getClassSubjectOpts(clsNumStr, curSubVal) {
+    function renderClassMultiSubjectControl(clsNumStr, curSubVal) {
       const isHssClass = (clsNumStr === "11" || clsNumStr === "12");
       const allTeachSubs = dd.teachingSubjects || [];
-      const filteredSubs = allTeachSubs.filter(ts => {
+      const filteredSubs = [];
+      const seenSub = new Set();
+      allTeachSubs.forEach(ts => {
+        const nm = String(ts.name || "").trim();
+        if (!nm || seenSub.has(nm.toLowerCase())) return;
         const cr = normalizeClientTeachingClassRange(ts.classRange);
-        if (!cr) return true;
-        if (isHssClass) return cr === "6-12" || cr === "11-12" || cr.includes("12");
-        return cr === "6-10" || cr === "6-12" || cr.startsWith("6");
-      }).map(ts => ({ value: ts.name, label: ts.name }));
-      return buildSelectOptionsWithCurrent(filteredSubs, curSubVal, "-", true);
+        const allow = !cr || (isHssClass ? (cr === "6-12" || cr === "11-12" || cr.includes("12")) : (cr === "6-10" || cr === "6-12" || cr.startsWith("6")));
+        if (allow) {
+          seenSub.add(nm.toLowerCase());
+          filteredSubs.push(nm);
+        }
+      });
+
+      const rawSelected = String(curSubVal || "").split(",").map(s => s.trim()).filter(s => s && s !== "-");
+      const validSelected = rawSelected.filter(sel => filteredSubs.some(f => f.toLowerCase() === sel.toLowerCase()));
+      const joinedVal = validSelected.join(", ");
+      const displayLabel = validSelected.length > 0 ? joinedVal : "-";
+
+      const checkboxesHtml = filteredSubs.map(subName => {
+        const isChecked = validSelected.some(sel => sel.toLowerCase() === subName.toLowerCase());
+        return `
+          <label style="display:flex; align-items:center; gap:6px; padding:4px 6px; font-size:0.74rem; font-weight:${isChecked ? "900" : "700"}; color:${isChecked ? "#4c1d95" : "#1e293b"}; background:${isChecked ? "#f5f3ff" : "transparent"}; cursor:pointer; border-radius:4px; margin:0;">
+            <input type="checkbox" class="ebs-cls-sub-chk-${clsNumStr}" value="${escapeHtmlAttr(subName)}" ${isChecked ? "checked" : ""} onchange="onEbsClassSubCheckboxChange('${clsNumStr}')" style="cursor:pointer;">
+            <span>${escapeHtmlAttr(subName)}</span>
+          </label>
+        `;
+      }).join("");
+
+      return `
+        <div class="ebs-multi-sub-wrap" id="ebsClsSubWrap_${clsNumStr}" style="position:relative; text-align:left;">
+          <input type="hidden" id="ebsClsSub_${clsNumStr}" value="${escapeHtmlAttr(joinedVal)}">
+          <button type="button" id="ebsClsSubBtn_${clsNumStr}" onclick="toggleEbsClassSubDropdown('${clsNumStr}', event)" class="form-control" title="${escapeHtmlAttr(joinedVal || "பாடங்களைத் தேர்வு செய்க (Multiple Selection)")}" style="padding:4px 6px; font-size:0.73rem; font-weight:800; text-align:left; display:flex; justify-content:space-between; align-items:center; gap:4px; min-height:30px; cursor:pointer; background:#fff; border-color:${validSelected.length > 0 ? "#7c3aed" : "#cbd5e1"};">
+            <span id="ebsClsSubLabel_${clsNumStr}" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:92px; color:${validSelected.length > 0 ? "#4c1d95" : "#64748b"};">${escapeHtmlAttr(displayLabel)}</span>
+            <span style="font-size:0.62rem; color:#64748b;">▼</span>
+          </button>
+          <div id="ebsClsSubMenu_${clsNumStr}" class="ebs-multi-sub-menu" onclick="event.stopPropagation()" style="display:none; position:absolute; top:100%; ${Number(clsNumStr) >= 11 ? "right:0;" : "left:0;"} z-index:1200; min-width:210px; max-height:230px; overflow-y:auto; background:#fff; border:1.5px solid #4c1d95; border-radius:8px; box-shadow:0 10px 24px rgba(15,41,74,0.24); padding:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:4px; margin-bottom:4px; border-bottom:1px solid #e2e8f0; font-size:0.70rem; font-weight:900; color:#4c1d95;">
+              <span>${clsNumStr}th Std Subjects (Multi-Select)</span>
+              <button type="button" onclick="clearEbsClassSubSelection('${clsNumStr}', event)" style="background:none; border:none; color:#dc2626; font-weight:800; cursor:pointer; font-size:0.70rem;">Clear</button>
+            </div>
+            ${checkboxesHtml}
+          </div>
+        </div>
+      `;
     }
 
     // 9. Practical Exam Centres (Col AB 10th Practical Exam Centre & Col AC 12th Practical Centre)
@@ -23142,11 +23245,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             </thead>
             <tbody>
               <tr>
-                <td style="font-weight:800; font-size:0.76rem;">Subjects</td>
-                ${["6","7","8","9","10","11","12"].map(c => `<td>
-                  <select id="ebsClsSub_${c}" class="form-control" style="padding:3px 4px; font-size:0.74rem; font-weight:800;">
-                    ${getClassSubjectOpts(c, (ch[c] && ch[c].sub) || "")}
-                  </select>
+                <td style="font-weight:800; font-size:0.76rem;">Subjects<br><span style="font-size:0.65rem; color:#4c1d95;">(Multiple Select)</span></td>
+                ${["6","7","8","9","10","11","12"].map(c => `<td style="overflow:visible;">
+                  ${renderClassMultiSubjectControl(c, (ch[c] && ch[c].sub) || "")}
                 </td>`).join("")}
               </tr>
               <tr>
@@ -23522,11 +23623,14 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     showToast(`✅ [${nameEn}] EBS 2026-27 படிவ விவரங்கள் சேமிக்கப்பட்டன!`, "#16a34a");
   }
 
-  function printCurrentModalEbsStaffForm() {
+  async function printCurrentModalEbsStaffForm() {
     if (!_activeEbsEditingStaff) return;
-    saveEbsStaffProfileModal(null);
+    await saveEbsStaffProfileModal(null);
     const mode = _activeEbsEditingStaff.isTeaching ? "F3_SINGLE" : "F4_SINGLE";
     openEbsA4PreviewModal(mode, _activeEbsEditingStaff.staffId, _activeEbsEditingStaff.uNo);
+    setTimeout(() => {
+      downloadDirectEbsA4Pdf();
+    }, 250);
   }
 
   // =========================================================================
@@ -24309,33 +24413,33 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (mode === "F1") {
       htmlPages = buildOfficialEbsForm1Html(uNo);
       title = `🏫 FORM – I : பள்ளி சுயவிவரம் (U.NO: ${uNo} - ${sch.nameEn})`;
-      fileBase += "_FORM_1.html";
+      fileBase += "_FORM_1.pdf";
     } else if (mode === "F2") {
       htmlPages = buildOfficialEbsForm2Html(uNo);
       title = `📘 FORM – II : +2 பாடவாரியான மாணவர் எண்ணிக்கை (U.NO: ${uNo} - ${sch.nameEn})`;
-      fileBase += "_FORM_2.html";
+      fileBase += "_FORM_2.pdf";
     } else if (mode === "F3_SINGLE") {
       const st = teachList.find(x => String(x.staffId) === String(optionalStaffId)) || staffList.find(x => String(x.staffId) === String(optionalStaffId));
       if (!st) return;
       htmlPages = buildOfficialEbsForm3SingleHtml(sch, st);
       title = `👨‍🏫 FORM – III : ${st.name} (EMIS: ${st.staffId})`;
-      fileBase += `_FORM_3_${st.staffId}.html`;
+      fileBase += `_FORM_3_${st.staffId}.pdf`;
     } else if (mode === "F3_ALL") {
       htmlPages = teachList.map(st => buildOfficialEbsForm3SingleHtml(sch, st)).join("");
       title = `👨‍🏫 FORM – III : அனைத்து ஆசிரியர்கள் (${teachList.length} Pages - U.NO: ${uNo})`;
-      fileBase += `_FORM_3_ALL_${teachList.length}_TEACHERS.html`;
+      fileBase += `_FORM_3_ALL_${teachList.length}_TEACHERS.pdf`;
     } else if (mode === "F4_SINGLE") {
       const st = nonTeachList.find(x => String(x.staffId) === String(optionalStaffId)) || staffList.find(x => String(x.staffId) === String(optionalStaffId));
       if (!st) return;
       htmlPages = buildOfficialEbsForm4SingleHtml(sch, st);
       title = `🧑‍💼 FORM – IV : ${st.name} (EMIS: ${st.staffId})`;
-      fileBase += `_FORM_4_${st.staffId}.html`;
+      fileBase += `_FORM_4_${st.staffId}.pdf`;
     } else if (mode === "F4_ALL") {
       htmlPages = nonTeachList.length > 0
         ? nonTeachList.map(st => buildOfficialEbsForm4SingleHtml(sch, st)).join("")
         : `<div class="ebs-a4-page" style="display:flex;align-items:center;justify-content:center;font-weight:800;">இப்பள்ளியில் ஆசிரியரல்லாத பணியாளர்கள் இல்லை (No Non-Teaching Staff).</div>`;
       title = `🧑‍💼 FORM – IV : அனைத்து ஆசிரியரல்லாத பணியாளர்கள் (${nonTeachList.length} Pages - U.NO: ${uNo})`;
-      fileBase += `_FORM_4_ALL_${nonTeachList.length}_STAFF.html`;
+      fileBase += `_FORM_4_ALL_${nonTeachList.length}_STAFF.pdf`;
     } else {
       const p1 = buildOfficialEbsForm1Html(uNo);
       const p2 = isHSS ? buildOfficialEbsForm2Html(uNo) : "";
@@ -24343,7 +24447,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       const p4 = nonTeachList.map(st => buildOfficialEbsForm4SingleHtml(sch, st)).join("");
       htmlPages = p1 + p2 + p3 + p4;
       title = `📚 முழுப் பள்ளி EBS 2026-27 கையேடு (F1${isHSS ? "+F2" : ""}+F3+F4) – U.NO: ${uNo} ${sch.nameEn}`;
-      fileBase += `_COMPLETE_EBS_BOOKLET.html`;
+      fileBase += `_COMPLETE_EBS_BOOKLET.pdf`;
     }
 
     _lastRenderedEbsA4Html = htmlPages;
@@ -24371,279 +24475,73 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     window.print();
   }
 
-  function downloadStandaloneEbsA4Html() {
+  async function downloadDirectEbsA4Pdf() {
     if (!_lastRenderedEbsA4Html) return;
-    const fullDoc = `<!DOCTYPE html>
-<html lang="ta">
-<head>
-<meta charset="UTF-8">
-<title>${_lastRenderedEbsA4Filename}</title>
-<link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-  body { margin: 0; padding: 12px; background: #e2e8f0; font-family: Arial, Helvetica, 'Mukta Malar', sans-serif; }
-  .top-print-bar { max-width: 210mm; margin: 0 auto 12px auto; background: #0f294a; color: #fff; padding: 10px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-  .top-print-bar button { background: #16a34a; color: #fff; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 800; cursor: pointer; font-size: 14px; }
-  
-    /* =======================================================================
-       HIDE ADMIN TOP BAR IN SCHOOL PORTAL & ENSURE CRISP ACTIVE MENU TEXT
-       ======================================================================= */
-    body.school-mode .top-system-bar {
-      display: none !important;
-    }
-    .school-topmenu-item.active .topmenu-title,
-    .school-topmenu-item.active .topmenu-label {
-      color: #ffffff !important;
-    }
-    .school-topmenu-item.active .topmenu-num,
-    .school-topmenu-item.active .topmenu-en {
-      color: #fde047 !important;
+    const pdfFilename = String(_lastRenderedEbsA4Filename || "EBS_2026_27_Report.pdf").replace(/\.html$/i, ".pdf");
+    const btn = document.getElementById("ebsA4DownloadPdfBtn");
+
+    if (typeof html2pdf === "undefined") {
+      triggerDirectEbsA4Print();
+      return;
     }
 
-    /* =======================================================================
-       EBS 2026-27 MODULE & OFFICIAL A4 FORM I - IV PRINT / PREVIEW STYLES
-       ======================================================================= */
-    .ebs-subtab-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-      background: #f8fafc;
-      padding: 8px;
-      border-radius: 12px;
-      border: 1.5px solid #cbd5e1;
-    }
-    .ebs-subtab-btn {
-      flex: 1 1 210px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1.5px solid #cbd5e1;
-      background: #ffffff;
-      color: #0f294a;
-      font-weight: 800;
-      font-size: 0.84rem;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.18s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .ebs-subtab-btn:hover {
-      border-color: #2563eb;
-      background: #eff6ff;
-    }
-    .ebs-subtab-btn.active {
-      background: linear-gradient(135deg, #0f294a 0%, #1e40af 100%);
-      color: #ffffff;
-      border-color: #0f294a;
-      box-shadow: 0 4px 12px rgba(15, 41, 74, 0.22);
-    }
-    .ebs-num-input {
-      width: 58px;
-      padding: 4px 5px;
-      text-align: center;
-      font-weight: 800;
-      font-size: 0.82rem;
-      border: 1.5px solid #94a3b8;
-      border-radius: 6px;
-      background: #ffffff;
-      color: #0f294a;
-    }
-    .ebs-num-input:focus {
-      outline: none;
-      border-color: #2563eb;
-      background: #eff6ff;
-    }
-    .ebs-num-input[readonly] {
-      background: #f1f5f9;
-      color: #334155;
-      border-color: #cbd5e1;
-      cursor: not-allowed;
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Generating PDF...";
     }
 
-    /* Official A4 Sheet Layout matching EBS FORM 01 TO 04.pdf */
-    .ebs-a4-page {
-      width: 210mm;
-      max-width: 100%;
-      min-height: 288mm;
-      margin: 0 auto 22px auto;
-      padding: 8mm 10mm;
-      background: #ffffff !important;
-      color: #000000 !important;
-      font-family: Arial, Helvetica, 'Mukta Malar', sans-serif;
-      border: 1.5px solid #94a3b8;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
-      box-sizing: border-box;
-      page-break-after: always;
-      break-after: page;
-    }
-    .ebs-a4-page:last-child {
-      page-break-after: auto;
-      break-after: auto;
-    }
-    .ebs-top-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .ebs-form-pill {
-      border: 1.6px solid #000;
-      border-radius: 999px;
-      padding: 4px 28px;
-      font-weight: 800;
-      font-size: 13px;
-      color: #000;
-      background: #fff;
-      text-align: center;
-      letter-spacing: 0.3px;
-    }
-    .ebs-uno-table {
-      border-collapse: collapse;
-      border: 1.5px solid #000;
-    }
-    .ebs-uno-table td {
-      border: 1.2px solid #000;
-      padding: 3px 8px;
-      font-weight: 800;
-      font-size: 12px;
-      color: #000;
-    }
-    .ebs-uno-digit {
-      width: 26px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 900;
-    }
-    .ebs-main-heading {
-      text-align: center;
-      font-size: 14px;
-      font-weight: 900;
-      text-decoration: underline;
-      margin: 4px 0 8px 0;
-      color: #000;
-      letter-spacing: 0.2px;
-    }
-    .ebs-section-caption {
-      font-size: 12px;
-      font-weight: 800;
-      color: #000;
-      margin: 7px 0 3px 0;
-    }
-    .ebs-print-table {
-      width: 100%;
-      border-collapse: collapse;
-      border: 1.5px solid #000;
-      margin-bottom: 6px;
-    }
-    .ebs-print-table th,
-    .ebs-print-table td {
-      border: 1px solid #000;
-      padding: 3px 5px;
-      font-size: 11px;
-      line-height: 1.25;
-      color: #000;
-      vertical-align: middle;
-    }
-    .ebs-print-table th {
-      font-weight: 800;
-      text-align: center;
-      background: #f8fafc;
-    }
-    .ebs-grey-cell {
-      background: #bdbdbd !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-    .ebs-digit-boxes {
-      display: inline-grid;
-      grid-auto-flow: column;
-      border-collapse: collapse;
-    }
-    .ebs-digit-boxes span {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 22px;
-      border: 1px solid #000;
-      font-weight: 800;
-      font-size: 11.5px;
-      color: #000;
-      background: #fff;
-      margin-left: -1px;
-    }
-    .ebs-chk {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin-right: 10px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #000;
-    }
-    .ebs-chk-sq {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 13px;
-      height: 13px;
-      border: 1.4px solid #000;
-      font-size: 10px;
-      font-weight: 900;
-      line-height: 1;
-      background: #fff;
-    }
-    @media print {
-      @page {
-        size: A4 portrait;
-        margin: 6mm;
-      }
-      #printReportArea {
-        display: block !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-      .ebs-a4-page {
-        width: 100% !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-        padding: 4mm 6mm !important;
-        border: none !important;
-        box-shadow: none !important;
-        page-break-after: always !important;
-        break-after: page !important;
-      }
-      .ebs-a4-page:last-child {
-        page-break-after: auto !important;
-        break-after: auto !important;
-      }
-    }
+    const tempContainer = document.createElement("div");
+    tempContainer.style.cssText = "position:fixed; left:-9999px; top:0; width:210mm; background:#ffffff; z-index:-1;";
+    tempContainer.innerHTML = `
+      <style>
+        .pdf-export-wrap .ebs-a4-page {
+          width: 210mm !important;
+          min-height: auto !important;
+          margin: 0 auto !important;
+          padding: 9mm 11mm !important;
+          box-shadow: none !important;
+          border: none !important;
+          box-sizing: border-box !important;
+          page-break-after: always !important;
+          break-after: page !important;
+        }
+        .pdf-export-wrap .ebs-a4-page:last-child {
+          page-break-after: auto !important;
+          break-after: auto !important;
+        }
+      </style>
+      <div class="pdf-export-wrap">${_lastRenderedEbsA4Html}</div>
+    `;
+    document.body.appendChild(tempContainer);
+    const exportTarget = tempContainer.querySelector(".pdf-export-wrap");
 
-  @media print {
-    body { background: #fff !important; padding: 0 !important; }
-    .top-print-bar { display: none !important; }
+    try {
+      const opt = {
+        margin: 0,
+        filename: pdfFilename,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] }
+      };
+      await html2pdf().set(opt).from(exportTarget).save();
+      showToast(`📥 [${pdfFilename}] PDF கோப்பாகப் பதிவிறக்கப்பட்டது!`, "#2563eb");
+    } catch (err) {
+      console.error("PDF generation error:", err);
+      triggerDirectEbsA4Print();
+    } finally {
+      if (tempContainer && tempContainer.parentNode) {
+        tempContainer.parentNode.removeChild(tempContainer);
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Download PDF";
+      }
+    }
   }
-</style>
-</head>
-<body>
-  <div class="top-print-bar">
-    <div><strong>🏛️ முதன்மைக் கல்வி அலுவலகம், சிவகங்கை – EBS 2026-27 அதிகாரப்பூர்வ A4 படிவம்</strong></div>
-    <button onclick="window.print()">🖨️ Print / Save as A4 PDF</button>
-  </div>
-  ${_lastRenderedEbsA4Html}
-</body>
-</html>`;
-    const blob = new Blob([fullDoc], { type: "text/html;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = _lastRenderedEbsA4Filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast(`📥 [${_lastRenderedEbsA4Filename}] A4 அறிக்கை பதிவிறக்கப்பட்டது!`, "#2563eb");
+
+  function downloadStandaloneEbsA4Html() {
+    return downloadDirectEbsA4Pdf();
   }
 
   // =========================================================================
