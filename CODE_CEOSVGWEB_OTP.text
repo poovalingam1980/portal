@@ -37,6 +37,7 @@ const PORTAL_CONFIG = {
   OWNER_EMAIL: "ceosvgweb@gmail.com",
   MASTER_SHEET_ID: "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ",
   TEACHERS_SHEET_ID: "1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A",
+  EBS_SHEET_ID: "1EPyFeEoJRHg_7OFN8k9nY6VJSngoT3HicF2zcu9-fRc",
 
   // Meta WhatsApp Cloud API Configuration (Phone Number ID: 1457353970785529 | Template: hello_world [en_US] | ID: 2600197680404000)
   WA_PHONE_NUMBER_ID: "1457353970785529",
@@ -285,6 +286,7 @@ function onOpen() {
       .createMenu("🏛️ CEO Sivagangai Portal")
       .addItem("🛠️ 1. அனைத்து 12 தாவல்களையும் உருவாக்கு (Setup Master DB + 10_Ex_Cen & 12_Ex_Cen)", "setupPortalSheets")
       .addItem("👨‍🏫 2. ஆசிரியர் தனி Google Sheet உருவாக்கு / அமை (Setup Teachers Master DB)", "setupTeachersPortalSheetsMenu")
+      .addItem("📋 2B. EBS 2026-27 தனி Google Sheet அமை (Setup EBS 2026-27 DB - F1,F2,F3,F4)", "setupEbsPortalSheetsMenu")
       .addItem("🧹 3. ஆசிரியர் வரிசைகள் சீரமைப்பு - 7,081 வரிசைகள் (Deduplicate Teachers Sheet)", "deduplicateTeachersMasterSheetMenu")
       .addItem("✨ 4. தமிழ் எழுத்துரு சீரமைப்பு (Fix Tamil Font Mojibake)", "repairAllSheetTamilMojibakeMenu")
       .addItem("📧 4. சோதனை Email OTP அனுப்புக (Test Email OTP)", "testSendEmailOtpMenu")
@@ -512,6 +514,218 @@ function setupTeachersPortalSheets(optionalTeachersSheetId, forceCreateNew) {
 function setupTeachersPortalSheetsMenu() {
   const res = setupTeachersPortalSheets("", false);
   Logger.log("Teachers Master DB Ready: " + JSON.stringify(res));
+}
+
+function getOrCreateEbsSpreadsheet_(optionalEbsSheetId, forceCreateNew) {
+  let savedPropId = "";
+  try {
+    savedPropId = PropertiesService.getScriptProperties().getProperty("EBS_SHEET_ID") || "";
+  } catch (e) {}
+
+  if (!forceCreateNew) {
+    const candidateIds = [
+      String(optionalEbsSheetId || "").trim(),
+      String(savedPropId || "").trim(),
+      String(PORTAL_CONFIG.EBS_SHEET_ID || "").trim()
+    ].filter(Boolean);
+
+    for (let i = 0; i < candidateIds.length; i++) {
+      try {
+        const ss = SpreadsheetApp.openById(candidateIds[i]);
+        if (ss) {
+          try { PropertiesService.getScriptProperties().setProperty("EBS_SHEET_ID", ss.getId()); } catch (e2) {}
+          return ss;
+        }
+      } catch (err) {}
+    }
+  }
+
+  const newSs = SpreadsheetApp.create("CEO_Sivagangai_EBS_2026_27_DB");
+  try {
+    PropertiesService.getScriptProperties().setProperty("EBS_SHEET_ID", newSs.getId());
+  } catch (e) {}
+  return newSs;
+}
+
+const EBS_F1_HEADERS = [
+  "UNIQUE_NO", "UDISE_NO", "DGE_NO", "Block", "Level", "Management", "Zone", "S_No",
+  "School_Name", "Pincode", "HSS_Exam_Centre_No", "SSLC_Exam_Centre_No",
+  "HM_Name", "HM_Mobile", "AHM_VP_Name", "AHM_VP_Mobile",
+  "School_Gmail_Old", "School_Email_Tnschools", "Landline_STD",
+  "Total_Classrooms", "Eligible_Exam_Rooms", "Bench_Desk_Pairs",
+  "Reg_Teach_HM", "Reg_Teach_PG", "Reg_Teach_Comp", "Reg_Teach_PhD1", "Reg_Teach_VocHSS",
+  "Reg_Teach_BT", "Reg_Teach_PhD2", "Reg_Teach_SGT", "Reg_Teach_PET", "Reg_Teach_Spl",
+  "Reg_Teach_VocHS", "Reg_Teach_Total", "Con_Teach_Total", "Teach_Grand_Total",
+  "Reg_NonTeach_Asst", "Reg_NonTeach_JrAsst", "Reg_NonTeach_LabAsst", "Reg_NonTeach_RC",
+  "Reg_NonTeach_Watchman", "Reg_NonTeach_Others", "Reg_NonTeach_Total", "Con_NonTeach_Total", "NonTeach_Grand_Total",
+  "SSLC_TM_Boys", "SSLC_TM_Girls", "SSLC_TM_Total", "SSLC_EM_Boys", "SSLC_EM_Girls", "SSLC_EM_Total",
+  "SSLC_Total_Boys", "SSLC_Total_Girls", "SSLC_Grand_Total",
+  "SSLC_Part4_Boys", "SSLC_Part4_Girls", "SSLC_Part4_Total",
+  "HSC2_TM_Boys", "HSC2_TM_Girls", "HSC2_TM_Total", "HSC2_EM_Boys", "HSC2_EM_Girls", "HSC2_EM_Total",
+  "HSC2_Total_Boys", "HSC2_Total_Girls", "HSC2_Grand_Total",
+  "HSC2_Hindi_Boys", "HSC2_Hindi_Girls", "HSC2_Hindi_Total",
+  "HSC2_French_Boys", "HSC2_French_Girls", "HSC2_French_Total",
+  "HSC2_Sanskrit_Boys", "HSC2_Sanskrit_Girls", "HSC2_Sanskrit_Total", "Updated_At"
+];
+
+const EBS_F2_HEADERS = [
+  "S_No", "Management", "Zone", "U_NO", "School_Name",
+  "Lang_Tamil", "Lang_Hindi", "Lang_French", "Lang_Sanskrit", "English_Total",
+  "Maths_TM", "Maths_EM", "Maths_Tot", "Physics_TM", "Physics_EM", "Physics_Tot",
+  "Chemistry_TM", "Chemistry_EM", "Chemistry_Tot", "Biology_TM", "Biology_EM", "Biology_Tot",
+  "Botany_TM", "Botany_EM", "Botany_Tot", "Zoology_TM", "Zoology_EM", "Zoology_Tot",
+  "CompSci_TM", "CompSci_EM", "CompSci_Tot", "History_TM", "History_EM", "History_Tot",
+  "Economics_TM", "Economics_EM", "Economics_Tot", "Commerce_TM", "Commerce_EM", "Commerce_Tot",
+  "Accountancy_TM", "Accountancy_EM", "Accountancy_Tot", "AdvTamil_TM", "AdvTamil_EM", "AdvTamil_Tot",
+  "BusMaths_TM", "BusMaths_EM", "BusMaths_Tot", "MicroBio_TM", "MicroBio_EM", "MicroBio_Tot",
+  "Nursing_TM", "Nursing_EM", "Nursing_Tot", "CompApp_TM", "CompApp_EM", "CompApp_Tot",
+  "Agri_TM", "Agri_EM", "Agri_Tot", "EmpSkills_TM", "EmpSkills_EM", "EmpSkills_Tot",
+  "TypeWriting_TM", "TypeWriting_EM", "TypeWriting_Tot", "AccAudit_TM", "AccAudit_EM", "AccAudit_Tot",
+  "OfficeMgmt_TM", "OfficeMgmt_EM", "OfficeMgmt_Tot", "BME_TM", "BME_EM", "BME_Tot",
+  "BEE_Elec_TM", "BEE_Elec_EM", "BEE_Elec_Tot", "BEE_Elx_TM", "BEE_Elx_EM", "BEE_Elx_Tot",
+  "Others_Subject", "Others_TM", "Others_EM", "Others_Tot", "Updated_At"
+];
+
+const EBS_F3_HEADERS = [
+  "SN", "U_NO", "Level", "Management", "Block", "School_Name",
+  "Staff_EMIS_ID", "IFHRMS_ID", "Teacher_Name_En", "Salutation", "Teacher_Name_Ta",
+  "Gender", "DOB", "Age_01_04_26", "DOR", "Designation", "Qualification", "Main_Subject",
+  "Mobile_WhatsApp", "Alternate_Mobile", "Personal_Email", "Residential_Place", "Residential_District",
+  "Preferred_Camp_2026_27",
+  "Class6_Sub", "Class6_Med", "Class7_Sub", "Class7_Med", "Class8_Sub", "Class8_Med",
+  "Class9_Sub", "Class9_Med", "Class10_Sub", "Class10_Med", "Class11_Sub", "Class11_Med", "Class12_Sub", "Class12_Med",
+  "Mode_First_App", "DOJ_First_App", "First_Join_Post", "Mode_Present_Post", "Nature_Present_Post",
+  "DOJ_Present_Post", "Service_Present_Post", "Unit_Transfer_Date", "DOJ_Present_School",
+  "Practical_Ext_SSLC_1", "Practical_Ext_HSC_1", "Practical_Ext_HSC_2",
+  "Duty_25_26_SSLC_Work", "Duty_25_26_SSLC_Centre", "Duty_25_26_HSE_Work", "Duty_25_26_HSE_Centre",
+  "Duty_25_26_Camp_Work", "Duty_25_26_Camp_Centre",
+  "Child_Exam_Centre_1", "Child_Exam_Centre_2", "Exemption_Ground", "Exemption_Details", "Updated_At"
+];
+
+const EBS_F4_HEADERS = [
+  "U_NO", "SN", "School_Name", "Staff_EMIS_ID", "IFHRMS_ID",
+  "Employee_Name_En", "Salutation", "Employee_Name_Ta", "Designation", "Gender",
+  "DOB", "Age_01_04_26", "DOR", "DOJ_Govt_Service", "Nature_Present_Post",
+  "DOJ_Present_Post", "Service_Present_Post", "DOJ_Present_School",
+  "Mobile_WhatsApp", "Alternate_Mobile", "Residential_Place", "Residential_District",
+  "Preferred_Camp_2026_27",
+  "Duty_SSLC_Work", "Duty_SSLC_Centre", "Duty_HSC_Work", "Duty_HSC_Centre",
+  "Duty_Camp_Work", "Duty_Camp_Centre",
+  "Child_Exam_Centre_1", "Child_Exam_Centre_2", "Exemption_Ground", "Exemption_Details", "Updated_At"
+];
+
+function setupEbsPortalSheets(optionalEbsSheetId, forceCreateNew) {
+  const eSs = getOrCreateEbsSpreadsheet_(optionalEbsSheetId, Boolean(forceCreateNew));
+
+  getOrCreateSheet_(eSs, "F1", EBS_F1_HEADERS, "#0f294a");
+  getOrCreateSheet_(eSs, "F2", EBS_F2_HEADERS, "#065f46");
+  getOrCreateSheet_(eSs, "F3", EBS_F3_HEADERS, "#1e3a8a");
+  getOrCreateSheet_(eSs, "F4", EBS_F4_HEADERS, "#7c2d12");
+
+  const ce10 = getOrCreateSheet_(eSs, "10_CE", ["SN", "UN", "CN", "BLOCK", "Exam_Centre"], "#1e40af");
+  const ce12 = getOrCreateSheet_(eSs, "12_CE", ["SN", "UN", "CN", "BLOCK", "Name_Of_The_Centre"], "#15803d");
+
+  if (ce10.getLastRow() <= 1 && DEFAULT_EXAM_CENTRES_10_SEED.length > 0) {
+    ce10.getRange(2, 1, DEFAULT_EXAM_CENTRES_10_SEED.length, 5).setValues(DEFAULT_EXAM_CENTRES_10_SEED);
+  }
+  if (ce12.getLastRow() <= 1 && DEFAULT_EXAM_CENTRES_12_SEED.length > 0) {
+    ce12.getRange(2, 1, DEFAULT_EXAM_CENTRES_12_SEED.length, 5).setValues(DEFAULT_EXAM_CENTRES_12_SEED);
+  }
+
+  try {
+    const defaultSh = eSs.getSheetByName("Sheet1");
+    if (defaultSh && eSs.getSheets().length > 1) {
+      eSs.deleteSheet(defaultSh);
+    }
+  } catch (e) {}
+
+  return {
+    ok: true,
+    ebsSheetId: eSs.getId(),
+    ebsSheetUrl: eSs.getUrl(),
+    ebsSheetName: eSs.getName(),
+    tabs: ["F1", "F2", "F3", "F4", "10_CE", "12_CE"]
+  };
+}
+
+function setupEbsPortalSheetsMenu() {
+  const res = setupEbsPortalSheets("", false);
+  Logger.log("EBS 2026-27 DB Ready: " + JSON.stringify(res));
+}
+
+function upsertSchoolEbsDataInSheet_(optionalEbsSheetId, uNoStr, f1Row, f2Row, f3Rows, f4Rows, nowStr) {
+  if (!uNoStr) return { ok: false, error: "Missing uNo" };
+  const eInfo = setupEbsPortalSheets(optionalEbsSheetId, false);
+  const eSs = getOrCreateEbsSpreadsheet_(eInfo.ebsSheetId, false);
+  const cleanUNo = String(uNoStr).trim();
+
+  // 1. Upsert F1 row (keyed by Column 1: UNIQUE_NO)
+  if (Array.isArray(f1Row) && f1Row.length > 0) {
+    const f1Sheet = eSs.getSheetByName("F1");
+    const row1 = f1Row.slice(0, EBS_F1_HEADERS.length);
+    while (row1.length < EBS_F1_HEADERS.length - 1) row1.push("");
+    if (row1.length < EBS_F1_HEADERS.length) row1.push(nowStr);
+    else row1[EBS_F1_HEADERS.length - 1] = nowStr;
+    upsertRowByKey_(f1Sheet, 1, cleanUNo, row1);
+  }
+
+  // 2. Upsert F2 row (keyed by Column 4: U_NO)
+  if (Array.isArray(f2Row) && f2Row.length > 0) {
+    const f2Sheet = eSs.getSheetByName("F2");
+    const row2 = f2Row.slice(0, EBS_F2_HEADERS.length);
+    while (row2.length < EBS_F2_HEADERS.length - 1) row2.push("");
+    if (row2.length < EBS_F2_HEADERS.length) row2.push(nowStr);
+    else row2[EBS_F2_HEADERS.length - 1] = nowStr;
+    upsertRowByKey_(f2Sheet, 4, cleanUNo, row2);
+  }
+
+  // 3. Replace school rows in F3 (Column 2: U_NO)
+  if (Array.isArray(f3Rows)) {
+    const f3Sheet = eSs.getSheetByName("F3");
+    const last3 = f3Sheet.getLastRow();
+    const existing3 = last3 > 1 ? f3Sheet.getRange(2, 1, last3 - 1, EBS_F3_HEADERS.length).getValues() : [];
+    const kept3 = existing3.filter(function(r) {
+      return String(r[1] || "").trim() !== cleanUNo && (String(r[6] || "").trim() || String(r[8] || "").trim());
+    });
+    f3Rows.forEach(function(r) {
+      const row3 = r.slice(0, EBS_F3_HEADERS.length);
+      while (row3.length < EBS_F3_HEADERS.length - 1) row3.push("");
+      if (row3.length < EBS_F3_HEADERS.length) row3.push(nowStr);
+      else row3[EBS_F3_HEADERS.length - 1] = nowStr;
+      kept3.push(row3);
+    });
+    for (let i = 0; i < kept3.length; i++) kept3[i][0] = i + 1;
+    if (last3 > 1) f3Sheet.getRange(2, 1, last3 - 1, EBS_F3_HEADERS.length).clearContent();
+    if (kept3.length > 0) f3Sheet.getRange(2, 1, kept3.length, EBS_F3_HEADERS.length).setValues(kept3);
+  }
+
+  // 4. Replace school rows in F4 (Column 1: U_NO)
+  if (Array.isArray(f4Rows)) {
+    const f4Sheet = eSs.getSheetByName("F4");
+    const last4 = f4Sheet.getLastRow();
+    const existing4 = last4 > 1 ? f4Sheet.getRange(2, 1, last4 - 1, EBS_F4_HEADERS.length).getValues() : [];
+    const kept4 = existing4.filter(function(r) {
+      return String(r[0] || "").trim() !== cleanUNo && (String(r[3] || "").trim() || String(r[5] || "").trim());
+    });
+    f4Rows.forEach(function(r, idx) {
+      const row4 = r.slice(0, EBS_F4_HEADERS.length);
+      while (row4.length < EBS_F4_HEADERS.length - 1) row4.push("");
+      if (row4.length < EBS_F4_HEADERS.length) row4.push(nowStr);
+      else row4[EBS_F4_HEADERS.length - 1] = nowStr;
+      row4[1] = idx + 1;
+      kept4.push(row4);
+    });
+    if (last4 > 1) f4Sheet.getRange(2, 1, last4 - 1, EBS_F4_HEADERS.length).clearContent();
+    if (kept4.length > 0) f4Sheet.getRange(2, 1, kept4.length, EBS_F4_HEADERS.length).setValues(kept4);
+  }
+
+  return {
+    ok: true,
+    ebsSheetId: eSs.getId(),
+    ebsSheetUrl: eSs.getUrl(),
+    uNo: cleanUNo,
+    updatedAt: nowStr
+  };
 }
 
 function deduplicateAndTrimTeachersSheet_(tmSheet, optionalExpectedStaffCount) {
@@ -853,6 +1067,25 @@ function doGet(e) {
       });
     }
 
+    if (action === "get_ebs_sheet_snapshot") {
+      const eInfo = setupEbsPortalSheets(p.ebsSheetId || "", false);
+      const eSs = getOrCreateEbsSpreadsheet_(eInfo.ebsSheetId, false);
+      const f1Sh = eSs.getSheetByName("F1");
+      const f2Sh = eSs.getSheetByName("F2");
+      const f3Sh = eSs.getSheetByName("F3");
+      const f4Sh = eSs.getSheetByName("F4");
+      return jsonResponse_({
+        ok: true,
+        ebsSheetId: eSs.getId(),
+        ebsSheetUrl: eSs.getUrl(),
+        f1RowsCount: Math.max(0, f1Sh.getLastRow() - 1),
+        f2RowsCount: Math.max(0, f2Sh.getLastRow() - 1),
+        f3RowsCount: Math.max(0, f3Sh.getLastRow() - 1),
+        f4RowsCount: Math.max(0, f4Sh.getLastRow() - 1),
+        timestamp: nowStr
+      });
+    }
+
     if (action === "get_teachers_sheet_snapshot") {
       const tInfo = setupTeachersPortalSheets(p.teachersSheetId || "", false);
       const tSs = getOrCreateTeachersSpreadsheet_(tInfo.teachersSheetId, false);
@@ -1053,7 +1286,109 @@ function doPost(e) {
       if (data.waPhoneNumberId) props.setProperty("WA_PHONE_NUMBER_ID", String(data.waPhoneNumberId).trim());
       if (data.adminPassHash) props.setProperty("ADMIN_PASS_HASH", String(data.adminPassHash).trim());
       if (data.teachersSheetId) props.setProperty("TEACHERS_SHEET_ID", String(data.teachersSheetId).trim());
+      if (data.ebsSheetId) props.setProperty("EBS_SHEET_ID", String(data.ebsSheetId).trim());
       return jsonResponse_({ ok: true, savedToScriptProperties: true, updatedAt: nowStr });
+    }
+
+    // 0A. DEDICATED EBS 2026-27 GOOGLE SHEET CREATION & SYNC (F1, F2, F3, F4)
+    if (action === "create_ebs_spreadsheet") {
+      const eInfo = setupEbsPortalSheets(data.ebsSheetId || "", Boolean(data.forceNew));
+      return jsonResponse_(eInfo);
+    }
+
+    if (action === "sync_ebs_school_data") {
+      const resEbs = upsertSchoolEbsDataInSheet_(
+        data.ebsSheetId || "",
+        data.uNo,
+        data.f1Row,
+        data.f2Row,
+        data.f3Rows,
+        data.f4Rows,
+        nowStr
+      );
+      return jsonResponse_(resEbs);
+    }
+
+    if (action === "sync_ebs_district_batch") {
+      const lock = LockService.getScriptLock();
+      try { lock.waitLock(25000); } catch (le) {}
+      try {
+        const eInfo = setupEbsPortalSheets(data.ebsSheetId || "", false);
+        const eSs = getOrCreateEbsSpreadsheet_(eInfo.ebsSheetId, false);
+        const f1Sh = eSs.getSheetByName("F1");
+        const f2Sh = eSs.getSheetByName("F2");
+        const f3Sh = eSs.getSheetByName("F3");
+        const f4Sh = eSs.getSheetByName("F4");
+
+        if (data.isFirstBatch) {
+          if (Array.isArray(data.f1Rows)) {
+            if (f1Sh.getLastRow() > 1) f1Sh.getRange(2, 1, f1Sh.getLastRow() - 1, EBS_F1_HEADERS.length).clearContent();
+            if (data.f1Rows.length > 0) {
+              const rows1 = data.f1Rows.map(function(r) {
+                const a = r.slice(0, EBS_F1_HEADERS.length);
+                while (a.length < EBS_F1_HEADERS.length - 1) a.push("");
+                if (a.length < EBS_F1_HEADERS.length) a.push(nowStr);
+                else a[EBS_F1_HEADERS.length - 1] = nowStr;
+                return a;
+              });
+              f1Sh.getRange(2, 1, rows1.length, EBS_F1_HEADERS.length).setValues(rows1);
+            }
+          }
+          if (Array.isArray(data.f2Rows)) {
+            if (f2Sh.getLastRow() > 1) f2Sh.getRange(2, 1, f2Sh.getLastRow() - 1, EBS_F2_HEADERS.length).clearContent();
+            if (data.f2Rows.length > 0) {
+              const rows2 = data.f2Rows.map(function(r) {
+                const a = r.slice(0, EBS_F2_HEADERS.length);
+                while (a.length < EBS_F2_HEADERS.length - 1) a.push("");
+                if (a.length < EBS_F2_HEADERS.length) a.push(nowStr);
+                else a[EBS_F2_HEADERS.length - 1] = nowStr;
+                return a;
+              });
+              f2Sh.getRange(2, 1, rows2.length, EBS_F2_HEADERS.length).setValues(rows2);
+            }
+          }
+          if (f3Sh.getLastRow() > 1) f3Sh.getRange(2, 1, f3Sh.getLastRow() - 1, EBS_F3_HEADERS.length).clearContent();
+          if (f4Sh.getLastRow() > 1) f4Sh.getRange(2, 1, f4Sh.getLastRow() - 1, EBS_F4_HEADERS.length).clearContent();
+        }
+
+        if (Array.isArray(data.f3Rows) && data.f3Rows.length > 0) {
+          const start3 = Math.max(2, f3Sh.getLastRow() + 1);
+          const rows3 = data.f3Rows.map(function(r, idx) {
+            const a = r.slice(0, EBS_F3_HEADERS.length);
+            while (a.length < EBS_F3_HEADERS.length - 1) a.push("");
+            if (a.length < EBS_F3_HEADERS.length) a.push(nowStr);
+            else a[EBS_F3_HEADERS.length - 1] = nowStr;
+            a[0] = (start3 - 2) + idx + 1;
+            return a;
+          });
+          f3Sh.getRange(start3, 1, rows3.length, EBS_F3_HEADERS.length).setValues(rows3);
+        }
+
+        if (Array.isArray(data.f4Rows) && data.f4Rows.length > 0) {
+          const start4 = Math.max(2, f4Sh.getLastRow() + 1);
+          const rows4 = data.f4Rows.map(function(r) {
+            const a = r.slice(0, EBS_F4_HEADERS.length);
+            while (a.length < EBS_F4_HEADERS.length - 1) a.push("");
+            if (a.length < EBS_F4_HEADERS.length) a.push(nowStr);
+            else a[EBS_F4_HEADERS.length - 1] = nowStr;
+            return a;
+          });
+          f4Sh.getRange(start4, 1, rows4.length, EBS_F4_HEADERS.length).setValues(rows4);
+        }
+
+        return jsonResponse_({
+          ok: true,
+          ebsSheetId: eSs.getId(),
+          ebsSheetUrl: eSs.getUrl(),
+          f1Count: Math.max(0, f1Sh.getLastRow() - 1),
+          f2Count: Math.max(0, f2Sh.getLastRow() - 1),
+          f3Count: Math.max(0, f3Sh.getLastRow() - 1),
+          f4Count: Math.max(0, f4Sh.getLastRow() - 1),
+          updatedAt: nowStr
+        });
+      } finally {
+        try { lock.releaseLock(); } catch (re) {}
+      }
     }
 
     // 0B. DEDICATED TEACHERS GOOGLE SHEET CREATION & BATCH SYNC (7,081 STAFF)
@@ -1377,6 +1712,19 @@ function doPost(e) {
         }
         if (Array.isArray(data.schoolStaffRows) || data.schoolStaffSummaryRow) {
           upsertSchoolStaffInTeachersSheet_(data.teachersSheetId, uNoStr, data.schoolStaffRows, data.schoolStaffSummaryRow, nowStr);
+        }
+        if (data.ebsPacket && typeof data.ebsPacket === "object") {
+          try {
+            upsertSchoolEbsDataInSheet_(
+              data.ebsSheetId || "",
+              uNoStr,
+              data.ebsPacket.f1Row,
+              data.ebsPacket.f2Row,
+              data.ebsPacket.f3Rows,
+              data.ebsPacket.f4Rows,
+              nowStr
+            );
+          } catch (ebsErr) {}
         }
         return jsonResponse_({ ok: true, syncType: syncType, uNo: uNoStr });
       }
