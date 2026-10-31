@@ -547,6 +547,73 @@
     .school-topmenu-item.active .topmenu-en {
       color: #fde047 !important;
     }
+    .ebs-combo-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .ebs-combo-input-group {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      gap: 4px;
+    }
+    .ebs-combo-input-group input.form-control {
+      flex: 1;
+      min-width: 0;
+    }
+    .ebs-combo-toggle-btn {
+      padding: 4px 10px;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1.5px solid #93c5fd;
+      border-radius: 6px;
+      font-weight: 900;
+      font-size: 0.76rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .ebs-combo-toggle-btn:hover {
+      background: #dbeafe;
+      border-color: #2563eb;
+    }
+    .ebs-combo-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 3px);
+      left: 0;
+      right: 0;
+      max-height: 230px;
+      overflow-y: auto;
+      background: #ffffff;
+      border: 2px solid #2563eb;
+      border-radius: 8px;
+      box-shadow: 0 10px 28px rgba(15, 41, 74, 0.25);
+      z-index: 9999;
+    }
+    .ebs-combo-menu.open {
+      display: block;
+    }
+    .ebs-combo-item {
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #0f294a;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      text-align: left;
+    }
+    .ebs-combo-item:hover {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .ebs-combo-item mark {
+      background: #fef08a;
+      color: #7c2d12;
+      font-weight: 900;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
     .ebs-subtab-bar {
       display: flex;
       flex-wrap: wrap;
@@ -12388,6 +12455,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
 
     renderSchoolStudentDashboardTables(activeSchoolSession);
     renderSchoolStudentTable(activeSchoolSession, extra);
+    if (extra && extra.ebs2026) {
+      extra.ebs2026.f2 = deriveSchoolEbsF2SubjectsFromPortal(uNo, extra.ebs2026.f1);
+    }
     const box = document.getElementById("schHssGroupEditorBox");
     if (box) box.style.display = "none";
     showToast(`✅ இப்பள்ளியின் ${_tempEditingSchoolGroups.length} பாடப்பிரிவுகளின் மாணவர் எண்ணிக்கை சேமிக்கப்பட்டு புதுப்பிக்கப்பட்டது!`, "#16a34a");
@@ -21447,6 +21517,236 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   //     - Dedicated 2026-27 Google Sheet: 1EPyFeEoJRHg_7OFN8k9nY6VJSngoT3HicF2zcu9-fRc
   // =========================================================================
   const DEFAULT_DEDICATED_EBS_SHEET_ID = "1EPyFeEoJRHg_7OFN8k9nY6VJSngoT3HicF2zcu9-fRc";
+  const EBS_DROPDOWN_DATA = {"prac10":["DVKI0001-GOVT. HSS , KANNANGUDI","DVKI0002-GOVT. HSS , HANUMANTHAKUDI","DVKI0003-GOVT. MODEL HSS, PEERKALAIKADU","DVKI0004-GOVT. HSS , ARIYAGUDI","DVKI0005-GOVT. HSS , O.SIRUVAYAL","DVKI0006-GOVT. HSS , MITHIRAVAYAL","DVKI0007-GOVT. HSS , THIRUVEGAMPET","DVKI0008-GOVT. GIRLS HSS, MUTHUPATTINAM","DVKI0009-MV GOVT. HSS, KARAIKUDI","DVKI0010-SM GIRLS HSS, KARAIKUDI","DVKI0011-TAC GOVT. HSS, KOTTAIYUR","DVKI0012-VNT GOVT. HSS, SHANMUGANATHAPATTINAM","DVKI0013-ALANGUIDYAR STREET MPL HS, KARAIKUDI","DVKI0014-GOVT. HS , PERIYAKOTTAI","DVKI0015-GOVT. HS , PULIYAL","DVKI0016-GOVT. HS , SIRUVATCHI","DVKI0017-GOVT. HS , SIRUGAPATTI","DVKI0018-GOVT. HS , MUPPAIYUR","DVKI0019-GOVT. HS , SAKKOTTAI","DVKI0020-GOVT. HS , NARANAMANGALAM","DVKI0021-GOVT. HS , T.SIRUVANOOR","DVKI0022-GOVT. HS , JEYANKONDAN","DVKI0023-GOVT. HS , SITHIVAYAL","DVKI0024-GOVT. HS , THIRUVELANGUDI","DVKI0025-GOVT. HS , POYYAVAYAL","DVKI0026-GOVT. HS , ILUPPAIKUDI","DVKI0027-GOVT. HSS , PERIYAKARAI","DVKI0028-MUNICIPAL HS, DEVAKOTTAI","DVKI0029-R H HSS, KARIKUDI","DVKI0030-G (ADW) HS, UNJANAI","DVKI0031-ALAGAPPA MODEL AHSS, KARAIKUDI","DVKI0032-AC AHSS, PALLATHUR","DVKI0033-CC GIRLS AHSS, KOTTAIYUR","DVKI0034-DE BRITTO AHSS, DEVAKOTTAI","DVKI0035-NSMVPS AHSS, DEVAKOTTAI","DVKI0036-RC AHSS, PUDUVAYAL","DVKI0037-SMSV AHSS, KARAIKUDI","DVKI0038-ST.MARY'S G AHSS, DEVAKOTTAI","DVKI0039-MCTMCC AHSS, KANADUKATHAN","DVKI0040-PETHAL ACHI G AHSS, DEVAKOTTAI","DVKI0041-SCGR AHSS, AMARAVATHIPUDUR","DVKI0042-SSV GIRLS AHSS, PUDUVAYAL","DVKI0043-ST.JOHN'S G AHSS, DEVAKOTTAI","DVKI0044-ST.JOSEPH'S AHSS, SEKKAKUDI","DVKI0045-ALAGAPPA MHSS, KARAIKUDI","DVKI0046-ST.MICHAEL MHSS, ARIYAKKUDI","DVKI0047-KAMBAN KARPAKAM MHSS, KARAIKUDI","DVKI0048-K M V M MHSS, T.T NAGAR , KARAIKUDI","DVKI0049-MUTHIAH ALAGAPPA MHSS, KOTTAIYUR","DVKI0050-INFANT JESUS MHSS, DEVAKOTTAI","DVKI0051-SAHAYAMATHA MHSS, KARAIKUDI","DVKI0052-SRI VIDHYAA GIRI MHSS, PUDUVAYAL","DVKI0053-SRI KALAIMAGAL VIDYALAYA MHSS, PUDHUVAYAL","DVKI0054-SRI SUBBAIAH AMBALAM MHSS, KOTTAIYUR","DVKI0055-SRI KALAIVANI VIDHYALAYA MHSS, KARAIKUDI","DVKI0056-SRI RAGHAVENDRA MHSS, KARAIKUDI","DVKI0057-THE LEADERS MHSS, KARAIKUDI","DVKI0058-VAIRAM GROUP MHSS, DEVAKOTTAI","DVKI0059-CAM AHS, KANDANUR","DVKI0060-PSS AHS, SHANMUGANATHAPURAM","DVKI0061-RMM GIRLS AHS, PALLATHUR","DVKI0062-LFRC AHSS, KARAIKUDI","DVKI0063-RC AHS, KEELAUCHANI","DVKI0064-SELVA VINAYAGAR AHS, KOTHAMANGALAM","DVKI0065-ST.PAUL'S AHS, SARUGANI","DVKI0066-ZAMIMTHA ST. AHS, DEVAKOTTAI","DVKI0067-AZAD MHSS, KARAIKUDI","DVKI0068-CVCTV M A MS, KANADUKATHAN","DVKI0069-INFANT JESUS MS, ARIYAKUDI","DVKI0070-MOUNT SENARIO MHSS, MUPPAIYUR","DVKI0071-MUNICIPAL HS, KARAIKUDI","DVKI0072-SRI SARATHA VIDHALAYA MS, AMARAVATHIPUDUR","DVKI0073-SRI VAIRAVA MS, KARAIKUDI","DVKI0074-ST.JOSEPH MHSS, DEVAKOTTAI","DVKI0075-K M V M MHSS, INDRA NAGAR, KARAIKUDI","DVKI0077-ALAGAPPA GIRLS MHSS, KARAIKUDI","DVKI0078-PANCHU VALLIAPPA MS, DEVAKOTTAI","DVKI0079-VIDYA GIRI MHSS, KARAIKUDI","DVKI0081-GOVT. HSS , MARAVAMANGALAM","DVKI0082-GOVT. HSS , KALAIYARKOVIL","DVKI0083-GOVT. HSS , KOLLANGUDI","DVKI0084-GOVT. HSS , SILUKKUPATTI","DVKI0085-GOVT. GIRLS HS , PAGANERI","DVKI0086-GOVT. HSS , PAGANERI","DVKI0087-GOVT. HS , K.CHOCKANATHAPURAM","DVKI0088-GOVT. HS , KARUMANTHAKUDI","DVKI0089-GOVT. HS , PERIYAKANNANOOR","DVKI0090-GOVT. HS , SETHUR","DVKI0091-GOVT. (ADW) HSS , MALLAL","DVKI0092-KMSC AHSS, NATTARASAN KOTTAI","DVKI0093-SRM AHSS, NATTARASAN KOTTAI","DVKI0094-SAHAYARAN GIRLS AHSS, SUSAIAPPARPATTANAM","DVKI0095-DON BOSCO HSS, PALLITHAMMAM","DVKI0096-SAMBAVIGA HSS, RAGINIPATTI","DVKI0097-HOLY SPIRIT MHSS, SEEGOORANI","DVKI0098-ULAGAMATHA AHS, SAKKUR","DVKI0099-ST.TERESAS CARMAL MS, PAGAIYANJAN","DVKI0100-OMGS MS, KALAIYARKOIL","DVKI0101-ST.MICHAEL MHSS, KALAIYARKOIL","DVKI0102-AUXILIUM MHSS, PULIYADITHAMMAM","DVKI0103-S S V V MHSS, KALAYARKOIL","DVKI0104-GOVT. HS , SAKKAVAYAL","DVKI0105-OXFOR MHSS, SOORAKKULAM","DVKI0106-MARUTHA MALAIYAN MS, KARIKUDI","DVKI0301-ARIBALA MS, PALKULAM MARAVAMANGALAM","DVKIXXXX-SCVM MHSS, MULLIKUNDU, DEVAKOTTAI","SVGI0001-GOVT. HSS , SALAIGRAMAM","SVGI0002-GOVT. BOYS HSS , THIRUPPUVANAM","SVGI0003-GOVT. GIRLS HSS, SIVAGANGAI","SVGI0004-GOVT. GIRLS HSS, MANAMADURAI","SVGI0005-GOVT. GIRLS HSS, THIRUPPUVANAM","SVGI0006-GOVT. HSS , ARASANOOR THIRUMANJOLAI","SVGI0007-GOVT. HSS , KEELADI","SVGI0008-GOVT. HSS , KATTIKULAM","SVGI0009-GOVT. HSS , THIRUPPACHETHI","SVGI0010-GOVT. MODEL HSS, KEELAPOONGUDI","SVGI0011-GOVT. HSS , ALAGAMANAGARI","SVGI0012-GOVT. HSS , THAMARAKKI SOUTH","SVGI0013-GOVT. HSS , VEMBATHUR","SVGI0014-GOVT. HSS , IDAIKATTUR","SVGI0015-GOVT. HSS , KOMBUKARANENDAL","SVGI0016-GOVT. HSS , IDAYAMELUR","SVGI0017-GOVT. HSS , ALAVAKOTTAI","SVGI0018-GOVT. HSS , MARUTHUPANDIYAR NAGAR","SVGI0019-GOVT. HSS , PERIYAKOTTAI","SVGI0020-GOVT. HSS , MUNAIVENDRI","SVGI0021-GOVT. HSS , CHINNAKANNANUR","SVGI0022-GOVT. HSS , PALAYANOOR","SVGI0023-GOVT. HSS , V MALAMPATTI","SVGI0024-GOVT. HSS , MANGUDI","SVGI0025-GOVT. GIRLS HS , ILAYANGUDI","SVGI0026-GOVT. HS , MELANETTUR","SVGI0027-GOVT. HS , KALLURANI","SVGI0028-GOVT. HS , SITHALOOR","SVGI0029-GOVT. HS , PADAMATHUR","SVGI0030-GOVT. HS , ALAVIDANGAN","SVGI0031-GOVT. HS , MANALUR","SVGI0032-GOVT. HS , VELLIKURICHI","SVGI0033-GOVT. HSS , ALLINAGARAM","SVGI0034-GOVT. HS , MILAGANOOR","SVGI0035-GOVT. HS , KATTANIPATTI","SVGI0036-GOVT. HS , POOVANTHI","SVGI0037-GOVT. HS , KEELAKANDANI","SVGI0038-GOVT. HS , VETHIYARENDAL","SVGI0039-GOVT. HS , KANCHERANKULAM","SVGI0040-GOVT. HS , MELASALOOR","SVGI0041-GOVT. HS , KATCHATHANALLUR","SVGI0042-GOVT. HS , MOONGILOORANI","SVGI0043-GOVT. HS , MELAPASALAI","SVGI0044-GOVT. HS , KALKURICHI","SVGI0045-GOVT. HS , PARAYANKULAM","SVGI0046-GOVT. HS , KUMARAPATTI","SVGI0047-GOVT. HSS , SAKKANTHI","SVGI0048-GOVT. HS , ILANTHAIKULAM","SVGI0049-GOVT. HS , D.KARISALKULAM","SVGI0050-GOVT. HS , THAVATHARENTHAL","SVGI0051-GOVT. HS , LADANENTHAL","SVGI0052-GOVT. HSS , SATHANOOR","SVGI0053-GOVT. HS , MUDIKANDAM","SVGI0055-H KK I A AHSS, PUDUR","SVGI0056-ILAYANGUDI AHSS, ILAYANGUDI","SVGI0057-OVC AHSS, MANAMADURAI","SVGI0058-MANNAR AHSS, SIVAGANGAI","SVGI0059-ST.JUSTIN'S GIRLS HSS, SIVAGANGAI","SVGI0060-KSPR AHSS, SIVAGANGAI","SVGI0061-MELLAPALLI VASAL GIRLS AHSS, ILAIYANGUDI","SVGI0062-SC AHSS, OKKUR","SVGI0063-ST.JAMES HSS, SOORANAM","SVGI0064-ST.JOSEPH'S AHSS, SIVAGANGAI","SVGI0065-ST. MARY'S AHSS, RAJAGAMBEERAM","SVGI0066-A S P M MHSS, THIRUPPUVANAM","SVGI0067-S R V HSS, CHOLAPURAM","SVGI0068-21ST CENTURY MHSS, SIVAGANGAI","SVGI0069-ALAGUMALAR MHSS, MANALUR","SVGI0070-ARIYAVA MONTESSORI MHSS, MADAPURAM","SVGI0071-KAMARAJAR MHSS, THIRUPPUVANAM","SVGI0072-OXFOR MHSS, T.PUDUR SIVAGANGAI","SVGI0073-S D A MHSS, MANAMADURAI","SVGI0074-ST.ANNES MHSS, ILAYANGUDI","SVGI0075-ST.JUSTIN MHSS, SIVAGANGAI","SVGI0076-ST.MARY'S MHSS, THIRUPPUVANAM","SVGI0077-VELAMMAL MHSS, THIRUPPUVANAM","SVGI0078-BONIFACE AHS, ARIYANDIPURAM","SVGI0079-CSHI AHS, MANAMADURAI","SVGI0080-CSI DSD HS FOR THE DEAF, MANAMADURAI","SVGI0081-SBDV AHS, SOLAPURAM","SVGI0082-ALICE MILLER GIRLS AHS, SIVAGANGAI","SVGI0083-HAMEEDIA HSS, SALAIYOOR","SVGI0084-ST.ANTONY'S AHS, KALLADITHIDAL","SVGI0085-ST.MARY'S AHS, MICHAELPATTINAM","SVGI0086-SWAMI VIVEKANANDA AHS, SIVAGANGAI","SVGI0088-RC HS, KUNDUKULAM","SVGI0089-SAKTHI HS, JOTHI NAGAR PADAMATHUR","SVGI0090-SARVASEVA HS, VAHULATHUPATTI","SVGI0091-ST.EUGENE HS, KOMBADIMADURAI.","SVGI0092-A S V MHSS, MELAVANIYANGUDI","SVGI0093-ARULMIGU THANDEESWARAR MS, THIRUPPUVANAM","SVGI0094-BABA MS, MANAMADURAI","SVGI0095-GOOD WILL MS, MANAMADURAI","SVGI0096-INPT MS, ILAIYANGUDI","SVGI0097-IQRA MS, ILAIYANGUDI","SVGI0098-MOTHER THERASA MS, SIVAGANGAI","SVGI0099-ST.JOSEPH MS, O PUDUR","SVGI0100-ST.JOSEPH MHSS, MANAMADURAI","SVGI0101-ST.MICHAEL MHSS, SIVAGANGAI","SVGI0102-S V MHSS, METTUPATTI","SVGI0103-GOODWILL MHSS, MANAMADURAI","SVGI0104-ST. CHARLES MS, PERIYAKOTTAI","SVGI0105-MANIMARAN MS, POOVANTHI","SVGI0106-AL-HUDHA ISLAMIC INT. MHSS, SIVAGANGAI","SVGI0107-NALMEIPAR MS, VARUNTHI","SVGI0301-GOVT. HS , ILUPPAKUDI","SVGI0302-GOVT. HS , KALIYANTHUR","SVGI0501-BHARATHIYAR MS, SOORANAM","TPRS0001-AP GOVT. BOYS HSS, THIRUPPATHUR","TPRS0002-GOVT. BOYS HSS , SINGAMPUNARI","TPRS0003-GOVT. HSS , A MURAIYUR","TPRS0004-GOVT. HSS , ERIYUR","TPRS0005-GOVT. HSS , PULUTHIPATTI","TPRS0006-GOVT. HSS , KIRUNGAKOTTAI","TPRS0007-GOVT. HSS , SS KOTTAI","TPRS0008-GOVT. HSS , S VELANGUDI","TPRS0009-GOVT. HSS , ULAGAMPATTI","TPRS0010-GOVT. HSS , THIRUKOSHTIYUR","TPRS0011-GOVT. HSS , KOTTAIYIRUPPU","TPRS0012-GOVT. HSS , V.PUDUR","TPRS0013-GOVT. HSS , MUSUNDAPATTI","TPRS0014-GOVT. HSS , VETRIYUR","TPRS0015-GOVT. HSS , KATTUKUDIPATTI","TPRS0016-MK GOVT. HSS , SEMBANUR","TPRS0017-GOVT. MODEL HSS, KATTUKUDIPATTI","TPRS0018-NM GOVT. GIRLS HSS, THIRUPPATHUR","TPRS0019-RM RM GOVT. GIRLS HSS, SINGAMPUNARI","TPRS0020-SATHAPPA GOVT. HSS , NERKKUPPAI","TPRS0021-TM GOVT. HSS , POOLANKURICHI","TPRS0022-GOVT. BOYS HS, A KALAPPUR","TPRS0023-GOVT. GIRLS HS , KALLAL","TPRS0024-GOVT. HS, MALLAKOTTAI","TPRS0025-GOVT. HSS , KARISALPATTI","TPRS0026-GOVT. HSS , VISALAYAN KOTTAI","TPRS0027-GOVT. HS, ARALIKOTTAI","TPRS0028-GOVT. HS, E SENBAGAPETTAI","TPRS0029-GOVT. HS, ANIAMPATTI","TPRS0030-GOVT. HS, SEVVOOR","TPRS0031-GOVT. HS, MAHIBALANPATTI","TPRS0032-GOVT. HS , KOVILUR","TPRS0033-GOVT. HS, CHELLIAMPATTI","TPRS0034-GOVT. HS, M SOORAKUDI","TPRS0035-GOVT. HS, THIRUKKALAPATTI","TPRS0036-GOVT. HS , ALANGUDI","TPRS0037-GOVT. HS , VALASAIPATTI","TPRS0038-GOVT. HS, T PUTHUPATTI","TPRS0039-GOVT. HS, THENMAPATTU","TPRS0040-GOVT. GIRLS HS, A KALAPPUR","TPRS0041-INDIRAGANDHI MS, THENMAPATTU","TPRS0042-GOVT.(ADW) HS , ATHIKARAM","TPRS0043-DKG AHSS, KUNDRAKUDI","TPRS0044-KM AHSS, KALLAL","TPRS0045-SMS HSS , KEELASEVALPATTI","TPRS0046-SVK AHSS , A THEKKUR","TPRS0047-VALLAL PARI AHSS , PIRANMALAI","TPRS0048-BRITTO AHSS, KALLAL","TPRS0049-AVM MATRIC HSS , SINGAMPUNARI","TPRS0050-APSA MHSS, THIRUPPATHUR","TPRS0051-BABA AMIR BADHUSAH MHSS, THIRUPPATHUR","TPRS0052-PARI VALLAL MHSS, SINGAMPUNARI","TPRS0053-SHANTHI RANI MHSS, KALLAL","TPRS0054-JV AHS , NACHIAPURAM","TPRS0055-MAP GIRLS AHS, KANDRAMANICKAM","TPRS0056-RCM AHS , NADARAJAPURAM","TPRS0057-SD AHS, KANDRAMANICKAM","TPRS0058-TRVA AHS, PATTAMANGALAM","TPRS0059-VT GIRLS AHS, A.THEKKUR","TPRS0060-ST.SEBASTIAN'S AHS, KOOTHALUR","TPRS0061-AVM Public MHSS, SEVVOOR","TPRS0062-CHRISTHURAJA MHSS, K.VAIRAVANPATTI","TPRS0063-KOVILOOR ANDAVAR MHSS, KOVILOOR","TPRS0064-RM M MS, KILASELVALPATTI","TPRS0065-SETHU IRANI MHSS, KANDRAMANICKAM","TPRS0066-SRI SEVUGAMOORTHY MS, SINGAMPUNARI","TPRS0068-LIMRA MHSS, THIRUPPATHUR","TPRS0069-SSARAVANA MS, THUVAR","TPRS0070-MOUNT ZION SIL. JUB. MHSS, THENKARAI","Other District","Not allotted","Duty Cancelled"],"prac12":["16101-GOVT. GIRLS HSS, MUTHUPATTINAM","16102-TAC GOVT. HSS, KOTTAIYUR","16103-GOVT. HSS , O.SIRUVAYAL","16104-GOVT. HSS , KOLLANGUDI","16105-GOVT. HSS , MARAVAMANGALAM","16106-GOVT. (ADW) HSS , MALLAL","16107-GOVT. HSS , HANUMANTHAKUDI","16108-SMSV AHSS, KARAIKUDI","16109-ALAGAPPA MODEL AHSS, KARAIKUDI","16110-RC AHSS, PUDUVAYAL","16111-CC GIRLS AHSS, KOTTAIYUR","16112-AC AHSS, PALLATHUR","16113-DE BRITTO AHSS, DEVAKOTTAI","16114-PETHAL ACHI G AHSS, DEVAKOTTAI","16115-KMSC AHSS, NATTARASAN KOTTAI","16116-DON BOSCO HSS, PALLITHAMMAM","16117-SAMBAVIGA HSS, RAGINIPATTI","16118-INFANT JESUS MHSS, DEVAKOTTAI","16119-ALAGAPPA MHSS, KARAIKUDI","16120-K M V M MHSS, T.T NAGAR , KARAIKUDI","16121-SRI KALAIVANI VIDHYALAYA MHSS, KARAIKUDI","16122-SRI RAGHAVENDRA MHSS, KARAIKUDI","16123-VIDYA GIRI MHSS, KARAIKUDI","16124-SRI KALAIMAGAL VIDYALAYA MHSS, PUDHUVAYAL","16125-GOVT. HSS , SILUKKUPATTI","16151-GOVT. HSS , ARIYAGUDI","16152-MV GOVT. HSS, KARAIKUDI","16153-GOVT. MODEL HSS, PEERKALAIKADU","16154-GOVT. HSS , THIRUVEGAMPET","16155-VNT GOVT. HSS, SHANMUGANATHAPATTINAM","16156-GOVT. HSS , PAGANERI","16157-GOVT. HSS , KALAIYARKOVIL","16158-GOVT. HSS , KANNANGUDI","16159-SM GIRLS HSS, KARAIKUDI","16160-SSV GIRLS AHSS, PUDUVAYAL","16161-MCTMCC AHSS, KANADUKATHAN","16162-SCGR AHSS, AMARAVATHIPUDUR","16163-NSMVPS AHSS, DEVAKOTTAI","16164-ST.MARY'S G AHSS, DEVAKOTTAI","16165-ST.JOHN'S G AHSS, DEVAKOTTAI","16166-ST.JOSEPH'S AHSS, SEKKAKUDI","16167-SAHAYARAN GIRLS AHSS, SUSAIAPPARPATTANAM","16168-OXFOR MHSS, SOORAKKULAM","16169-MUTHIAH ALAGAPPA MHSS, KOTTAIYUR","16170-K M V M MHSS, INDRA NAGAR, KARAIKUDI","16171-KAMBAN KARPAKAM MHSS, KARAIKUDI","16172-SAHAYAMATHA MHSS, KARAIKUDI","16173-THE LEADERS MHSS, KARAIKUDI","16174-SRI VIDHYAA GIRI MHSS, PUDUVAYAL","16175-HOLY SPIRIT MHSS, SEEGOORANI","17101-GOVT. HSS , MARUTHUPANDIYAR NAGAR","17102-GOVT. GIRLS HSS, SIVAGANGAI","17103-GOVT. HSS , ALAGAMANAGARI","17104-GOVT. HSS , THAMARAKKI SOUTH","17105-GOVT. HSS , ARASANOOR THIRUMANJOLAI","17106-GOVT. HSS , IDAYAMELUR","17107-GOVT. MODEL HSS, KEELAPOONGUDI","17108-GOVT. HSS , ALAVAKOTTAI","17109-GOVT. HSS , MANGUDI","17110-GOVT. HSS , V MALAMPATTI","17111-GOVT. GIRLS HSS, MANAMADURAI","17112-GOVT. HSS , VEMBATHUR","17113-GOVT. HSS , IDAIKATTUR","17114-GOVT. HSS , KOMBUKARANENDAL","17115-GOVT. HSS , CHINNAKANNANUR","17116-GOVT. BOYS HSS , THIRUPPUVANAM","17117-GOVT. HSS , KEELADI","17118-ILAYANGUDI AHSS, ILAYANGUDI","17119-H KK I A AHSS, PUDUR","17120-MELLAPALLI VASAL GIRLS AHSS, ILAIYANGUDI","17121-HAMEEDIA HSS, SALAIYOOR","17122-VELAMMAL MHSS, THIRUPPUVANAM","17123-ST.ANNES MHSS, ILAYANGUDI","17151-GOVT. GIRLS HSS, THIRUPPUVANAM","17152-GOVT. HSS , THIRUPPACHETHI","17153-GOVT. HSS , PALAYANOOR","17154-GOVT. HSS , KATTIKULAM","17155-GOVT. HSS , SALAIGRAMAM","17156-GOVT. HSS , MUNAIVENDRI","17157-MANNAR AHSS, SIVAGANGAI","17158-ST.JUSTIN'S GIRLS HSS, SIVAGANGAI","17159-OVC AHSS, MANAMADURAI","17160-KSPR AHSS, SIVAGANGAI","17161-ST.JOSEPH'S AHSS, SIVAGANGAI","17162-SC AHSS, OKKUR","17163-ST. MARY'S AHSS, RAJAGAMBEERAM","17164-ST.JAMES HSS, SOORANAM","17165-S R V HSS, CHOLAPURAM","17166-21ST CENTURY MHSS, SIVAGANGAI","17167-ST.JUSTIN MHSS, SIVAGANGAI","17168-OXFOR MHSS, T.PUDUR SIVAGANGAI","17169-S D A MHSS, MANAMADURAI","17170-ST.JOSEPH MHSS, MANAMADURAI","17171-ALAGUMALAR MHSS, MANALUR","17172-A S V MHSS, MELAVANIYANGUDI","18101-AP GOVT. BOYS HSS, THIRUPPATHUR","18102-SATHAPPA GOVT. HSS , NERKKUPPAI","18103-GOVT. HSS , KOTTAIYIRUPPU","18104-GOVT. BOYS HSS , SINGAMPUNARI","18105-GOVT. HSS , KIRUNGAKOTTAI","18106-GOVT. HSS , A MURAIYUR","18107-GOVT. HSS , SS KOTTAI","18108-GOVT. HSS , V.PUDUR","18109-GOVT. HSS , PULUTHIPATTI","18110-MK GOVT. HSS , SEMBANUR","18111-SMS HSS , KEELASEVALPATTI","18112-DKG AHSS, KUNDRAKUDI","18113-APSA MHSS, THIRUPPATHUR","18114-PARI VALLAL MHSS, SINGAMPUNARI","18115-SHANTHI RANI MHSS, KALLAL","18151-NM GOVT. GIRLS HSS, THIRUPPATHUR","18152-TM GOVT. HSS , POOLANKURICHI","18153-GOVT. HSS , S VELANGUDI","18154-GOVT. HSS , THIRUKOSHTIYUR","18155-RM RM GOVT. GIRLS HSS, SINGAMPUNARI","18156-GOVT. HSS , ERIYUR","18157-GOVT. MODEL HSS, KATTUKUDIPATTI","18158-SVK AHSS , A THEKKUR","18159-VALLAL PARI AHSS , PIRANMALAI","18160-BRITTO AHSS, KALLAL","18161-BABA AMIR BADHUSAH MHSS, THIRUPPATHUR","18162-AVM MATRIC HSS , SINGAMPUNARI","18163-KOVILOOR ANDAVAR MHSS, KOVILOOR","18164-MOUNT ZION SIL. JUB. MHSS, THENKARAI","18165-GOVT. HSS , MUSUNDAPATTI","GOODVIL MATRIC HSS, KARAISALKULAM, MANAMADURAI","Other District","Not allotted","Duty Cancelled"],"examWork":["CU - CUSTODIAN","RO - ROUTE OFFICER","MVO","SQ - SQUAD","LO - Flying Squad","CS - LIASION OFFICER","AC - Chief Superintendent","DO - Addl. Chief Superintendent","AD - Department Officer","OS - Addl. Depaertment Officer","IN - Office Staff","SC - Invigilator","ST - Scribe","XX - Duty Not Allotted","RE - Exemption","NA - Duty Cancelled","CA"],"campWork":["CE","SO","AE","MVO","Tabulator","Data Entry","Liaison Officer","Not Allotted","Duty Cancelled"],"campCentres":["HSS-1-OXFORD MHSS, SIVAGANGAI","HSS-2-VIDHYAGIRI MHSS, KARAIKUDI","SSLC-1-ST.JUSTIN MHSS, SIVAGANGAI","SSLC-2-DE.BRITTO HSS, DEVAKOTTAI","Other District"]};
+
+  function getEbsComboOptionsByListKey(listKey) {
+    if (listKey === "PRAC_10") {
+      return EBS_DROPDOWN_DATA.prac10 || [];
+    }
+    if (listKey === "PRAC_12") {
+      return EBS_DROPDOWN_DATA.prac12 || [];
+    }
+    if (listKey === "CE_10") {
+      const c10 = (typeof INITIAL_EXAM_CENTRES_10 !== "undefined" ? INITIAL_EXAM_CENTRES_10 : []).map(c => `${c.centreNo || c.cNo} - ${c.centreName || c.nameEn}`);
+      return ["Other District", ...c10];
+    }
+    if (listKey === "CE_12") {
+      const c12 = (typeof INITIAL_EXAM_CENTRES !== "undefined" ? INITIAL_EXAM_CENTRES : []).map(c => `${c.centreNo || c.cNo} - ${c.centreName || c.nameEn}`);
+      return ["Other District", ...c12];
+    }
+    if (listKey === "ALL_CE") {
+      const c10 = (typeof INITIAL_EXAM_CENTRES_10 !== "undefined" ? INITIAL_EXAM_CENTRES_10 : []).map(c => `SSLC: ${c.cNo} - ${c.nameEn}`);
+      const c12 = (typeof INITIAL_EXAM_CENTRES !== "undefined" ? INITIAL_EXAM_CENTRES : []).map(c => `HSC: ${c.cNo} - ${c.nameEn}`);
+      return [...c12, ...c10, "Other District"];
+    }
+    if (listKey === "EXAM_WORK") {
+      return [
+        "CS - Chief Superintendent",
+        "AC - Addl. Chief Superintendent",
+        "DO - Department Officer",
+        "AD - Addl. Department Officer",
+        "IN - Invigilator (Hall Superintendent)",
+        "LO - Liaison Officer",
+        "RO - Route Officer",
+        "CU - Custodian",
+        "SQ - Standing Squad",
+        "FS - Flying Squad",
+        "MVO - MVO",
+        "SC - Scribe",
+        "OS - Office Staff",
+        "NA - Duty Not Allotted",
+        "CA - Duty Cancelled",
+        "RE - Exemption"
+      ];
+    }
+    if (listKey === "CAMP_WORK") {
+      return [
+        "CE - Chief Examiner",
+        "SO - Scrutinizing Officer",
+        "AE - Assistant Examiner",
+        "MVO - Camp MVO",
+        "Tabulator",
+        "Data Entry",
+        "Liaison Officer",
+        "Not Allotted",
+        "Duty Cancelled"
+      ];
+    }
+    if (listKey === "CAMP_CENTRE") {
+      return EBS_DROPDOWN_DATA.campCentres || [
+        "HSS-1-OXFORD MHSS, SIVAGANGAI",
+        "HSS-2-VIDHYAGIRI MHSS, KARAIKUDI",
+        "SSLC-1-ST.JUSTIN MHSS, SIVAGANGAI",
+        "SSLC-2-DE.BRITTO HSS, DEVAKOTTAI",
+        "Other District"
+      ];
+    }
+    return [];
+  }
+
+  function renderEbsSearchableComboHtml(inputId, currentValue, listKey, placeholderText) {
+    return `
+      <div class="ebs-combo-wrap" id="wrap_${inputId}">
+        <div class="ebs-combo-input-group">
+          <input type="text" id="${inputId}" class="form-control" value="${escapeHtmlAttr(currentValue || "")}"
+            placeholder="${escapeHtmlAttr(placeholderText || "Type or select...")}"
+            autocomplete="off"
+            onfocus="onEbsComboInput('${inputId}', '${listKey}', this.value)"
+            oninput="onEbsComboInput('${inputId}', '${listKey}', this.value)"
+            style="font-weight:800; font-size:0.78rem;">
+          <button type="button" class="ebs-combo-toggle-btn" onclick="toggleEbsComboMenu('${inputId}', '${listKey}')" title="முழுப் பட்டியலைக் காண்க">▼</button>
+        </div>
+        <div class="ebs-combo-menu" id="menu_${inputId}"></div>
+      </div>
+    `;
+  }
+
+  function closeAllEbsComboMenus(exceptInputId) {
+    document.querySelectorAll(".ebs-combo-menu.open").forEach(el => {
+      if (!exceptInputId || el.id !== "menu_" + exceptInputId) {
+        el.classList.remove("open");
+      }
+    });
+  }
+
+  function onEbsComboInput(inputId, listKey, queryStr, showAllOnToggle) {
+    closeAllEbsComboMenus(inputId);
+    const menu = document.getElementById("menu_" + inputId);
+    if (!menu) return;
+    const allItems = getEbsComboOptionsByListKey(listKey);
+    const q = showAllOnToggle ? "" : String(queryStr || "").trim().toLowerCase();
+
+    const matched = q
+      ? allItems.filter(item => String(item).toLowerCase().includes(q))
+      : allItems;
+
+    if (matched.length === 0) {
+      menu.innerHTML = `<div style="padding:8px 10px; font-size:0.76rem; color:#64748b; font-weight:700;">ℹ️ "${escapeHtmlAttr(queryStr)}" — நேரடியாக உள்ளீடு செய்யப்பட்டது (பட்டியலில் இல்லை)</div>`;
+      menu.classList.add("open");
+      return;
+    }
+
+    const maxItems = matched.slice(0, 80);
+    menu.innerHTML = maxItems.map(item => {
+      let displayHtml = escapeHtmlAttr(item);
+      if (q) {
+        const idx = item.toLowerCase().indexOf(q);
+        if (idx !== -1) {
+          const before = escapeHtmlAttr(item.slice(0, idx));
+          const mid = escapeHtmlAttr(item.slice(idx, idx + q.length));
+          const after = escapeHtmlAttr(item.slice(idx + q.length));
+          displayHtml = `${before}<mark>${mid}</mark>${after}`;
+        }
+      }
+      const safeVal = escapeHtmlAttr(item).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+      return `<div class="ebs-combo-item" onmousedown="selectEbsComboOption('${inputId}', '${safeVal}')">${displayHtml}</div>`;
+    }).join("");
+    menu.classList.add("open");
+  }
+
+  function toggleEbsComboMenu(inputId, listKey) {
+    const menu = document.getElementById("menu_" + inputId);
+    if (!menu) return;
+    if (menu.classList.contains("open")) {
+      menu.classList.remove("open");
+    } else {
+      onEbsComboInput(inputId, listKey, "", true);
+      const inp = document.getElementById(inputId);
+      if (inp) inp.focus();
+    }
+  }
+
+  function selectEbsComboOption(inputId, selectedVal) {
+    const inp = document.getElementById(inputId);
+    if (inp) inp.value = selectedVal;
+    const menu = document.getElementById("menu_" + inputId);
+    if (menu) menu.classList.remove("open");
+  }
+
+  if (typeof document !== "undefined" && document.addEventListener) {
+    document.addEventListener("click", function(ev) {
+      if (!ev.target || !ev.target.closest || !ev.target.closest(".ebs-combo-wrap")) {
+        closeAllEbsComboMenus("");
+      }
+    });
+  }
+
+  // Direct editing of 10th Standard (SSLC) Student Strength inside EBS Form-I
+  function onEbsF1SslcDirectChange(field, val) {
+    if (!activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo);
+    const extra = getSchoolExtra(uNo);
+    const stu10_12 = getSchoolFixedPortal10And12Strength(uNo);
+    const s10 = stu10_12.sslc;
+
+    const num = Math.max(0, Number(val || 0));
+    s10[field] = num;
+    const tm_b = Number(s10.tm_b || 0);
+    const tm_g = Number(s10.tm_g || 0);
+    const em_b = Number(s10.em_b || 0);
+    const em_g = Number(s10.em_g || 0);
+    const tm_tot = tm_b + tm_g;
+    const em_tot = em_b + em_g;
+    const tot_b = tm_b + em_b;
+    const tot_g = tm_g + em_g;
+    const grand = tot_b + tot_g;
+
+    if (!extra.students) extra.students = {};
+    extra.students["10"] = {
+      boys: tot_b,
+      girls: tot_g,
+      tm: tm_tot,
+      em: em_tot,
+      tm_b: tm_b,
+      tm_g: tm_g,
+      em_b: em_b,
+      em_g: em_g
+    };
+
+    const emisSch = (typeof EMIS_STUDENT_DATA !== "undefined" && EMIS_STUDENT_DATA.schoolEnrollments)
+      ? EMIS_STUDENT_DATA.schoolEnrollments[uNo]
+      : null;
+    if (emisSch && emisSch.classes) {
+      emisSch.classes["10"] = JSON.parse(JSON.stringify(extra.students["10"]));
+    }
+
+    if (extra.ebs2026 && extra.ebs2026.f1) {
+      extra.ebs2026.f1.sslcFixed = { tm_b, tm_g, tm_tot, em_b, em_g, em_tot, tot_b, tot_g, grand };
+    }
+
+    const elTmTot = document.getElementById("ebsF1S10TmTot"); if (elTmTot) elTmTot.textContent = tm_tot;
+    const elEmTot = document.getElementById("ebsF1S10EmTot"); if (elEmTot) elEmTot.textContent = em_tot;
+    const elTotB  = document.getElementById("ebsF1S10TotB");  if (elTotB)  elTotB.textContent  = tot_b;
+    const elTotG  = document.getElementById("ebsF1S10TotG");  if (elTotG)  elTotG.textContent  = tot_g;
+    const elGrand = document.getElementById("ebsF1S10Grand"); if (elGrand) elGrand.textContent = grand;
+
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+  }
+
+  function promptHssGroupStrengthRedirect() {
+    showToast("ℹ️ 12-ஆம் வகுப்பு (+2) மாணவர் எண்ணிக்கையை மாற்ற '1. பள்ளித்தகவல் பலகை ➔ Group-wise Student Strength' பகுதியைப் பயன்படுத்தவும்!", "#0f766e");
+    openHssGroupEditorFromEbsF1();
+  }
+
+  function openHssGroupEditorFromEbsF1() {
+    if (!activeSchoolSession) return;
+    switchSchoolTab("staffStrength");
+    if (typeof renderSchoolStudentDashboardTables === "function") {
+      renderSchoolStudentDashboardTables(activeSchoolSession);
+    }
+    const box = document.getElementById("schHssGroupEditorBox");
+    if (box) {
+      box.style.display = "block";
+      if (typeof initSchoolHssGroupEditorState === "function") {
+        initSchoolHssGroupEditorState();
+      }
+      setTimeout(() => {
+        box.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 120);
+    }
+    showToast("📘 இங்கே +2 பாடப்பிரிவு (Group-wise) மாணவர் எண்ணிக்கையை மாற்றிச் சேமித்தால், EBS FORM-I மற்றும் FORM-II தானாகப் புதுப்பிக்கப்படும்!", "#0f766e");
+  }
+
   const EBS_F1_SUPP_SEED = {"101":["NAGARAJ S","9786417523","ghsvalasaipatti@gmail.com","tn-33231106101@tnschools.gov.in","",3,3,40],"102":["KALPANA R","9080772990","gbhskalapursvm@gmail.com","tn-33231000112@tnschools.gov.in","",5,5,30],"103":["PANCHAVARNAM K","8825564010","akgovtgirls@gmail.com","tn-33231000114@tnschools.gov.in","",5,5,36],"104":["KALPANA R","8925312176","ghsaniam@gmail.com","tn-33231000213@tnschools.gov.in","",5,5,50],"105":["SORNAVALLI K","9047324384","aralikkottai@gmail.com","tn-33231001703@tnschools.gov.in","",3,2,30],"106":["S.ANBUCHELVAN","9488631712","ghschelliampatti1@gmail.com","tn-33231000307@tnschools.gov.in","04333-299667",5,5,40],"107":["LAKSHMI S","9344511394","hmghsmsurakkudi@gmail.com","tn-33231001103@tnschools.gov.in","",6,6,70],"108":["NAGAJOTHI S","9159246361","ghsmallai2014@gmail.com","tn-33231001003@tnschools.gov.in","",5,5,50],"109":["PALANIAMMAL A","9443494442","ghsshenbagampettai@gmail.com","tn-33230900206@tnschools.gov.in","",4,4,40],"110":["RAGHUNATHAN R","9894909727","headmaster203mahi@gmail.com","tn-33230901907@tnschools.gov.in","04577-266023",5,5,30],"111":["RAMESH.A","9791189747","govthssevoor@gmail.com","tn-33230900303@tnschools.gov.in","04333-260007",5,5,30],"112":["RAHIMA BEGUM M","8608753224","hmghstp@gmail.com","tn-33230903902@tnschools.gov.in","",15,9,150],"113":["RAJATHI D","9976003715","thenmapattughs@gmail.com","tn-33230904901@tnschools.gov.in","",5,0,20],"114":["G.SEVUGAMOORTHY","9976095672","thiruhmtkp1966@gmail.com","tn-33230902403@tnschools.gov.in","04577-266025",4,4,30],"115":["J JENITTA","8610818887","jenittapersonal@gmail.com","tn-33231200502@tnschools.gov.in","",3,3,24],"116":["SUMATHI M","9442047841","hmgghskallal@gmail.com","tn-33231200104@tnschools.gov.in","04565 - 220452",10,0,110],"117":["HELEN JULIET JEYACELIA A","9443639769","koviloor.ghs@gmail.com","tn-33231202104@tnschools.gov.in","",10,10,100],"118":["RAJAMOHAN P","9943765650","ghsdvkiluppaikudi@gmail.com","tn-33230801502@tnschools.gov.in","",10,0,90],"119":["JOHN JESUDAS G","9443684713","ghsjeyankondan@gmail.com","tn-33230802703@tnschools.gov.in","",4,4,50],"120":["JEYA M","8883274260","ghsperiyakottaidvk@gmail.com","tn-33230802401@tnschools.gov.in","04565250643",6,6,120],"121":["PANDI MURUGAN A R","9659377377","ghspoyyavayal@gmail.com","tn-33230802503@tnschools.gov.in","",5,4,20],"122":["VIMALA S","9944774143","ghssakkavayal2017@gmail.com","tn-33230802003@tnschools.gov.in","04565 - 272001",5,5,30],"123":["VIJAYALAKSHMI V","9486721494","ghssakkottai14@gmail.com","tn-33230802106@tnschools.gov.in","",5,5,30],"124":["PALANIAPPAN M","9626951257","hmsirugapatti@gmail.com","tn-33230802210@tnschools.gov.in","04565-220947",5,5,45],"125":["SUBAIRIA MARIAM M","9788053672","manisaraswathi654@gmail.com","tn-33230803103@tnschools.gov.in","04565-272004",5,5,50],"126":["KUMARAPPAN S","9443874476","ghsthiruvelangudi@gmail.com","tn-33230800304@tnschools.gov.in","",5,5,40],"127":["Hemalatha M","9047248695","ghs.naranamangalam@gmail.com","tn-33230700404@tnschools.gov.in","",5,5,35],"128":["S EMALDAMARY","9688703420","siruvatchi.school@gmail.com","tn-33230700703@tnschools.gov.in","",5,5,40],"129":["ANTONY ILAMATHY A","9994769433","hmsiruvanoor@gmail.com","tn-33230701802@tnschools.gov.in","",5,5,45],"130":["ROSEMARY T","8940072885","ghs.muppaiyur@gmail.com","tn-33230601205@tnschools.gov.in","",5,5,80],"131":["VIMALA K","9486290762","hmghspuliyal@gmail.com","tn-33230600905@tnschools.gov.in","",5,5,65],"132":["SELVARANI P","9943596387","hmgghspaganeri@gmail.com","tn-33230211102@tnschools.gov.in","",13,5,30],"133":["JJAMES KUMAR M","9442048339","ghs.chockanathapuram@gmail.com","tn-33230212302@tnschools.gov.in","",8,6,50],"134":["SELVI R","7373207131","ghskarumanthakudi@gmail.com","tn-33230212502@tnschools.gov.in","",7,5,40],"135":["JEYABALA S","9865075641","ghspkr2014@gmail.com","tn-33230213002@tnschools.gov.in","",5,5,30],"136":["PANDI V","9786508099","ghssethur@gmail.com","tn-33230212602@tnschools.gov.in","",5,5,30],"137":["KANNAN P","9843854387","gghsilg@gmail.com","tn-33230505414@tnschools.gov.in","04564-299830",3,3,55],"138":["B.VELMURUGAN","9894385101","ghsalavidangang2@gmail.com","tn-33230502901@tnschools.gov.in","",5,5,31],"139":["DAVID A","9442858649","ghskatchathanallur@gmail.com","tn-33230501605@tnschools.gov.in","",5,5,40],"140":["ILAMURUGU K","9488546371","gkalkurichi@gmail.com","tn-33230302207@tnschools.gov.in","",7,6,60],"141":["DEIVENDRAN V","8838651368","ghsmelanettur@gmail.com","tn-33230301303@tnschools.gov.in","",6,3,30],"142":["M. KALA","9789789409","ghsmelappasalaihm@gmail.com","tn-33230301505@tnschools.gov.in","",5,5,30],"143":["JEYANANTHINI N","9489103070","ghsmilaganoor@gmail.com","tn-33230301605@tnschools.gov.in","",4,3,30],"144":["GANESHRAJA T","9994023137","ghsmoongiloorani2011@gmail.com","tn-33230301208@tnschools.gov.in","",5,5,70],"145":["SARATHKUMAR P D","9894868537","ghsparayankulam@gmail.com","tn-33230302405@tnschools.gov.in","",5,5,50],"146":["DEIVANAI R","8778297753","hmvellikurichighs@gmail.com","tn-33230302902@tnschools.gov.in","",10,10,50],"147":["UTHAYAKUMARI A","9786136290","ghs.vethiyarendal@gmail.com","tn-33230300705@tnschools.gov.in","",5,5,50],"148":["PRABHU V G S","9943683575","hmghsdkarisalkulam@gmail.com","tn-33230402002@tnschools.gov.in","",5,5,40],"149":["VEERAPADRAN V","9994484791","ghsilanthaikulam@gmail.com","tn-33230401907@tnschools.gov.in","",5,5,50],"150":["P.MAHARAJAN","7598098186","hmghskaliyanthur@gmail.com","tn-33230400603@tnschools.gov.in","",3,3,18],"151":["METILDA SAHAYAVATHI J","9751130867","ghskalloorani@gmail.com","tn-33230404305@tnschools.gov.in","",4,3,30],"152":["ARUL AROCKIAM","7397019854","ghsskanjirankulam@gmail.com","tn-33230402303@tnschools.gov.in","",5,5,50],"153":["PONMALAR  L","6380912346","ghsladanenthal@gmail.com","tn-33230403709@tnschools.gov.in","",13,13,99],"154":["MURUGESAN R","9486162631","ghsmanaloor@gmail.com","tn-33230401702@tnschools.gov.in","",6,6,30],"155":["K. NAGALAKSHMI","8610876434","ghspoovanthi@gmail.com","tn-33230400702@tnschools.gov.in","",6,6,50],"156":["M.RAMVEL","7904593128","hmghsthavatharendal@gmail.com","tn-33230402903@tnschools.gov.in","",5,5,48],"157":["N JAYALAKSHMI","8248863757","ghsiluppakkudi@gmail.com","tn-33230100702@tnschools.gov.in","",3,3,10],"158":["KARUPPAIAH C","9943847774","sgi041school@gmail.com","tn-33230101002@tnschools.gov.in","",9,5,40],"159":["MUTHULAKSHMI A","8940889395","hmkeelakandani@gmail.com","tn-33230104202@tnschools.gov.in","",5,5,50],"160":["ABDUL SHAJITHA BEGUM D","9585570177","ghskumarapatty@gmail.com","tn-33230101506@tnschools.gov.in","",5,5,23],"161":["RAJA MM","9865745183","hmghsmc@gmail.com","tn-33230103505@tnschools.gov.in","",5,5,70],"162":["VIDHYA M","9751451558","mudikandam2015@gmail.com","tn-33230102503@tnschools.gov.in","",1,0,10],"163":["SA SERAPHINE SAGAYA MARY","8940003750","ghspadamathur@gmail.com","tn-33230103102@tnschools.gov.in","",5,2,10],"164":["JEYALAKSHMI V","8111058423","ghssithaloor@gmail.com","tn-33230101803@tnschools.gov.in","",4,4,20],"181":["P.MALATHI","9360578999","alangudiyarmplhskkdi@gmail.com","tn-33230801161@tnschools.gov.in","04565-292434",9,6,90],"182":["NAGAVELU D","8610975077","rmsmhskkdi@gmail.com","tn-33230801162@tnschools.gov.in","04565-220904",36,21,360],"183":["RAMGANESH K","8248336896","mhsdvk@gmail.com","tn-33230602902@tnschools.gov.in","",5,5,60],"191":["MURALI V","8778119224","govtadwhsathikaram@gmail.com","tn-33231203607@tnschools.gov.in","04577-256486",5,5,20],"192":["M.AROCKIASAMY","8248987773","govtadwhsunjanai@gmail.com","tn-33230700203@tnschools.gov.in","04565-220906",2,2,10],"201":["SURESH M","9787221025","karisalpattighs@gmail.com","tn-33231105402@tnschools.gov.in","04577-230374",9,9,90],"202":["AZHAGURAJ. R","9786061402","ghsskattukkudipatti@gmail.com","tn-33231105801@tnschools.gov.in","",19,16,150],"203":["JAYAPRAKASH P","9962078924","rmsamskat@gmail.com","tn-33231100802@tnschools.gov.in","45615964145",14,14,150],"204":["MURUGAN M","9600226782","ghsmusundapatti@gmail.com","tn-33231104602@tnschools.gov.in","",12,10,100],"205":["ARUL MARTINAL S","959733498","ghsspuzhuthipatti@gmail.com","tn-33231105901@tnschools.gov.in","04577251137",19,12,140],"206":["PALANIAPPAN V","6380541500","ghssulagampatti@gmail.com","tn-33231106001@tnschools.gov.in","",9,7,70],"207":["JAYALAKSHMI R","9789483680","ghssvpudhur@gmail.com","tn-33231106201@tnschools.gov.in","",8,8,80],"208":["P.KAVERI","7358334109","ghssamuraiyur@gmail.com","tn-33231001903@tnschools.gov.in","04577266288",9,9,71],"209":["M.MATHESHWARAN","6381329351","ghsseriyur1960@gmail.com","tn-33231000702@tnschools.gov.in","",18,7,70],"210":["V.KRISHNAN","9994890152","kirungakottaighss@gmail.com","tn-33231001402@tnschools.gov.in","04577-242047",14,14,80],"211":["JEYAJOTHI M","8110969653","singamgbhss@gmail.com","tn-33231000110@tnschools.gov.in","",20,12,120],"212":["RAMEELA BANU S","9789771840","singairmrmgghss@gmail.com","tn-33231000111@tnschools.gov.in","04577-299349",19,13,170],"213":["N.MUMTAJ BEGAM","8778844680","gscl022.ssk@gmail.com","tn-33231001204@tnschools.gov.in","",7,7,100],"214":["P.NANDHINI","9600786890","ghsskottaiyiruppu@gmail.com","tn-33230901602@tnschools.gov.in","",10,10,100],"215":["A.NISHANTHI","9095899697","sathappaschool1@gmail.com","tn-33230903805@tnschools.gov.in","04577-266024",19,14,150],"216":["KARUNAKARAN V","9715388608","tmghss.highersecondaryschool@gmail.com","tn-33230903302@tnschools.gov.in","",14,14,120],"217":["HEMALATHA S","9965690259","ghsssvelangudi@gmail.com","tn-33230901505@tnschools.gov.in","04577-266026",11,11,50],"218":["JAYASUDHA R","8940539216","thirukoshtiyur@gmail.com","tn-33230902503@tnschools.gov.in","04577-251135",9,9,150],"219":["RENUGADEVI S","9488024870","apghsstpr1@gmail.com","tn-33230904802@tnschools.gov.in","",14,12,100],"220":["AMIN KABILA M","9080184207","nmgghss@gmail.com","tn-33230904302@tnschools.gov.in","",20,20,250],"221":["GANESH M","9443490602","mkghsssembanur25@gmail.com","tn-33231203502@tnschools.gov.in","",12,12,100],"222":["A.ILAMARAN","9500256271","vetriyurschool@gmail.com","tn-33231204202@tnschools.gov.in","",10,7,60],"223":["THANIKASH V","95247426782","govtmodelhssvkottai@gmail.com","tn-33231204004@tnschools.gov.in","",4,0,50],"224":["MANIMEGALAI. C","9751473943","gghssmuthupattanamsvg@gmail.com","tn-33230801120@tnschools.gov.in","04565237978",20,9,90],"225":["BEULA SANTHI K","9443109578","mvghss@gmail.com","tn-33230801119@tnschools.gov.in","04565-292804",14,10,100],"226":["ANURATHA M","9442563394","tacghss@gmail.com","tn-33230800804@tnschools.gov.in","",10,9,90],"227":["SHARAVANAN S","9500392182","ghss.pkkd@gmail.com","tn-33230802207@tnschools.gov.in","04565-287307",20,15,80],"228":["SELVAM S","9443009550","hssamithira@gmail.com","tn-33230803203@tnschools.gov.in","",8,8,80],"229":["VINNARASI P","9486888246","ghssosiruvayal@gmail.com","tn-33230800202@tnschools.gov.in","04565-291100",16,16,105],"230":["JOHN KULANDAI S","9489210674","ghssakdi@gmail.com","tn-33230801402@tnschools.gov.in","",20,15,300],"231":["TAMIZHARASAN P","9025663705","ghssankdi1@gmail.com","tn-33230700104@tnschools.gov.in","",14,11,150],"232":["SARAVANAN V","8122022901","ghsskannangudi1963@gmail.com","tn-33230700803@tnschools.gov.in","",9,9,120],"233":["A. THAINESE","9047314483","vntghss@gmail.com","tn-33230607002@tnschools.gov.in","",14,12,120],"234":["A.ALPHONSE LIGORI","9443612247","hmperiyakarai@gmail.com","tn-33230600105@tnschools.gov.in","",9,5,100],"235":["RAMACHANDRAN S","9865398783","ghssthiruvegampet@gmail.com","tn-33230605402@tnschools.gov.in","04561-270712",12,11,144],"236":["UDAYAKUMAR P","9487505341","ghsskkl1955@gmail.com","tn-33230201302@tnschools.gov.in","",17,13,130],"237":["KRISHNASAMY K","9791526060","mangalamghss1219@gmail.com","tn-33230209902@tnschools.gov.in","",18,15,120],"238":["KULANDAI A","9840387203","silukkapattighssnew@gmail.com","tn-33230202302@tnschools.gov.in","",12,12,150],"239":["MUTHURAMDURAI SR","9486326427","ghsskollangudi1@gmail.com","tn-33230201602@tnschools.gov.in","",15,14,150],"240":["ALAGUMAYIL R","9176319811","oermghsspaganeri@gmail.com","tn-33230211103@tnschools.gov.in","",8,8,80],"241":["VICTOR M","6384369190","ghssmunaivendri@gmail.com","tn-33230501501@tnschools.gov.in","",10,6,100],"242":["KALYANASUNDARAM K","9751150615","sgi001school@gmail.com","tn-33230503404@tnschools.gov.in","",17,14,160],"243":["KANNAN M","8883925968","sathanoorschool@gmail.com","tn-33230504002@tnschools.gov.in","",9,5,70],"244":["POOVENDHAN","9994661640","hmgghssmnm@gmail.com","tn-33230303609@tnschools.gov.in","04574-268479",28,22,250],"245":["R.VIJAYARAMU","9787673041","hmghsscknr50@gmail.com","tn-33230300304@tnschools.gov.in","",8,4,60],"246":["KARTHIKEYAN K","9442515006","ghssidaikattur@gmail.com","tn-33230300405@tnschools.gov.in","",15,8,80],"247":["GANESAN T","9884107103","ghsskattikulam@gmail.com","tn-33230300602@tnschools.gov.in","",10,7,82],"248":["KARTHIK R","9092192292","ghsskknl@gmail.com","tn-33230302603@tnschools.gov.in","",4,3,80],"249":["R.SUJATHA","8870357787","ghsperiyakottai.svg@gmail.com","tn-33230301903@tnschools.gov.in","",10,6,40],"250":["R.KALIMANI","8220171281","hmghssvembathur@gmail.com","tn-33230303002@tnschools.gov.in","",7,7,40],"251":["T HARIHARAN","8072351564","gbhsstpvmsvg@gmail.com","tn-33230400303@tnschools.gov.in","",25,20,250],"252":["C.VEERAPPAN","9894727209","hmgghsstpvm@gmail.com","tn-33230400109@tnschools.gov.in","",52,30,400],"253":["M.VISWANATHAN","6379749117","ghsskeeladi@gmail.com","tn-33230401603@tnschools.gov.in","",14,10,200],"254":["R AROCKIYASELVAM","9976922163","hmghsspalayanoor@gmail.com","tn-33230403505@tnschools.gov.in","",24,10,120],"255":["RAMANATHAN P","9944285966","hmghsstpcy@gmail.com","tn-33230403302@tnschools.gov.in","",23,15,150],"256":["PRABAGARAN R","9092768010","hmghs.allinagaram@gmail.com","tn-33230400503@tnschools.gov.in","",13,10,122],"257":["J RAMASAMY","9486694624","gghsssivagangai@gmail.com","tn-33230104407@tnschools.gov.in","04575244988",20,18,180],"258":["GANESAN P","9442266706","ghssmpn@gmail.com","tn-33230104405@tnschools.gov.in","04575-240759",12,7,80],"259":["KAMAL BATCHA M","9488058362","sgi012school@gmail.com","tn-33230101402@tnschools.gov.in","7708363402",21,19,180],"260":["NIRMALA S","8489615427","ghssthamarakki@gmail.com","tn-33230103902@tnschools.gov.in","",9,5,25],"261":["SEKAR L","9942523574","ghssalnagari@gmail.com","tn-33230100602@tnschools.gov.in","04577 - 230277",10,7,70],"262":["KASTHURI P","7695942069","ghssalavakkottai@gmail.com","tn-33230100102@tnschools.gov.in","",13,7,120],"263":["ILANGOVAN R","7448335234","ghsssakkandi@gmail.com","tn-33230103808@tnschools.gov.in","",7,7,70],"264":["SENTHIL SARAVANAN S","9500437098","ghssidayamelur@gmail.com","tn-33230100804@tnschools.gov.in","04575237237",16,16,150],"265":["RAJENDRAN M","9362962690","ghssvmalampatti@gmail.com","tn-33230102401@tnschools.gov.in","",11,8,80],"266":["Pa.Rajavidhyatharan","9994337536","thirumanjolaihrschool@gmail.com","tn-33230100207@tnschools.gov.in","",14,10,100],"267":["SARAVANAN S","9942494512","ghssmangudi@gmail.com","tn-33230101905@tnschools.gov.in","",14,10,100],"268":["RAMESHKUMAR M","9787026250","ms.sivagangai@tnschools.gov.in","tn-33230104204@tnschools.gov.in","",10,10,106],"291":["RICHARD DEVA SAGAYAM M","9842477750","hmadwmallal@gmail.com","tn-33230210902@tnschools.gov.in","",10,8,80],"301":["RUKMANI N","9655514199","vthmmani@gmail.com","","",10,5,50],"302":["ANANDHI S","9976972525","mapghs@gmail.com","","",10,5,50],"303":["THIRUMALAIRAJAN C","9442678894","sdhskmm@gmail.com","","04577 262799",9,9,90],"304":["CHITRA P  I/C","9787831250","stsebastianshighschoolkuthalur@gmail.com","","",10,5,80],"305":["CHARLES A","6380271639","jvhighs@gmail.com","","04577299905",7,6,72],"306":["SARAVANAN S","9787054034","rcmhschool0042@gmail.com","","9842008630",5,4,40],"307":["G VETRIVELVARADHARAJAN","8940949464","hm.trvahs.pattamangalam@gmail.com","","04577 299077",8,8,150],"308":["NATARAJAN A","9789261612","camhighschool43@gmail.com","","04565-282870",11,11,110],"309":["RADHA E","9597411986","rmmghspallathur@gmail.com","","04565 283164",6,0,0],"310":["ALICE MANOGARI S","9944337521","mrarsvhs@gmail.com","","9442924074",16,0,0],"311":["MUTHUGANESAN S","9442960570","psshssnp@gmail.com","","",7,7,35],"312":["","","","","",0,0,0],"313":["BELSI MEDONA S","9500190942","rchskeelauchani@gmail.com","rchskeelauchani@gmail.com","Nil",13,13,60],"314":["MALATHI A","9865924499","stpaulshs2011@gmail.com","","",6,6,25],"316":["AROCKIA JESURAJ T J","9443612720","bonifacehs12@gmail.com","","",5,5,25],"317":["JOHN PRABAKER I","9486483231","sgi436school@gmail.com","","",10,10,70],"318":["Y.ELIZABETH","9944589466","csihsmanamadurai@gmail.com","csihsmanamadurai@gmail.com","04574268492",5,5,50],"319":["THAINESE VICTORIA M","9787785728","stmariyshsmichaelpattanam@gmail.com","","",8,8,80],"320":["ANANTHAKRISHNAN A","9786570356","sbdvhighschool@gmail.com","","",7,5,30],"321":["ARUNKUMAR D","8110069388","alicemillerschool@gmail.com","alicemillerschool@gmail.com","",5,5,30],"322":["KRISHNAVENI R","9865241045","beandmake1937@gmail.com","","",5,5,30],"392":["M SUNDARI","6380969652","csidsddeafschool@gmail.com","","04574268544",10,10,35],"401":["N. ALAGUMEENAL","9159157387","piranmalaivphss@gmail.com","devisingaram1984@gmail.com","Nil",18,17,150],"402":["KARPAGAM AN","9489488295","svkhss@gmail.com","","",17,13,140],"403":["THANGARASU R","6369613102","sms.highersecondaryschool@gmail.com","","04577265402",30,14,350],"404":["THANUSU STALIN M","9442148812","brittokallal@gmail.com","","",15,12,120],"405":["MOHANRAJAN KM","9486440759","kallalmurugappahss@gmail.com","","",14,14,155],"406":["PIRABHAKARAN R","9442869662","dkghssknk43@gmail.com","","Nil",20,16,200],"407":["PARIPOORANAM K","9489509908","srimeenakshigirlsschool@gmail.com","","04565220215",27,21,250],"408":["MUTHUKUMAR SV","9443288931","smsvboysschool@gmail.com","annamalai.ramasamy1969@gmail.com","04565220877",10,10,120],"409":["SHANMUGASUNDARI P T","9943027435","alagappamodel@gmail.com","vallalalagappar@yahoo.co.in","04565-225400",27,15,300],"410":["","","ccghsktyr@gmail.com","","04565286280",34,15,300],"411":["TAMILVANAN M","9486888294","achss.ptr@gmail.com","","04565299381",15,15,300],"412":["S PARTHIBAN","9597100673","rchsspvl@gmail.com","","04565292933",22,22,350],"413":["SELVANATHAN R","9442419967","scgurukulam@gmail.com","","04565299698",25,20,100],"414":["VIJAYARAJ S","7639515380","mctmschlkkn1@gmail.com","","",19,19,270],"415":["DEVI M","9486449442","lfrckkdnew@gmail.com","","04565290375",28,28,672],"416":["KARPAGAVALLI K","9442223569","ssvgirlshrsec@gmail.com","","",18,18,180],"417":["EDWIN ROSARIO M","9952155200","debrittodvk@gmail.com","","8807706522",30,25,350],"418":["PUGAL R D","9486906181","nsmvpsdvk@gmail.com","","04561272343",30,25,350],"419":["Sr SAHAYARANI T.A.","8248388925","stmaryhssdvk@gmail.com","","04561290430",42,28,400],"420":["","","stjohnshssdvk@gmail.com","","04561290343",17,12,170],"421":["KALAISELVI P","9047511940","pghssdvk@gmail.com","","04561272576",18,14,200],"422":["ARUL RANI JESSINTHA G","9344681605","st.joseph1986@gmail.com","","9626441170",14,10,135],"423":["MEENAKSHI SUNDARI G","8270783414","kmscghss@gmail.com","","",13,10,150],"424":["S.KUMARAN","9965212019","srmschool045@gmail.com","","",12,10,100],"425":["","7305765912","Sahayaranighss@gmail.com","","9025082825",37,30,410],"426":["IBRAHIMSHA N E N","9443576120","ilayangudihr@gmail.com","","9842928365",25,20,200],"427":["KULASEKARA PANDIAN S","9698782966","hkkiahss@gmail.com","","04564265275",20,20,200],"428":["RASHITHA BANU K N M","9360426147","sgi410school@gmail.com","","04564265548",20,15,150],"429":["SAKTHIBALAN M","8778210859","hameediahsily@gmail.com","","",14,12,60],"430":["BRO JEYASEELAN A KATTAR","9486213397","stjameshrsssuranam86@gmail.com","","04564267220",17,13,130],"431":["MEENAKSHI S","9487485524","ovchssmnm@gmail.com","","04574268581",16,13,100],"432":["SELVAN S","9952202866","hmstmarys@gmail.com","","",15,10,100],"433":["JOHNBRITTO","9944868287","hmrhsssvga@gmail.com","","",20,20,400],"434":["Sr.Emerencia Mary","7695893529","justinsghsschool@gmail.com","","8778549385",24,22,220],"435":["AROCKIASAMY A","7502522233","sschssokkur@gmail.com","","04575233466",14,10,80],"436":["ILANGO N","9487877171","krhsssivaganga@gmail.com","","",7,5,40],"437":["JOSEPHIN JUSTIN MARY I","9942579158","sgi413school@gmail.com","","",23,10,100],"501":["Mr.Bhoominathan S","9843671182","ssmatricsingai@gmail.com","","8883937666",21,14,50],"502":["P. KALAIVANI","9894793176","rmmcs2007@gmail.com","","",0,0,0],"504":["","","ssvmsschool@gmail.com","","7358092281",12,8,30],"505":["GOKILA.T","9715719594","infantjesusfspm@gmail.com","","04565250461",20,20,30],"506":["SATHYA K","8300126468","vairavermatriculation2016@gmail.com","","04565255787",14,1,70],"507":["KAVITHA M","8973491451","maruthamalaiyanmhs@gmail.com","","04565221600",15,6,100],"508":["R.NANDHINI","8072067289","pvmatricschooldvk@gmail.com","","8525061875",10,8,50],"509":["PRIYA M","8489289585","aribalamatricschool@gmail.com","","9843240175",17,5,50],"510":["Mrs MYMOON BEGUM A","9787458333","inptms@gmail.com","","04564245642",14,8,80],"511":["Mrs S.YESTHER VANITHA","8148555191","principal@iqraschool-india.org","iqraschool03@gmail.com","8526626721",12,6,60],"512":["P.Deivanathan","8667645360","schoolbharathiyar@gmail.com","","045267267",21,4,250],"513":["SHOBANA R","8098471517","nalmeipper@gmail.com","","",15,15,50],"514":["R SIVAKAMI","9566615572","babamatricmnm@gmail.com","babamatricgarden@gmail.com","04574268330",19,15,80],"515":["","","goodwillschoolmnm@gmail.com","","",14,7,70],"516":["MURUGANANTHAM A","9865728670","stcharlesmatric@gmail.com","","",12,3,15],"517":["NAVANEETHAKRISHNAN","8778302434","mmspoovandhi@gmail.com","manimaranschool@gmail.com","9790119933",17,10,60],"518":["DEVI N","9585835885","atmschool86@gmail.com","devithamil1030@gmail.com","04574299018",15,12,60],"519":["SR.PUNITHA ANNAMMAL","7418089512","stjosephokkur@gmail.com","","7695936486",20,20,240],"520":["","","srithiyagaraja20@gmail.com","","04575299351",31,15,150],"521":["GEETHA L","6369234995","vivischool@gmail.com","","04575246295",18,12,58],"522":["","","vhntmjschool@gmail.com","vhntmjschool@gmail.com","0452-2911912",25,23,200],"523":["A KULANTHAI BENITA","7639518555","jpscbse@gmail.com","","9597775031.0",18,16,80],"524":["A. ARUL GRACY","9566257787","stmarys.devakottai@gmail.com","stmarys.devakottai@gmail.com","9944910290.0",19,3,36],"525":["Shanmuga priya","9025532259","eriyurgandhischool@yahoo.co.in","eriyurgandhischool@gmail.com","",13,3,30],"526":["MARIKANNU","8754716852","motherteresa.svga@gmail.com","","",0,0,0],"601":["SUBBIAH K","9655505199","avmsingai@gmail.com","avm.school@rediffmail.com","9585172172",37,37,200],"602":["MUHILA S","6383928241","pvmschool@gmail.com","","04577-290368",64,25,250],"603":["VALLIMAYIL PL","7867012466","christhurajamatricschool@gmail.com","","7867012466.0",38,15,150],"604":["Sankar","9487540003","plazaaschool.tpr@gmail.com","","",21,18,120],"605":["","","avmpublicmatricschool@gmail.com","","",21,15,120],"606":["G.ARUL XAVIER ANTHONI RAJ","9688518640","apsaschooltpr@gmail.com","","04577266001",19,15,175],"607":["S.KANAGA","9600676400","babaamirbadhushamhss@gmail.com","","04577290229",15,10,100],"608":["SIRAJNISHA S","9498047530","limramatriculation@gmail.com","","04577266577",19,8,100],"609":["Sr SUNITA SHINGARE","7094918311","shanthiranimatric@gmail.com","","04565284919",48,19,380],"610":["","","sethuirani@gmail.com","","98655 74423",30,18,120],"611":["","","kamhs2010@gmail.com","","04565-232221",22,10,100],"613":["R SNEHAVALLI","8508055425","stmichael.mhss@yahoo.com","","7305396743",24,8,82],"614":["POONKUZHALI A","9487277685","karaikudinewmaharishi@gmail.com","","04565-220055",20,18,200],"615":["JP.KARTHIKA","8838276780","alagappagirls2015@gmail.com","","04565230392",21,21,256],"616":["","","alagappaschoolskkdi@gmail.com","","8122194432",30,15,300],"617":["","","azadmatricschool@gmail.com","","04565256138",14,14,73],"618":["AMUTHA R","9788777372","kambanschool@gmail.com","","04565-233600",53,16,425],"619":["","","smmhsskkdi25@gmail.com","","04565-255494",38,20,300],"620":["POONKODI C","6383261899","srikalaivanischool@gmail.com","","04565-221841",39,20,350],"621":["MRS.SHANTHI","8220607989","raghavendramatric@gmail.com","","04565-232445",33,28,150],"622":["Mr .MUTHUKUMAR G","9047296551","theleadersmatric@gmail.com","","9655240550",30,30,475],"623":["SATHIYAMOORTHI R","9688712080","vidhyagirikaraikudi@gmail.com","","04565-234456",30,20,200],"624":["","","m.al.principal@gmail.com","","04565 - 286315, 286215",27,17,400],"625":["M RAJA MOHAMED","7339030745","ssamhs1994kkdi@gmail.com","","04565-224487",35,25,75],"626":["BHOOPATHY RAJA M","9789787301","skvms.pvl25m019@gmail.com","skvmhs98@gmail.com","04565-272650",20,20,200],"627":["SENTHIL S","9942488340","principalvidhyaagiri@gmail.com","","04565-272733",30,30,300],"628":["KAPILDEV A","9942931326","karaikudimaharishi@gmail.com","","0465 233994",27,27,250],"629":["SARADHA S","9524677711","principal@cteducational.org","","04565 283042",23,23,245],"630":["Sr.IRUTHAYA MARY","9566148724","infantjesusdvk@gmail.com","","04561290388",42,25,750],"631":["UTHAYA KUMAR A","9787091960","stjosephmatric2009@gmail.com","","04561-299597",18,12,100],"633":["","","drganesanhm@gmail.com","","04561-299312",32,20,150],"634":["MR. MUTHURAJA K","8870274007","msmsmuppaiyur@gmail.com","","",36,10,250],"635":["MR.MUTHUKUMAR M","9600671029","stmichaelmhsskoil@gmail.com","","04575- 232009",20,10,100],"636":["ANITHA R","9843910226","ssvvmskkl@gmail.com","","04575 242216",22,12,120],"637":["MRS.RAMA DEVI","9094052813","auxipuliadithammam@gmail.com","","9442050767",26,26,216],"638":["MRS.KANAGAMANI A","9942447741","holyspiritseegoorani1@gmail.com","","04575290211",20,20,200],"639":["","","oxfordsvg2015@gmail.com","","7502278000",37,30,300],"640":["N RAMACHANDRAN","9047927146","ilayangudistannes@gmail.com","","9042395637",20,20,200],"641":["","","goodwillmatricschool2016@gmail.com","","",20,10,100],"642":["MR.JEYA BASKAR J","8637683114","sdaschoolmanamadurai@gmail.com","","04574-258410",20,15,200],"643":["Francis J","9942419429","stjms1991@gmail.com","d.christiraj@gmail.com","04574-258401",40,40,400],"644":["KANNAN S - SENIOR PRINCIPAL","7695995389","ariyavaschool@gmail.com","","04574 - 290292",30,12,100],"645":["M SELVAKUMAR","9789642913","alagumalar1986@gmail.com","","0452-2465643",66,20,670],"646":["S.MURUGESWARI","8838597659","Kamarajarmhss@gmail.com","","04574-265055",30,16,160],"647":["","","stmarys507@gmail.com","","",15,12,25],"648":["G MUMTHAJ","9944433382","principalveltpvm2019@gmail.com","","9047265301",70,25,700],"649":["P MARIESWARAN","9943483851","asvamatricschool01@gmail.com","","04575-241299",34,7,70],"650":["MURUGANANDAM S","9943703484","mkvsvm@gmail.com","","9159050007",15,12,110],"651":["ARUNA DEVI M","8098235285","twentyfirstschool@gmail.com","","04575245121",19,6,80],"652":["Kaleeswari M","8220360649","alhudhaislamicschool@gmail.com","","",17,8,60],"653":["","","jmhss561@gmail.com","","04575-241592",42,12,140],"654":["GUNASEKARAN K","9600868171","stmichaelsvga@gmail.com","","04575 246406",26,10,100],"655":["","8","oxfordsvg2011@gmail.com","","",84,60,400],"701":["SR.Maggie","6384205769","stteresacarmel111@gmail.com","","",7,3,60],"702":["CHARLES A","9842060585","eugenehighschool@gmail.com","","",7,7,70],"703":["JACKULIN ANITHA A","8675525935","rchighschoolkundukulam2016@gmail.com","","",5,5,53],"704":["","","sakthischoolsvga@gmail.com","","",12,7,100],"801":["ARPUTHA SAHAYARANI D","9750656836","dbpallithammam@gmail.com","","",16,16,220],"802":["CHANDIRASEKAR","7904275520","svgsambaviga@gmail.com","","04575245221",40,30,400],"804":["","","srvcholapuram@gmail.com","","",20,20,250],"805":["","","rhskaraikudi@gmail.com","","04565796536",0,0,0]};
 
   function escapeHtmlAttr(val) {
@@ -22171,17 +22471,19 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           </table>
         </div>
 
-        <div style="font-weight:900; color:#0f294a; font-size:0.88rem; margin-bottom:6px;">
-          🎓 SSLC (10th Standard) - Total No. of Students <span style="color:#1d4ed8; font-size:0.76rem;">(🔒 போர்ட்டலின் நிலையான மாணவர் எண்ணிக்கை)</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+          <div style="font-weight:900; color:#0f294a; font-size:0.88rem;">
+            🎓 SSLC (10th Standard) - Total No. of Students <span style="color:#15803d; font-size:0.76rem;">(✏️ 10-ஆம் வகுப்பு மாணவர் எண்ணிக்கையை நேரடியாக இங்கே திருத்தலாம்)</span>
+          </div>
         </div>
         <div class="table-responsive" style="margin-bottom:16px;">
           <table class="data-table" style="margin:0; text-align:center;">
             <thead>
               <tr style="background:#0f294a; color:#fff; font-size:0.75rem;">
-                <th colspan="3" style="text-align:center;">TAMIL MEDIUM (Fixed)</th>
-                <th colspan="3" style="text-align:center;">ENGLISH MEDIUM (Fixed)</th>
-                <th colspan="3" style="text-align:center; background:#1e3a8a;">TOTAL (Fixed)</th>
-                <th colspan="3" style="text-align:center; background:#4c1d95;">Part-IV Optional Language (Editable)</th>
+                <th colspan="3" style="text-align:center; background:#1e40af;">TAMIL MEDIUM (நேரடி உள்ளீடு)</th>
+                <th colspan="3" style="text-align:center; background:#0369a1;">ENGLISH MEDIUM (நேரடி உள்ளீடு)</th>
+                <th colspan="3" style="text-align:center; background:#15803d;">TOTAL (தானியங்கி மொத்தம்)</th>
+                <th colspan="3" style="text-align:center; background:#4c1d95;">Part-IV Optional Language</th>
               </tr>
               <tr style="background:#e2e8f0; color:#0f294a; font-size:0.74rem; font-weight:900;">
                 <th>Boys</th><th>Girls</th><th>Total</th>
@@ -22192,15 +22494,15 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             </thead>
             <tbody>
               <tr style="font-weight:900; font-size:0.92rem;">
-                <td style="background:#f8fafc;">${s10.tm_b}</td>
-                <td style="background:#f8fafc;">${s10.tm_g}</td>
-                <td style="background:#eff6ff; color:#1d4ed8;">${s10.tm_tot}</td>
-                <td style="background:#f8fafc;">${s10.em_b}</td>
-                <td style="background:#f8fafc;">${s10.em_g}</td>
-                <td style="background:#eff6ff; color:#1d4ed8;">${s10.em_tot}</td>
-                <td style="background:#f0fdf4;">${s10.tot_b}</td>
-                <td style="background:#f0fdf4;">${s10.tot_g}</td>
-                <td style="background:#dcfce7; color:#15803d; font-size:1rem;">${s10.grand}</td>
+                <td><input type="number" min="0" class="ebs-num-input" value="${s10.tm_b}" oninput="onEbsF1SslcDirectChange('tm_b', this.value)" title="10th Tamil Medium Boys"></td>
+                <td><input type="number" min="0" class="ebs-num-input" value="${s10.tm_g}" oninput="onEbsF1SslcDirectChange('tm_g', this.value)" title="10th Tamil Medium Girls"></td>
+                <td id="ebsF1S10TmTot" style="background:#eff6ff; color:#1d4ed8; font-weight:900;">${s10.tm_tot}</td>
+                <td><input type="number" min="0" class="ebs-num-input" value="${s10.em_b}" oninput="onEbsF1SslcDirectChange('em_b', this.value)" title="10th English Medium Boys"></td>
+                <td><input type="number" min="0" class="ebs-num-input" value="${s10.em_g}" oninput="onEbsF1SslcDirectChange('em_g', this.value)" title="10th English Medium Girls"></td>
+                <td id="ebsF1S10EmTot" style="background:#eff6ff; color:#1d4ed8; font-weight:900;">${s10.em_tot}</td>
+                <td id="ebsF1S10TotB" style="background:#f0fdf4;">${s10.tot_b}</td>
+                <td id="ebsF1S10TotG" style="background:#f0fdf4;">${s10.tot_g}</td>
+                <td id="ebsF1S10Grand" style="background:#dcfce7; color:#15803d; font-size:1rem;">${s10.grand}</td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.sslcPart4Boys || 0)}" oninput="onEbsF1FieldChange('sslcPart4Boys', this.value)"></td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.sslcPart4Girls || 0)}" oninput="onEbsF1FieldChange('sslcPart4Girls', this.value)"></td>
                 <td id="ebsF1SslcPart4Tot" style="background:#f5f3ff; color:#4c1d95; font-weight:900;">${p4Tot}</td>
@@ -22209,15 +22511,25 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           </table>
         </div>
 
-        <div style="font-weight:900; color:#0f294a; font-size:0.88rem; margin-bottom:6px;">
-          🎓 HSC SECOND YEAR (+2) - Total No. of Students <span style="color:#0f766e; font-size:0.76rem;">(🔒 போர்ட்டலின் நிலையான +2 மாணவர் எண்ணிக்கை &amp; Part-1 இதர மொழிகள்)</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+          <div style="font-weight:900; color:#0f294a; font-size:0.88rem;">
+            🎓 HSC SECOND YEAR (+2) - Total No. of Students
+          </div>
+          ${isHSS ? `
+          <button type="button" class="btn btn-primary btn-sm" onclick="openHssGroupEditorFromEbsF1()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">
+            ✏️ 12-ஆம் வகுப்பு (+2) மாணவர் எண்ணிக்கையை மாற்ற (Group-wise Student Strength பகுதிக்குச் செல்க ➔)
+          </button>` : ``}
         </div>
+        ${isHSS ? `
+        <div style="background:#fffbeb; border:1.5px solid #fcd34d; border-left:5px solid #d97706; border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:0.79rem; color:#92400e; font-weight:800;">
+          ⚠️ <strong>முக்கிய அறிவுறுத்தல்:</strong> 12-ஆம் வகுப்பு (+2) மாணவர்களின் எண்ணிக்கையை மாற்ற விரும்பினால், <strong>"1. பள்ளித்தகவல் பலகை (School Dashboard) ➔ மேல்நிலைப் பாடப்பிரிவு வாரியான மாணவர் எண்ணிக்கை (Group-wise Student Strength)"</strong> பகுதியில் மட்டுமே மாற்றங்களைப் பதிவு செய்ய வேண்டும். அங்கு மாற்றம் செய்தவுடன் <strong>FORM – I (+2 எண்ணிக்கை)</strong> மற்றும் <strong>FORM – II (27 பாடவாரியான எண்ணிக்கை)</strong> ஆகிய இரண்டும் தானாகவே புதுப்பிக்கப்படும்.
+        </div>` : ``}
         <div class="table-responsive">
           <table class="data-table" style="margin:0; text-align:center;">
             <thead>
               <tr style="background:#0f294a; color:#fff; font-size:0.74rem;">
-                <th colspan="3" style="text-align:center;">Tamil Medium</th>
-                <th colspan="3" style="text-align:center;">English Medium</th>
+                <th colspan="3" style="text-align:center;">Tamil Medium (Group-wise Sync)</th>
+                <th colspan="3" style="text-align:center;">English Medium (Group-wise Sync)</th>
                 <th colspan="3" style="text-align:center; background:#1e3a8a;">TOTAL (+2)</th>
                 <th colspan="3" style="text-align:center; background:#0f766e;">Part-1: HINDI</th>
                 <th colspan="3" style="text-align:center; background:#0369a1;">Part-1: FRENCH</th>
@@ -22234,15 +22546,15 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             </thead>
             <tbody>
               <tr style="font-weight:900; font-size:0.9rem;">
-                <td style="background:#f8fafc;">${s12.tm_b}</td>
-                <td style="background:#f8fafc;">${s12.tm_g}</td>
-                <td style="background:#eff6ff; color:#1d4ed8;">${s12.tm_tot}</td>
-                <td style="background:#f8fafc;">${s12.em_b}</td>
-                <td style="background:#f8fafc;">${s12.em_g}</td>
-                <td style="background:#eff6ff; color:#1d4ed8;">${s12.em_tot}</td>
-                <td style="background:#f0fdf4;">${s12.tot_b}</td>
-                <td style="background:#f0fdf4;">${s12.tot_g}</td>
-                <td style="background:#dcfce7; color:#15803d; font-size:1rem;">${s12.grand}</td>
+                <td style="background:#f1f5f9; cursor:pointer;" onclick="promptHssGroupStrengthRedirect()" title="மாற்றம் செய்ய Group-wise Student Strength பகுதிக்குச் செல்லவும்">${s12.tm_b}</td>
+                <td style="background:#f1f5f9; cursor:pointer;" onclick="promptHssGroupStrengthRedirect()" title="மாற்றம் செய்ய Group-wise Student Strength பகுதிக்குச் செல்லவும்">${s12.tm_g}</td>
+                <td style="background:#eff6ff; color:#1d4ed8; cursor:pointer;" onclick="promptHssGroupStrengthRedirect()">${s12.tm_tot}</td>
+                <td style="background:#f1f5f9; cursor:pointer;" onclick="promptHssGroupStrengthRedirect()" title="மாற்றம் செய்ய Group-wise Student Strength பகுதிக்குச் செல்லவும்">${s12.em_b}</td>
+                <td style="background:#f1f5f9; cursor:pointer;" onclick="promptHssGroupStrengthRedirect()" title="மாற்றம் செய்ய Group-wise Student Strength பகுதிக்குச் செல்லவும்">${s12.em_g}</td>
+                <td style="background:#eff6ff; color:#1d4ed8; cursor:pointer;" onclick="promptHssGroupStrengthRedirect()">${s12.em_tot}</td>
+                <td style="background:#f0fdf4; cursor:pointer;" onclick="promptHssGroupStrengthRedirect()">${s12.tot_b}</td>
+                <td style="background:#f0fdf4; cursor:pointer;" onclick="promptHssGroupStrengthRedirect()">${s12.tot_g}</td>
+                <td style="background:#dcfce7; color:#15803d; font-size:1rem; cursor:pointer;" onclick="promptHssGroupStrengthRedirect()">${s12.grand}</td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.hscHindiBoys || 0)}" oninput="onEbsF1FieldChange('hscHindiBoys', this.value)"></td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.hscHindiGirls || 0)}" oninput="onEbsF1FieldChange('hscHindiGirls', this.value)"></td>
                 <td id="ebsF1HscHindiTot" style="background:#f0fdfa; color:#0f766e;">${hinTot}</td>
@@ -22593,9 +22905,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     if (subEl) subEl.textContent = `🏫 பள்ளி: [${ctx.sch.uNo}] ${ctx.sch.nameTa} (${ctx.sch.nameEn})`;
 
     const c10Opts = `<option value="">-- 10th தேர்வு மையம் தேர்வு செய்க --</option>` +
-      (INITIAL_EXAM_CENTRES_10 || []).map(c => `<option value="${escapeHtmlAttr(c.cNo + " - " + c.nameEn)}">${c.cNo} - ${c.nameEn}</option>`).join("");
+      (INITIAL_EXAM_CENTRES_10 || []).map(c => `<option value="${escapeHtmlAttr((c.centreNo || c.cNo) + " - " + (c.centreName || c.nameEn))}">${c.cNo} - ${c.nameEn}</option>`).join("");
     const c12Opts = `<option value="">-- 12th தேர்வு மையம் தேர்வு செய்க --</option>` +
-      (INITIAL_EXAM_CENTRES || []).map(c => `<option value="${escapeHtmlAttr(c.cNo + " - " + c.nameEn)}">${c.cNo} - ${c.nameEn}</option>`).join("");
+      (INITIAL_EXAM_CENTRES || []).map(c => `<option value="${escapeHtmlAttr((c.centreNo || c.cNo) + " - " + (c.centreName || c.nameEn))}">${c.cNo} - ${c.nameEn}</option>`).join("");
 
     const ch = st.classesHandling || getDefaultClassesHandlingForStaff(st.desig, st.subject, ctx.sch);
 
@@ -22754,64 +23066,67 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           </table>
         </div>
 
-        <div class="grid-3" style="margin-bottom:12px; background:#eff6ff; padding:10px; border-radius:8px; border:1px solid #bfdbfe;">
-          <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#1e40af;">Feb'26 Practical External Examiner – SSLC 1)</label>
-            <input type="text" id="ebsStfPracSslc1" class="form-control" value="${escapeHtmlAttr(st.pracSslc1 || "")}" placeholder="SSLC Practical Exam Centre">
+        <div style="margin-bottom:12px; background:#eff6ff; padding:12px; border-radius:8px; border:1.5px solid #93c5fd;">
+          <div style="font-size:0.78rem; font-weight:900; color:#1e3a8a; margin-bottom:8px;">
+            🔬 Name of the Exam Centre in which acted as External Examiner in Feb'26 Practical Exam
+            <span style="font-size:0.73rem; color:#0369a1; font-weight:700; margin-left:6px;">(மையத்தின் பெயரை பகுதியாக டைப் செய்தோ அல்லது ▼ பொத்தானை அழுத்தியோ தேர்ந்தெடுக்கலாம்)</span>
           </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#1e40af;">Feb'26 Practical External Examiner – HSC 1)</label>
-            <input type="text" id="ebsStfPracHsc1" class="form-control" value="${escapeHtmlAttr(st.pracHsc1 || "")}" placeholder="HSC Practical Centre 1">
-          </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#1e40af;">Feb'26 Practical External Examiner – HSC 2)</label>
-            <input type="text" id="ebsStfPracHsc2" class="form-control" value="${escapeHtmlAttr(st.pracHsc2 || "")}" placeholder="HSC Practical Centre 2">
+          <div class="grid-3">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#1e40af;">SSLC Practical Centre – 1)</label>
+              ${renderEbsSearchableComboHtml("ebsStfPracSslc1", st.pracSslc1 || "", "PRAC_10", "🔍 SSLC செய்முறை மையம் டைப் செய்க / தேர்ந்தெடுக்க...")}
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#1e40af;">HSC Practical Centre – 1)</label>
+              ${renderEbsSearchableComboHtml("ebsStfPracHsc1", st.pracHsc1 || "", "PRAC_12", "🔍 HSC செய்முறை மையம் 1 டைப் செய்க / தேர்ந்தெடுக்க...")}
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#1e40af;">HSC Practical Centre – 2)</label>
+              ${renderEbsSearchableComboHtml("ebsStfPracHsc2", st.pracHsc2 || "", "PRAC_12", "🔍 HSC செய்முறை மையம் 2 டைப் செய்க / தேர்ந்தெடுக்க...")}
+            </div>
           </div>
         </div>
         ` : ``}
 
         <div style="margin-bottom:12px;">
-          <div style="font-size:0.78rem; font-weight:900; color:#0f294a; margin-bottom:4px;">📝 Exam Duty Details (SSLC, HSE/HSC &amp; Valuation Camp – Nature of Work &amp; Exam Centre)</div>
-          <table class="data-table" style="margin:0;">
+          <div style="font-size:0.78rem; font-weight:900; color:#0f294a; margin-bottom:4px;">
+            📝 Exam Duty Details (கடந்த ஆண்டு பணியாற்றிய தேர்வு மையங்கள் &amp; விடைத்தாள் திருத்தும் முகாம்)
+            <span style="font-size:0.73rem; color:#15803d; font-weight:800; margin-left:6px;">(தேர்வு மையத்தின் பெயரை பகுதியாக டைப் செய்தால் அம்மையத்தை உடனடியாகத் தேர்ந்தெடுக்கலாம்)</span>
+          </div>
+          <table class="data-table" style="margin:0; overflow:visible;">
             <thead>
               <tr style="background:#0f294a; color:#fff; font-size:0.75rem;">
-                <th style="width:140px;">Exam / Camp</th>
-                <th style="width:230px;">Nature of Work (பணியின் தன்மை)</th>
-                <th>Name of the Exam Centre / Valuation Camp (தேர்வு மையம் / முகாம்)</th>
+                <th style="width:130px;">Exam / Camp</th>
+                <th style="width:265px;">Nature of Work (பணியின் தன்மை - Dropdown)</th>
+                <th>Name of the Exam Centre / Valuation Camp (பகுதியாக டைப் செய்க அல்லது ▼ பட்டியல்)</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td style="font-weight:900;">SSLC</td>
                 <td>
-                  <input type="text" id="ebsStfDutySslcWork" class="form-control" value="${escapeHtmlAttr(st.dutySslcWork || "")}" placeholder="CS / DO / Hall Supt / Invigilator">
+                  ${renderEbsSearchableComboHtml("ebsStfDutySslcWork", st.dutySslcWork || "", "EXAM_WORK", "🔍 பணியின் தன்மை (CS/DO/IN...)")}
                 </td>
                 <td>
-                  <div style="display:flex; gap:6px;">
-                    <select class="form-control" style="max-width:210px;" onchange="if(this.value) document.getElementById('ebsStfDutySslcCentre').value=this.value;">${c10Opts}</select>
-                    <input type="text" id="ebsStfDutySslcCentre" class="form-control" value="${escapeHtmlAttr(st.dutySslcCentre || "")}" placeholder="SSLC Exam Centre No &amp; Name">
-                  </div>
+                  ${renderEbsSearchableComboHtml("ebsStfDutySslcCentre", st.dutySslcCentre || "", "CE_10", "🔍 10th தேர்வு மைய எண் / பெயரை டைப் செய்க...")}
                 </td>
               </tr>
               <tr>
                 <td style="font-weight:900;">HSE / HSC</td>
                 <td>
-                  <input type="text" id="ebsStfDutyHseWork" class="form-control" value="${escapeHtmlAttr(st.dutyHseWork || "")}" placeholder="CS / DO / Hall Supt / Invigilator">
+                  ${renderEbsSearchableComboHtml("ebsStfDutyHseWork", st.dutyHseWork || "", "EXAM_WORK", "🔍 பணியின் தன்மை (CS/DO/IN...)")}
                 </td>
                 <td>
-                  <div style="display:flex; gap:6px;">
-                    <select class="form-control" style="max-width:210px;" onchange="if(this.value) document.getElementById('ebsStfDutyHseCentre').value=this.value;">${c12Opts}</select>
-                    <input type="text" id="ebsStfDutyHseCentre" class="form-control" value="${escapeHtmlAttr(st.dutyHseCentre || "")}" placeholder="HSC Exam Centre No &amp; Name">
-                  </div>
+                  ${renderEbsSearchableComboHtml("ebsStfDutyHseCentre", st.dutyHseCentre || "", "CE_12", "🔍 12th தேர்வு மைய எண் / பெயரை டைப் செய்க...")}
                 </td>
               </tr>
               <tr>
                 <td style="font-weight:900;">Valuation Camp</td>
                 <td>
-                  <input type="text" id="ebsStfDutyCampWork" class="form-control" value="${escapeHtmlAttr(st.dutyCampWork || "")}" placeholder="CE / AE / SO / MVO / Tabulator">
+                  ${renderEbsSearchableComboHtml("ebsStfDutyCampWork", st.dutyCampWork || "", "CAMP_WORK", "🔍 முகாம் பணி (CE/SO/AE/MVO...)")}
                 </td>
                 <td>
-                  <input type="text" id="ebsStfDutyCampCentre" class="form-control" value="${escapeHtmlAttr(st.dutyCampCentre || "")}" placeholder="Ex. ST.JUSTIN MHSS, SIVAGANGAI / VIDHYAGIRI MHSS, KARAIKUDI">
+                  ${renderEbsSearchableComboHtml("ebsStfDutyCampCentre", st.dutyCampCentre || "", "CAMP_CENTRE", "🔍 விடைத்தாள் திருத்தும் முகாம் பெயரை டைப் செய்க...")}
                 </td>
               </tr>
             </tbody>
@@ -22821,11 +23136,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         <div class="grid-3" style="margin-bottom:14px;">
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.74rem; font-weight:800;">Son/Daughter Exam Centre in Mar/Apr-2027 – 1)</label>
-            <input type="text" id="ebsStfChildCentre1" class="form-control" value="${escapeHtmlAttr(st.childCentre1 || "")}" placeholder="Centre 1 (if applicable)">
+            ${renderEbsSearchableComboHtml("ebsStfChildCentre1", st.childCentre1 || "", "ALL_CE", "🔍 மகன்/மகள் தேர்வு மையம் 1 டைப் செய்க...")}
           </div>
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.74rem; font-weight:800;">Son/Daughter Exam Centre in Mar/Apr-2027 – 2)</label>
-            <input type="text" id="ebsStfChildCentre2" class="form-control" value="${escapeHtmlAttr(st.childCentre2 || "")}" placeholder="Centre 2 (if applicable)">
+            ${renderEbsSearchableComboHtml("ebsStfChildCentre2", st.childCentre2 || "", "ALL_CE", "🔍 மகன்/மகள் தேர்வு மையம் 2 டைப் செய்க...")}
           </div>
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#dc2626;">Grounds for Exam Duty Exemption</label>
@@ -22899,17 +23214,17 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       dojSchool: (document.getElementById("ebsStfDojSchool")?.value || "").trim(),
       unitTransferDate: (document.getElementById("ebsStfUnitTransfer")?.value || "").trim(),
       classesHandling: classesHandling,
-      pracSslc1: (document.getElementById("ebsStfPracSslc1")?.value || "").trim(),
-      pracHsc1: (document.getElementById("ebsStfPracHsc1")?.value || "").trim(),
-      pracHsc2: (document.getElementById("ebsStfPracHsc2")?.value || "").trim(),
-      dutySslcWork: (document.getElementById("ebsStfDutySslcWork")?.value || "").trim(),
-      dutySslcCentre: (document.getElementById("ebsStfDutySslcCentre")?.value || "").trim(),
-      dutyHseWork: (document.getElementById("ebsStfDutyHseWork")?.value || "").trim(),
-      dutyHseCentre: (document.getElementById("ebsStfDutyHseCentre")?.value || "").trim(),
-      dutyCampWork: (document.getElementById("ebsStfDutyCampWork")?.value || "").trim(),
-      dutyCampCentre: (document.getElementById("ebsStfDutyCampCentre")?.value || "").trim(),
-      childCentre1: (document.getElementById("ebsStfChildCentre1")?.value || "").trim(),
-      childCentre2: (document.getElementById("ebsStfChildCentre2")?.value || "").trim(),
+      pracSslc1: (document.getElementById("ebsStf" + "PracSslc1")?.value || "").trim(),
+      pracHsc1: (document.getElementById("ebsStf" + "PracHsc1")?.value || "").trim(),
+      pracHsc2: (document.getElementById("ebsStf" + "PracHsc2")?.value || "").trim(),
+      dutySslcWork: (document.getElementById("ebsStf" + "DutySslcWork")?.value || "").trim(),
+      dutySslcCentre: (document.getElementById("ebsStf" + "DutySslcCentre")?.value || "").trim(),
+      dutyHseWork: (document.getElementById("ebsStf" + "DutyHseWork")?.value || "").trim(),
+      dutyHseCentre: (document.getElementById("ebsStf" + "DutyHseCentre")?.value || "").trim(),
+      dutyCampWork: (document.getElementById("ebsStf" + "DutyCampWork")?.value || "").trim(),
+      dutyCampCentre: (document.getElementById("ebsStf" + "DutyCampCentre")?.value || "").trim(),
+      childCentre1: (document.getElementById("ebsStf" + "ChildCentre1")?.value || "").trim(),
+      childCentre2: (document.getElementById("ebsStf" + "ChildCentre2")?.value || "").trim(),
       exemptionGround: (document.getElementById("ebsStfExemptionGround")?.value || "").trim(),
       exemptionOtherSpec: (document.getElementById("ebsStfExemptionSpec")?.value || "").trim()
     };
@@ -23820,6 +24135,73 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     .school-topmenu-item.active .topmenu-en {
       color: #fde047 !important;
     }
+    .ebs-combo-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .ebs-combo-input-group {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      gap: 4px;
+    }
+    .ebs-combo-input-group input.form-control {
+      flex: 1;
+      min-width: 0;
+    }
+    .ebs-combo-toggle-btn {
+      padding: 4px 10px;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1.5px solid #93c5fd;
+      border-radius: 6px;
+      font-weight: 900;
+      font-size: 0.76rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .ebs-combo-toggle-btn:hover {
+      background: #dbeafe;
+      border-color: #2563eb;
+    }
+    .ebs-combo-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 3px);
+      left: 0;
+      right: 0;
+      max-height: 230px;
+      overflow-y: auto;
+      background: #ffffff;
+      border: 2px solid #2563eb;
+      border-radius: 8px;
+      box-shadow: 0 10px 28px rgba(15, 41, 74, 0.25);
+      z-index: 9999;
+    }
+    .ebs-combo-menu.open {
+      display: block;
+    }
+    .ebs-combo-item {
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #0f294a;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      text-align: left;
+    }
+    .ebs-combo-item:hover {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .ebs-combo-item mark {
+      background: #fef08a;
+      color: #7c2d12;
+      font-weight: 900;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
     .ebs-subtab-bar {
       display: flex;
       flex-wrap: wrap;
@@ -24542,8 +24924,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([EBS_F3_XLSX_HEADERS, ...f3Rows]), "F3");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([EBS_F4_XLSX_HEADERS, ...f4Rows]), "F4");
 
-    const ce10Rows = [["SN", "UN", "CN", "BLOCK", "Exam_Centre"], ...(INITIAL_EXAM_CENTRES_10 || []).map((c, i) => [i + 1, c.uNo, c.cNo, c.block, c.nameEn])];
-    const ce12Rows = [["SN", "UN", "CN", "BLOCK", "Name_Of_The_Centre"], ...(INITIAL_EXAM_CENTRES || []).map((c, i) => [i + 1, c.uNo, c.cNo, c.block, c.nameEn])];
+    const ce10Rows = [["SN", "UN", "CN", "BLOCK", "Exam_Centre"], ...(INITIAL_EXAM_CENTRES_10 || []).map((c, i) => [i + 1, c.uNo, c.centreNo || c.cNo, c.block, c.centreName || c.nameEn])];
+    const ce12Rows = [["SN", "UN", "CN", "BLOCK", "Name_Of_The_Centre"], ...(INITIAL_EXAM_CENTRES || []).map((c, i) => [i + 1, c.uNo, c.centreNo || c.cNo, c.block, c.centreName || c.nameEn])];
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ce10Rows), "10_CE");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ce12Rows), "12_CE");
 
