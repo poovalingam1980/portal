@@ -632,20 +632,36 @@
       box-shadow: 0 4px 12px rgba(15, 41, 74, 0.22);
     }
     .ebs-num-input {
-      width: 58px;
-      padding: 4px 5px;
+      width: 68px;
+      min-width: 64px;
+      height: 34px;
+      padding: 4px 6px !important;
       text-align: center;
-      font-weight: 800;
-      font-size: 0.82rem;
-      border: 1.5px solid #94a3b8;
-      border-radius: 6px;
-      background: #ffffff;
-      color: #0f294a;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+      font-weight: 900 !important;
+      font-size: 1.02rem !important;
+      color: #0f172a !important;
+      border: 1.5px solid #64748b !important;
+      border-radius: 6px !important;
+      background: #ffffff !important;
+      letter-spacing: 0.3px;
     }
     .ebs-num-input:focus {
-      outline: none;
-      border-color: #2563eb;
-      background: #eff6ff;
+      border-color: #2563eb !important;
+      background: #eff6ff !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.24) !important;
+      outline: none !important;
+    }
+    .ebs-num-display {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+      font-weight: 900 !important;
+      font-size: 1.02rem !important;
+      letter-spacing: 0.2px;
+    }
+    #schPaneEbs .data-table td,
+    #ebsHscGroupEditModal .data-table td {
+      font-family: 'Inter', 'Mukta Malar', 'Segoe UI', Arial, sans-serif;
+      font-size: 0.94rem;
     }
     .ebs-num-input[readonly] {
       background: #f1f5f9;
@@ -731,11 +747,11 @@
     }
     .ebs-print-table th,
     .ebs-print-table td {
-      border: 1px solid #000;
-      padding: 3px 5px;
-      font-size: 11px;
-      line-height: 1.25;
-      color: #000;
+      border: 1px solid #000000;
+      padding: 4px 5.5px;
+      font-family: 'Inter', Arial, Helvetica, 'Mukta Malar', sans-serif;
+      font-size: 11.5px;
+      line-height: 1.28;
       vertical-align: middle;
     }
     .ebs-print-table th {
@@ -7695,6 +7711,66 @@
       </div>
     </div>
     <div id="ebsStaffModalBody"></div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- EBS 2026-27 HSC (+2) GROUP-WISE STUDENT STRENGTH POPUP EDITOR MODAL   -->
+<!-- ===================================================================== -->
+<div id="ebsHscGroupEditModal" class="modal-backdrop" onclick="if(event.target===this) closeEbsHscGroupEditModal()">
+  <div class="modal-card" style="max-width:960px; width:96%; max-height:92vh; overflow-y:auto; padding:20px; border-top:5px solid #0f766e;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #cbd5e1; padding-bottom:10px; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+      <div>
+        <h3 style="font-size:1.12rem; font-weight:900; color:#0f294a; margin:0;">🎓 +2 (12-ஆம் வகுப்பு) பாடப்பிரிவு வாரியான மாணவர் எண்ணிக்கை திருத்தும் சாளரம்</h3>
+        <div id="ebsHscGroupModalSub" style="font-size:0.82rem; color:#0f766e; font-weight:800; margin-top:2px;"></div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="saveEbsHscGroupEditModal()" style="background:#16a34a; border-color:#15803d; font-weight:900; padding:6px 14px;">
+          💾 சேமி &amp; புதுப்பி (Save &amp; Update F1, F2)
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeEbsHscGroupEditModal()" style="font-weight:900;">Close</button>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#f0fdfa; border:1.5px solid #99f6e4; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+      <label style="font-size:0.82rem; font-weight:900; color:#0f294a;">➕ புதிய பாடப்பிரிவு (Group) சேர்க்க:</label>
+      <select id="ebsModalAddGroupSelect" class="form-control" style="max-width:420px; font-weight:800; font-size:0.84rem;"></select>
+      <button type="button" class="btn btn-primary btn-sm" onclick="addGroupInEbsHscModal()" style="background:#0f766e; border-color:#0f766e; font-weight:900;">
+        ➕ Group சேர்
+      </button>
+      <span style="font-size:0.76rem; color:#115e59; font-weight:700; margin-left:auto;">
+        ℹ️ இதில் செய்யும் மாற்றங்கள் <strong>FORM – I (+2 மொத்தம்)</strong> மற்றும் <strong>FORM – II (பாடவாரியான எண்ணிக்கை)</strong> இரண்டிலும் தானாகப் புதுப்பிக்கப்படும்.
+      </span>
+    </div>
+
+    <div class="table-responsive" style="border:1.5px solid #94a3b8; border-radius:8px; max-height:54vh; overflow-y:auto;">
+      <table class="data-table" style="margin:0; text-align:center;">
+        <thead style="position:sticky; top:0; z-index:5;">
+          <tr style="background:#0f294a; color:#fff; font-size:0.78rem;">
+            <th rowspan="2" style="width:75px; text-align:center;">Group Code</th>
+            <th rowspan="2" style="width:95px; text-align:center;">Category</th>
+            <th rowspan="2" style="text-align:left; min-width:210px;">Group Name &amp; Major Subjects</th>
+            <th colspan="3" style="text-align:center; background:#14532d;">தமிழ் வழி (Tamil Medium - +2)</th>
+            <th colspan="3" style="text-align:center; background:#1e3a8a;">ஆங்கில வழி (English Medium - +2)</th>
+            <th rowspan="2" style="width:85px; text-align:center; background:#0f766e;">மொத்தம்<br>(Total)</th>
+            <th rowspan="2" style="width:55px; text-align:center;">நீக்கு</th>
+          </tr>
+          <tr style="background:#e2e8f0; color:#0f294a; font-size:0.75rem; font-weight:900;">
+            <th>Boys</th><th>Girls</th><th>Total</th>
+            <th>Boys</th><th>Girls</th><th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="ebsHscGroupModalTbody"></tbody>
+        <tfoot id="ebsHscGroupModalTfoot" style="background:#fefce8; font-weight:900; border-top:2px solid #0f294a;"></tfoot>
+      </table>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px; padding-top:12px; border-top:1px solid #cbd5e1;">
+      <button type="button" class="btn btn-outline" onclick="closeEbsHscGroupEditModal()" style="font-weight:800;">Close</button>
+      <button type="button" class="btn btn-primary" onclick="saveEbsHscGroupEditModal()" style="background:#16a34a; border-color:#15803d; font-weight:900; padding:8px 22px;">
+        💾 சேமி &amp; FORM I, II புதுப்பி (Save Changes)
+      </button>
+    </div>
   </div>
 </div>
 
@@ -21945,7 +22021,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     return s;
   }
 
-  // Get fixed SSLC (10th) and HSC (+2 / 12th) student strength from Portal
+  // Get SSLC (10th - directly editable in F1) and HSC (+2 / 12th - derived from Group-wise strength)
   function getSchoolFixedPortal10And12Strength(uNo) {
     uNo = String(uNo || "").trim();
     const sch = masterSchools.find(m => String(m.uNo) === uNo) || { uNo, level: "HS" };
@@ -21955,14 +22031,26 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       : null;
     const isHSS = isHigherSecondarySchool(sch);
 
-    let c10 = (extra && extra.students && extra.students["10"]) ? extra.students["10"] : ((emisSch && emisSch.classes && emisSch.classes["10"]) ? emisSch.classes["10"] : {});
-    if (emisSch && emisSch.classes && emisSch.classes["10"] && (Number(c10.boys || 0) + Number(c10.girls || 0) === 0)) {
-      c10 = emisSch.classes["10"];
+    let s10_tm_b = 0, s10_tm_g = 0, s10_em_b = 0, s10_em_g = 0;
+    const sslcOv = (extra && extra.ebs2026 && extra.ebs2026.f1 && extra.ebs2026.f1.sslcEdited)
+      ? extra.ebs2026.f1.sslcEdited
+      : null;
+
+    if (sslcOv && typeof sslcOv === "object") {
+      s10_tm_b = Math.max(0, Number(sslcOv.tm_b || 0));
+      s10_tm_g = Math.max(0, Number(sslcOv.tm_g || 0));
+      s10_em_b = Math.max(0, Number(sslcOv.em_b || 0));
+      s10_em_g = Math.max(0, Number(sslcOv.em_g || 0));
+    } else {
+      let c10 = (extra && extra.students && extra.students["10"]) ? extra.students["10"] : ((emisSch && emisSch.classes && emisSch.classes["10"]) ? emisSch.classes["10"] : {});
+      if (emisSch && emisSch.classes && emisSch.classes["10"] && (Number(c10.boys || 0) + Number(c10.girls || 0) === 0)) {
+        c10 = emisSch.classes["10"];
+      }
+      s10_tm_b = Number(c10.tm_b !== undefined ? c10.tm_b : (c10.tm ? Math.round(Number(c10.boys || 0) * (Number(c10.tm || 0) / Math.max(1, Number(c10.boys || 0) + Number(c10.girls || 0)))) : 0));
+      s10_tm_g = Number(c10.tm_g !== undefined ? c10.tm_g : Math.max(0, Number(c10.tm || 0) - s10_tm_b));
+      s10_em_b = Number(c10.em_b !== undefined ? c10.em_b : Math.max(0, Number(c10.boys || 0) - s10_tm_b));
+      s10_em_g = Number(c10.em_g !== undefined ? c10.em_g : Math.max(0, Number(c10.girls || 0) - s10_tm_g));
     }
-    let s10_tm_b = Number(c10.tm_b !== undefined ? c10.tm_b : (c10.tm ? Math.round(Number(c10.boys || 0) * (Number(c10.tm || 0) / Math.max(1, Number(c10.boys || 0) + Number(c10.girls || 0)))) : 0));
-    let s10_tm_g = Number(c10.tm_g !== undefined ? c10.tm_g : Math.max(0, Number(c10.tm || 0) - s10_tm_b));
-    let s10_em_b = Number(c10.em_b !== undefined ? c10.em_b : Math.max(0, Number(c10.boys || 0) - s10_tm_b));
-    let s10_em_g = Number(c10.em_g !== undefined ? c10.em_g : Math.max(0, Number(c10.girls || 0) - s10_tm_g));
 
     let s12_tm_b = 0, s12_tm_g = 0, s12_em_b = 0, s12_em_g = 0;
     if (isHSS) {
@@ -21997,8 +22085,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     };
   }
 
-  // Derive Form-II (27 subjects TM / EM / Total) from the school's fixed Portal +2 Groups
-  function deriveSchoolEbsF2SubjectsFromPortal(uNo, f1Obj) {
+  // Derive Dynamic Form-II subjects from the school's +2 Groups (marking active subjects in this school)
+  function deriveSchoolEbsF2SubjectsFromPortal(uNo, f1Obj, prevF2Obj) {
     uNo = String(uNo || "").trim();
     const sch = masterSchools.find(m => String(m.uNo) === uNo) || { uNo, level: "HS" };
     const extra = getSchoolExtra(uNo);
@@ -22007,9 +22095,12 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       : null;
     const isHSS = isHigherSecondarySchool(sch);
 
-    const out = { othersSubjectName: "" };
+    const out = {
+      othersSubjectName: (prevF2Obj && prevF2Obj.othersSubjectName) ? prevF2Obj.othersSubjectName : "",
+      customLangOverrides: (prevF2Obj && prevF2Obj.customLangOverrides) ? JSON.parse(JSON.stringify(prevF2Obj.customLangOverrides)) : {}
+    };
     EBS_F2_SUBJECT_DEFINITIONS.forEach(def => {
-      out[def.key] = { tm: 0, em: 0, tot: 0 };
+      out[def.key] = { tm: 0, em: 0, tot: 0, activeInSchool: false };
     });
     if (!isHSS) return out;
 
@@ -22021,7 +22112,6 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       const tm = Number(gr.tm_b || 0) + Number(gr.tm_g || 0);
       const em = Number(gr.em_b || 0) + Number(gr.em_g || 0);
       const tot = tm + em;
-      if (tot <= 0) return;
       total12 += tot;
 
       const meta = getHssGroupMetaByCode(gr.code);
@@ -22049,21 +22139,35 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         out[k].tm += tm;
         out[k].em += em;
         out[k].tot += tot;
+        out[k].activeInSchool = true;
       });
     });
 
-    const hindiTot = f1Obj ? (Number(f1Obj.hscHindiBoys || 0) + Number(f1Obj.hscHindiGirls || 0)) : 0;
-    const frenchTot = f1Obj ? (Number(f1Obj.hscFrenchBoys || 0) + Number(f1Obj.hscFrenchGirls || 0)) : 0;
-    const sanskritTot = f1Obj ? (Number(f1Obj.hscSanskritBoys || 0) + Number(f1Obj.hscSanskritGirls || 0)) : 0;
-    const tamilTot = Math.max(0, total12 - (hindiTot + frenchTot + sanskritTot));
+    const hindiDef = f1Obj ? (Number(f1Obj.hscHindiBoys || 0) + Number(f1Obj.hscHindiGirls || 0)) : 0;
+    const frenchDef = f1Obj ? (Number(f1Obj.hscFrenchBoys || 0) + Number(f1Obj.hscFrenchGirls || 0)) : 0;
+    const sanskritDef = f1Obj ? (Number(f1Obj.hscSanskritBoys || 0) + Number(f1Obj.hscSanskritGirls || 0)) : 0;
+    const tamilDef = Math.max(0, total12 - (hindiDef + frenchDef + sanskritDef));
+    const engDef = total12;
 
-    out.lang_tamil = { tm: 0, em: 0, tot: tamilTot };
-    out.lang_hindi = { tm: 0, em: 0, tot: hindiTot };
-    out.lang_french = { tm: 0, em: 0, tot: frenchTot };
-    out.lang_sanskrit = { tm: 0, em: 0, tot: sanskritTot };
-    out.english = { tm: 0, em: 0, tot: total12 };
+    const ov = out.customLangOverrides || {};
+    out.lang_tamil = { tm: 0, em: 0, tot: (ov.lang_tamil !== undefined) ? Number(ov.lang_tamil) : tamilDef, activeInSchool: true };
+    out.lang_hindi = { tm: 0, em: 0, tot: (ov.lang_hindi !== undefined) ? Number(ov.lang_hindi) : hindiDef, activeInSchool: (hindiDef > 0 || Number(ov.lang_hindi || 0) > 0) };
+    out.lang_french = { tm: 0, em: 0, tot: (ov.lang_french !== undefined) ? Number(ov.lang_french) : frenchDef, activeInSchool: (frenchDef > 0 || Number(ov.lang_french || 0) > 0) };
+    out.lang_sanskrit = { tm: 0, em: 0, tot: (ov.lang_sanskrit !== undefined) ? Number(ov.lang_sanskrit) : sanskritDef, activeInSchool: (sanskritDef > 0 || Number(ov.lang_sanskrit || 0) > 0) };
+    out.english = { tm: 0, em: 0, tot: (ov.english !== undefined) ? Number(ov.english) : engDef, activeInSchool: true };
 
     return out;
+  }
+
+  // Return only the active Group Subject definitions for a school (excluding unrelated subjects)
+  function getActiveSchoolF2GroupSubjects(f2Obj) {
+    const regularDefs = EBS_F2_SUBJECT_DEFINITIONS.filter(d => !d.isLangSub && d.key !== "english");
+    const active = regularDefs.filter(def => {
+      const v = f2Obj && f2Obj[def.key];
+      if (!v) return false;
+      return Boolean(v.activeInSchool || Number(v.tot || 0) > 0 || Number(v.tm || 0) > 0 || Number(v.em || 0) > 0);
+    });
+    return active;
   }
 
   // Build or retrieve the complete EBS 2026-27 state object for a school
@@ -22120,6 +22224,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         teachCon: forceResetStaffCounts ? autoTeachCon : (prevF1.teachCon || autoTeachCon),
         nonTeachReg: autoNonTeachReg,
         nonTeachCon: forceResetStaffCounts ? autoNonTeachCon : (prevF1.nonTeachCon || autoNonTeachCon),
+        sslcEdited: prevF1.sslcEdited || null,
         sslcPart4Boys: Number(prevF1.sslcPart4Boys || 0),
         sslcPart4Girls: Number(prevF1.sslcPart4Girls || 0),
         hscHindiBoys: Number(prevF1.hscHindiBoys || 0),
@@ -22141,19 +22246,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     ebs.f1.sslcFixed = stu10_12.sslc;
     ebs.f1.hsc2Fixed = stu10_12.hsc2;
 
-    if (!ebs.f2) {
-      ebs.f2 = deriveSchoolEbsF2SubjectsFromPortal(uNo, ebs.f1);
-    } else {
-      const total12 = stu10_12.hsc2.grand;
-      const hTot = Number(ebs.f1.hscHindiBoys || 0) + Number(ebs.f1.hscHindiGirls || 0);
-      const fTot = Number(ebs.f1.hscFrenchBoys || 0) + Number(ebs.f1.hscFrenchGirls || 0);
-      const sTot = Number(ebs.f1.hscSanskritBoys || 0) + Number(ebs.f1.hscSanskritGirls || 0);
-      ebs.f2.lang_hindi = { tm: 0, em: 0, tot: hTot };
-      ebs.f2.lang_french = { tm: 0, em: 0, tot: fTot };
-      ebs.f2.lang_sanskrit = { tm: 0, em: 0, tot: sTot };
-      ebs.f2.lang_tamil = { tm: 0, em: 0, tot: Math.max(0, total12 - (hTot + fTot + sTot)) };
-      ebs.f2.english = { tm: 0, em: 0, tot: total12 };
-    }
+    // Always dynamically derive F2 from current +2 Groups while preserving any custom Language/English exemption overrides
+    ebs.f2 = deriveSchoolEbsF2SubjectsFromPortal(uNo, ebs.f1, ebs.f2);
 
     if (!ebs.staffProfiles) {
       ebs.staffProfiles = {};
@@ -22234,7 +22328,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }).join("");
     const teachTotCells = EBS_TEACHING_CATS.map(c => {
       const tot = Number(f1.teachReg[c.key] || 0) + Number(f1.teachCon[c.key] || 0);
-      return `<td id="ebsF1TeachColTot_${c.key}" style="font-weight:900; text-align:center; background:#f1f5f9;">${tot}</td>`;
+      return `<td id="ebsF1TeachColTot_${c.key}" class="ebs-num-display" style="text-align:center; background:#f1f5f9; color:#0f172a;">${tot}</td>`;
     }).join("");
 
     let nonTeachRegTot = 0, nonTeachConTot = 0;
@@ -22250,7 +22344,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }).join("");
     const nonTeachTotCells = EBS_NONTEACHING_CATS.map(c => {
       const tot = Number(f1.nonTeachReg[c.key] || 0) + Number(f1.nonTeachCon[c.key] || 0);
-      return `<td id="ebsF1NonTeachColTot_${c.key}" style="font-weight:900; text-align:center; background:#f1f5f9;">${tot}</td>`;
+      return `<td id="ebsF1NonTeachColTot_${c.key}" class="ebs-num-display" style="text-align:center; background:#f1f5f9; color:#0f172a;">${tot}</td>`;
     }).join("");
 
     const s10 = stu10_12.sslc;
@@ -22273,7 +22367,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           </div>
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.78rem; font-weight:800;">3. HM / Principal Mobile Number (10 Digits)</label>
-            <input type="text" maxlength="10" class="form-control" value="${escapeHtmlAttr(f1.hmMobile || "")}" oninput="onEbsF1FieldChange('hmMobile', this.value)" style="font-weight:800; letter-spacing:1.5px;">
+            <input type="text" maxlength="10" class="form-control" value="${escapeHtmlAttr(f1.hmMobile || "")}" oninput="onEbsF1FieldChange('hmMobile', this.value)" style="font-weight:900; font-size:0.96rem; letter-spacing:1.5px;">
           </div>
         </div>
 
@@ -22284,7 +22378,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           </div>
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.78rem; font-weight:800; color:#4c1d95;">5. AHM / VP Mobile No. (10 Digits)</label>
-            <input type="text" maxlength="10" class="form-control" value="${escapeHtmlAttr(f1.ahmMobile || "")}" oninput="onEbsF1FieldChange('ahmMobile', this.value)" placeholder="10-Digit Mobile" style="font-weight:800; border-color:#a78bfa; letter-spacing:1.5px;">
+            <input type="text" maxlength="10" class="form-control" value="${escapeHtmlAttr(f1.ahmMobile || "")}" oninput="onEbsF1FieldChange('ahmMobile', this.value)" placeholder="10-Digit Mobile" style="font-weight:900; font-size:0.96rem; border-color:#a78bfa; letter-spacing:1.5px;">
           </div>
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.78rem; font-weight:800;">6. School Gmail Address</label>
@@ -22292,32 +22386,32 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           </div>
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.78rem; font-weight:800;">7. School Landline Number with STD Code</label>
-            <input type="text" class="form-control" value="${escapeHtmlAttr(f1.landline || "")}" oninput="onEbsF1FieldChange('landline', this.value)" placeholder="Ex. 04575-240408" style="font-weight:700;">
+            <input type="text" class="form-control" value="${escapeHtmlAttr(f1.landline || "")}" oninput="onEbsF1FieldChange('landline', this.value)" placeholder="Ex. 04575-240408" style="font-weight:800;">
           </div>
         </div>
 
         <div class="grid-3" style="margin-bottom:16px; background:#f5f3ff; padding:12px; border-radius:10px; border:1px solid #ddd6fe;">
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.78rem; font-weight:900; color:#4c1d95;">8. Total No. of Classrooms (மொத்த வகுப்பறைகள்)</label>
-            <input type="number" min="0" class="form-control" value="${Number(f1.totalClassrooms || 0)}" oninput="onEbsF1FieldChange('totalClassrooms', this.value)" style="font-weight:900; font-size:1rem;">
+            <input type="number" min="0" class="form-control" value="${Number(f1.totalClassrooms || 0)}" oninput="onEbsF1FieldChange('totalClassrooms', this.value)" style="font-weight:900; font-size:1.05rem;">
           </div>
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.78rem; font-weight:900; color:#4c1d95;">9. No. of Eligible rooms for Exam Purpose (தேர்வுக்குத் தகுதியான அறைகள்)</label>
-            <input type="number" min="0" class="form-control" value="${Number(f1.eligibleExamRooms || 0)}" oninput="onEbsF1FieldChange('eligibleExamRooms', this.value)" style="font-weight:900; font-size:1rem;">
+            <input type="number" min="0" class="form-control" value="${Number(f1.eligibleExamRooms || 0)}" oninput="onEbsF1FieldChange('eligibleExamRooms', this.value)" style="font-weight:900; font-size:1.05rem;">
           </div>
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.78rem; font-weight:900; color:#4c1d95;">10. No. of Bench Desk Available - Pair (பெஞ்ச்-டெஸ்க் இணை)</label>
-            <input type="number" min="0" class="form-control" value="${Number(f1.benchDeskPairs || 0)}" oninput="onEbsF1FieldChange('benchDeskPairs', this.value)" style="font-weight:900; font-size:1rem;">
+            <input type="number" min="0" class="form-control" value="${Number(f1.benchDeskPairs || 0)}" oninput="onEbsF1FieldChange('benchDeskPairs', this.value)" style="font-weight:900; font-size:1.05rem;">
           </div>
         </div>
 
-        <div style="font-weight:900; color:#0f294a; font-size:0.88rem; margin-bottom:6px;">
-          👨‍🏫 No. of Teaching Staff Working (Include Self Finance Staff) — <span style="color:#15803d; font-size:0.78rem;">(போர்ட்டல் ஆசிரியர் பதிவேட்டிலிருந்து தானாகக் கணக்கிடப்பட்டது)</span>
+        <div style="font-weight:900; color:#0f294a; font-size:0.90rem; margin-bottom:6px;">
+          👨‍🏫 No. of Teaching Staff Working (Include Self Finance Staff)
         </div>
         <div class="table-responsive" style="margin-bottom:14px;">
           <table class="data-table" style="margin:0; text-align:center;">
             <thead>
-              <tr style="background:#0f294a; color:#fff; font-size:0.76rem;">
+              <tr style="background:#0f294a; color:#fff; font-size:0.78rem;">
                 <th style="text-align:left; min-width:190px;">Nature of Post</th>
                 ${EBS_TEACHING_CATS.map(c => `<th style="text-align:center;">${c.label}</th>`).join("")}
                 <th style="text-align:center; background:#1e3a8a;">TOTAL</th>
@@ -22325,31 +22419,31 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             </thead>
             <tbody>
               <tr>
-                <td style="text-align:left; font-weight:800; font-size:0.78rem;">Regular (Govt. Salaried)<br><span style="font-size:0.68rem; color:#64748b;">(Govt. &amp; Aided Schools only)</span></td>
+                <td style="text-align:left; font-weight:800; font-size:0.80rem;">Regular (Govt. Salaried)<br><span style="font-size:0.70rem; color:#64748b;">(Govt. &amp; Aided Schools only)</span></td>
                 ${teachRegCells}
-                <td id="ebsF1TeachRegRowTot" style="font-weight:900; font-size:0.95rem; background:#eff6ff; color:#1e40af;">${teachRegTot}</td>
+                <td id="ebsF1TeachRegRowTot" class="ebs-num-display" style="background:#eff6ff; color:#1e40af;">${teachRegTot}</td>
               </tr>
               <tr>
-                <td style="text-align:left; font-weight:800; font-size:0.78rem;">Contract (Self Finance)<br><span style="font-size:0.68rem; color:#64748b;">(Govt.Aided / Matric &amp; Self Finance)</span></td>
+                <td style="text-align:left; font-weight:800; font-size:0.80rem;">Contract (Self Finance)<br><span style="font-size:0.70rem; color:#64748b;">(Govt.Aided / Matric &amp; Self Finance)</span></td>
                 ${teachConCells}
-                <td id="ebsF1TeachConRowTot" style="font-weight:900; font-size:0.95rem; background:#fff7ed; color:#c2410c;">${teachConTot}</td>
+                <td id="ebsF1TeachConRowTot" class="ebs-num-display" style="background:#fff7ed; color:#c2410c;">${teachConTot}</td>
               </tr>
               <tr style="background:#f1f5f9;">
                 <td style="text-align:left; font-weight:900;">TOTAL</td>
                 ${teachTotCells}
-                <td id="ebsF1TeachGrandTot" style="font-weight:900; font-size:1rem; background:#dcfce7; color:#15803d;">${teachRegTot + teachConTot}</td>
+                <td id="ebsF1TeachGrandTot" class="ebs-num-display" style="font-size:1.08rem !important; background:#dcfce7; color:#15803d;">${teachRegTot + teachConTot}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div style="font-weight:900; color:#0f294a; font-size:0.88rem; margin-bottom:6px;">
+        <div style="font-weight:900; color:#0f294a; font-size:0.90rem; margin-bottom:6px;">
           🧑‍💼 No. of Non-Teaching Staff Working (All Type Schools – Include Matric &amp; Self Finance Schools)
         </div>
         <div class="table-responsive" style="margin-bottom:16px;">
           <table class="data-table" style="margin:0; text-align:center;">
             <thead>
-              <tr style="background:#0f294a; color:#fff; font-size:0.76rem;">
+              <tr style="background:#0f294a; color:#fff; font-size:0.78rem;">
                 <th style="text-align:left; min-width:190px;">Nature of Post</th>
                 ${EBS_NONTEACHING_CATS.map(c => `<th style="text-align:center;">${c.label}</th>`).join("")}
                 <th style="text-align:center; background:#1e3a8a;">TOTAL</th>
@@ -22357,105 +22451,115 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             </thead>
             <tbody>
               <tr>
-                <td style="text-align:left; font-weight:800; font-size:0.78rem;">Regular (Govt. Salaried)<br><span style="font-size:0.68rem; color:#64748b;">(Govt. &amp; Aided Schools only)</span></td>
+                <td style="text-align:left; font-weight:800; font-size:0.80rem;">Regular (Govt. Salaried)<br><span style="font-size:0.70rem; color:#64748b;">(Govt. &amp; Aided Schools only)</span></td>
                 ${nonTeachRegCells}
-                <td id="ebsF1NonTeachRegRowTot" style="font-weight:900; font-size:0.95rem; background:#eff6ff; color:#1e40af;">${nonTeachRegTot}</td>
+                <td id="ebsF1NonTeachRegRowTot" class="ebs-num-display" style="background:#eff6ff; color:#1e40af;">${nonTeachRegTot}</td>
               </tr>
               <tr>
-                <td style="text-align:left; font-weight:800; font-size:0.78rem;">Contract (Self Finance)<br><span style="font-size:0.68rem; color:#64748b;">(Govt.Aided / Matric &amp; Self Finance)</span></td>
+                <td style="text-align:left; font-weight:800; font-size:0.80rem;">Contract (Self Finance)<br><span style="font-size:0.70rem; color:#64748b;">(Govt.Aided / Matric &amp; Self Finance)</span></td>
                 ${nonTeachConCells}
-                <td id="ebsF1NonTeachConRowTot" style="font-weight:900; font-size:0.95rem; background:#fff7ed; color:#c2410c;">${nonTeachConTot}</td>
+                <td id="ebsF1NonTeachConRowTot" class="ebs-num-display" style="background:#fff7ed; color:#c2410c;">${nonTeachConTot}</td>
               </tr>
               <tr style="background:#f1f5f9;">
                 <td style="text-align:left; font-weight:900;">TOTAL</td>
                 ${nonTeachTotCells}
-                <td id="ebsF1NonTeachGrandTot" style="font-weight:900; font-size:1rem; background:#dcfce7; color:#15803d;">${nonTeachRegTot + nonTeachConTot}</td>
+                <td id="ebsF1NonTeachGrandTot" class="ebs-num-display" style="font-size:1.08rem !important; background:#dcfce7; color:#15803d;">${nonTeachRegTot + nonTeachConTot}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div style="font-weight:900; color:#0f294a; font-size:0.88rem; margin-bottom:6px;">
-          🎓 SSLC (10th Standard) - Total No. of Students <span style="color:#1d4ed8; font-size:0.76rem;">(🔒 போர்ட்டலின் நிலையான மாணவர் எண்ணிக்கை)</span>
+        <!-- SSLC (10th Standard) - DIRECTLY EDITABLE -->
+        <div style="font-weight:900; color:#0f294a; font-size:0.90rem; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <span>🎓 SSLC (10th Standard) - Total No. of Students <span style="color:#15803d; font-size:0.78rem;">(✏️ நேரடியாகத் திருத்தலாம் - Direct Edit)</span></span>
         </div>
         <div class="table-responsive" style="margin-bottom:16px;">
           <table class="data-table" style="margin:0; text-align:center;">
             <thead>
-              <tr style="background:#0f294a; color:#fff; font-size:0.75rem;">
-                <th colspan="3" style="text-align:center;">TAMIL MEDIUM (Fixed)</th>
-                <th colspan="3" style="text-align:center;">ENGLISH MEDIUM (Fixed)</th>
-                <th colspan="3" style="text-align:center; background:#1e3a8a;">TOTAL (Fixed)</th>
-                <th colspan="3" style="text-align:center; background:#4c1d95;">Part-IV Optional Language (Editable)</th>
+              <tr style="background:#0f294a; color:#fff; font-size:0.78rem;">
+                <th colspan="3" style="text-align:center; background:#14532d;">TAMIL MEDIUM (Editable)</th>
+                <th colspan="3" style="text-align:center; background:#1e3a8a;">ENGLISH MEDIUM (Editable)</th>
+                <th colspan="3" style="text-align:center; background:#0f294a;">TOTAL (10th)</th>
+                <th colspan="3" style="text-align:center; background:#4c1d95;">Part-IV Optional Language</th>
+              </tr>
+              <tr style="background:#e2e8f0; color:#0f294a; font-size:0.76rem; font-weight:900;">
+                <th>Boys</th><th>Girls</th><th>Total</th>
+                <th>Boys</th><th>Girls</th><th>Total</th>
+                <th>Boys</th><th>Girls</th><th>Total</th>
+                <th>Boys</th><th>Girls</th><th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="number" min="0" class="ebs-num-input" value="${Number(s10.tm_b || 0)}" oninput="onEbsF1SslcStrengthChange('tm_b', this.value)"></td>
+                <td><input type="number" min="0" class="ebs-num-input" value="${Number(s10.tm_g || 0)}" oninput="onEbsF1SslcStrengthChange('tm_g', this.value)"></td>
+                <td id="ebsF1SslcTmTot" class="ebs-num-display" style="background:#f0fdf4; color:#15803d;">${s10.tm_tot}</td>
+                <td><input type="number" min="0" class="ebs-num-input" value="${Number(s10.em_b || 0)}" oninput="onEbsF1SslcStrengthChange('em_b', this.value)"></td>
+                <td><input type="number" min="0" class="ebs-num-input" value="${Number(s10.em_g || 0)}" oninput="onEbsF1SslcStrengthChange('em_g', this.value)"></td>
+                <td id="ebsF1SslcEmTot" class="ebs-num-display" style="background:#eff6ff; color:#1d4ed8;">${s10.em_tot}</td>
+                <td id="ebsF1SslcTotBoys" class="ebs-num-display" style="background:#f8fafc; color:#0f172a;">${s10.tot_b}</td>
+                <td id="ebsF1SslcTotGirls" class="ebs-num-display" style="background:#f8fafc; color:#0f172a;">${s10.tot_g}</td>
+                <td id="ebsF1SslcGrandTot" class="ebs-num-display" style="background:#dcfce7; color:#15803d; font-size:1.10rem !important;">${s10.grand}</td>
+                <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.sslcPart4Boys || 0)}" oninput="onEbsF1FieldChange('sslcPart4Boys', this.value)"></td>
+                <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.sslcPart4Girls || 0)}" oninput="onEbsF1FieldChange('sslcPart4Girls', this.value)"></td>
+                <td id="ebsF1SslcPart4Tot" class="ebs-num-display" style="background:#f5f3ff; color:#4c1d95;">${p4Tot}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- HSC SECOND YEAR (+2) - EDIT VIA GROUP-WISE POPUP MODAL -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+          <div style="font-weight:900; color:#0f294a; font-size:0.90rem;">
+            🎓 HSC SECOND YEAR (+2) - Total No. of Students
+            <span style="color:#0f766e; font-size:0.78rem;">(பாடப்பிரிவு வாரியான எண்ணிக்கையிலிருந்து கணக்கிடப்பட்டது)</span>
+          </div>
+          ${isHSS ? `
+          <button type="button" class="btn btn-primary btn-sm" onclick="openEbsHscGroupEditModal()" style="background:#0f766e; border-color:#0d9488; font-weight:900; padding:5px 14px; font-size:0.82rem;">
+            ✏️ EDIT (+2 பிரிவு வாரியான மாணவர் எண்ணிக்கை திருத்து)
+          </button>
+          ` : ``}
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" style="margin:0; text-align:center;">
+            <thead>
+              <tr style="background:#0f294a; color:#fff; font-size:0.76rem;">
+                <th colspan="3" style="text-align:center;">Tamil Medium (+2)</th>
+                <th colspan="3" style="text-align:center;">English Medium (+2)</th>
+                <th colspan="3" style="text-align:center; background:#1e3a8a;">TOTAL (+2)</th>
+                <th colspan="3" style="text-align:center; background:#0f766e;">Part-1: HINDI</th>
+                <th colspan="3" style="text-align:center; background:#0369a1;">Part-1: FRENCH</th>
+                <th colspan="3" style="text-align:center; background:#6d28d9;">Part-1: SANSKRIT</th>
               </tr>
               <tr style="background:#e2e8f0; color:#0f294a; font-size:0.74rem; font-weight:900;">
                 <th>Boys</th><th>Girls</th><th>Total</th>
                 <th>Boys</th><th>Girls</th><th>Total</th>
                 <th>Boys</th><th>Girls</th><th>Total</th>
                 <th>Boys</th><th>Girls</th><th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="font-weight:900; font-size:0.92rem;">
-                <td style="background:#f8fafc;">${s10.tm_b}</td>
-                <td style="background:#f8fafc;">${s10.tm_g}</td>
-                <td style="background:#eff6ff; color:#1d4ed8;">${s10.tm_tot}</td>
-                <td style="background:#f8fafc;">${s10.em_b}</td>
-                <td style="background:#f8fafc;">${s10.em_g}</td>
-                <td style="background:#eff6ff; color:#1d4ed8;">${s10.em_tot}</td>
-                <td style="background:#f0fdf4;">${s10.tot_b}</td>
-                <td style="background:#f0fdf4;">${s10.tot_g}</td>
-                <td style="background:#dcfce7; color:#15803d; font-size:1rem;">${s10.grand}</td>
-                <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.sslcPart4Boys || 0)}" oninput="onEbsF1FieldChange('sslcPart4Boys', this.value)"></td>
-                <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.sslcPart4Girls || 0)}" oninput="onEbsF1FieldChange('sslcPart4Girls', this.value)"></td>
-                <td id="ebsF1SslcPart4Tot" style="background:#f5f3ff; color:#4c1d95; font-weight:900;">${p4Tot}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div style="font-weight:900; color:#0f294a; font-size:0.88rem; margin-bottom:6px;">
-          🎓 HSC SECOND YEAR (+2) - Total No. of Students <span style="color:#0f766e; font-size:0.76rem;">(🔒 போர்ட்டலின் நிலையான +2 மாணவர் எண்ணிக்கை &amp; Part-1 இதர மொழிகள்)</span>
-        </div>
-        <div class="table-responsive">
-          <table class="data-table" style="margin:0; text-align:center;">
-            <thead>
-              <tr style="background:#0f294a; color:#fff; font-size:0.74rem;">
-                <th colspan="3" style="text-align:center;">Tamil Medium</th>
-                <th colspan="3" style="text-align:center;">English Medium</th>
-                <th colspan="3" style="text-align:center; background:#1e3a8a;">TOTAL (+2)</th>
-                <th colspan="3" style="text-align:center; background:#0f766e;">Part-1: HINDI</th>
-                <th colspan="3" style="text-align:center; background:#0369a1;">Part-1: FRENCH</th>
-                <th colspan="3" style="text-align:center; background:#6d28d9;">Part-1: SANSKRIT</th>
-              </tr>
-              <tr style="background:#e2e8f0; color:#0f294a; font-size:0.72rem; font-weight:900;">
-                <th>Boys</th><th>Girls</th><th>Total</th>
-                <th>Boys</th><th>Girls</th><th>Total</th>
-                <th>Boys</th><th>Girls</th><th>Total</th>
-                <th>Boys</th><th>Girls</th><th>Total</th>
                 <th>Boys</th><th>Girls</th><th>Total</th>
                 <th>Boys</th><th>Girls</th><th>Total</th>
               </tr>
             </thead>
             <tbody>
-              <tr style="font-weight:900; font-size:0.9rem;">
-                <td style="background:#f8fafc;">${s12.tm_b}</td>
-                <td style="background:#f8fafc;">${s12.tm_g}</td>
-                <td style="background:#eff6ff; color:#1d4ed8;">${s12.tm_tot}</td>
-                <td style="background:#f8fafc;">${s12.em_b}</td>
-                <td style="background:#f8fafc;">${s12.em_g}</td>
-                <td style="background:#eff6ff; color:#1d4ed8;">${s12.em_tot}</td>
-                <td style="background:#f0fdf4;">${s12.tot_b}</td>
-                <td style="background:#f0fdf4;">${s12.tot_g}</td>
-                <td style="background:#dcfce7; color:#15803d; font-size:1rem;">${s12.grand}</td>
+              <tr>
+                <td class="ebs-num-display" style="background:#f8fafc; color:#0f172a;">${s12.tm_b}</td>
+                <td class="ebs-num-display" style="background:#f8fafc; color:#0f172a;">${s12.tm_g}</td>
+                <td class="ebs-num-display" style="background:#eff6ff; color:#1d4ed8;">${s12.tm_tot}</td>
+                <td class="ebs-num-display" style="background:#f8fafc; color:#0f172a;">${s12.em_b}</td>
+                <td class="ebs-num-display" style="background:#f8fafc; color:#0f172a;">${s12.em_g}</td>
+                <td class="ebs-num-display" style="background:#eff6ff; color:#1d4ed8;">${s12.em_tot}</td>
+                <td class="ebs-num-display" style="background:#f0fdf4; color:#0f172a;">${s12.tot_b}</td>
+                <td class="ebs-num-display" style="background:#f0fdf4; color:#0f172a;">${s12.tot_g}</td>
+                <td class="ebs-num-display" style="background:#dcfce7; color:#15803d; font-size:1.10rem !important;">${s12.grand}</td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.hscHindiBoys || 0)}" oninput="onEbsF1FieldChange('hscHindiBoys', this.value)"></td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.hscHindiGirls || 0)}" oninput="onEbsF1FieldChange('hscHindiGirls', this.value)"></td>
-                <td id="ebsF1HscHindiTot" style="background:#f0fdfa; color:#0f766e;">${hinTot}</td>
+                <td id="ebsF1HscHindiTot" class="ebs-num-display" style="background:#f0fdfa; color:#0f766e;">${hinTot}</td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.hscFrenchBoys || 0)}" oninput="onEbsF1FieldChange('hscFrenchBoys', this.value)"></td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.hscFrenchGirls || 0)}" oninput="onEbsF1FieldChange('hscFrenchGirls', this.value)"></td>
-                <td id="ebsF1HscFrenchTot" style="background:#f0f9ff; color:#0369a1;">${freTot}</td>
+                <td id="ebsF1HscFrenchTot" class="ebs-num-display" style="background:#f0f9ff; color:#0369a1;">${freTot}</td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.hscSanskritBoys || 0)}" oninput="onEbsF1FieldChange('hscSanskritBoys', this.value)"></td>
                 <td><input type="number" min="0" class="ebs-num-input" value="${Number(f1.hscSanskritGirls || 0)}" oninput="onEbsF1FieldChange('hscSanskritGirls', this.value)"></td>
-                <td id="ebsF1HscSanskritTot" style="background:#f5f3ff; color:#6d28d9;">${sanTot}</td>
+                <td id="ebsF1HscSanskritTot" class="ebs-num-display" style="background:#f5f3ff; color:#6d28d9;">${sanTot}</td>
               </tr>
             </tbody>
           </table>
@@ -22464,7 +22568,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         <!-- Prominent Bottom Save & Print Bar for Form-I -->
         <div style="margin-top:18px; padding:12px 16px; border-radius:10px; background:linear-gradient(90deg,#f0fdf4 0%,#eff6ff 100%); border:1.5px solid #86efac; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div style="font-size:0.84rem; font-weight:800; color:#14532d;">
-            💾 <strong>FORM – I விவரங்களைத் திருத்திய பின் சேமிக்கவும்:</strong> (Firebase மற்றும் 2026-27 தனி Google Sheet-இல் உடனடியாகப் பதிவாகும்)
+            💾 <strong>FORM – I விவரங்களைத் திருத்திய பின் சேமிக்கவும்:</strong>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button type="button" class="btn btn-primary" onclick="saveSchoolEbs2026Data(true)" style="background:#16a34a; border-color:#15803d; font-weight:900; padding:10px 22px; font-size:0.92rem;">
@@ -22477,6 +22581,278 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         </div>
       </div>
     `;
+  }
+
+  function onEbsF1SslcStrengthChange(field, val) {
+    if (!activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo);
+    const { extra, ebs, stu10_12 } = getOrInitSchoolEbs2026Data(uNo, false);
+    const cur = ebs.f1.sslcEdited || {
+      tm_b: Number(stu10_12.sslc.tm_b || 0),
+      tm_g: Number(stu10_12.sslc.tm_g || 0),
+      em_b: Number(stu10_12.sslc.em_b || 0),
+      em_g: Number(stu10_12.sslc.em_g || 0)
+    };
+    cur[field] = Math.max(0, Number(val || 0));
+    ebs.f1.sslcEdited = cur;
+
+    const tm_tot = cur.tm_b + cur.tm_g;
+    const em_tot = cur.em_b + cur.em_g;
+    const tot_b = cur.tm_b + cur.em_b;
+    const tot_g = cur.tm_g + cur.em_g;
+    const grand = tot_b + tot_g;
+
+    ebs.f1.sslcFixed = {
+      tm_b: cur.tm_b, tm_g: cur.tm_g, tm_tot,
+      em_b: cur.em_b, em_g: cur.em_g, em_tot,
+      tot_b, tot_g, grand
+    };
+
+    if (!extra.students) extra.students = {};
+    extra.students["10"] = {
+      tm_b: cur.tm_b, tm_g: cur.tm_g,
+      em_b: cur.em_b, em_g: cur.em_g,
+      tm: tm_tot, em: em_tot,
+      boys: tot_b, girls: tot_g
+    };
+
+    const elTmTot = document.getElementById("ebsF1SslcTmTot"); if (elTmTot) elTmTot.textContent = tm_tot;
+    const elEmTot = document.getElementById("ebsF1SslcEmTot"); if (elEmTot) elEmTot.textContent = em_tot;
+    const elBoys = document.getElementById("ebsF1SslcTotBoys"); if (elBoys) elBoys.textContent = tot_b;
+    const elGirls = document.getElementById("ebsF1SslcTotGirls"); if (elGirls) elGirls.textContent = tot_g;
+    const elGrand = document.getElementById("ebsF1SslcGrandTot"); if (elGrand) elGrand.textContent = grand;
+
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+    scheduleAutoSaveSchoolEbs2026();
+  }
+
+  // =========================================================================
+  // POPUP MODAL FOR EDITING 12th (+2) GROUP-WISE STUDENT STRENGTH
+  // =========================================================================
+  let _ebsModalEditingGroups12 = [];
+
+  function openEbsHscGroupEditModal() {
+    if (!activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo);
+    const sch = masterSchools.find(m => String(m.uNo) === uNo) || activeSchoolSession;
+    const extra = getSchoolExtra(uNo);
+    const emisSch = (typeof EMIS_STUDENT_DATA !== "undefined" && EMIS_STUDENT_DATA.schoolEnrollments)
+      ? EMIS_STUDENT_DATA.schoolEnrollments[uNo]
+      : null;
+    const hssData = getSchoolActiveHssGroups(emisSch || sch, extra);
+
+    const codeSet = new Set();
+    (hssData["11"] || []).forEach(r => codeSet.add(String(r.code)));
+    (hssData["12"] || []).forEach(r => codeSet.add(String(r.code)));
+
+    _ebsModalEditingGroups12 = Array.from(codeSet).map(code => {
+      const r11 = (hssData["11"] || []).find(x => String(x.code) === code) || { tm_b: 0, tm_g: 0, em_b: 0, em_g: 0 };
+      const r12 = (hssData["12"] || []).find(x => String(x.code) === code) || { tm_b: 0, tm_g: 0, em_b: 0, em_g: 0 };
+      return {
+        code: String(code),
+        c11: { tm_b: Number(r11.tm_b || 0), tm_g: Number(r11.tm_g || 0), em_b: Number(r11.em_b || 0), em_g: Number(r11.em_g || 0) },
+        c12: { tm_b: Number(r12.tm_b || 0), tm_g: Number(r12.tm_g || 0), em_b: Number(r12.em_b || 0), em_g: Number(r12.em_g || 0) }
+      };
+    });
+
+    const subEl = document.getElementById("ebsHscGroupModalSub");
+    if (subEl) subEl.textContent = `🏫 பள்ளி: [U.NO: ${sch.uNo}] ${sch.nameTa} (${sch.nameEn})`;
+
+    const addSel = document.getElementById("ebsModalAddGroupSelect");
+    if (addSel && typeof getHssGroupMasterList === "function") {
+      const mList = getHssGroupMasterList();
+      addSel.innerHTML = `<option value="">-- புதிய பாடப்பிரிவு (Group Code) தேர்வு செய்க --</option>` +
+        mList.map(g => `<option value="${escapeHtmlAttr(g.groupCode)}">${escapeHtmlAttr(g.groupCode)} - ${escapeHtmlAttr(g.groupName)} (${escapeHtmlAttr(g.majorSubjects)})</option>`).join("");
+    }
+
+    renderEbsHscGroupModalTable();
+    const modal = document.getElementById("ebsHscGroupEditModal");
+    if (modal) modal.classList.add("active");
+  }
+
+  function closeEbsHscGroupEditModal() {
+    const modal = document.getElementById("ebsHscGroupEditModal");
+    if (modal) modal.classList.remove("active");
+  }
+
+  function renderEbsHscGroupModalTable() {
+    const tbody = document.getElementById("ebsHscGroupModalTbody");
+    const tfoot = document.getElementById("ebsHscGroupModalTfoot");
+    if (!tbody || !tfoot) return;
+
+    if (_ebsModalEditingGroups12.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="11" style="padding:18px; text-align:center; color:#dc2626; font-weight:800;">இப்பள்ளிக்கு +2 பாடப்பிரிவுகள் எதுவும் இல்லை. மேலே உள்ள பட்டியலிலிருந்து Group தேர்வு செய்து சேர்க்கவும்.</td></tr>`;
+      tfoot.innerHTML = "";
+      return;
+    }
+
+    let sumTmB = 0, sumTmG = 0, sumEmB = 0, sumEmG = 0;
+
+    tbody.innerHTML = _ebsModalEditingGroups12.map((item, idx) => {
+      const meta = getHssGroupMetaByCode(item.code);
+      const tmB = Number(item.c12.tm_b || 0);
+      const tmG = Number(item.c12.tm_g || 0);
+      const tmT = tmB + tmG;
+      const emB = Number(item.c12.em_b || 0);
+      const emG = Number(item.c12.em_g || 0);
+      const emT = emB + emG;
+      const gTot = tmT + emT;
+
+      sumTmB += tmB; sumTmG += tmG; sumEmB += emB; sumEmG += emG;
+
+      return `
+        <tr>
+          <td class="ebs-num-display" style="background:#f8fafc; color:#0f294a;">${escapeHtmlAttr(meta.groupCode)}</td>
+          <td style="font-weight:800; color:#0f766e; font-size:0.80rem;">${escapeHtmlAttr(meta.category)}</td>
+          <td style="text-align:left; padding:6px 10px;">
+            <div style="font-weight:900; color:#0f294a; font-size:0.88rem;">${escapeHtmlAttr(meta.groupName)}</div>
+            <div style="font-size:0.74rem; color:#475569; font-weight:700;">${escapeHtmlAttr(meta.majorSubjects)}</div>
+          </td>
+          <td><input type="number" min="0" class="ebs-num-input" value="${tmB}" oninput="onEbsModalGroup12CellChange(${idx}, 'tm_b', this.value)"></td>
+          <td><input type="number" min="0" class="ebs-num-input" value="${tmG}" oninput="onEbsModalGroup12CellChange(${idx}, 'tm_g', this.value)"></td>
+          <td id="ebsMdlGrpTmTot_${idx}" class="ebs-num-display" style="background:#f0fdf4; color:#15803d;">${tmT}</td>
+          <td><input type="number" min="0" class="ebs-num-input" value="${emB}" oninput="onEbsModalGroup12CellChange(${idx}, 'em_b', this.value)"></td>
+          <td><input type="number" min="0" class="ebs-num-input" value="${emG}" oninput="onEbsModalGroup12CellChange(${idx}, 'em_g', this.value)"></td>
+          <td id="ebsMdlGrpEmTot_${idx}" class="ebs-num-display" style="background:#eff6ff; color:#1d4ed8;">${emT}</td>
+          <td id="ebsMdlGrpGrand_${idx}" class="ebs-num-display" style="background:#dcfce7; color:#15803d; font-size:1.06rem !important;">${gTot}</td>
+          <td>
+            <button type="button" class="btn btn-outline btn-sm" onclick="removeGroupInEbsHscModal(${idx})" style="color:#dc2626; border-color:#fca5a5; padding:4px 8px; font-weight:800;">🗑️</button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    const sumTmT = sumTmB + sumTmG;
+    const sumEmT = sumEmB + sumEmG;
+    const sumGrand = sumTmT + sumEmT;
+    tfoot.innerHTML = `
+      <tr>
+        <td colspan="3" style="text-align:right; font-weight:900; padding-right:12px; color:#0f294a;">மொத்தம் (+2 Total Students):</td>
+        <td id="ebsMdlFootTmB" class="ebs-num-display">${sumTmB}</td>
+        <td id="ebsMdlFootTmG" class="ebs-num-display">${sumTmG}</td>
+        <td id="ebsMdlFootTmT" class="ebs-num-display" style="background:#dcfce7; color:#15803d;">${sumTmT}</td>
+        <td id="ebsMdlFootEmB" class="ebs-num-display">${sumEmB}</td>
+        <td id="ebsMdlFootEmG" class="ebs-num-display">${sumEmG}</td>
+        <td id="ebsMdlFootEmT" class="ebs-num-display" style="background:#dbeafe; color:#1e40af;">${sumEmT}</td>
+        <td id="ebsMdlFootGrand" class="ebs-num-display" style="background:#fef08a; color:#78350f; font-size:1.12rem !important;">${sumGrand}</td>
+        <td></td>
+      </tr>
+    `;
+  }
+
+  function onEbsModalGroup12CellChange(idx, field, val) {
+    if (!_ebsModalEditingGroups12[idx]) return;
+    _ebsModalEditingGroups12[idx].c12[field] = Math.max(0, Number(val || 0));
+
+    const g = _ebsModalEditingGroups12[idx].c12;
+    const tmT = Number(g.tm_b || 0) + Number(g.tm_g || 0);
+    const emT = Number(g.em_b || 0) + Number(g.em_g || 0);
+    const grand = tmT + emT;
+
+    const elTm = document.getElementById("ebsMdlGrpTmTot_" + idx); if (elTm) elTm.textContent = tmT;
+    const elEm = document.getElementById("ebsMdlGrpEmTot_" + idx); if (elEm) elEm.textContent = emT;
+    const elGr = document.getElementById("ebsMdlGrpGrand_" + idx); if (elGr) elGr.textContent = grand;
+
+    let sumTmB = 0, sumTmG = 0, sumEmB = 0, sumEmG = 0;
+    _ebsModalEditingGroups12.forEach(it => {
+      sumTmB += Number(it.c12.tm_b || 0);
+      sumTmG += Number(it.c12.tm_g || 0);
+      sumEmB += Number(it.c12.em_b || 0);
+      sumEmG += Number(it.c12.em_g || 0);
+    });
+    const fTmB = document.getElementById("ebsMdlFootTmB"); if (fTmB) fTmB.textContent = sumTmB;
+    const fTmG = document.getElementById("ebsMdlFootTmG"); if (fTmG) fTmG.textContent = sumTmG;
+    const fTmT = document.getElementById("ebsMdlFootTmT"); if (fTmT) fTmT.textContent = sumTmB + sumTmG;
+    const fEmB = document.getElementById("ebsMdlFootEmB"); if (fEmB) fEmB.textContent = sumEmB;
+    const fEmG = document.getElementById("ebsMdlFootEmG"); if (fEmG) fEmG.textContent = sumEmG;
+    const fEmT = document.getElementById("ebsMdlFootEmT"); if (fEmT) fEmT.textContent = sumEmB + sumEmG;
+    const fGr = document.getElementById("ebsMdlFootGrand"); if (fGr) fGr.textContent = sumTmB + sumTmG + sumEmB + sumEmG;
+  }
+
+  function addGroupInEbsHscModal() {
+    const sel = document.getElementById("ebsModalAddGroupSelect");
+    if (!sel || !sel.value) return;
+    const code = String(sel.value).trim();
+    if (_ebsModalEditingGroups12.some(x => String(x.code) === code)) {
+      showToast(`ℹ️ Group [${code}] ஏற்கனவே பட்டியலில் உள்ளது!`, "#0284c7");
+      return;
+    }
+    _ebsModalEditingGroups12.push({
+      code,
+      c11: { tm_b: 0, tm_g: 0, em_b: 0, em_g: 0 },
+      c12: { tm_b: 15, tm_g: 15, em_b: 0, em_g: 0 }
+    });
+    renderEbsHscGroupModalTable();
+  }
+
+  function removeGroupInEbsHscModal(idx) {
+    _ebsModalEditingGroups12.splice(idx, 1);
+    renderEbsHscGroupModalTable();
+  }
+
+  function saveEbsHscGroupEditModal() {
+    if (!activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo);
+    const extra = getSchoolExtra(uNo);
+
+    const list11 = [];
+    const list12 = [];
+    let c12_tm_b = 0, c12_tm_g = 0, c12_em_b = 0, c12_em_g = 0;
+
+    _ebsModalEditingGroups12.forEach(item => {
+      const meta = getHssGroupMetaByCode(item.code);
+      list11.push({
+        code: item.code,
+        category: meta.category,
+        name: meta.groupName,
+        tm_b: Number(item.c11.tm_b || 0),
+        tm_g: Number(item.c11.tm_g || 0),
+        em_b: Number(item.c11.em_b || 0),
+        em_g: Number(item.c11.em_g || 0)
+      });
+      list12.push({
+        code: item.code,
+        category: meta.category,
+        name: meta.groupName,
+        tm_b: Number(item.c12.tm_b || 0),
+        tm_g: Number(item.c12.tm_g || 0),
+        em_b: Number(item.c12.em_b || 0),
+        em_g: Number(item.c12.em_g || 0)
+      });
+      c12_tm_b += Number(item.c12.tm_b || 0);
+      c12_tm_g += Number(item.c12.tm_g || 0);
+      c12_em_b += Number(item.c12.em_b || 0);
+      c12_em_g += Number(item.c12.em_g || 0);
+    });
+
+    extra.hssGroups = { "11": list11, "12": list12 };
+    extra.hssGroupsV34 = true;
+    extra.hssGroupsV35 = true;
+    if (!extra.students) extra.students = {};
+    extra.students["12"] = {
+      tm_b: c12_tm_b, tm_g: c12_tm_g,
+      em_b: c12_em_b, em_g: c12_em_g,
+      tm: c12_tm_b + c12_tm_g,
+      em: c12_em_b + c12_em_g,
+      boys: c12_tm_b + c12_em_b,
+      girls: c12_tm_g + c12_em_g
+    };
+
+    if (extra.ebs2026) {
+      if (extra.ebs2026.f2) {
+        delete extra.ebs2026.f2.customLangOverrides;
+      }
+      extra.ebs2026.f2 = deriveSchoolEbsF2SubjectsFromPortal(uNo, extra.ebs2026.f1, extra.ebs2026.f2);
+    }
+
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+    closeEbsHscGroupEditModal();
+    renderSchoolEbsModule();
+    if (typeof renderSchoolStudentDashboardTables === "function") {
+      try { renderSchoolStudentDashboardTables(activeSchoolSession); } catch (e) {}
+    }
+    saveSchoolEbs2026Data(false);
+    showToast("✅ +2 பாடப்பிரிவு வாரியான மாணவர் எண்ணிக்கை சேமிக்கப்பட்டு FORM-I மற்றும் FORM-II புதுப்பிக்கப்பட்டன!", "#0f766e");
   }
 
   function onEbsF1StaffCellChange(rowKey, catKey, val) {
@@ -22511,6 +22887,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       const gEl = document.getElementById("ebsF1NonTeachGrandTot"); if (gEl) gEl.textContent = regSum + conSum;
     }
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+    scheduleAutoSaveSchoolEbs2026();
   }
 
   function onEbsF1FieldChange(field, val) {
@@ -22533,15 +22910,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const sEl = document.getElementById("ebsF1HscSanskritTot");
     if (sEl) sEl.textContent = Number(ebs.f1.hscSanskritBoys || 0) + Number(ebs.f1.hscSanskritGirls || 0);
 
-    const total12 = stu10_12.hsc2.grand;
-    const hTot = Number(ebs.f1.hscHindiBoys || 0) + Number(ebs.f1.hscHindiGirls || 0);
-    const fTot = Number(ebs.f1.hscFrenchBoys || 0) + Number(ebs.f1.hscFrenchGirls || 0);
-    const sTot = Number(ebs.f1.hscSanskritBoys || 0) + Number(ebs.f1.hscSanskritGirls || 0);
-    if (ebs.f2) {
-      ebs.f2.lang_hindi = { tm: 0, em: 0, tot: hTot };
-      ebs.f2.lang_french = { tm: 0, em: 0, tot: fTot };
-      ebs.f2.lang_sanskrit = { tm: 0, em: 0, tot: sTot };
-      ebs.f2.lang_tamil = { tm: 0, em: 0, tot: Math.max(0, total12 - (hTot + fTot + sTot)) };
+    if (["hscHindiBoys", "hscHindiGirls", "hscFrenchBoys", "hscFrenchGirls", "hscSanskritBoys", "hscSanskritGirls"].includes(field)) {
+      if (ebs.f2 && ebs.f2.customLangOverrides) {
+        delete ebs.f2.customLangOverrides;
+      }
+      ebs.f2 = deriveSchoolEbsF2SubjectsFromPortal(uNo, ebs.f1, ebs.f2);
     }
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
     scheduleAutoSaveSchoolEbs2026();
@@ -22564,6 +22937,12 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     showToast("✅ போர்ட்டலின் நிலையான ஆசிரியர் & மாணவர் எண்ணிக்கையிலிருந்து FORM-I மீளமைக்கப்பட்டது!", "#15803d");
   }
 
+  // =========================================================================
+  // DYNAMIC FORM-II INTERACTIVE RENDERER
+  // - Shows ONLY the subjects present in this school's +2 Groups
+  // - Language & English are editable (for exemption adjustments)
+  // - Group subjects are auto-calculated from +2 Group-wise strength
+  // =========================================================================
   function renderSchoolEbsF2Interactive(ctx) {
     const container = document.getElementById("ebsF2InteractiveContainer");
     if (!container) return;
@@ -22578,58 +22957,93 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }
 
     const f2 = ebs.f2;
-    const rowsHtml = EBS_F2_SUBJECT_DEFINITIONS.map(def => {
+    const activeGroupSubjectDefs = getActiveSchoolF2GroupSubjects(f2);
+
+    // Language rows: Tamil is always shown; Hindi/French/Sanskrit shown if > 0
+    const langDefs = EBS_F2_SUBJECT_DEFINITIONS.filter(d => {
+      if (!d.isLangSub) return false;
+      if (d.key === "lang_tamil") return true;
+      const v = f2[d.key] || { tot: 0 };
+      return Number(v.tot || 0) > 0 || v.activeInSchool;
+    });
+
+    const langRowsHtml = langDefs.map((def, idx) => {
       const val = f2[def.key] || { tm: 0, em: 0, tot: 0 };
-      if (def.isLangSub || def.greyTmEm) {
-        return `
-          <tr>
-            <td style="text-align:center; font-weight:900;">${def.sno}</td>
-            <td style="font-weight:800;">${def.label}</td>
-            <td style="background:#cbd5e1; text-align:center; color:#475569; font-weight:700;">— (Part-I / II)</td>
-            <td style="background:#cbd5e1; text-align:center; color:#475569; font-weight:700;">— (Part-I / II)</td>
-            <td style="text-align:center;">
-              <input type="number" min="0" class="ebs-num-input" style="width:76px; background:#eff6ff;" value="${Number(val.tot || 0)}" oninput="onEbsF2CellChange('${def.key}', 'tot', this.value)">
-            </td>
-          </tr>
-        `;
-      }
+      return `
+        <tr>
+          <td class="ebs-num-display" style="text-align:center;">${idx === 0 ? "01" : ""}</td>
+          <td style="font-weight:900; color:#0f294a;">
+            ${def.label}
+            <span style="font-size:0.72rem; color:#4c1d95; font-weight:800; margin-left:6px;">(✏️ திருத்தலாம் - விலக்கு இருப்பின்)</span>
+          </td>
+          <td style="background:#e2e8f0; text-align:center; color:#64748b; font-weight:800;">— (Part-I)</td>
+          <td style="background:#e2e8f0; text-align:center; color:#64748b; font-weight:800;">— (Part-I)</td>
+          <td style="text-align:center; background:#eff6ff;">
+            <input type="number" min="0" class="ebs-num-input" value="${Number(val.tot || 0)}" oninput="onEbsF2LangOrEngChange('${def.key}', this.value)">
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    const engVal = f2.english || { tm: 0, em: 0, tot: 0 };
+    const engRowHtml = `
+      <tr>
+        <td class="ebs-num-display" style="text-align:center;">02</td>
+        <td style="font-weight:900; color:#0f294a;">
+          English
+          <span style="font-size:0.72rem; color:#4c1d95; font-weight:800; margin-left:6px;">(✏️ திருத்தலாம் - விலக்கு இருப்பின்)</span>
+        </td>
+        <td style="background:#e2e8f0; text-align:center; color:#64748b; font-weight:800;">— (Part-II)</td>
+        <td style="background:#e2e8f0; text-align:center; color:#64748b; font-weight:800;">— (Part-II)</td>
+        <td style="text-align:center; background:#eff6ff;">
+          <input type="number" min="0" class="ebs-num-input" value="${Number(engVal.tot || 0)}" oninput="onEbsF2LangOrEngChange('english', this.value)">
+        </td>
+      </tr>
+    `;
+
+    const groupSubRowsHtml = activeGroupSubjectDefs.map((def, idx) => {
+      const val = f2[def.key] || { tm: 0, em: 0, tot: 0 };
+      const dynSno = String(idx + 3).padStart(2, "0");
       const extraInput = def.key === "others"
-        ? `<input type="text" class="form-control" style="display:inline-block; width:210px; margin-left:8px; padding:3px 8px; font-size:0.78rem; font-weight:800;" placeholder="பாடத்தின் பெயர் குறிப்பிடுக" value="${escapeHtmlAttr(f2.othersSubjectName || "")}" oninput="onEbsF2OtherSubjectName(this.value)">`
+        ? `<input type="text" class="form-control" style="display:inline-block; width:210px; margin-left:8px; padding:3px 8px; font-size:0.80rem; font-weight:800;" placeholder="பாடத்தின் பெயர் குறிப்பிடுக" value="${escapeHtmlAttr(f2.othersSubjectName || "")}" oninput="onEbsF2OtherSubjectName(this.value)">`
         : "";
       return `
         <tr>
-          <td style="text-align:center; font-weight:900;">${def.sno}</td>
-          <td style="font-weight:800;">${def.label} ${extraInput}</td>
-          <td style="text-align:center;">
-            <input type="number" min="0" class="ebs-num-input" style="width:72px;" value="${Number(val.tm || 0)}" oninput="onEbsF2CellChange('${def.key}', 'tm', this.value)">
-          </td>
-          <td style="text-align:center;">
-            <input type="number" min="0" class="ebs-num-input" style="width:72px;" value="${Number(val.em || 0)}" oninput="onEbsF2CellChange('${def.key}', 'em', this.value)">
-          </td>
-          <td id="ebsF2SubTot_${def.key}" style="text-align:center; font-weight:900; font-size:0.94rem; background:#f0fdf4; color:#15803d;">
-            ${Number(val.tm || 0) + Number(val.em || 0)}
-          </td>
+          <td class="ebs-num-display" style="text-align:center;">${dynSno}</td>
+          <td style="font-weight:900; color:#0f294a;">${def.label} ${extraInput}</td>
+          <td class="ebs-num-display" style="text-align:center; background:#f8fafc; color:#14532d;">${Number(val.tm || 0)}</td>
+          <td class="ebs-num-display" style="text-align:center; background:#f8fafc; color:#1e40af;">${Number(val.em || 0)}</td>
+          <td class="ebs-num-display" style="text-align:center; background:#f0fdf4; color:#15803d; font-size:1.06rem !important;">${Number(val.tot || 0)}</td>
         </tr>
       `;
     }).join("");
 
     container.innerHTML = `
       <div style="background:#fff; border:1.5px solid #cbd5e1; border-radius:12px; padding:14px;">
-        <div style="background:#f0fdfa; border:1px solid #99f6e4; border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:0.80rem; color:#115e59; font-weight:700;">
-          ✅ இப்பள்ளியின் போர்ட்டல் <strong>+2 பாடப்பிரிவு (Group-wise) மாணவர் எண்ணிக்கையிலிருந்து</strong> கீழ்க்காணும் 27 பாடங்களுக்கும் தமிழ் வழி (TM), ஆங்கில வழி (EM) மற்றும் மொத்தம் (TOTAL) தானாகக் கணக்கிடப்பட்டுள்ளன.
+        <div style="background:#f0fdfa; border:1.5px solid #99f6e4; border-radius:8px; padding:10px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="font-size:0.82rem; color:#115e59; font-weight:800;">
+            ✅ இப்பள்ளியில் செயல்படும் <strong>+2 பாடப்பிரிவுகளுக்குரிய (${activeGroupSubjectDefs.length} பாடங்கள்)</strong> மாணவர் எண்ணிக்கை மட்டும் தானாகக் கணக்கிட்டு காட்டப்பட்டுள்ளது. <strong>மொழிப்பாடம் (Language)</strong> மற்றும் <strong>ஆங்கிலம் (English)</strong> பாடங்களில் தேர்வு விலக்கு பெற்ற மாணவர்கள் இருப்பின் அவற்றை நேரடியாகத் திருத்தலாம்.
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="openEbsHscGroupEditModal()" style="background:#fff; color:#0f766e; border-color:#0d9488; font-weight:900;">
+            ✏️ +2 பிரிவு வாரியான மாணவர் எண்ணிக்கை திருத்து (Edit Groups)
+          </button>
         </div>
-        <div class="table-responsive" style="max-height:560px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px;">
+        <div class="table-responsive" style="max-height:560px; overflow-y:auto; border:1.5px solid #94a3b8; border-radius:8px;">
           <table class="data-table" style="margin:0;">
             <thead style="position:sticky; top:0; z-index:4;">
               <tr style="background:#0f294a; color:#fff;">
-                <th style="width:65px; text-align:center;">S.No</th>
-                <th>SUBJECT (27 Subjects as per EBS Form-II)</th>
-                <th style="width:150px; text-align:center;">TAMIL MEDIUM</th>
-                <th style="width:150px; text-align:center;">ENGLISH MEDIUM</th>
-                <th style="width:150px; text-align:center; background:#0f766e;">TOTAL</th>
+                <th style="width:70px; text-align:center;">S.No</th>
+                <th>SUBJECT (இப்பள்ளியின் +2 பாடப்பிரிவுப் பாடங்கள் மட்டும்)</th>
+                <th style="width:160px; text-align:center;">TAMIL MEDIUM</th>
+                <th style="width:160px; text-align:center;">ENGLISH MEDIUM</th>
+                <th style="width:160px; text-align:center; background:#0f766e;">TOTAL</th>
               </tr>
             </thead>
-            <tbody>${rowsHtml}</tbody>
+            <tbody>
+              ${langRowsHtml}
+              ${engRowHtml}
+              ${groupSubRowsHtml}
+            </tbody>
           </table>
         </div>
         <div style="margin-top:14px; padding:12px 16px; border-radius:10px; background:#f0fdfa; border:1.5px solid #5eead4; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -22649,21 +23063,21 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     `;
   }
 
-  function onEbsF2CellChange(subKey, field, val) {
+  function onEbsF2LangOrEngChange(subKey, val) {
     if (!activeSchoolSession) return;
     const uNo = String(activeSchoolSession.uNo);
     const { ebs } = getOrInitSchoolEbs2026Data(uNo, false);
-    if (!ebs.f2[subKey]) ebs.f2[subKey] = { tm: 0, em: 0, tot: 0 };
     const num = Math.max(0, Number(val || 0));
-    if (field === "tot") {
-      ebs.f2[subKey].tot = num;
-    } else {
-      ebs.f2[subKey][field] = num;
-      ebs.f2[subKey].tot = Number(ebs.f2[subKey].tm || 0) + Number(ebs.f2[subKey].em || 0);
-      const totEl = document.getElementById("ebsF2SubTot_" + subKey);
-      if (totEl) totEl.textContent = ebs.f2[subKey].tot;
-    }
+    if (!ebs.f2.customLangOverrides) ebs.f2.customLangOverrides = {};
+    ebs.f2.customLangOverrides[subKey] = num;
+    if (!ebs.f2[subKey]) ebs.f2[subKey] = { tm: 0, em: 0, tot: num, activeInSchool: true };
+    else ebs.f2[subKey].tot = num;
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+    scheduleAutoSaveSchoolEbs2026();
+  }
+
+  function onEbsF2CellChange(subKey, field, val) {
+    return onEbsF2LangOrEngChange(subKey, val);
   }
 
   function onEbsF2OtherSubjectName(val) {
@@ -22672,16 +23086,21 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const { ebs } = getOrInitSchoolEbs2026Data(uNo, false);
     ebs.f2.othersSubjectName = String(val || "");
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+    scheduleAutoSaveSchoolEbs2026();
   }
 
   function recalcSchoolEbsF2FromPortalGroups(showMsg) {
     if (!activeSchoolSession) return;
     const uNo = String(activeSchoolSession.uNo);
     const { ebs } = getOrInitSchoolEbs2026Data(uNo, false);
-    ebs.f2 = deriveSchoolEbsF2SubjectsFromPortal(uNo, ebs.f1);
+    if (ebs.f2 && ebs.f2.customLangOverrides) {
+      delete ebs.f2.customLangOverrides;
+    }
+    ebs.f2 = deriveSchoolEbsF2SubjectsFromPortal(uNo, ebs.f1, null);
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     renderSchoolEbsModule();
-    if (showMsg) showToast("✅ போர்ட்டலின் நிலையான +2 Group மாணவர் எண்ணிக்கையிலிருந்து 27 பாடங்களும் கணக்கிடப்பட்டன!", "#0f766e");
+    scheduleAutoSaveSchoolEbs2026();
+    if (showMsg) showToast("✅ இப்பள்ளியின் +2 Group மாணவர் எண்ணிக்கையிலிருந்து பாடங்கள் கணக்கிடப்பட்டன!", "#0f766e");
   }
 
   function renderSchoolEbsF3Table(ctx, teachList) {
@@ -23989,25 +24408,57 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const f2 = ebs.f2;
 
     const getVal = (k) => f2[k] || { tm: 0, em: 0, tot: 0 };
-    const lTam = getVal("lang_tamil").tot;
-    const lHin = getVal("lang_hindi").tot;
-    const lFre = getVal("lang_french").tot;
-    const lSan = getVal("lang_sanskrit").tot;
-    const engTot = getVal("english").tot;
+    const lTam = Number(getVal("lang_tamil").tot || 0);
+    const lHin = Number(getVal("lang_hindi").tot || 0);
+    const lFre = Number(getVal("lang_french").tot || 0);
+    const lSan = Number(getVal("lang_sanskrit").tot || 0);
+    const engTot = Number(getVal("english").tot || 0);
 
-    const regularSubjects = EBS_F2_SUBJECT_DEFINITIONS.filter(d => !d.isLangSub && d.key !== "english");
-    const rows2To27Html = regularSubjects.map(def => {
+    const activeLangItems = [
+      { label: "Tamil", tot: lTam, show: true },
+      { label: "Hindi", tot: lHin, show: lHin > 0 },
+      { label: "French", tot: lFre, show: lFre > 0 },
+      { label: "Sanskrit", tot: lSan, show: lSan > 0 }
+    ].filter(x => x.show);
+
+    const langRowSpan = activeLangItems.length;
+    const langRowsPrintHtml = activeLangItems.map((it, idx) => {
+      if (idx === 0) {
+        return `
+          <tr style="height:26px;">
+            <td rowspan="${langRowSpan}" style="text-align:center; font-weight:900; font-size:12px;">01</td>
+            <td rowspan="${langRowSpan}" style="width:18%; font-weight:800; padding-left:8px; font-size:12px;">Language</td>
+            <td style="width:26%; font-weight:800; padding-left:8px; font-size:12px;">${it.label}</td>
+            <td class="ebs-grey-cell"></td>
+            <td class="ebs-grey-cell"></td>
+            <td style="text-align:center; font-weight:900; font-size:12.5px;">${it.tot || ""}</td>
+          </tr>
+        `;
+      }
+      return `
+        <tr style="height:26px;">
+          <td style="font-weight:800; padding-left:8px; font-size:12px;">${it.label}</td>
+          <td class="ebs-grey-cell"></td>
+          <td class="ebs-grey-cell"></td>
+          <td style="text-align:center; font-weight:900; font-size:12.5px;">${it.tot || ""}</td>
+        </tr>
+      `;
+    }).join("");
+
+    const activeGroupSubjects = getActiveSchoolF2GroupSubjects(f2);
+    const activeSubjectRowsHtml = activeGroupSubjects.map((def, idx) => {
       const v = getVal(def.key);
+      const dynSno = String(idx + 3).padStart(2, "0");
       const labelStr = def.key === "others" && f2.othersSubjectName
         ? `Others (${escapeHtmlAttr(f2.othersSubjectName)})`
         : def.label;
       return `
-        <tr style="height:21px;">
-          <td style="text-align:center; font-weight:800;">${def.sno}</td>
-          <td colspan="2" style="font-weight:700; padding-left:8px;">${labelStr}</td>
-          <td style="text-align:center; font-weight:700;">${v.tm || ""}</td>
-          <td style="text-align:center; font-weight:700;">${v.em || ""}</td>
-          <td style="text-align:center; font-weight:800;">${v.tot || ""}</td>
+        <tr style="height:26px;">
+          <td style="text-align:center; font-weight:900; font-size:12px;">${dynSno}</td>
+          <td colspan="2" style="font-weight:800; padding-left:8px; font-size:12px;">${labelStr}</td>
+          <td style="text-align:center; font-weight:800; font-size:12.5px;">${v.tm || ""}</td>
+          <td style="text-align:center; font-weight:800; font-size:12.5px;">${v.em || ""}</td>
+          <td style="text-align:center; font-weight:900; font-size:12.5px;">${v.tot || ""}</td>
         </tr>
       `;
     }).join("");
@@ -24039,44 +24490,19 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             </tr>
           </thead>
           <tbody>
-            <tr style="height:21px;">
-              <td rowspan="4" style="text-align:center; font-weight:800;">01</td>
-              <td rowspan="4" style="width:18%; font-weight:700; padding-left:8px;">Language</td>
-              <td style="width:26%; font-weight:700; padding-left:8px;">Tamil</td>
+            ${langRowsPrintHtml}
+            <tr style="height:26px;">
+              <td style="text-align:center; font-weight:900; font-size:12px;">02</td>
+              <td colspan="2" style="font-weight:800; padding-left:8px; font-size:12px;">English</td>
               <td class="ebs-grey-cell"></td>
               <td class="ebs-grey-cell"></td>
-              <td style="text-align:center; font-weight:800;">${lTam || ""}</td>
+              <td style="text-align:center; font-weight:900; font-size:12.5px;">${engTot || ""}</td>
             </tr>
-            <tr style="height:21px;">
-              <td style="font-weight:700; padding-left:8px;">Hindi</td>
-              <td class="ebs-grey-cell"></td>
-              <td class="ebs-grey-cell"></td>
-              <td style="text-align:center; font-weight:800;">${lHin || ""}</td>
-            </tr>
-            <tr style="height:21px;">
-              <td style="font-weight:700; padding-left:8px;">French</td>
-              <td class="ebs-grey-cell"></td>
-              <td class="ebs-grey-cell"></td>
-              <td style="text-align:center; font-weight:800;">${lFre || ""}</td>
-            </tr>
-            <tr style="height:21px;">
-              <td style="font-weight:700; padding-left:8px;">Sanskrit</td>
-              <td class="ebs-grey-cell"></td>
-              <td class="ebs-grey-cell"></td>
-              <td style="text-align:center; font-weight:800;">${lSan || ""}</td>
-            </tr>
-            <tr style="height:21px;">
-              <td style="text-align:center; font-weight:800;">02</td>
-              <td colspan="2" style="font-weight:700; padding-left:8px;">English</td>
-              <td class="ebs-grey-cell"></td>
-              <td class="ebs-grey-cell"></td>
-              <td style="text-align:center; font-weight:800;">${engTot || ""}</td>
-            </tr>
-            ${rows2To27Html}
+            ${activeSubjectRowsHtml}
           </tbody>
         </table>
 
-        <div style="text-align:right; margin-top:26px; padding-right:18px; font-size:12px; font-weight:700;">
+        <div style="text-align:right; margin-top:30px; padding-right:18px; font-size:12px; font-weight:700;">
           Signature of the Headmaster / Principal
         </div>
       </div>
