@@ -3975,6 +3975,9 @@
             </div>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="openEbsAddStaffModal(true)" style="background:#15803d; border-color:#15803d; font-weight:900;">
+              ➕ புதிய ஆசிரியர் சேர் (Add Teacher - F3)
+            </button>
             <button type="button" class="btn btn-primary btn-sm" onclick="openEbsA4PreviewModal('F3_ALL')" style="background:#1d4ed8; border-color:#1d4ed8; font-weight:900;">
               🖨️ அனைத்து ஆசிரியர்களின் FORM – III (A4 Booklet) அச்சிடு / PDF
             </button>
@@ -3995,6 +3998,9 @@
             </div>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="openEbsAddStaffModal(false)" style="background:#15803d; border-color:#15803d; font-weight:900;">
+              ➕ புதிய பணியாளர் சேர் (Add Staff - F4)
+            </button>
             <button type="button" class="btn btn-primary btn-sm" onclick="openEbsA4PreviewModal('F4_ALL')" style="background:#b45309; border-color:#b45309; font-weight:900;">
               🖨️ அனைத்து பணியாளர்களின் FORM – IV (A4 Booklet) அச்சிடு / PDF
             </button>
@@ -7689,6 +7695,61 @@
       <button type="button" class="btn btn-outline btn-sm" onclick="pushApiSecretsToAppsScriptVault()" style="font-weight:800; border-color:#ea580c; color:#c2410c; background:#fff;">
         🚀 API சாவிகளை Server Vault-க்கு அனுப்பு (Sync to ScriptProperties)
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- EBS 2026-27 ADD NEW TEACHER (F3) / NON-TEACHING STAFF (F4) MODAL      -->
+<!-- ===================================================================== -->
+<div id="ebsAddStaffModal" class="modal-backdrop" onclick="if(event.target===this) closeEbsAddStaffModal()">
+  <div class="modal-card" style="max-width:760px; width:96%; max-height:92vh; overflow-y:auto; padding:20px; border-top:5px solid #15803d;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #cbd5e1; padding-bottom:10px; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+      <div>
+        <h3 id="ebsAddStaffModalTitle" style="font-size:1.10rem; font-weight:900; color:#0f294a; margin:0;">➕ FORM – III : கூடுதல் ஆசிரியர் சேர்க்கை (Add Teacher)</h3>
+        <div id="ebsAddStaffModalSub" style="font-size:0.80rem; color:#475569; font-weight:700; margin-top:2px;"></div>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeEbsAddStaffModal()" style="font-weight:900;">Close</button>
+    </div>
+
+    <!-- STEP 1: SEARCH BY EMIS ID -->
+    <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:10px; padding:14px; margin-bottom:16px;">
+      <div style="font-weight:900; color:#1e3a8a; font-size:0.92rem; margin-bottom:4px;">
+        🔍 வழிமுறை 1: EMIS எண் கொடுத்துத் தேடிச் சேர்த்தல் (Search by EMIS ID)
+      </div>
+      <div style="font-size:0.78rem; color:#334155; font-weight:700; margin-bottom:10px;">
+        பணியாளரின் 8-இலக்க EMIS எண்ணை (அல்லது பெயரை) உள்ளிட்டுத் தேடவும். மாவட்ட EMIS தரவுத்தளத்தில் இருந்தால் விவரங்கள் தானாகப் பூர்த்தியாகும்; பிற மாவட்ட மாறுதல் எனில் அதே EMIS எண்ணுடன் நேரடியாக இணைக்கலாம்.
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <input type="text" id="ebsAddStaffSearchInput" class="form-control" placeholder="8-இலக்க Staff EMIS ID (எ.கா. 33230101) அல்லது பெயர் உள்ளிடவும்..." oninput="onEbsAddStaffSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchEmisForEbsAddStaff();}" style="flex:1; min-width:220px; font-weight:900; font-size:0.90rem; border-color:#3b82f6;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="searchEmisForEbsAddStaff()" style="background:#1d4ed8; border-color:#1d4ed8; font-weight:900; padding:8px 16px;">
+          🔍 EMIS எண் தேடு
+        </button>
+      </div>
+      <div id="ebsAddStaffSearchResults" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- STEP 2: AUTO-GENERATE TEMPORARY ID (U.NO 3 digits + 5 digits seq e.g. 10100001) -->
+    <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
+        <div>
+          <div style="font-weight:900; color:#14532d; font-size:0.92rem;">
+            🆕 வழிமுறை 2: EMIS எண் இல்லையெனில் — புதிய தற்காலிக எண் (Temporary ID) மூலம் சேர்த்தல்
+          </div>
+          <div style="font-size:0.78rem; color:#166534; font-weight:700; margin-top:2px;">
+            EMIS எண் இல்லாத புதிய நியமனம் / தொகுப்பூதியம் / PTA பணியாளர்களுக்கு முதல் 3 இலக்கம் பள்ளியின் <strong>U.NO</strong> + அடுத்த 5 இலக்கம் <strong>பணியாளர் வரிசை எண்</strong> (எ.கா. <code style="background:#dcfce7; padding:1px 5px; border-radius:4px; font-weight:900;">10100001</code>) என்ற அடிப்படையில் தானியங்கி Temporary ID உருவாக்கப்படும்.
+          </div>
+        </div>
+        <div style="background:#fff; border:2px dashed #16a34a; border-radius:8px; padding:6px 14px; text-align:center; min-width:150px;">
+          <div style="font-size:0.68rem; font-weight:800; color:#15803d;">அடுத்த Temporary ID</div>
+          <div id="ebsAddStaffNextTempIdPreview" style="font-size:1.18rem; font-weight:900; color:#14532d; letter-spacing:1.5px;">10100001</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+        <button type="button" id="ebsAddStaffCreateTempBtn" class="btn btn-primary btn-sm" onclick="createAndOpenEbsStaffWithTempId()" style="background:#15803d; border-color:#15803d; font-weight:900; padding:8px 16px; font-size:0.84rem;">
+          🆕 தற்காலிக எண் (10100001) உருவாக்கிப் படிவம் பூர்த்தி செய்
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -21989,6 +22050,32 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         }
       });
     }
+    if (!Array.isArray(extra.staff)) extra.staff = [];
+    if (extra.ebs2026 && Array.isArray(extra.ebs2026.removedStaffIds) && extra.ebs2026.removedStaffIds.length > 0) {
+      const remSet = new Set(extra.ebs2026.removedStaffIds.map(x => String(x).trim()));
+      extra.staff = extra.staff.filter(x => !remSet.has(String(x && (x.id || x.staffId) || "").trim()));
+    }
+    if (extra.ebs2026 && Array.isArray(extra.ebs2026.addedStaff) && extra.ebs2026.addedStaff.length > 0) {
+      const existingStaffIds = new Set(extra.staff.map(x => String(x && (x.id || x.staffId) || "").trim()).filter(Boolean));
+      extra.ebs2026.addedStaff.forEach(addSt => {
+        if (!addSt) return;
+        const aid = String(addSt.id || addSt.staffId || "").trim();
+        if (!aid) return;
+        if (!existingStaffIds.has(aid)) {
+          extra.staff.push(Object.assign({}, addSt, { id: aid, staffId: aid }));
+          existingStaffIds.add(aid);
+        } else {
+          const exItem = extra.staff.find(x => String(x && (x.id || x.staffId) || "").trim() === aid);
+          if (exItem) {
+            if (typeof addSt.isTeaching === "boolean") exItem.isTeaching = addSt.isTeaching;
+            if (addSt.isAddedEbs) exItem.isAddedEbs = true;
+            if (addSt.isTempId) exItem.isTempId = true;
+          }
+        }
+      });
+    }
+    const uPrefix3 = String(uNo || "101").replace(/\D/g, "").padStart(3, "0").slice(0, 3);
+    const tempIdRegex = new RegExp("^" + uPrefix3 + "00\\d{3}$");
     const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
     const list = (extra.staff || []).map(st => {
       const sid = String(st.id || st.staffId || "").trim();
@@ -22042,7 +22129,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         exemptionOtherSpec: ebsProf.exemptionOtherSpec || "",
         exemptionCertUrl: ebsProf.exemptionCertUrl || "",
         exemptionCertName: ebsProf.exemptionCertName || "",
-        isTeaching: isTeach
+        isTeaching: isTeach,
+        isTempId: Boolean(st.isTempId || ebsProf.isTempId || tempIdRegex.test(sid)),
+        isAddedEbs: Boolean(st.isAddedEbs || ebsProf.isAddedEbs || st.isTempId || tempIdRegex.test(sid))
       };
     });
     return list;
@@ -23222,20 +23311,23 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const container = document.getElementById("ebsF3TeachersTableContainer");
     if (!container) return;
     if (teachList.length === 0) {
-      container.innerHTML = `<div style="padding:18px; text-align:center; color:#dc2626; font-weight:800;">இப்பள்ளியில் ஆசிரியர் பதிவுகள் எதுவும் இல்லை.</div>`;
+      container.innerHTML = `<div style="padding:18px; text-align:center; color:#dc2626; font-weight:800;">இப்பள்ளியில் ஆசிரியர் பதிவுகள் எதுவும் இல்லை. <button type="button" class="btn btn-primary btn-sm" onclick="openEbsAddStaffModal(true)" style="margin-left:10px; background:#15803d; border-color:#15803d; font-weight:900;">➕ புதிய ஆசிரியர் சேர் (Add Teacher)</button></div>`;
       return;
     }
     const rowsHtml = teachList.map((st, idx) => {
       const hasIfhrms = Boolean(st.ifhrmsId && String(st.ifhrmsId).trim().length >= 5);
+      const idBadge = st.isTempId
+        ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dcfce7; color:#166534; font-weight:900;">Temp ID</span>`
+        : (st.isAddedEbs ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dbeafe; color:#1e40af; font-weight:900;">கூடுதல்</span>` : "");
       return `
         <tr>
           <td style="text-align:center; font-weight:900;">${idx + 1}</td>
           <td>
-            <div style="font-weight:900; color:#1e40af;">EMIS: ${st.staffId || "-"}</div>
+            <div style="font-weight:900; color:#1e40af;">${st.isTempId ? "TEMP" : "EMIS"}: ${st.staffId || "-"}${idBadge}</div>
             <div style="font-size:0.75rem; font-weight:800; color:${hasIfhrms ? "#15803d" : "#b45309"};">IFHRMS: ${st.ifhrmsId || "பதிவு செய்க"}</div>
           </td>
           <td>
-            <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name)}</div>
+            <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name || "(பெயர் உள்ளிடவும்)")}</div>
             <div style="font-size:0.78rem; color:#4c1d95; font-weight:800;">${escapeHtmlAttr(st.prefix || "")} ${escapeHtmlAttr(st.nameTa || "(தமிழ் பெயர் சேர்க்க)")}</div>
           </td>
           <td>
@@ -23258,6 +23350,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
               <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F3_SINGLE', '${st.staffId}')" style="border-color:#1d4ed8; color:#1d4ed8; background:#eff6ff; font-size:0.75rem; padding:4px 9px; font-weight:800;">
                 🖨️ Form-III A4
               </button>
+              ${st.isAddedEbs ? `<button type="button" class="btn btn-outline btn-sm" onclick="removeAddedEbsStaff('${ctx.sch.uNo}', '${st.staffId}')" title="கூடுதலாகச் சேர்க்கப்பட்ட பதிவை நீக்கு" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-size:0.72rem; padding:4px 7px; font-weight:800;">🗑️</button>` : ""}
             </div>
           </td>
         </tr>
@@ -23288,20 +23381,23 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const container = document.getElementById("ebsF4NonTeachingTableContainer");
     if (!container) return;
     if (nonTeachList.length === 0) {
-      container.innerHTML = `<div style="padding:18px; text-align:center; color:#64748b; font-weight:800;">இப்பள்ளியில் ஆசிரியரல்லாத பணியாளர்கள் பதிவுகள் எதுவும் இல்லை.</div>`;
+      container.innerHTML = `<div style="padding:18px; text-align:center; color:#64748b; font-weight:800;">இப்பள்ளியில் ஆசிரியரல்லாத பணியாளர்கள் பதிவுகள் எதுவும் இல்லை. <button type="button" class="btn btn-primary btn-sm" onclick="openEbsAddStaffModal(false)" style="margin-left:10px; background:#15803d; border-color:#15803d; font-weight:900;">➕ புதிய பணியாளர் சேர் (Add Staff)</button></div>`;
       return;
     }
     const rowsHtml = nonTeachList.map((st, idx) => {
       const hasIfhrms = Boolean(st.ifhrmsId && String(st.ifhrmsId).trim().length >= 5);
+      const idBadge = st.isTempId
+        ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dcfce7; color:#166534; font-weight:900;">Temp ID</span>`
+        : (st.isAddedEbs ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dbeafe; color:#1e40af; font-weight:900;">கூடுதல்</span>` : "");
       return `
         <tr>
           <td style="text-align:center; font-weight:900;">${idx + 1}</td>
           <td>
-            <div style="font-weight:900; color:#b45309;">EMIS: ${st.staffId || "-"}</div>
+            <div style="font-weight:900; color:#b45309;">${st.isTempId ? "TEMP" : "EMIS"}: ${st.staffId || "-"}${idBadge}</div>
             <div style="font-size:0.75rem; font-weight:800; color:${hasIfhrms ? "#15803d" : "#b45309"};">IFHRMS: ${st.ifhrmsId || "பதிவு செய்க"}</div>
           </td>
           <td>
-            <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name)}</div>
+            <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name || "(பெயர் உள்ளிடவும்)")}</div>
             <div style="font-size:0.78rem; color:#78350f; font-weight:800;">${escapeHtmlAttr(st.prefix || "")} ${escapeHtmlAttr(st.nameTa || "(தமிழ் பெயர் சேர்க்க)")}</div>
           </td>
           <td style="font-weight:800; color:#0f766e;">${escapeHtmlAttr(st.desig)} (${escapeHtmlAttr(st.nature || "Regular")})</td>
@@ -23321,6 +23417,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
               <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F4_SINGLE', '${st.staffId}')" style="border-color:#b45309; color:#b45309; background:#fffbeb; font-size:0.75rem; padding:4px 9px; font-weight:800;">
                 🖨️ Form-IV A4
               </button>
+              ${st.isAddedEbs ? `<button type="button" class="btn btn-outline btn-sm" onclick="removeAddedEbsStaff('${ctx.sch.uNo}', '${st.staffId}')" title="கூடுதலாகச் சேர்க்கப்பட்ட பதிவை நீக்கு" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-size:0.72rem; padding:4px 7px; font-weight:800;">🗑️</button>` : ""}
             </div>
           </td>
         </tr>
@@ -23467,6 +23564,456 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
   document.addEventListener("click", function() {
     closeAllEbsClassSubMenus("");
   });
+
+  let _ebsAddStaffModeIsTeaching = true;
+  let _ebsAddStaffSearchResultsCache = [];
+
+  function generateNextEbsTempStaffId(uNo) {
+    const uClean = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "101").replace(/\D/g, "").padStart(3, "0").slice(0, 3);
+    const extra = getSchoolExtra(uNo);
+    const existingIds = new Set();
+    if (extra && Array.isArray(extra.staff)) {
+      extra.staff.forEach(s => {
+        if (s) existingIds.add(String(s.id || s.staffId || "").trim());
+      });
+    }
+    if (extra && extra.ebs2026) {
+      if (Array.isArray(extra.ebs2026.addedStaff)) {
+        extra.ebs2026.addedStaff.forEach(s => {
+          if (s) existingIds.add(String(s.id || s.staffId || "").trim());
+        });
+      }
+      if (extra.ebs2026.staffProfiles && typeof extra.ebs2026.staffProfiles === "object") {
+        Object.keys(extra.ebs2026.staffProfiles).forEach(k => existingIds.add(String(k).trim()));
+      }
+    }
+    let maxSeq = 0;
+    const re = new RegExp("^" + uClean + "(\\d{5})$");
+    existingIds.forEach(id => {
+      const m = id.match(re);
+      if (m) {
+        const n = parseInt(m[1], 10);
+        if (!isNaN(n) && n >= 1 && n <= 999 && n > maxSeq) maxSeq = n;
+      }
+    });
+    let nextSeq = maxSeq + 1;
+    let candidate = uClean + String(nextSeq).padStart(5, "0");
+    while (existingIds.has(candidate)) {
+      nextSeq++;
+      candidate = uClean + String(nextSeq).padStart(5, "0");
+    }
+    return candidate;
+  }
+
+  function recalcSchoolEbsF1StaffCountsFromList(uNo) {
+    uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+    if (!uNo) return;
+    const sch = masterSchools.find(m => String(m.uNo) === uNo) || { uNo, level: "HS", mgmt1: "1G" };
+    const isHSS = isHigherSecondarySchool(sch);
+    const extra = getSchoolExtra(uNo);
+    if (!extra.ebs2026 || !extra.ebs2026.f1) return;
+    const staffList = getSchoolFixedPortalStaffList(uNo);
+
+    const autoTeachReg = {};
+    const autoTeachCon = {};
+    EBS_TEACHING_CATS.forEach(c => { autoTeachReg[c.key] = 0; autoTeachCon[c.key] = 0; });
+    const autoNonTeachReg = {};
+    const autoNonTeachCon = {};
+    EBS_NONTEACHING_CATS.forEach(c => { autoNonTeachReg[c.key] = 0; autoNonTeachCon[c.key] = 0; });
+
+    staffList.forEach(st => {
+      const cls = classifyPortalStaffForF1(st, isHSS);
+      const isContract = /CONTRACT|SELF|CONSOLIDATED|PART/i.test(String(st.nature || ""));
+      if (cls.group === "teach") {
+        if (isContract) autoTeachCon[cls.key] = (autoTeachCon[cls.key] || 0) + 1;
+        else autoTeachReg[cls.key] = (autoTeachReg[cls.key] || 0) + 1;
+      } else {
+        if (isContract) autoNonTeachCon[cls.key] = (autoNonTeachCon[cls.key] || 0) + 1;
+        else autoNonTeachReg[cls.key] = (autoNonTeachReg[cls.key] || 0) + 1;
+      }
+    });
+
+    extra.ebs2026.f1.teachReg = autoTeachReg;
+    extra.ebs2026.f1.teachCon = autoTeachCon;
+    extra.ebs2026.f1.nonTeachReg = autoNonTeachReg;
+    extra.ebs2026.f1.nonTeachCon = autoNonTeachCon;
+  }
+
+  function openEbsAddStaffModal(isTeaching) {
+    if (!activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo || "").trim();
+    _ebsAddStaffModeIsTeaching = Boolean(isTeaching);
+    _ebsAddStaffSearchResultsCache = [];
+
+    // Ensure current school staff list is initialized
+    getOrInitSchoolEbs2026Data(uNo, false);
+
+    const modal = document.getElementById("ebsAddStaffModal");
+    const titleEl = document.getElementById("ebsAddStaffModalTitle");
+    const subEl = document.getElementById("ebsAddStaffModalSub");
+    const inpEl = document.getElementById("ebsAddStaffSearchInput");
+    const resEl = document.getElementById("ebsAddStaffSearchResults");
+    const tempPrevEl = document.getElementById("ebsAddStaffNextTempIdPreview");
+    const tempBtnEl = document.getElementById("ebsAddStaffCreateTempBtn");
+
+    const nextTempId = generateNextEbsTempStaffId(uNo);
+    const sch = masterSchools.find(m => String(m.uNo) === uNo) || activeSchoolSession;
+
+    if (titleEl) {
+      titleEl.textContent = _ebsAddStaffModeIsTeaching
+        ? "➕ FORM – III : கூடுதல் ஆசிரியர் சேர்க்கை (Add Teacher to F3)"
+        : "➕ FORM – IV : கூடுதல் ஆசிரியரல்லாத பணியாளர் சேர்க்கை (Add Non-Teaching Staff to F4)";
+    }
+    if (subEl) {
+      subEl.textContent = `🏫 பள்ளி: [U.NO: ${uNo}] ${sch.nameTa || ""} (${sch.nameEn || ""})`;
+    }
+    if (inpEl) inpEl.value = "";
+    if (resEl) resEl.innerHTML = "";
+    if (tempPrevEl) tempPrevEl.textContent = nextTempId;
+    if (tempBtnEl) {
+      tempBtnEl.textContent = `🆕 தற்காலிக எண் (${nextTempId}) உருவாக்கி புதிய ${_ebsAddStaffModeIsTeaching ? "ஆசிரியர் (F3)" : "பணியாளர் (F4)"} படிவம் பூர்த்தி செய்`;
+    }
+
+    if (modal) {
+      modal.classList.add("open");
+      setTimeout(() => { if (inpEl) inpEl.focus(); }, 80);
+    }
+  }
+
+  function closeEbsAddStaffModal() {
+    const modal = document.getElementById("ebsAddStaffModal");
+    if (modal) modal.classList.remove("open");
+  }
+
+  function onEbsAddStaffSearchInput() {
+    const inpEl = document.getElementById("ebsAddStaffSearchInput");
+    if (!inpEl) return;
+    const q = inpEl.value.trim();
+    if (q.length >= 4) {
+      searchEmisForEbsAddStaff();
+    } else if (!q) {
+      const resEl = document.getElementById("ebsAddStaffSearchResults");
+      if (resEl) resEl.innerHTML = "";
+    }
+  }
+
+  function searchEmisForEbsAddStaff() {
+    if (!activeSchoolSession) return;
+    const curUNo = String(activeSchoolSession.uNo || "").trim();
+    const inpEl = document.getElementById("ebsAddStaffSearchInput");
+    const resEl = document.getElementById("ebsAddStaffSearchResults");
+    if (!inpEl || !resEl) return;
+
+    const rawQuery = inpEl.value.trim();
+    if (!rawQuery) {
+      resEl.innerHTML = `<div style="font-size:0.78rem; color:#dc2626; font-weight:800;">⚠️ தயவுசெய்து EMIS எண் அல்லது பெயரை உள்ளிடவும்.</div>`;
+      return;
+    }
+
+    const qLower = rawQuery.toLowerCase();
+    const qDigits = rawQuery.replace(/\D/g, "");
+    const curStaffList = getSchoolFixedPortalStaffList(curUNo);
+    const curStaffIds = new Set(curStaffList.map(x => String(x.staffId || "").trim()));
+
+    const matches = [];
+    const seenIds = new Set();
+
+    // 1. Search across EMIS_STAFF_DATA.byUNo
+    const emis = getEmisStaffData();
+    if (emis && emis.byUNo) {
+      const pool = emis.pool || [];
+      Object.keys(emis.byUNo).forEach(uKey => {
+        const rows = emis.byUNo[uKey] || [];
+        rows.forEach(r => {
+          const sid = String(r[1] || "").trim();
+          const nm = String(r[2] || "").trim();
+          if (!sid || seenIds.has(sid)) return;
+          const idMatch = qDigits && sid.includes(qDigits);
+          const nameMatch = qLower.length >= 3 && nm.toLowerCase().includes(qLower);
+          if (idMatch || nameMatch) {
+            seenIds.add(sid);
+            const isTeach = r[0] === 1;
+            const schObj = masterSchools.find(m => String(m.uNo) === String(uKey));
+            matches.push({
+              staffId: sid,
+              name: nm,
+              gender: r[4] === "F" ? "Female" : "Male",
+              dob: r[5] || "",
+              desig: pool[r[3]] || (isTeach ? "B.T.Assistant" : "Junior Assistant"),
+              subject: pool[r[7]] || (isTeach ? "English" : "-"),
+              classTaught: pool[r[8]] || "-",
+              qualification: pool[r[9]] || "",
+              dojService: r[10] || "",
+              dojPresPost: r[11] || "",
+              dojSchool: r[12] || r[10] || "",
+              nature: r[6] === "R" ? "Regular (Govt.Salaried )" : "Contract",
+              isTeaching: isTeach,
+              fromUNo: String(uKey),
+              fromSchoolName: schObj ? `${schObj.nameTa || schObj.nameEn}` : `U.NO: ${uKey}`,
+              exactId: sid === qDigits
+            });
+          }
+        });
+      });
+    }
+
+    // 2. Also search across schoolExtraDataStore for any locally added/edited staff
+    if (schoolExtraDataStore && typeof schoolExtraDataStore === "object") {
+      Object.keys(schoolExtraDataStore).forEach(uKey => {
+        const ex = schoolExtraDataStore[uKey];
+        if (!ex || !Array.isArray(ex.staff)) return;
+        const schObj = masterSchools.find(m => String(m.uNo) === String(uKey));
+        ex.staff.forEach(st => {
+          if (!st) return;
+          const sid = String(st.id || st.staffId || "").trim();
+          const nm = String(st.name || "").trim();
+          if (!sid || seenIds.has(sid)) return;
+          const idMatch = qDigits && sid.includes(qDigits);
+          const nameMatch = qLower.length >= 3 && nm.toLowerCase().includes(qLower);
+          if (idMatch || nameMatch) {
+            seenIds.add(sid);
+            matches.push({
+              staffId: sid,
+              name: nm,
+              gender: st.gender || "Male",
+              dob: st.dob || "",
+              desig: st.desig || (_ebsAddStaffModeIsTeaching ? "B.T.Assistant" : "Junior Assistant"),
+              subject: st.subject || (_ebsAddStaffModeIsTeaching ? "English" : "-"),
+              classTaught: st.classTaught || "-",
+              qualification: st.qualification || "",
+              dojService: st.dojService || "",
+              dojPresPost: st.dojPresPost || "",
+              dojSchool: st.dojSchool || "",
+              nature: st.nature || "Regular (Govt.Salaried )",
+              isTeaching: typeof st.isTeaching === "boolean" ? st.isTeaching : _ebsAddStaffModeIsTeaching,
+              fromUNo: String(uKey),
+              fromSchoolName: schObj ? `${schObj.nameTa || schObj.nameEn}` : `U.NO: ${uKey}`,
+              exactId: sid === qDigits
+            });
+          }
+        });
+      });
+    }
+
+    matches.sort((a, b) => (b.exactId ? 1 : 0) - (a.exactId ? 1 : 0));
+    _ebsAddStaffSearchResultsCache = matches.slice(0, 12);
+
+    const nextTempId = generateNextEbsTempStaffId(curUNo);
+    let htmlOut = "";
+
+    if (_ebsAddStaffSearchResultsCache.length > 0) {
+      htmlOut += `<div style="display:flex; flex-direction:column; gap:8px; max-height:240px; overflow-y:auto; padding-right:2px;">`;
+      _ebsAddStaffSearchResultsCache.forEach((m, idx) => {
+        const alreadyInCurrentSchool = curStaffIds.has(m.staffId);
+        htmlOut += `
+          <div style="background:#fff; border:1.5px solid ${m.exactId ? "#2563eb" : "#cbd5e1"}; border-radius:8px; padding:9px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <div style="font-weight:900; color:#0f294a; font-size:0.86rem;">
+                <span style="color:#1d4ed8;">EMIS: ${escapeHtmlAttr(m.staffId)}</span> — ${escapeHtmlAttr(m.name)}
+                <span style="font-size:0.72rem; padding:1px 6px; border-radius:4px; background:#f1f5f9; color:#334155; margin-left:4px;">${escapeHtmlAttr(m.desig)} (${escapeHtmlAttr(m.subject)})</span>
+              </div>
+              <div style="font-size:0.74rem; color:#475569; font-weight:700; margin-top:2px;">
+                🏫 தற்போதைய பள்ளி: [U.NO: ${escapeHtmlAttr(m.fromUNo)}] ${escapeHtmlAttr(m.fromSchoolName)} | DOB: ${formatDateDisplayDMY(m.dob) || "-"}
+              </div>
+            </div>
+            <div>
+              ${alreadyInCurrentSchool
+                ? `<button type="button" class="btn btn-outline btn-sm" onclick="closeEbsAddStaffModal(); openEbsStaffProfileModal('${curUNo}', '${escapeHtmlAttr(m.staffId)}');" style="font-weight:900; font-size:0.75rem; color:#1d4ed8; border-color:#93c5fd; background:#eff6ff;">✅ இப்பள்ளியில் உள்ளார் — படிவம் திற</button>`
+                : `<button type="button" class="btn btn-primary btn-sm" onclick="selectSearchedEmisStaffForEbs(${idx})" style="background:#1d4ed8; border-color:#1d4ed8; font-weight:900; font-size:0.76rem; padding:5px 11px;">➕ இப்பள்ளியின் ${_ebsAddStaffModeIsTeaching ? "F3" : "F4"}-இல் இணை &amp; திருத்து</button>`
+              }
+            </div>
+          </div>
+        `;
+      });
+      htmlOut += `</div>`;
+    } else {
+      htmlOut += `
+        <div style="background:#fff; border:1.5px solid #fcd34d; border-radius:8px; padding:10px 12px;">
+          <div style="font-size:0.80rem; font-weight:800; color:#92400e; margin-bottom:8px;">
+            ℹ️ நீங்கள் தேடிய <strong>"${escapeHtmlAttr(rawQuery)}"</strong> சிவகங்கை மாவட்ட EMIS பட்டியலில் காணப்படவில்லை.
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            ${qDigits.length >= 6 ? `
+              <button type="button" class="btn btn-primary btn-sm" onclick="createAndOpenEbsStaffWithCustomEmis('${escapeHtmlAttr(qDigits.slice(0, 8))}')" style="background:#1d4ed8; border-color:#1d4ed8; font-weight:900; font-size:0.78rem;">
+                ➕ இதே EMIS எண்ணுடன் (${escapeHtmlAttr(qDigits.slice(0, 8))}) புதிய ${_ebsAddStaffModeIsTeaching ? "ஆசிரியராக (F3)" : "பணியாளராக (F4)"} சேர்
+              </button>
+            ` : ""}
+            <button type="button" class="btn btn-primary btn-sm" onclick="createAndOpenEbsStaffWithTempId()" style="background:#15803d; border-color:#15803d; font-weight:900; font-size:0.78rem;">
+              🆕 தற்காலிக எண் (${nextTempId}) உருவாக்கிச் சேர்
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    resEl.innerHTML = htmlOut;
+  }
+
+  function addStaffRecordToCurrentSchoolEbs(uNo, staffObj, isTeaching, isTempId) {
+    uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+    if (!uNo || !staffObj || !staffObj.staffId) return null;
+
+    // Ensure school EBS & staff store are initialized
+    getOrInitSchoolEbs2026Data(uNo, false);
+    const sch = masterSchools.find(m => String(m.uNo) === uNo) || { uNo, nameEn: "", nameTa: "", mgmt1: "1G", block: "01-Sivagangai" };
+    const extra = getSchoolExtra(uNo);
+    if (!Array.isArray(extra.staff)) extra.staff = [];
+    if (!extra.ebs2026) extra.ebs2026 = {};
+    if (!Array.isArray(extra.ebs2026.addedStaff)) extra.ebs2026.addedStaff = [];
+    if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+    if (Array.isArray(extra.ebs2026.removedStaffIds)) {
+      extra.ebs2026.removedStaffIds = extra.ebs2026.removedStaffIds.filter(x => String(x) !== String(staffObj.staffId));
+    }
+
+    const sid = String(staffObj.staffId).trim();
+    const defaultDesig = isTeaching ? "B.T.Assistant" : "Junior Assistant";
+    const defaultSub = isTeaching ? "English" : "-";
+    const normNature = normalizeStaffNatureBySchoolMgmt(staffObj.nature || "Regular (Govt.Salaried )", sch.mgmt1);
+
+    const newRec = {
+      id: sid,
+      staffId: sid,
+      prefix: staffObj.prefix || (staffObj.gender === "Female" ? "திருமதி." : "திரு."),
+      name: staffObj.name || "",
+      nameTa: staffObj.nameTa || "",
+      gender: staffObj.gender || "Male",
+      dob: staffObj.dob || "",
+      desig: staffObj.desig || defaultDesig,
+      subject: isTeaching ? (staffObj.subject && staffObj.subject !== "-" ? staffObj.subject : defaultSub) : "-",
+      classTaught: staffObj.classTaught || "-",
+      qualification: staffObj.qualification || "",
+      dojService: staffObj.dojService || "",
+      dojPresPost: staffObj.dojPresPost || "",
+      dojSchool: staffObj.dojSchool || "",
+      firstApp: "TRB",
+      nature: normNature,
+      examDuty: isTeaching ? "Hall Superintendent" : "",
+      campDuty: isTeaching ? "Examiner" : "",
+      campOption: sch.block || "01-Sivagangai",
+      mobile: staffObj.mobile || "",
+      source: isTempId ? "TEMP_ID" : "EBS_ADDED",
+      isTeaching: Boolean(isTeaching),
+      isAddedEbs: true,
+      isTempId: Boolean(isTempId)
+    };
+
+    const exIdx = extra.staff.findIndex(x => String(x && (x.id || x.staffId) || "").trim() === sid);
+    if (exIdx >= 0) {
+      extra.staff[exIdx] = Object.assign({}, extra.staff[exIdx], newRec);
+    } else {
+      extra.staff.push(newRec);
+    }
+
+    const addIdx = extra.ebs2026.addedStaff.findIndex(x => String(x && (x.id || x.staffId) || "").trim() === sid);
+    if (addIdx >= 0) {
+      extra.ebs2026.addedStaff[addIdx] = Object.assign({}, extra.ebs2026.addedStaff[addIdx], newRec);
+    } else {
+      extra.ebs2026.addedStaff.push(newRec);
+    }
+
+    if (!extra.ebs2026.staffProfiles[sid]) {
+      extra.ebs2026.staffProfiles[sid] = {
+        prefix: newRec.prefix,
+        nameTa: newRec.nameTa,
+        nature: newRec.nature,
+        resDistrict: "Sivagangai",
+        prefCamp: "01-Sivagangai",
+        modeFirstApp: "TRB",
+        modePresPost: "NEW APPOINTMENT",
+        dojService: newRec.dojService,
+        dojPresPost: newRec.dojPresPost,
+        dojSchool: newRec.dojSchool,
+        isTempId: Boolean(isTempId),
+        isAddedEbs: true
+      };
+    } else {
+      extra.ebs2026.staffProfiles[sid].isTempId = Boolean(isTempId);
+      extra.ebs2026.staffProfiles[sid].isAddedEbs = true;
+    }
+
+    recalcSchoolEbsF1StaffCountsFromList(uNo);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+    renderSchoolEbsModule();
+    saveSchoolEbs2026Data(false);
+    return sid;
+  }
+
+  function selectSearchedEmisStaffForEbs(idx) {
+    if (!activeSchoolSession) return;
+    const m = _ebsAddStaffSearchResultsCache[idx];
+    if (!m) return;
+    const uNo = String(activeSchoolSession.uNo || "").trim();
+    const sid = addStaffRecordToCurrentSchoolEbs(uNo, m, _ebsAddStaffModeIsTeaching, false);
+    closeEbsAddStaffModal();
+    if (sid) {
+      showToast(`✅ EMIS [${sid}] ${m.name} இப்பள்ளியின் ${_ebsAddStaffModeIsTeaching ? "F3" : "F4"} பட்டியலில் இணைக்கப்பட்டார்!`, "#16a34a");
+      openEbsStaffProfileModal(uNo, sid);
+    }
+  }
+
+  function createAndOpenEbsStaffWithCustomEmis(customEmisId) {
+    if (!activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo || "").trim();
+    const cleanId = String(customEmisId || "").replace(/\D/g, "").slice(0, 8);
+    if (!cleanId) return;
+    const sid = addStaffRecordToCurrentSchoolEbs(uNo, {
+      staffId: cleanId,
+      name: "",
+      gender: "Male",
+      desig: _ebsAddStaffModeIsTeaching ? "B.T.Assistant" : "Junior Assistant",
+      subject: _ebsAddStaffModeIsTeaching ? "English" : "-"
+    }, _ebsAddStaffModeIsTeaching, false);
+    closeEbsAddStaffModal();
+    if (sid) {
+      showToast(`✅ EMIS [${sid}] உடன் புதிய ${_ebsAddStaffModeIsTeaching ? "ஆசிரியர் (F3)" : "பணியாளர் (F4)"} உருவாக்கப்பட்டார். விவரங்களைப் பூர்த்தி செய்க!`, "#16a34a");
+      openEbsStaffProfileModal(uNo, sid);
+      setTimeout(() => { const nmEl = document.getElementById("ebsStfNameEn"); if (nmEl) nmEl.focus(); }, 100);
+    }
+  }
+
+  function createAndOpenEbsStaffWithTempId() {
+    if (!activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo || "").trim();
+    const nextTempId = generateNextEbsTempStaffId(uNo);
+    const sid = addStaffRecordToCurrentSchoolEbs(uNo, {
+      staffId: nextTempId,
+      name: "",
+      gender: "Male",
+      desig: _ebsAddStaffModeIsTeaching ? "B.T.Assistant" : "Junior Assistant",
+      subject: _ebsAddStaffModeIsTeaching ? "English" : "-"
+    }, _ebsAddStaffModeIsTeaching, true);
+    closeEbsAddStaffModal();
+    if (sid) {
+      showToast(`🆕 தற்காலிக எண் [${sid}] உருவாக்கப்பட்டு ${_ebsAddStaffModeIsTeaching ? "F3" : "F4"} பட்டியலில் சேர்க்கப்பட்டது!`, "#15803d");
+      openEbsStaffProfileModal(uNo, sid);
+      setTimeout(() => { const nmEl = document.getElementById("ebsStfNameEn"); if (nmEl) nmEl.focus(); }, 100);
+    }
+  }
+
+  function removeAddedEbsStaff(uNo, staffId) {
+    uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+    staffId = String(staffId || "").trim();
+    if (!uNo || !staffId) return;
+    const extra = getSchoolExtra(uNo);
+    if (Array.isArray(extra.staff)) {
+      extra.staff = extra.staff.filter(x => String(x && (x.id || x.staffId) || "").trim() !== staffId);
+    }
+    if (extra.ebs2026) {
+      if (Array.isArray(extra.ebs2026.addedStaff)) {
+        extra.ebs2026.addedStaff = extra.ebs2026.addedStaff.filter(x => String(x && (x.id || x.staffId) || "").trim() !== staffId);
+      }
+      if (extra.ebs2026.staffProfiles && extra.ebs2026.staffProfiles[staffId]) {
+        delete extra.ebs2026.staffProfiles[staffId];
+      }
+      if (!Array.isArray(extra.ebs2026.removedStaffIds)) extra.ebs2026.removedStaffIds = [];
+      if (!extra.ebs2026.removedStaffIds.includes(staffId)) extra.ebs2026.removedStaffIds.push(staffId);
+    }
+    recalcSchoolEbsF1StaffCountsFromList(uNo);
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+    renderSchoolEbsModule();
+    saveSchoolEbs2026Data(false);
+    showToast(`🗑️ பணியாளர் பதிவு [${staffId}] பட்டியலிலிருந்து நீக்கப்பட்டது.`, "#dc2626");
+  }
 
   function openEbsStaffProfileModal(uNo, staffId) {
     uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "");
@@ -24223,6 +24770,23 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         stItem.mobile = prof.mobile;
       }
     }
+    if (extra.ebs2026 && Array.isArray(extra.ebs2026.addedStaff)) {
+      const addItem = extra.ebs2026.addedStaff.find(x => String(x.id || x.staffId) === String(staffId));
+      if (addItem) {
+        if (nameEn) addItem.name = nameEn;
+        addItem.gender = gender;
+        addItem.dob = dob;
+        if (desig) addItem.desig = desig;
+        addItem.qualification = qual;
+        if (isTeaching && subject) addItem.subject = subject;
+        addItem.nature = prof.nature;
+        addItem.dojService = prof.dojService;
+        addItem.dojPresPost = prof.dojPresPost;
+        addItem.dojSchool = prof.dojSchool;
+        addItem.mobile = prof.mobile;
+      }
+    }
+    recalcSchoolEbsF1StaffCountsFromList(uNo);
 
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
     closeEbsStaffProfileModal();
