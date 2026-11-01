@@ -542,6 +542,47 @@
     body.school-mode .top-system-bar {
       display: none !important;
     }
+
+    /* Show compact EBS-27 Notification Box in Flash Ticker Bar only in School Portal */
+    .ebs-notif-ticker-box {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1.5px solid #fef08a;
+      font-weight: 900;
+      font-size: 0.80rem;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+      white-space: nowrap;
+      transition: transform 0.15s ease;
+    }
+    .ebs-notif-ticker-box:hover {
+      transform: translateY(-1px);
+    }
+    body.school-mode .ebs-notif-ticker-box {
+      display: inline-flex;
+    }
+
+    /* Fullscreen Standalone EBS Mode: Hide Header Banner, Flash Ticker, Top Bar & Menu Buttons */
+    body.ebs-standalone-mode .top-system-bar,
+    body.ebs-standalone-mode .portal-header,
+    body.ebs-standalone-mode .flash-ticker-bar,
+    body.ebs-standalone-mode #schTopQuickActionBar,
+    body.ebs-standalone-mode .school-topmenu-container,
+    body.ebs-standalone-mode #schoolTopMenuBar,
+    body.ebs-standalone-mode .creator-card,
+    body.ebs-standalone-mode .portal-footer {
+      display: none !important;
+    }
+    body.ebs-standalone-mode .container {
+      max-width: 100% !important;
+      padding: 10px 14px !important;
+      margin: 0 auto !important;
+    }
     .school-topmenu-item.active .topmenu-title,
     .school-topmenu-item.active .topmenu-label {
       color: #ffffff !important;
@@ -2571,6 +2612,11 @@
     <div style="flex:1; font-weight:700;" id="flashTickerText">
       📢 [முக்கிய அறிவிப்பு] சிவகங்கை மாவட்ட 281 பள்ளிகளின் ஆசிரியர்கள் (6,125) மற்றும் அலுவலகப் பணியாளர்கள் (956) விவரங்கள் TN EMIS பதிவேட்டிலிருந்து இணைக்கப்பட்டு நேரடி ஒத்திசைவு செய்யப்பட்டுள்ளது. பள்ளிகள் விடுபட்ட விவரங்களை மட்டும் பூர்த்தி செய்தால் போதும்.
     </div>
+    <div class="ebs-notif-ticker-box" onclick="openSchoolEbsStandaloneMode()" title="EBS-27 படிவங்களைத் திறக்க இங்கே கிளிக் செய்க">
+      <span style="background:#fef08a; color:#4c1d95; padding:1px 7px; border-radius:4px; font-size:0.73rem; font-weight:900;">🔔 EBS - 27</span>
+      <span>📋 2026-27 EBS படிவங்கள் (F1–F4)</span>
+      <span style="color:#fef08a; font-size:0.76rem;">திற ❯</span>
+    </div>
     <button type="button" class="btn btn-sm" style="background:#fef08a; color:#7f1d1d; font-weight:800;" onclick="cycleFlashNews()">அடுத்த அறிவிப்பு ❯</button>
   </div>
 
@@ -2976,7 +3022,7 @@
   <!-- ===================================================================== -->
   <div id="viewSchool" class="view-section">
     <!-- School Top Quick Action Bar + Navigation Menu -->
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:#0f294a; color:#fff; padding:6px 12px; border-radius:8px; margin-bottom:8px; border-left:4px solid #f59e0b;">
+    <div id="schTopQuickActionBar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:#0f294a; color:#fff; padding:6px 12px; border-radius:8px; margin-bottom:8px; border-left:4px solid #f59e0b;">
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
         <span style="font-size:0.82rem; font-weight:900; color:#fde047;">🏫 பள்ளி உள்நுழைவு முகப்பு (School Portal)</span>
         <span id="schTopQuickNameBadge" style="font-size:0.80rem; font-weight:700; color:#e2e8f0;"></span>
@@ -3022,15 +3068,9 @@
           <span class="topmenu-en">(Needs &amp; Circulars)</span>
         </button>
 
-        <button type="button" class="school-topmenu-item" id="schTabBtnEbs" onclick="switchSchoolTab('ebs')">
-          <span class="topmenu-icon">📋</span>
-          <span class="topmenu-label"><span class="topmenu-num">5.</span> <span class="topmenu-title">EBS 2026-27 (F1–F4 படிவங்கள்)</span></span>
-          <span class="topmenu-en">(EBS Forms 01–04)</span>
-        </button>
-
         <button type="button" class="school-topmenu-item" id="schTabBtnSecurity" onclick="switchSchoolTab('security')">
           <span class="topmenu-icon">🔑</span>
-          <span class="topmenu-label"><span class="topmenu-num">6.</span> <span class="topmenu-title">கடவுச்சொல் மாற்றம்</span></span>
+          <span class="topmenu-label"><span class="topmenu-num">5.</span> <span class="topmenu-title">கடவுச்சொல் மாற்றம்</span></span>
           <span class="topmenu-en">(Change Password)</span>
         </button>
       </div>
@@ -3040,6 +3080,20 @@
     <!-- 1. பள்ளித்தகவல் பலகை (SCHOOL DASHBOARD)                               -->
     <!-- =================================================================== -->
     <div id="schPaneStaffStrength" class="panel-box">
+      <!-- SCHOOL NOTIFICATION AREA WITH COMPACT EBS-27 BOX -->
+      <div id="schDashEbsNotificationStrip" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:linear-gradient(90deg, #fffbeb 0%, #f5f3ff 100%); border:1.5px solid #f59e0b; border-left:5px solid #7c3aed; border-radius:10px; padding:7px 12px; margin-bottom:12px; box-shadow:0 2px 8px rgba(124,58,237,0.10);">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span style="background:#dc2626; color:#fff; font-size:0.72rem; font-weight:900; padding:2px 8px; border-radius:999px;">📢 அறிவிப்பு (Notification)</span>
+          <span style="font-size:0.82rem; font-weight:800; color:#1e1b4b;">
+            2026-2027 ஆம் கல்வி ஆண்டிற்கான <strong>EBS படிவங்கள் (FORM I, II, III &amp; IV)</strong> ஆன்லைன் பதிவு மற்றும் A4 PDF பதிவிறக்கம்:
+          </span>
+        </div>
+        <div onclick="openSchoolEbsStandaloneMode()" style="cursor:pointer; display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); color:#ffffff; padding:6px 14px; border-radius:8px; font-weight:900; font-size:0.84rem; border:1.5px solid #ddd6fe; box-shadow:0 3px 10px rgba(124,58,237,0.28);">
+          <span style="background:#fef08a; color:#4c1d95; padding:2px 8px; border-radius:5px; font-size:0.75rem; font-weight:900;">📋 EBS - 27</span>
+          <span>படிவங்கள் திறக்க (Open EBS) ❯</span>
+        </div>
+      </div>
+
       <!-- SECTION 1 OF SCHOOL DASHBOARD: DIGNITARIES & EDUCATION OFFICIALS -->
       <div id="schoolDignitariesShowcase" class="dignitary-showcase-container" style="margin-bottom:14px;">
         <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px; background:linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%); border-bottom:1.5px solid #cbd5e1; gap:8px; flex-wrap:wrap;">
@@ -3070,9 +3124,6 @@
           <div style="display:flex; gap:6px; flex-wrap:wrap;">
             <button type="button" class="btn btn-sm" onclick="switchSchoolTab('profile')" style="background:#fef08a; color:#0f294a; font-weight:900; padding:5px 12px; font-size:0.78rem; border-radius:6px; border:none;">
               ✏️ பள்ளி விவரம் திருத்து (Edit Profile)
-            </button>
-            <button type="button" class="btn btn-sm" onclick="switchSchoolTab('ebs')" style="background:#ddd6fe; color:#4c1d95; font-weight:900; padding:5px 12px; font-size:0.78rem; border-radius:6px; border:1px solid #a78bfa;">
-              📋 EBS 2026-27 படிவங்கள் (F1–F4) &amp; A4 பதிவிறக்கம்
             </button>
           </div>
         </div>
@@ -3802,7 +3853,10 @@
             📌 <strong>நிலையான தரவு (Fixed Baseline Data):</strong> நமது போர்ட்டலில் உள்ள <strong>தற்போதைய மாணவர் எண்ணிக்கை</strong> மற்றும் <strong>பணிபுரியும் ஆசிரியர்கள்/பணியாளர்கள்</strong> நிலையான தரவாக இணைக்கப்பட்டுள்ளன. விடுபட்ட தேர்வுப் பணி விவரங்களை மட்டும் பூர்த்தி செய்து <strong>FORM I–IV A4 அறிக்கைகளைப்</strong> பதிவிறக்கம் செய்யலாம்.
           </div>
         </div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="closeSchoolEbsStandaloneMode()" style="background:#fffbeb; color:#92400e; border-color:#f59e0b; font-weight:900;">
+            ⬅️ பள்ளி முகப்பிற்குத் திரும்பு (Back to School Home)
+          </button>
           <button type="button" class="btn btn-primary btn-sm" onclick="saveSchoolEbs2026Data(true)" style="background:#16a34a; border-color:#15803d; font-weight:900;">
             💾 EBS 2026-27 சேமி &amp; தனி Google Sheet-இல் ஒத்திசை
           </button>
@@ -8890,6 +8944,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const target = document.getElementById(viewName);
     if (target) target.classList.add("active");
     if (document.body) {
+      if (viewName !== "viewSchool") {
+        document.body.classList.remove("ebs-standalone-mode");
+      }
       document.body.classList.toggle("school-mode", viewName === "viewSchool");
       document.body.classList.toggle("admin-mode", viewName === "viewAdmin");
       const topSysBar = document.querySelector(".top-system-bar");
@@ -10501,6 +10558,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       }
       if (pane) pane.style.display = (k === tabKey) ? "block" : "none";
     });
+    if (document.body) { document.body.classList.toggle("ebs-standalone-mode", tabKey === "ebs"); }
     if (tabKey === "ebs" && typeof renderSchoolEbsModule === "function") { try { renderSchoolEbsModule(); } catch (err) { console.error("renderSchoolEbsModule error:", err); } }
     if (tabKey === "students") {
       renderSchoolStudentsRosterUI();
@@ -22111,6 +22169,22 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     }
 
     return { sch, extra, ebs, staffList, stu10_12, isHSS };
+  }
+
+  function openSchoolEbsStandaloneMode() {
+    if (document.body) {
+      document.body.classList.add("ebs-standalone-mode");
+    }
+    switchSchoolTab("ebs");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function closeSchoolEbsStandaloneMode() {
+    if (document.body) {
+      document.body.classList.remove("ebs-standalone-mode");
+    }
+    switchSchoolTab("staffStrength");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function switchSchoolEbsSubTab(subKey) {
