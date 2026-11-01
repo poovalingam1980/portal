@@ -22142,9 +22142,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       const schMobClean = String(sch.mobile || "").replace(/\D/g, "").slice(-10);
       const stMobClean = String(st.mobile || "").replace(/\D/g, "").slice(-10);
       const personalStMob = (stMobClean && stMobClean !== schMobClean) ? stMobClean : "";
+      const resolvedNature = normalizeStaffNatureBySchoolMgmt(ebsProf.nature || ov.nature || st.nature || raw.nature || "Regular (Govt.Salaried )", sch.mgmt1);
+      const isContractPost = /contract/i.test(resolvedNature);
       return {
         staffId: sid,
-        ifhrmsId: ebsProf.ifhrmsId || raw.ifhrmsId || st.ifhrmsId || "",
+        ifhrmsId: isContractPost ? "" : (ebsProf.ifhrmsId || raw.ifhrmsId || st.ifhrmsId || ""),
         prefix: ebsProf.prefix || raw.prefix || st.prefix || ((ov.gender || st.gender || raw.gender) === "Female" ? "திருமதி." : "திரு."),
         name: ov.name || st.name || raw.name || "",
         nameTa: ebsProf.nameTa || raw.nameTa || st.nameTa || "",
@@ -22154,20 +22156,20 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         qualification: ov.qualification || st.qualification || raw.qualification || "",
         subject: ov.subject || st.subject || raw.subject || "-",
         classTaught: st.classTaught || raw.classTaught || "-",
-        nature: normalizeStaffNatureBySchoolMgmt(ebsProf.nature || ov.nature || st.nature || raw.nature || "Regular (Govt.Salaried )", sch.mgmt1),
-        dojService: ebsProf.dojService || ov.dojService || st.dojService || raw.dojService || "",
+        nature: resolvedNature,
+        dojService: isContractPost ? "" : (ebsProf.dojService || ov.dojService || st.dojService || raw.dojService || ""),
         dojPresPost: ebsProf.dojPresPost || ov.dojPresPost || st.dojPresPost || raw.dojPresPost || "",
         dojSchool: ebsProf.dojSchool || ov.dojSchool || st.dojSchool || raw.dojSchool || "",
-        unitTransferDate: ebsProf.unitTransferDate || "",
+        unitTransferDate: isContractPost ? "" : (ebsProf.unitTransferDate || ""),
         mobile: ebsProf.mobile || ov.mobile || raw.mobile || personalStMob || stMobClean || "",
         altMobile: ebsProf.altMobile || st.altMobile || raw.altMobile || "",
         email: ebsProf.email || ov.email || st.email || raw.email || "",
         resPlace: ebsProf.resPlace || st.resPlace || raw.resPlace || "",
         resDistrict: ebsProf.resDistrict || st.resDistrict || raw.resDistrict || "Sivagangai",
         prefCamp: ebsProf.prefCamp || st.prefCamp || raw.prefCamp || (/(KARAIKUDI|DEVAKOTTAI|SAKKOTTAI|KANNANGUDI|KALLAL|THIRUPPATHUR|SINGAMPUNARI|S\.PUDUR)/i.test(sch.block || "") ? "02-Karaikudi/Devakottai" : "01-Sivagangai"),
-        modeFirstApp: ebsProf.modeFirstApp || raw.modeFirstApp || st.firstApp || "TRB",
-        firstJoinPost: ebsProf.firstJoinPost || raw.firstJoinPost || desigStr,
-        modePresPost: ebsProf.modePresPost || raw.modePresPost || "NEW APPOINTMENT",
+        modeFirstApp: isContractPost ? "" : (ebsProf.modeFirstApp || raw.modeFirstApp || st.firstApp || "TRB"),
+        firstJoinPost: isContractPost ? "" : (ebsProf.firstJoinPost || raw.firstJoinPost || desigStr),
+        modePresPost: isContractPost ? "" : (ebsProf.modePresPost || raw.modePresPost || "NEW APPOINTMENT"),
         classesHandling: ebsProf.classesHandling || getDefaultClassesHandlingForStaff(desigStr, ov.subject || st.subject || raw.subject || "", sch),
         pracSslc1: ebsProf.pracSslc1 || "",
         pracHsc1: ebsProf.pracHsc1 || "",
@@ -23379,7 +23381,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           <td style="text-align:center; font-weight:900;">${idx + 1}</td>
           <td>
             <div style="font-weight:900; color:#1e40af;">${st.isTempId ? "TEMP" : "EMIS"}: ${st.staffId || "-"}${idBadge}</div>
-            <div style="font-size:0.75rem; font-weight:800; color:${hasIfhrms ? "#15803d" : "#b45309"};">IFHRMS: ${st.ifhrmsId || "பதிவு செய்க"}</div>
+            <div style="font-size:0.75rem; font-weight:800; color:${/contract/i.test(st.nature || "") ? "#64748b" : (hasIfhrms ? "#15803d" : "#b45309")};">${/contract/i.test(st.nature || "") ? "Contract (IFHRMS: —)" : ("IFHRMS: " + (st.ifhrmsId || "பதிவு செய்க"))}</div>
           </td>
           <td>
             <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name || "(பெயர் உள்ளிடவும்)")}</div>
@@ -23450,7 +23452,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           <td style="text-align:center; font-weight:900;">${idx + 1}</td>
           <td>
             <div style="font-weight:900; color:#b45309;">${st.isTempId ? "TEMP" : "EMIS"}: ${st.staffId || "-"}${idBadge}</div>
-            <div style="font-size:0.75rem; font-weight:800; color:${hasIfhrms ? "#15803d" : "#b45309"};">IFHRMS: ${st.ifhrmsId || "பதிவு செய்க"}</div>
+            <div style="font-size:0.75rem; font-weight:800; color:${/contract/i.test(st.nature || "") ? "#64748b" : (hasIfhrms ? "#15803d" : "#b45309")};">${/contract/i.test(st.nature || "") ? "Contract (IFHRMS: —)" : ("IFHRMS: " + (st.ifhrmsId || "பதிவு செய்க"))}</div>
           </td>
           <td>
             <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name || "(பெயர் உள்ளிடவும்)")}</div>
@@ -24205,8 +24207,9 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       value: d.name,
       label: d.code ? `${d.code} - ${d.name}` : d.name
     }));
+    const isContractInitial = /contract/i.test(normalizeStaffNatureBySchoolMgmt(st.nature, ctx.sch.mgmt1));
     const desigOpts = buildSelectOptionsWithCurrent(desigItems, st.desig, "-- பதவி தேர்வு செய்க --");
-    const firstJoinPostOpts = buildSelectOptionsWithCurrent(desigItems, st.firstJoinPost || st.desig, "-- முதல் நியமனப் பதவி --");
+    const firstJoinPostOpts = `<option value="" ${isContractInitial || !(st.firstJoinPost || st.desig) ? "selected" : ""}></option>` + buildSelectOptionsWithCurrent(desigItems, isContractInitial ? "__NONE__" : (st.firstJoinPost || st.desig), "", true);
 
     // 3. Main Subject (Col F DESIGNATION_SUBJECT) - Only for Teaching Staff (Form-III)
     const mainSubItems = (dd.designationSubjects || []).map(s => ({
@@ -24236,8 +24239,8 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const natureOpts = buildSelectOptionsWithCurrent(allowedNatureItems, effectiveNature, "", true);
 
     // 7. Mode of First Appointment (Col P) & Mode of Present Post (Col Q)
-    const modeFirstOpts = buildSelectOptionsWithCurrent(dd.modeFirstAppointments || ["TRB", "Employment Seniority", "Management", "Composinate Ground", "TNPSC", "Others"], st.modeFirstApp, "");
-    const modePresOpts = buildSelectOptionsWithCurrent(dd.modePresentPosts || ["NEW APPOINTMENT", "PROMOTION"], st.modePresPost, "");
+    const modeFirstOpts = `<option value="" ${isContractInitial || !st.modeFirstApp ? "selected" : ""}></option>` + buildSelectOptionsWithCurrent(dd.modeFirstAppointments || ["TRB", "Employment Seniority", "Management", "Composinate Ground", "TNPSC", "Others"], isContractInitial ? "__NONE__" : st.modeFirstApp, "", true);
+    const modePresOpts = `<option value="" ${isContractInitial || !st.modePresPost ? "selected" : ""}></option>` + buildSelectOptionsWithCurrent(dd.modePresentPosts || ["NEW APPOINTMENT", "PROMOTION"], isContractInitial ? "__NONE__" : st.modePresPost, "", true);
 
     // 8. Handling Classes Multi-Select Subjects (Col H TEACHING_SUBJECT filtered by Col I TEACHING_SUBJECT_CLASS)
     const ch = st.classesHandling || getDefaultClassesHandlingForStaff(st.desig, st.subject, ctx.sch);
@@ -24411,28 +24414,47 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const isAdminViewing = Boolean(document.body && document.body.classList.contains("admin-mode"));
 
     bodyEl.innerHTML = `
-      <form onsubmit="saveEbsStaffProfileModal(event)">
-        <div class="grid-4" style="margin-bottom:12px;">
+      <form onsubmit="saveEbsStaffProfileModal(event)" data-orig-ifhrms="${escapeHtmlAttr(st.ifhrmsId || "")}" data-orig-modefirst="${escapeHtmlAttr(st.modeFirstApp || "TRB")}" data-orig-dojservice="${escapeHtmlAttr(st.dojService || "")}" data-orig-firstpost="${escapeHtmlAttr(st.firstJoinPost || st.desig || "")}" data-orig-modepres="${escapeHtmlAttr(st.modePresPost || "NEW APPOINTMENT")}" data-orig-unittransfer="${escapeHtmlAttr(st.unitTransferDate || "")}">
+        <!-- ROW 1: Staff EMIS ID -> Nature of Present Post -> IFHRMS ID -> Name (English) & Name (Tamil with Tanglish) -->
+        <div style="display:grid; grid-template-columns:130px 195px 155px 1fr 1.45fr; gap:8px; margin-bottom:12px; align-items:start;">
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.76rem; font-weight:800;">Staff EMIS ID (8 Digits)</label>
+            <label class="form-label" style="font-size:0.75rem; font-weight:800;">Staff EMIS ID (8 Digits)</label>
             <input type="text" id="ebsStfEmisId" maxlength="8" class="form-control" value="${escapeHtmlAttr(st.staffId)}" readonly style="background:#f1f5f9; font-weight:900;">
           </div>
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4c1d95;">IFHRMS ID* (11 Digits)</label>
-            <input type="text" id="ebsStfIfhrmsId" maxlength="11" class="form-control" value="${escapeHtmlAttr(st.ifhrmsId || "")}" placeholder="11-இலக்க IFHRMS எண்" style="font-weight:900; border-color:#7c3aed; letter-spacing:1px;">
+            <label class="form-label" style="font-size:0.75rem; font-weight:900; color:#1e3a8a;">Nature of Present Post</label>
+            <select id="ebsStfNature" class="form-control" onchange="onEbsNatureOfPostChange()" style="font-weight:900; border-color:#2563eb; background:#eff6ff; color:#1e3a8a;">
+              ${natureOpts}
+            </select>
           </div>
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.76rem; font-weight:800;">Name (In English)</label>
+            <label class="form-label" style="font-size:0.75rem; font-weight:900; color:#4c1d95;">IFHRMS ID* (11 Digits)</label>
+            <input type="text" id="ebsStfIfhrmsId" maxlength="11" class="form-control" value="${isContractInitial ? "" : escapeHtmlAttr(st.ifhrmsId || "")}" placeholder="${isContractInitial ? "" : "11-இலக்க IFHRMS எண்"}" ${isContractInitial ? "disabled" : ""} style="font-weight:900; border-color:${isContractInitial ? "#cbd5e1" : "#7c3aed"}; background:${isContractInitial ? "#e2e8f0" : "#fff"}; letter-spacing:1px;">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="font-size:0.75rem; font-weight:800;">Name (In English)</label>
             <input type="text" id="ebsStfNameEn" class="form-control" value="${escapeHtmlAttr(st.name || "")}" style="font-weight:800;">
           </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4c1d95;">பெயர் (தமிழில்) &amp; Prefix</label>
+          <div class="form-group" style="margin-bottom:0; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; gap:4px; flex-wrap:wrap;">
+              <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#4c1d95; margin:0;">பெயர் (தமிழில்) &amp; Prefix</label>
+              <div style="display:flex; align-items:center; gap:5px;">
+                <label style="display:inline-flex; align-items:center; gap:3px; font-size:0.68rem; font-weight:900; color:#15803d; background:#dcfce7; padding:1px 6px; border-radius:4px; cursor:pointer;" title="ஆங்கில எழுத்துகளில் தட்டச்சு செய்து Space அழுத்தினால் தமிழில் மாறும் (Tanglish Phonetic Typing)">
+                  <input type="checkbox" id="ebsTanglishToggle" checked style="margin:0; cursor:pointer;">
+                  <span>தங்கlish</span>
+                </label>
+                <button type="button" onclick="autoFillEbsTamilNameFromEnglish()" title="ஆங்கிலப் பெயரைத் தானாகத் தமிழில் மாற்று" style="background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; border-radius:4px; padding:1px 6px; font-size:0.67rem; font-weight:900; cursor:pointer;">
+                  ⚡ ஆங்கிலம்➔தமிழ்
+                </button>
+              </div>
+            </div>
             <div style="display:flex; gap:4px;">
-              <select id="ebsStfPrefix" class="form-control" style="max-width:105px; font-weight:800;">
+              <select id="ebsStfPrefix" class="form-control" style="max-width:98px; font-weight:800; padding:6px 4px;">
                 ${prefixOpts}
               </select>
-              <input type="text" id="ebsStfNameTa" class="form-control" value="${escapeHtmlAttr(st.nameTa || "")}" placeholder="உம். கார்த்திகேயன் இரா" style="font-weight:800; border-color:#7c3aed;">
+              <input type="text" id="ebsStfNameTa" class="form-control" value="${escapeHtmlAttr(st.nameTa || "")}" placeholder="தங்கlish-இல் தட்டச்சு செய்க (எ.கா. karthikeyan + Space)" oninput="onEbsNameTaTanglishInput(event)" onkeydown="onEbsNameTaTanglishKeydown(event)" onblur="onEbsNameTaTanglishBlur(event)" autocomplete="off" style="font-weight:800; border-color:#7c3aed;">
             </div>
+            <div id="ebsTanglishSuggestBar" style="display:none; margin-top:4px; padding:4px 6px; background:#f5f3ff; border:1px solid #c4b5fd; border-radius:6px; font-size:0.73rem; font-weight:800; color:#4c1d95; flex-wrap:wrap; gap:4px; align-items:center;"></div>
           </div>
         </div>
 
@@ -24503,24 +24525,25 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
         </div>
 
         <!-- SECTION 1: முதன் முதலில் அரசுப்பணியேற்ற விவரம் -->
-        <div style="margin-bottom:12px; background:#f0fdfa; padding:10px 12px; border-radius:8px; border:1.5px solid #99f6e4;">
-          <div style="font-size:0.80rem; font-weight:900; color:#0f766e; margin-bottom:8px;">
-            🏛️ முதன் முதலில் அரசுப்பணியேற்ற விவரம்
+        <div id="ebsFirstGovtApptSection" style="margin-bottom:12px; background:${isContractInitial ? "#f1f5f9" : "#f0fdfa"}; padding:10px 12px; border-radius:8px; border:1.5px solid ${isContractInitial ? "#cbd5e1" : "#99f6e4"}; opacity:${isContractInitial ? "0.62" : "1"}; transition:all 0.2s;">
+          <div style="font-size:0.80rem; font-weight:900; color:${isContractInitial ? "#64748b" : "#0f766e"}; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+            <span>🏛️ முதன் முதலில் அரசுப்பணியேற்ற விவரம்</span>
+            <span id="ebsFirstGovtApptContractNote" style="display:${isContractInitial ? "inline-block" : "none"}; font-size:0.71rem; color:#dc2626; background:#fee2e2; padding:1px 8px; border-radius:4px; font-weight:800;">Contract பணியாளர்களுக்குப் பொருந்தாது (Disabled)</span>
           </div>
           <div class="grid-3">
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label" style="font-size:0.75rem; font-weight:900; color:#0f766e;">Mode of First Appointment</label>
-              <select id="ebsStfModeFirstApp" class="form-control" style="font-weight:800; border-color:#0f766e;">
+              <select id="ebsStfModeFirstApp" class="form-control" ${isContractInitial ? "disabled" : ""} style="font-weight:800; border-color:${isContractInitial ? "#cbd5e1" : "#0f766e"}; background:${isContractInitial ? "#e2e8f0" : "#fff"};">
                 ${modeFirstOpts}
               </select>
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label" style="font-size:0.75rem; font-weight:800;">D.O.J in First Appointment</label>
-              <input type="date" id="ebsStfDojService" class="form-control" value="${escapeHtmlAttr(st.dojService || "")}" style="font-weight:800;">
+              <input type="${isContractInitial ? "text" : "date"}" id="ebsStfDojService" class="form-control" value="${isContractInitial ? "" : escapeHtmlAttr(st.dojService || "")}" ${isContractInitial ? "disabled" : ""} style="font-weight:800; background:${isContractInitial ? "#e2e8f0" : "#fff"};">
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label" style="font-size:0.75rem; font-weight:800;">Name of the Post (First Join)</label>
-              <select id="ebsStfFirstJoinPost" class="form-control" style="font-weight:800;">
+              <select id="ebsStfFirstJoinPost" class="form-control" ${isContractInitial ? "disabled" : ""} style="font-weight:800; background:${isContractInitial ? "#e2e8f0" : "#fff"};">
                 ${firstJoinPostOpts}
               </select>
             </div>
@@ -24532,17 +24555,11 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
           <div style="font-size:0.80rem; font-weight:900; color:#1e3a8a; margin-bottom:8px;">
             📋 தற்போது வகிக்கும் பதவி சார்ந்த விவரங்கள்
           </div>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(155px, 1fr)); gap:10px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:10px;">
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#1e3a8a;">Mode of Appointment in Present Post</label>
-              <select id="ebsStfModePresPost" class="form-control" style="font-weight:800; border-color:#3b82f6;">
+              <select id="ebsStfModePresPost" class="form-control" ${isContractInitial ? "disabled" : ""} style="font-weight:800; border-color:${isContractInitial ? "#cbd5e1" : "#3b82f6"}; background:${isContractInitial ? "#e2e8f0" : "#fff"};">
                 ${modePresOpts}
-              </select>
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#1e3a8a;">Nature of Present Post</label>
-              <select id="ebsStfNature" class="form-control" style="font-weight:800; border-color:#3b82f6;">
-                ${natureOpts}
               </select>
             </div>
             <div class="form-group" style="margin-bottom:0;">
@@ -24551,7 +24568,7 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label" style="font-size:0.74rem; font-weight:800;">Unit Transfer Date</label>
-              <input type="date" id="ebsStfUnitTransfer" class="form-control" value="${escapeHtmlAttr(st.unitTransferDate || "")}" title="துறை மாறுதல் மூலம் தற்போதைய பதவியில் பணியேற்றவர்கள் மட்டும்">
+              <input type="${isContractInitial ? "text" : "date"}" id="ebsStfUnitTransfer" class="form-control" value="${isContractInitial ? "" : escapeHtmlAttr(st.unitTransferDate || "")}" ${isContractInitial ? "disabled" : ""} style="font-weight:800; background:${isContractInitial ? "#e2e8f0" : "#fff"};" title="துறை மாறுதல் மூலம் தற்போதைய பதவியில் பணியேற்றவர்கள் மட்டும்">
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label" style="font-size:0.74rem; font-weight:800;">Date of Join in Present School</label>
@@ -24735,6 +24752,499 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     modal.classList.add("active");
   }
 
+
+  // =========================================================================
+  // CONTRACT POST FIELD DISABLER & BLANKER (F3 & F4)
+  // =========================================================================
+  function onEbsNatureOfPostChange() {
+    const natureEl = document.getElementById("ebsStfNature");
+    if (!natureEl) return;
+    const isContract = /contract/i.test(natureEl.value || "");
+    const formEl = natureEl.closest("form");
+
+    const ifhrmsEl = document.getElementById("ebsStfIfhrmsId");
+    const sec1El = document.getElementById("ebsFirstGovtApptSection");
+    const sec1NoteEl = document.getElementById("ebsFirstGovtApptContractNote");
+    const modeFirstEl = document.getElementById("ebsStfModeFirstApp");
+    const dojServiceEl = document.getElementById("ebsStfDojService");
+    const firstJoinPostEl = document.getElementById("ebsStfFirstJoinPost");
+    const modePresEl = document.getElementById("ebsStfModePresPost");
+    const unitTransferEl = document.getElementById("ebsStfUnitTransfer");
+
+    if (isContract) {
+      if (ifhrmsEl) {
+        if (ifhrmsEl.value) formEl?.setAttribute("data-orig-ifhrms", ifhrmsEl.value);
+        ifhrmsEl.value = "";
+        ifhrmsEl.placeholder = "";
+        ifhrmsEl.disabled = true;
+        ifhrmsEl.style.background = "#e2e8f0";
+        ifhrmsEl.style.borderColor = "#cbd5e1";
+      }
+      if (sec1El) {
+        sec1El.style.background = "#f1f5f9";
+        sec1El.style.borderColor = "#cbd5e1";
+        sec1El.style.opacity = "0.62";
+      }
+      if (sec1NoteEl) sec1NoteEl.style.display = "inline-block";
+
+      if (modeFirstEl) {
+        if (modeFirstEl.value) formEl?.setAttribute("data-orig-modefirst", modeFirstEl.value);
+        modeFirstEl.value = "";
+        modeFirstEl.disabled = true;
+        modeFirstEl.style.background = "#e2e8f0";
+        modeFirstEl.style.borderColor = "#cbd5e1";
+      }
+      if (dojServiceEl) {
+        if (dojServiceEl.value) formEl?.setAttribute("data-orig-dojservice", dojServiceEl.value);
+        dojServiceEl.type = "text";
+        dojServiceEl.value = "";
+        dojServiceEl.disabled = true;
+        dojServiceEl.style.background = "#e2e8f0";
+      }
+      if (firstJoinPostEl) {
+        if (firstJoinPostEl.value) formEl?.setAttribute("data-orig-firstpost", firstJoinPostEl.value);
+        firstJoinPostEl.value = "";
+        firstJoinPostEl.disabled = true;
+        firstJoinPostEl.style.background = "#e2e8f0";
+      }
+      if (modePresEl) {
+        if (modePresEl.value) formEl?.setAttribute("data-orig-modepres", modePresEl.value);
+        modePresEl.value = "";
+        modePresEl.disabled = true;
+        modePresEl.style.background = "#e2e8f0";
+        modePresEl.style.borderColor = "#cbd5e1";
+      }
+      if (unitTransferEl) {
+        if (unitTransferEl.value) formEl?.setAttribute("data-orig-unittransfer", unitTransferEl.value);
+        unitTransferEl.type = "text";
+        unitTransferEl.value = "";
+        unitTransferEl.disabled = true;
+        unitTransferEl.style.background = "#e2e8f0";
+      }
+    } else {
+      if (ifhrmsEl) {
+        ifhrmsEl.disabled = false;
+        ifhrmsEl.placeholder = "11-இலக்க IFHRMS எண்";
+        ifhrmsEl.style.background = "#fff";
+        ifhrmsEl.style.borderColor = "#7c3aed";
+        if (!ifhrmsEl.value && formEl?.getAttribute("data-orig-ifhrms")) {
+          ifhrmsEl.value = formEl.getAttribute("data-orig-ifhrms");
+        }
+      }
+      if (sec1El) {
+        sec1El.style.background = "#f0fdfa";
+        sec1El.style.borderColor = "#99f6e4";
+        sec1El.style.opacity = "1";
+      }
+      if (sec1NoteEl) sec1NoteEl.style.display = "none";
+
+      if (modeFirstEl) {
+        modeFirstEl.disabled = false;
+        modeFirstEl.style.background = "#fff";
+        modeFirstEl.style.borderColor = "#0f766e";
+        if (!modeFirstEl.value) {
+          modeFirstEl.value = formEl?.getAttribute("data-orig-modefirst") || "TRB";
+        }
+      }
+      if (dojServiceEl) {
+        dojServiceEl.disabled = false;
+        dojServiceEl.type = "date";
+        dojServiceEl.style.background = "#fff";
+        if (!dojServiceEl.value && formEl?.getAttribute("data-orig-dojservice")) {
+          dojServiceEl.value = formEl.getAttribute("data-orig-dojservice");
+        }
+      }
+      if (firstJoinPostEl) {
+        firstJoinPostEl.disabled = false;
+        firstJoinPostEl.style.background = "#fff";
+        if (!firstJoinPostEl.value) {
+          firstJoinPostEl.value = formEl?.getAttribute("data-orig-firstpost") || (document.getElementById("ebsStfDesig")?.value || "");
+        }
+      }
+      if (modePresEl) {
+        modePresEl.disabled = false;
+        modePresEl.style.background = "#fff";
+        modePresEl.style.borderColor = "#3b82f6";
+        if (!modePresEl.value) {
+          modePresEl.value = formEl?.getAttribute("data-orig-modepres") || "NEW APPOINTMENT";
+        }
+      }
+      if (unitTransferEl) {
+        unitTransferEl.disabled = false;
+        unitTransferEl.type = "date";
+        unitTransferEl.style.background = "#fff";
+        if (!unitTransferEl.value && formEl?.getAttribute("data-orig-unittransfer")) {
+          unitTransferEl.value = formEl.getAttribute("data-orig-unittransfer");
+        }
+      }
+    }
+  }
+
+  // =========================================================================
+  // TANGLISH (PHONETIC ENGLISH-TO-TAMIL) ENGINE FOR TEACHER/STAFF NAMES
+  // =========================================================================
+  const TANGLISH_INITIAL_MAP = {
+    a: "அ", b: "பா", c: "சி", d: "த", e: "இ", f: "பி", g: "கோ", h: "ஹ",
+    i: "இ", j: "ஜெ", k: "க", l: "இல", m: "மு", n: "ந", o: "ஓ", p: "ப",
+    q: "கி", r: "இரா", s: "ச", t: "தி", u: "உ", v: "வெ", w: "வா", x: "சே",
+    y: "ய", z: "ஜ"
+  };
+
+  const TANGLISH_COMMON_NAMES_DICT = {
+    "murugan": "முருகன்", "murugesan": "முருகேசன்", "murugeswari": "முருகேஸ்வரி",
+    "karthikeyan": "கார்த்திகேயன்", "karthik": "கார்த்திக்", "karthiga": "கார்த்திகா", "karthika": "கார்த்திகா",
+    "lakshmi": "லட்சுமி", "muthulakshmi": "முத்துலட்சுமி", "mahalakshmi": "மகாலட்சுமி",
+    "vijayalakshmi": "விஜயலட்சுமி", "jeyalakshmi": "ஜெயலட்சுமி", "jayalakshmi": "ஜெயலட்சுமி",
+    "meenakshi": "மீனாட்சி", "meenatchi": "மீனாட்சி", "visalakshi": "விசாலாட்சி",
+    "senthil": "செந்தில்", "senthilkumar": "செந்தில்குமார்", "kumar": "குமார்", "kumaran": "குமரன்",
+    "saravanan": "சரவணன்", "saravanakumar": "சரவணகுமார்", "subramanian": "சுப்பிரமணியன்",
+    "subramani": "சுப்பிரமணி", "balasubramanian": "பாலசுப்பிரமணியன்", "balakrishnan": "பாலகிருஷ்ணன்",
+    "krishnan": "கிருஷ்ணன்", "krishnamoorthy": "கிருஷ்ணமூர்த்தி", "moorthy": "மூர்த்தி",
+    "rajeswari": "இராஜேஸ்வரி", "maheswari": "மகேஸ்வரி", "kaleeswari": "காளீஸ்வரி", "pandeeswari": "பாண்டீஸ்வரி",
+    "eswari": "ஈஸ்வரி", "parameswari": "பரமேஸ்வரி", "bhuvaneswari": "புவனேஸ்வரி", "yogeswari": "யோகேஸ்வரி",
+    "palanisamy": "பழனிசாமி", "palani": "பழனி", "ramasamy": "இராமசாமி", "muniyasamy": "முனியசாமி",
+    "karuppasamy": "கருப்பசாமி", "chellasamy": "செல்லசாமி", "velusamy": "வேலுசாமி", "periyasamy": "பெரியசாமி",
+    "ganesan": "கணேசன்", "ganesh": "கணேஷ்", "shanmugam": "சண்முகம்", "shanmuganathan": "சண்முகநாதன்",
+    "annamalai": "அண்ணாமலை", "alagarsamy": "அழகர்சாமி", "alagu": "அழகு", "azhagu": "அழகு",
+    "chithra": "சித்ரா", "chitra": "சித்ரா", "kavitha": "கவிதா", "anitha": "அனிதா", "punitha": "புனிதா",
+    "vanitha": "வனிதா", "lalitha": "லலிதா", "sunitha": "சுனிதா", "savitha": "சவிதா",
+    "priya": "பிரியா", "shanmugapriya": "சண்முகப்பிரியா", "vishnupriya": "விஷ்ணுப்பிரியா", "sathiyapriya": "சத்யப்பிரியா",
+    "devi": "தேவி", "uma": "உமா", "umamaheswari": "உமாமகேஸ்வரி", "selvi": "செல்வி", "tamilselvi": "தமிழ்ச்செல்வி",
+    "selvam": "செல்வம்", "paneerselvam": "பன்னீர்செல்வம்", "panneerselvam": "பன்னீர்செல்வம்", "tamilselvan": "தமிழ்ச்செல்வன்",
+    "kannan": "கண்ணன்", "mariappan": "மாரியப்பன்", "iyappan": "ஐயப்பன்", "ayyappan": "ஐயப்பன்",
+    "ravi": "இரவி", "ravichandran": "இரவிச்சந்திரன்", "chandran": "சந்திரன்", "ramachandran": "இராமச்சந்திரன்",
+    "sundaram": "சுந்தரம்", "sundar": "சுந்தர்", "meenakshisundaram": "மீனாட்சிசுந்தரம்",
+    "natarajan": "நடராஜன்", "rajan": "இராஜன்", "raja": "இராஜா", "rajendran": "இராஜேந்திரன்", "rajasekaran": "இராஜசேகரன்",
+    "venkatesan": "வெங்கடேசன்", "venkatesh": "வெங்கடேஷ்", "srinivasan": "சீனிவாசன்", "vasudevan": "வாசுதேவன்",
+    "parvathi": "பார்வதி", "sathya": "சத்யா", "revathi": "இரேவதி", "suganya": "சுகன்யா", "sukanya": "சுகன்யா",
+    "malathi": "மாலதி", "jayanthi": "ஜெயந்தி", "gomathi": "கோமதி", "kalaivani": "கலைவாணி", "vani": "வாணி",
+    "arul": "அருள்", "arulmozhi": "அருள்மொழி", "thenmozhi": "தேன்மொழி", "kanimozhi": "கனிமொழி", "kalarani": "கலாராணி", "rani": "இராணி",
+    "xavier": "சேவியர்", "joseph": "ஜோசப்", "mary": "மேரி", "arockia": "ஆரோக்கிய", "arockiamary": "ஆரோக்கியமேரி",
+    "arockiasamy": "ஆரோக்கியசாமி", "sahayarani": "சகாயராணி", "stella": "ஸ்டெல்லா", "jansi": "ஜான்சி", "christy": "கிறிஸ்டி",
+    "fatima": "பாத்திமா", "fathima": "பாத்திமா", "mohamed": "முகமது", "mohammed": "முகமது", "abdul": "அப்துல்",
+    "syed": "சையது", "ibrahim": "இப்ராஹிம்", "ismail": "இஸ்மாயில்", "begum": "பேகம்", "banu": "பானு",
+    "muthu": "முத்து", "muthukumar": "முத்துக்குமார்", "muthuraman": "முத்துராமன்", "raman": "இராமன்", "ramakrishnan": "இராமகிருஷ்ணன்",
+    "velmurugan": "வேல்முருகன்", "balamurugan": "பாலமுருகன்", "sakthivel": "சக்திவேல்", "vadivel": "வடிவேல்", "kathirvel": "கதிர்வேல்",
+    "pandian": "பாண்டியன்", "soundarapandian": "சௌந்தரபாண்டியன்", "marimuthu": "மாரிமுத்து", "kalimuthu": "காளிமுத்து",
+    "manikandan": "மணிகண்டன்", "mani": "மணி", "manimegalai": "மணிமேகலை", "megalai": "மேகலை",
+    "suresh": "சுரேஷ்", "ramesh": "இரமேஷ்", "dinesh": "தினேஷ்", "rajesh": "இராஜேஷ்", "mahesh": "மகேஷ்", "satheesh": "சதீஷ்",
+    "prakash": "பிரகாஷ்", "prabhu": "பிரபு", "prabakaran": "பிரபாகரன்", "baskaran": "பாஸ்கரன்", "bhaskaran": "பாஸ்கரன்",
+    "sekar": "சேகர்", "chandrasekaran": "சந்திரசேகரன்", "gnanasekaran": "ஞானசேகரன்", "dhanasekaran": "தனசேகரன்",
+    "vasanthi": "வசந்தி", "shanthi": "சாந்தி", "santhi": "சாந்தி", "indira": "இந்திரா", "chandra": "சந்திரா",
+    "sumathi": "சுமதி", "valarmathi": "வளர்மதி", "poongothai": "பூங்கோதை", "geetha": "கீதா", "latha": "லதா", "radha": "இராதா", "sudha": "சுதா",
+    "usha": "உஷா", "nisha": "நிஷா", "asha": "ஆஷா", "deepa": "தீபா", "roopa": "ரூபா", "kala": "கலா", "mala": "மாலா", "sheela": "ஷீலா",
+    "gayathri": "காயத்ரி", "abhirami": "அபிராமி", "abirami": "அபிராமி", "sangeetha": "சங்கீதா", "prema": "பிரேமா", "hemalatha": "ஹேமலதா",
+    "mythili": "மைதிலி", "renuka": "ரேணுகா", "menaka": "மேனகா", "ambika": "அம்பிகா", "malliga": "மல்லிகா", "saradha": "சாரதா", "sarada": "சாரதா"
+  };
+
+  function transliterateWordTanglishToTamil(rawWord) {
+    if (!rawWord) return "";
+    // Preserve non-Latin characters
+    if (!/[a-zA-Z]/.test(rawWord)) return rawWord;
+
+    const cleanLower = rawWord.toLowerCase().replace(/[^a-z]/g, "");
+    if (!cleanLower) return rawWord;
+
+    // Single-letter initial (e.g., "R" or "R.")
+    if (cleanLower.length === 1 && TANGLISH_INITIAL_MAP[cleanLower]) {
+      return TANGLISH_INITIAL_MAP[cleanLower] + (rawWord.endsWith(".") ? "." : "");
+    }
+
+    if (TANGLISH_COMMON_NAMES_DICT[cleanLower]) {
+      return TANGLISH_COMMON_NAMES_DICT[cleanLower];
+    }
+
+    // Phonetic syllable-by-syllable state machine for Tamil
+    const vowels = [
+      ["au", "ஔ", "ௌ"], ["ow", "ஔ", "ௌ"], ["ai", "ஐ", "ை"],
+      ["aa", "ஆ", "ா"], ["ee", "ஈ", "ீ"], ["ii", "ஈ", "ீ"],
+      ["oo", "ஊ", "ூ"], ["uu", "ஊ", "ூ"], ["ae", "ஏ", "ே"],
+      ["oa", "ஓ", "ோ"], ["A", "ஆ", "ா"], ["I", "ஈ", "ீ"],
+      ["U", "ஊ", "ூ"], ["E", "ஏ", "ே"], ["O", "ஓ", "ோ"],
+      ["a", "அ", ""], ["i", "இ", "ி"], ["u", "உ", "ு"],
+      ["e", "எ", "ெ"], ["o", "ஒ", "ொ"]
+    ];
+
+    const consonants = [
+      ["ksh", "க்ஷ"], ["shr", "ஸ்ரீ"], ["sr", "ஸ்ரீ"],
+      ["ngk", "ங்க"], ["nk", "ங்க"], ["nch", "ஞ்ச"], ["nj", "ஞ்ச"],
+      ["nth", "ந்த"], ["ndh", "ந்த"], ["ndr", "ன்ற"], ["nt", "ண்ட"], ["nd", "ண்ட"],
+      ["mp", "ம்ப"], ["mb", "ம்ப"], ["kk", "க்க"], ["chch", "ச்ச"], ["cc", "ச்ச"],
+      ["thth", "த்த"], ["tt", "ட்ட"], ["pp", "ப்ப"], ["mm", "ம்ம"], ["yy", "ய்ய"],
+      ["ll", "ல்ல"], ["vv", "வ்வ"], ["rr", "ற்ற"], ["tr", "ற்ற"],
+      ["zh", "ழ"], ["sh", "ஷ"], ["ch", "ச"], ["th", "த"], ["dh", "த"],
+      ["ng", "ங"], ["ny", "ஞ"], ["bh", "ப"], ["ph", "ப"], ["gh", "க"], ["kh", "க"],
+      ["N", "ண"], ["L", "ள"], ["R", "ற"], ["S", "ஸ"], ["z", "ழ"],
+      ["k", "க"], ["g", "க"], ["c", "ச"], ["s", "ச"], ["j", "ஜ"],
+      ["t", "ட"], ["d", "ட"], ["n", "ந"], ["p", "ப"], ["b", "ப"], ["f", "ப"],
+      ["m", "ம"], ["y", "ய"], ["r", "ர"], ["l", "ல"], ["v", "வ"], ["w", "வ"],
+      ["h", "ஹ"], ["x", "க்ஷ"], ["q", "க"]
+    ];
+
+    const w = rawWord.replace(/[^a-zA-Z]/g, "");
+    let i = 0;
+    let out = "";
+
+    while (i < w.length) {
+      const rem = w.slice(i);
+      const remLower = rem.toLowerCase();
+
+      // Check consonant match first
+      let matchedCons = null;
+      for (let c of consonants) {
+        const pat = c[0];
+        const isCaseSensitive = (pat === "N" || pat === "L" || pat === "R" || pat === "S");
+        if (isCaseSensitive ? rem.startsWith(pat) : remLower.startsWith(pat)) {
+          matchedCons = { pat, base: c[1], len: pat.length };
+          break;
+        }
+      }
+
+      if (matchedCons) {
+        // Word-internal/final 'n' defaults to 'ன்' (ன) instead of 'ந்' (ந)
+        let baseChar = matchedCons.base;
+        if (matchedCons.pat === "n" && i > 0) {
+          baseChar = "ன";
+        }
+        i += matchedCons.len;
+
+        // Look ahead for following vowel
+        const remAfter = w.slice(i);
+        const remAfterLower = remAfter.toLowerCase();
+        let matchedVowel = null;
+        for (let v of vowels) {
+          const vPat = v[0];
+          const isVCap = (vPat === "A" || vPat === "I" || vPat === "U" || vPat === "E" || vPat === "O");
+          if (isVCap ? remAfter.startsWith(vPat) : remAfterLower.startsWith(vPat)) {
+            matchedVowel = { pat: vPat, indep: v[1], sign: v[2], len: vPat.length };
+            break;
+          }
+        }
+
+        if (matchedVowel) {
+          out += baseChar + matchedVowel.sign;
+          i += matchedVowel.len;
+        } else {
+          out += baseChar + "்";
+        }
+        continue;
+      }
+
+      // Otherwise check independent vowel match
+      let matchedIndepV = null;
+      for (let v of vowels) {
+        const vPat = v[0];
+        const isVCap = (vPat === "A" || vPat === "I" || vPat === "U" || vPat === "E" || vPat === "O");
+        if (isVCap ? rem.startsWith(vPat) : remLower.startsWith(vPat)) {
+          matchedIndepV = { indep: v[1], len: vPat.length };
+          break;
+        }
+      }
+
+      if (matchedIndepV) {
+        out += matchedIndepV.indep;
+        i += matchedIndepV.len;
+      } else {
+        out += w[i];
+        i++;
+      }
+    }
+
+    return out;
+  }
+
+  function transliterateFullNameTanglishToTamil(englishText) {
+    const str = String(englishText || "").trim();
+    if (!str) return "";
+    return str.split(/(\s+|\.)/).map(tok => {
+      if (!/[a-zA-Z]/.test(tok)) return tok;
+      return transliterateWordTanglishToTamil(tok);
+    }).join("").replace(/\s+/g, " ").trim();
+  }
+
+  function generatePhoneticTamilVariants(latinWord) {
+    const primary = transliterateWordTanglishToTamil(latinWord);
+    const set = new Set([primary]);
+    // Provide helpful L/ள/ழ, R/ற, N/ண/ந variants
+    if (primary.includes("ல")) set.add(primary.replace(/ல/g, "ள"));
+    if (primary.includes("ள")) set.add(primary.replace(/ள/g, "ழ"));
+    if (primary.includes("ன")) set.add(primary.replace(/ன/g, "ண"));
+    if (primary.includes("ர")) set.add(primary.replace(/ர/g, "ற"));
+    if (primary.includes("ச")) set.add(primary.replace(/ச/, "ஷ"));
+    return Array.from(set).filter(Boolean).slice(0, 4);
+  }
+
+  let _tanglishFetchTimer = null;
+
+  function getActiveLatinWordAtCursor(inputEl) {
+    if (!inputEl) return null;
+    const val = inputEl.value || "";
+    const pos = typeof inputEl.selectionStart === "number" ? inputEl.selectionStart : val.length;
+    const before = val.slice(0, pos);
+    const m = before.match(/([a-zA-Z]+)$/);
+    if (!m) return null;
+    return {
+      word: m[1],
+      start: pos - m[1].length,
+      end: pos
+    };
+  }
+
+  function replaceActiveLatinWordInInput(inputEl, startIdx, endIdx, tamilReplacement, addTrailingSpace) {
+    if (!inputEl) return;
+    const val = inputEl.value || "";
+    const suffix = addTrailingSpace ? " " : "";
+    const nextVal = val.slice(0, startIdx) + tamilReplacement + suffix + val.slice(endIdx);
+    inputEl.value = nextVal;
+    const newCursor = startIdx + tamilReplacement.length + suffix.length;
+    try { inputEl.setSelectionRange(newCursor, newCursor); } catch (e) {}
+    const bar = document.getElementById("ebsTanglishSuggestBar");
+    if (bar) bar.style.display = "none";
+  }
+
+  function renderEbsTanglishSuggestions(latinInfo, suggestions) {
+    const bar = document.getElementById("ebsTanglishSuggestBar");
+    if (!bar) return;
+    if (!latinInfo || !suggestions || suggestions.length === 0) {
+      bar.style.display = "none";
+      return;
+    }
+    bar.style.display = "flex";
+    bar.innerHTML = `<span style="font-size:0.68rem; color:#64748b;">Space அழுத்தவும்:</span>` +
+      suggestions.map((sug, idx) => `
+        <button type="button" onmousedown="event.preventDefault(); applyEbsTanglishSuggestion(${latinInfo.start}, ${latinInfo.end}, '${escapeHtmlAttr(sug)}')" style="background:${idx === 0 ? "#4c1d95" : "#fff"}; color:${idx === 0 ? "#fff" : "#4c1d95"}; border:1px solid #7c3aed; border-radius:4px; padding:1px 7px; font-size:0.74rem; font-weight:800; cursor:pointer;">
+          ${escapeHtmlAttr(sug)}
+        </button>
+      `).join("");
+  }
+
+  function applyEbsTanglishSuggestion(startIdx, endIdx, tamilWord) {
+    const inputEl = document.getElementById("ebsStfNameTa");
+    if (!inputEl) return;
+    replaceActiveLatinWordInInput(inputEl, startIdx, endIdx, tamilWord, true);
+    inputEl.focus();
+  }
+
+  function onEbsNameTaTanglishInput(evt) {
+    const toggle = document.getElementById("ebsTanglishToggle");
+    if (toggle && !toggle.checked) {
+      const bar = document.getElementById("ebsTanglishSuggestBar");
+      if (bar) bar.style.display = "none";
+      return;
+    }
+    const inputEl = evt.target;
+    const latinInfo = getActiveLatinWordAtCursor(inputEl);
+    if (!latinInfo) {
+      const bar = document.getElementById("ebsTanglishSuggestBar");
+      if (bar) bar.style.display = "none";
+      return;
+    }
+
+    const localVariants = generatePhoneticTamilVariants(latinInfo.word);
+    renderEbsTanglishSuggestions(latinInfo, localVariants);
+
+    // Also query Google Input Tools Tanglish API when online for rich suggestions
+    if (_tanglishFetchTimer) clearTimeout(_tanglishFetchTimer);
+    _tanglishFetchTimer = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(latinInfo.word)}&itc=ta-t-i0-und&num=4&cp=0&cs=1&ie=utf-8&oe=utf-8`);
+        if (!res || !res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data) && data[0] === "SUCCESS" && data[1] && data[1][0] && Array.isArray(data[1][0][1])) {
+          const gCands = data[1][0][1];
+          const merged = Array.from(new Set([...gCands, ...localVariants])).slice(0, 5);
+          const curInfo = getActiveLatinWordAtCursor(inputEl);
+          if (curInfo && curInfo.word === latinInfo.word) {
+            renderEbsTanglishSuggestions(curInfo, merged);
+          }
+        }
+      } catch (e) {}
+    }, 120);
+  }
+
+  function onEbsNameTaTanglishKeydown(evt) {
+    const toggle = document.getElementById("ebsTanglishToggle");
+    if (toggle && !toggle.checked) return;
+    const inputEl = evt.target;
+    if (evt.key === " " || evt.key === "Enter" || evt.key === "Tab") {
+      const latinInfo = getActiveLatinWordAtCursor(inputEl);
+      if (latinInfo && latinInfo.word) {
+        const bar = document.getElementById("ebsTanglishSuggestBar");
+        const firstBtn = bar && bar.style.display !== "none" ? bar.querySelector("button") : null;
+        const bestTamil = (firstBtn && firstBtn.textContent.trim()) || transliterateWordTanglishToTamil(latinInfo.word);
+        if (evt.key === " " || evt.key === "Enter") {
+          evt.preventDefault();
+          replaceActiveLatinWordInInput(inputEl, latinInfo.start, latinInfo.end, bestTamil, evt.key === " ");
+        } else if (evt.key === "Tab") {
+          replaceActiveLatinWordInInput(inputEl, latinInfo.start, latinInfo.end, bestTamil, false);
+        }
+      }
+    }
+  }
+
+  function convertRemainingTanglishInInput(inputEl) {
+    if (!inputEl) return;
+    const toggle = document.getElementById("ebsTanglishToggle");
+    if (toggle && !toggle.checked) return;
+    const val = inputEl.value || "";
+    if (/[a-zA-Z]/.test(val)) {
+      inputEl.value = val.split(/(\s+|\.)/).map(tok => {
+        if (/^[a-zA-Z]+$/.test(tok)) return transliterateWordTanglishToTamil(tok);
+        return tok;
+      }).join("");
+    }
+    const bar = document.getElementById("ebsTanglishSuggestBar");
+    if (bar) bar.style.display = "none";
+  }
+
+  function onEbsNameTaTanglishBlur(evt) {
+    setTimeout(() => {
+      convertRemainingTanglishInInput(evt.target);
+    }, 150);
+  }
+
+  async function autoFillEbsTamilNameFromEnglish() {
+    const enEl = document.getElementById("ebsStfNameEn");
+    const taEl = document.getElementById("ebsStfNameTa");
+    if (!enEl || !taEl) return;
+    const enName = String(enEl.value || "").trim();
+    if (!enName) {
+      showToast("⚠️ முதலில் Name (In English) புலத்தில் பெயரை உள்ளிடவும்.", "#d97706");
+      return;
+    }
+    // First apply instant offline phonetic transliteration
+    const localTamil = transliterateFullNameTanglishToTamil(enName);
+    taEl.value = localTamil;
+
+    // Also try Google Input Tools online for multi-word refinement
+    try {
+      const words = enName.split(/\s+/).filter(Boolean);
+      const convertedWords = await Promise.all(words.map(async (w) => {
+        const cleanW = w.replace(/[^a-zA-Z]/g, "").toLowerCase();
+        if (cleanW.length === 1 && TANGLISH_INITIAL_MAP[cleanW]) {
+          return TANGLISH_INITIAL_MAP[cleanW];
+        }
+        if (TANGLISH_COMMON_NAMES_DICT[cleanW]) {
+          return TANGLISH_COMMON_NAMES_DICT[cleanW];
+        }
+        try {
+          const res = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(cleanW)}&itc=ta-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`);
+          if (res && res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data[0] === "SUCCESS" && data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
+              return data[1][0][1][0];
+            }
+          }
+        } catch (e) {}
+        return transliterateWordTanglishToTamil(w);
+      }));
+      if (convertedWords.length > 0) {
+        taEl.value = convertedWords.join(" ");
+      }
+    } catch (e) {}
+    taEl.focus();
+  }
+
   function closeEbsStaffProfileModal() {
     const modal = document.getElementById("ebsStaffProfileModal");
     if (modal) modal.classList.remove("active");
@@ -24881,8 +25391,16 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       });
     }
 
+    // Flush any remaining Tanglish word in ebsStfNameTa before saving
+    const nameTaInputEl = document.getElementById("ebsStfNameTa");
+    if (nameTaInputEl && typeof convertRemainingTanglishInInput === "function") {
+      convertRemainingTanglishInInput(nameTaInputEl);
+    }
+    const selectedNatureVal = (document.getElementById("ebsStfNature")?.value || "Regular (Govt.Salaried )").trim();
+    const isContractSelected = /contract/i.test(selectedNatureVal);
+
     const prof = {
-      ifhrmsId: (document.getElementById("ebsStfIfhrmsId")?.value || "").trim(),
+      ifhrmsId: isContractSelected ? "" : (document.getElementById("ebsStfIfhrmsId")?.value || "").trim(),
       prefix: (document.getElementById("ebsStfPrefix")?.value || "").trim(),
       nameTa: (document.getElementById("ebsStfNameTa")?.value || "").trim(),
       mobile: (document.getElementById("ebsStfMobile")?.value || "").replace(/\D/g, "").slice(0, 10),
@@ -24891,14 +25409,14 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       resPlace: (document.getElementById("ebsStfResPlace")?.value || "").trim(),
       resDistrict: (document.getElementById("ebsStfResDistrict")?.value || "Sivagangai").trim(),
       prefCamp: (document.getElementById("ebsStfPrefCamp")?.value || "01-Sivagangai").trim(),
-      nature: (document.getElementById("ebsStfNature")?.value || "Regular (Govt.Salaried )").trim(),
-      modeFirstApp: (document.getElementById("ebsStfModeFirstApp")?.value || "TRB").trim(),
-      dojService: (document.getElementById("ebsStfDojService")?.value || "").trim(),
-      firstJoinPost: (document.getElementById("ebsStfFirstJoinPost")?.value || "").trim(),
-      modePresPost: (document.getElementById("ebsStfModePresPost")?.value || "NEW APPOINTMENT").trim(),
+      nature: selectedNatureVal,
+      modeFirstApp: isContractSelected ? "" : (document.getElementById("ebsStfModeFirstApp")?.value || "TRB").trim(),
+      dojService: isContractSelected ? "" : (document.getElementById("ebsStfDojService")?.value || "").trim(),
+      firstJoinPost: isContractSelected ? "" : (document.getElementById("ebsStfFirstJoinPost")?.value || "").trim(),
+      modePresPost: isContractSelected ? "" : (document.getElementById("ebsStfModePresPost")?.value || "NEW APPOINTMENT").trim(),
       dojPresPost: (document.getElementById("ebsStfDojPresPost")?.value || "").trim(),
       dojSchool: (document.getElementById("ebsStfDojSchool")?.value || "").trim(),
-      unitTransferDate: (document.getElementById("ebsStfUnitTransfer")?.value || "").trim(),
+      unitTransferDate: isContractSelected ? "" : (document.getElementById("ebsStfUnitTransfer")?.value || "").trim(),
       classesHandling: classesHandling,
       pracSslc1: (document.getElementById("ebsStfPracSslc1")?.value || "").trim(),
       pracHsc1: (document.getElementById("ebsStfPracHsc1")?.value || "").trim(),
@@ -25378,9 +25896,10 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const ch = st.classesHandling || getDefaultClassesHandlingForStaff(st.desig, st.subject, sch);
     const isSvgCamp = !/Karaikudi|Devakottai/i.test(st.prefCamp || "");
     const isKkdCamp = /Karaikudi|Devakottai/i.test(st.prefCamp || "");
-    const mFirst = String(st.modeFirstApp || "TRB");
-    const isProm = /PROMOTION/i.test(st.modePresPost || "");
     const isReg = !/Contract|Self/i.test(st.nature || "");
+    const mFirst = isReg ? String(st.modeFirstApp || "TRB") : "";
+    const isProm = isReg && /PROMOTION/i.test(st.modePresPost || "");
+    const isNewApp = isReg && !isProm;
     const ex = String(st.exemptionGround || "");
 
     return `
@@ -25494,14 +26013,14 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
                 ${renderCheckboxHtml(mFirst === "Others", "Others")}
               </div>
             </td>
-            <td style="text-align:center; font-weight:800;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojService))}</td>
-            <td style="text-align:center; font-weight:800;">${escapeHtmlAttr(st.firstJoinPost || st.desig || "")}</td>
+            <td style="text-align:center; font-weight:800;">${isReg ? escapeHtmlAttr(formatDateDisplayDMY(st.dojService)) : ""}</td>
+            <td style="text-align:center; font-weight:800;">${isReg ? escapeHtmlAttr(st.firstJoinPost || st.desig || "") : ""}</td>
           </tr>
           <tr>
             <td colspan="3" style="text-align:center; font-weight:700; padding:4px;">
               Mode of Appointment in Present Post : &nbsp;&nbsp;
               ${renderCheckboxHtml(isProm, "Promotion")} &nbsp;&nbsp;&nbsp;
-              ${renderCheckboxHtml(!isProm, "New Appointment")}
+              ${renderCheckboxHtml(isNewApp, "New Appointment")}
             </td>
           </tr>
         </table>
@@ -26019,23 +26538,29 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
     const nonTeachList = staffList.filter(s => !s.isTeaching);
 
     const f3Rows = teachList.map((st, idx) => {
+      const isContractSt = /contract/i.test(st.nature || "");
       const ageInfo = computeAgeAndDorFromDob(st.dob);
-      const srv = computeServiceYearsMonths(st.dojPresPost || st.dojService);
+      const srv = computeServiceYearsMonths(st.dojPresPost || (isContractSt ? "" : st.dojService));
       const ch = st.classesHandling || {};
       const cSub = (c) => (ch[c] && ch[c].sub) || "";
       const cMed = (c) => (ch[c] && ch[c].med) || "";
       return [
         idx + 1, sch.uNo, sch.level || "HS", sch.mgmt1 || "1G", sch.block || "", sch.nameEn || "",
-        st.staffId || "", st.ifhrmsId || "", st.name || "", st.prefix || "", st.nameTa || "",
+        st.staffId || "", isContractSt ? "" : (st.ifhrmsId || ""), st.name || "", st.prefix || "", st.nameTa || "",
         st.gender || "", formatDateDisplayDMY(st.dob), ageInfo.age26, ageInfo.dor,
         st.desig || "", st.qualification || "", st.subject || "",
         st.mobile || "", st.altMobile || "", st.email || "", st.resPlace || "", st.resDistrict || "Sivagangai",
         st.prefCamp || "01-Sivagangai",
         cSub("6"), cMed("6"), cSub("7"), cMed("7"), cSub("8"), cMed("8"),
         cSub("9"), cMed("9"), cSub("10"), cMed("10"), cSub("11"), cMed("11"), cSub("12"), cMed("12"),
-        st.modeFirstApp || "TRB", formatDateDisplayDMY(st.dojService), st.firstJoinPost || st.desig || "",
-        st.modePresPost || "NEW APPOINTMENT", st.nature || "Regular (Govt.Salaried )",
-        formatDateDisplayDMY(st.dojPresPost), srv, formatDateDisplayDMY(st.unitTransferDate), formatDateDisplayDMY(st.dojSchool),
+        isContractSt ? "" : (st.modeFirstApp || "TRB"),
+        isContractSt ? "" : formatDateDisplayDMY(st.dojService),
+        isContractSt ? "" : (st.firstJoinPost || st.desig || ""),
+        isContractSt ? "" : (st.modePresPost || "NEW APPOINTMENT"),
+        st.nature || "Regular (Govt.Salaried )",
+        formatDateDisplayDMY(st.dojPresPost), srv,
+        isContractSt ? "" : formatDateDisplayDMY(st.unitTransferDate),
+        formatDateDisplayDMY(st.dojSchool),
         st.pracSslc1 || "", st.pracHsc1 || "", st.pracHsc2 || "",
         st.dutySslcWork || "", st.dutySslcCentre || "", st.dutyHseWork || "", st.dutyHseCentre || "",
         st.dutyCampWork || "", st.dutyCampCentre || "",
