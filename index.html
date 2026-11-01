@@ -3857,9 +3857,6 @@
           <button type="button" class="btn btn-outline btn-sm" onclick="closeSchoolEbsStandaloneMode()" style="background:#fffbeb; color:#92400e; border-color:#f59e0b; font-weight:900;">
             ⬅️ பள்ளி முகப்பிற்குத் திரும்பு (Back to School Home)
           </button>
-          <button type="button" class="btn btn-primary btn-sm" onclick="saveSchoolEbs2026Data(true)" style="background:#16a34a; border-color:#15803d; font-weight:900;">
-            💾 EBS 2026-27 சேமி &amp; தனி Google Sheet-இல் ஒத்திசை
-          </button>
           <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('ALL')" style="background:#4c1d95; color:#fff; border-color:#4c1d95; font-weight:900;">
             📚 முழு EBS கையேடு (F1–F4 A4 PDF / Print)
           </button>
@@ -3869,11 +3866,8 @@
         </div>
       </div>
 
-      <!-- Dedicated 2026-27 Google Sheet Status Strip -->
-      <div style="background:linear-gradient(90deg,#f5f3ff 0%,#eff6ff 100%); border:1.5px solid #c4b5fd; border-radius:10px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <div style="font-size:0.81rem; color:#1e1b4b; font-weight:700;">
-          ☁️ <strong>2026-27 தனி Google Sheet இணைப்பு:</strong> நடப்பு ஆண்டிற்கான <strong><a href="https://docs.google.com/spreadsheets/d/1EPyFeEoJRHg_7OFN8k9nY6VJSngoT3HicF2zcu9-fRc/edit" target="_blank" rel="noopener" style="color:#4c1d95; text-decoration:underline;">CEO_Sivagangai_EBS_2026_27_DB (F1, F2, F3, F4)</a></strong> கோப்பில் நேரடியாக ஒத்திசைக்கப்படுகிறது.
-        </div>
+      <!-- Quick A4 Print / PDF Action Bar -->
+      <div style="background:linear-gradient(90deg,#f5f3ff 0%,#eff6ff 100%); border:1.5px solid #c4b5fd; border-radius:10px; padding:8px 14px; margin-bottom:14px; display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:10px;">
         <div style="display:flex; gap:6px; flex-wrap:wrap;">
           <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F1')" style="font-weight:800; border-color:#7c3aed; color:#5b21b6; background:#fff;">🖨️ FORM-I A4</button>
           <button type="button" class="btn btn-outline btn-sm" id="schEbsQuickBtnF2" onclick="openEbsA4PreviewModal('F2')" style="font-weight:800; border-color:#0f766e; color:#0f766e; background:#fff;">🖨️ FORM-II A4 (+2)</button>
@@ -3923,9 +3917,6 @@
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button type="button" class="btn btn-primary btn-sm" onclick="saveSchoolEbs2026Data(true)" style="background:#16a34a; border-color:#15803d; font-weight:900;">
               💾 FORM – I விவரங்களைச் சேமி (Save Form-I)
-            </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="resetSchoolEbsF1StaffFromPortal()" style="font-weight:800; color:#0369a1; border-color:#7dd3fc; background:#f0f9ff;">
-              🔄 போர்ட்டல் எண்ணிக்கையை மீளமை (Auto-Fill)
             </button>
             <button type="button" class="btn btn-primary btn-sm" onclick="openEbsA4PreviewModal('F1')" style="background:#4c1d95; border-color:#4c1d95; font-weight:900;">
               🖨️ FORM – I A4 படிவம் பார்வையிடு &amp; பதிவிறக்கு
@@ -22553,6 +22544,15 @@ if (typeof globalThis !== "undefined") { globalThis.EMIS_STUDENT_DATA = EMIS_STU
       ebs.f2.lang_tamil = { tm: 0, em: 0, tot: Math.max(0, total12 - (hTot + fTot + sTot)) };
     }
     safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+    scheduleAutoSaveSchoolEbs2026();
+  }
+
+  let _ebsAutoSaveTimer = null;
+  function scheduleAutoSaveSchoolEbs2026() {
+    if (_ebsAutoSaveTimer) clearTimeout(_ebsAutoSaveTimer);
+    _ebsAutoSaveTimer = setTimeout(() => {
+      try { saveSchoolEbs2026Data(false); } catch (e) {}
+    }, 1200);
   }
 
   function resetSchoolEbsF1StaffFromPortal() {
