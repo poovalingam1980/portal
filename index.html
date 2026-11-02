@@ -1669,4 +1669,1562 @@
         campPref: "02-Karaikudi/Devakottai",
         handling: {},
         dutySslcWork: "", dutySslcCentre: "",
-        dutyHseWork: "Collection Point Clerk", dutyHseCentre: "208035 - GOVT. HSS
+        dutyHseWork: "Collection Point Clerk", dutyHseCentre: "208035 - GOVT. HSS , KANNANGUDI",
+        exemptionGround: "", exemptionDetails: ""
+      },
+      // District Office / DI Staff searchable via EMIS ID 10172271
+      {
+        uNo: "OFFICE_CEO", emisId: "10172271", ifhrmsId: "43010100988", isTeaching: false,
+        nameEn: "POOVALINGAM K", prefix: "திரு.", nameTa: "பூவலிங்கம் க", gender: "Male", dob: "23-07-1980",
+        desig: "DEPUTY INSPECTOR (DI)", qual: "M.A., B.Ed.", mainSub: "Economics",
+        nature: "Regular (Govt.Salaried )", modeFirstApp: "Employment Seniority", dojFirstApp: "17-04-2002", firstJoinPost: "JUNIOR ASSISTANT",
+        modePresPost: "Promotion", dojPresPost: "03-06-2017", unitTransferDate: "", dojSchool: "08-11-2022",
+        mobile: "9443188776", altMobile: "", email: "poovalingamdi@gmail.com", resPlace: "SIVAGANGAI", resDist: "Sivagangai",
+        campPref: "01-Sivagangai",
+        handling: {},
+        dutySslcWork: "", dutySslcCentre: "",
+        dutyHseWork: "Office Staff", dutyHseCentre: "CEO OFFICE SIVAGANGAI",
+        exemptionGround: "", exemptionDetails: ""
+      }
+    ];
+
+    // 8. Circulars Store with Mark-as-Read tracking per School U.NO
+    let PORTAL_CIRCULARS = [
+      {
+        id: "CIR_2026_01",
+        date: "01-11-2026",
+        title: "2026-27 பொதுத்தேர்வு EBS படிவங்கள் (FORM I, II, III & IV) ஆன்லைன் சரிபார்ப்பு மற்றும் A4 அறிக்கை சமர்ப்பித்தல்",
+        desc: "சிவகங்கை மாவட்டத்திலுள்ள அனைத்து 282 உயர்நிலை மற்றும் மேல்நிலைப் பள்ளித் தலைமையாசிரியர்களும் தங்களது பள்ளியின் EBS-27 படிவங்களை சரிபார்த்து உறுதிப்படுத்துமாறு கேட்டுக்கொள்ளப்படுகிறார்கள்.",
+        targetSummary: "மாநிலப் பாடத்திட்டம் (282 பள்ளிகள்)",
+        driveLink: "https://drive.google.com/drive/folders/1R-0i5OS83fSTLa0p3dw_mI81Pee4rZdA?usp=drive_link",
+        fileName: "CEO_SVG_EBS_2026_27_Instructions.pdf",
+        readBySchools: {}
+      }
+    ];
+
+    // Active State Variables
+    let currentSchoolUNo = "232";
+    let currentEbsSubTab = "F1";
+    let currentAddStaffFormType = "F3";
+    let currentEditingStaffEmisId = null;
+    let currentEditingStaffFormType = "F3";
+    let f2ManualLangOverrides = {}; // keyed by uNo -> { Language: {tm, em}, English: {tm, em} }
+
+    // =====================================================================
+    // HELPER FUNCTIONS FOR GOOGLE SHEET BACKEND & SORTING
+    // =====================================================================
+    function getGoogleSheetWebAppUrl() {
+      const inp = document.getElementById("gasWebAppUrlInput");
+      return inp && inp.value ? inp.value.trim() : "";
+    }
+
+    async function sendToGoogleSheetBackend(payload) {
+      const url = getGoogleSheetWebAppUrl();
+      if (!url) return { ok: true, simulated: true };
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        return await res.json();
+      } catch (err) {
+        return { ok: true, cachedLocally: true };
+      }
+    }
+
+    function parseDateToSortableNumber(dStr) {
+      if (!dStr) return 99999999;
+      const parts = String(dStr).trim().split(/[-/.]/);
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          return Number(parts[0] + parts[1].padStart(2, "0") + parts[2].padStart(2, "0"));
+        }
+        return Number(parts[2] + parts[1].padStart(2, "0") + parts[0].padStart(2, "0"));
+      }
+      return 99999999;
+    }
+
+    function getDesigCodeForStaff(desig) {
+      const clean = String(desig || "").trim().toUpperCase();
+      return DESIGNATION_CODE_MAP[clean] || "19";
+    }
+
+    // Strict 3-tier sorting: 1) Designation_code -> 2) Date of Joining in Present Post -> 3) Date of Birth
+    function sortStaffListStrict(list) {
+      return list.slice().sort(function(a, b) {
+        const codeA = Number(getDesigCodeForStaff(a.desig));
+        const codeB = Number(getDesigCodeForStaff(b.desig));
+        if (codeA !== codeB) return codeA - codeB;
+
+        const dojA = parseDateToSortableNumber(a.dojPresPost);
+        const dojB = parseDateToSortableNumber(b.dojPresPost);
+        if (dojA !== dojB) return dojA - dojB;
+
+        const dobA = parseDateToSortableNumber(a.dob);
+        const dobB = parseDateToSortableNumber(b.dob);
+        return dobA - dobB;
+      });
+    }
+
+    function getActiveSchoolObj() {
+      return PORTAL_SCHOOLS_MASTER.find(function(s) { return s.uNo === currentSchoolUNo; }) || PORTAL_SCHOOLS_MASTER[0];
+    }
+
+    function getSchoolStaffByType(uNo, isTeachingBool) {
+      const filtered = EMIS_STAFF_DATABASE.filter(function(st) {
+        return st.uNo === uNo && Boolean(st.isTeaching) === Boolean(isTeachingBool);
+      });
+      return sortStaffListStrict(filtered);
+    }
+
+    // Normalize Nature of Present Post according to school management (1G, 2A vs 3P)
+    function normalizeStaffNatureBySchoolMgmt(rawNature, schoolMgmt) {
+      if (schoolMgmt === "3P") return "Contract";
+      const str = String(rawNature || "").toLowerCase();
+      if (str.indexOf("contract") !== -1) return "Contract";
+      return "Regular (Govt.Salaried )";
+    }
+
+    // =====================================================================
+    // INITIALIZATION & SCHOOL SELECTION
+    // =====================================================================
+    function initPortalApp() {
+      const sel = document.getElementById("activeSchoolSelect");
+      sel.innerHTML = PORTAL_SCHOOLS_MASTER.map(function(s) {
+        return '<option value="' + s.uNo + '">[U.NO: ' + s.uNo + '] ' + s.nameTa + ' (' + s.nameEn + ') - ' + s.mgmt1 + '</option>';
+      }).join("");
+      sel.value = currentSchoolUNo;
+
+      // Populate 12 Blocks in Admin Circulars
+      const blkGrid = document.getElementById("cirTargetBlocksGrid");
+      if (blkGrid) {
+        blkGrid.innerHTML = SIVAGANGAI_12_BLOCKS.map(function(b) {
+          return '<label class="flex items-center gap-1.5 bg-white p-1.5 rounded border"><input type="checkbox" class="cir-block-chk" value="' + b + '" checked> ' + b + '</label>';
+        }).join("");
+      }
+
+      // Normalize all staff nature for 1G/2A/3P
+      EMIS_STAFF_DATABASE.forEach(function(st) {
+        const sch = PORTAL_SCHOOLS_MASTER.find(function(s) { return s.uNo === st.uNo; });
+        const mgmt = sch ? sch.mgmt1 : "1G";
+        st.nature = normalizeStaffNatureBySchoolMgmt(st.nature, mgmt);
+      });
+
+      refreshActiveSchoolViews();
+      renderAdminCircularsList();
+    }
+
+    function onSelectActiveSchool(uNo) {
+      currentSchoolUNo = uNo;
+      refreshActiveSchoolViews();
+    }
+
+    function refreshActiveSchoolViews() {
+      const sch = getActiveSchoolObj();
+      document.getElementById("activeSchoolMgmtBadge").textContent = sch.mgmt1 + " | " + sch.level;
+      document.getElementById("activeSchoolCentresInfo").textContent = "10th Centre: " + (sch.centre10 || "-") + " | 12th Centre: " + (sch.centre12 || "-");
+
+      // Dashboard Titles & Metrics
+      document.getElementById("dashSchoolTitleTa").textContent = "[U.NO: " + sch.uNo + "] " + sch.nameTa;
+      document.getElementById("dashSchoolTitleEn").textContent = sch.nameEn + " | Block: " + sch.block;
+      document.getElementById("dashSchoolUdiseBadge").textContent = "UDISE: " + sch.udiseNo;
+
+      const sslcTot = (sch.sslc.tmB || 0) + (sch.sslc.tmG || 0) + (sch.sslc.emB || 0) + (sch.sslc.emG || 0);
+      let hscTot = 0;
+      (sch.hscGroups || []).forEach(function(g) {
+        hscTot += (g.tmB || 0) + (g.tmG || 0) + (g.emB || 0) + (g.emG || 0);
+      });
+
+      const f3List = getSchoolStaffByType(sch.uNo, true);
+      const f4List = getSchoolStaffByType(sch.uNo, false);
+
+      document.getElementById("dashMetric10th").textContent = sslcTot;
+      document.getElementById("dashMetric12th").textContent = sch.level === "HSS" ? hscTot : "— (HS)";
+      document.getElementById("dashMetricTeachers").textContent = f3List.length;
+      document.getElementById("dashMetricNonTeaching").textContent = f4List.length;
+
+      // Hide EBS widget for non-state-board schools (4CG, 5IC, 6CB)
+      const ebsBox = document.getElementById("ebsNotificationWidgetBox");
+      if (["1G", "2A", "3P"].indexOf(sch.mgmt1) === -1) {
+        ebsBox.classList.add("opacity-50");
+      } else {
+        ebsBox.classList.remove("opacity-50");
+      }
+
+      // Profile Tab 2
+      document.getElementById("profNameEn").value = sch.nameEn;
+      document.getElementById("profNameTa").value = sch.nameTa;
+      document.getElementById("profHmMobile").value = (sch.hmName || "") + " - " + (sch.mobile || "");
+
+      // Render Circulars & Unread Badge
+      renderSchoolCircularsView();
+
+      // Render EBS Forms F1-F4
+      renderEbsForm1();
+      renderEbsForm2Dynamic();
+      renderEbsForm3Roster();
+      renderEbsForm4Roster();
+    }
+
+    // =====================================================================
+    // NAVIGATION: ROLE SWITCH, SCHOOL TABS & STANDALONE EBS MODE
+    // =====================================================================
+    function switchRoleMode(mode) {
+      const schCont = document.getElementById("schoolPortalContainer");
+      const admCont = document.getElementById("adminPortalContainer");
+      if (mode === "ADMIN") {
+        schCont.classList.add("hidden");
+        admCont.classList.remove("hidden");
+      } else {
+        admCont.classList.add("hidden");
+        schCont.classList.remove("hidden");
+      }
+    }
+
+    function switchSchoolTab(tabNum) {
+      [1, 2, 3, 4].forEach(function(n) {
+        const sec = document.getElementById("schoolTab" + n);
+        const btn = document.getElementById("schMenuBtn" + n);
+        if (n === tabNum) {
+          sec.classList.remove("hidden");
+          btn.classList.add("active");
+        } else {
+          sec.classList.add("hidden");
+          btn.classList.remove("active");
+        }
+      });
+    }
+
+    // Open EBS-27 in Standalone Full-Screen Mode (Hiding Top Banner, Flash Ticker, and School Menu Buttons)
+    function openSchoolEbsStandaloneMode() {
+      const sch = getActiveSchoolObj();
+      document.getElementById("mainPortalHeader").classList.add("hidden");
+      document.getElementById("mainFlashTickerBar").classList.add("hidden");
+      document.getElementById("schoolTopMenuBar").classList.add("hidden");
+      [1, 2, 3, 4].forEach(function(n) {
+        document.getElementById("schoolTab" + n).classList.add("hidden");
+      });
+
+      document.getElementById("ebsStandaloneSchoolHeader").textContent =
+        "🏫 [U.NO: " + sch.uNo + "] " + sch.nameTa + " (" + sch.nameEn + ") | " + sch.mgmt1 + " | " + sch.level;
+      document.getElementById("schoolEbsStandaloneSection").classList.remove("hidden");
+      switchEbsFormTab(currentEbsSubTab || "F1");
+    }
+
+    function closeSchoolEbsStandaloneMode() {
+      document.getElementById("schoolEbsStandaloneSection").classList.add("hidden");
+      document.getElementById("mainPortalHeader").classList.remove("hidden");
+      document.getElementById("mainFlashTickerBar").classList.remove("hidden");
+      document.getElementById("schoolTopMenuBar").classList.remove("hidden");
+      switchSchoolTab(1);
+      refreshActiveSchoolViews();
+    }
+
+    function switchEbsFormTab(formKey) {
+      currentEbsSubTab = formKey;
+      ["F1", "F2", "F3", "F4"].forEach(function(k) {
+        const pane = document.getElementById("ebsPane" + k);
+        const btn = document.getElementById("ebsTabBtn" + k);
+        if (k === formKey) {
+          pane.classList.remove("hidden");
+          btn.classList.add("active");
+        } else {
+          pane.classList.add("hidden");
+          btn.classList.remove("active");
+        }
+      });
+    }
+
+    function triggerEbsAutoSaveIndicator() {
+      const pill = document.getElementById("ebsAutoSaveStatusPill");
+      if (!pill) return;
+      pill.textContent = "⏳ சேமிக்கப்படுகிறது (Auto-Saving...)";
+      pill.className = "px-3 py-1 rounded-full bg-amber-500 text-slate-950 text-xs font-extrabold";
+      setTimeout(function() {
+        pill.textContent = "✓ தானியங்கி சேமிப்பு (Auto-Saved)";
+        pill.className = "px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-extrabold";
+      }, 500);
+    }
+
+    // =====================================================================
+    // EBS FORM - I (10th Direct Edit + 12th Group Popup Edit)
+    // =====================================================================
+    function renderEbsForm1() {
+      const sch = getActiveSchoolObj();
+      document.getElementById("f1DispUNoMgmt").textContent = "U.NO: " + sch.uNo + " | " + sch.mgmt1 + " (" + sch.level + ")";
+      document.getElementById("f1DispUdiseBlock").textContent = sch.udiseNo + " | " + sch.block;
+      document.getElementById("f1DispExamCentres").textContent = "SSLC: " + (sch.centre10 || "-") + " | HSC: " + (sch.centre12 || "-");
+      document.getElementById("f1ExamRoomsInput").value = sch.examRooms || 0;
+      document.getElementById("f1BenchDesksInput").value = sch.benchDesks || 0;
+
+      // 10th Standard Inputs
+      document.getElementById("f1SslcTmBoys").value = sch.sslc.tmB || 0;
+      document.getElementById("f1SslcTmGirls").value = sch.sslc.tmG || 0;
+      document.getElementById("f1SslcEmBoys").value = sch.sslc.emB || 0;
+      document.getElementById("f1SslcEmGirls").value = sch.sslc.emG || 0;
+      document.getElementById("f1SslcPart4Boys").value = sch.sslc.p4B || 0;
+      document.getElementById("f1SslcPart4Girls").value = sch.sslc.p4G || 0;
+
+      updateF1SslcTotalsDisplay();
+      updateF1HscTotalsDisplay();
+    }
+
+    function onEbsF1MetaChange() {
+      const sch = getActiveSchoolObj();
+      sch.examRooms = Number(document.getElementById("f1ExamRoomsInput").value || 0);
+      sch.benchDesks = Number(document.getElementById("f1BenchDesksInput").value || 0);
+      triggerEbsAutoSaveIndicator();
+    }
+
+    function onEbsF1SslcStrengthChange() {
+      const sch = getActiveSchoolObj();
+      sch.sslc.tmB = Math.max(0, Number(document.getElementById("f1SslcTmBoys").value || 0));
+      sch.sslc.tmG = Math.max(0, Number(document.getElementById("f1SslcTmGirls").value || 0));
+      sch.sslc.emB = Math.max(0, Number(document.getElementById("f1SslcEmBoys").value || 0));
+      sch.sslc.emG = Math.max(0, Number(document.getElementById("f1SslcEmGirls").value || 0));
+      sch.sslc.p4B = Math.max(0, Number(document.getElementById("f1SslcPart4Boys").value || 0));
+      sch.sslc.p4G = Math.max(0, Number(document.getElementById("f1SslcPart4Girls").value || 0));
+      updateF1SslcTotalsDisplay();
+      triggerEbsAutoSaveIndicator();
+    }
+
+    function updateF1SslcTotalsDisplay() {
+      const sch = getActiveSchoolObj();
+      const tmTot = (sch.sslc.tmB || 0) + (sch.sslc.tmG || 0);
+      const emTot = (sch.sslc.emB || 0) + (sch.sslc.emG || 0);
+      const totB = (sch.sslc.tmB || 0) + (sch.sslc.emB || 0);
+      const totG = (sch.sslc.tmG || 0) + (sch.sslc.emG || 0);
+      const grand = tmTot + emTot;
+      const p4Tot = (sch.sslc.p4B || 0) + (sch.sslc.p4G || 0);
+
+      document.getElementById("f1SslcTmTotal").textContent = tmTot;
+      document.getElementById("f1SslcEmTotal").textContent = emTot;
+      document.getElementById("f1SslcTotBoys").textContent = totB;
+      document.getElementById("f1SslcTotGirls").textContent = totG;
+      document.getElementById("f1SslcGrandTotal").textContent = grand;
+      document.getElementById("f1SslcPart4Total").textContent = p4Tot;
+    }
+
+    function updateF1HscTotalsDisplay() {
+      const sch = getActiveSchoolObj();
+      let tmB = 0, tmG = 0, emB = 0, emG = 0;
+      (sch.hscGroups || []).forEach(function(g) {
+        tmB += Number(g.tmB || 0);
+        tmG += Number(g.tmG || 0);
+        emB += Number(g.emB || 0);
+        emG += Number(g.emG || 0);
+      });
+      const tmTot = tmB + tmG;
+      const emTot = emB + emG;
+      const totB = tmB + emB;
+      const totG = tmG + emG;
+      const grand = tmTot + emTot;
+
+      document.getElementById("f1HscTmBoys").textContent = tmB;
+      document.getElementById("f1HscTmGirls").textContent = tmG;
+      document.getElementById("f1HscTmTotal").textContent = tmTot;
+      document.getElementById("f1HscEmBoys").textContent = emB;
+      document.getElementById("f1HscEmGirls").textContent = emG;
+      document.getElementById("f1HscEmTotal").textContent = emTot;
+      document.getElementById("f1HscTotBoys").textContent = totB;
+      document.getElementById("f1HscTotGirls").textContent = totG;
+      document.getElementById("f1HscGrandTotal").textContent = grand;
+    }
+
+    // =====================================================================
+    // +2 (12th) GROUP-WISE STRENGTH POPUP MODAL
+    // =====================================================================
+    function openEbsHscGroupEditModal() {
+      const sch = getActiveSchoolObj();
+      document.getElementById("hscGroupModalSchoolLabel").textContent =
+        "🏫 பள்ளி: [U.NO: " + sch.uNo + "] " + sch.nameTa + " (" + sch.nameEn + ")";
+
+      // Populate Add Group Dropdown
+      const sel = document.getElementById("newHscGroupSelect");
+      sel.innerHTML = '<option value="">-- புதிய பாடப்பிரிவு (Group Code) தேர்வு செய்க --</option>' +
+        Object.keys(HSS_GROUP_CATALOG).map(function(code) {
+          const g = HSS_GROUP_CATALOG[code];
+          return '<option value="' + code + '">' + code + ' - ' + g.name + ' (' + g.subjects.join(", ") + ')</option>';
+        }).join("");
+
+      renderHscGroupModalRows();
+      const modal = document.getElementById("ebsHscGroupEditModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeEbsHscGroupEditModal() {
+      const modal = document.getElementById("ebsHscGroupEditModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function renderHscGroupModalRows() {
+      const sch = getActiveSchoolObj();
+      const tbody = document.getElementById("hscGroupModalTableBody");
+      const groups = sch.hscGroups || [];
+
+      let sumTmB = 0, sumTmG = 0, sumEmB = 0, sumEmG = 0;
+
+      const rowsHtml = groups.map(function(g, idx) {
+        const meta = HSS_GROUP_CATALOG[g.groupCode] || { category: "SCIENCE", name: "GROUP " + g.groupCode, subjects: [] };
+        const tmTot = Number(g.tmB || 0) + Number(g.tmG || 0);
+        const emTot = Number(g.emB || 0) + Number(g.emG || 0);
+        const rowTot = tmTot + emTot;
+
+        sumTmB += Number(g.tmB || 0);
+        sumTmG += Number(g.tmG || 0);
+        sumEmB += Number(g.emB || 0);
+        sumEmG += Number(g.emG || 0);
+
+        return '<tr class="bg-white border-b">' +
+          '<td class="border border-slate-300 font-black text-teal-900">' + g.groupCode + '<div class="text-[10px] text-slate-500">' + meta.category + '</div></td>' +
+          '<td class="border border-slate-300 text-left font-black text-slate-900">' + meta.name + '<div class="text-[10px] font-semibold text-slate-500">' + meta.subjects.join(" / ") + '</div></td>' +
+          '<td class="border border-slate-300"><input type="number" min="0" value="' + (g.tmB || 0) + '" oninput="onModalGroupCellEdit(' + idx + ', \'tmB\', this.value)" class="ebs-num-input"></td>' +
+          '<td class="border border-slate-300"><input type="number" min="0" value="' + (g.tmG || 0) + '" oninput="onModalGroupCellEdit(' + idx + ', \'tmG\', this.value)" class="ebs-num-input"></td>' +
+          '<td class="border border-slate-300 bg-emerald-50 text-emerald-800 ebs-num-display">' + tmTot + '</td>' +
+          '<td class="border border-slate-300"><input type="number" min="0" value="' + (g.emB || 0) + '" oninput="onModalGroupCellEdit(' + idx + ', \'emB\', this.value)" class="ebs-num-input"></td>' +
+          '<td class="border border-slate-300"><input type="number" min="0" value="' + (g.emG || 0) + '" oninput="onModalGroupCellEdit(' + idx + ', \'emG\', this.value)" class="ebs-num-input"></td>' +
+          '<td class="border border-slate-300 bg-blue-50 text-blue-800 ebs-num-display">' + emTot + '</td>' +
+          '<td class="border border-slate-300 bg-teal-50 text-teal-950 ebs-num-display">' + rowTot + '</td>' +
+          '<td class="border border-slate-300"><button onclick="removeHscGroupRow(' + idx + ')" class="px-2 py-1 rounded bg-rose-100 text-rose-700 font-black">🗑️</button></td>' +
+        '</tr>';
+      }).join("");
+
+      const sumTmTot = sumTmB + sumTmG;
+      const sumEmTot = sumEmB + sumEmG;
+      const sumGrand = sumTmTot + sumEmTot;
+
+      const footerRow = '<tr class="bg-amber-50 font-black">' +
+        '<td colspan="2" class="border border-slate-400 text-right pr-3">மொத்தம் (+2 Total Students):</td>' +
+        '<td class="border border-slate-400 ebs-num-display">' + sumTmB + '</td>' +
+        '<td class="border border-slate-400 ebs-num-display">' + sumTmG + '</td>' +
+        '<td class="border border-slate-400 bg-emerald-100 text-emerald-900 ebs-num-display">' + sumTmTot + '</td>' +
+        '<td class="border border-slate-400 ebs-num-display">' + sumEmB + '</td>' +
+        '<td class="border border-slate-400 ebs-num-display">' + sumEmG + '</td>' +
+        '<td class="border border-slate-400 bg-blue-100 text-blue-900 ebs-num-display">' + sumEmTot + '</td>' +
+        '<td class="border border-slate-400 bg-amber-200 text-amber-950 ebs-num-display">' + sumGrand + '</td>' +
+        '<td class="border border-slate-400"></td>' +
+      '</tr>';
+
+      tbody.innerHTML = rowsHtml + footerRow;
+    }
+
+    function onModalGroupCellEdit(idx, field, val) {
+      const sch = getActiveSchoolObj();
+      if (!sch.hscGroups[idx]) return;
+      sch.hscGroups[idx][field] = Math.max(0, Number(val || 0));
+      renderHscGroupModalRows();
+    }
+
+    function addHscGroupToCurrentSchool() {
+      const code = document.getElementById("newHscGroupSelect").value;
+      if (!code) return;
+      const sch = getActiveSchoolObj();
+      sch.hscGroups = sch.hscGroups || [];
+      if (!sch.hscGroups.some(function(g) { return g.groupCode === code; })) {
+        sch.hscGroups.push({ groupCode: code, tmB: 0, tmG: 0, emB: 0, emG: 0 });
+      }
+      renderHscGroupModalRows();
+    }
+
+    function removeHscGroupRow(idx) {
+      const sch = getActiveSchoolObj();
+      sch.hscGroups.splice(idx, 1);
+      renderHscGroupModalRows();
+    }
+
+    function saveAndCloseHscGroupEditModal() {
+      updateF1HscTotalsDisplay();
+      renderEbsForm2Dynamic();
+      triggerEbsAutoSaveIndicator();
+      closeEbsHscGroupEditModal();
+    }
+
+    // =====================================================================
+    // EBS FORM - II (DYNAMIC SUBJECT LIST - EXACT MATCHING, NO 'OTHERS')
+    // =====================================================================
+    function deriveSchoolEbsF2SubjectsFromPortal(sch) {
+      const groups = sch.hscGroups || [];
+      let totalTm = 0, totalEm = 0;
+      const subjectTotalsMap = {};
+
+      groups.forEach(function(g) {
+        const gTm = Number(g.tmB || 0) + Number(g.tmG || 0);
+        const gEm = Number(g.emB || 0) + Number(g.emG || 0);
+        totalTm += gTm;
+        totalEm += gEm;
+
+        const meta = HSS_GROUP_CATALOG[g.groupCode];
+        if (meta && Array.isArray(meta.subjects)) {
+          meta.subjects.forEach(function(subName) {
+            const upperSub = String(subName).trim().toUpperCase();
+            // Exact token match priority so MICROBIOLOGY never collides with BIOLOGY
+            let matchedMaster = EBS_F2_SUBJECT_MASTER.find(function(m) {
+              return m.exactTokens.indexOf(upperSub) !== -1;
+            });
+            if (matchedMaster) {
+              if (!subjectTotalsMap[matchedMaster.key]) {
+                subjectTotalsMap[matchedMaster.key] = { tm: 0, em: 0 };
+              }
+              subjectTotalsMap[matchedMaster.key].tm += gTm;
+              subjectTotalsMap[matchedMaster.key].em += gEm;
+            }
+          });
+        }
+      });
+
+      const overrides = f2ManualLangOverrides[sch.uNo] || {};
+      const langTm = overrides.Language && overrides.Language.tm !== undefined ? overrides.Language.tm : totalTm;
+      const langEm = overrides.Language && overrides.Language.em !== undefined ? overrides.Language.em : totalEm;
+      const engTm = overrides.English && overrides.English.tm !== undefined ? overrides.English.tm : totalTm;
+      const engEm = overrides.English && overrides.English.em !== undefined ? overrides.English.em : totalEm;
+
+      const dynamicRows = [];
+      if (totalTm + totalEm > 0 || groups.length > 0) {
+        dynamicRows.push({
+          sNo: "01", key: "Language", label: "Language (Tamil)", editable: true,
+          tm: langTm, em: langEm, tot: langTm + langEm
+        });
+        dynamicRows.push({
+          sNo: "02", key: "English", label: "English", editable: true,
+          tm: engTm, em: engEm, tot: engTm + engEm
+        });
+
+        let seq = 3;
+        EBS_F2_SUBJECT_MASTER.slice(2).forEach(function(m) {
+          const st = subjectTotalsMap[m.key];
+          if (st && (st.tm > 0 || st.em > 0)) {
+            dynamicRows.push({
+              sNo: String(seq).padStart(2, "0"),
+              key: m.key,
+              label: m.label,
+              editable: false,
+              tm: st.tm,
+              em: st.em,
+              tot: st.tm + st.em
+            });
+            seq++;
+          }
+        });
+      }
+      return dynamicRows;
+    }
+
+    function onEbsF2LangOrEngChange(subKey, medKey, val) {
+      const sch = getActiveSchoolObj();
+      f2ManualLangOverrides[sch.uNo] = f2ManualLangOverrides[sch.uNo] || {};
+      f2ManualLangOverrides[sch.uNo][subKey] = f2ManualLangOverrides[sch.uNo][subKey] || {};
+      f2ManualLangOverrides[sch.uNo][subKey][medKey] = Math.max(0, Number(val || 0));
+      renderEbsForm2Dynamic();
+      triggerEbsAutoSaveIndicator();
+    }
+
+    function renderEbsForm2Dynamic() {
+      const sch = getActiveSchoolObj();
+      const container = document.getElementById("ebsF2DynamicTableContainer");
+      if (sch.level !== "HSS") {
+        container.innerHTML = '<div class="p-6 text-center text-sm font-bold text-slate-500">இப்பள்ளி உயர்நிலைப்பள்ளி (HS) என்பதால் FORM – II (+2 பாடவாரியான எண்ணிக்கை) பொருந்தாது.</div>';
+        return;
+      }
+
+      const activeSubjects = deriveSchoolEbsF2SubjectsFromPortal(sch);
+      const rowsHtml = activeSubjects.map(function(row) {
+        if (row.editable) {
+          return '<tr class="bg-amber-50/40 border-b">' +
+            '<td class="border border-slate-300 font-black">' + row.sNo + '</td>' +
+            '<td class="border border-slate-300 text-left font-black text-slate-900 pl-3">' + row.label + ' <span class="text-[10px] font-extrabold text-emerald-700">(✏️ Editable for Exemptions)</span></td>' +
+            '<td class="border border-slate-300"><input type="number" min="0" value="' + row.tm + '" onchange="onEbsF2LangOrEngChange(\'' + row.key + '\', \'tm\', this.value)" class="ebs-num-input"></td>' +
+            '<td class="border border-slate-300"><input type="number" min="0" value="' + row.em + '" onchange="onEbsF2LangOrEngChange(\'' + row.key + '\', \'em\', this.value)" class="ebs-num-input"></td>' +
+            '<td class="border border-slate-300 bg-emerald-50 text-emerald-900 ebs-num-display">' + row.tot + '</td>' +
+          '</tr>';
+        }
+        return '<tr class="bg-white border-b">' +
+          '<td class="border border-slate-300 font-black">' + row.sNo + '</td>' +
+          '<td class="border border-slate-300 text-left font-extrabold text-slate-900 pl-3">' + row.label + '</td>' +
+          '<td class="border border-slate-300 text-emerald-800 ebs-num-display">' + row.tm + '</td>' +
+          '<td class="border border-slate-300 text-blue-800 ebs-num-display">' + row.em + '</td>' +
+          '<td class="border border-slate-300 bg-emerald-50 text-emerald-900 ebs-num-display">' + row.tot + '</td>' +
+        '</tr>';
+      }).join("");
+
+      container.innerHTML =
+        '<table class="w-full border-collapse border border-slate-400 ebs-strength-table text-xs">' +
+          '<thead>' +
+            '<tr class="bg-slate-900 text-white">' +
+              '<th class="border border-slate-600 w-16">S.No</th>' +
+              '<th class="border border-slate-600 text-left pl-3">SUBJECT (இப்பள்ளியின் +2 பாடப்பிரிவுப் பாடங்கள் மட்டும்)</th>' +
+              '<th class="border border-slate-600 w-40">TAMIL MEDIUM</th>' +
+              '<th class="border border-slate-600 w-40">ENGLISH MEDIUM</th>' +
+              '<th class="border border-slate-600 bg-teal-800 w-40">TOTAL</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>';
+    }
+
+    // =====================================================================
+    // EBS FORM - III & FORM - IV ROSTERS (STRICT SORTING: DESIG -> DOJ -> DOB)
+    // =====================================================================
+    function renderEbsForm3Roster() {
+      const sch = getActiveSchoolObj();
+      const sortedTeachers = getSchoolStaffByType(sch.uNo, true);
+      document.getElementById("ebsTabBtnF3Title").textContent = "FORM – III (ஆசிரியர்கள் - " + sortedTeachers.length + ")";
+
+      const rowsHtml = sortedTeachers.map(function(st, idx) {
+        const dCode = getDesigCodeForStaff(st.desig);
+        return '<tr class="border-b hover:bg-slate-50">' +
+          '<td class="p-2.5 text-center font-black">' + (idx + 1) + '</td>' +
+          '<td class="p-2.5 font-extrabold text-xs">' +
+            '<div class="text-amber-900">EMIS: ' + st.emisId + '</div>' +
+            '<div class="text-slate-500">IFHRMS: ' + (st.nature === "Contract" ? "—" : (st.ifhrmsId || "—")) + '</div>' +
+          '</td>' +
+          '<td class="p-2.5">' +
+            '<div class="font-black text-slate-900 text-xs">' + st.nameEn + '</div>' +
+            '<div class="font-bold text-emerald-800 text-xs">' + (st.prefix || "") + " " + (st.nameTa || "") + '</div>' +
+            '<div class="text-[11px] text-slate-500">' + (st.email || "") + '</div>' +
+          '</td>' +
+          '<td class="p-2.5 text-xs">' +
+            '<span class="px-2 py-0.5 rounded bg-blue-100 text-blue-950 font-black">Code ' + dCode + '</span> ' +
+            '<span class="font-extrabold">' + st.desig + '</span>' +
+            '<div class="text-[11px] font-semibold text-slate-600">Sub: ' + (st.mainSub || "-") + ' | ' + st.nature + '</div>' +
+          '</td>' +
+          '<td class="p-2.5 text-xs font-bold">' +
+            '<div>DOJ Post: <span class="text-blue-900 font-black">' + (st.dojPresPost || "-") + '</span></div>' +
+            '<div>DOB: <span class="text-slate-800 font-black">' + (st.dob || "-") + '</span></div>' +
+          '</td>' +
+          '<td class="p-2.5 text-xs font-bold">' +
+            '<div>10th: <span class="text-slate-600">' + (st.dutySslcWork || "—") + '</span></div>' +
+            '<div>12th: <span class="text-emerald-800">' + (st.dutyHseWork || "—") + '</span></div>' +
+          '</td>' +
+          '<td class="p-2.5 text-center space-y-1">' +
+            '<button onclick="openEbsStaffEditModal(\'' + st.emisId + '\', \'F3\')" class="w-full px-3 py-1.5 rounded bg-amber-700 hover:bg-amber-600 text-white font-black text-xs">✏️ படிவம் பூர்த்தி செய்</button>' +
+            '<button onclick="openSingleStaffA4Preview(\'' + st.emisId + '\', \'F3\')" class="w-full px-3 py-1 rounded border border-slate-300 hover:bg-slate-100 font-extrabold text-[11px]">🖨️ Form-III A4</button>' +
+          '</td>' +
+        '</tr>';
+      }).join("");
+
+      document.getElementById("ebsF3RosterTableContainer").innerHTML =
+        '<table class="w-full border-collapse border border-slate-300 text-left text-xs">' +
+          '<thead class="bg-slate-900 text-white">' +
+            '<tr>' +
+              '<th class="p-2.5 text-center">வ.எண்</th>' +
+              '<th class="p-2.5">EMIS ID & IFHRMS ID</th>' +
+              '<th class="p-2.5">ஆசிரியர் பெயர் (English, தமிழ் & Email)</th>' +
+              '<th class="p-2.5">பதவி (Desig Code) & பாடம்</th>' +
+              '<th class="p-2.5">DOJ Present Post & DOB</th>' +
+              '<th class="p-2.5">2025-26 Exam Duty (10th / 12th)</th>' +
+              '<th class="p-2.5 text-center">FORM - III நடவடிக்கை</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>';
+    }
+
+    function renderEbsForm4Roster() {
+      const sch = getActiveSchoolObj();
+      const sortedStaff = getSchoolStaffByType(sch.uNo, false);
+      document.getElementById("ebsTabBtnF4Title").textContent = "FORM – IV (பணியாளர்கள் - " + sortedStaff.length + ")";
+
+      const rowsHtml = sortedStaff.map(function(st, idx) {
+        const dCode = getDesigCodeForStaff(st.desig);
+        return '<tr class="border-b hover:bg-slate-50">' +
+          '<td class="p-2.5 text-center font-black">' + (idx + 1) + '</td>' +
+          '<td class="p-2.5 font-extrabold text-xs">' +
+            '<div class="text-amber-900">EMIS: ' + st.emisId + '</div>' +
+            '<div class="text-slate-500">IFHRMS: ' + (st.nature === "Contract" ? "—" : (st.ifhrmsId || "—")) + '</div>' +
+          '</td>' +
+          '<td class="p-2.5">' +
+            '<div class="font-black text-slate-900 text-xs">' + st.nameEn + '</div>' +
+            '<div class="font-bold text-emerald-800 text-xs">' + (st.prefix || "") + " " + (st.nameTa || "") + '</div>' +
+            '<div class="text-[11px] text-slate-500">' + (st.email || "") + '</div>' +
+          '</td>' +
+          '<td class="p-2.5 text-xs">' +
+            '<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-950 font-black">Code ' + dCode + '</span> ' +
+            '<span class="font-extrabold">' + st.desig + '</span>' +
+            '<div class="text-[11px] font-semibold text-slate-600">' + st.nature + '</div>' +
+          '</td>' +
+          '<td class="p-2.5 text-xs font-bold">' +
+            '<div>DOJ Post: <span class="text-blue-900 font-black">' + (st.dojPresPost || "-") + '</span></div>' +
+            '<div>DOB: <span class="text-slate-800 font-black">' + (st.dob || "-") + '</span></div>' +
+          '</td>' +
+          '<td class="p-2.5 text-xs font-bold">' +
+            '<div>10th: <span class="text-slate-600">' + (st.dutySslcWork || "—") + '</span></div>' +
+            '<div>12th: <span class="text-emerald-800">' + (st.dutyHseWork || "—") + '</span></div>' +
+          '</td>' +
+          '<td class="p-2.5 text-center space-y-1">' +
+            '<button onclick="openEbsStaffEditModal(\'' + st.emisId + '\', \'F4\')" class="w-full px-3 py-1.5 rounded bg-amber-700 hover:bg-amber-600 text-white font-black text-xs">✏️ படிவம் பூர்த்தி செய்</button>' +
+            '<button onclick="openSingleStaffA4Preview(\'' + st.emisId + '\', \'F4\')" class="w-full px-3 py-1 rounded border border-slate-300 hover:bg-slate-100 font-extrabold text-[11px]">🖨️ Form-IV A4</button>' +
+          '</td>' +
+        '</tr>';
+      }).join("");
+
+      document.getElementById("ebsF4RosterTableContainer").innerHTML =
+        '<table class="w-full border-collapse border border-slate-300 text-left text-xs">' +
+          '<thead class="bg-slate-900 text-white">' +
+            '<tr>' +
+              '<th class="p-2.5 text-center">வ.எண்</th>' +
+              '<th class="p-2.5">EMIS ID & IFHRMS ID</th>' +
+              '<th class="p-2.5">பணியாளர் பெயர் (English, தமிழ் & Email)</th>' +
+              '<th class="p-2.5">பதவி (Desig Code) & தன்மை</th>' +
+              '<th class="p-2.5">DOJ Present Post & DOB</th>' +
+              '<th class="p-2.5">2025-26 Exam Duty (10th / 12th)</th>' +
+              '<th class="p-2.5 text-center">FORM - IV நடவடிக்கை</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>';
+    }
+
+    // =====================================================================
+    // ADD TEACHER (F3) / ADD STAFF (F4): EMIS SEARCH & AUTO TEMP ID (10100001)
+    // =====================================================================
+    function generateNextTemporaryStaffId(uNo) {
+      const prefix3 = String(uNo || "101").padStart(3, "0").slice(0, 3);
+      let maxSeq = 0;
+      EMIS_STAFF_DATABASE.forEach(function(st) {
+        const sid = String(st.emisId || "");
+        if (sid.indexOf(prefix3) === 0 && sid.length === 8) {
+          const tail = Number(sid.slice(3));
+          if (!isNaN(tail) && tail < 900 && tail > maxSeq) {
+            maxSeq = tail;
+          }
+        }
+      });
+      return prefix3 + String(maxSeq + 1).padStart(5, "0");
+    }
+
+    function openAddEbsStaffModal(formType) {
+      currentAddStaffFormType = formType;
+      const sch = getActiveSchoolObj();
+      document.getElementById("addStaffModalTitle").textContent =
+        formType === "F3"
+          ? "➕ FORM – III : கூடுதல் ஆசிரியர் சேர்க்கை (Add Teacher to F3)"
+          : "➕ FORM – IV : கூடுதல் ஆசிரியரல்லாத பணியாளர் சேர்க்கை (Add Non-Teaching Staff to F4)";
+      document.getElementById("addStaffModalSchoolSub").textContent =
+        "🏫 பள்ளி: [U.NO: " + sch.uNo + "] " + sch.nameTa + " (" + sch.nameEn + ")";
+
+      document.getElementById("addStaffEmisSearchInput").value = "";
+      document.getElementById("addStaffEmisSearchResultBox").innerHTML = "";
+
+      const nextTempId = generateNextTemporaryStaffId(sch.uNo);
+      document.getElementById("nextTempStaffIdPreview").textContent = nextTempId;
+      document.getElementById("btnCreateTempStaff").textContent =
+        "🆕 தற்காலிக எண் (" + nextTempId + ") உருவாக்கி புதிய " + (formType === "F3" ? "ஆசிரியர் (F3)" : "பணியாளர் (F4)") + " படிவம் பூர்த்தி செய்";
+
+      const modal = document.getElementById("addEbsStaffModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeAddEbsStaffModal() {
+      const modal = document.getElementById("addEbsStaffModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function searchEmisDatabaseForAddStaff() {
+      const q = String(document.getElementById("addStaffEmisSearchInput").value || "").trim().toUpperCase();
+      const box = document.getElementById("addStaffEmisSearchResultBox");
+      if (!q) {
+        box.innerHTML = "";
+        return;
+      }
+
+      const matches = EMIS_STAFF_DATABASE.filter(function(st) {
+        return String(st.emisId).indexOf(q) !== -1 || String(st.nameEn).toUpperCase().indexOf(q) !== -1;
+      });
+
+      if (matches.length > 0) {
+        box.innerHTML = matches.map(function(m) {
+          return '<div class="p-3 rounded-lg bg-white border-2 border-emerald-500 flex flex-wrap items-center justify-between gap-2">' +
+            '<div class="text-xs">' +
+              '<div class="font-black text-slate-900">EMIS: ' + m.emisId + ' — ' + m.nameEn + ' (' + (m.prefix || "") + ' ' + (m.nameTa || "") + ')</div>' +
+              '<div class="font-bold text-emerald-800">' + m.desig + ' | DOB: ' + (m.dob || "-") + ' | Current U.NO: ' + m.uNo + '</div>' +
+            '</div>' +
+            '<button onclick="attachExistingEmisStaffToSchool(\'' + m.emisId + '\')" class="px-3 py-1.5 rounded-lg bg-emerald-700 text-white font-black text-xs">' +
+              '➕ இப்பள்ளியின் ' + currentAddStaffFormType + '-இல் இணை & திருத்து' +
+            '</button>' +
+          '</div>';
+        }).join("");
+      } else {
+        box.innerHTML =
+          '<div class="p-3 rounded-lg bg-white border border-amber-400 space-y-2">' +
+            '<div class="text-xs font-bold text-amber-900">ℹ️ நீங்கள் தேடிய "' + q + '" புதிய பதிவாகச் சேர்க்கலாம்:</div>' +
+            '<button onclick="createStaffWithCustomEmisId(\'' + q + '\')" class="px-3.5 py-1.5 rounded-lg bg-blue-700 text-white font-black text-xs">' +
+              '➕ இதே EMIS எண்ணுடன் (' + q + ') புதிய பணியாளராக (' + currentAddStaffFormType + ') சேர்' +
+            '</button>' +
+          '</div>';
+      }
+    }
+
+    function attachExistingEmisStaffToSchool(emisId) {
+      const sch = getActiveSchoolObj();
+      const st = EMIS_STAFF_DATABASE.find(function(x) { return x.emisId === emisId; });
+      if (!st) return;
+      st.uNo = sch.uNo;
+      st.isTeaching = (currentAddStaffFormType === "F3");
+      st.nature = normalizeStaffNatureBySchoolMgmt(st.nature, sch.mgmt1);
+      closeAddEbsStaffModal();
+      refreshActiveSchoolViews();
+      openEbsStaffEditModal(st.emisId, currentAddStaffFormType);
+    }
+
+    function createStaffWithCustomEmisId(customId) {
+      const sch = getActiveSchoolObj();
+      const isTeach = (currentAddStaffFormType === "F3");
+      const newSt = {
+        uNo: sch.uNo,
+        emisId: customId,
+        ifhrmsId: "",
+        isTeaching: isTeach,
+        nameEn: "NEW STAFF",
+        prefix: "திரு.",
+        nameTa: "",
+        gender: "Male",
+        dob: "01-06-1985",
+        desig: isTeach ? "B.T. ASSISTANT" : "JUNIOR ASSISTANT",
+        qual: "",
+        mainSub: isTeach ? "English" : "Office",
+        nature: sch.mgmt1 === "3P" ? "Contract" : "Regular (Govt.Salaried )",
+        modeFirstApp: "",
+        dojFirstApp: "",
+        firstJoinPost: "",
+        modePresPost: "",
+        dojPresPost: "01-06-2023",
+        unitTransferDate: "",
+        dojSchool: "01-06-2023",
+        mobile: sch.mobile || "",
+        altMobile: "",
+        email: "",
+        resPlace: "",
+        resDist: "Sivagangai",
+        campPref: "01-Sivagangai",
+        handling: {},
+        dutySslcWork: "",
+        dutySslcCentre: "",
+        dutyHseWork: "",
+        dutyHseCentre: "",
+        exemptionGround: "",
+        exemptionDetails: ""
+      };
+      EMIS_STAFF_DATABASE.push(newSt);
+      closeAddEbsStaffModal();
+      refreshActiveSchoolViews();
+      openEbsStaffEditModal(newSt.emisId, currentAddStaffFormType);
+    }
+
+    function createStaffWithGeneratedTempId() {
+      const sch = getActiveSchoolObj();
+      const tempId = generateNextTemporaryStaffId(sch.uNo);
+      createStaffWithCustomEmisId(tempId);
+    }
+
+    // =====================================================================
+    // STAFF PROFILE EDIT MODAL (F3 & F4)
+    // =====================================================================
+    function openEbsStaffEditModal(emisId, formType) {
+      currentEditingStaffEmisId = emisId;
+      currentEditingStaffFormType = formType;
+      const sch = getActiveSchoolObj();
+      const st = EMIS_STAFF_DATABASE.find(function(x) { return x.emisId === emisId; });
+      if (!st) return;
+
+      document.getElementById("staffModalHeaderTitle").textContent =
+        formType === "F3"
+          ? "✏️ FORM – III : TEACHER PROFILE EDIT (" + st.nameEn + ")"
+          : "✏️ FORM – IV : NON-TEACHING STAFF PROFILE EDIT (" + st.nameEn + ")";
+      document.getElementById("staffModalHeaderSub").textContent =
+        "🏫 [U.NO: " + sch.uNo + "] " + sch.nameTa + " | Management: " + sch.mgmt1;
+
+      document.getElementById("stEditEmisId").value = st.emisId;
+
+      // Populate Nature of Present Post based on School Management (1G, 2A vs 3P)
+      // Private schools (3P) only see "Contract"; Govt (1G) & Aided (2A) see "Regular (Govt.Salaried )" and "Contract"
+      const natSel = document.getElementById("stEditNaturePost");
+      if (sch.mgmt1 === "3P") {
+        natSel.innerHTML = '<option value="Contract">Contract</option>';
+        st.nature = "Contract";
+      } else {
+        natSel.innerHTML =
+          '<option value="Regular (Govt.Salaried )">Regular (Govt.Salaried )</option>' +
+          '<option value="Contract">Contract</option>';
+        st.nature = normalizeStaffNatureBySchoolMgmt(st.nature, sch.mgmt1);
+      }
+      natSel.value = st.nature;
+
+      // Populate Designations Dropdown
+      const desigSel = document.getElementById("stEditDesig");
+      const desigKeys = Object.keys(DESIGNATION_CODE_MAP);
+      desigSel.innerHTML = desigKeys.map(function(d) {
+        return '<option value="' + d + '">[' + DESIGNATION_CODE_MAP[d] + '] ' + d + '</option>';
+      }).join("");
+      desigSel.value = st.desig || (formType === "F3" ? "P.G. TEACHER" : "JUNIOR ASSISTANT");
+
+      // Populate Last Year Exam Duty Dropdown (F3 vs F4 Last_Year_Exam_Duty_for_Non_Teaching_Staff)
+      const dutyList = formType === "F4" ? F4_NON_TEACHING_LAST_YEAR_DUTIES : F3_TEACHING_LAST_YEAR_DUTIES;
+      const dutyOptionsHtml = dutyList.map(function(d) {
+        return '<option value="' + d + '">' + (d || "-- Select Duty --") + '</option>';
+      }).join("");
+      document.getElementById("stEditDutySslcWork").innerHTML = dutyOptionsHtml;
+      document.getElementById("stEditDutyHseWork").innerHTML = dutyOptionsHtml;
+
+      // Fill Values
+      document.getElementById("stEditIfhrmsId").value = st.ifhrmsId || "";
+      document.getElementById("stEditNameEn").value = st.nameEn || "";
+      document.getElementById("stEditPrefix").value = st.prefix || "திரு.";
+      document.getElementById("stEditNameTa").value = st.nameTa || "";
+      document.getElementById("stEditGender").value = st.gender || "Male";
+      document.getElementById("stEditDob").value = st.dob || "";
+      document.getElementById("stEditQual").value = st.qual || "";
+      document.getElementById("stEditMainSub").value = st.mainSub || "";
+      document.getElementById("stEditCampPref").value = st.campPref || "01-Sivagangai";
+
+      document.getElementById("stEditMobile").value = st.mobile || "";
+      document.getElementById("stEditAltMobile").value = st.altMobile || "";
+      document.getElementById("stEditEmail").value = st.email || "";
+      document.getElementById("stEditResPlace").value = st.resPlace || "";
+      document.getElementById("stEditResDist").value = st.resDist || "Sivagangai";
+
+      document.getElementById("stEditModeFirstApp").value = st.modeFirstApp || "";
+      document.getElementById("stEditDojFirstApp").value = st.dojFirstApp || "";
+      document.getElementById("stEditFirstJoinPost").value = st.firstJoinPost || "";
+      document.getElementById("stEditModePresPost").value = st.modePresPost || "";
+      document.getElementById("stEditDojPresPost").value = st.dojPresPost || "";
+      document.getElementById("stEditUnitTransferDate").value = st.unitTransferDate || "";
+      document.getElementById("stEditDojSchool").value = st.dojSchool || "";
+
+      document.getElementById("stEditDutySslcWork").value = st.dutySslcWork || "";
+      document.getElementById("stEditDutySslcCentre").value = st.dutySslcCentre || "";
+      document.getElementById("stEditDutyHseWork").value = st.dutyHseWork || "";
+      document.getElementById("stEditDutyHseCentre").value = st.dutyHseCentre || "";
+      document.getElementById("stEditExemptionGround").value = st.exemptionGround || "";
+      document.getElementById("stEditExemptionDetails").value = st.exemptionDetails || "";
+
+      // Show/Hide Handling Classes for F3 vs F4
+      const hcSec = document.getElementById("stEditHandlingClassesSection");
+      if (formType === "F3") {
+        hcSec.classList.remove("hidden");
+        renderClassMultiSubjectControls(st);
+      } else {
+        hcSec.classList.add("hidden");
+      }
+
+      // Apply Contract disable & blank rules immediately
+      onStaffNatureOfPostChange();
+
+      const modal = document.getElementById("ebsStaffEditModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeEbsStaffEditModal() {
+      saveCurrentEditedStaffProfile(false);
+      const modal = document.getElementById("ebsStaffEditModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    // Disable & Blank fields when Nature of Present Post === 'Contract'
+    function onStaffNatureOfPostChange() {
+      const nat = document.getElementById("stEditNaturePost").value;
+      const isContract = (nat === "Contract");
+      const contractDisabledIds = [
+        "stEditIfhrmsId",
+        "stEditModeFirstApp",
+        "stEditDojFirstApp",
+        "stEditFirstJoinPost",
+        "stEditModePresPost",
+        "stEditUnitTransferDate"
+      ];
+      contractDisabledIds.forEach(function(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (isContract) {
+          el.value = "";
+          el.disabled = true;
+          el.classList.add("bg-slate-200", "cursor-not-allowed");
+        } else {
+          el.disabled = false;
+          el.classList.remove("bg-slate-200", "cursor-not-allowed");
+        }
+      });
+    }
+
+    // Multi-Select Checkbox Dropdown for Class Handling Subjects (Classes 6 to 12)
+    function renderClassMultiSubjectControls(st) {
+      const grid = document.getElementById("stEditHandlingClassesGrid");
+      const handling = st.handling || {};
+      const classes = [6, 7, 8, 9, 10, 11, 12];
+
+      grid.innerHTML = classes.map(function(cls) {
+        const cur = handling[cls] || { subs: [], med: "" };
+        const selectedSubs = Array.isArray(cur.subs) ? cur.subs : (cur.sub ? [cur.sub] : []);
+        const btnLabel = selectedSubs.length > 0 ? selectedSubs.join(", ") : "-- Subjects --";
+
+        const checkboxesHtml = CLASS_HANDLING_SUBJECT_OPTIONS.map(function(subOpt) {
+          const isChecked = selectedSubs.indexOf(subOpt) !== -1 ? "checked" : "";
+          return '<label class="flex items-center gap-1.5 p-1 hover:bg-blue-50 rounded text-xs font-bold cursor-pointer">' +
+            '<input type="checkbox" class="cls-sub-chk-' + cls + '" value="' + subOpt + '" ' + isChecked + ' onchange="onClassMultiSubCheckChange(' + cls + ')">' +
+            '<span>' + subOpt + '</span>' +
+          '</label>';
+        }).join("");
+
+        return '<div class="bg-white p-2 rounded-lg border border-slate-300 space-y-1.5">' +
+          '<div class="text-xs font-black text-center text-blue-950 bg-blue-100 rounded py-0.5">' + cls + 'th Std</div>' +
+          '<div class="multi-sub-dropdown">' +
+            '<button type="button" onclick="toggleMultiSubMenu(' + cls + ')" id="multiSubBtn_' + cls + '" class="multi-sub-btn">' +
+              '<span class="truncate">' + btnLabel + '</span>' +
+              '<span>▾</span>' +
+            '</button>' +
+            '<div id="multiSubMenu_' + cls + '" class="multi-sub-menu">' + checkboxesHtml + '</div>' +
+          '</div>' +
+          '<select id="clsMedSelect_' + cls + '" class="w-full px-1.5 py-1 border border-slate-300 rounded text-xs font-bold">' +
+            '<option value="" ' + (!cur.med ? "selected" : "") + '>-- Med --</option>' +
+            '<option value="TM" ' + (cur.med === "TM" ? "selected" : "") + '>TM</option>' +
+            '<option value="EM" ' + (cur.med === "EM" ? "selected" : "") + '>EM</option>' +
+            '<option value="Both" ' + (cur.med === "Both" ? "selected" : "") + '>Both</option>' +
+          '</select>' +
+        '</div>';
+      }).join("");
+    }
+
+    function toggleMultiSubMenu(cls) {
+      [6, 7, 8, 9, 10, 11, 12].forEach(function(c) {
+        const m = document.getElementById("multiSubMenu_" + c);
+        if (!m) return;
+        if (c === cls) m.classList.toggle("open");
+        else m.classList.remove("open");
+      });
+    }
+
+    function onClassMultiSubCheckChange(cls) {
+      const checked = Array.from(document.querySelectorAll(".cls-sub-chk-" + cls + ":checked")).map(function(el) { return el.value; });
+      const btn = document.getElementById("multiSubBtn_" + cls);
+      if (btn) {
+        btn.querySelector("span").textContent = checked.length > 0 ? checked.join(", ") : "-- Subjects --";
+      }
+      const medSel = document.getElementById("clsMedSelect_" + cls);
+      if (medSel && checked.length > 0 && !medSel.value) {
+        medSel.value = "TM";
+      }
+    }
+
+    function saveCurrentEditedStaffProfile(closeAfter) {
+      const st = EMIS_STAFF_DATABASE.find(function(x) { return x.emisId === currentEditingStaffEmisId; });
+      if (!st) return;
+
+      st.nature = document.getElementById("stEditNaturePost").value;
+      const isContract = (st.nature === "Contract");
+
+      st.ifhrmsId = isContract ? "" : document.getElementById("stEditIfhrmsId").value.trim();
+      st.nameEn = document.getElementById("stEditNameEn").value.trim();
+      st.prefix = document.getElementById("stEditPrefix").value;
+      st.nameTa = document.getElementById("stEditNameTa").value.trim();
+      st.gender = document.getElementById("stEditGender").value;
+      st.dob = document.getElementById("stEditDob").value.trim();
+      st.desig = document.getElementById("stEditDesig").value;
+      st.qual = document.getElementById("stEditQual").value.trim();
+      st.mainSub = document.getElementById("stEditMainSub").value.trim();
+      st.campPref = document.getElementById("stEditCampPref").value;
+
+      st.mobile = document.getElementById("stEditMobile").value.trim();
+      st.altMobile = document.getElementById("stEditAltMobile").value.trim();
+      st.email = document.getElementById("stEditEmail").value.trim();
+      st.resPlace = document.getElementById("stEditResPlace").value.trim();
+      st.resDist = document.getElementById("stEditResDist").value.trim();
+
+      st.modeFirstApp = isContract ? "" : document.getElementById("stEditModeFirstApp").value;
+      st.dojFirstApp = isContract ? "" : document.getElementById("stEditDojFirstApp").value.trim();
+      st.firstJoinPost = isContract ? "" : document.getElementById("stEditFirstJoinPost").value.trim();
+      st.modePresPost = isContract ? "" : document.getElementById("stEditModePresPost").value;
+      st.dojPresPost = document.getElementById("stEditDojPresPost").value.trim();
+      st.unitTransferDate = isContract ? "" : document.getElementById("stEditUnitTransferDate").value.trim();
+      st.dojSchool = document.getElementById("stEditDojSchool").value.trim();
+
+      st.dutySslcWork = document.getElementById("stEditDutySslcWork").value;
+      st.dutySslcCentre = document.getElementById("stEditDutySslcCentre").value.trim();
+      st.dutyHseWork = document.getElementById("stEditDutyHseWork").value;
+      st.dutyHseCentre = document.getElementById("stEditDutyHseCentre").value.trim();
+      st.exemptionGround = document.getElementById("stEditExemptionGround").value;
+      st.exemptionDetails = document.getElementById("stEditExemptionDetails").value.trim();
+
+      if (currentEditingStaffFormType === "F3") {
+        const newHandling = {};
+        [6, 7, 8, 9, 10, 11, 12].forEach(function(cls) {
+          const subs = Array.from(document.querySelectorAll(".cls-sub-chk-" + cls + ":checked")).map(function(el) { return el.value; });
+          const medEl = document.getElementById("clsMedSelect_" + cls);
+          const med = medEl ? medEl.value : "";
+          if (subs.length > 0) {
+            newHandling[cls] = { subs: subs, med: med || "TM" };
+          }
+        });
+        st.handling = newHandling;
+      }
+
+      renderEbsForm3Roster();
+      renderEbsForm4Roster();
+      triggerEbsAutoSaveIndicator();
+
+      if (closeAfter) {
+        const modal = document.getElementById("ebsStaffEditModal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+    }
+
+    function downloadCurrentEditedStaffPdf() {
+      saveCurrentEditedStaffProfile(false);
+      openSingleStaffA4Preview(currentEditingStaffEmisId, currentEditingStaffFormType);
+      setTimeout(function() {
+        downloadActiveA4PreviewAsPdf();
+      }, 300);
+    }
+
+    // =====================================================================
+    // TANGLISH (ENGLISH -> TAMIL) PHONETIC TRANSLITERATION ENGINE
+    // =====================================================================
+    const TANGLISH_WORD_DICTIONARY = {
+      "dharmabalan": "தர்மபாலன்", "karthikeyan": "கார்த்திகேயன்", "muthulakshmi": "முத்துலட்சுமி",
+      "senthil": "செந்தில்", "kumar": "குமார்", "anbarasu": "அன்பரசு", "sahaya": "சகாய",
+      "shanthi": "சாந்தி", "jeevanantham": "ஜீவானந்தம்", "backiyam": "பாக்கியம்",
+      "thuraiarasan": "துரையரசன்", "aravind": "அரவிந்த்", "poovalingam": "பூவலிங்கம்",
+      "subramaniyan": "சுப்பிரமணியன்", "rajalakshmi": "ராஜலட்சுமி", "jothi": "ஜோதி",
+      "ramesh": "ரமேஷ்", "sundaram": "சுந்தரம்", "murugan": "முருகன்", "saravanan": "சரவணன்"
+    };
+
+    const TANGLISH_INITIAL_MAP = {
+      "a": "அ", "b": "பா", "c": "சி", "d": "த", "e": "இ", "g": "க", "h": "ஹ",
+      "i": "இ", "j": "ஜெ", "k": "க", "l": "ல", "m": "மு", "n": "நா", "p": "ப",
+      "r": "இரா", "s": "ச", "t": "த", "u": "உ", "v": "வெ", "y": "ய"
+    };
+
+    function transliterateSingleRomanWord(word) {
+      const clean = String(word || "").trim().toLowerCase();
+      if (!clean) return "";
+      if (TANGLISH_WORD_DICTIONARY[clean]) return TANGLISH_WORD_DICTIONARY[clean];
+      if (clean.length === 1 && TANGLISH_INITIAL_MAP[clean]) return TANGLISH_INITIAL_MAP[clean];
+
+      // Phonetic fallback syllable map
+      const phoneticPairs = [
+        ["shri", "ஸ்ரீ"], ["th", "த"], ["dh", "த"], ["sh", "ஷ"], ["ch", "ச"],
+        ["ng", "ங்க"], ["nk", "ங்க"], ["aa", "ஆ"], ["ee", "ஈ"], ["oo", "ஊ"],
+        ["ai", "ஐ"], ["au", "ஔ"], ["ka", "க"], ["ki", "கி"], ["ku", "கு"],
+        ["ke", "கெ"], ["ko", "கொ"], ["sa", "ச"], ["si", "சி"], ["su", "சு"],
+        ["ta", "ட"], ["ti", "டி"], ["tu", "டு"], ["na", "ந"], ["ni", "நி"],
+        ["nu", "நு"], ["pa", "ப"], ["pi", "பி"], ["pu", "பு"], ["ma", "ம"],
+        ["mi", "மி"], ["mu", "மு"], ["ya", "ய"], ["ra", "ர"], ["ri", "ரி"],
+        ["ru", "ரு"], ["la", "ல"], ["li", "லி"], ["lu", "லு"], ["va", "வ"],
+        ["vi", "வி"], ["vu", "வு"], ["an", "ன்"], ["am", "ம்"], ["ar", "ர்"],
+        ["al", "ல்"], ["n", "ன்"], ["m", "ம்"], ["r", "ர்"], ["l", "ல்"], ["s", "ஸ்"]
+      ];
+      let out = clean;
+      phoneticPairs.forEach(function(pair) {
+        out = out.split(pair[0]).join(pair[1]);
+      });
+      return out;
+    }
+
+    function handleTanglishKeydown(e, inputEl) {
+      if (e.key === " " || e.key === "Enter") {
+        const parts = inputEl.value.split(/\s+/);
+        const converted = parts.map(function(w) {
+          return /^[a-zA-Z]+$/.test(w) ? transliterateSingleRomanWord(w) : w;
+        });
+        inputEl.value = converted.join(" ") + (e.key === " " ? " " : "");
+        if (e.key === " ") e.preventDefault();
+      }
+    }
+
+    function transliterateEnglishNameFieldToTamil() {
+      const enVal = document.getElementById("stEditNameEn").value.trim();
+      if (!enVal) return;
+      const tokens = enVal.split(/\s+/);
+      const taTokens = tokens.map(function(t) { return transliterateSingleRomanWord(t); });
+      document.getElementById("stEditNameTa").value = taTokens.join(" ");
+    }
+
+    // =====================================================================
+    // OFFICIAL A4 FORM GENERATOR & DIRECT .PDF DOWNLOAD (html2pdf.js)
+    // =====================================================================
+    function buildUnoBoxesHtml(uNo) {
+      const str = String(uNo || "").padStart(3, "0");
+      return '<table class="ebs-uno-table"><tr><td style="padding:4px 10px;">School Unique Number</td>' +
+        str.split("").map(function(d) { return '<td class="ebs-uno-digit">' + d + '</td>'; }).join("") +
+        '</tr></table>';
+    }
+
+    function buildDigitBoxesHtml(val, totalBoxes) {
+      const chars = String(val || "").split("");
+      let html = '<span class="ebs-digit-boxes">';
+      for (let i = 0; i < totalBoxes; i++) {
+        html += '<span>' + (chars[i] ? chars[i] : "&nbsp;") + '</span>';
+      }
+      html += '</span>';
+      return html;
+    }
+
+    function buildStaffA4PageHtml(st, sch, formType) {
+      const isContract = (st.nature === "Contract");
+      const formLabel = formType === "F4" ? "FORM – IV" : "FORM – III";
+      const headingLabel = formType === "F4"
+        ? "SIVAGANGAI DISTRICT &nbsp;2026 - 2027 &nbsp;NON-TEACHING STAFF PROFILE"
+        : "SIVAGANGAI DISTRICT &nbsp;2026 - 2027 &nbsp;HEADMASTER/ PRINCIPAL &amp; TEACHERS PROFILE";
+
+      // Exemption Box: Print ONLY the selected exemption ground + Details inside the same box
+      let exemptionCellHtml = "";
+      if (st.exemptionGround) {
+        exemptionCellHtml =
+          '<div style="font-weight:900; font-size:11.5px;"><span class="ebs-chk"><span class="ebs-chk-sq">✓</span> ' + st.exemptionGround + '</span></div>' +
+          (st.exemptionDetails ? '<div style="margin-top:4px; font-weight:800; font-size:11px;">Details : ' + st.exemptionDetails + '</div>' : "");
+      } else {
+        exemptionCellHtml = '<div style="min-height:22px;">&nbsp;</div>';
+      }
+
+      // Handling Classes Section for F3
+      let handlingTableHtml = "";
+      if (formType === "F3") {
+        const clsCols = [6, 7, 8, 9, 10, 11, 12];
+        const subCells = clsCols.map(function(c) {
+          const h = (st.handling && st.handling[c]) ? st.handling[c] : null;
+          const txt = h && Array.isArray(h.subs) ? h.subs.join(", ") : "";
+          return '<td style="font-weight:700; font-size:10px;">' + txt + '</td>';
+        }).join("");
+        const medCells = clsCols.map(function(c) {
+          const h = (st.handling && st.handling[c]) ? st.handling[c] : null;
+          return '<td style="font-weight:800;">' + (h && h.med ? h.med : "") + '</td>';
+        }).join("");
+
+        handlingTableHtml =
+          '<table class="ebs-print-table" style="text-align:center;">' +
+            '<thead><tr><th style="width:20%; text-align:left;">Handling Classes</th><th>6<sup>th</sup></th><th>7<sup>th</sup></th><th>8<sup>th</sup></th><th>9<sup>th</sup></th><th>10<sup>th</sup></th><th>11<sup>th</sup></th><th>12<sup>th</sup></th></tr></thead>' +
+            '<tbody>' +
+              '<tr style="height:22px;"><td style="text-align:left; font-weight:700;">Subjects</td>' + subCells + '</tr>' +
+              '<tr style="height:22px;"><td style="text-align:left; font-weight:700; font-size:10px;">Medium: (TM/EM &amp; Both)</td>' + medCells + '</tr>' +
+            '</tbody>' +
+          '</table>';
+      }
+
+      return '<div class="ebs-a4-page">' +
+        '<div class="ebs-top-header-row">' +
+          '<div class="ebs-form-pill">' + formLabel + '</div>' +
+          buildUnoBoxesHtml(sch.uNo) +
+        '</div>' +
+        '<div class="ebs-main-heading">' + headingLabel + '</div>' +
+        '<div style="font-size:12px; font-weight:800; margin-bottom:5px;">Name of the School: <span style="font-weight:900;">' + sch.nameEn + ' (' + sch.nameTa + ')</span></div>' +
+        '<table class="ebs-print-table">' +
+          '<tr>' +
+            '<td style="width:15%; font-weight:700;">Staff EMIS ID</td>' +
+            '<td style="width:33%;">' + buildDigitBoxesHtml(st.emisId, 10) + '</td>' +
+            '<td style="width:14%; font-weight:700;">IFHRMS ID*</td>' +
+            '<td style="width:38%;">' + buildDigitBoxesHtml(isContract ? "" : st.ifhrmsId, 11) + '</td>' +
+          '</tr>' +
+        '</table>' +
+        '<table class="ebs-print-table">' +
+          '<tr>' +
+            '<td rowspan="3" style="width:12%; font-weight:700;">Name</td>' +
+            '<td style="width:38%; height:26px;"><div style="font-size:9px; font-weight:700;">(In English)</div><div style="font-weight:900; font-size:12px;">' + (st.nameEn || "") + '</div></td>' +
+            '<td style="width:15%; font-weight:700;">Gender</td>' +
+            '<td style="width:35%; font-weight:800;">' + (st.gender || "") + '</td>' +
+          '</tr>' +
+          '<tr>' +
+            '<td rowspan="2" style="height:36px;"><div style="font-size:9.5px; font-weight:800;">(தமிழில்)</div><div style="font-weight:900; font-size:12px;">' + (st.prefix || "") + ' ' + (st.nameTa || "") + '</div></td>' +
+            '<td style="font-weight:700;">Date of Birth</td>' +
+            '<td style="font-weight:800;">' + (st.dob || "") + '</td>' +
+          '</tr>' +
+          '<tr>' +
+            '<td style="font-weight:700;">Designation</td>' +
+            '<td style="font-weight:800;">' + (st.desig || "") + '</td>' +
+          '</tr>' +
+          '<tr>' +
+            '<td colspan="2" style="font-weight:700;">Educational Qualification : <span style="font-weight:800;">' + (st.qual || "") + '</span></td>' +
+            '<td colspan="2" style="font-weight:700;">Main Subject : <span style="font-weight:800;">' + (st.mainSub || "") + '</span></td>' +
+          '</tr>' +
+          '<tr>' +
+            '<td style="font-weight:700;">Mobile Number<br><strong>(WhatsApp)</strong></td>' +
+            '<td>' + buildDigitBoxesHtml(st.mobile, 10) + '</td>' +
+            '<td style="font-weight:700;">Alternate<br>Mobile No.</td>' +
+            '<td>' + buildDigitBoxesHtml(st.altMobile, 10) + '</td>' +
+          '</tr>' +
+          '<tr>' +
+            '<td colspan="4" style="font-weight:700;">Personal E-mail Address &nbsp;:&nbsp; <span style="font-weight:800;">' + (st.email || "") + '</span></td>' +
+          '</tr>' +
+        '</table>' +
+        handlingTableHtml +
+        '<table class="ebs-print-table" style="text-align:center;">' +
+          '<tr>' +
+            '<th style="width:30%;">Nature of Present Post</th>' +
+            '<th style="width:23%;">D.O.J in First Appointment</th>' +
+            '<th style="width:24%;">Date of Join in Present Post</th>' +
+            '<th style="width:23%;">Date of Join in Present School</th>' +
+          '</tr>' +
+          '<tr style="height:24px;">' +
+            '<td style="font-weight:800;">' + (st.nature || "") + '</td>' +
+            '<td style="font-weight:800;">' + (isContract ? "" : (st.dojFirstApp || "")) + '</td>' +
+            '<td style="font-weight:800;">' + (st.dojPresPost || "") + '</td>' +
+            '<td style="font-weight:800;">' + (st.dojSchool || "") + '</td>' +
+          '</tr>' +
+        '</table>' +
+        '<table class="ebs-print-table">' +
+          '<thead><tr><th style="width:18%;">2025-26 Exam Duty</th><th style="width:28%;">Nature of Work</th><th style="width:54%;">Name of the Exam Centre / Valuation Camp</th></tr></thead>' +
+          '<tbody>' +
+            '<tr style="height:22px;"><td style="font-weight:900;">SSLC (10th)</td><td style="text-align:center; font-weight:700;">' + (st.dutySslcWork || "") + '</td><td style="font-weight:700;">' + (st.dutySslcCentre || "") + '</td></tr>' +
+            '<tr style="height:22px;"><td style="font-weight:900;">HSE (+1/+2)</td><td style="text-align:center; font-weight:700;">' + (st.dutyHseWork || "") + '</td><td style="font-weight:700;">' + (st.dutyHseCentre || "") + '</td></tr>' +
+          '</tbody>' +
+        '</table>' +
+        '<table class="ebs-print-table">' +
+          '<tr>' +
+            '<td style="width:35%; font-weight:700;">Grounds for Exam Duty Exemption<br><span style="font-size:9px; font-weight:800;">(Enclose: Certificate Copy)</span></td>' +
+            '<td style="width:65%;">' + exemptionCellHtml + '</td>' +
+          '</tr>' +
+        '</table>' +
+        '<div style="display:flex; justify-content:space-between; margin-top:24px; font-size:11.5px; font-weight:800;">' +
+          '<div>Signature of the Staff</div>' +
+          '<div>Signature of the Headmaster / Principal</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function openSingleStaffA4Preview(emisId, formType) {
+      const sch = getActiveSchoolObj();
+      const st = EMIS_STAFF_DATABASE.find(function(x) { return x.emisId === emisId; });
+      if (!st) return;
+      document.getElementById("a4PreviewTitleLabel").textContent =
+        "EBS_2026_27_U" + sch.uNo + "_" + formType + "_" + st.emisId + ".pdf";
+      document.getElementById("a4PrintableContentHolder").innerHTML = buildStaffA4PageHtml(st, sch, formType);
+      document.getElementById("a4PrintPreviewModal").classList.remove("hidden");
+    }
+
+    function openA4PreviewModal(mode) {
+      const sch = getActiveSchoolObj();
+      const holder = document.getElementById("a4PrintableContentHolder");
+      document.getElementById("a4PreviewTitleLabel").textContent = "EBS_2026_27_U" + sch.uNo + "_" + mode + ".pdf";
+
+      if (mode === "F1") {
+        holder.innerHTML =
+          '<div class="ebs-a4-page">' +
+            '<div class="ebs-top-header-row"><div class="ebs-form-pill">FORM – I</div>' + buildUnoBoxesHtml(sch.uNo) + '</div>' +
+            '<div class="ebs-main-heading">SIVAGANGAI DISTRICT &nbsp;2026 - 2027 &nbsp;SCHOOL PROFILE &amp; STRENGTH</div>' +
+            '<p style="font-size:12px; font-weight:800;">School Name: ' + sch.nameEn + ' (' + sch.nameTa + ') | UDISE: ' + sch.udiseNo + '</p>' +
+            document.getElementById("ebsPaneF1").innerHTML +
+          '</div>';
+      } else if (mode === "F2") {
+        const rows = deriveSchoolEbsF2SubjectsFromPortal(sch);
+        const trs = rows.map(function(r) {
+          return '<tr><td style="text-align:center; font-weight:800;">' + r.sNo + '</td><td style="font-weight:800;">' + r.label + '</td><td style="text-align:center; font-weight:800;">' + r.tm + '</td><td style="text-align:center; font-weight:800;">' + r.em + '</td><td style="text-align:center; font-weight:900;">' + r.tot + '</td></tr>';
+        }).join("");
+        holder.innerHTML =
+          '<div class="ebs-a4-page">' +
+            '<div class="ebs-top-header-row"><div class="ebs-form-pill">FORM – II</div>' + buildUnoBoxesHtml(sch.uNo) + '</div>' +
+            '<div class="ebs-main-heading">SIVAGANGAI DISTRICT &nbsp;2026 - 2027 &nbsp;HSC (+2) SUBJECT-WISE STRENGTH</div>' +
+            '<div style="font-size:12px; font-weight:800; margin-bottom:6px;">School: ' + sch.nameEn + ' (' + sch.nameTa + ')</div>' +
+            '<table class="ebs-print-table"><thead><tr><th>S.No</th><th>Subject</th><th>Tamil Medium</th><th>English Medium</th><th>Total</th></tr></thead><tbody>' + trs + '</tbody></table>' +
+          '</div>';
+      } else if (mode === "F3_ALL") {
+        const list = getSchoolStaffByType(sch.uNo, true);
+        holder.innerHTML = list.map(function(st) { return buildStaffA4PageHtml(st, sch, "F3"); }).join("");
+      } else if (mode === "F4_ALL") {
+        const list = getSchoolStaffByType(sch.uNo, false);
+        holder.innerHTML = list.map(function(st) { return buildStaffA4PageHtml(st, sch, "F4"); }).join("");
+      }
+
+      document.getElementById("a4PrintPreviewModal").classList.remove("hidden");
+    }
+
+    function closeA4PreviewModal() {
+      document.getElementById("a4PrintPreviewModal").classList.add("hidden");
+    }
+
+    // Direct .PDF file download via html2pdf.js (Not .html)
+    function downloadActiveA4PreviewAsPdf() {
+      const element = document.getElementById("a4PrintableContentHolder");
+      const fileName = (document.getElementById("a4PreviewTitleLabel").textContent || "EBS_2026_27_Form.pdf").replace(/\.html$/i, ".pdf");
+      const btn = document.getElementById("btnDirectPdfDownload");
+      if (btn) btn.textContent = "Generating PDF...";
+
+      if (typeof html2pdf !== "undefined") {
+        const opt = {
+          margin: 4,
+          filename: fileName.endsWith(".pdf") ? fileName : (fileName + ".pdf"),
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        };
+        html2pdf().set(opt).from(element).save().then(function() {
+          if (btn) btn.textContent = "Download PDF";
+        });
+      } else {
+        window.print();
+        if (btn) btn.textContent = "Download PDF";
+      }
+    }
+
+    // =====================================================================
+    // CIRCULARS & NOTIFICATIONS (MULTI-SELECT, MARK AS READ, EMAIL & DRIVE)
+    // =====================================================================
+    function toggleAllCircularBlocks(checkBool) {
+      document.querySelectorAll(".cir-block-chk").forEach(function(c) { c.checked = checkBool; });
+    }
+
+    function publishNewCircularFromAdmin() {
+      const title = document.getElementById("cirTitleInput").value.trim();
+      const desc = document.getElementById("cirDescInput").value.trim();
+      if (!title) return;
+
+      const cats = Array.from(document.querySelectorAll("#cirTargetCategoryCheckboxes input:checked")).map(function(c) { return c.value; });
+      const blocks = Array.from(document.querySelectorAll(".cir-block-chk:checked")).map(function(c) { return c.value; });
+      const fileInput = document.getElementById("cirFileAttachmentInput");
+      const fileName = (fileInput && fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : "";
+      const sendEmail = document.getElementById("cirSendEmailCheckbox").checked;
+
+      const newCir = {
+        id: "CIR_" + Date.now(),
+        date: new Date().toLocaleDateString("en-GB"),
+        title: title,
+        desc: desc || title,
+        targetSummary: "பிரிவுகள்: " + (cats.join(", ") || "All") + " | ஒன்றியங்கள்: " + blocks.length,
+        driveLink: "https://drive.google.com/drive/folders/1R-0i5OS83fSTLa0p3dw_mI81Pee4rZdA?usp=drive_link",
+        fileName: fileName,
+        sentEmail: sendEmail,
+        readBySchools: {}
+      };
+
+      PORTAL_CIRCULARS.unshift(newCir);
+      document.getElementById("flashNewsMarquee").textContent = "📢 புதிய சுற்றறிக்கை (" + newCir.date + "): " + newCir.title;
+      document.getElementById("cirTitleInput").value = "";
+      document.getElementById("cirDescInput").value = "";
+
+      sendToGoogleSheetBackend({
+        action: "send_circular_emails",
+        circular: newCir,
+        targetCategories: cats,
+        targetBlocks: blocks,
+        driveFolderId: "1R-0i5OS83fSTLa0p3dw_mI81Pee4rZdA"
+      });
+
+      renderAdminCircularsList();
+      refreshActiveSchoolViews();
+    }
+
+    function markCircularAsReadBySchool(cirId) {
+      const cir = PORTAL_CIRCULARS.find(function(c) { return c.id === cirId; });
+      if (!cir) return;
+      cir.readBySchools = cir.readBySchools || {};
+      cir.readBySchools[currentSchoolUNo] = new Date().toLocaleString("en-IN");
+      renderSchoolCircularsView();
+      renderAdminCircularsList();
+    }
+
+    function renderSchoolCircularsView() {
+      const unreadList = PORTAL_CIRCULARS.filter(function(c) {
+        return !(c.readBySchools && c.readBySchools[currentSchoolUNo]);
+      });
+
+      const badge = document.getElementById("schMenu4UnreadBadge");
+      if (badge) {
+        badge.textContent = unreadList.length + " Unread";
+        badge.className = unreadList.length > 0
+          ? "px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-black"
+          : "px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-black";
+      }
+
+      // Preview inside Dashboard Notification Box
+      const prevBox = document.getElementById("dashUnreadCircularPreview");
+      if (prevBox) {
+        if (unreadList.length > 0) {
+          const latest = unreadList[0];
+          prevBox.innerHTML =
+            '<div class="text-xs font-black text-red-700">📢 புதிய சுற்றறிக்கை (' + unreadList.length + ' படிக்காதவை):</div>' +
+            '<div class="text-xs font-bold text-slate-800 mt-0.5 line-clamp-2">' + latest.title + '</div>' +
+            '<button onclick="switchSchoolTab(4)" class="mt-1.5 text-[11px] font-extrabold text-blue-800 underline">சுற்றறிக்கை பகுதியைத் திற & Mark as Read ➔</button>';
+        } else {
+          prevBox.innerHTML = '<div class="text-xs font-bold text-emerald-700">✅ அனைத்து சுற்றறிக்கைகளும் படிக்கப்பட்டன.</div>';
+        }
+      }
+
+      const listContainer = document.getElementById("schoolCircularsListContainer");
+      if (!listContainer) return;
+
+      listContainer.innerHTML = PORTAL_CIRCULARS.map(function(c) {
+        const readAt = c.readBySchools && c.readBySchools[currentSchoolUNo];
+        return '<div class="p-4 rounded-xl border-2 ' + (readAt ? "border-slate-200 bg-slate-50" : "border-amber-400 bg-amber-50/30") + ' flex flex-wrap items-center justify-between gap-3">' +
+          '<div class="space-y-1 flex-1 min-w-[260px]">' +
+            '<div class="flex items-center gap-2">' +
+              '<span class="px-2 py-0.5 rounded bg-blue-900 text-white text-[10px] font-black">' + c.date + '</span>' +
+              '<span class="text-[11px] font-bold text-slate-600">' + (c.targetSummary || "All Schools") + '</span>' +
+            '</div>' +
+            '<div class="text-sm font-black text-slate-900">' + c.title + '</div>' +
+            '<div class="text-xs font-semibold text-slate-700">' + (c.desc || "") + '</div>' +
+            '<div class="pt-1">' +
+              '<a href="' + c.driveLink + '" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 rounded bg-blue-100 text-blue-900 text-xs font-extrabold">📎 இணைப்புக் கோப்பு (Google Drive Folder) ' + (c.fileName ? "- " + c.fileName : "") + '</a>' +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            (readAt
+              ? '<span class="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-900 font-black text-xs">✅ படிக்கப்பட்டது (Read: ' + readAt + ')</span>'
+              : '<button onclick="markCircularAsReadBySchool(\'' + c.id + '\')" class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs shadow">☑️ படித்துவிட்டேன் (Mark as Read)</button>') +
+          '</div>' +
+        '</div>';
+      }).join("");
+    }
+
+    function renderAdminCircularsList() {
+      const el = document.getElementById("adminPublishedCircularsList");
+      if (!el) return;
+      el.innerHTML = PORTAL_CIRCULARS.map(function(c) {
+        const readCount = c.readBySchools ? Object.keys(c.readBySchools).length : 0;
+        return '<div class="p-3 rounded-lg border bg-slate-50 flex flex-wrap items-center justify-between gap-2 text-xs">' +
+          '<div><span class="font-black text-blue-900">[' + c.date + ']</span> <span class="font-extrabold">' + c.title + '</span> <span class="text-slate-500">(' + c.targetSummary + ')</span></div>' +
+          '<span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-900 font-black">👁️ படித்த பள்ளிகள்: ' + readCount + '</span>' +
+        '</div>';
+      }).join("");
+    }
+
+    // =====================================================================
+    // ADMIN BULK SYNC & HELPERS
+    // =====================================================================
+    async function syncAll282SchoolsEbsToGoogleSheet() {
+      const statusEl = document.getElementById("adminEbsSyncStatusText");
+      if (statusEl) {
+        statusEl.textContent = "⏳ EBS 2026-27 Google Sheet ஒத்திசைவு நடைபெறுகிறது...";
+      }
+      await sendToGoogleSheetBackend({
+        action: "sync_ebs_district_batch",
+        isFirstBatch: true,
+        f1Count: 282,
+        f2Count: 163
+      });
+      if (statusEl) {
+        statusEl.textContent = "✅ ஒத்திசைவு வெற்றிகரமாக நிறைவுற்றது! F1: 282 பள்ளிகள் | F2: 163 மேல்நிலைப்பள்ளிகள் | F3 & F4 Sorted.";
+      }
+    }
+
+    function switchAdminMod(modNum) {
+      const sec2 = document.getElementById("adminMod2Section");
+      const sec3 = document.getElementById("adminMod3Section");
+      if (modNum === 2 && sec2) sec2.scrollIntoView({ behavior: "smooth" });
+      if (modNum === 3 && sec3) sec3.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function openAppsScriptCodeModal() {
+      document.getElementById("appsScriptCodeModal").classList.remove("hidden");
+      document.getElementById("appsScriptCodeModal").classList.add("flex");
+    }
+
+    function autoSaveSchoolProfile() {
+      const sch = getActiveSchoolObj();
+      sch.nameTa = document.getElementById("profNameTa").value.trim() || sch.nameTa;
+      refreshActiveSchoolViews();
+    }
+
+    function saveInfraNeeds() {
+      triggerEbsAutoSaveIndicator();
+    }
+
+    window.onload = function() {
+      initPortalApp();
+    };
+  </script>
+</body>
+</html>
