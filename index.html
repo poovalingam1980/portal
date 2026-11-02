@@ -1,106 +1,1672 @@
-<!-- ... existing code ... -->
-                    const bHseWork = cleanSeedVal(base.hseExamWork);
-                    const bHseCen  = cleanSeedVal(base.hseExamCentre);
-                    const bSslcWork = "";
-                    const bSslcCen  = "";
-                    const bQual = cleanSeedVal(base.qual);
-                    const bMajor = cleanSeedVal(base.major);
-                    const bDesigCode = cleanSeedVal(base.desigCode);
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை - ஒருங்கிணைந்த பள்ளி தகவல் மேலாண்மை தளம் (v4.3)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mukta+Malar:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f294a;
+      --navy-light: #1e40af;
+      --emerald: #15803d;
+      --gold: #fde047;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Mukta Malar', Segoe UI, Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
 
-                    // Clear auto-populated SSLC (10th) baseline duplicate data unless explicitly updated by user in v4
-                    const hasManualSslcUpdate = ex._sslcManualV4 === true;
-                    const finalSslcWork = hasManualSslcUpdate ? cleanSeedVal(ex.sslcExamWork) : '';
-                    const finalSslcCen  = hasManualSslcUpdate ? cleanSeedVal(ex.sslcExamCentre) : '';
+    /* Portal Header & Flash News Ticker */
+    .portal-header {
+      background: linear-gradient(135deg, #0f294a 0%, #1e3a8a 60%, #172554 100%);
+      color: #ffffff;
+      border-bottom: 4px solid #eab308;
+      padding: 12px 20px;
+    }
+    .flash-ticker-bar {
+      background: #fefce8;
+      border-bottom: 1.5px solid #fde047;
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #854d0e;
+    }
 
-                    return {
-                        ...base,
-                        ...ex,
-                        udise: normUdise,
-                        schoolType: ex.schoolType || base.schoolType || (normUdise === '33230900405' ? 'HRSEC' : 'HIGH'),
-                        medium: cleanSeedVal(ex.medium) || cleanSeedVal(base.medium) || 'TM',
-                        scaleCode: cleanSeedVal(ex.scaleCode) || cleanSeedVal(base.scaleCode) || 'L',
-                        subjectCode: cleanSeedVal(ex.subjectCode) || cleanSeedVal(base.subjectCode) || '001',
-                        desigCode: cleanSeedVal(ex.desigCode) || bDesigCode,
-                        qual: cleanSeedVal(ex.qual) || bQual,
-                        major: cleanSeedVal(ex.major) || bMajor,
-                        exemption: cleanSeedVal(ex.exemption) === 'R' ? '' : cleanSeedVal(ex.exemption),
-                        remarks: (cleanSeedVal(ex.exemption) === 'R' && cleanSeedVal(ex.remarks) === cleanSeedVal(base.remarks)) ? '' : cleanSeedVal(ex.remarks),
-                        hseExamWork: cleanSeedVal(ex.hseExamWork) || bHseWork,
-                        hseExamCentre: cleanSeedVal(ex.hseExamCentre) || bHseCen,
-                        sslcExamWork: finalSslcWork,
-                        sslcExamCentre: finalSslcCen,
-                        _sslcManualV4: hasManualSslcUpdate,
-                        basicPay: ex.basicPay || base.basicPay || '',
-<!-- ... existing code ... -->
-                    const bHseWork = cleanSeedVal(seedMatch.hseExamWork);
-                    const bHseCen  = cleanSeedVal(seedMatch.hseExamCentre);
-                    const bQual = cleanSeedVal(seedMatch.qual);
-                    const bMajor = cleanSeedVal(seedMatch.major);
-                    const bDesigCode = cleanSeedVal(seedMatch.desigCode);
+    /* Admin 4-per-row Full-Width Compact Grid */
+    .admin-4col-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      width: 100%;
+      max-width: 100%;
+    }
+    @media (max-width: 1150px) {
+      .admin-4col-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .admin-4col-grid { grid-template-columns: 1fr; }
+    }
+    .admin-mod-card {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 112px;
+    }
+    .admin-mod-card:hover {
+      border-color: #1e40af;
+      background: #f8fafc;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15, 41, 74, 0.1);
+    }
 
-                    const curHseW = cleanSeedVal(r.hseExamWork);
-                    const curHseC = cleanSeedVal(r.hseExamCentre);
-                    const curSslcW = cleanSeedVal(r.sslcExamWork);
-                    const curSslcC = cleanSeedVal(r.sslcExamCentre);
+    /* School Top Menu Bar */
+    .school-topmenu-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 900px) {
+      .school-topmenu-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .school-topmenu-item {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.16s ease;
+      position: relative;
+    }
+    .school-topmenu-item:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+    .school-topmenu-item.active {
+      background: linear-gradient(135deg, #0f294a 0%, #1e40af 100%);
+      border-color: #0f294a;
+      color: #ffffff;
+    }
+    .school-topmenu-item.active .topmenu-title,
+    .school-topmenu-item.active .topmenu-label {
+      color: #ffffff !important;
+    }
+    .school-topmenu-item.active .topmenu-num,
+    .school-topmenu-item.active .topmenu-en {
+      color: #fde047 !important;
+    }
 
-                    // Clear auto-populated 10th (SSLC) duty if it was not manually set or if it merely duplicated 12th (HSE) seed data
-                    const isSslcAutoDup = !r._sslcManualV4 || (curSslcW === bHseWork && curSslcC === bHseCen && !r._sslcUserSaved);
+    /* EBS Sub-tab Bar & Numeric Inputs */
+    .ebs-subtab-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      background: #f8fafc;
+      padding: 8px;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+    }
+    .ebs-subtab-btn {
+      flex: 1 1 210px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: #0f294a;
+      font-weight: 800;
+      font-size: 0.86rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ebs-subtab-btn:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+    .ebs-subtab-btn.active {
+      background: linear-gradient(135deg, #0f294a 0%, #1e40af 100%);
+      color: #ffffff;
+      border-color: #0f294a;
+    }
 
-                    if ((!curHseW && bHseWork) || (!curHseC && bHseCen) || isSslcAutoDup || (!cleanSeedVal(r.qual) && bQual) || (!cleanSeedVal(r.major) && bMajor) || (!cleanSeedVal(r.desigCode) && bDesigCode) || cleanSeedVal(r.exemption) === 'R') {
-                        const wasAutoR = cleanSeedVal(r.exemption) === 'R';
-                        ebsUpdated = true;
-                        return {
-                            ...r,
-                            desigCode: cleanSeedVal(r.desigCode) || bDesigCode,
-                            qual: cleanSeedVal(r.qual) || bQual,
-                            major: cleanSeedVal(r.major) || bMajor,
-                            exemption: wasAutoR ? '' : cleanSeedVal(r.exemption),
-                            remarks: wasAutoR ? '' : cleanSeedVal(r.remarks),
-                            hseExamWork: curHseW || bHseWork,
-                            hseExamCentre: curHseC || bHseCen,
-                            sslcExamWork: isSslcAutoDup ? '' : curSslcW,
-                            sslcExamCentre: isSslcAutoDup ? '' : curSslcC,
-                            _sslcManualV4: true
-                        };
-                    }
-                }
-                return r;
-            });
-<!-- ... existing code ... -->
-            const rec = {
-                id: editId || ('F3_' + Date.now()),
-                udise,
-                schoolName: sch ? sch.name : '',
-                schoolType: document.getElementById('f3SchoolType')?.value || 'HRSEC',
-                teacherName: tName,
-                gender: document.getElementById('f3Gender')?.value || 'M',
-                dob: document.getElementById('f3Dob')?.value || '',
-                scaleCode: document.getElementById('f3ScaleCode')?.value || 'L',
-                basicPay: document.getElementById('f3BasicPay')?.value || '',
-                desigCode: desigVal,
-                subjectCode: document.getElementById('f3SubjectCode')?.value || '001',
-                qual: document.getElementById('f3Qual')?.value.trim() || '',
-                major: document.getElementById('f3Major')?.value.trim() || '',
-                medium: document.getElementById('f3Medium')?.value || 'TM',
-                dojService: document.getElementById('f3DojService')?.value || '',
-                dojPost: document.getElementById('f3DojPost')?.value || '',
-                dojSchool: document.getElementById('f3DojSchool')?.value || '',
-                retirementDate: document.getElementById('f3RetireDate')?.value || '',
-                exemption: document.getElementById('f3Exemption')?.value || '',
-                resAddress1: document.getElementById('f3ResAdd1')?.value.trim() || '',
-                resAddress2: document.getElementById('f3ResAdd2')?.value.trim() || '',
-                resPin: document.getElementById('f3ResPin')?.value.trim() || '',
-                mobile: document.getElementById('f3Mobile')?.value.trim() || '',
-                whatsapp: document.getElementById('f3Whatsapp')?.value.trim() || '',
-                ifhrmsId: document.getElementById('f3Ifhrms')?.value.trim() || '',
-                emisId: document.getElementById('f3Emis')?.value.trim() || '',
-                remarks: document.getElementById('f3Remarks')?.value.trim() || '',
-                hseExamWork: document.getElementById('f3HseWork')?.value.trim() || '',
-                hseExamCentre: document.getElementById('f3HseCentre')?.value.trim() || '',
-                sslcExamWork: document.getElementById('f3SslcWork')?.value.trim() || '',
-                sslcExamCentre: document.getElementById('f3SslcCentre')?.value.trim() || '',
-                _sslcManualV4: true,
-                _sslcUserSaved: true,
-                updatedAt: new Date().toLocaleDateString('en-GB')
-            };
-<!-- ... existing code ... -->
+    /* Clear, high-legibility numeric inputs & displays */
+    .ebs-num-input {
+      width: 68px;
+      height: 34px;
+      padding: 4px 6px;
+      text-align: center !important;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      font-weight: 900;
+      font-size: 1.02rem;
+      border: 1.8px solid #64748b;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #0f294a;
+      display: inline-block;
+      margin: 0 auto;
+    }
+    .ebs-num-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      background: #eff6ff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    }
+    .ebs-num-input[readonly], .ebs-num-input:disabled {
+      background: #f1f5f9;
+      color: #334155;
+      border-color: #cbd5e1;
+      cursor: not-allowed;
+    }
+    .ebs-num-display {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      font-size: 1.04rem;
+      font-weight: 900;
+      text-align: center !important;
+      vertical-align: middle !important;
+    }
+
+    /* Strict center alignment for Boys/Girls/Total tables */
+    .ebs-strength-table th,
+    .ebs-strength-table td {
+      text-align: center !important;
+      vertical-align: middle !important;
+      padding: 8px 6px;
+    }
+
+    /* Official A4 Sheet Layout - Pure White Background & Zero Shadow */
+    .ebs-a4-page {
+      width: 210mm;
+      max-width: 100%;
+      min-height: 286mm;
+      margin: 0 auto 18px auto;
+      padding: 8mm 10mm;
+      background: #ffffff !important;
+      color: #000000 !important;
+      font-family: Arial, Helvetica, 'Mukta Malar', sans-serif;
+      border: 1px solid #cbd5e1;
+      box-shadow: none !important;
+      text-shadow: none !important;
+      box-sizing: border-box;
+      page-break-after: always;
+      break-after: page;
+    }
+    .ebs-a4-page:last-child {
+      page-break-after: auto;
+      break-after: auto;
+    }
+    .ebs-top-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      background: #ffffff !important;
+      box-shadow: none !important;
+    }
+    .ebs-form-pill {
+      border: 1.6px solid #000000;
+      border-radius: 999px;
+      padding: 4px 28px;
+      font-weight: 800;
+      font-size: 13px;
+      color: #000000 !important;
+      background: #ffffff !important;
+      box-shadow: none !important;
+      text-align: center;
+    }
+    .ebs-uno-table {
+      border-collapse: collapse;
+      border: 1.5px solid #000000;
+      background: #ffffff !important;
+    }
+    .ebs-uno-table td {
+      border: 1.2px solid #000000;
+      padding: 3px 8px;
+      font-weight: 800;
+      font-size: 12px;
+      color: #000000 !important;
+      background: #ffffff !important;
+    }
+    .ebs-uno-digit {
+      width: 26px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .ebs-main-heading {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 900;
+      text-decoration: underline;
+      margin: 4px 0 8px 0;
+      color: #000000 !important;
+      background: #ffffff !important;
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+    .ebs-print-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1.5px solid #000000;
+      margin-bottom: 6px;
+      background: #ffffff !important;
+    }
+    .ebs-print-table th,
+    .ebs-print-table td {
+      border: 1px solid #000000;
+      padding: 3.5px 5px;
+      font-size: 11px;
+      line-height: 1.25;
+      color: #000000 !important;
+      background: #ffffff !important;
+      vertical-align: middle;
+      box-shadow: none !important;
+    }
+    .ebs-print-table th {
+      font-weight: 800;
+      text-align: center;
+      background: #ffffff !important;
+    }
+    .ebs-digit-boxes {
+      display: inline-grid;
+      grid-auto-flow: column;
+      border-collapse: collapse;
+    }
+    .ebs-digit-boxes span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 22px;
+      border: 1px solid #000000;
+      font-weight: 800;
+      font-size: 11.5px;
+      color: #000000 !important;
+      background: #ffffff !important;
+      margin-left: -1px;
+    }
+    .ebs-chk {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #000000 !important;
+    }
+    .ebs-chk-sq {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 13px;
+      height: 13px;
+      border: 1.4px solid #000000;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1;
+      background: #ffffff !important;
+    }
+
+    /* Multi-select dropdown for Class Handling Subjects */
+    .multi-sub-dropdown {
+      position: relative;
+      width: 100%;
+    }
+    .multi-sub-btn {
+      width: 100%;
+      min-height: 34px;
+      padding: 4px 8px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      background: #ffffff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #0f294a;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .multi-sub-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 60;
+      width: 230px;
+      max-height: 220px;
+      overflow-y: auto;
+      background: #ffffff;
+      border: 1.5px solid #1e40af;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(15, 41, 74, 0.2);
+      padding: 6px;
+      display: none;
+    }
+    .multi-sub-menu.open {
+      display: block;
+    }
+
+    @media print {
+      @page { size: A4 portrait; margin: 6mm; }
+      body * { visibility: hidden; }
+      #a4PrintPreviewModal, #a4PrintPreviewModal * { visibility: visible; }
+      #a4PrintPreviewModal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .no-print-bar { display: none !important; }
+      .ebs-a4-page {
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================================
+       1. TOP PORTAL HEADER & FLASH NEWS TICKER (Hidden in EBS Standalone)
+       ===================================================================== -->
+  <header id="mainPortalHeader" class="portal-header">
+    <div class="w-full flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-yellow-400 text-slate-900 flex items-center justify-center font-black text-xl shadow">🏛️</div>
+        <div>
+          <div class="text-xs font-extrabold text-yellow-300 tracking-wide">பள்ளிக்கல்வித்துறை – தமிழ்நாடு அரசு | சிவகங்கை மாவட்டம்</div>
+          <h1 class="text-lg md:text-xl font-black tracking-tight">முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (portal.ceosvg.in)</h1>
+          <div class="text-xs text-slate-200 font-semibold">ஒருங்கிணைந்த பள்ளி தகவல் மேலாண்மை & EBS 2026-27 தளம் (v4.3)</div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <span id="cloudSyncBadge" class="px-3 py-1 rounded-full bg-emerald-700 text-white text-xs font-bold">☁️ Auto-Sync Active</span>
+        <button onclick="switchRoleMode('SCHOOL')" id="btnRoleSchool" class="px-3.5 py-1.5 rounded-lg bg-yellow-400 text-slate-900 font-extrabold text-xs shadow">🏫 பள்ளி முகப்பு (School View)</button>
+        <button onclick="switchRoleMode('ADMIN')" id="btnRoleAdmin" class="px-3.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white font-extrabold text-xs border border-white/30">🛡️ நிர்வாகி கட்டுப்பாட்டகம் (CEO Admin)</button>
+        <button onclick="openAppsScriptCodeModal()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs">📜 Code.gs</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="mainFlashTickerBar" class="flash-ticker-bar">
+    <span class="px-2.5 py-0.5 rounded bg-red-600 text-white text-xs font-extrabold shrink-0">📢 முக்கிய அறிவிப்பு</span>
+    <marquee id="flashNewsMarquee" behavior="scroll" direction="left" class="flex-1 font-bold">
+      2026-2027 ஆம் கல்வியாண்டிற்கான பொதுத்தேர்வு EBS படிவங்கள் (FORM I, II, III & IV) அனைத்து 282 மாநிலப் பாடத்திட்டப் பள்ளிகளுக்கும் செயல்பாட்டில் உள்ளன. பள்ளி முகப்பின் அறிவிப்புப் பெட்டியிலுள்ள "EBS - 27" பொத்தானைக் கிளிக் செய்து சரிபார்க்கவும்.
+    </marquee>
+  </div>
+
+  <!-- =====================================================================
+       2. SCHOOL PORTAL VIEW (Normal Mode + Standalone EBS Mode)
+       ===================================================================== -->
+  <main id="schoolPortalContainer" class="w-full px-3 md:px-6 py-4">
+
+    <!-- School Selection & Top Menu Bar (Hidden when EBS Standalone is active) -->
+    <div id="schoolTopMenuBar">
+      <div class="bg-white rounded-xl border border-slate-300 p-3 mb-3 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2 flex-1">
+          <label class="text-xs font-black text-slate-700 uppercase">🏫 பள்ளித் தேர்வு (U.NO / பெயர்):</label>
+          <select id="activeSchoolSelect" onchange="onSelectActiveSchool(this.value)" class="flex-1 min-w-[280px] max-w-xl px-3 py-2 rounded-lg border-2 border-blue-800 font-extrabold text-sm text-slate-900 bg-blue-50/40">
+          </select>
+          <span id="activeSchoolMgmtBadge" class="px-2.5 py-1 rounded-md bg-blue-900 text-white text-xs font-extrabold"></span>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-600">
+          <span id="activeSchoolCentresInfo"></span>
+        </div>
+      </div>
+
+      <!-- 4 Main Menus (EBS removed from here and placed in Notification Box) -->
+      <div class="school-topmenu-bar">
+        <button onclick="switchSchoolTab(1)" id="schMenuBtn1" class="school-topmenu-item active">
+          <div class="text-[11px] font-black text-blue-700 topmenu-num">MENU 01</div>
+          <div class="text-sm font-black text-slate-900 topmenu-title">📊 1. பள்ளித்தகவல் பலகை</div>
+          <div class="text-xs text-slate-500 font-semibold topmenu-en">Dashboard & Notifications (EBS-27)</div>
+        </button>
+        <button onclick="switchSchoolTab(2)" id="schMenuBtn2" class="school-topmenu-item">
+          <div class="text-[11px] font-black text-blue-700 topmenu-num">MENU 02</div>
+          <div class="text-sm font-black text-slate-900 topmenu-title">🏫 2. பள்ளி சுயவிவரம் & நிர்வாகப் பிரிவு</div>
+          <div class="text-xs text-slate-500 font-semibold topmenu-en">School Profile & Infrastructure Needs</div>
+        </button>
+        <button onclick="switchSchoolTab(3)" id="schMenuBtn3" class="school-topmenu-item">
+          <div class="text-[11px] font-black text-blue-700 topmenu-num">MENU 03</div>
+          <div class="text-sm font-black text-slate-900 topmenu-title">👨‍🏫 3. ஆசிரியர்கள் & மாணவர்கள்</div>
+          <div class="text-xs text-slate-500 font-semibold topmenu-en">EMIS Staff Roster & Group Strength</div>
+        </button>
+        <button onclick="switchSchoolTab(4)" id="schMenuBtn4" class="school-topmenu-item">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-black text-blue-700 topmenu-num">MENU 04</span>
+            <span id="schMenu4UnreadBadge" class="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-black">0 Unread</span>
+          </div>
+          <div class="text-sm font-black text-slate-900 topmenu-title">📢 4. சுற்றறிக்கைகள் & அறிவிப்புகள்</div>
+          <div class="text-xs text-slate-500 font-semibold topmenu-en">CEO Circulars & Mark as Read</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB 1: SCHOOL DASHBOARD & NOTIFICATION BOX WITH COMPACT EBS-27 WIDGET -->
+    <section id="schoolTab1" class="space-y-4">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Left 2 Columns: School Summary Metrics -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-300 p-4 shadow-sm">
+          <div class="flex flex-wrap justify-between items-center border-b pb-3 mb-3">
+            <div>
+              <h2 id="dashSchoolTitleTa" class="text-base md:text-lg font-black text-slate-900"></h2>
+              <p id="dashSchoolTitleEn" class="text-xs font-bold text-slate-600"></p>
+            </div>
+            <span id="dashSchoolUdiseBadge" class="px-3 py-1 rounded-lg bg-slate-100 border border-slate-300 text-xs font-black text-slate-800"></span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-center">
+              <div class="text-xs font-bold text-blue-800">10-ஆம் வகுப்பு (SSLC)</div>
+              <div id="dashMetric10th" class="text-2xl font-black text-blue-950 mt-1">0</div>
+              <div class="text-[11px] font-semibold text-blue-700">மாணவர்கள் (TM + EM)</div>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+              <div class="text-xs font-bold text-emerald-800">12-ஆம் வகுப்பு (+2)</div>
+              <div id="dashMetric12th" class="text-2xl font-black text-emerald-950 mt-1">0</div>
+              <div class="text-[11px] font-semibold text-emerald-700">மாணவர்கள் (Groups)</div>
+            </div>
+            <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-center">
+              <div class="text-xs font-bold text-indigo-800">ஆசிரியர்கள் (F3)</div>
+              <div id="dashMetricTeachers" class="text-2xl font-black text-indigo-950 mt-1">0</div>
+              <div class="text-[11px] font-semibold text-indigo-700">Teaching Staff</div>
+            </div>
+            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-center">
+              <div class="text-xs font-bold text-amber-800">பணியாளர்கள் (F4)</div>
+              <div id="dashMetricNonTeaching" class="text-2xl font-black text-amber-950 mt-1">0</div>
+              <div class="text-[11px] font-semibold text-amber-700">Non-Teaching Staff</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Notification Area with Compact EBS-27 Box -->
+        <div class="bg-white rounded-xl border-2 border-amber-400 p-4 shadow-sm flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-amber-900 bg-amber-100 px-2.5 py-1 rounded-md">🔔 அறிவிப்புப் பலகை (Notifications)</span>
+              <span class="text-[11px] font-extrabold text-emerald-700">LIVE 2026-27</span>
+            </div>
+
+            <!-- Compact EBS-27 Launch Box inside Notification Area -->
+            <div id="ebsNotificationWidgetBox" onclick="openSchoolEbsStandaloneMode()" class="cursor-pointer rounded-xl p-3.5 bg-gradient-to-r from-blue-950 via-blue-900 to-indigo-900 text-white border-2 border-yellow-400 shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5">
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 rounded bg-yellow-400 text-slate-950 text-[11px] font-black">📋 EBS - 27</span>
+                <span class="text-[11px] font-bold text-yellow-300">கிளிக் செய்து திறக்கவும் ➔</span>
+              </div>
+              <div class="text-sm font-black mt-1.5">EBS 2026-27 பொதுத்தேர்வு படிவங்கள் (F1 – F4)</div>
+              <div class="text-[11px] text-blue-100 font-medium mt-0.5">பள்ளி விவரம் (F1), +2 பாடங்கள் (F2), ஆசிரியர்கள் (F3) & பணியாளர்கள் (F4) முழுத்திரைப் பதிவு</div>
+            </div>
+          </div>
+
+          <!-- Latest Unread Circular Preview inside Notification Box -->
+          <div id="dashUnreadCircularPreview" class="border-t border-slate-200 pt-2.5"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: SCHOOL PROFILE & INFRASTRUCTURE NEEDS (Moved under Menu 2) -->
+    <section id="schoolTab2" class="hidden space-y-4">
+      <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-sm">
+        <h3 class="text-base font-black text-slate-900 border-b pb-2 mb-3">🏫 பள்ளி அடிப்படை விவரம் & நிர்வாகப் பிரிவு (School Profile)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">பள்ளியின் பெயர் (English)</label>
+            <input id="profNameEn" type="text" class="w-full px-3 py-2 border rounded-lg font-bold bg-slate-50" readonly>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">பள்ளியின் பெயர் (தமிழில்)</label>
+            <input id="profNameTa" type="text" class="w-full px-3 py-2 border rounded-lg font-bold" onchange="autoSaveSchoolProfile()">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">தலைமையாசிரியர் பெயர் & கைபேசி</label>
+            <input id="profHmMobile" type="text" class="w-full px-3 py-2 border rounded-lg font-bold" onchange="autoSaveSchoolProfile()">
+          </div>
+        </div>
+      </div>
+
+      <!-- School Infrastructure Needs (Under Menu 2 as requested) -->
+      <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-sm">
+        <div class="flex items-center justify-between border-b pb-2 mb-3">
+          <h3 class="text-base font-black text-blue-950">🏗️ பள்ளியின் அடிப்படைத் தேவைகள் பதிவு (School Infrastructure Need Details)</h3>
+          <span class="text-xs font-bold text-emerald-700">தானியங்கி சேமிப்பு (Auto-Save)</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">கூடுதல் வகுப்பறைத் தேவை (Classrooms Needed)</label>
+            <input id="infraRoomsNeeded" type="number" min="0" value="0" onchange="saveInfraNeeds()" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-extrabold">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">மாணவர் மேசை/இருக்கை தேவை (Dual Desks Needed)</label>
+            <input id="infraDesksNeeded" type="number" min="0" value="0" onchange="saveInfraNeeds()" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-extrabold">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">குடிநீர் வசதி நிலை (Drinking Water Status)</label>
+            <select id="infraWaterStatus" onchange="saveInfraNeeds()" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-bold">
+              <option value="போதுமானது (Adequate)">போதுமானது (Adequate)</option>
+              <option value="கூடுதல் RO தேவை (RO Needed)">கூடுதல் RO தேவை (RO Needed)</option>
+              <option value="பழுது நீக்கம் தேவை (Repair Needed)">பழுது நீக்கம் தேவை (Repair Needed)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">கழிப்பறை வசதி நிலை (Toilets Status)</label>
+            <select id="infraToiletStatus" onchange="saveInfraNeeds()" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-bold">
+              <option value="போதுமானது (Adequate)">போதுமானது (Adequate)</option>
+              <option value="புதிய கழிப்பறை தேவை (New Needed)">புதிய கழிப்பறை தேவை (New Needed)</option>
+              <option value="பராமரிப்பு தேவை (Repair Needed)">பராமரிப்பு தேவை (Repair Needed)</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2 md:col-span-4">
+            <label class="block text-xs font-bold text-slate-700 mb-1">பிற முக்கிய அடிப்படைத் தேவைகள் / சுற்றுச்சுவர் / ஆய்வகத் தேவை</label>
+            <input id="infraOtherRemarks" type="text" placeholder="சுற்றுச்சுவர், ஆய்வகம், மின்வசதி குறிப்புகள்..." onchange="saveInfraNeeds()" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-semibold">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: STAFF & STUDENTS OVERVIEW -->
+    <section id="schoolTab3" class="hidden space-y-4">
+      <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 class="text-base font-black text-slate-900">👨‍🏫 EMIS ஆசிரியர்கள், பணியாளர்கள் & மாணவர் எண்ணிக்கை</h3>
+          <p class="text-xs text-slate-600 font-semibold">பொதுத்தேர்வுப் படிவங்களில் திருத்தங்களை மேற்கொள்ள EBS - 27 தனித்திரையைத் திறக்கவும்.</p>
+        </div>
+        <button onclick="openSchoolEbsStandaloneMode()" class="px-4 py-2 rounded-lg bg-blue-900 text-white font-extrabold text-xs">📋 EBS - 27 படிவங்களைத் திற (F1–F4)</button>
+      </div>
+    </section>
+
+    <!-- TAB 4: CIRCULARS & NOTIFICATIONS WITH "MARK AS READ" -->
+    <section id="schoolTab4" class="hidden space-y-4">
+      <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between border-b pb-3 mb-3 gap-2">
+          <div>
+            <h3 class="text-base font-black text-slate-900">📢 முதன்மைக் கல்வி அலுவலர் சுற்றறிக்கைகள் & அறிவிப்புகள்</h3>
+            <p class="text-xs text-slate-600 font-semibold">சுற்றறிக்கையைப் பார்வையிட்டு இணைப்புக் கோப்பினைப் பதிவிறக்கிய பின் "☑️ படித்துவிட்டேன் (Mark as Read)" என்பதைத் தேர்வு செய்யவும்.</p>
+          </div>
+        </div>
+        <div id="schoolCircularsListContainer" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         STANDALONE FULL-SCREEN EBS 2026-27 VIEW (FORM I, II, III, IV)
+         =================================================================== -->
+    <section id="schoolEbsStandaloneSection" class="hidden space-y-3">
+      <!-- Standalone Top Bar (Only Back to School Home + School Badge + Auto-Save Indicator) -->
+      <div class="bg-slate-900 text-white rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 shadow">
+        <div class="flex flex-wrap items-center gap-3">
+          <button onclick="closeSchoolEbsStandaloneMode()" class="px-3.5 py-2 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow">
+            ⬅️ பள்ளி முகப்பிற்குத் திரும்பு (Back to School Home)
+          </button>
+          <div>
+            <div class="text-xs font-extrabold text-yellow-300">📋 சிவகங்கை மாவட்டம் – EBS 2026-2027 (FORM – I, II, III & IV)</div>
+            <div id="ebsStandaloneSchoolHeader" class="text-sm font-black text-white"></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="ebsAutoSaveStatusPill" class="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-extrabold">✓ தானியங்கி சேமிப்பு (Auto-Saved)</span>
+        </div>
+      </div>
+
+      <!-- EBS Form Selector Sub-tabs (No redundant 4 top print buttons row) -->
+      <div class="ebs-subtab-bar">
+        <button onclick="switchEbsFormTab('F1')" id="ebsTabBtnF1" class="ebs-subtab-btn active">
+          <span class="text-lg">🏫</span>
+          <div>
+            <div class="text-xs font-black">FORM – I (பள்ளி விவரம்)</div>
+            <div class="text-[11px] opacity-80">School Profile, Staff & 10th/+2 Strength</div>
+          </div>
+        </button>
+        <button onclick="switchEbsFormTab('F2')" id="ebsTabBtnF2" class="ebs-subtab-btn">
+          <span class="text-lg">📊</span>
+          <div>
+            <div class="text-xs font-black">FORM – II (+2 பாடவாரியாக)</div>
+            <div class="text-[11px] opacity-80">Dynamic HSC (+2) Subject Strength</div>
+          </div>
+        </button>
+        <button onclick="switchEbsFormTab('F3')" id="ebsTabBtnF3" class="ebs-subtab-btn">
+          <span class="text-lg">👨‍🏫</span>
+          <div>
+            <div id="ebsTabBtnF3Title" class="text-xs font-black">FORM – III (ஆசிரியர்கள்)</div>
+            <div class="text-[11px] opacity-80">HM & Teachers Profile (Sorted)</div>
+          </div>
+        </button>
+        <button onclick="switchEbsFormTab('F4')" id="ebsTabBtnF4" class="ebs-subtab-btn">
+          <span class="text-lg">🧑‍💼</span>
+          <div>
+            <div id="ebsTabBtnF4Title" class="text-xs font-black">FORM – IV (பணியாளர்கள்)</div>
+            <div class="text-[11px] opacity-80">Non-Teaching Staff Profile (Sorted)</div>
+          </div>
+        </button>
+      </div>
+
+      <!-- FORM - I PANE -->
+      <div id="ebsPaneF1" class="bg-white rounded-xl border border-slate-300 p-4 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between border-b pb-3 gap-2">
+          <div>
+            <h3 class="text-base font-black text-slate-900">🏫 FORM – I : SCHOOL PROFILE, STAFF COUNT & STUDENT STRENGTH (2026-27)</h3>
+            <p class="text-xs text-slate-600 font-semibold">10-ஆம் வகுப்பு மாணவர் எண்ணிக்கையை நேரடியாகத் திருத்தலாம்; 12-ஆம் வகுப்பு (+2) எண்ணிக்கையைத் திருத்த "✏️ EDIT" பொத்தானைப் பயன்படுத்தவும்.</p>
+          </div>
+          <button onclick="openA4PreviewModal('F1')" class="px-4 py-2 rounded-lg bg-blue-900 hover:bg-blue-800 text-white font-extrabold text-xs">🖨️ FORM - I A4 படிவம் / Download PDF</button>
+        </div>
+
+        <!-- Basic School Details & Exam Rooms -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+          <div class="p-2.5 rounded-lg bg-slate-50 border">
+            <div class="font-bold text-slate-500">School Unique No (U.NO) & Management</div>
+            <div id="f1DispUNoMgmt" class="text-sm font-black text-slate-900 mt-0.5"></div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 border">
+            <div class="font-bold text-slate-500">UDISE Code & Block</div>
+            <div id="f1DispUdiseBlock" class="text-sm font-black text-slate-900 mt-0.5"></div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 border">
+            <div class="font-bold text-slate-500">10th / 12th Exam Centre No.</div>
+            <div id="f1DispExamCentres" class="text-sm font-black text-blue-900 mt-0.5"></div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-50 border flex items-center justify-between gap-2">
+            <div>
+              <div class="font-bold text-slate-500">தேர்வு அறைகள் (Exam Rooms)</div>
+              <input id="f1ExamRoomsInput" type="number" min="0" class="ebs-num-input mt-1" onchange="onEbsF1MetaChange()">
+            </div>
+            <div>
+              <div class="font-bold text-slate-500">Bench-Desk Pairs</div>
+              <input id="f1BenchDesksInput" type="number" min="0" class="ebs-num-input mt-1" onchange="onEbsF1MetaChange()">
+            </div>
+          </div>
+        </div>
+
+        <!-- SSLC (10th Standard) Direct Editable Table with Perfectly Centered Boys/Girls/Total Headers -->
+        <div>
+          <div class="text-sm font-black text-slate-900 mb-2">
+            🎓 SSLC (10th Standard) - Total No. of Students <span class="text-emerald-700 text-xs font-extrabold">(✏️ நேரடியாகத் திருத்தலாம் - Direct Edit)</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse border border-slate-400 ebs-strength-table">
+              <thead>
+                <tr>
+                  <th colspan="3" class="bg-emerald-800 text-white text-xs font-black border border-slate-400">TAMIL MEDIUM (Editable)</th>
+                  <th colspan="3" class="bg-blue-900 text-white text-xs font-black border border-slate-400">ENGLISH MEDIUM (Editable)</th>
+                  <th colspan="3" class="bg-slate-900 text-white text-xs font-black border border-slate-400">TOTAL (10th)</th>
+                  <th colspan="3" class="bg-purple-900 text-white text-xs font-black border border-slate-400">Part-IV Optional Language</th>
+                </tr>
+                <tr class="bg-slate-800 text-white text-xs font-bold">
+                  <th class="border border-slate-500">Boys</th>
+                  <th class="border border-slate-500">Girls</th>
+                  <th class="border border-slate-500">Total</th>
+                  <th class="border border-slate-500">Boys</th>
+                  <th class="border border-slate-500">Girls</th>
+                  <th class="border border-slate-500">Total</th>
+                  <th class="border border-slate-500">Boys</th>
+                  <th class="border border-slate-500">Girls</th>
+                  <th class="border border-slate-500">Total</th>
+                  <th class="border border-slate-500">Boys</th>
+                  <th class="border border-slate-500">Girls</th>
+                  <th class="border border-slate-500">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="bg-white">
+                  <td class="border border-slate-300"><input id="f1SslcTmBoys" type="number" min="0" class="ebs-num-input" oninput="onEbsF1SslcStrengthChange()"></td>
+                  <td class="border border-slate-300"><input id="f1SslcTmGirls" type="number" min="0" class="ebs-num-input" oninput="onEbsF1SslcStrengthChange()"></td>
+                  <td id="f1SslcTmTotal" class="border border-slate-300 bg-emerald-50 text-emerald-800 ebs-num-display">0</td>
+                  <td class="border border-slate-300"><input id="f1SslcEmBoys" type="number" min="0" class="ebs-num-input" oninput="onEbsF1SslcStrengthChange()"></td>
+                  <td class="border border-slate-300"><input id="f1SslcEmGirls" type="number" min="0" class="ebs-num-input" oninput="onEbsF1SslcStrengthChange()"></td>
+                  <td id="f1SslcEmTotal" class="border border-slate-300 bg-blue-50 text-blue-800 ebs-num-display">0</td>
+                  <td id="f1SslcTotBoys" class="border border-slate-300 ebs-num-display">0</td>
+                  <td id="f1SslcTotGirls" class="border border-slate-300 ebs-num-display">0</td>
+                  <td id="f1SslcGrandTotal" class="border border-slate-300 bg-emerald-100 text-emerald-900 ebs-num-display">0</td>
+                  <td class="border border-slate-300"><input id="f1SslcPart4Boys" type="number" min="0" class="ebs-num-input" oninput="onEbsF1SslcStrengthChange()"></td>
+                  <td class="border border-slate-300"><input id="f1SslcPart4Girls" type="number" min="0" class="ebs-num-input" oninput="onEbsF1SslcStrengthChange()"></td>
+                  <td id="f1SslcPart4Total" class="border border-slate-300 bg-purple-50 text-purple-900 ebs-num-display">0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- HSC SECOND YEAR (+2) Table with EDIT Popup Modal Button -->
+        <div id="f1HscSectionWrapper">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div class="text-sm font-black text-slate-900">
+              🎓 HSC SECOND YEAR (+2 / 12th Standard) - Total No. of Students
+            </div>
+            <button onclick="openEbsHscGroupEditModal()" class="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs shadow flex items-center gap-1.5">
+              ✏️ EDIT (+2 பிரிவு வாரியான மாணவர் எண்ணிக்கை திருத்து)
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse border border-slate-400 ebs-strength-table">
+              <thead>
+                <tr>
+                  <th colspan="3" class="bg-emerald-800 text-white text-xs font-black border border-slate-400">TAMIL MEDIUM (+2)</th>
+                  <th colspan="3" class="bg-blue-900 text-white text-xs font-black border border-slate-400">ENGLISH MEDIUM (+2)</th>
+                  <th colspan="3" class="bg-slate-900 text-white text-xs font-black border border-slate-400">TOTAL (+2 Students)</th>
+                </tr>
+                <tr class="bg-slate-800 text-white text-xs font-bold">
+                  <th class="border border-slate-500">Boys</th>
+                  <th class="border border-slate-500">Girls</th>
+                  <th class="border border-slate-500">Total</th>
+                  <th class="border border-slate-500">Boys</th>
+                  <th class="border border-slate-500">Girls</th>
+                  <th class="border border-slate-500">Total</th>
+                  <th class="border border-slate-500">Boys</th>
+                  <th class="border border-slate-500">Girls</th>
+                  <th class="border border-slate-500">Grand Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="bg-white">
+                  <td id="f1HscTmBoys" class="border border-slate-300 ebs-num-display">0</td>
+                  <td id="f1HscTmGirls" class="border border-slate-300 ebs-num-display">0</td>
+                  <td id="f1HscTmTotal" class="border border-slate-300 bg-emerald-50 text-emerald-800 ebs-num-display">0</td>
+                  <td id="f1HscEmBoys" class="border border-slate-300 ebs-num-display">0</td>
+                  <td id="f1HscEmGirls" class="border border-slate-300 ebs-num-display">0</td>
+                  <td id="f1HscEmTotal" class="border border-slate-300 bg-blue-50 text-blue-800 ebs-num-display">0</td>
+                  <td id="f1HscTotBoys" class="border border-slate-300 ebs-num-display">0</td>
+                  <td id="f1HscTotGirls" class="border border-slate-300 ebs-num-display">0</td>
+                  <td id="f1HscGrandTotal" class="border border-slate-300 bg-amber-100 text-amber-950 ebs-num-display">0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM - II PANE (Dynamic Subject Strength - Only Active School Groups, Language/English Editable) -->
+      <div id="ebsPaneF2" class="hidden bg-white rounded-xl border border-slate-300 p-4 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between border-b pb-3 gap-2">
+          <div>
+            <h3 class="text-base font-black text-slate-900">📊 FORM – II : HSC (+2) SUBJECT-WISE CANDIDATES STRENGTH (Dynamic)</h3>
+            <p class="text-xs text-slate-600 font-semibold">இப்பள்ளியிலுள்ள +2 பாடப்பிரிவுகளின் பாடங்கள் மட்டுமே வரிசைப்படி காட்டப்படுகின்றன. விலக்கு பெற்ற மாணவர்களுக்காக 01 Language மற்றும் 02 English மட்டும் திருத்தலாம்.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openEbsHscGroupEditModal()" class="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs">✏️ EDIT +2 Groups</button>
+            <button onclick="openA4PreviewModal('F2')" class="px-4 py-2 rounded-lg bg-blue-900 hover:bg-blue-800 text-white font-extrabold text-xs">🖨️ FORM - II A4 படிவம் / Download PDF</button>
+          </div>
+        </div>
+
+        <div id="ebsF2DynamicTableContainer" class="overflow-x-auto"></div>
+      </div>
+
+      <!-- FORM - III PANE (TEACHERS PROFILE - Sorted by Desig Code -> DOJ Present Post -> DOB) -->
+      <div id="ebsPaneF3" class="hidden bg-white rounded-xl border border-slate-300 p-4 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between border-b pb-3 gap-2">
+          <div>
+            <h3 class="text-base font-black text-slate-900">👨‍🏫 FORM – III : HEADMASTER / PRINCIPAL & TEACHERS PROFILE (2026-27)</h3>
+            <p class="text-xs text-slate-600 font-semibold">வரிசை முறை: 1) Designation Code ➔ 2) Date of Joining in Present Post ➔ 3) Date of Birth</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openAddEbsStaffModal('F3')" class="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs shadow">➕ புதிய ஆசிரியர் சேர் (Add Teacher - F3)</button>
+            <button onclick="openA4PreviewModal('F3_ALL')" class="px-4 py-2 rounded-lg bg-blue-900 hover:bg-blue-800 text-white font-extrabold text-xs">🖨️ அனைத்து ஆசிரியர்களின் FORM - III (A4 PDF)</button>
+          </div>
+        </div>
+        <div id="ebsF3RosterTableContainer" class="overflow-x-auto"></div>
+      </div>
+
+      <!-- FORM - IV PANE (NON-TEACHING STAFF PROFILE - Sorted by Desig Code -> DOJ Present Post -> DOB) -->
+      <div id="ebsPaneF4" class="hidden bg-white rounded-xl border border-slate-300 p-4 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between border-b pb-3 gap-2">
+          <div>
+            <h3 class="text-base font-black text-slate-900">🧑‍💼 FORM – IV : NON-TEACHING STAFF PROFILE (2026-27)</h3>
+            <p class="text-xs text-slate-600 font-semibold">வரிசை முறை: 1) Designation Code ➔ 2) Date of Joining in Present Post ➔ 3) Date of Birth</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openAddEbsStaffModal('F4')" class="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs shadow">➕ புதிய பணியாளர் சேர் (Add Staff - F4)</button>
+            <button onclick="openA4PreviewModal('F4_ALL')" class="px-4 py-2 rounded-lg bg-amber-800 hover:bg-amber-700 text-white font-extrabold text-xs">🖨️ அனைத்து பணியாளர்களின் FORM - IV (A4 PDF)</button>
+          </div>
+        </div>
+        <div id="ebsF4RosterTableContainer" class="overflow-x-auto"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =====================================================================
+       3. CEO ADMIN CONTROL PANEL (4-PER-ROW COMPACT FULL-WIDTH CARDS)
+       ===================================================================== -->
+  <main id="adminPortalContainer" class="hidden w-full px-3 md:px-6 py-4 space-y-4">
+    <div class="bg-white rounded-xl border border-slate-300 p-4 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div>
+          <h2 class="text-base md:text-lg font-black text-slate-900">🛡️ முதன்மைக் கல்வி அலுவலர் கட்டுப்பாட்டகம் (CEO Admin Master Control)</h2>
+          <p class="text-xs font-bold text-slate-600">மொத்தப் பள்ளிகள்: 308 (மாநிலப் பாடத்திட்டம்: 282 | KV: 3 | ICSE: 2 | CBSE: 21) | 12 கல்வி ஒன்றியங்கள்</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="syncAll282SchoolsEbsToGoogleSheet()" class="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs shadow">☁️ அனைத்து 282 பள்ளிகளின் EBS (F1-F4) Google Sheet ஒத்திசை</button>
+        </div>
+      </div>
+
+      <!-- 4-Per-Row Compact Cards Grid using Full Monitor Width -->
+      <div id="admMainPortalChooser" class="admin-4col-grid">
+        <div onclick="switchAdminMod(1)" class="admin-mod-card">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 text-[10px] font-black">MOD 01</span>
+            <span class="text-lg">🏫</span>
+          </div>
+          <div class="text-xs font-black text-slate-900 mt-1">308 பள்ளிகள் முதன்மைப் பட்டியல்</div>
+          <div class="text-[11px] text-slate-500 font-semibold">State (282) + KV/ICSE/CBSE (26)</div>
+        </div>
+
+        <div onclick="switchAdminMod(2)" class="admin-mod-card">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-black">MOD 02</span>
+            <span class="text-lg">📢</span>
+          </div>
+          <div class="text-xs font-black text-slate-900 mt-1">சுற்றறிக்கை & அறிவிப்புகள் (Multi-Select)</div>
+          <div class="text-[11px] text-slate-500 font-semibold">Dashboard + Email + Drive Upload</div>
+        </div>
+
+        <div onclick="switchAdminMod(3)" class="admin-mod-card">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 text-[10px] font-black">MOD 03</span>
+            <span class="text-lg">📋</span>
+          </div>
+          <div class="text-xs font-black text-slate-900 mt-1">EBS 2026-27 (282 பள்ளிகள் F1–F4)</div>
+          <div class="text-[11px] text-slate-500 font-semibold">163 HSS & 119 HS Bulk Sync</div>
+        </div>
+
+        <div onclick="switchAdminMod(4)" class="admin-mod-card">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-purple-100 text-purple-900 text-[10px] font-black">MOD 04</span>
+            <span class="text-lg">👨‍🏫</span>
+          </div>
+          <div class="text-xs font-black text-slate-900 mt-1">மாவட்ட EMIS பணியாளர் தேடல்</div>
+          <div class="text-[11px] text-slate-500 font-semibold">7,081 School + Office/DI Staff</div>
+        </div>
+
+        <div onclick="switchAdminMod(5)" class="admin-mod-card">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-teal-100 text-teal-900 text-[10px] font-black">MOD 05</span>
+            <span class="text-lg">🎓</span>
+          </div>
+          <div class="text-xs font-black text-slate-900 mt-1">+2 பாடப்பிரிவு மாணவர் எண்ணிக்கை</div>
+          <div class="text-[11px] text-slate-500 font-semibold">EMIS Group-wise Strength</div>
+        </div>
+
+        <div onclick="switchAdminMod(6)" class="admin-mod-card">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-rose-100 text-rose-900 text-[10px] font-black">MOD 06</span>
+            <span class="text-lg">🏗️</span>
+          </div>
+          <div class="text-xs font-black text-slate-900 mt-1">அடிப்படைத் தேவைகள் அறிக்கை</div>
+          <div class="text-[11px] text-slate-500 font-semibold">Classrooms, Desks, Water, Toilets</div>
+        </div>
+
+        <div onclick="switchAdminMod(7)" class="admin-mod-card">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-900 text-[10px] font-black">MOD 07</span>
+            <span class="text-lg">🏛️</span>
+          </div>
+          <div class="text-xs font-black text-slate-900 mt-1">பொதுத்தேர்வு மையங்கள் (10th & 12th)</div>
+          <div class="text-[11px] text-slate-500 font-semibold">113 SSLC & 91 HSE Centres</div>
+        </div>
+
+        <div onclick="openAppsScriptCodeModal()" class="admin-mod-card">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-slate-200 text-slate-900 text-[10px] font-black">MOD 08</span>
+            <span class="text-lg">⚙️</span>
+          </div>
+          <div class="text-xs font-black text-slate-900 mt-1">Google Sheet & Code.gs இணைப்பு</div>
+          <div class="text-[11px] text-slate-500 font-semibold">Web App URL & Drive Folders</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN MOD 2: CIRCULARS & NOTIFICATIONS DISPATCHER (Multi-select Categories, 12 Blocks, Schools, Email, Drive Upload) -->
+    <section id="adminMod2Section" class="bg-white rounded-xl border border-slate-300 p-4 shadow-sm space-y-4">
+      <div class="flex flex-wrap items-center justify-between border-b pb-3 gap-2">
+        <div>
+          <h3 class="text-base font-black text-slate-900">📢 சுற்றறிக்கை & அறிவிப்புகள் அனுப்புதல் (Multi-Select Target, Email & Google Drive இணைப்பு)</h3>
+          <p class="text-xs text-slate-600 font-semibold">இங்கு வெளியிடப்படும் அறிவிப்புகள் Flash News பட்டையிலும் பள்ளிகளின் "4. சுற்றறிக்கைகள் & அறிவிப்புகள்" மெனுவிலும் உடனடியாக இடம்பெறும்.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-black text-slate-700 mb-1">சுற்றறிக்கைத் தலைப்பு (Circular Headline) *</label>
+            <input id="cirTitleInput" type="text" placeholder="எ.கா. பொதுத்தேர்வு 2026-27 EBS படிவங்கள் சரிபார்ப்பு..." class="w-full px-3 py-2 border border-slate-300 rounded-lg font-bold text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-black text-slate-700 mb-1">விரிவான செய்தி / விவரம் (Description)</label>
+            <textarea id="cirDescInput" rows="3" placeholder="சுற்றறிக்கை விவரங்களை உள்ளிடவும்..." class="w-full px-3 py-2 border border-slate-300 rounded-lg font-semibold text-sm"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-black text-slate-700 mb-1">📎 இணைப்புக் கோப்பு பதிவேற்றம் (Saves to Google Drive Folder: 1R-0i5OS83fSTLa0p3dw_mI81Pee4rZdA)</label>
+            <input id="cirFileAttachmentInput" type="file" class="w-full text-xs font-bold text-slate-700 border border-slate-300 rounded-lg p-2 bg-slate-50">
+          </div>
+          <label class="flex items-start gap-2.5 p-3 rounded-lg bg-blue-50 border border-blue-200 cursor-pointer">
+            <input id="cirSendEmailCheckbox" type="checkbox" checked class="mt-1 w-4 h-4">
+            <span class="text-xs font-extrabold text-blue-950">
+              📧 பள்ளி இணைய முகப்புடன் (Dashboard Notification) சேர்த்து, சம்பந்தப்பட்ட பள்ளிகளின் பதிவு செய்யப்பட்ட மின்னஞ்சலுக்கும் (Email) இந்த அறிவிப்பை அனுப்புக
+            </span>
+          </label>
+        </div>
+
+        <!-- Multi-Select Target Selector: 1) Categories (incl. KV/ICSE/CBSE), 2) 12 Blocks, 3) Specific Schools -->
+        <div class="space-y-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <div>
+            <div class="text-xs font-black text-slate-900 mb-1.5">1️⃣ பள்ளி வகை / வாரியம் வாரியாகத் தேர்வு செய்க (Multiple Selection):</div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs font-bold" id="cirTargetCategoryCheckboxes">
+              <label class="flex items-center gap-1.5 bg-white p-1.5 rounded border"><input type="checkbox" value="ALL_308" checked> அனைத்துப் பள்ளிகள் (308)</label>
+              <label class="flex items-center gap-1.5 bg-white p-1.5 rounded border"><input type="checkbox" value="STATE_282"> மாநிலப் பாடத்திட்டம் (282)</label>
+              <label class="flex items-center gap-1.5 bg-white p-1.5 rounded border"><input type="checkbox" value="1G"> 1G - அரசுப் பள்ளிகள் (138)</label>
+              <label class="flex items-center gap-1.5 bg-white p-1.5 rounded border"><input type="checkbox" value="2A"> 2A - அரசு உதவிபெறும் (59)</label>
+              <label class="flex items-center gap-1.5 bg-white p-1.5 rounded border"><input type="checkbox" value="3P"> 3P - மெட்ரிக் / சுயநிதி (85)</label>
+              <label class="flex items-center gap-1.5 bg-amber-50 p-1.5 rounded border border-amber-300"><input type="checkbox" value="4CG"> 4CG - கேந்திரிய வித்யாலயா (3)</label>
+              <label class="flex items-center gap-1.5 bg-emerald-50 p-1.5 rounded border border-emerald-300"><input type="checkbox" value="5IC"> 5IC - ICSE பள்ளிகள் (2)</label>
+              <label class="flex items-center gap-1.5 bg-purple-50 p-1.5 rounded border border-purple-300"><input type="checkbox" value="6CB"> 6CB - CBSE பள்ளிகள் (21)</label>
+              <label class="flex items-center gap-1.5 bg-white p-1.5 rounded border"><input type="checkbox" value="HSS"> மேல்நிலை (HSS)</label>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-black text-slate-900">2️⃣ ஒன்றியங்கள் வாரியாகத் தேர்வு செய்க (12 Blocks Multiple Selection):</span>
+              <div class="space-x-2">
+                <button type="button" onclick="toggleAllCircularBlocks(true)" class="text-[11px] font-extrabold text-blue-700 underline">☑️ அனைத்து ஒன்றியங்கள்</button>
+                <button type="button" onclick="toggleAllCircularBlocks(false)" class="text-[11px] font-extrabold text-rose-700 underline">✕ நீக்கு</button>
+              </div>
+            </div>
+            <div id="cirTargetBlocksGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs font-bold"></div>
+          </div>
+
+          <div class="pt-1 flex justify-end">
+            <button onclick="publishNewCircularFromAdmin()" class="px-5 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs shadow">
+              🚀 சுற்றறிக்கையை வெளியிடு & Email அனுப்பு (Publish Circular)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="adminPublishedCircularsList" class="pt-3 border-t space-y-2"></div>
+    </section>
+
+    <!-- ADMIN MOD 3: EBS 2026-27 BULK SYNC & STATUS -->
+    <section id="adminMod3Section" class="bg-white rounded-xl border border-slate-300 p-4 shadow-sm space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 class="text-base font-black text-slate-900">📋 சிவகங்கை மாவட்டம் – EBS 2026-27 ஒருங்கிணைந்த கட்டுப்பாட்டகம் (282 மாநிலப் பாடத்திட்டப் பள்ளிகள்)</h3>
+          <p id="adminEbsSyncStatusText" class="text-xs font-extrabold text-emerald-700 mt-0.5">✅ தயார் நிலையில் உள்ளது (F1: 282 பள்ளிகள் | F2: 163 மேல்நிலைப்பள்ளிகள்)</p>
+        </div>
+        <button onclick="syncAll282SchoolsEbsToGoogleSheet()" class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs">🟢 அனைத்து 282 பள்ளிகளின் EBS (F1-F4) தனி Google Sheet-இல் ஒத்திசை</button>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-200">
+          <div class="text-xs font-bold text-indigo-900">FORM - I (பள்ளி சுயவிவரம்)</div>
+          <div class="text-xl font-black text-indigo-950">282 பள்ளிகள்</div>
+          <div class="text-[11px] font-semibold text-indigo-700">138 Govt + 59 Aided + 85 Self-Fin</div>
+        </div>
+        <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+          <div class="text-xs font-bold text-emerald-900">FORM - II (+2 பாடவாரியாக)</div>
+          <div class="text-xl font-black text-emerald-950">163 மேல்நிலைப் பள்ளிகள்</div>
+          <div class="text-[11px] font-semibold text-emerald-700">31 பாடங்கள் (Others நீக்கப்பட்டது)</div>
+        </div>
+        <div class="p-3 rounded-xl bg-blue-50 border border-blue-200">
+          <div class="text-xs font-bold text-blue-900">FORM - III (ஆசிரியர்கள்)</div>
+          <div class="text-xl font-black text-blue-950">6,541 ஆசிரியர்கள்</div>
+          <div class="text-[11px] font-semibold text-blue-700">Sorted by Desig Code ➔ DOJ ➔ DOB</div>
+        </div>
+        <div class="p-3 rounded-xl bg-amber-50 border border-amber-200">
+          <div class="text-xs font-bold text-amber-900">FORM - IV (ஆசிரியரல்லாதோர்)</div>
+          <div class="text-xl font-black text-amber-950">540 பணியாளர்கள்</div>
+          <div class="text-[11px] font-semibold text-amber-700">Sorted by Desig Code ➔ DOJ ➔ DOB</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =====================================================================
+       4. MODAL: +2 (12th STANDARD) GROUP-WISE STRENGTH EDIT POPUP
+       ===================================================================== -->
+  <div id="ebsHscGroupEditModal" class="fixed inset-0 bg-slate-900/70 z-50 hidden items-center justify-center p-3 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-4xl w-full p-5 shadow-2xl border-2 border-slate-800 space-y-4 my-8">
+      <div class="flex flex-wrap items-center justify-between border-b pb-3 gap-2">
+        <div>
+          <h3 class="text-base font-black text-slate-900">🎓 +2 (12-ஆம் வகுப்பு) பாடப்பிரிவு வாரியான மாணவர் எண்ணிக்கை திருத்தும் சாளரம்</h3>
+          <p id="hscGroupModalSchoolLabel" class="text-xs font-extrabold text-emerald-800 mt-0.5"></p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="saveAndCloseHscGroupEditModal()" class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs">💾 சேமி & புதுப்பி (Save & Update F1, F2)</button>
+          <button onclick="closeEbsHscGroupEditModal()" class="px-3.5 py-2 rounded-lg border border-slate-300 font-bold text-xs">Close</button>
+        </div>
+      </div>
+
+      <!-- Add New Group Row -->
+      <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-wrap items-center gap-2">
+        <span class="text-xs font-black text-emerald-950">➕ புதிய பாடப்பிரிவு (Group) சேர்க்க:</span>
+        <select id="newHscGroupSelect" class="flex-1 min-w-[240px] px-3 py-1.5 rounded-lg border border-emerald-400 text-xs font-bold bg-white"></select>
+        <button onclick="addHscGroupToCurrentSchool()" class="px-3.5 py-1.5 rounded-lg bg-emerald-800 text-white font-extrabold text-xs">+ Group சேர்</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse border border-slate-400 ebs-strength-table text-xs">
+          <thead>
+            <tr class="bg-slate-900 text-white">
+              <th rowspan="2" class="border border-slate-600">Group Code</th>
+              <th rowspan="2" class="border border-slate-600 text-left">Group Name & Major Subjects</th>
+              <th colspan="3" class="bg-emerald-800 border border-slate-600">தமிழ் வழி (Tamil Medium - +2)</th>
+              <th colspan="3" class="bg-blue-900 border border-slate-600">ஆங்கில வழி (English Medium - +2)</th>
+              <th rowspan="2" class="bg-teal-800 border border-slate-600">மொத்தம் (Total)</th>
+              <th rowspan="2" class="border border-slate-600">நீக்கு</th>
+            </tr>
+            <tr class="bg-slate-800 text-white">
+              <th class="border border-slate-600">Boys</th>
+              <th class="border border-slate-600">Girls</th>
+              <th class="border border-slate-600">Total</th>
+              <th class="border border-slate-600">Boys</th>
+              <th class="border border-slate-600">Girls</th>
+              <th class="border border-slate-600">Total</th>
+            </tr>
+          </thead>
+          <tbody id="hscGroupModalTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t">
+        <button onclick="closeEbsHscGroupEditModal()" class="px-4 py-2 rounded-lg border border-slate-300 font-bold text-xs">Close</button>
+        <button onclick="saveAndCloseHscGroupEditModal()" class="px-5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs">💾 சேமி & FORM I, II புதுப்பி (Save Changes)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       5. MODAL: ADD NEW TEACHER (F3) / NON-TEACHING STAFF (F4)
+          (Search by 8-Digit EMIS ID incl. 10172271 OR Auto Temp ID 10100001)
+       ===================================================================== -->
+  <div id="addEbsStaffModal" class="fixed inset-0 bg-slate-900/70 z-50 hidden items-center justify-center p-3 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-5 shadow-2xl border-2 border-slate-800 space-y-4 my-8">
+      <div class="flex items-center justify-between border-b pb-3">
+        <div>
+          <h3 id="addStaffModalTitle" class="text-base font-black text-slate-900">➕ கூடுதல் ஆசிரியர் / பணியாளர் சேர்க்கை</h3>
+          <p id="addStaffModalSchoolSub" class="text-xs font-bold text-emerald-800 mt-0.5"></p>
+        </div>
+        <button onclick="closeAddEbsStaffModal()" class="px-3.5 py-1.5 rounded-lg border border-slate-300 font-bold text-xs">Close</button>
+      </div>
+
+      <!-- Method 1: Search by EMIS ID -->
+      <div class="p-4 rounded-xl bg-blue-50/70 border border-blue-200 space-y-3">
+        <div class="text-xs font-black text-blue-950">🔍 வழிமுறை 1: EMIS எண் கொடுத்துத் தேடிச் சேர்த்தல் (Search by EMIS ID)</div>
+        <p class="text-[11px] font-semibold text-slate-600">பணியாளரின் 8-இலக்க EMIS எண்ணை (எ.கா. 10172271, 10212235) அல்லது பெயரை உள்ளிட்டுத் தேடவும். மாவட்ட EMIS தரவுத்தளத்தில் இருந்தால் விவரங்கள் தானாகப் பூர்த்தியாகும்.</p>
+        <div class="flex gap-2">
+          <input id="addStaffEmisSearchInput" type="text" placeholder="8-இலக்க EMIS எண் அல்லது பெயர் (எ.கா. 10172271)..." oninput="searchEmisDatabaseForAddStaff()" class="flex-1 px-3 py-2 rounded-lg border-2 border-blue-800 font-extrabold text-sm">
+          <button onclick="searchEmisDatabaseForAddStaff()" class="px-4 py-2 rounded-lg bg-blue-800 text-white font-black text-xs">🔍 EMIS எண் தேடு</button>
+        </div>
+        <div id="addStaffEmisSearchResultBox" class="space-y-2"></div>
+      </div>
+
+      <!-- Method 2: Auto Temporary ID Generator (U.NO 3 digits + 5 digits sequence e.g. 10100001) -->
+      <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-3">
+        <div class="text-xs font-black text-emerald-950">🆕 வழிமுறை 2: EMIS எண் இல்லையெனில் — புதிய தற்காலிக எண் (Temporary ID) மூலம் சேர்த்தல்</div>
+        <p class="text-[11px] font-semibold text-slate-600">முதல் 3 இலக்கங்கள் பள்ளியின் U.NO + அடுத்த 5 இலக்கங்கள் பணியாளர் வரிசை எண் (எ.கா. 10100001) என்ற அடிப்படையில் தானியங்கி Temporary ID உருவாக்கப்படும்.</p>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="px-4 py-2 rounded-lg bg-white border-2 border-dashed border-emerald-600 text-center">
+            <div class="text-[10px] font-bold text-emerald-800">அடுத்த Temporary ID</div>
+            <div id="nextTempStaffIdPreview" class="text-base font-black text-emerald-950 tracking-wider">10100001</div>
+          </div>
+          <button onclick="createStaffWithGeneratedTempId()" id="btnCreateTempStaff" class="px-4 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs shadow">
+            🆕 தற்காலிக எண் உருவாக்கிப் படிவம் பூர்த்தி செய்
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       6. MODAL: F3 / F4 STAFF PROFILE EDIT MODAL
+          (Nature of Present Post next to EMIS ID, Contract Disables/Blanks,
+           Tanglish Tamil Input, Multi-Select Handling Subjects, English Buttons)
+       ===================================================================== -->
+  <div id="ebsStaffEditModal" class="fixed inset-0 bg-slate-900/75 z-50 hidden items-center justify-center p-2 md:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-5xl w-full p-4 md:p-6 shadow-2xl border-2 border-slate-800 space-y-4 my-6 max-h-[94vh] overflow-y-auto">
+      <!-- Top Action Bar with English Only Buttons: Download PDF, Close -->
+      <div class="flex flex-wrap items-center justify-between border-b pb-3 gap-2 sticky top-0 bg-white z-20">
+        <div>
+          <h3 id="staffModalHeaderTitle" class="text-base font-black text-slate-900">✏️ FORM – III / IV PROFILE EDIT</h3>
+          <p id="staffModalHeaderSub" class="text-xs font-bold text-blue-800"></p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="downloadCurrentEditedStaffPdf()" class="px-4 py-2 rounded-lg bg-blue-900 hover:bg-blue-800 text-white font-black text-xs shadow">Download PDF</button>
+          <button type="button" onclick="closeEbsStaffEditModal()" class="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-900 font-black text-xs">Close</button>
+        </div>
+      </div>
+
+      <!-- Row 1: Staff EMIS ID, Nature of Present Post (Right next to EMIS ID), IFHRMS ID -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+        <div>
+          <label class="block text-xs font-black text-slate-700 mb-1">1. Staff EMIS ID (8 Digits)</label>
+          <input id="stEditEmisId" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-black text-sm bg-white" readonly>
+        </div>
+        <div>
+          <label class="block text-xs font-black text-blue-950 mb-1">2. Nature of Present Post *</label>
+          <select id="stEditNaturePost" onchange="onStaffNatureOfPostChange()" class="w-full px-3 py-2 border-2 border-blue-800 rounded-lg font-extrabold text-sm bg-white"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-black text-slate-700 mb-1">3. IFHRMS ID* (11 Digits)</label>
+          <input id="stEditIfhrmsId" type="text" maxlength="11" placeholder="11-இலக்க IFHRMS எண்" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-extrabold text-sm">
+        </div>
+      </div>
+
+      <!-- Row 2: English Name, Salutation + Tanglish Tamil Name, Gender, DOB, Designation, Subject -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-xs font-black text-slate-700 mb-1">Name (In English)</label>
+          <input id="stEditNameEn" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-extrabold text-sm">
+        </div>
+        <div class="md:col-span-2">
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-black text-emerald-900">பெயர் (தமிழில்) & Prefix — (தங்கlish: ஆங்கிலத்தில் தட்டச்சு செய்து Space அழுத்தவும்)</label>
+            <button type="button" onclick="transliterateEnglishNameFieldToTamil()" class="px-2.5 py-0.5 rounded bg-emerald-700 text-white text-[11px] font-extrabold">⚡ ஆங்கிலம்➔தமிழ்</button>
+          </div>
+          <div class="flex gap-2">
+            <select id="stEditPrefix" class="w-28 px-2 py-2 border border-slate-300 rounded-lg font-extrabold text-sm">
+              <option value="திரு.">திரு.</option>
+              <option value="திருமதி.">திருமதி.</option>
+              <option value="செல்வி.">செல்வி.</option>
+            </select>
+            <input id="stEditNameTa" type="text" placeholder="எ.கா. dharmabalan n என தட்டச்சு செய்து Space அழுத்தவும்..." onkeydown="handleTanglishKeydown(event, this)" class="flex-1 px-3 py-2 border-2 border-emerald-600 rounded-lg font-extrabold text-sm">
+          </div>
+          <div id="tanglishSuggestionsBar" class="flex flex-wrap gap-1.5 mt-1"></div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Gender</label>
+          <select id="stEditGender" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-bold text-sm">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Date of Birth (DD-MM-YYYY)</label>
+          <input id="stEditDob" type="text" placeholder="DD-MM-YYYY" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-extrabold text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Designation (பதவி)</label>
+          <select id="stEditDesig" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-extrabold text-sm"></select>
+        </div>
+
+        <div id="stEditQualWrapper">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Educational Qualification</label>
+          <input id="stEditQual" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-bold text-sm">
+        </div>
+        <div id="stEditMainSubWrapper">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Main Subject</label>
+          <input id="stEditMainSub" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-bold text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Preferred Valuation Camp 2026-27</label>
+          <select id="stEditCampPref" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-bold text-sm">
+            <option value="01-Sivagangai">01-Sivagangai</option>
+            <option value="02-Karaikudi/Devakottai">02-Karaikudi/Devakottai</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 3: Contact, Personal Email & Residential Place -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Mobile Number (WhatsApp)</label>
+          <input id="stEditMobile" type="text" maxlength="10" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-extrabold text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Alternate Mobile No.</label>
+          <input id="stEditAltMobile" type="text" maxlength="10" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Personal E-mail Address</label>
+          <input id="stEditEmail" type="email" placeholder="teacher@gmail.com" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Residential Place & District</label>
+          <div class="flex gap-1.5">
+            <input id="stEditResPlace" type="text" placeholder="Place" class="w-1/2 px-2 py-1.5 border border-slate-300 rounded-lg font-bold text-xs">
+            <input id="stEditResDist" type="text" value="Sivagangai" class="w-1/2 px-2 py-1.5 border border-slate-300 rounded-lg font-bold text-xs">
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: Handling Classes (6th to 12th) with Multi-Select Subject Checkboxes (F3 Only) -->
+      <div id="stEditHandlingClassesSection" class="p-3.5 rounded-xl border border-blue-200 bg-blue-50/40 space-y-2">
+        <div class="text-xs font-black text-blue-950">📚 Handling Classes (6th to 12th) — Subjects (Multiple Selection) & Medium</div>
+        <div id="stEditHandlingClassesGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2"></div>
+      </div>
+
+      <!-- Row 5: First Appointment & Present Post Details (Disabled & Blanked when Contract is chosen) -->
+      <div class="p-3.5 rounded-xl border border-slate-300 space-y-3">
+        <div class="text-xs font-black text-slate-900">🏛️ முதன் முதலில் அரசுப்பணியேற்ற விவரம் & தற்போதைய பதவி விவரம் (Service & Appointment Details)</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Mode of First Appointment</label>
+            <select id="stEditModeFirstApp" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-xs">
+              <option value="">-- Select --</option>
+              <option value="TRB">TRB</option>
+              <option value="Employment Seniority">Employment Seniority</option>
+              <option value="Management">Management</option>
+              <option value="Compassionate Ground">Compassionate Ground</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">D.O.J in First Appointment</label>
+            <input id="stEditDojFirstApp" type="text" placeholder="DD-MM-YYYY" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Name of the Post (First Join)</label>
+            <input id="stEditFirstJoinPost" type="text" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-xs">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Mode of Appointment in Present Post</label>
+            <select id="stEditModePresPost" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-xs">
+              <option value="">-- Select --</option>
+              <option value="Promotion">Promotion</option>
+              <option value="New Appointment">New Appointment</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Date of Join in Present Post</label>
+            <input id="stEditDojPresPost" type="text" placeholder="DD-MM-YYYY" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-extrabold text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Unit Transfer Date</label>
+            <input id="stEditUnitTransferDate" type="text" placeholder="DD-MM-YYYY" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-xs">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Date of Join in Present School</label>
+            <input id="stEditDojSchool" type="text" placeholder="DD-MM-YYYY" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-extrabold text-xs">
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 6: Last Year (2025-26) Exam Duty & Current Year Exemption Ground + Details -->
+      <div class="p-3.5 rounded-xl border border-amber-300 bg-amber-50/40 space-y-3">
+        <div class="text-xs font-black text-amber-950">📋 கடந்த ஆண்டு (2025-26) பொதுத்தேர்வுப் பணி (10th SSLC & 12th HSE) மற்றும் நடப்பு ஆண்டு விலக்கு விவரம்</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">2025-26 SSLC (10th) Exam Duty - Nature of Work</label>
+            <select id="stEditDutySslcWork" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-xs"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">2025-26 SSLC (10th) Exam Centre</label>
+            <input id="stEditDutySslcCentre" type="text" placeholder="தேர்வு மைய எண் & பெயர்" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-xs">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">2025-26 HSE (+1/+2) Exam Duty - Nature of Work</label>
+            <select id="stEditDutyHseWork" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-xs"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">2025-26 HSE (+1/+2) Exam Centre</label>
+            <input id="stEditDutyHseCentre" type="text" placeholder="தேர்வு மைய எண் & பெயர்" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg font-bold text-xs">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-rose-900 mb-1">Grounds for Exam Duty Exemption (Enclose: Certificate Copy)</label>
+            <select id="stEditExemptionGround" class="w-full px-3 py-1.5 border border-rose-400 rounded-lg font-extrabold text-xs bg-white">
+              <option value="">-- விலக்கு கோரவில்லை (None) --</option>
+              <option value="Differently Abled">Differently Abled</option>
+              <option value="Cancer Patient">Cancer Patient</option>
+              <option value="Recent Major Surgery">Recent Major Surgery</option>
+              <option value="Severe Health Issues">Severe Health Issues</option>
+              <option value="Others (Please Specify)">Others (Please Specify)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-rose-900 mb-1">Exemption Details (தேர்வு செய்த காரணத்திற்கான விவரம்)</label>
+            <input id="stEditExemptionDetails" type="text" placeholder="விலக்குக்கான முழு விவரத்தை உள்ளிடவும் (A4 படிவத்தில் அதே பெட்டிக்குள் அச்சாகும்)..." class="w-full px-3 py-1.5 border border-rose-400 rounded-lg font-bold text-xs bg-white">
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Save & English Buttons -->
+      <div class="flex flex-wrap items-center justify-between pt-3 border-t gap-2">
+        <span class="text-xs font-bold text-emerald-700">✓ மாற்றங்கள் அனைத்தும் தானாகவே சேமிக்கப்படும்</span>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="saveCurrentEditedStaffProfile(true)" class="px-5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs shadow">💾 Save Profile</button>
+          <button type="button" onclick="downloadCurrentEditedStaffPdf()" class="px-4 py-2 rounded-lg bg-blue-900 hover:bg-blue-800 text-white font-black text-xs">Download PDF</button>
+          <button type="button" onclick="closeEbsStaffEditModal()" class="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-900 font-black text-xs">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       7. MODAL: OFFICIAL A4 PRINT & DIRECT .PDF DOWNLOAD MODAL
+          (Buttons in English only: Print, Download PDF, Close)
+       ===================================================================== -->
+  <div id="a4PrintPreviewModal" class="fixed inset-0 bg-slate-900/80 z-50 hidden overflow-y-auto p-3">
+    <div class="max-w-[220mm] mx-auto my-4">
+      <div class="no-print-bar bg-slate-900 text-white px-4 py-3 rounded-xl mb-3 flex flex-wrap items-center justify-between gap-2 border border-slate-700">
+        <div class="text-xs font-extrabold text-yellow-300" id="a4PreviewTitleLabel">A4 Official Form Preview</div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="window.print()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs">Print</button>
+          <button type="button" onclick="downloadActiveA4PreviewAsPdf()" id="btnDirectPdfDownload" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-black text-xs">Download PDF</button>
+          <button type="button" onclick="closeA4PreviewModal()" class="px-4 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-black text-xs">Close</button>
+        </div>
+      </div>
+      <div id="a4PrintableContentHolder" class="bg-white"></div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       8. MODAL: GOOGLE APPS SCRIPT (Code.gs) VIEWER & COPIER
+       ===================================================================== -->
+  <div id="appsScriptCodeModal" class="fixed inset-0 bg-slate-900/75 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full p-5 shadow-2xl space-y-3">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 class="text-sm font-black text-slate-900">📜 Google Apps Script (Code.gs) & Web App இணைப்பு</h3>
+        <button onclick="document.getElementById('appsScriptCodeModal').classList.add('hidden')" class="px-3 py-1 rounded border font-bold text-xs">Close</button>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Google Apps Script Web App URL:</label>
+        <input id="gasWebAppUrlInput" type="text" value="https://script.google.com/macros/s/AKfycbz_ceosvg_portal_v43/exec" class="w-full px-3 py-1.5 border rounded font-mono text-xs">
+      </div>
+      <div class="text-xs text-slate-600 font-semibold">
+        சுற்றறிக்கை Google Drive கோப்புறை: <code class="bg-slate-100 px-1.5 py-0.5 rounded font-bold">1R-0i5OS83fSTLa0p3dw_mI81Pee4rZdA</code> |
+        விலக்குச் சான்றிதழ் கோப்புறை: <code class="bg-slate-100 px-1.5 py-0.5 rounded font-bold">1Fd2DR3QDi7Vjop1-d6ZvQT2Dp9EX9EJX</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       9. COMPLETE PORTAL JAVASCRIPT ENGINE (v4.3 - Clean & Error-Free)
+       ===================================================================== -->
+  <script>
+    // 1. 12 Educational Blocks of Sivagangai District
+    const SIVAGANGAI_12_BLOCKS = [
+      "01 S.Pudur", "02 Singampunari", "03 Tiruppathur", "04 Kallal",
+      "05 Sakkottai", "06 Kannangudi", "07 Devakottai", "08 Kalayarkoil",
+      "09 Ilayangudi", "10 Manamadurai", "11 Thiruppuvanam", "12 Sivagangai"
+    ];
+
+    // 2. Official HSS Group Master (with exact subjects for dynamic Form-II)
+    const HSS_GROUP_CATALOG = {
+      "2501": { code: "2501", category: "SCIENCE", name: "MATHS-STATISTICS", subjects: ["Physics", "Chemistry", "Statistics", "Mathematics"] },
+      "2502": { code: "2502", category: "SCIENCE", name: "COMPUTER-MATHS", subjects: ["Physics", "Chemistry", "Computer Science", "Mathematics"] },
+      "2503": { code: "2503", category: "SCIENCE", name: "BIO-MATHS", subjects: ["Physics", "Chemistry", "Biology", "Mathematics"] },
+      "2504": { code: "2504", category: "SCIENCE", name: "PURE SCIENCE", subjects: ["Physics", "Chemistry", "Botany", "Zoology"] },
+      "2601": { code: "2601", category: "SCIENCE", name: "BIO-COMPUTER", subjects: ["Physics", "Chemistry", "Biology", "Computer Science"] },
+      "2602": { code: "2602", category: "SCIENCE", name: "MICRO BIOLOGY", subjects: ["Physics", "Chemistry", "Biology", "Microbiology"] },
+      "2606": { code: "2606", category: "SCIENCE", name: "BIO-COMM.ENG", subjects: ["Physics", "Chemistry", "Biology", "Communicative English"] },
+      "2701": { code: "2701", category: "ARTS", name: "BUSINESS MATHS", subjects: ["Economics", "Commerce", "Accountancy", "Business Maths"] },
+      "2702": { code: "2702", category: "ARTS", name: "COMMERCE-COM.APP.", subjects: ["Economics", "Commerce", "Accountancy", "Computer Applications"] },
+      "2703": { code: "2703", category: "ARTS", name: "COMMERCE-COMM.ENG", subjects: ["Economics", "Commerce", "Accountancy", "Communicative English"] },
+      "2704": { code: "2704", category: "ARTS", name: "ARTS-HISTORY", subjects: ["History", "Economics", "Commerce", "Accountancy"] },
+      "2801": { code: "2801", category: "ARTS", name: "GEOGRAPHY-HISTORY", subjects: ["History", "Economics", "Geography", "Political Science"] },
+      "2802": { code: "2802", category: "ARTS", name: "ADV.TAMIL-ARTS", subjects: ["History", "Economics", "Commerce", "Advanced Tamil"] },
+      "2961": { code: "2961", category: "VOCATIONAL", name: "BASIC ELECTRICAL ENG", subjects: ["Basic Electrical Engineering", "Employability Skills"] },
+      "2962": { code: "2962", category: "VOCATIONAL", name: "BASIC ELECTRONICS ENG", subjects: ["Basic Electronics Engineering", "Employability Skills"] },
+      "2963": { code: "2963", category: "VOCATIONAL", name: "BASIC MECHANICAL ENG", subjects: ["Basic Mechanical Engineering", "Employability Skills"] },
+      "2971": { code: "2971", category: "VOCATIONAL", name: "TEXTILES & DRESS DESIGN", subjects: ["Home Science", "Employability Skills"] },
+      "2975": { code: "2975", category: "VOCATIONAL", name: "NURSING VOCATIONAL", subjects: ["Nursing", "Employability Skills"] },
+      "2980": { code: "2980", category: "VOCATIONAL", name: "AGRI SCIENCE", subjects: ["Agricultural Science", "Employability Skills"] },
+      "2991": { code: "2991", category: "VOCATIONAL", name: "OFFICE MGMT & AUDITING", subjects: ["Accountancy", "Economics", "Commerce", "Office Management & Secretaryship", "Accountancy & Auditing", "Employability Skills"] }
+    };
+
+    // 3. Complete 31 Official Subjects for EBS Form-II (No 'Others' column)
+    const EBS_F2_SUBJECT_MASTER = [
+      { key: "Language", label: "Language (Tamil / Optional)", editable: true, exactTokens: ["LANGUAGE", "TAMIL"] },
+      { key: "English", label: "English", editable: true, exactTokens: ["ENGLISH"] },
+      { key: "Mathematics", label: "Mathematics", editable: false, exactTokens: ["MATHEMATICS", "MATHS"] },
+      { key: "Physics", label: "Physics", editable: false, exactTokens: ["PHYSICS"] },
+      { key: "Chemistry", label: "Chemistry", editable: false, exactTokens: ["CHEMISTRY"] },
+      { key: "Biology", label: "Biology", editable: false, exactTokens: ["BIOLOGY"] },
+      { key: "Botany", label: "Botany", editable: false, exactTokens: ["BOTANY"] },
+      { key: "Zoology", label: "Zoology", editable: false, exactTokens: ["ZOOLOGY"] },
+      { key: "Computer Science", label: "Computer Science", editable: false, exactTokens: ["COMPUTER SCIENCE"] },
+      { key: "History", label: "History", editable: false, exactTokens: ["HISTORY"] },
+      { key: "Economics", label: "Economics", editable: false, exactTokens: ["ECONOMICS"] },
+      { key: "Commerce", label: "Commerce", editable: false, exactTokens: ["COMMERCE"] },
+      { key: "Accountancy", label: "Accountancy", editable: false, exactTokens: ["ACCOUNTANCY"] },
+      { key: "Advanced Tamil", label: "Advanced Tamil", editable: false, exactTokens: ["ADVANCED TAMIL"] },
+      { key: "Business Maths", label: "Business Maths & Statistics", editable: false, exactTokens: ["BUSINESS MATHS", "BUSINESS MATHEMATICS"] },
+      { key: "Microbiology", label: "Microbiology", editable: false, exactTokens: ["MICROBIOLOGY", "MICRO BIOLOGY"] },
+      { key: "Nursing", label: "Nursing", editable: false, exactTokens: ["NURSING"] },
+      { key: "Computer Applications", label: "Computer Applications", editable: false, exactTokens: ["COMPUTER APPLICATIONS"] },
+      { key: "Agricultural Science", label: "Agricultural Science", editable: false, exactTokens: ["AGRICULTURAL SCIENCE"] },
+      { key: "Employability Skills", label: "Employability Skills", editable: false, exactTokens: ["EMPLOYABILITY SKILLS"] },
+      { key: "Typewriting", label: "Typewriting", editable: false, exactTokens: ["TYPEWRITING"] },
+      { key: "Accountancy & Auditing", label: "Accountancy & Auditing", editable: false, exactTokens: ["ACCOUNTANCY & AUDITING"] },
+      { key: "Office Management", label: "Office Management & Secretaryship", editable: false, exactTokens: ["OFFICE MANAGEMENT & SECRETARYSHIP"] },
+      { key: "Basic Mechanical Eng", label: "Basic Mechanical Engineering", editable: false, exactTokens: ["BASIC MECHANICAL ENGINEERING"] },
+      { key: "Basic Electrical Eng", label: "Basic Electrical Engineering", editable: false, exactTokens: ["BASIC ELECTRICAL ENGINEERING"] },
+      { key: "Basic Electronics Eng", label: "Basic Electronics Engineering", editable: false, exactTokens: ["BASIC ELECTRONICS ENGINEERING"] },
+      { key: "Home Science", label: "Home Science", editable: false, exactTokens: ["HOME SCIENCE"] },
+      { key: "Geography", label: "Geography", editable: false, exactTokens: ["GEOGRAPHY"] },
+      { key: "Political Science", label: "Political Science", editable: false, exactTokens: ["POLITICAL SCIENCE"] },
+      { key: "Statistics", label: "Statistics", editable: false, exactTokens: ["STATISTICS"] },
+      { key: "Communicative English", label: "Communicative English", editable: false, exactTokens: ["COMMUNICATIVE ENGLISH"] }
+    ];
+
+    // 4. Official Designation Codes (01 to 37) for Strict Sorting
+    const DESIGNATION_CODE_MAP = {
+      "HM (HSS)": "01", "HEADMASTER (HSS)": "01",
+      "HM (HS)": "02", "HEADMASTER (HS)": "02",
+      "PRINCIPAL": "03",
+      "VICE PRINCIPAL": "04", "AHM": "04",
+      "P.G. TEACHER": "05", "PG ASSISTANT": "05",
+      "PHYSICAL DIRECTOR GR-I": "06",
+      "COMPUTER INSTRUCTOR GR-I": "07",
+      "VOCATIONAL INSTRUCTOR": "09",
+      "B.T. ASSISTANT": "11", "BT ASSISTANT": "11",
+      "PHYSICAL DIRECTOR GR-II": "12",
+      "S.G. TEACHER": "13", "SECONDARY GRADE TEACHER": "13",
+      "P.E.T": "14", "PHYSICAL EDUCATION TEACHER": "14",
+      "SPECIAL TEACHER": "15",
+      "SUPERINTENDENT": "20",
+      "DEPUTY INSPECTOR (DI)": "21",
+      "ASSISTANT": "22",
+      "JUNIOR ASSISTANT": "23",
+      "LAB ASSISTANT": "24",
+      "RECORD ASSISTANT": "25",
+      "LIBRARIAN": "26",
+      "RECORD CLERK": "27",
+      "OFFICE ASSISTANT": "28",
+      "WATCHMAN": "29",
+      "SCAVENGER": "30",
+      "SWEEPER": "33",
+      "TYPIST": "36",
+      "COOK": "37"
+    };
+
+    // 5. Dropdowns for Exam Duty (F3 Teaching vs F4 Last_Year_Exam_Duty_for_Non_Teaching_Staff)
+    const F3_TEACHING_LAST_YEAR_DUTIES = [
+      "", "Chief Superintendent", "Department Officer", "Addl.Department Officer",
+      "Invigilator", "Standing Squad", "Flying Squad", "Route Officer",
+      "Custodian", "Liasion Officer", "Mark Verification Officer", "Scribe",
+      "Duty Not Allotted", "Duty Cancelled", "Exemption"
+    ];
+    const F4_NON_TEACHING_LAST_YEAR_DUTIES = [
+      "", "Office Staff", "Tabulator", "Data Entry",
+      "Collection Point Clerk", "Collection Point Office Assistant",
+      "Collection Point Watchman", "Duty Not Allotted", "Exemption", "Duty Cancelled"
+    ];
+
+    const CLASS_HANDLING_SUBJECT_OPTIONS = [
+      "Tamil", "English", "Mathematics", "Science", "Social Science",
+      "Physics", "Chemistry", "Biology", "Botany", "Zoology",
+      "Computer Science", "Computer Applications", "Commerce", "Accountancy",
+      "Economics", "History", "Geography", "Business Maths", "Microbiology",
+      "Agricultural Science", "Employability Skills", "Physical Education"
+    ];
+
+    // 6. Representative Schools Master (282 State Board + 26 KV/ICSE/CBSE = 308 Schools)
+    const PORTAL_SCHOOLS_MASTER = [
+      {
+        uNo: "232", udiseNo: "33230600803", block: "06 Kannangudi", mgmt1: "1G", level: "HSS",
+        nameEn: "GOVT. HSS , KANNANGUDI", nameTa: "அரசு மேல்நிலைப்பள்ளி கண்ணங்குடி",
+        centre10: "6018", centre12: "208035", hmName: "BACKIYAM M", mobile: "9486952930", email: "ghsskannangudi@gmail.com",
+        examRooms: 12, benchDesks: 240,
+        sslc: { tmB: 10, tmG: 14, emB: 4, emG: 5, p4B: 0, p4G: 0 },
+        hscGroups: [
+          { groupCode: "2502", tmB: 12, tmG: 2, emB: 0, emG: 0 },
+          { groupCode: "2503", tmB: 5, tmG: 22, emB: 0, emG: 0 },
+          { groupCode: "2702", tmB: 3, tmG: 10, emB: 0, emG: 0 }
+        ]
+      },
+      {
+        uNo: "101", udiseNo: "33230100105", block: "01 S.Pudur", mgmt1: "1G", level: "HS",
+        nameEn: "GOVT. HS , VALASAIPATTI", nameTa: "அரசு உயர்நிலைப்பள்ளி வலசைப்பட்டி",
+        centre10: "6001", centre12: "-", hmName: "RAMESH K", mobile: "9443123456", email: "ghsvalasaipatti@gmail.com",
+        examRooms: 8, benchDesks: 120,
+        sslc: { tmB: 14, tmG: 11, emB: 0, emG: 0, p4B: 0, p4G: 0 },
+        hscGroups: []
+      },
+      {
+        uNo: "409", udiseNo: "33230501209", block: "05 Sakkottai", mgmt1: "2A", level: "HSS",
+        nameEn: "ALAGAPPA MODEL HSS , KARAIKUDI", nameTa: "அழகப்பா மாதிரி மேல்நிலைப்பள்ளி காரைக்குடி",
+        centre10: "6042", centre12: "208018", hmName: "SUNDARAM S", mobile: "9842155667", email: "alagappamodelhss@gmail.com",
+        examRooms: 20, benchDesks: 420,
+        sslc: { tmB: 36, tmG: 35, emB: 22, emG: 18, p4B: 0, p4G: 0 },
+        hscGroups: [
+          { groupCode: "2503", tmB: 18, tmG: 20, emB: 15, emG: 12 },
+          { groupCode: "2602", tmB: 16, tmG: 20, emB: 0, emG: 0 },
+          { groupCode: "2702", tmB: 20, tmG: 18, emB: 10, emG: 14 }
+        ]
+      },
+      {
+        uNo: "512", udiseNo: "33231200911", block: "12 Sivagangai", mgmt1: "3P", level: "HSS",
+        nameEn: "ST. JOSEPH MATRIC HSS , SIVAGANGAI", nameTa: "புனித ஜோசப் மெட்ரிக் மேல்நிலைப்பள்ளி சிவகங்கை",
+        centre10: "6088", centre12: "208074", hmName: "XAVIER A", mobile: "9442288990", email: "stjosephsvg@gmail.com",
+        examRooms: 18, benchDesks: 360,
+        sslc: { tmB: 0, tmG: 0, emB: 45, emG: 48, p4B: 0, p4G: 0 },
+        hscGroups: [
+          { groupCode: "2502", tmB: 0, tmG: 0, emB: 28, emG: 26 },
+          { groupCode: "2503", tmB: 0, tmG: 0, emB: 30, emG: 34 }
+        ]
+      },
+      {
+        uNo: "901", udiseNo: "33231209901", block: "12 Sivagangai", mgmt1: "4CG", level: "HSS",
+        nameEn: "PM SHRI KENDRIYA VIDYALAYA , SIVAGANGAI", nameTa: "கேந்திரிய வித்யாலயா சிவகங்கை",
+        centre10: "-", centre12: "-", hmName: "PRINCIPAL KV", mobile: "9443000901", email: "kvsivagangai@gmail.com",
+        examRooms: 15, benchDesks: 300,
+        sslc: { tmB: 0, tmG: 0, emB: 40, emG: 42, p4B: 0, p4G: 0 },
+        hscGroups: []
+      },
+      {
+        uNo: "911", udiseNo: "33230709911", block: "07 Devakottai", mgmt1: "5IC", level: "HSS",
+        nameEn: "LOTUS AN. VENKATACHALAM CHETTIAR ICSE SCHOOL , DEVAKOTTAI", nameTa: "லோட்டஸ் ஏ.என். வெங்கடாசலம் செட்டியார் ICSE பள்ளி தேவகோட்டை",
+        centre10: "-", centre12: "-", hmName: "PRINCIPAL ICSE", mobile: "9443000911", email: "lotusicse@gmail.com",
+        examRooms: 14, benchDesks: 280,
+        sslc: { tmB: 0, tmG: 0, emB: 32, emG: 30, p4B: 0, p4G: 0 },
+        hscGroups: []
+      },
+      {
+        uNo: "951", udiseNo: "33230509951", block: "05 Sakkottai", mgmt1: "6CB", level: "HSS",
+        nameEn: "ALAGAPPA ACADEMY CBSE SCHOOL , KARAIKUDI", nameTa: "அழகப்பா அகாடமி சி.பி.எஸ்.இ பள்ளி காரைக்குடி",
+        centre10: "-", centre12: "-", hmName: "PRINCIPAL CBSE", mobile: "9443000951", email: "alagappaacademy@gmail.com",
+        examRooms: 16, benchDesks: 320,
+        sslc: { tmB: 0, tmG: 0, emB: 50, emG: 45, p4B: 0, p4G: 0 },
+        hscGroups: []
+      }
+    ];
+
+    // 7. Authentic Staff Database (Including 10172271 POOVALINGAM K and U.NO 232 Staff)
+    // Note: SSLC (10th) last-year exam duty is intentionally blanked as requested, while 12th HSE duty is preserved; auto-exemptions are cleared.
+    const EMIS_STAFF_DATABASE = [
+      {
+        uNo: "232", emisId: "10201101", ifhrmsId: "43010100112", isTeaching: true,
+        nameEn: "BACKIYAM M", prefix: "திருமதி.", nameTa: "பாக்கியம் மு", gender: "Female", dob: "12-04-1970",
+        desig: "HM (HSS)", qual: "M.Sc., M.Ed., M.Phil.", mainSub: "Physics",
+        nature: "Regular (Govt.Salaried )", modeFirstApp: "TRB", dojFirstApp: "15-07-1998", firstJoinPost: "P.G. TEACHER",
+        modePresPost: "Promotion", dojPresPost: "01-06-2022", unitTransferDate: "", dojSchool: "01-06-2022",
+        mobile: "9486952930", altMobile: "", email: "backiyamghss@gmail.com", resPlace: "KARAIIKUDI", resDist: "Sivagangai",
+        campPref: "02-Karaikudi/Devakottai",
+        handling: { 11: { subs: ["Physics"], med: "TM" }, 12: { subs: ["Physics"], med: "TM" } },
+        dutySslcWork: "", dutySslcCentre: "",
+        dutyHseWork: "Chief Superintendent", dutyHseCentre: "208035 - GOVT. HSS , KANNANGUDI",
+        exemptionGround: "", exemptionDetails: ""
+      },
+      {
+        uNo: "232", emisId: "10212235", ifhrmsId: "43010100365", isTeaching: true,
+        nameEn: "DHARMABALAN N", prefix: "திரு.", nameTa: "தர்மபாலன் நா", gender: "Male", dob: "01-05-1985",
+        desig: "P.G. TEACHER", qual: "M.A., M.Phil., B.Ed.", mainSub: "English",
+        nature: "Regular (Govt.Salaried )", modeFirstApp: "TRB", dojFirstApp: "03-01-2013", firstJoinPost: "P.G. TEACHER",
+        modePresPost: "New Appointment", dojPresPost: "03-01-2013", unitTransferDate: "", dojSchool: "26-06-2014",
+        mobile: "9003459601", altMobile: "8838058012", email: "dharmabalanns@gmail.com", resPlace: "DEVAKOTTAI", resDist: "Sivagangai",
+        campPref: "02-Karaikudi/Devakottai",
+        handling: { 11: { subs: ["English"], med: "TM" }, 12: { subs: ["English"], med: "TM" } },
+        dutySslcWork: "", dutySslcCentre: "",
+        dutyHseWork: "Department Officer", dutyHseCentre: "208021 - GOVT. HSS , DEVAKOTTAI",
+        exemptionGround: "", exemptionDetails: ""
+      },
+      {
+        uNo: "232", emisId: "10205825", ifhrmsId: "43030872180", isTeaching: true,
+        nameEn: "SAHAYA SHANTHI A", prefix: "திருமதி.", nameTa: "சகாய சாந்தி அ", gender: "Female", dob: "19-03-1978",
+        desig: "P.G. TEACHER", qual: "M.A., B.Ed.", mainSub: "Tamil",
+        nature: "Regular (Govt.Salaried )", modeFirstApp: "TRB", dojFirstApp: "10-08-2009", firstJoinPost: "P.G. TEACHER",
+        modePresPost: "New Appointment", dojPresPost: "10-08-2009", unitTransferDate: "", dojSchool: "14-06-2017",
+        mobile: "9443567890", altMobile: "", email: "sahayashanthi78@gmail.com", resPlace: "DEVAKOTTAI", resDist: "Sivagangai",
+        campPref: "02-Karaikudi/Devakottai",
+        handling: { 11: { subs: ["Tamil"], med: "TM" }, 12: { subs: ["Tamil"], med: "TM" } },
+        dutySslcWork: "", dutySslcCentre: "",
+        dutyHseWork: "Invigilator", dutyHseCentre: "208035 - GOVT. HSS , KANNANGUDI",
+        exemptionGround: "", exemptionDetails: ""
+      },
+      {
+        uNo: "232", emisId: "10214490", ifhrmsId: "43010118084", isTeaching: true,
+        nameEn: "JEEVANANTHAM S", prefix: "திரு.", nameTa: "ஜீவானந்தம் ச", gender: "Male", dob: "22-06-1981",
+        desig: "P.G. TEACHER", qual: "M.Sc., B.Ed.", mainSub: "Mathematics",
+        nature: "Regular (Govt.Salaried )", modeFirstApp: "TRB", dojFirstApp: "18-11-2014", firstJoinPost: "P.G. TEACHER",
+        modePresPost: "New Appointment", dojPresPost: "18-11-2014", unitTransferDate: "", dojSchool: "18-11-2014",
+        mobile: "9787654321", altMobile: "", email: "jeevamaths81@gmail.com", resPlace: "KANNANGUDI", resDist: "Sivagangai",
+        campPref: "02-Karaikudi/Devakottai",
+        handling: { 9: { subs: ["Mathematics"], med: "TM" }, 10: { subs: ["Mathematics"], med: "TM" }, 11: { subs: ["Mathematics"], med: "TM" }, 12: { subs: ["Mathematics"], med: "TM" } },
+        dutySslcWork: "", dutySslcCentre: "",
+        dutyHseWork: "Standing Squad", dutyHseCentre: "208035 - GOVT. HSS , KANNANGUDI",
+        exemptionGround: "", exemptionDetails: ""
+      },
+      {
+        uNo: "232", emisId: "10573927", ifhrmsId: "43010199201", isTeaching: false,
+        nameEn: "THURAIARASAN M", prefix: "திரு.", nameTa: "துரையரசன் மு", gender: "Male", dob: "10-05-1984",
+        desig: "JUNIOR ASSISTANT", qual: "B.A.", mainSub: "Office",
+        nature: "Regular (Govt.Salaried )", modeFirstApp: "Employment Seniority", dojFirstApp: "12-03-2012", firstJoinPost: "JUNIOR ASSISTANT",
+        modePresPost: "New Appointment", dojPresPost: "12-03-2012", unitTransferDate: "", dojSchool: "05-07-2019",
+        mobile: "9486952930", altMobile: "", email: "thuraiarasan84@gmail.com", resPlace: "KANNANGUDI", resDist: "Sivagangai",
+        campPref: "02-Karaikudi/Devakottai",
+        handling: {},
+        dutySslcWork: "", dutySslcCentre: "",
+        dutyHseWork: "Office Staff", dutyHseCentre: "208035 - GOVT. HSS , KANNANGUDI",
+        exemptionGround: "", exemptionDetails: ""
+      },
+      {
+        uNo: "232", emisId: "11171113", ifhrmsId: "43010199455", isTeaching: false,
+        nameEn: "ARAVIND A", prefix: "திரு.", nameTa: "அரவிந்த் அ", gender: "Male", dob: "18-09-1991",
+        desig: "LAB ASSISTANT", qual: "B.Sc.", mainSub: "Lab",
+        nature: "Regular (Govt.Salaried )", modeFirstApp: "Employment Seniority", dojFirstApp: "20-04-2017", firstJoinPost: "LAB ASSISTANT",
+        modePresPost: "New Appointment", dojPresPost: "20-04-2017", unitTransferDate: "", dojSchool: "20-04-2017",
+        mobile: "9842311223", altMobile: "", email: "aravindlab91@gmail.com", resPlace: "DEVAKOTTAI", resDist: "Sivagangai",
+        campPref: "02-Karaikudi/Devakottai",
+        handling: {},
+        dutySslcWork: "", dutySslcCentre: "",
+        dutyHseWork: "Collection Point Clerk", dutyHseCentre: "208035 - GOVT. HSS
