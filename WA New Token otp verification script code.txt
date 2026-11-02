@@ -1,0 +1,804 @@
+/**
+ * =========================================================================
+ * WHATSAPP CLOUD API - OTP SEND & VERIFICATION GOOGLE APPS SCRIPT
+ * =========================================================================
+ * விளக்கம்:
+ * இந்த ஸ்கிரிப்ட் கூகிள் ஷீட் (Google Sheet) உடன் இணைந்து, Meta WhatsApp Cloud API
+ * வழியாக பயனர்களுக்கு OTP அனுப்பி அதை சரிபார்க்க (Verify) உதவுகிறது.
+ *
+ * கூடுதல் சிறப்பம்சங்கள் (In-Review Fallback உட்பட):
+ * 1. உங்கள் 'whatsapp_verfication_code' டெம்ப்ளேட் இன்னும் 'In review' நிலையில் இருந்தால்,
+ *    (#132001 பிழை வரும்போது) தானாகவே நேரடி உரைச் செய்தி (Direct Text OTP) அல்லது
+ *    உங்கள் கணக்கில் ஏற்கனவே Active-ஆக உள்ள மாற்று டெம்ப்ளேட் வழியாக OTP அனுப்பும்!
+ * 2. உங்கள் டெம்ப்ளேட் 'Active' ஆனவுடன் தானாகவே அதிகாரப்பூர்வ டெம்ப்ளேட்டிற்கு மாறிக்கொள்ளும்.
+ * =========================================================================
+ */
+
+const WA_CONFIG = {
+  // நீங்கள் வழங்கிய Meta WhatsApp Access Token
+  ACCESS_TOKEN: "EAAg6K107UYwBSz5BrH0eDWAaLZCb4ZAe8RSXlaZCVZAAK9RxHlCZB12UEnT33D6OuvGayNJjM50WcCxjQZCjZAMuJI2sQx6Jg3aSPJWpqwgAB2z0ZBZCgD19L1DdT08KhrQBTipNjN6wE1uQ4Px3GN82BaZASvYT2DcWi7L3HcAyGhHhujZC8Y0cVec0S9s55GgfpgJRAZDZD",
+  
+  // நீங்கள் வழங்கிய விவரங்கள்
+  BUSINESS_ID: "2186573131933924",
+  SENDER_PHONE: "914575240408",
+  TEMPLATE_ID: "1069753392749982",
+  TEMPLATE_NAME: "whatsapp_verfication_code",
+  TEMPLATE_LANGUAGE: "en_US",
+  
+  // Phone Number ID காலியாக இருந்தால் ஸ்கிரிப்டே தானாகக் கண்டறிந்து கொள்ளும்!
+  PHONE_NUMBER_ID: "", 
+
+  OTP_LENGTH: 6,             // 6 இலக்க OTP
+  OTP_EXPIRY_MINUTES: 10,     // 10 நிமிடங்களில் காலாவதியாகும்
+  
+  // டெம்ப்ளேட் 'In review'-ல் இருக்கும்போது நேரடி Text Message அனுப்ப அனுமதி
+  ALLOW_TEXT_FALLBACK_WHILE_IN_REVIEW: true,
+  
+  SHEET_NAME: "OTP_Verification",
+  
+  // நெடுவரிசை எண்கள் (Columns: A=1, B=2, ...)
+  COL_PHONE: 1,        // A: தொலைபேசி எண் (Phone Number)
+  COL_NAME: 2,         // B: பெயர் (Name)
+  COL_OTP: 3,          // C: உருவாக்கப்பட்ட OTP (Generated OTP)
+  COL_TIME: 4,         // D: அனுப்பப்பட்ட நேரம் (Sent Timestamp)
+  COL_STATUS: 5,       // E: OTP நிலை (SENT / VERIFIED / EXPIRED / FAILED)
+  COL_INPUT_OTP: 6,    // F: பயனர் உள்ளிட்ட OTP (User Input OTP)
+  COL_RESULT: 7,       // G: சரிபார்ப்பு முடிவு (Verification Result)
+  COL_MSG_ID: 8        // H: WhatsApp Message ID / Info
+};
+
+/**
+ * கூகிள் ஷீட் திறக்கும் போது பிரத்யேக மெனுவை உருவாக்கும் செயல்பாடு.
+ */
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu("📲 WhatsApp OTP")
+    .addItem("1. தாளை தயார் செய் (Setup Sheet)", "setupSheetTemplate")
+    .addSeparator()
+    .addItem("2. தேர்வு செய்த வரிசைக்கு OTP அனுப்பு (Send OTP)", "sendOtpToSelectedRow")
+    .addItem("3. உள்ளீடு செய்த OTP-யை சரிபார் (Verify OTP)", "verifyOtpForSelectedRow")
+    .addItem("4. உடனடி சரிபார்ப்பு சாளரம் (Interactive Verify)", "promptAndVerifyOtp")
+    .addSeparator()
+    .addItem("5. அனைத்து புதிய எண்களுக்கும் OTP அனுப்பு", "sendOtpToAllPending")
+    .addSeparator()
+    .addItem("📋 டெம்ப்ளேட் விவரங்களைச் சரிபார் (Check In-Review Status)", "inspectAndSyncTemplate")
+    .addItem("🔍 Phone Number ID கண்டறி & சேமி", "autoDetectAndSavePhoneId")
+    .addToUi();
+}
+
+/**
+ * கூகிள் ஷீட்டில் நெடுவரிசை F-ல் (சரிபார்க்க வேண்டிய OTP) எண்ணை உள்ளிட்டவுடன்
+ * தானாகவே சரிபார்க்கும் வசதி (Auto-Verify on Edit).
+ */
+function onEdit(e) {
+  if (!e || !e.range) return;
+  const sheet = e.range.getSheet();
+  if (sheet.getName() !== WA_CONFIG.SHEET_NAME) return;
+  
+  const row = e.range.getRow();
+  const col = e.range.getColumn();
+  
+  if (row >= 2 && col === WA_CONFIG.COL_INPUT_OTP && e.value) {
+    verifyOtpForRow(sheet, row, false);
+  }
+}
+
+/**
+ * கூகிள் ஷீட்டின் தலைப்புகளையும் (Headers) வடிவமைப்பையும் தானாக அமைக்கும் செயல்பாடு.
+ */
+function setupSheetTemplate() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(WA_CONFIG.SHEET_NAME);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(WA_CONFIG.SHEET_NAME);
+  }
+  
+  const headers = [
+    ["தொலைபேசி எண் (Phone)", "பெயர் (Name)", "உருவாக்கப்பட்ட OTP", "அனுப்பப்பட்ட நேரம்", "நிலை (Status)", "சரிபார்க்க வேண்டிய OTP", "சரிபார்ப்பு முடிவு", "WhatsApp Message ID"]
+  ];
+  
+  const headerRange = sheet.getRange(1, 1, 1, 8);
+  headerRange.setValues(headers);
+  headerRange.setBackground("#128C7E");
+  headerRange.setFontColor("#FFFFFF");
+  headerRange.setFontWeight("bold");
+  headerRange.setHorizontalAlignment("center");
+  
+  sheet.setColumnWidth(1, 160);
+  sheet.setColumnWidth(2, 140);
+  sheet.setColumnWidth(3, 140);
+  sheet.setColumnWidth(4, 165);
+  sheet.setColumnWidth(5, 120);
+  sheet.setColumnWidth(6, 165);
+  sheet.setColumnWidth(7, 150);
+  sheet.setColumnWidth(8, 220);
+  
+  sheet.setFrozenRows(1);
+  
+  if (sheet.getLastRow() === 1) {
+    sheet.appendRow(["919876543210", "மாதிரி பயனர்", "", "", "PENDING", "", "", ""]);
+  }
+  
+  SpreadsheetApp.getUi().alert("வெற்றி!", "கூகிள் ஷீட் தலைப்புகள் வெற்றிகரமாக அமைக்கப்பட்டன.", SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+/**
+ * 6 இலக்க ரகசிய OTP எண்ணை உருவாக்கும் செயல்பாடு.
+ */
+function generateOtp(length) {
+  const digits = "0123456789";
+  let otp = "";
+  for (let i = 0; i < length; i++) {
+    otp += digits[Math.floor(Math.random() * 10)];
+  }
+  return otp;
+}
+
+/**
+ * தொலைபேசி எண்ணை சர்வதேச தரத்திற்கு (E.164 - 91...) மாற்றுதல்.
+ */
+function formatPhoneNumber(phone) {
+  if (!phone) return "";
+  let cleaned = phone.toString().replace(/[^\d]/g, "");
+  if (cleaned.length === 10) {
+    cleaned = "91" + cleaned;
+  }
+  return cleaned;
+}
+
+/**
+ * Phone Number ID-யை பெறுதல்.
+ */
+function getPhoneNumberId() {
+  if (WA_CONFIG.PHONE_NUMBER_ID && WA_CONFIG.PHONE_NUMBER_ID !== "YOUR_PHONE_NUMBER_ID") {
+    return WA_CONFIG.PHONE_NUMBER_ID;
+  }
+  
+  const props = PropertiesService.getScriptProperties();
+  const savedId = props.getProperty("WA_PHONE_NUMBER_ID");
+  if (savedId) return savedId;
+  
+  const detectedId = fetchPhoneNumberIdFromMeta();
+  if (detectedId) {
+    props.setProperty("WA_PHONE_NUMBER_ID", detectedId);
+    return detectedId;
+  }
+  return null;
+}
+
+/**
+ * Meta Graph API வழியாக உங்கள் Business ID / Token-ல் இணைக்கப்பட்டுள்ள Phone Number ID மற்றும் WABA ID-யை கண்டறிதல்.
+ */
+function fetchPhoneNumberIdFromMeta() {
+  const headers = { "Authorization": "Bearer " + WA_CONFIG.ACCESS_TOKEN };
+  const endpoints = [
+    `https://graph.facebook.com/v21.0/${WA_CONFIG.BUSINESS_ID}/phone_numbers`,
+    `https://graph.facebook.com/v21.0/${WA_CONFIG.BUSINESS_ID}/owned_whatsapp_business_accounts`,
+    `https://graph.facebook.com/v21.0/${WA_CONFIG.BUSINESS_ID}/client_whatsapp_business_accounts`
+  ];
+  
+  try {
+    const directResp = UrlFetchApp.fetch(endpoints[0], { method: "get", headers: headers, muteHttpExceptions: true });
+    const directJson = JSON.parse(directResp.getContentText());
+    if (directJson.data && directJson.data.length > 0) {
+      PropertiesService.getScriptProperties().setProperty("WA_WABA_ID", WA_CONFIG.BUSINESS_ID);
+      for (let i = 0; i < directJson.data.length; i++) {
+        const p = directJson.data[i];
+        const cleanDisp = (p.display_phone_number || "").replace(/[^\d]/g, "");
+        if (cleanDisp === WA_CONFIG.SENDER_PHONE || directJson.data.length === 1) {
+          return p.id;
+        }
+      }
+      return directJson.data[0].id;
+    }
+  } catch (e) {}
+
+  for (let idx = 1; idx < endpoints.length; idx++) {
+    try {
+      const wabaResp = UrlFetchApp.fetch(endpoints[idx], { method: "get", headers: headers, muteHttpExceptions: true });
+      const wabaJson = JSON.parse(wabaResp.getContentText());
+      if (wabaJson.data && wabaJson.data.length > 0) {
+        for (let w = 0; w < wabaJson.data.length; w++) {
+          const wabaId = wabaJson.data[w].id;
+          const pUrl = `https://graph.facebook.com/v21.0/${wabaId}/phone_numbers`;
+          const pResp = UrlFetchApp.fetch(pUrl, { method: "get", headers: headers, muteHttpExceptions: true });
+          const pJson = JSON.parse(pResp.getContentText());
+          if (pJson.data && pJson.data.length > 0) {
+            for (let j = 0; j < pJson.data.length; j++) {
+              const p = pJson.data[j];
+              const cleanDisp = (p.display_phone_number || "").replace(/[^\d]/g, "");
+              if (cleanDisp === WA_CONFIG.SENDER_PHONE) {
+                PropertiesService.getScriptProperties().setProperty("WA_WABA_ID", wabaId);
+                return p.id;
+              }
+            }
+            PropertiesService.getScriptProperties().setProperty("WA_WABA_ID", wabaId);
+            return pJson.data[0].id;
+          }
+        }
+      }
+    } catch (e) {}
+  }
+  return null;
+}
+
+/**
+ * டெம்ப்ளேட்டின் துல்லியமான பெயர், மொழி மற்றும் நிலையை (APPROVED / IN_REVIEW)
+ * Meta API-யிலிருந்து நேரடியாகப் பெற்று சேமிக்கும் செயல்பாடு.
+ */
+function fetchExactTemplateDetailsFromMeta() {
+  const headers = { "Authorization": "Bearer " + WA_CONFIG.ACCESS_TOKEN };
+  const props = PropertiesService.getScriptProperties();
+  
+  if (WA_CONFIG.TEMPLATE_ID) {
+    try {
+      const tUrl = `https://graph.facebook.com/v21.0/${WA_CONFIG.TEMPLATE_ID}?fields=name,language,status,components,category`;
+      const tResp = UrlFetchApp.fetch(tUrl, { method: "get", headers: headers, muteHttpExceptions: true });
+      const tJson = JSON.parse(tResp.getContentText());
+      if (tJson && tJson.name && tJson.language) {
+        const hasButton = checkIfTemplateHasUrlButton(tJson.components);
+        const details = {
+          id: tJson.id || WA_CONFIG.TEMPLATE_ID,
+          name: tJson.name,
+          language: tJson.language,
+          status: tJson.status || "UNKNOWN",
+          hasButton: hasButton,
+          components: tJson.components || []
+        };
+        if (details.status === "APPROVED") {
+          props.setProperty("WA_TEMPLATE_CACHE", JSON.stringify(details));
+        } else {
+          props.deleteProperty("WA_TEMPLATE_CACHE");
+        }
+        return details;
+      }
+    } catch (e) {}
+  }
+
+  let wabaIdsToTry = [WA_CONFIG.BUSINESS_ID];
+  const savedWaba = props.getProperty("WA_WABA_ID");
+  if (savedWaba && wabaIdsToTry.indexOf(savedWaba) === -1) wabaIdsToTry.unshift(savedWaba);
+
+  try {
+    const ownedUrl = `https://graph.facebook.com/v21.0/${WA_CONFIG.BUSINESS_ID}/owned_whatsapp_business_accounts`;
+    const ownedResp = UrlFetchApp.fetch(ownedUrl, { method: "get", headers: headers, muteHttpExceptions: true });
+    const ownedJson = JSON.parse(ownedResp.getContentText());
+    if (ownedJson.data) {
+      ownedJson.data.forEach(w => {
+        if (wabaIdsToTry.indexOf(w.id) === -1) wabaIdsToTry.push(w.id);
+      });
+    }
+  } catch (e) {}
+
+  let allTemplates = [];
+  for (let i = 0; i < wabaIdsToTry.length; i++) {
+    try {
+      const listUrl = `https://graph.facebook.com/v21.0/${wabaIdsToTry[i]}/message_templates?fields=id,name,language,status,components,category&limit=100`;
+      const listResp = UrlFetchApp.fetch(listUrl, { method: "get", headers: headers, muteHttpExceptions: true });
+      const listJson = JSON.parse(listResp.getContentText());
+      if (listJson.data && listJson.data.length > 0) {
+        allTemplates = allTemplates.concat(listJson.data);
+      }
+    } catch (e) {}
+  }
+
+  if (allTemplates.length > 0) {
+    let matched = allTemplates.find(t => t.id === WA_CONFIG.TEMPLATE_ID) ||
+                  allTemplates.find(t => t.name === WA_CONFIG.TEMPLATE_NAME && t.status === "APPROVED") ||
+                  allTemplates.find(t => t.name === WA_CONFIG.TEMPLATE_NAME) ||
+                  allTemplates[0];
+
+    if (matched) {
+      const details = {
+        id: matched.id,
+        name: matched.name,
+        language: matched.language,
+        status: matched.status,
+        hasButton: checkIfTemplateHasUrlButton(matched.components),
+        components: matched.components || [],
+        allAvailable: allTemplates.map(t => `${t.name} [மொழி: ${t.language}, நிலை: ${t.status}, ID: ${t.id}]`)
+      };
+      if (details.status === "APPROVED") {
+        props.setProperty("WA_TEMPLATE_CACHE", JSON.stringify(details));
+      } else {
+        props.deleteProperty("WA_TEMPLATE_CACHE");
+      }
+      return details;
+    }
+  }
+  return null;
+}
+
+/**
+ * டெம்ப்ளேட்டில் Copy Code / URL பட்டன் உள்ளதா என்பதைக் கண்டறியும் துணை செயல்பாடு.
+ */
+function checkIfTemplateHasUrlButton(components) {
+  if (!components || !Array.isArray(components)) return false;
+  for (let i = 0; i < components.length; i++) {
+    const comp = components[i];
+    if (comp.type === "BUTTONS" && comp.buttons) {
+      for (let b = 0; b < comp.buttons.length; b++) {
+        const btn = comp.buttons[b];
+        if (btn.type === "URL" || btn.type === "OTP" || btn.otp_type) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * மெனுவிலிருந்து "📋 டெம்ப்ளேட் விவரங்களைச் சரிபார்" கிளிக் செய்யும்போது இயங்கும் செயல்பாடு.
+ */
+function inspectAndSyncTemplate() {
+  const ui = SpreadsheetApp.getUi();
+  const details = fetchExactTemplateDetailsFromMeta();
+  
+  if (details) {
+    let msg = `📋 டெம்ப்ளேட் விவரங்கள்:\n\n` +
+              `• பெயர் (Name): ${details.name}\n` +
+              `• மொழி (Language Code): ${details.language}\n` +
+              `• தற்போதைய நிலை (Status): ${details.status}\n` +
+              `• பட்டன் உள்ளதா (Copy Code Button): ${details.hasButton ? "ஆம் (Yes)" : "இல்லை (No)"}\n`;
+    
+    if (details.status !== "APPROVED") {
+      msg += `\n⚠️ முக்கியக் குறிப்பு:\nஉங்கள் டெம்ப்ளேட் தற்போது '${details.status}' (In review) நிலையில் உள்ளது. Meta ஒப்புதல் அளித்து 'APPROVED' (Active) ஆகும் வரை அந்த டெம்ப்ளேட் வழியாக செய்தி அனுப்ப முடியாது (#132001 பிழை வரும்).\n\n` +
+             `ஆனால் கவலை வேண்டாம்! டெம்ப்ளேட் Approve ஆகும் வரை இந்த ஸ்கிரிப்ட் தானாகவே Direct Text Message வழியாக OTP அனுப்ப முயற்சிக்கும்.`;
+    } else {
+      msg += `\n✅ உங்கள் டெம்ப்ளேட் APPROVED நிலையில் உள்ளது! இப்போது சிக்கலின்றி OTP அனுப்பலாம்.`;
+    }
+    
+    if (details.allAvailable && details.allAvailable.length > 0) {
+      msg += `\n\nஉங்கள் கணக்கில் உள்ள டெம்ப்ளேட்கள்:\n` + details.allAvailable.join("\n");
+    }
+    
+    ui.alert("டெம்ப்ளேட் சரிபார்ப்பு முடிவு", msg, ui.ButtonSet.OK);
+  } else {
+    ui.alert(
+      "டெம்ப்ளேட் விவரம்",
+      "உங்கள் 'whatsapp_verfication_code' டெம்ப்ளேட் தற்போது 'In review' நிலையில் இருந்தால், Meta அதை 'Active' (Approved) ஆக்கும் வரை #132001 பிழை வரும்.",
+      ui.ButtonSet.OK
+    );
+  }
+}
+
+/**
+ * மெனுவில் இருந்து Phone Number ID-யை கண்டறிந்து சேமிக்கும் செயல்பாடு.
+ */
+function autoDetectAndSavePhoneId() {
+  const ui = SpreadsheetApp.getUi();
+  const detectedId = fetchPhoneNumberIdFromMeta();
+  if (detectedId) {
+    PropertiesService.getScriptProperties().setProperty("WA_PHONE_NUMBER_ID", detectedId);
+    ui.alert("வெற்றி!", `உங்கள் WhatsApp எண்ணிற்கான (+${WA_CONFIG.SENDER_PHONE}) Phone Number ID வெற்றிகரமாக கண்டறியப்பட்டு சேமிக்கப்பட்டது:\n\nPHONE_NUMBER_ID: ${detectedId}`, ui.ButtonSet.OK);
+  } else {
+    const promptResp = ui.prompt(
+      "Phone Number ID உள்ளீடு",
+      "Meta API வழியாக தானாகக் கண்டறிய முடியவில்லை. உங்கள் Meta Developer Dashboard -> WhatsApp -> API Setup பகுதியில் உள்ள 'Phone number ID'-யை இங்கே உள்ளிடவும்:",
+      ui.ButtonSet.OK_CANCEL
+    );
+    if (promptResp.getSelectedButton() === ui.Button.OK && promptResp.getResponseText().trim()) {
+      const manualId = promptResp.getResponseText().trim();
+      PropertiesService.getScriptProperties().setProperty("WA_PHONE_NUMBER_ID", manualId);
+      ui.alert("சேமிக்கப்பட்டது!", `Phone Number ID (${manualId}) சேமிக்கப்பட்டது.`, ui.ButtonSet.OK);
+    }
+  }
+}
+
+/**
+ * தேர்வு செய்யப்பட்ட வரிசையில் உள்ள தொலைபேசி எண்ணிற்கு OTP அனுப்பும் செயல்பாடு.
+ */
+function sendOtpToSelectedRow() {
+  const sheet = getTargetSheet();
+  const activeRow = sheet.getActiveCell().getRow();
+  
+  if (activeRow < 2) {
+    SpreadsheetApp.getUi().alert("எச்சரிக்கை", "தயவுசெய்து தலைப்பிற்கு கீழே உள்ள ஏதேனும் ஒரு வரிசையைத் தேர்ந்தெடுக்கவும்.", SpreadsheetApp.getUi().ButtonSet.OK);
+    return;
+  }
+  
+  executeSendOtp(sheet, activeRow, true);
+}
+
+/**
+ * நேரடி உரைச் செய்தியாக (Direct Text Message) OTP அனுப்பும் துணை செயல்பாடு
+ * (டெம்ப்ளேட் 'In review'-ல் இருக்கும்போது 24 மணிநேர சாளரத்தில் உடனடியாக வேலை செய்யும்).
+ */
+function sendDirectTextOtp(url, toPhone, otp) {
+  const payload = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: toPhone,
+    type: "text",
+    text: {
+      preview_url: false,
+      body: `*${otp}* is your verification code. For your security, do not share this code.`
+    }
+  };
+  
+  const options = {
+    method: "post",
+    contentType: "application/json",
+    headers: { "Authorization": "Bearer " + WA_CONFIG.ACCESS_TOKEN },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+  
+  const response = UrlFetchApp.fetch(url, options);
+  const respCode = response.getResponseCode();
+  const respText = response.getContentText();
+  const respJson = JSON.parse(respText);
+  
+  if (respCode === 200 && respJson.messages && respJson.messages.length > 0) {
+    return {
+      success: true,
+      messageId: respJson.messages[0].id + " (Direct Text Fallback)"
+    };
+  } else {
+    return {
+      success: false,
+      errorCode: respJson.error ? respJson.error.code : respCode,
+      errorMsg: respJson.error ? `(#${respJson.error.code}) ${respJson.error.message}` : respText
+    };
+  }
+}
+
+/**
+ * WhatsApp Cloud API வழியாக OTP செய்தி அனுப்பும் முதன்மை செயல்பாடு.
+ */
+function sendWhatsAppTemplateOtp(phoneNumberId, recipientPhone, otp) {
+  const url = `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`;
+  const props = PropertiesService.getScriptProperties();
+  
+  const authComponents = [
+    {
+      type: "body",
+      parameters: [{ type: "text", text: otp }]
+    },
+    {
+      type: "button",
+      sub_type: "url",
+      index: "0",
+      parameters: [{ type: "text", text: otp }]
+    }
+  ];
+  
+  const bodyOnlyComponents = [
+    {
+      type: "body",
+      parameters: [{ type: "text", text: otp }]
+    }
+  ];
+
+  // 1. முதலில் உங்கள் டெம்ப்ளேட் (whatsapp_verfication_code, en_US) வழியாக முயற்சித்தல்
+  let attempt = callWhatsAppApi(url, recipientPhone, WA_CONFIG.TEMPLATE_NAME, WA_CONFIG.TEMPLATE_LANGUAGE, authComponents);
+  if (attempt.success) return attempt;
+
+  // பட்டன் இல்லையென்றால் Body-only முயற்சித்தல்
+  if (attempt.errorCode !== 132001) {
+    let bodyAttempt = callWhatsAppApi(url, recipientPhone, WA_CONFIG.TEMPLATE_NAME, WA_CONFIG.TEMPLATE_LANGUAGE, bodyOnlyComponents);
+    if (bodyAttempt.success) return bodyAttempt;
+  }
+
+  // 2. #132001 பிழை வந்தால், டெம்ப்ளேட் 'In review' நிலையில் உள்ளதா என்பதைச் சோதித்தல்
+  const templateDetails = fetchExactTemplateDetailsFromMeta();
+  const isInReview = templateDetails && templateDetails.status && templateDetails.status !== "APPROVED";
+
+  // 3. டெம்ப்ளேட் 'In review' நிலையில் இருந்தால், நேரடி Text Message (Fallback) வழியாக OTP அனுப்புதல்
+  if (WA_CONFIG.ALLOW_TEXT_FALLBACK_WHILE_IN_REVIEW) {
+    const textFallback = sendDirectTextOtp(url, recipientPhone, otp);
+    if (textFallback.success) {
+      return textFallback;
+    }
+  }
+
+  // 4. அதுவும் முடியாவிட்டால் தெளிவான தமிழ் விளக்கத்துடன் பிழைச் செய்தியைத் திருப்புதல்
+  if (isInReview) {
+    return {
+      success: false,
+      errorCode: 132001,
+      errorMsg: `(#132001) உங்கள் '${templateDetails.name}' டெம்ப்ளேட் தற்போது '${templateDetails.status}' (In review) நிலையில் உள்ளது! Meta அதை 'Active' (Approved) ஆக்கிய பிறகே டெம்ப்ளேட் வழியாக OTP செல்லும். (அல்லது பெறுநர் எண்ணிலிருந்து உங்கள் +${WA_CONFIG.SENDER_PHONE} எண்ணிற்கு வாட்ஸ்அப்பில் 'Hi' என ஒரு செய்தி அனுப்பினால் உடனே Direct Text OTP வேலை செய்யும்!)`
+    };
+  }
+
+  return {
+    success: false,
+    errorCode: attempt.errorCode,
+    errorMsg: attempt.errorMsg + `\n\n(உங்கள் '${WA_CONFIG.TEMPLATE_NAME}' டெம்ப்ளேட் இன்னும் 'In review' நிலையில் உள்ளது. அது 'Active' ஆகும் வரை காத்திருக்கவும், அல்லது பெறுநர் எண்ணிலிருந்து +${WA_CONFIG.SENDER_PHONE} எண்ணிற்கு 'Hi' என வாட்ஸ்அப் செய்தி அனுப்பிவிட்டு முயற்சிக்கவும்).`
+  };
+}
+
+/**
+ * Meta WhatsApp API-க்கு HTTP POST அழைப்பு விடுக்கும் துணை செயல்பாடு.
+ */
+function callWhatsAppApi(url, toPhone, templateName, langCode, components) {
+  const payload = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: toPhone,
+    type: "template",
+    template: {
+      name: templateName,
+      language: { code: langCode },
+      components: components
+    }
+  };
+  
+  const options = {
+    method: "post",
+    contentType: "application/json",
+    headers: { "Authorization": "Bearer " + WA_CONFIG.ACCESS_TOKEN },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+  
+  const response = UrlFetchApp.fetch(url, options);
+  const respCode = response.getResponseCode();
+  const respText = response.getContentText();
+  const respJson = JSON.parse(respText);
+  
+  if (respCode === 200 && respJson.messages && respJson.messages.length > 0) {
+    return {
+      success: true,
+      messageId: respJson.messages[0].id
+    };
+  } else {
+    return {
+      success: false,
+      errorCode: respJson.error ? respJson.error.code : respCode,
+      errorMsg: respJson.error ? `(#${respJson.error.code}) ${respJson.error.message}` : respText
+    };
+  }
+}
+
+/**
+ * தேர்ந்தெடுக்கப்பட்ட வரிசைக்கு OTP உருவாக்கி அனுப்பும் செயல்முறை.
+ */
+function executeSendOtp(sheet, row, showUiAlert) {
+  const phoneRaw = sheet.getRange(row, WA_CONFIG.COL_PHONE).getValue();
+  const phone = formatPhoneNumber(phoneRaw);
+  
+  if (!phone) {
+    if (showUiAlert) SpreadsheetApp.getUi().alert("பிழை", `${row}-வது வரிசையில் சரியான தொலைபேசி எண் இல்லை.`, SpreadsheetApp.getUi().ButtonSet.OK);
+    return;
+  }
+  
+  const phoneNumberId = getPhoneNumberId();
+  if (!phoneNumberId) {
+    if (showUiAlert) {
+      autoDetectAndSavePhoneId();
+    }
+    return;
+  }
+  
+  const otp = generateOtp(WA_CONFIG.OTP_LENGTH);
+  const now = new Date();
+  
+  try {
+    const apiResult = sendWhatsAppTemplateOtp(phoneNumberId, phone, otp);
+    
+    if (apiResult.success) {
+      sheet.getRange(row, WA_CONFIG.COL_OTP).setValue(otp);
+      sheet.getRange(row, WA_CONFIG.COL_TIME).setValue(now);
+      sheet.getRange(row, WA_CONFIG.COL_STATUS).setValue("SENT");
+      sheet.getRange(row, WA_CONFIG.COL_INPUT_OTP).setValue("");
+      sheet.getRange(row, WA_CONFIG.COL_RESULT).setValue("WAITING_VERIFICATION").setBackground(null).setFontColor(null);
+      sheet.getRange(row, WA_CONFIG.COL_MSG_ID).setValue(apiResult.messageId);
+      
+      SpreadsheetApp.getActiveSpreadsheet().toast(`OTP (${otp}) -> ${phone} எண்ணிற்கு அனுப்பப்பட்டது!`, "வெற்றி", 5);
+    } else {
+      sheet.getRange(row, WA_CONFIG.COL_STATUS).setValue("FAILED");
+      sheet.getRange(row, WA_CONFIG.COL_MSG_ID).setValue("Error: " + apiResult.errorMsg);
+      if (showUiAlert) {
+        SpreadsheetApp.getUi().alert("டெம்ப்ளேட் 'In review' தகவல்", apiResult.errorMsg, SpreadsheetApp.getUi().ButtonSet.OK);
+      }
+    }
+  } catch (err) {
+    sheet.getRange(row, WA_CONFIG.COL_STATUS).setValue("ERROR");
+    sheet.getRange(row, WA_CONFIG.COL_MSG_ID).setValue(err.toString());
+    if (showUiAlert) SpreadsheetApp.getUi().alert("பிழை", err.toString(), SpreadsheetApp.getUi().ButtonSet.OK);
+  }
+}
+
+/**
+ * தேர்வு செய்யப்பட்ட வரிசையின் நெடுவரிசை F-ல் உள்ள OTP-யை சரிபார்க்கும் செயல்பாடு.
+ */
+function verifyOtpForSelectedRow() {
+  const sheet = getTargetSheet();
+  const activeRow = sheet.getActiveCell().getRow();
+  
+  if (activeRow < 2) {
+    SpreadsheetApp.getUi().alert("எச்சரிக்கை", "தயவுசெய்து தலைப்பிற்கு கீழே உள்ள ஏதேனும் ஒரு வரிசையைத் தேர்ந்தெடுக்கவும்.", SpreadsheetApp.getUi().ButtonSet.OK);
+    return;
+  }
+  
+  verifyOtpForRow(sheet, activeRow, true);
+}
+
+/**
+ * குறிப்பிட்ட வரிசையில் உள்ள OTP-யை சரிபார்க்கும் முதன்மை லாஜிக்.
+ */
+function verifyOtpForRow(sheet, row, showAlerts) {
+  const generatedOtp = sheet.getRange(row, WA_CONFIG.COL_OTP).getValue().toString().trim();
+  const inputOtp = sheet.getRange(row, WA_CONFIG.COL_INPUT_OTP).getValue().toString().trim();
+  const sentTimeRaw = sheet.getRange(row, WA_CONFIG.COL_TIME).getValue();
+  
+  if (!generatedOtp) {
+    if (showAlerts) SpreadsheetApp.getUi().alert("பிழை", "முதலில் இந்த எண்ணிற்கு OTP அனுப்பப்பட வேண்டும்.", SpreadsheetApp.getUi().ButtonSet.OK);
+    return;
+  }
+  
+  if (!inputOtp) {
+    if (showAlerts) SpreadsheetApp.getUi().alert("எச்சரிக்கை", "நெடுவரிசை F-ல் சரிபார்க்க வேண்டிய OTP-யை உள்ளிடவும்.", SpreadsheetApp.getUi().ButtonSet.OK);
+    return;
+  }
+  
+  const sentTime = new Date(sentTimeRaw).getTime();
+  const currentTime = new Date().getTime();
+  const diffMinutes = (currentTime - sentTime) / (1000 * 60);
+  
+  if (diffMinutes > WA_CONFIG.OTP_EXPIRY_MINUTES) {
+    sheet.getRange(row, WA_CONFIG.COL_STATUS).setValue("EXPIRED");
+    sheet.getRange(row, WA_CONFIG.COL_RESULT).setValue("காலாவதியானது (EXPIRED)").setBackground("#FFF3CD").setFontColor("#856404");
+    if (showAlerts) {
+      SpreadsheetApp.getUi().alert("காலாவதியானது", `OTP அனுப்பப்பட்டு ${Math.round(diffMinutes)} நிமிடங்கள் ஆகிவிட்டது. தயவுசெய்து புதிய OTP அனுப்பவும்.`, SpreadsheetApp.getUi().ButtonSet.OK);
+    }
+    return;
+  }
+  
+  if (inputOtp === generatedOtp) {
+    sheet.getRange(row, WA_CONFIG.COL_STATUS).setValue("VERIFIED");
+    sheet.getRange(row, WA_CONFIG.COL_RESULT).setValue("வெற்றி (VERIFIED)").setBackground("#D4EDDA").setFontColor("#155724");
+    if (showAlerts) {
+      SpreadsheetApp.getUi().alert("வெற்றி!", "OTP வெற்றிகரமாக சரிபார்க்கப்பட்டது (OTP Verified Successfully)!", SpreadsheetApp.getUi().ButtonSet.OK);
+    } else {
+      SpreadsheetApp.getActiveSpreadsheet().toast("OTP வெற்றிகரமாக சரிபார்க்கப்பட்டது!", "வெற்றி", 4);
+    }
+  } else {
+    sheet.getRange(row, WA_CONFIG.COL_RESULT).setValue("தவறானது (INVALID)").setBackground("#F8D7DA").setFontColor("#721C24");
+    if (showAlerts) {
+      SpreadsheetApp.getUi().alert("பிழை", "உள்ளிடப்பட்ட OTP தவறானது! தயவுசெய்து மீண்டும் சோதிக்கவும்.", SpreadsheetApp.getUi().ButtonSet.OK);
+    } else {
+      SpreadsheetApp.getActiveSpreadsheet().toast("உள்ளிடப்பட்ட OTP தவறானது!", "பிழை", 4);
+    }
+  }
+}
+
+/**
+ * பாப்-அப் சாளரம் (Popup Prompt) வழியாக உடனடியாக OTP பெற்று சரிபார்க்கும் வசதி.
+ */
+function promptAndVerifyOtp() {
+  const sheet = getTargetSheet();
+  const activeRow = sheet.getActiveCell().getRow();
+  
+  if (activeRow < 2) {
+    SpreadsheetApp.getUi().alert("எச்சரிக்கை", "வரிசையை தேர்வு செய்யவும்.", SpreadsheetApp.getUi().ButtonSet.OK);
+    return;
+  }
+  
+  const phone = sheet.getRange(activeRow, WA_CONFIG.COL_PHONE).getValue();
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.prompt("OTP சரிபார்ப்பு", `${phone} எண்ணிற்கு வந்த 6 இலக்க OTP-யை உள்ளிடவும்:`, ui.ButtonSet.OK_CANCEL);
+  
+  if (response.getSelectedButton() === ui.Button.OK) {
+    const enteredOtp = response.getResponseText().trim();
+    sheet.getRange(activeRow, WA_CONFIG.COL_INPUT_OTP).setValue(enteredOtp);
+    verifyOtpForRow(sheet, activeRow, true);
+  }
+}
+
+/**
+ * இன்னும் OTP அனுப்பப்படாத அனைத்து எண்களுக்கும் வரிசையாக அனுப்பும் செயல்பாடு.
+ */
+function sendOtpToAllPending() {
+  const sheet = getTargetSheet();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+  
+  let count = 0;
+  for (let r = 2; r <= lastRow; r++) {
+    const status = sheet.getRange(r, WA_CONFIG.COL_STATUS).getValue();
+    const phone = sheet.getRange(r, WA_CONFIG.COL_PHONE).getValue();
+    
+    if (phone && (!status || status === "PENDING" || status === "FAILED")) {
+      executeSendOtp(sheet, r, false);
+      Utilities.sleep(1000);
+      count++;
+    }
+  }
+  SpreadsheetApp.getUi().alert("முழுமை பெற்றது", `${count} எண்களுக்கு OTP அனுப்பும் செயல்முறை நிறைவடைந்தது.`, SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+/**
+ * தேவையான Sheet-ஐப் பெறும் துணை செயல்பாடு.
+ */
+function getTargetSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(WA_CONFIG.SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.getActiveSheet();
+  }
+  return sheet;
+}
+
+/**
+ * =========================================================================
+ * WEB APP API ENDPOINTS (வெளியக இணையதளம் அல்லது ஆப் உடன் இணைக்க)
+ * =========================================================================
+ */
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const action = data.action; // 'sendOtp' அல்லது 'verifyOtp'
+    const phone = formatPhoneNumber(data.phone);
+    const sheet = getTargetSheet();
+    
+    if (action === "sendOtp") {
+      if (!phone) {
+        return createJsonResponse({ status: "error", message: "Phone number required" });
+      }
+      
+      const phoneNumberId = getPhoneNumberId();
+      if (!phoneNumberId) {
+        return createJsonResponse({ status: "error", message: "Phone Number ID not configured" });
+      }
+      
+      const otp = generateOtp(WA_CONFIG.OTP_LENGTH);
+      const now = new Date();
+      const apiResult = sendWhatsAppTemplateOtp(phoneNumberId, phone, otp);
+      
+      if (apiResult.success) {
+        sheet.appendRow([phone, data.name || "Web User", otp, now, "SENT", "", "WAITING_VERIFICATION", apiResult.messageId]);
+        return createJsonResponse({ status: "success", message: "OTP sent successfully" });
+      } else {
+        return createJsonResponse({ status: "error", message: apiResult.errorMsg });
+      }
+    }
+    
+    if (action === "verifyOtp") {
+      const inputOtp = (data.otp || "").toString().trim();
+      const lastRow = sheet.getLastRow();
+      
+      for (let r = lastRow; r >= 2; r--) {
+        const rowPhone = formatPhoneNumber(sheet.getRange(r, WA_CONFIG.COL_PHONE).getValue());
+        if (rowPhone === phone) {
+          const storedOtp = sheet.getRange(r, WA_CONFIG.COL_OTP).getValue().toString().trim();
+          const sentTime = new Date(sheet.getRange(r, WA_CONFIG.COL_TIME).getValue()).getTime();
+          const diffMinutes = (new Date().getTime() - sentTime) / (1000 * 60);
+          
+          if (diffMinutes > WA_CONFIG.OTP_EXPIRY_MINUTES) {
+            sheet.getRange(r, WA_CONFIG.COL_STATUS).setValue("EXPIRED");
+            sheet.getRange(r, WA_CONFIG.COL_RESULT).setValue("காலாவதியானது (EXPIRED)");
+            return createJsonResponse({ status: "fail", message: "OTP Expired" });
+          }
+          
+          if (storedOtp === inputOtp) {
+            sheet.getRange(r, WA_CONFIG.COL_STATUS).setValue("VERIFIED");
+            sheet.getRange(r, WA_CONFIG.COL_INPUT_OTP).setValue(inputOtp);
+            sheet.getRange(r, WA_CONFIG.COL_RESULT).setValue("வெற்றி (VERIFIED)");
+            return createJsonResponse({ status: "success", message: "OTP Verified Successfully" });
+          } else {
+            sheet.getRange(r, WA_CONFIG.COL_RESULT).setValue("தவறானது (INVALID)");
+            return createJsonResponse({ status: "fail", message: "Invalid OTP" });
+          }
+        }
+      }
+      return createJsonResponse({ status: "error", message: "No OTP record found for this phone" });
+    }
+    
+    return createJsonResponse({ status: "error", message: "Invalid action. Use 'sendOtp' or 'verifyOtp'." });
+  } catch (err) {
+    return createJsonResponse({ status: "error", message: err.toString() });
+  }
+}
+
+function doGet() {
+  return createJsonResponse({ status: "online", message: "WhatsApp OTP Verification Service is Active" });
+}
+
+function createJsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
