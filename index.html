@@ -1291,7 +1291,15 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div style="font-size:0.72rem; opacity:0.85; font-weight:700;">Non-Teaching Staff Profile</div>
 </div>
 </button>
+<button type="button" class="ebs-subtab-btn" id="ebsSubBtnF5" onclick="switchSchoolEbsSubTab('F5')">
+<span style="font-size:1.2rem;">🛡️</span>
+<div>
+<div>மாறுதல் &amp; நீக்க ஒப்புதல் (<span id="ebsTabCountF5">0</span>)</div>
+<div style="font-size:0.72rem; opacity:0.85; font-weight:700;">Transfer &amp; Removal Approvals</div>
 </div>
+</button>
+</div>
+<span id="schEbsQuickBtnF2" style="display:none;"></span>
 <!-- SUB-PANE 1: FORM-I INTERACTIVE EDITOR -->
 <div id="ebsSubPaneF1">
 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
@@ -1372,6 +1380,18 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <div id="ebsF4NonTeachingTableContainer"></div>
+</div>
+<!-- SUB-PANE 5: SCHOOL EBS STAFF TRANSFER & REMOVAL APPROVAL TRACKER -->
+<div id="ebsSubPaneF5" style="display:none;">
+<div style="background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%); border:1.5px solid #f59e0b; border-left:5px solid #d97706; border-radius:10px; padding:12px 16px; margin-bottom:14px;">
+<div style="font-weight:900; color:#78350f; font-size:0.95rem;">
+🛡️ ஆசிரியர் (FORM – III) &amp; அலுவலகப் பணியாளர் (FORM – IV) நீக்கம் மற்றும் பிற பள்ளி மாறுதல் ஒப்புதல் நிலை
+</div>
+<div style="font-size:0.81rem; color:#92400e; margin-top:4px; font-weight:700;">
+📌 பள்ளிகள் சமர்ப்பிக்கும் <strong>பணியாளர் நீக்கம் (Removal)</strong> மற்றும் <strong>பிற பள்ளி மாறுதல் (Transfer to another school)</strong> கோரிக்கைகள் அனைத்தும் <strong>மாவட்ட முதன்மைக் கல்வி அலுவலர் (CEO Admin)</strong> ஒப்புதலுக்குப் பின்னரே அங்கீகரிக்கப்பட்டு FORM–I, III &amp; IV பட்டியல்களில் மாற்றம் செய்யப்படும்.
+</div>
+</div>
+<div id="ebsSchoolTransferRemovalRequestsContainer"></div>
 </div>
 </div>
 <!-- SCHOOL SUB-TAB 5: CHANGE PASSWORD & 6-DIGIT PIN -->
@@ -4195,6 +4215,61 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <div style="font-size:1.4rem; font-weight:900; color:#78350f;" id="admEbsStatF4Count">540 பணியாளர்கள்</div>
 <div style="font-size:0.72rem; color:#d97706; font-weight:700;">போர்ட்டல் நிலையான பணியாளர் பட்டியல்</div>
 </div>
+<div style="background:#fef2f2; border:1.5px solid #fecaca; border-left:4px solid #dc2626; border-radius:10px; padding:10px 14px; cursor:pointer;" onclick="document.getElementById('admEbsApprovalCenterBox')?.scrollIntoView({behavior:'smooth',block:'start'})">
+<div style="font-size:0.75rem; font-weight:800; color:#991b1b;">🛡️ நீக்கம் &amp; மாறுதல் ஒப்புதல்</div>
+<div style="font-size:1.35rem; font-weight:900; color:#b91c1c;" id="admEbsStatPendingReqs">0 நிலுவையில்</div>
+<div style="font-size:0.72rem; color:#dc2626; font-weight:800;" id="admEbsStatApprovedReqsSub">நிர்வாகி ஒப்புதல் மையம் ➔</div>
+</div>
+</div>
+<!-- ADMIN EBS STAFF REMOVAL & SCHOOL TRANSFER APPROVAL CENTER -->
+<div id="admEbsApprovalCenterBox" style="background:#fff; border:2px solid #f59e0b; border-left:6px solid #d97706; border-radius:12px; padding:14px 16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(217,119,6,0.08);">
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+<div>
+<div style="font-weight:900; color:#78350f; font-size:1rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+<span>🛡️ EBS ஆசிரியர்கள் (F3) &amp; அலுவலகப் பணியாளர்கள் (F4) நீக்கம் மற்றும் பிற பள்ளி மாறுதல் – நிர்வாகி ஒப்புதல் மையம்</span>
+<span id="admEbsReqPendingBadgePill" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">⏳ 0 நிலுவையில்</span>
+</div>
+<div style="font-size:0.79rem; color:#475569; margin-top:2px; font-weight:700;">
+பள்ளிகள் EBS படிவத்தில் சமர்ப்பிக்கும் <strong>பிற பள்ளி மாறுதல் (Transfer)</strong> மற்றும் <strong>பணியாளர் நீக்கம் (Removal)</strong> கோரிக்கைகளை ஆய்வு செய்து ஒப்புதல் அளிக்கவும். ஒப்புதல் அளித்தவுடன் தொடர்புடைய பள்ளிகளின் EBS எண்ணிக்கை (F1, F3, F4) தானாகப் புதுப்பிக்கப்படும்.
+</div>
+</div>
+<div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+<select id="admEbsReqStatusFilter" class="form-control" style="width:auto; padding:5px 10px; font-size:0.80rem; font-weight:800;" onchange="renderAdminDeleteRequestsTable()">
+<option value="PENDING">⏳ ஒப்புதல் நிலுவையில் (Pending)</option>
+<option value="ALL">📋 அனைத்துக் கோரிக்கைகள் (All)</option>
+<option value="APPROVED">✅ ஒப்புதல் அளிக்கப்பட்டவை (Approved)</option>
+<option value="REJECTED">❌ நிராகரிக்கப்பட்டவை (Rejected)</option>
+</select>
+<select id="admEbsReqTypeFilter" class="form-control" style="width:auto; padding:5px 10px; font-size:0.80rem; font-weight:800;" onchange="renderAdminDeleteRequestsTable()">
+<option value="ALL">🔄/🗑️ மாறுதல் &amp; நீக்கம் (All Types)</option>
+<option value="TRANSFER">🔄 பிற பள்ளி மாறுதல் (Transfers Only)</option>
+<option value="REMOVE">🗑️ பணியாளர் நீக்கம் (Removals Only)</option>
+</select>
+<input type="text" id="admEbsReqSearchInput" class="form-control" style="width:200px; padding:5px 10px; font-size:0.80rem;" placeholder="🔍 பள்ளி, பெயர், EMIS ID..." oninput="renderAdminDeleteRequestsTable()">
+<button type="button" class="btn btn-primary btn-sm" onclick="approveAllPendingEbsStaffRequests()" style="background:#15803d; border-color:#15803d; font-weight:900; font-size:0.78rem;">
+✅ நிலுவையில் உள்ள அனைத்திற்கும் ஒப்புதல் அளி
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="exportDeleteRequestsCsv()" style="font-weight:800; font-size:0.78rem;">
+📥 CSV
+</button>
+</div>
+</div>
+<div class="table-responsive" style="max-height:340px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px;">
+<table class="data-table" style="margin:0;">
+<thead style="position:sticky; top:0; z-index:4;">
+<tr style="background:#78350f; color:#fff;">
+<th style="width:120px;">கோரிக்கை எண் &amp; நாள்</th>
+<th>தற்போதைய பள்ளி (From School)</th>
+<th>படிவம் &amp; பணியாளர் விவரம்</th>
+<th>நடவடிக்கை &amp; மாறுதல் பெறும் பள்ளி / காரணம்</th>
+<th>ஆணை விவரம் &amp; தேதி</th>
+<th style="text-align:center;">நிலை (Status)</th>
+<th style="text-align:center; min-width:190px;">நிர்வாகி ஒப்புதல் நடவடிக்கை</th>
+</tr>
+</thead>
+<tbody id="admEbsApprovalReqsTbody"></tbody>
+</table>
+</div>
 </div>
 <!-- Filters for Admin EBS School Table -->
 <div class="grid-4" style="margin-bottom:14px; background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
@@ -4595,41 +4670,102 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 </div>
 </div>
-<!-- STAFF DELETE REQUEST MODAL (SCHOOL PORTAL - NATIVE CORE MODAL) -->
+<!-- STAFF TRANSFER & DELETE REQUEST MODAL (EBS FORM-III / FORM-IV & SCHOOL STAFF ROSTER) -->
 <div id="deleteRequestModal" class="modal-backdrop" onclick="if(event.target===this) closeDeleteRequestModal()">
-<div class="modal-card" style="max-width:580px; border-top:6px solid #dc2626;">
-<div class="modal-header">
-<div class="modal-title" style="color:#991b1b;">🗑️ ஆசிரியர் / பணியாளர் விவரம் நீக்கக் கோரிக்கை (Staff Relieving / Delete Request)</div>
+<div class="modal-card" style="max-width:680px; width:96%; max-height:92vh; overflow-y:auto; border-top:6px solid #1d4ed8;" id="delReqModalCard">
+<div class="modal-header" style="border-bottom:1.5px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px;">
+<div>
+<div class="modal-title" style="color:#0f294a; font-size:1.08rem;" id="delReqModalHeading">🔄/🗑️ EBS ஆசிரியர் &amp; அலுவலகப் பணியாளர் மாறுதல் / நீக்கக் கோரிக்கை</div>
+<div style="font-size:0.76rem; color:#475569; font-weight:700; margin-top:2px;">மாவட்ட நிர்வாகியின் (CEO Admin) ஒப்புதலுக்குப் பின்னரே நீக்கம் மற்றும் மாறுதல்கள் அங்கீகரிக்கப்படும்</div>
+</div>
 <button type="button" class="btn btn-outline btn-sm" onclick="closeDeleteRequestModal()">✕ மூடுக</button>
 </div>
-<div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:10px 12px; margin-bottom:14px; font-size:0.84rem; color:#7f1d1d;">
-⚠️ <strong>முக்கியக் குறிப்பு:</strong> பள்ளிகள் நேரடியாக ஆசிரியர் அல்லது அலுவலகப் பணியாளர் விவரங்களை நீக்க இயலாது. கீழே நீக்குவதற்கான காரணத்தைப் பதிவு செய்து அனுப்பினால், அது <strong>மாவட்ட நிர்வாகி முகப்பிற்கு (CEO Admin Portal)</strong> அனுப்பப்படும். மாவட்ட நிர்வாகம் ஒப்புதல் அளித்தவுடன் மட்டுமே இப்பதிவு நீக்கப்படும்.
+<!-- Action Mode Toggle: TRANSFER vs REMOVE -->
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; background:#f1f5f9; padding:6px; border-radius:10px; border:1px solid #cbd5e1;">
+<button type="button" id="delReqModeBtnTransfer" onclick="setStaffReqModalActionType('TRANSFER')" style="padding:9px 12px; border-radius:8px; border:2px solid #1d4ed8; background:#1d4ed8; color:#fff; font-weight:900; font-size:0.84rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+🔄 1. பிற பள்ளிக்கு மாறுதல் (Transfer)
+</button>
+<button type="button" id="delReqModeBtnRemove" onclick="setStaffReqModalActionType('REMOVE')" style="padding:9px 12px; border-radius:8px; border:2px solid transparent; background:transparent; color:#475569; font-weight:900; font-size:0.84rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+🗑️ 2. பட்டியலிலிருந்து நீக்கம் (Remove)
+</button>
+</div>
+<div id="delReqInfoBanner" style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid #1d4ed8; border-radius:8px; padding:9px 12px; margin-bottom:12px; font-size:0.81rem; color:#1e3a8a; font-weight:700;">
+🛡️ <strong>நிர்வாகி ஒப்புதல் நடைமுறை:</strong> இப்பணியாளரை பிற பள்ளிக்கு மாறுதல் செய்யக் கோரிக்கை அனுப்பினால், மாவட்ட நிர்வாகி (CEO Admin) ஒப்புதல் அளித்தவுடன் இப்பள்ளியின் EBS (Form-I, III, IV) பட்டியலிலிருந்து நீக்கப்பட்டு, மாறுதல் பெறும் பள்ளியின் EBS பட்டியலில் தானாகவே சேர்க்கப்படுவார்.
 </div>
 <form onsubmit="submitStaffDeleteRequest(event)">
-<input type="hidden" id="delReqFormType" value="STF">
+<input type="hidden" id="delReqFormType" value="EBS">
+<input type="hidden" id="delReqActionType" value="TRANSFER">
+<input type="hidden" id="delReqSchoolUNo" value="">
 <input type="hidden" id="delReqStaffId" value="">
-<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:14px; font-size:0.85rem;" id="delReqStaffSummaryBox"></div>
+<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:0.84rem;" id="delReqStaffSummaryBox"></div>
+<!-- SECTION A: TRANSFER TO ANOTHER SCHOOL -->
+<div id="delReqTransferSection">
 <div class="form-group">
-<label class="form-label">நீக்குவதற்கான முதன்மைக் காரணம் (Reason Category) <span class="required">*</span></label>
-<select id="delReqReasonCategory" class="form-control" required>
-<option value="">-- காரணத்தைத் தேர்ந்தெடுக்கவும் --</option>
-<option value="மாறுதல் (Transfer to another School)">1. மாறுதல் (Transfer to another School / District)</option>
-<option value="பணி ஓய்வு / விருப்ப ஓய்வு (Retirement / VRS)">2. பணி ஓய்வு / விருப்ப ஓய்வு (Retirement / VRS)</option>
-<option value="பதவி உயர்வு மாறுதல் (Promotion Transfer)">3. பதவி உயர்வு மாறுதல் (Promotion to another School)</option>
-<option value="மாற்றுப் பணி / அயற்பணி (Deputation)">4. மாற்றுப் பணி / அயற்பணி (Deputation)</option>
-<option value="பணி விலகல் / பணியிலிருந்து விடுவிப்பு (Resignation / Relieved)">5. பணி விலகல் / பணியிலிருந்து விடுவிப்பு (Resignation / Relieved)</option>
-<option value="மறைவு (Demise / Death)">6. மறைவு (Demise)</option>
-<option value="இரட்டைப் பதிவு / தவறான பள்ளிப் பதிவு (Duplicate / Wrong School Entry)">7. இரட்டைப் பதிவு / வேறு பள்ளிப் பணியாளர் (Duplicate / Wrong School Entry)</option>
+<label class="form-label">மாறுதல் வகை (Type of Transfer) <span class="required">*</span></label>
+<select id="delReqTransferCategory" class="form-control" onchange="onDelReqTransferCategoryChange()" style="font-weight:800;">
+<option value="மாவட்டத்திற்குள் பிற பள்ளிக்கு மாறுதல் (Within District School Transfer)">1. மாவட்டத்திற்குள் பிற பள்ளிக்கு மாறுதல் (Within Sivagangai District Transfer)</option>
+<option value="பதவி உயர்வு மூலம் பிற பள்ளிக்கு மாறுதல் (Promotion Transfer)">2. பதவி உயர்வு மூலம் பிற பள்ளிக்கு மாறுதல் (Promotion Transfer to Another School)</option>
+<option value="மாற்றுப் பணி / அயற்பணி (Deputation to Another School)">3. மாற்றுப் பணி / அயற்பணி (Deputation to Another School)</option>
+<option value="பிற மாவட்டத்திற்கு மாறுதல் (Inter-District Transfer)">4. பிற மாவட்டத்திற்கு மாறுதல் (Inter-District Transfer - Outside Sivagangai)</option>
+</select>
+</div>
+<div id="delReqWithinDistrictSchoolBox" class="form-group" style="background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+<label class="form-label" style="color:#0369a1; font-weight:900;">🏫 மாறுதல் பெறும் பள்ளி (Target School in Sivagangai District) <span class="required">*</span></label>
+<input type="text" id="delReqTargetSchoolSearch" class="form-control" placeholder="🔍 U.NO, பள்ளிப் பெயர் அல்லது ஒன்றியம் தட்டச்சு செய்து வடிகட்டுக..." oninput="filterDelReqTargetSchoolOptions()" style="margin-bottom:8px; font-size:0.82rem;">
+<select id="delReqTargetSchoolUNo" class="form-control" style="font-weight:800; color:#0f294a;">
+<option value="">-- மாறுதல் பெறும் பள்ளியைத் தேர்ந்தெடுக்கவும் (Select Destination School) --</option>
+</select>
+<div style="font-size:0.74rem; color:#0284c7; margin-top:4px; font-weight:700;">
+✨ நிர்வாகி ஒப்புதல் அளித்தவுடன் இப்பணியாளரின் முழு EBS சுயவிவரமும் (Form-III / Form-IV) தேர்ந்தெடுக்கப்பட்ட பள்ளிக்கு தானாக மாற்றப்படும்.
+</div>
+</div>
+<div id="delReqOutsideDistrictBox" class="form-group" style="display:none; background:#fffbeb; border:1.5px solid #fde68a; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+<label class="form-label" style="color:#92400e; font-weight:900;">🌍 மாறுதல் சென்ற மாவட்டம் &amp; பள்ளியின் பெயர் (Destination District &amp; School) <span class="required">*</span></label>
+<input type="text" id="delReqOtherDistrictSchool" class="form-control" placeholder="எ.கா: மதுரை மாவட்டம் - அரசு மேல்நிலைப்பள்ளி, மேலூர்">
+</div>
+</div>
+<!-- SECTION B: REMOVE FROM ROSTER -->
+<div id="delReqRemoveSection" style="display:none;">
+<div class="form-group">
+<label class="form-label">நீக்குவதற்கான முதன்மைக் காரணம் (Removal Reason Category) <span class="required">*</span></label>
+<select id="delReqReasonCategory" class="form-control" style="font-weight:800;">
+<option value="">-- நீக்குவதற்கான காரணத்தைத் தேர்ந்தெடுக்கவும் --</option>
+<option value="பணி ஓய்வு / விருப்ப ஓய்வு (Retirement / VRS)">1. பணி ஓய்வு / விருப்ப ஓய்வு (Retirement / VRS)</option>
+<option value="நீண்ட கால விடுப்பு / மகப்பேறு விடுப்பு (Long Leave / Maternity Leave)">2. நீண்ட கால விடுப்பு / மகப்பேறு விடுப்பு (Long Leave / Maternity Leave)</option>
+<option value="பணி விலகல் / பணியிலிருந்து விடுவிப்பு (Resignation / Relieved)">3. பணி விலகல் / பணியிலிருந்து விடுவிப்பு (Resignation / Relieved)</option>
+<option value="மறைவு (Demise / Death)">4. மறைவு (Demise / Death)</option>
+<option value="மாற்றுத் துறை / பிற பணிக்குச் சென்றமை (Moved to Other Department)">5. மாற்றுத் துறை / பிற பணிக்குச் சென்றமை (Moved to Other Department)</option>
+<option value="இரட்டைப் பதிவு / தவறான பள்ளிப் பதிவு (Duplicate / Wrong School Entry)">6. இரட்டைப் பதிவு / வேறு பள்ளிப் பணியாளர் (Duplicate / Wrong School Entry)</option>
+<option value="கூடுதலாகத் தவறுதலாகச் சேர்க்கப்பட்ட பதிவு (Added by Mistake in EBS)">7. கூடுதலாகத் தவறுதலாகச் சேர்க்கப்பட்ட பதிவு (Added by Mistake in EBS)</option>
 <option value="பிற காரணங்கள் (Other Reasons)">8. பிற காரணங்கள் (Other Reasons)</option>
 </select>
 </div>
-<div class="form-group">
-<label class="form-label">விரிவான காரணம் / ஆணை எண் &amp; நாள் / மாறுதல் சென்ற பள்ளி விவரம் <span class="required">*</span></label>
-<textarea id="delReqReasonDetail" class="form-control" rows="3" placeholder="எ.கா: முதன்மைக் கல்வி அலுவலர் செயல்முறைகள் ந.க.எண்... நாள்...ன்படி அரசு மேல்நிலைப்பள்ளி ...க்கு மாறுதல் / 31.05.2026 அன்று பணி ஓய்வு..." required></textarea>
 </div>
-<div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
+<div class="grid-2" style="gap:10px;">
+<div class="form-group">
+<label class="form-label" id="delReqDateLabel">பணியிலிருந்து விடுவிப்பு / மாறுதல் தேதி (Date)</label>
+<input type="date" id="delReqActionDate" class="form-control">
+</div>
+<div class="form-group">
+<label class="form-label">ஆணை எண் / செயல்முறைகள் எண் (Order / Proc. No.)</label>
+<input type="text" id="delReqOrderNo" class="form-control" placeholder="எ.கா: ந.க.எண். 1245/அ2/2026">
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">விரிவான காரணம் / கூடுதல் குறிப்புகள் (Remarks / Details) <span class="required">*</span></label>
+<textarea id="delReqReasonDetail" class="form-control" rows="2" placeholder="எ.கா: முதன்மைக் கல்வி அலுவலர் செயல்முறைகளின்படி மாறுதல் / பணி ஓய்வு பெற்று விடுவிக்கப்பட்டார்..." required></textarea>
+</div>
+<div id="delReqAdminInstantApproveWrap" style="display:none; background:#f0fdf4; border:1.5px solid #86efac; border-radius:8px; padding:8px 12px; margin-bottom:12px;">
+<label style="display:flex; align-items:center; gap:8px; font-size:0.82rem; font-weight:900; color:#166534; cursor:pointer;">
+<input type="checkbox" id="delReqAdminInstantApproveChk" style="width:16px; height:16px;">
+<span>👑 நிர்வாகி நேரடி ஒப்புதல்: கோரிக்கையை நிலுவையில் வைக்காமல் உடனடியாக அங்கீகரித்து அமல்படுத்து (Instant Admin Approval)</span>
+</label>
+</div>
+<div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px; border-top:1px solid #e2e8f0; padding-top:12px;">
 <button type="button" class="btn btn-outline" onclick="closeDeleteRequestModal()">ரத்து செய்</button>
-<button type="submit" class="btn btn-danger">📤 நீக்கக் கோரிக்கையை மாவட்ட நிர்வாகிக்கு அனுப்புக</button>
+<button type="submit" class="btn btn-primary" id="delReqSubmitBtn" style="background:#1d4ed8; border-color:#1d4ed8; font-weight:900;">
+📤 மாறுதல் கோரிக்கையை மாவட்ட நிர்வாகி ஒப்புதலுக்கு அனுப்புக
+</button>
 </div>
 </form>
 </div>
@@ -7857,11 +7993,22 @@ const pool = emis.pool || [];
 const uNo = String(s.uNo || "").trim();
 const cleanUNo = uNo.replace(/^0+/, "");
 const rawRows = emis.byUNo[uNo] || (cleanUNo ? emis.byUNo[cleanUNo] : null) || [];
-if (rawRows.length > 0) {
-const hasOnlyDummy = !extra.staff || extra.staff.length <= 1;
-const fewerThanEmis = extra.staff && extra.staff.length < rawRows.length;
+const remIdsArr = []
+.concat((extra.removedStaffIds && Array.isArray(extra.removedStaffIds)) ? extra.removedStaffIds : [])
+.concat((extra.ebs2026 && Array.isArray(extra.ebs2026.removedStaffIds)) ? extra.ebs2026.removedStaffIds : []);
+const remSetInit = new Set(remIdsArr.map(x => String(x || "").trim()).filter(Boolean));
+const filteredRawRows = rawRows.filter(r => !remSetInit.has(String((r && r[1]) || "").trim()));
+if (Array.isArray(extra.staff) && remSetInit.size > 0) {
+extra.staff = extra.staff.filter(x => !remSetInit.has(String((x && (x.id || x.staffId)) || "").trim()));
+}
+if (filteredRawRows.length > 0) {
+const preservedAdded = Array.isArray(extra.staff)
+? extra.staff.filter(x => x && (x.isAddedEbs || x.transferredFromUNo || x.source === "EBS_ADDED" || x.source === "TEMP_ID" || x.source === "EBS_TRANSFER"))
+: [];
+const hasOnlyDummy = !extra.staff || (extra.staff.length === 0 && remSetInit.size === 0) || (extra.staff.length === 1 && String(extra.staff[0].id || "").startsWith("HM-"));
+const fewerThanEmis = extra.staff && extra.staff.length < filteredRawRows.length && remSetInit.size === 0;
 if (hasOnlyDummy || fewerThanEmis) {
-extra.staff = rawRows.map(r => {
+const mappedEmis = filteredRawRows.map(r => {
 const isTeach = r[0] === 1;
 const staffId = String(r[1] || "");
 const name = String(r[2] || "");
@@ -7897,6 +8044,15 @@ source: "EMIS",
 isTeaching: isTeach
 };
 });
+const seenInitIds = new Set(mappedEmis.map(x => String(x.id || "").trim()));
+preservedAdded.forEach(addItem => {
+const aid = String(addItem.id || addItem.staffId || "").trim();
+if (aid && !seenInitIds.has(aid) && !remSetInit.has(aid)) {
+mappedEmis.push(addItem);
+seenInitIds.add(aid);
+}
+});
+extra.staff = mappedEmis;
 } else if (Array.isArray(extra.staff)) {
 const byId = {};
 rawRows.forEach(r => { if (r[1]) byId[String(r[1]).trim()] = r; });
@@ -10448,7 +10604,14 @@ tbody.innerHTML = staffList.map((st, idx) => `
         <td style="font-size:0.80rem;">தேர்வு: <strong>${st.examDuty || "-"}</strong><br>முகாம்: ${st.campDuty || "-"} (${st.campOption || "-"})</td>
         <td><strong style="color:#0284c7;">${st.mobile || "-"}</strong></td>
         <td style="white-space:nowrap; text-align:center;">
-          <button type="button" class="btn btn-primary btn-sm" onclick="editStaffMember('${st.id}')">✏️ திருத்து</button>
+          <div style="display:flex; gap:4px; justify-content:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="editStaffMember('${st.id}')">✏️ திருத்து</button>
+            ${getPendingStaffChangeReq(activeSchoolSession ? activeSchoolSession.uNo : '', st.id)
+              ? `<button type="button" class="btn btn-outline btn-sm" onclick="cancelSchoolDeleteRequest('STF', '${st.id}')" style="border-color:#f59e0b; color:#b45309; background:#fef3c7; font-weight:800;">↩️ கோரிக்கை ரத்து</button>`
+              : `<button type="button" class="btn btn-outline btn-sm" onclick="openEbsStaffActionModal('${activeSchoolSession ? activeSchoolSession.uNo : ''}', '${st.id}', 'TRANSFER')" style="border-color:#93c5fd; color:#1e40af; background:#eff6ff; font-weight:800;">🔄 மாறுதல்</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openEbsStaffActionModal('${activeSchoolSession ? activeSchoolSession.uNo : ''}', '${st.id}', 'REMOVE')" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-weight:800;">🗑️ நீக்கம்</button>`
+            }
+          </div>
         </td>
       </tr>
     `).join("");
@@ -17534,36 +17697,190 @@ document.body.removeChild(a);
 URL.revokeObjectURL(url);
 showToast("💾 emis-staff-data.js கோப்பு வெற்றிகரமாகப் பதிவிறக்கம் செய்யப்பட்டது!", "#0284c7");
 }
-function openDeleteRequestModal(type, staffId) {
-if (!activeSchoolSession) {
-showToast("⚠️ பள்ளி உள்நுழைவு அமர்வு காணப்படவில்லை.", "#ef4444");
+function normalizeStaffChangeRequestObj(r) {
+if (!r || typeof r !== "object") return null;
+const uNo = String(r.uNo || "").trim();
+const sch = masterSchools.find(s => String(s.uNo) === uNo);
+const sid = String(r.staffRecordId || r.emisId || r.staffId || "").trim();
+const isTrans = r.reqType === "TRANSFER" || /மாறுதல்|transfer|deputation|அயற்பணி/i.test(String(r.reasonCategory || r.reason || ""));
+return Object.assign(r, {
+reqType: r.reqType || (isTrans && r.targetUNo ? "TRANSFER" : "REMOVE"),
+uNo: uNo,
+udiseNo: r.udiseNo || (sch ? sch.udiseNo : ""),
+schoolName: r.schoolName || r.schoolNameTa || (sch ? (sch.nameTa || sch.nameEn) : ""),
+staffRecordId: sid,
+emisId: String(r.emisId || sid),
+staffName: r.staffName || r.staffNameEn || r.staffNameTa || "",
+desig: r.desig || "TEACHER",
+reason: r.reason || `${r.reasonCategory || ""} ${r.reasonDetail || ""}`.trim(),
+status: r.status || "PENDING"
+});
+}
+function getPendingStaffChangeReq(uNo, staffId) {
+uNo = String(uNo || "").trim();
+staffId = String(staffId || "").trim();
+if (!uNo || !staffId || !Array.isArray(staffDeleteRequests)) return null;
+return staffDeleteRequests.find(r => {
+normalizeStaffChangeRequestObj(r);
+return r && r.status === "PENDING" && String(r.uNo) === uNo && (String(r.staffRecordId) === staffId || String(r.emisId) === staffId);
+}) || null;
+}
+function getSchoolRelatedStaffChangeRequests(uNo) {
+uNo = String(uNo || "").trim();
+if (!uNo || !Array.isArray(staffDeleteRequests)) return [];
+return staffDeleteRequests.filter(r => {
+normalizeStaffChangeRequestObj(r);
+return r && (String(r.uNo) === uNo || String(r.targetUNo || "") === uNo);
+});
+}
+function populateDelReqTargetSchoolOptions(excludeUNo, filterQuery) {
+const sel = document.getElementById("delReqTargetSchoolUNo");
+if (!sel) return;
+const prevVal = sel.value;
+const q = String(filterQuery || "").trim().toLowerCase();
+const schools = (typeof getEbs282MasterSchools === "function" ? getEbs282MasterSchools() : masterSchools) || [];
+const filtered = schools.filter(s => {
+if (String(s.uNo) === String(excludeUNo)) return false;
+if (!q) return true;
+const hay = `${s.uNo} ${s.udiseNo} ${s.nameTa} ${s.nameEn} ${s.block}`.toLowerCase();
+return hay.includes(q);
+});
+sel.innerHTML = `<option value="">-- மாறுதல் பெறும் பள்ளியைத் தேர்ந்தெடுக்கவும் (${filtered.length} பள்ளிகள்) --</option>` +
+filtered.map(s => `<option value="${escapeHtmlAttr(s.uNo)}">[U.NO: ${escapeHtmlAttr(s.uNo)}] ${escapeHtmlAttr(s.nameTa || s.nameEn)} (${escapeHtmlAttr(s.block || "")} - UDISE: ${escapeHtmlAttr(s.udiseNo || "")})</option>`).join("");
+if (prevVal && filtered.some(s => String(s.uNo) === String(prevVal))) {
+sel.value = prevVal;
+} else if (q && filtered.length === 1) {
+sel.value = String(filtered[0].uNo);
+}
+}
+function filterDelReqTargetSchoolOptions() {
+const uNo = document.getElementById("delReqSchoolUNo")?.value || (activeSchoolSession ? activeSchoolSession.uNo : "");
+const q = document.getElementById("delReqTargetSchoolSearch")?.value || "";
+populateDelReqTargetSchoolOptions(uNo, q);
+}
+function onDelReqTransferCategoryChange() {
+const cat = document.getElementById("delReqTransferCategory")?.value || "";
+const isInterDistrict = /பிற மாவட்டத்திற்கு|Inter-District/i.test(cat);
+const withinBox = document.getElementById("delReqWithinDistrictSchoolBox");
+const outBox = document.getElementById("delReqOutsideDistrictBox");
+if (withinBox) withinBox.style.display = isInterDistrict ? "none" : "block";
+if (outBox) outBox.style.display = isInterDistrict ? "block" : "none";
+}
+function setStaffReqModalActionType(actionType) {
+const isTransfer = actionType === "TRANSFER";
+const actEl = document.getElementById("delReqActionType");
+if (actEl) actEl.value = isTransfer ? "TRANSFER" : "REMOVE";
+const btnT = document.getElementById("delReqModeBtnTransfer");
+const btnR = document.getElementById("delReqModeBtnRemove");
+if (btnT) {
+btnT.style.background = isTransfer ? "#1d4ed8" : "transparent";
+btnT.style.color = isTransfer ? "#fff" : "#475569";
+btnT.style.borderColor = isTransfer ? "#1d4ed8" : "transparent";
+}
+if (btnR) {
+btnR.style.background = !isTransfer ? "#dc2626" : "transparent";
+btnR.style.color = !isTransfer ? "#fff" : "#475569";
+btnR.style.borderColor = !isTransfer ? "#dc2626" : "transparent";
+}
+const card = document.getElementById("delReqModalCard");
+if (card) card.style.borderTopColor = isTransfer ? "#1d4ed8" : "#dc2626";
+const tSec = document.getElementById("delReqTransferSection");
+const rSec = document.getElementById("delReqRemoveSection");
+if (tSec) tSec.style.display = isTransfer ? "block" : "none";
+if (rSec) rSec.style.display = !isTransfer ? "block" : "none";
+const banner = document.getElementById("delReqInfoBanner");
+if (banner) {
+if (isTransfer) {
+banner.style.background = "#eff6ff";
+banner.style.borderColor = "#bfdbfe";
+banner.style.borderLeftColor = "#1d4ed8";
+banner.style.color = "#1e3a8a";
+banner.innerHTML = `🛡️ <strong>நிர்வாகி ஒப்புதல் நடைமுறை (மாறுதல்):</strong> இப்பணியாளரை பிற பள்ளிக்கு மாறுதல் செய்யக் கோரிக்கை அனுப்பினால், <strong>மாவட்ட நிர்வாகி (CEO Admin)</strong> ஒப்புதல் அளித்தவுடன் இப்பள்ளியின் EBS (Form-I, III, IV) பட்டியலிலிருந்து நீக்கப்பட்டு, மாறுதல் பெறும் பள்ளியின் EBS பட்டியலில் தானாகவே இணைக்கப்படுவார்.`;
+} else {
+banner.style.background = "#fef2f2";
+banner.style.borderColor = "#fecaca";
+banner.style.borderLeftColor = "#dc2626";
+banner.style.color = "#7f1d1d";
+banner.innerHTML = `⚠️ <strong>நிர்வாகி ஒப்புதல் நடைமுறை (நீக்கம்):</strong> பள்ளிகள் நேரடியாக ஆசிரியர் அல்லது அலுவலகப் பணியாளரை நீக்க இயலாது. கீழே காரணத்தைப் பதிவு செய்து அனுப்பினால், <strong>மாவட்ட நிர்வாகம் (CEO Admin)</strong> ஒப்புதல் அளித்தவுடன் மட்டுமே இப்பதிவு EBS (Form-I, III, IV) பட்டியலிலிருந்து நீக்கப்படும்.`;
+}
+}
+const submitBtn = document.getElementById("delReqSubmitBtn");
+if (submitBtn) {
+submitBtn.style.background = isTransfer ? "#1d4ed8" : "#dc2626";
+submitBtn.style.borderColor = isTransfer ? "#1d4ed8" : "#dc2626";
+submitBtn.textContent = isTransfer
+? "📤 மாறுதல் கோரிக்கையை மாவட்ட நிர்வாகி ஒப்புதலுக்கு அனுப்புக"
+: "📤 நீக்கக் கோரிக்கையை மாவட்ட நிர்வாகி ஒப்புதலுக்கு அனுப்புக";
+}
+}
+function openEbsStaffActionModal(uNo, staffId, initialActionType) {
+uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+staffId = String(staffId || "").trim();
+if (!uNo || !staffId) {
+showToast("⚠️ பள்ளி அல்லது பணியாளர் விவரம் காணப்படவில்லை.", "#ef4444");
 return;
 }
-const extra = getSchoolExtra(activeSchoolSession.uNo);
-const staffList = (extra && extra.staff) ? extra.staff : [];
-const st = staffList.find(item => String(item.id) === String(staffId));
+const sch = masterSchools.find(s => String(s.uNo) === uNo) || activeSchoolSession || { uNo, nameTa: "", nameEn: "", udiseNo: "" };
+const ctx = getOrInitSchoolEbs2026Data(uNo, false);
+let st = ctx.staffList.find(item => String(item.staffId) === staffId);
+if (!st && ctx.extra && Array.isArray(ctx.extra.staff)) {
+const rawSt = ctx.extra.staff.find(item => String(item.id || item.staffId) === staffId);
+if (rawSt) {
+st = Object.assign({}, rawSt, { staffId: String(rawSt.id || rawSt.staffId) });
+}
+}
 if (!st) {
 showToast("⚠️ பணியாளர் விவரம் காணப்படவில்லை.", "#ef4444");
 return;
 }
-document.getElementById("delReqFormType").value = type || "STF";
-document.getElementById("delReqStaffId").value = st.id;
-document.getElementById("delReqReasonCategory").value = "";
-document.getElementById("delReqReasonDetail").value = "";
+document.getElementById("delReqFormType").value = st.isTeaching ? "EBS_F3" : "EBS_F4";
+document.getElementById("delReqSchoolUNo").value = uNo;
+document.getElementById("delReqStaffId").value = st.staffId;
+const reasonCatEl = document.getElementById("delReqReasonCategory");
+if (reasonCatEl) reasonCatEl.value = st.isAddedEbs ? "கூடுதலாகத் தவறுதலாகச் சேர்க்கப்பட்ட பதிவு (Added by Mistake in EBS)" : "";
+const reasonDetEl = document.getElementById("delReqReasonDetail");
+if (reasonDetEl) reasonDetEl.value = "";
+const orderNoEl = document.getElementById("delReqOrderNo");
+if (orderNoEl) orderNoEl.value = "";
+const dateEl = document.getElementById("delReqActionDate");
+if (dateEl) dateEl.value = new Date().toISOString().split("T")[0];
+const searchEl = document.getElementById("delReqTargetSchoolSearch");
+if (searchEl) searchEl.value = "";
+const otherDistEl = document.getElementById("delReqOtherDistrictSchool");
+if (otherDistEl) otherDistEl.value = "";
+populateDelReqTargetSchoolOptions(uNo, "");
+onDelReqTransferCategoryChange();
+setStaffReqModalActionType(initialActionType === "REMOVE" ? "REMOVE" : "TRANSFER");
+const isAdminViewingSchool = Boolean(document.getElementById("schBackToAdminBtn") && document.getElementById("schBackToAdminBtn").style.display !== "none");
+const instantWrap = document.getElementById("delReqAdminInstantApproveWrap");
+const instantChk = document.getElementById("delReqAdminInstantApproveChk");
+if (instantWrap) instantWrap.style.display = isAdminViewingSchool ? "block" : "none";
+if (instantChk) instantChk.checked = false;
 const summaryBox = document.getElementById("delReqStaffSummaryBox");
 if (summaryBox) {
 summaryBox.innerHTML = `
-        <div style="font-weight:900; color:#0f294a; font-size:0.95rem;">👤 ${st.prefix ? st.prefix + " " : ""}${st.name}</div>
-        <div style="color:#334155; font-size:0.82rem; margin-top:2px;">
-          பதவி: <strong>${st.desig || "-"}</strong> | பாடம்: <strong>${st.subject || "-"}</strong> | Staff ID: <strong style="color:#1d4ed8;">${st.id}</strong>
-        </div>
-        <div style="color:#64748b; font-size:0.78rem; margin-top:2px;">
-          பள்ளி: [${activeSchoolSession.uNo}] ${activeSchoolSession.nameTa} (UDISE: ${activeSchoolSession.udiseNo})
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-weight:900; color:#0f294a; font-size:0.95rem;">👤 ${escapeHtmlAttr(st.prefix ? st.prefix + " " : "")}${escapeHtmlAttr(st.name)} ${st.nameTa ? `<span style="color:#4c1d95;">(${escapeHtmlAttr(st.nameTa)})</span>` : ""}</div>
+            <div style="color:#334155; font-size:0.81rem; margin-top:3px;">
+              பதவி: <strong>${escapeHtmlAttr(st.desig || "-")}</strong> | பாடம்: <strong>${escapeHtmlAttr(st.subject || "-")}</strong> | EMIS ID: <strong style="color:#1d4ed8;">${escapeHtmlAttr(st.staffId)}</strong>
+            </div>
+            <div style="color:#64748b; font-size:0.77rem; margin-top:2px; font-weight:700;">
+              🏫 தற்போதைய பள்ளி: <strong>[U.NO: ${escapeHtmlAttr(uNo)}] ${escapeHtmlAttr(sch.nameTa || sch.nameEn)}</strong> (UDISE: ${escapeHtmlAttr(sch.udiseNo || "-")})
+            </div>
+          </div>
+          <span style="background:${st.isTeaching ? "#eff6ff" : "#fffbeb"}; color:${st.isTeaching ? "#1e40af" : "#92400e"}; border:1px solid ${st.isTeaching ? "#93c5fd" : "#fde68a"}; padding:3px 9px; border-radius:999px; font-size:0.74rem; font-weight:900;">
+            ${st.isTeaching ? "👨‍🏫 FORM – III (ஆசிரியர்)" : "🧑‍💼 FORM – IV (அலுவலகப் பணியாளர்)"}
+          </span>
         </div>
       `;
 }
 const modal = document.getElementById("deleteRequestModal");
 if (modal) modal.classList.add("open");
+}
+function openDeleteRequestModal(type, staffId) {
+const uNo = activeSchoolSession ? activeSchoolSession.uNo : "";
+openEbsStaffActionModal(uNo, staffId, "REMOVE");
 }
 function closeDeleteRequestModal() {
 const modal = document.getElementById("deleteRequestModal");
@@ -17571,118 +17888,495 @@ if (modal) modal.classList.remove("open");
 }
 function submitStaffDeleteRequest(event) {
 event.preventDefault();
-if (!activeSchoolSession) return;
-const staffId = document.getElementById("delReqStaffId").value;
-const reasonCat = document.getElementById("delReqReasonCategory").value;
-const reasonDet = document.getElementById("delReqReasonDetail").value.trim();
-if (!staffId || !reasonCat || !reasonDet) return;
-const extra = getSchoolExtra(activeSchoolSession.uNo);
-const staffList = (extra && extra.staff) ? extra.staff : [];
-const st = staffList.find(item => String(item.id) === String(staffId));
-if (!st) return;
-st.deleteReqStatus = "PENDING";
-safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+const uNo = String(document.getElementById("delReqSchoolUNo")?.value || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+const staffId = String(document.getElementById("delReqStaffId")?.value || "").trim();
+const actionType = (document.getElementById("delReqActionType")?.value || "REMOVE").trim();
+const actionDate = (document.getElementById("delReqActionDate")?.value || "").trim();
+const orderNo = (document.getElementById("delReqOrderNo")?.value || "").trim();
+const reasonDet = (document.getElementById("delReqReasonDetail")?.value || "").trim();
+if (!uNo || !staffId) return;
+const sch = masterSchools.find(s => String(s.uNo) === uNo) || activeSchoolSession || { uNo, nameTa: "", nameEn: "", udiseNo: "" };
+const ctx = getOrInitSchoolEbs2026Data(uNo, false);
+const stEbs = ctx.staffList.find(item => String(item.staffId) === staffId);
+const extra = ctx.extra;
+const rawSt = (extra && Array.isArray(extra.staff)) ? extra.staff.find(item => String(item.id || item.staffId) === staffId) : null;
+const st = stEbs || rawSt;
+if (!st) {
+showToast("⚠️ பணியாளர் விவரம் காணப்படவில்லை.", "#ef4444");
+return;
+}
+let reasonCategory = "";
+let targetUNo = "";
+let targetUdiseNo = "";
+let targetSchoolName = "";
+if (actionType === "TRANSFER") {
+reasonCategory = (document.getElementById("delReqTransferCategory")?.value || "மாவட்டத்திற்குள் பிற பள்ளிக்கு மாறுதல்").trim();
+const isInterDistrict = /பிற மாவட்டத்திற்கு|Inter-District/i.test(reasonCategory);
+if (isInterDistrict) {
+targetSchoolName = (document.getElementById("delReqOtherDistrictSchool")?.value || "").trim();
+if (!targetSchoolName) {
+showToast("⚠️ மாறுதல் சென்ற மாவட்டம் மற்றும் பள்ளியின் பெயரை உள்ளிடவும்.", "#dc2626");
+return;
+}
+} else {
+targetUNo = (document.getElementById("delReqTargetSchoolUNo")?.value || "").trim();
+if (!targetUNo) {
+showToast("⚠️ மாறுதல் பெறும் பள்ளியைத் தேர்ந்தெடுக்கவும்.", "#dc2626");
+return;
+}
+const targetSch = masterSchools.find(s => String(s.uNo) === targetUNo);
+targetUdiseNo = targetSch ? (targetSch.udiseNo || "") : "";
+targetSchoolName = targetSch ? (targetSch.nameTa || targetSch.nameEn || "") : ("U.NO: " + targetUNo);
+}
+} else {
+reasonCategory = (document.getElementById("delReqReasonCategory")?.value || "").trim();
+if (!reasonCategory) {
+showToast("⚠️ நீக்குவதற்கான முதன்மைக் காரணத்தைத் தேர்ந்தெடுக்கவும்.", "#dc2626");
+return;
+}
+}
+if (!reasonDet) {
+showToast("⚠️ விரிவான காரணம் / ஆணை விவரத்தை உள்ளிடவும்.", "#dc2626");
+return;
+}
+if (rawSt) {
+rawSt.deleteReqStatus = "PENDING";
+}
+const ebsProfSnap = (extra.ebs2026 && extra.ebs2026.staffProfiles && extra.ebs2026.staffProfiles[staffId])
+? Object.assign({}, extra.ebs2026.staffProfiles[staffId])
+: {};
+const isTeach = stEbs ? Boolean(stEbs.isTeaching) : !/ASSISTANT|CLERK|LAB|NIGHT|WATCHMAN|SWEEPER|OFFICE|TYPIST|RECORD/i.test(st.desig || "");
+const reqIdPrefix = actionType === "TRANSFER" ? "TRN-" : "DEL-";
+const reqId = reqIdPrefix + uNo + "-" + Date.now().toString().slice(-4);
+const fullReasonStr = actionType === "TRANSFER"
+? `${reasonCategory} ➔ ${targetUNo ? "[U.NO: " + targetUNo + "] " : ""}${targetSchoolName}${orderNo ? " | ஆணை: " + orderNo : ""}${actionDate ? " | நாள்: " + formatDateDisplayDMY(actionDate) : ""} | ${reasonDet}`
+: `${reasonCategory}${orderNo ? " | ஆணை: " + orderNo : ""}${actionDate ? " | நாள்: " + formatDateDisplayDMY(actionDate) : ""} | ${reasonDet}`;
+staffDeleteRequests = (staffDeleteRequests || []).filter(r => !(String(r.uNo) === uNo && (String(r.staffRecordId) === staffId || String(r.emisId) === staffId) && r.status === "PENDING"));
 const newReq = {
-reqId: "DEL-" + activeSchoolSession.uNo + "-" + Date.now().toString().slice(-4),
-uNo: activeSchoolSession.uNo,
-udiseNo: activeSchoolSession.udiseNo,
-schoolName: activeSchoolSession.nameTa,
-staffCategory: /ASSISTANT|CLERK|LAB|NIGHT|WATCHMAN|SWEEPER|OFFICE|TYPIST|RECORD/i.test(st.desig || "") ? "Non-Teaching" : "Teaching",
-staffRecordId: st.id,
-emisId: st.id,
-staffName: (st.prefix ? st.prefix + " " : "") + st.name,
-desig: st.desig || "TEACHER",
-reason: `${reasonCat} - ${reasonDet}`,
+reqId: reqId,
+reqType: actionType,
+sourceModule: "EBS",
+uNo: uNo,
+udiseNo: sch.udiseNo || "",
+schoolName: sch.nameTa || sch.nameEn || ("U.NO: " + uNo),
+targetUNo: targetUNo,
+targetUdiseNo: targetUdiseNo,
+targetSchoolName: targetSchoolName,
+isTeaching: isTeach,
+staffCategory: isTeach ? "Teaching (FORM-III)" : "Non-Teaching (FORM-IV)",
+staffRecordId: staffId,
+emisId: staffId,
+staffName: ((st.prefix ? st.prefix + " " : "") + (st.name || "")).trim(),
+nameTa: st.nameTa || ebsProfSnap.nameTa || "",
+desig: st.desig || (isTeach ? "TEACHER" : "OFFICE STAFF"),
+subject: st.subject || "-",
+reasonCategory: reasonCategory,
+orderNo: orderNo,
+actionDate: actionDate,
+reasonDetail: reasonDet,
+reason: fullReasonStr,
+staffSnapshot: Object.assign({}, stEbs || st),
+ebsProfileSnapshot: ebsProfSnap,
 requestedAt: new Date().toLocaleString("en-IN"),
 status: "PENDING",
 resolvedAt: ""
 };
 staffDeleteRequests.unshift(newReq);
+window._activeSyncTargetUNo = uNo;
+safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
+const instantApprove = Boolean(document.getElementById("delReqAdminInstantApproveChk")?.checked);
+closeDeleteRequestModal();
+if (instantApprove) {
+resolveAdminDeleteRequest(reqId, "APPROVED");
+return;
+}
 updateAllSummaryCounters();
 renderSchoolStaffTable(extra);
-closeDeleteRequestModal();
-showToast("📤 நீக்கக் கோரிக்கை மாவட்ட நிர்வாகியின் ஒப்புதலுக்கு வெற்றிகரமாக அனுப்பப்பட்டது!", "#22c55e");
+renderSchoolEbsModule();
+if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+showToast(
+actionType === "TRANSFER"
+? `📤 [${st.name}] பிற பள்ளி மாறுதல் கோரிக்கை (${targetSchoolName}) மாவட்ட நிர்வாகியின் ஒப்புதலுக்கு அனுப்பப்பட்டது!`
+: `📤 [${st.name}] நீக்கக் கோரிக்கை மாவட்ட நிர்வாகியின் ஒப்புதலுக்கு அனுப்பப்பட்டது!`,
+"#1d4ed8"
+);
 }
-function cancelSchoolDeleteRequest(type, staffId) {
-if (!activeSchoolSession) return;
-const extra = getSchoolExtra(activeSchoolSession.uNo);
+function cancelSchoolDeleteRequest(type, staffId, optionalUNo) {
+const uNo = String(optionalUNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+staffId = String(staffId || "").trim();
+if (!uNo || !staffId) return;
+const extra = getSchoolExtra(uNo);
 const staffList = (extra && extra.staff) ? extra.staff : [];
-const st = staffList.find(item => String(item.id) === String(staffId));
+const st = staffList.find(item => String(item.id || item.staffId) === staffId);
 if (st) {
 delete st.deleteReqStatus;
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 }
-staffDeleteRequests = (staffDeleteRequests || []).filter(r => !(String(r.uNo) === String(activeSchoolSession.uNo) && String(r.staffRecordId) === String(staffId) && r.status === "PENDING"));
+staffDeleteRequests = (staffDeleteRequests || []).filter(r => !(String(r.uNo) === uNo && (String(r.staffRecordId) === staffId || String(r.emisId) === staffId) && r.status === "PENDING"));
 safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
 updateAllSummaryCounters();
 renderSchoolStaffTable(extra);
-showToast("↩️ நீக்கக் கோரிக்கை ரத்து செய்யப்பட்டது.", "#f59e0b");
+renderSchoolEbsModule();
+if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+showToast("↩️ நிலுவையில் இருந்த மாறுதல் / நீக்கக் கோரிக்கை ரத்து செய்யப்பட்டது.", "#f59e0b");
+}
+function renderSchoolEbsTransferRemovalPane(ctx) {
+const container = document.getElementById("ebsSchoolTransferRemovalRequestsContainer");
+if (!container || !ctx || !ctx.sch) return;
+const uNo = String(ctx.sch.uNo);
+const relReqs = getSchoolRelatedStaffChangeRequests(uNo);
+if (relReqs.length === 0) {
+container.innerHTML = `<div style="padding:20px; text-align:center; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:10px; color:#64748b; font-weight:800;">இப்பள்ளியில் இதுவரை ஆசிரியர் (F3) அல்லது அலுவலகப் பணியாளர் (F4) நீக்கம் / பிற பள்ளி மாறுதல் கோரிக்கைகள் எதுவும் சமர்ப்பிக்கப்படவில்லை.</div>`;
+return;
+}
+const rowsHtml = relReqs.map((r, i) => {
+const isIncoming = String(r.targetUNo || "") === uNo && String(r.uNo) !== uNo;
+const typeBadge = r.reqType === "TRANSFER"
+? (isIncoming
+? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">📥 பிற பள்ளியிலிருந்து மாறுதல் வரவு</span>`
+: `<span style="background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">🔄 பிற பள்ளிக்கு மாறுதல்</span>`)
+: `<span style="background:#fef2f2; color:#991b1b; border:1px solid #fca5a5; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">🗑️ பட்டியலிலிருந்து நீக்கம்</span>`;
+const statusBadge = r.status === "PENDING"
+? `<span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:3px 8px; border-radius:999px; font-size:0.74rem; font-weight:900;">⏳ நிர்வாகி ஒப்புதல் நிலுவை</span>`
+: (r.status === "APPROVED"
+? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:3px 8px; border-radius:999px; font-size:0.74rem; font-weight:900;">✅ நிர்வாகியால் ஒப்புதல் (${escapeHtmlAttr(r.resolvedAt || "")})</span>`
+: `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:3px 8px; border-radius:999px; font-size:0.74rem; font-weight:900;">❌ நிராகரிக்கப்பட்டது</span>`);
+const targetDetail = r.reqType === "TRANSFER"
+? `<div><strong>பள்ளி:</strong> [U.NO: ${escapeHtmlAttr(r.uNo)}] ${escapeHtmlAttr(r.schoolName)} ➔ <strong>${r.targetUNo ? "[U.NO: " + escapeHtmlAttr(r.targetUNo) + "] " : ""}${escapeHtmlAttr(r.targetSchoolName || "")}</strong></div>`
+: `<div><strong>காரணம்:</strong> ${escapeHtmlAttr(r.reasonCategory || r.reason)}</div>`;
+return `
+        <tr>
+          <td style="text-align:center; font-weight:900;">${i + 1}</td>
+          <td><strong style="color:#0f294a;">${escapeHtmlAttr(r.reqId)}</strong><br><small style="color:#64748b;">${escapeHtmlAttr(r.requestedAt || "")}</small></td>
+          <td>${typeBadge}<div style="font-size:0.72rem; color:#475569; margin-top:3px; font-weight:800;">${escapeHtmlAttr(r.staffCategory || "")}</div></td>
+          <td><strong style="color:#0f294a;">${escapeHtmlAttr(r.staffName)}</strong> ${r.nameTa ? `<span style="color:#4c1d95; font-weight:800;">(${escapeHtmlAttr(r.nameTa)})</span>` : ""}<br><span style="font-size:0.75rem; color:#1d4ed8; font-weight:800;">EMIS: ${escapeHtmlAttr(r.emisId)}</span> | <small style="color:#475569; font-weight:700;">${escapeHtmlAttr(r.desig)}</small></td>
+          <td style="font-size:0.79rem; color:#334155;">${targetDetail}<div style="color:#64748b; margin-top:2px;">${escapeHtmlAttr(r.reasonDetail || r.reason || "")}</div></td>
+          <td style="text-align:center;">${statusBadge}</td>
+          <td style="text-align:center;">
+            ${(r.status === "PENDING" && String(r.uNo) === uNo)
+              ? `<button type="button" class="btn btn-outline btn-sm" onclick="cancelSchoolDeleteRequest('EBS', '${r.staffRecordId}', '${uNo}')" style="border-color:#f59e0b; color:#b45309; background:#fef3c7; font-weight:800; font-size:0.74rem;">↩️ கோரிக்கை ரத்து</button>`
+              : `<span style="font-size:0.75rem; color:#64748b; font-weight:700;">—</span>`
+            }
+          </td>
+        </tr>
+      `;
+}).join("");
+container.innerHTML = `
+      <div class="table-responsive" style="border:1px solid #cbd5e1; border-radius:8px;">
+        <table class="data-table" style="margin:0;">
+          <thead>
+            <tr style="background:#0f294a; color:#fff;">
+              <th style="width:45px; text-align:center;">வ.எண்</th>
+              <th>கோரிக்கை எண் &amp; நாள்</th>
+              <th>வகை &amp; படிவம்</th>
+              <th>ஆசிரியர் / பணியாளர் விவரம்</th>
+              <th>மாறுதல் பள்ளி / நீக்கக் காரணம்</th>
+              <th style="text-align:center;">ஒப்புதல் நிலை</th>
+              <th style="text-align:center;">செயல்</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>
+    `;
 }
 function renderAdminDeleteRequestsTable() {
+const allReqs = (staffDeleteRequests || []).map(r => normalizeStaffChangeRequestObj(r)).filter(Boolean);
+const pendCount = allReqs.filter(r => r.status === "PENDING").length;
+const apprCount = allReqs.filter(r => r.status === "APPROVED").length;
+const ebsPendEl = document.getElementById("admEbsStatPendingReqs");
+if (ebsPendEl) ebsPendEl.textContent = `${pendCount} நிலுவையில்`;
+const ebsSubEl = document.getElementById("admEbsStatApprovedReqsSub");
+if (ebsSubEl) ebsSubEl.textContent = `✅ ${apprCount} ஒப்புதல் அளிக்கப்பட்டவை`;
+const pillEl = document.getElementById("admEbsReqPendingBadgePill");
+if (pillEl) pillEl.textContent = `⏳ ${pendCount} ஒப்புதல் நிலுவையில்`;
 const tbody = document.getElementById("admDeleteRequestsTbody");
-if (!tbody) return;
+if (tbody) {
 const statusFilter = (document.getElementById("admDelReqStatusFilter")?.value || "PENDING");
 const q = (document.getElementById("admDelReqSearchInput")?.value || "").trim().toLowerCase();
-const filtered = (staffDeleteRequests || []).filter(r => {
+const filtered = allReqs.filter(r => {
 if (statusFilter !== "ALL" && r.status !== statusFilter) return false;
 if (q) {
-const hay = `${r.reqId} ${r.uNo} ${r.udiseNo} ${r.schoolName} ${r.staffName} ${r.emisId} ${r.desig} ${r.reason}`.toLowerCase();
+const hay = `${r.reqId} ${r.uNo} ${r.udiseNo} ${r.schoolName} ${r.targetUNo || ""} ${r.targetSchoolName || ""} ${r.staffName} ${r.emisId} ${r.desig} ${r.reason}`.toLowerCase();
 if (!hay.includes(q)) return false;
 }
 return true;
 });
 if (filtered.length === 0) {
-tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:22px; color:#64748b; font-weight:700;">பொருத்தமான நீக்கக் கோரிக்கைகள் எதுவும் இல்லை.</td></tr>`;
-return;
+tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:22px; color:#64748b; font-weight:700;">பொருத்தமான மாறுதல் / நீக்கக் கோரிக்கைகள் எதுவும் இல்லை.</td></tr>`;
+} else {
+tbody.innerHTML = filtered.map(r => buildAdminRequestRowHtml(r, false)).join("");
 }
-tbody.innerHTML = filtered.map(r => {
+}
+const ebsTbody = document.getElementById("admEbsApprovalReqsTbody");
+if (ebsTbody) {
+const statusFilter = (document.getElementById("admEbsReqStatusFilter")?.value || "PENDING");
+const typeFilter = (document.getElementById("admEbsReqTypeFilter")?.value || "ALL");
+const q = (document.getElementById("admEbsReqSearchInput")?.value || "").trim().toLowerCase();
+const filteredEbs = allReqs.filter(r => {
+if (statusFilter !== "ALL" && r.status !== statusFilter) return false;
+if (typeFilter !== "ALL" && r.reqType !== typeFilter) return false;
+if (q) {
+const hay = `${r.reqId} ${r.uNo} ${r.udiseNo} ${r.schoolName} ${r.targetUNo || ""} ${r.targetSchoolName || ""} ${r.staffName} ${r.nameTa || ""} ${r.emisId} ${r.desig} ${r.reason}`.toLowerCase();
+if (!hay.includes(q)) return false;
+}
+return true;
+});
+if (filteredEbs.length === 0) {
+ebsTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:18px; color:#64748b; font-weight:800;">தேர்ந்தெடுக்கப்பட்ட வடிகட்டலில் நிலுவையில் உள்ள மாறுதல் / நீக்கக் கோரிக்கைகள் எதுவும் இல்லை.</td></tr>`;
+} else {
+ebsTbody.innerHTML = filteredEbs.map(r => buildAdminRequestRowHtml(r, true)).join("");
+}
+}
+}
+function buildAdminRequestRowHtml(r, isEbsCompactTable) {
+const isTrans = r.reqType === "TRANSFER";
 const statusBadge = r.status === "PENDING"
-? `<span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">⏳ நிலுவையில் (Pending)</span>`
+? `<span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:3px 8px; border-radius:999px; font-size:0.74rem; font-weight:900;">⏳ நிலுவையில் (Pending)</span>`
 : (r.status === "APPROVED"
-? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">✅ நீக்கப்பட்டது (${r.resolvedAt || ''})</span>`
-: `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">❌ நிராகரிக்கப்பட்டது</span>`);
+? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:3px 8px; border-radius:999px; font-size:0.74rem; font-weight:900;">✅ ${isTrans ? "மாற்றப்பட்டது" : "நீக்கப்பட்டது"} (${escapeHtmlAttr(r.resolvedAt || "")})</span>`
+: `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:3px 8px; border-radius:999px; font-size:0.74rem; font-weight:900;">❌ நிராகரிக்கப்பட்டது</span>`);
+const approveBtnLabel = isTrans ? "✅ ஒப்புதல் &amp; மாற்று" : "✅ ஒப்புதல் &amp; நீக்கு";
 const actionHtml = r.status === "PENDING"
-? `<div style="display:flex; gap:6px; flex-wrap:wrap;">
-             <button type="button" class="btn btn-success btn-sm" onclick="resolveAdminDeleteRequest('${r.reqId}', 'APPROVED')">✅ ஒப்புதல் &amp; நீக்கு</button>
-             <button type="button" class="btn btn-danger btn-sm" onclick="resolveAdminDeleteRequest('${r.reqId}', 'REJECTED')">❌ நிராகரி</button>
-           </div>`
-: `<span style="font-size:0.78rem; color:#64748b; font-weight:700;">முடிக்கப்பட்டது</span>`;
+? `<div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">
+           <button type="button" class="btn btn-success btn-sm" onclick="resolveAdminDeleteRequest('${r.reqId}', 'APPROVED')" style="font-weight:900; font-size:0.74rem; padding:4px 8px;">${approveBtnLabel}</button>
+           <button type="button" class="btn btn-danger btn-sm" onclick="resolveAdminDeleteRequest('${r.reqId}', 'REJECTED')" style="font-weight:900; font-size:0.74rem; padding:4px 8px;">❌ நிராகரி</button>
+         </div>`
+: `<div style="display:flex; gap:5px; justify-content:center; align-items:center; flex-wrap:wrap;">
+           <span style="font-size:0.74rem; color:#64748b; font-weight:800;">முடிக்கப்பட்டது</span>
+           <button type="button" class="btn btn-outline btn-sm" onclick="revertAdminDeleteRequest('${r.reqId}')" title="ஒப்புதலை மீட்டமை (Undo / Restore)" style="font-size:0.70rem; padding:2px 6px; font-weight:800;">↩️ மீட்டமை</button>
+         </div>`;
+const typeAndTargetHtml = isTrans
+? `<div><span style="background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; padding:2px 7px; border-radius:4px; font-size:0.72rem; font-weight:900;">🔄 பிற பள்ளிக்கு மாறுதல்</span></div>
+         <div style="margin-top:4px; font-size:0.80rem; font-weight:900; color:#15803d;">➔ ${r.targetUNo ? "[U.NO: " + escapeHtmlAttr(r.targetUNo) + "] " : ""}${escapeHtmlAttr(r.targetSchoolName || "")}</div>
+         <div style="font-size:0.74rem; color:#475569;">${escapeHtmlAttr(r.reasonCategory || "")}</div>`
+: `<div><span style="background:#fef2f2; color:#991b1b; border:1px solid #fca5a5; padding:2px 7px; border-radius:4px; font-size:0.72rem; font-weight:900;">🗑️ பட்டியலிலிருந்து நீக்கம்</span></div>
+         <div style="margin-top:3px; font-size:0.79rem; font-weight:800; color:#334155;">${escapeHtmlAttr(r.reasonCategory || r.reason || "")}</div>`;
+if (isEbsCompactTable) {
 return `
         <tr>
-          <td><strong style="color:#0f294a;">${r.reqId}</strong><br><small style="color:#64748b;">${r.requestedAt}</small></td>
-          <td><strong>[${r.uNo}] ${r.schoolName}</strong><br><small style="color:#64748b;">UDISE: ${r.udiseNo}</small></td>
-          <td><span style="background:#eff6ff; color:#1e40af; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800;">${r.staffCategory || 'Teaching'}</span></td>
-          <td><strong style="color:#0f294a;">${r.staffName}</strong><br><small style="color:#475569;">${r.desig}</small></td>
-          <td><strong style="color:#1d4ed8;">${r.emisId}</strong></td>
-          <td style="max-width:260px; font-size:0.82rem; color:#334155;">${r.reason}</td>
-          <td>${statusBadge}</td>
-          <td>${actionHtml}</td>
+          <td><strong style="color:#0f294a;">${escapeHtmlAttr(r.reqId)}</strong><br><small style="color:#64748b;">${escapeHtmlAttr(r.requestedAt || "")}</small></td>
+          <td><strong style="color:#4c1d95;">[U.NO: ${escapeHtmlAttr(r.uNo)}]</strong><br><strong style="color:#0f294a; font-size:0.80rem;">${escapeHtmlAttr(r.schoolName)}</strong></td>
+          <td>
+            <span style="background:#f5f3ff; color:#5b21b6; border:1px solid #ddd6fe; padding:1px 6px; border-radius:4px; font-size:0.70rem; font-weight:900;">${escapeHtmlAttr(r.staffCategory || "Teaching")}</span>
+            <div style="font-weight:900; color:#0f294a; margin-top:2px;">${escapeHtmlAttr(r.staffName)} ${r.nameTa ? `<span style="color:#4c1d95;">(${escapeHtmlAttr(r.nameTa)})</span>` : ""}</div>
+            <div style="font-size:0.74rem; color:#1d4ed8; font-weight:800;">EMIS: ${escapeHtmlAttr(r.emisId)} | ${escapeHtmlAttr(r.desig)}</div>
+          </td>
+          <td>${typeAndTargetHtml}</td>
+          <td style="font-size:0.76rem; color:#334155; max-width:210px;">
+            ${r.orderNo ? `<div><strong>ஆணை:</strong> ${escapeHtmlAttr(r.orderNo)}</div>` : ""}
+            ${r.actionDate ? `<div><strong>தேதி:</strong> ${escapeHtmlAttr(formatDateDisplayDMY(r.actionDate))}</div>` : ""}
+            <div>${escapeHtmlAttr(r.reasonDetail || r.reason || "")}</div>
+          </td>
+          <td style="text-align:center;">${statusBadge}</td>
+          <td style="text-align:center;">${actionHtml}</td>
         </tr>
       `;
-}).join("");
+}
+return `
+      <tr>
+        <td><strong style="color:#0f294a;">${escapeHtmlAttr(r.reqId)}</strong><br><small style="color:#64748b;">${escapeHtmlAttr(r.requestedAt || "")}</small></td>
+        <td><strong>[U.NO: ${escapeHtmlAttr(r.uNo)}] ${escapeHtmlAttr(r.schoolName)}</strong><br><small style="color:#64748b;">UDISE: ${escapeHtmlAttr(r.udiseNo || "-")}</small></td>
+        <td><span style="background:#eff6ff; color:#1e40af; padding:2px 8px; border-radius:4px; font-size:0.74rem; font-weight:800;">${escapeHtmlAttr(r.staffCategory || "Teaching")}</span></td>
+        <td><strong style="color:#0f294a;">${escapeHtmlAttr(r.staffName)}</strong><br><small style="color:#475569;">${escapeHtmlAttr(r.desig)}</small></td>
+        <td><strong style="color:#1d4ed8;">${escapeHtmlAttr(r.emisId)}</strong></td>
+        <td style="max-width:260px; font-size:0.80rem; color:#334155;">${typeAndTargetHtml}<div style="margin-top:2px; color:#64748b;">${escapeHtmlAttr(r.reasonDetail || "")}</div></td>
+        <td>${statusBadge}</td>
+        <td>${actionHtml}</td>
+      </tr>
+    `;
 }
 function resolveAdminDeleteRequest(reqId, decision) {
-const req = (staffDeleteRequests || []).find(r => r.reqId === reqId);
+const req = (staffDeleteRequests || []).find(r => r && r.reqId === reqId);
 if (!req) return;
+normalizeStaffChangeRequestObj(req);
 req.status = decision;
 req.resolvedAt = new Date().toLocaleDateString("en-IN");
-const extra = getSchoolExtra(req.uNo);
-if (extra && Array.isArray(extra.staff)) {
+const uNo = String(req.uNo || "").trim();
+const sid = String(req.staffRecordId || req.emisId || "").trim();
+const ctxSource = getOrInitSchoolEbs2026Data(uNo, false);
+const sourceExtra = ctxSource.extra;
+const stFromSource = ctxSource.staffList.find(x => String(x.staffId) === sid) || req.staffSnapshot || {};
+const ebsProfFromSource = (sourceExtra.ebs2026 && sourceExtra.ebs2026.staffProfiles && sourceExtra.ebs2026.staffProfiles[sid])
+? Object.assign({}, sourceExtra.ebs2026.staffProfiles[sid])
+: (req.ebsProfileSnapshot || {});
 if (decision === "APPROVED") {
-extra.staff = extra.staff.filter(st => String(st.id) !== String(req.staffRecordId) && String(st.id) !== String(req.emisId));
+if (Array.isArray(sourceExtra.staff)) {
+sourceExtra.staff = sourceExtra.staff.filter(st => String(st && (st.id || st.staffId) || "").trim() !== sid);
+}
+if (!Array.isArray(sourceExtra.removedStaffIds)) sourceExtra.removedStaffIds = [];
+if (!sourceExtra.removedStaffIds.includes(sid)) sourceExtra.removedStaffIds.push(sid);
+if (!sourceExtra.ebs2026) sourceExtra.ebs2026 = {};
+if (Array.isArray(sourceExtra.ebs2026.addedStaff)) {
+sourceExtra.ebs2026.addedStaff = sourceExtra.ebs2026.addedStaff.filter(st => String(st && (st.id || st.staffId) || "").trim() !== sid);
+}
+if (!Array.isArray(sourceExtra.ebs2026.removedStaffIds)) sourceExtra.ebs2026.removedStaffIds = [];
+if (!sourceExtra.ebs2026.removedStaffIds.includes(sid)) sourceExtra.ebs2026.removedStaffIds.push(sid);
+recalcSchoolEbsF1StaffCountsFromList(uNo);
+const targetUNo = String(req.targetUNo || "").trim();
+const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+if (req.reqType === "TRANSFER" && targetUNo) {
+const targetSch = masterSchools.find(m => String(m.uNo) === targetUNo) || { uNo: targetUNo, mgmt1: "1G", block: "01-Sivagangai" };
+const ctxTarget = getOrInitSchoolEbs2026Data(targetUNo, false);
+const targetExtra = ctxTarget.extra;
+if (Array.isArray(targetExtra.removedStaffIds)) {
+targetExtra.removedStaffIds = targetExtra.removedStaffIds.filter(x => String(x).trim() !== sid);
+}
+if (targetExtra.ebs2026 && Array.isArray(targetExtra.ebs2026.removedStaffIds)) {
+targetExtra.ebs2026.removedStaffIds = targetExtra.ebs2026.removedStaffIds.filter(x => String(x).trim() !== sid);
+}
+const isTeach = req.isTeaching !== undefined ? Boolean(req.isTeaching) : Boolean(stFromSource.isTeaching !== false);
+const newDojSchool = req.actionDate || stFromSource.dojSchool || "";
+const transferredRec = {
+id: sid,
+staffId: sid,
+prefix: stFromSource.prefix || ebsProfFromSource.prefix || "திரு.",
+name: stFromSource.name || req.staffName || "",
+nameTa: stFromSource.nameTa || ebsProfFromSource.nameTa || req.nameTa || "",
+ifhrmsId: stFromSource.ifhrmsId || ebsProfFromSource.ifhrmsId || "",
+gender: stFromSource.gender || "Male",
+dob: stFromSource.dob || "",
+desig: stFromSource.desig || req.desig || (isTeach ? "B.T.Assistant" : "Junior Assistant"),
+subject: stFromSource.subject || req.subject || (isTeach ? "English" : "-"),
+classTaught: stFromSource.classTaught || "-",
+qualification: stFromSource.qualification || "",
+dojService: stFromSource.dojService || ebsProfFromSource.dojService || "",
+dojPresPost: stFromSource.dojPresPost || ebsProfFromSource.dojPresPost || "",
+dojSchool: newDojSchool,
+firstApp: stFromSource.modeFirstApp || "TRB",
+nature: normalizeStaffNatureBySchoolMgmt(stFromSource.nature || "Regular (Govt.Salaried )", targetSch.mgmt1),
+examDuty: isTeach ? "Hall Superintendent" : "",
+campDuty: isTeach ? "Examiner" : "",
+campOption: targetSch.block || "01-Sivagangai",
+mobile: stFromSource.mobile || ebsProfFromSource.mobile || "",
+email: stFromSource.email || ebsProfFromSource.email || "",
+source: "EBS_TRANSFER",
+isTeaching: isTeach,
+isAddedEbs: true,
+transferredFromUNo: uNo,
+transferredAt: req.resolvedAt
+};
+if (!Array.isArray(targetExtra.staff)) targetExtra.staff = [];
+const exTIdx = targetExtra.staff.findIndex(x => String(x && (x.id || x.staffId) || "").trim() === sid);
+if (exTIdx >= 0) targetExtra.staff[exTIdx] = Object.assign({}, targetExtra.staff[exTIdx], transferredRec);
+else targetExtra.staff.push(transferredRec);
+if (!targetExtra.ebs2026) targetExtra.ebs2026 = {};
+if (!Array.isArray(targetExtra.ebs2026.addedStaff)) targetExtra.ebs2026.addedStaff = [];
+const addTIdx = targetExtra.ebs2026.addedStaff.findIndex(x => String(x && (x.id || x.staffId) || "").trim() === sid);
+if (addTIdx >= 0) targetExtra.ebs2026.addedStaff[addTIdx] = Object.assign({}, targetExtra.ebs2026.addedStaff[addTIdx], transferredRec);
+else targetExtra.ebs2026.addedStaff.push(transferredRec);
+if (!targetExtra.ebs2026.staffProfiles) targetExtra.ebs2026.staffProfiles = {};
+targetExtra.ebs2026.staffProfiles[sid] = Object.assign({}, ebsProfFromSource, {
+prefix: transferredRec.prefix,
+nameTa: transferredRec.nameTa,
+ifhrmsId: transferredRec.ifhrmsId,
+mobile: transferredRec.mobile,
+email: transferredRec.email,
+dojService: transferredRec.dojService,
+dojPresPost: transferredRec.dojPresPost,
+dojSchool: newDojSchool,
+isAddedEbs: true,
+transferredFromUNo: uNo
+});
+recalcSchoolEbsF1StaffCountsFromList(targetUNo);
+staffOverrides[sid] = Object.assign({}, staffOverrides[sid] || {}, {
+uNo: targetUNo,
+transferredFromUNo: uNo,
+deleted: false
+});
 } else {
-const st = extra.staff.find(item => String(item.id) === String(req.staffRecordId) || String(item.id) === String(req.emisId));
+staffOverrides[sid] = Object.assign({}, staffOverrides[sid] || {}, {
+deleted: true,
+removedFromUNo: uNo
+});
+}
+safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
+districtFlattenedStaffCache = null;
+} else {
+if (Array.isArray(sourceExtra.staff)) {
+const st = sourceExtra.staff.find(item => String(item.id || item.staffId) === sid);
 if (st) delete st.deleteReqStatus;
 }
-window._activeSyncTargetUNo = String(req.uNo);
-safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 }
-window._activeSyncTargetUNo = String(req.uNo);
+window._activeSyncTargetUNo = uNo;
+safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
 updateAllSummaryCounters();
 renderAdminDeleteRequestsTable();
-showToast(decision === "APPROVED" ? `✅ ${req.staffName} நீக்கக் கோரிக்கைக்கு ஒப்புதல் அளிக்கப்பட்டு பட்டியலிலிருந்து நீக்கப்பட்டார்.` : `❌ ${req.staffName} நீக்கக் கோரிக்கை நிராகரிக்கப்பட்டது.`, decision === "APPROVED" ? "#22c55e" : "#ef4444");
+if (typeof renderAdminEbsMasterDashboard === "function") renderAdminEbsMasterDashboard();
+if (activeSchoolSession) {
+renderSchoolStaffTable(getSchoolExtra(activeSchoolSession.uNo));
+renderSchoolEbsModule();
+}
+if (decision === "APPROVED") {
+showToast(
+req.reqType === "TRANSFER" && req.targetUNo
+? `✅ ஒப்புதல் அளிக்கப்பட்டது! ${req.staffName} [U.NO: ${req.uNo}] பள்ளியிலிருந்து [U.NO: ${req.targetUNo}] ${req.targetSchoolName} பள்ளிக்கு மாற்றப்பட்டார்.`
+: `✅ ஒப்புதல் அளிக்கப்பட்டது! ${req.staffName} [U.NO: ${req.uNo}] பள்ளி EBS பட்டியலிலிருந்து நீக்கப்பட்டார்.`,
+"#16a34a"
+);
+} else {
+showToast(`❌ ${req.staffName} கோரிக்கை நிராகரிக்கப்பட்டது.`, "#ef4444");
+}
+}
+function revertAdminDeleteRequest(reqId) {
+const req = (staffDeleteRequests || []).find(r => r && r.reqId === reqId);
+if (!req) return;
+normalizeStaffChangeRequestObj(req);
+const uNo = String(req.uNo || "").trim();
+const sid = String(req.staffRecordId || req.emisId || "").trim();
+const sourceExtra = getSchoolExtra(uNo);
+if (req.status === "APPROVED") {
+if (Array.isArray(sourceExtra.removedStaffIds)) {
+sourceExtra.removedStaffIds = sourceExtra.removedStaffIds.filter(x => String(x).trim() !== sid);
+}
+if (sourceExtra.ebs2026 && Array.isArray(sourceExtra.ebs2026.removedStaffIds)) {
+sourceExtra.ebs2026.removedStaffIds = sourceExtra.ebs2026.removedStaffIds.filter(x => String(x).trim() !== sid);
+}
+if (req.staffSnapshot) {
+if (!Array.isArray(sourceExtra.staff)) sourceExtra.staff = [];
+if (!sourceExtra.staff.some(x => String(x && (x.id || x.staffId) || "").trim() === sid)) {
+const restored = Object.assign({}, req.staffSnapshot, { id: sid, staffId: sid, deleteReqStatus: "PENDING" });
+sourceExtra.staff.push(restored);
+}
+}
+if (req.reqType === "TRANSFER" && req.targetUNo) {
+const targetExtra = getSchoolExtra(req.targetUNo);
+if (Array.isArray(targetExtra.staff)) {
+targetExtra.staff = targetExtra.staff.filter(x => String(x && (x.id || x.staffId) || "").trim() !== sid);
+}
+if (targetExtra.ebs2026 && Array.isArray(targetExtra.ebs2026.addedStaff)) {
+targetExtra.ebs2026.addedStaff = targetExtra.ebs2026.addedStaff.filter(x => String(x && (x.id || x.staffId) || "").trim() !== sid);
+}
+recalcSchoolEbsF1StaffCountsFromList(req.targetUNo);
+}
+const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+delete staffOverrides[sid];
+safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
+districtFlattenedStaffCache = null;
+recalcSchoolEbsF1StaffCountsFromList(uNo);
+}
+req.status = "PENDING";
+req.resolvedAt = "";
+safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
+updateAllSummaryCounters();
+renderAdminDeleteRequestsTable();
+if (typeof renderAdminEbsMasterDashboard === "function") renderAdminEbsMasterDashboard();
+if (activeSchoolSession) renderSchoolEbsModule();
+showToast(`↩️ [${req.staffName}] கோரிக்கை மீண்டும் நிலுவைக்கு (Pending) மாற்றப்பட்டது.`, "#d97706");
+}
+function approveAllPendingEbsStaffRequests() {
+const pendingList = (staffDeleteRequests || []).filter(r => r && r.status === "PENDING");
+if (pendingList.length === 0) {
+showToast("ℹ️ ஒப்புதல் அளிக்க நிலுவையில் கோரிக்கைகள் எதுவும் இல்லை.", "#0284c7");
+return;
+}
+pendingList.forEach(r => {
+resolveAdminDeleteRequest(r.reqId, "APPROVED");
+});
+showToast(`✅ நிலுவையில் இருந்த அனைத்து ${pendingList.length} மாறுதல் / நீக்கக் கோரிக்கைகளுக்கும் ஒப்புதல் அளிக்கப்பட்டது!`, "#16a34a");
 }
 function exportDeleteRequestsCsv() {
 if (!staffDeleteRequests || staffDeleteRequests.length === 0) {
@@ -19151,7 +19845,7 @@ window.scrollTo({ top: 0, behavior: "smooth" });
 }
 function switchSchoolEbsSubTab(subKey) {
 activeSchoolEbsSubTab = subKey;
-["F1", "F2", "F3", "F4"].forEach(k => {
+["F1", "F2", "F3", "F4", "F5"].forEach(k => {
 const btn = document.getElementById("ebsSubBtn" + k);
 const pane = document.getElementById("ebsSubPane" + k);
 if (btn) btn.classList.toggle("active", k === subKey);
@@ -19174,10 +19868,19 @@ const c3 = document.getElementById("ebsTabCountF3");
 if (c3) c3.textContent = teachList.length;
 const c4 = document.getElementById("ebsTabCountF4");
 if (c4) c4.textContent = nonTeachList.length;
+const schReqs = getSchoolRelatedStaffChangeRequests(uNo);
+const c5 = document.getElementById("ebsTabCountF5");
+if (c5) {
+const pendCnt = schReqs.filter(r => r.status === "PENDING").length;
+c5.textContent = pendCnt > 0 ? `${pendCnt} நிலுவை` : String(schReqs.length);
+}
 renderSchoolEbsF1Interactive(ctx);
 renderSchoolEbsF2Interactive(ctx);
 renderSchoolEbsF3Table(ctx, teachList);
 renderSchoolEbsF4Table(ctx, nonTeachList);
+if (typeof renderSchoolEbsTransferRemovalPane === "function") {
+renderSchoolEbsTransferRemovalPane(ctx);
+}
 }
 function renderSchoolEbsF1Interactive(ctx) {
 const container = document.getElementById("ebsF1InteractiveContainer");
@@ -19915,11 +20618,21 @@ return;
 }
 const rowsHtml = teachList.map((st, idx) => {
 const hasIfhrms = Boolean(st.ifhrmsId && String(st.ifhrmsId).trim().length >= 5);
+const pendReq = getPendingStaffChangeReq(ctx.sch.uNo, st.staffId);
+const ebsProf = (ctx.ebs && ctx.ebs.staffProfiles && ctx.ebs.staffProfiles[st.staffId]) ? ctx.ebs.staffProfiles[st.staffId] : {};
+const transFrom = st.transferredFromUNo || ebsProf.transferredFromUNo || "";
 const idBadge = st.isTempId
 ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dcfce7; color:#166534; font-weight:900;">Temp ID</span>`
-: (st.isAddedEbs ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dbeafe; color:#1e40af; font-weight:900;">கூடுதல்</span>` : "");
+: (transFrom
+? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:900;">🔄 மாறுதல் வரவு (U.NO:${escapeHtmlAttr(transFrom)})</span>`
+: (st.isAddedEbs ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dbeafe; color:#1e40af; font-weight:900;">கூடுதல்</span>` : ""));
+const pendingBannerHtml = pendReq
+? (pendReq.reqType === "TRANSFER"
+? `<div style="margin-top:4px; padding:3px 7px; border-radius:6px; background:#eff6ff; border:1px solid #93c5fd; color:#1e40af; font-size:0.71rem; font-weight:900;">⏳ மாறுதல் ஒப்புதல் நிலுவை ➔ ${pendReq.targetUNo ? "[U.NO: " + escapeHtmlAttr(pendReq.targetUNo) + "] " : ""}${escapeHtmlAttr(pendReq.targetSchoolName || "")}</div>`
+: `<div style="margin-top:4px; padding:3px 7px; border-radius:6px; background:#fef2f2; border:1px solid #fca5a5; color:#991b1b; font-size:0.71rem; font-weight:900;">⏳ நீக்க ஒப்புதல் நிலுவை (${escapeHtmlAttr(pendReq.reasonCategory || "நிர்வாகி ஒப்புதலுக்கு")})</div>`)
+: "";
 return `
-        <tr>
+        <tr style="${pendReq ? "background:#fffbeb;" : ""}">
           <td style="text-align:center; font-weight:900;">${idx + 1}</td>
           <td>
             <div style="font-weight:900; color:#1e40af;">${st.isTempId ? "TEMP" : "EMIS"}: ${st.staffId || "-"}${idBadge}</div>
@@ -19928,6 +20641,7 @@ return `
           <td>
             <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name || "(பெயர் உள்ளிடவும்)")}</div>
             <div style="font-size:0.78rem; color:#4c1d95; font-weight:800;">${escapeHtmlAttr(st.prefix || "")} ${escapeHtmlAttr(st.nameTa || "(தமிழ் பெயர் சேர்க்க)")}</div>
+            ${pendingBannerHtml}
           </td>
           <td>
             <div style="font-weight:800; color:#0f766e;"><span style="display:inline-block; background:#ccfbf1; color:#115e59; border:1px solid #99f6e4; border-radius:4px; padding:0px 5px; font-size:0.68rem; font-weight:900; margin-right:4px;">Code ${String(st.desigCode || getEbsDesignationCodeNum(st.desig, true)).padStart(2, "0")}</span>${escapeHtmlAttr(st.desig)}</div>
@@ -19946,13 +20660,17 @@ return `
           </td>
           <td style="text-align:center;">
             <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">
-              <button type="button" class="btn btn-primary btn-sm" onclick="openEbsStaffProfileModal('${ctx.sch.uNo}', '${st.staffId}')" style="background:#4c1d95; border-color:#4c1d95; font-size:0.75rem; padding:4px 9px; font-weight:800;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="openEbsStaffProfileModal('${ctx.sch.uNo}', '${st.staffId}')" style="background:#4c1d95; border-color:#4c1d95; font-size:0.74rem; padding:4px 8px; font-weight:800;">
                 ✏️ படிவம் பூர்த்தி செய்
               </button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F3_SINGLE', '${st.staffId}')" style="border-color:#1d4ed8; color:#1d4ed8; background:#eff6ff; font-size:0.75rem; padding:4px 9px; font-weight:800;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F3_SINGLE', '${st.staffId}')" style="border-color:#1d4ed8; color:#1d4ed8; background:#eff6ff; font-size:0.74rem; padding:4px 8px; font-weight:800;">
                 🖨️ Form-III A4
               </button>
-              ${st.isAddedEbs ? `<button type="button" class="btn btn-outline btn-sm" onclick="removeAddedEbsStaff('${ctx.sch.uNo}', '${st.staffId}')" title="கூடுதலாகச் சேர்க்கப்பட்ட பதிவை நீக்கு" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-size:0.72rem; padding:4px 7px; font-weight:800;">🗑️</button>` : ""}
+              ${pendReq
+                ? `<button type="button" class="btn btn-outline btn-sm" onclick="cancelSchoolDeleteRequest('EBS', '${st.staffId}', '${ctx.sch.uNo}')" title="நிலுவையில் உள்ள கோரிக்கையை ரத்து செய்" style="border-color:#f59e0b; color:#b45309; background:#fef3c7; font-size:0.73rem; padding:4px 8px; font-weight:900;">↩️ கோரிக்கை ரத்து</button>`
+                : `<button type="button" class="btn btn-outline btn-sm" onclick="openEbsStaffActionModal('${ctx.sch.uNo}', '${st.staffId}', 'TRANSFER')" title="பிற பள்ளிக்கு மாறுதல் கோரிக்கை (நிர்வாகி ஒப்புதலுக்கு)" style="border-color:#93c5fd; color:#1e40af; background:#eff6ff; font-size:0.73rem; padding:4px 8px; font-weight:800;">🔄 மாறுதல்</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openEbsStaffActionModal('${ctx.sch.uNo}', '${st.staffId}', 'REMOVE')" title="பட்டியலிலிருந்து நீக்கக் கோரிக்கை (நிர்வாகி ஒப்புதலுக்கு)" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-size:0.73rem; padding:4px 8px; font-weight:800;">🗑️ நீக்கம்</button>`
+              }
             </div>
           </td>
         </tr>
@@ -19969,7 +20687,7 @@ container.innerHTML = `
               <th>பதவி, பாடம் &amp; கல்வித்தகுதி</th>
               <th style="text-align:center;">தற்போதைய பதவியில் சேர்ந்த தேதி (DOJ) &amp; பிறந்த தேதி (DOB)</th>
               <th style="text-align:center;">கைபேசி &amp; முகாம்</th>
-              <th style="text-align:center; width:220px;">FORM – III நடவடிக்கை</th>
+              <th style="text-align:center; width:260px;">FORM – III நடவடிக்கை (திருத்து / மாறுதல் / நீக்கம்)</th>
             </tr>
           </thead>
           <tbody>${rowsHtml}</tbody>
@@ -19986,11 +20704,21 @@ return;
 }
 const rowsHtml = nonTeachList.map((st, idx) => {
 const hasIfhrms = Boolean(st.ifhrmsId && String(st.ifhrmsId).trim().length >= 5);
+const pendReq = getPendingStaffChangeReq(ctx.sch.uNo, st.staffId);
+const ebsProf = (ctx.ebs && ctx.ebs.staffProfiles && ctx.ebs.staffProfiles[st.staffId]) ? ctx.ebs.staffProfiles[st.staffId] : {};
+const transFrom = st.transferredFromUNo || ebsProf.transferredFromUNo || "";
 const idBadge = st.isTempId
 ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dcfce7; color:#166534; font-weight:900;">Temp ID</span>`
-: (st.isAddedEbs ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dbeafe; color:#1e40af; font-weight:900;">கூடுதல்</span>` : "");
+: (transFrom
+? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:900;">🔄 மாறுதல் வரவு (U.NO:${escapeHtmlAttr(transFrom)})</span>`
+: (st.isAddedEbs ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dbeafe; color:#1e40af; font-weight:900;">கூடுதல்</span>` : ""));
+const pendingBannerHtml = pendReq
+? (pendReq.reqType === "TRANSFER"
+? `<div style="margin-top:4px; padding:3px 7px; border-radius:6px; background:#eff6ff; border:1px solid #93c5fd; color:#1e40af; font-size:0.71rem; font-weight:900;">⏳ மாறுதல் ஒப்புதல் நிலுவை ➔ ${pendReq.targetUNo ? "[U.NO: " + escapeHtmlAttr(pendReq.targetUNo) + "] " : ""}${escapeHtmlAttr(pendReq.targetSchoolName || "")}</div>`
+: `<div style="margin-top:4px; padding:3px 7px; border-radius:6px; background:#fef2f2; border:1px solid #fca5a5; color:#991b1b; font-size:0.71rem; font-weight:900;">⏳ நீக்க ஒப்புதல் நிலுவை (${escapeHtmlAttr(pendReq.reasonCategory || "நிர்வாகி ஒப்புதலுக்கு")})</div>`)
+: "";
 return `
-        <tr>
+        <tr style="${pendReq ? "background:#fffbeb;" : ""}">
           <td style="text-align:center; font-weight:900;">${idx + 1}</td>
           <td>
             <div style="font-weight:900; color:#b45309;">${st.isTempId ? "TEMP" : "EMIS"}: ${st.staffId || "-"}${idBadge}</div>
@@ -19999,6 +20727,7 @@ return `
           <td>
             <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name || "(பெயர் உள்ளிடவும்)")}</div>
             <div style="font-size:0.78rem; color:#78350f; font-weight:800;">${escapeHtmlAttr(st.prefix || "")} ${escapeHtmlAttr(st.nameTa || "(தமிழ் பெயர் சேர்க்க)")}</div>
+            ${pendingBannerHtml}
           </td>
           <td style="font-weight:800; color:#0f766e;"><span style="display:inline-block; background:#fef3c7; color:#92400e; border:1px solid #fde68a; border-radius:4px; padding:0px 5px; font-size:0.68rem; font-weight:900; margin-right:4px;">Code ${String(st.desigCode || getEbsDesignationCodeNum(st.desig, false)).padStart(2, "0")}</span>${escapeHtmlAttr(st.desig)} (${escapeHtmlAttr(st.nature || "Regular")})</td>
           <td style="text-align:center; font-size:0.78rem; font-weight:700;">
@@ -20012,13 +20741,17 @@ return `
           </td>
           <td style="text-align:center;">
             <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">
-              <button type="button" class="btn btn-primary btn-sm" onclick="openEbsStaffProfileModal('${ctx.sch.uNo}', '${st.staffId}')" style="background:#b45309; border-color:#b45309; font-size:0.75rem; padding:4px 9px; font-weight:800;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="openEbsStaffProfileModal('${ctx.sch.uNo}', '${st.staffId}')" style="background:#b45309; border-color:#b45309; font-size:0.74rem; padding:4px 8px; font-weight:800;">
                 ✏️ படிவம் பூர்த்தி செய்
               </button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F4_SINGLE', '${st.staffId}')" style="border-color:#b45309; color:#b45309; background:#fffbeb; font-size:0.75rem; padding:4px 9px; font-weight:800;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F4_SINGLE', '${st.staffId}')" style="border-color:#b45309; color:#b45309; background:#fffbeb; font-size:0.74rem; padding:4px 8px; font-weight:800;">
                 🖨️ Form-IV A4
               </button>
-              ${st.isAddedEbs ? `<button type="button" class="btn btn-outline btn-sm" onclick="removeAddedEbsStaff('${ctx.sch.uNo}', '${st.staffId}')" title="கூடுதலாகச் சேர்க்கப்பட்ட பதிவை நீக்கு" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-size:0.72rem; padding:4px 7px; font-weight:800;">🗑️</button>` : ""}
+              ${pendReq
+                ? `<button type="button" class="btn btn-outline btn-sm" onclick="cancelSchoolDeleteRequest('EBS', '${st.staffId}', '${ctx.sch.uNo}')" title="நிலுவையில் உள்ள கோரிக்கையை ரத்து செய்" style="border-color:#f59e0b; color:#b45309; background:#fef3c7; font-size:0.73rem; padding:4px 8px; font-weight:900;">↩️ கோரிக்கை ரத்து</button>`
+                : `<button type="button" class="btn btn-outline btn-sm" onclick="openEbsStaffActionModal('${ctx.sch.uNo}', '${st.staffId}', 'TRANSFER')" title="பிற பள்ளிக்கு மாறுதல் கோரிக்கை (நிர்வாகி ஒப்புதலுக்கு)" style="border-color:#93c5fd; color:#1e40af; background:#eff6ff; font-size:0.73rem; padding:4px 8px; font-weight:800;">🔄 மாறுதல்</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openEbsStaffActionModal('${ctx.sch.uNo}', '${st.staffId}', 'REMOVE')" title="பட்டியலிலிருந்து நீக்கக் கோரிக்கை (நிர்வாகி ஒப்புதலுக்கு)" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-size:0.73rem; padding:4px 8px; font-weight:800;">🗑️ நீக்கம்</button>`
+              }
             </div>
           </td>
         </tr>
@@ -20035,7 +20768,7 @@ container.innerHTML = `
               <th>பதவி (Designation)</th>
               <th style="text-align:center;">தற்போதைய பதவியில் சேர்ந்த தேதி (DOJ) &amp; பிறந்த தேதி (DOB)</th>
               <th style="text-align:center;">கைபேசி &amp; முகாம்</th>
-              <th style="text-align:center; width:220px;">FORM – IV நடவடிக்கை</th>
+              <th style="text-align:center; width:260px;">FORM – IV நடவடிக்கை (திருத்து / மாறுதல் / நீக்கம்)</th>
             </tr>
           </thead>
           <tbody>${rowsHtml}</tbody>
@@ -20639,6 +21372,8 @@ function removeAddedEbsStaff(uNo, staffId) {
 uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
 staffId = String(staffId || "").trim();
 if (!uNo || !staffId) return;
+openEbsStaffActionModal(uNo, staffId, "REMOVE");
+return;
 const extra = getSchoolExtra(uNo);
 if (Array.isArray(extra.staff)) {
 extra.staff = extra.staff.filter(x => String(x && (x.id || x.staffId) || "").trim() !== staffId);
@@ -21181,11 +21916,21 @@ ${prac12Opts2}
           </div>
         </div>
 
-        <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #cbd5e1; padding-top:12px;">
-          <button type="button" class="btn btn-outline" onclick="closeEbsStaffProfileModal()">ரத்து செய்</button>
-          <button type="submit" class="btn btn-primary" style="background:#16a34a; border-color:#15803d; font-weight:900;">
-            💾 பணியாளர் EBS சுயவிவரத்தைச் சேமி (Save Form-${st.isTeaching ? "III" : "IV"})
-          </button>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid #cbd5e1; padding-top:12px;">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="closeEbsStaffProfileModal(); openEbsStaffActionModal('${uNo}', '${st.staffId}', 'TRANSFER');" style="border-color:#93c5fd; color:#1e40af; background:#eff6ff; font-weight:900;">
+              🔄 பிற பள்ளிக்கு மாறுதல் கோரிக்கை (Transfer)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="closeEbsStaffProfileModal(); openEbsStaffActionModal('${uNo}', '${st.staffId}', 'REMOVE');" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-weight:900;">
+              🗑️ பட்டியலிலிருந்து நீக்கக் கோரிக்கை (Remove)
+            </button>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline" onclick="closeEbsStaffProfileModal()">ரத்து செய்</button>
+            <button type="submit" class="btn btn-primary" style="background:#16a34a; border-color:#15803d; font-weight:900;">
+              💾 பணியாளர் EBS சுயவிவரத்தைச் சேமி (Save Form-${st.isTeaching ? "III" : "IV"})
+            </button>
+          </div>
         </div>
       </form>
     `;
@@ -22972,6 +23717,9 @@ const f3El = document.getElementById("admEbsStatF3Count");
 if (f3El && totalF3 > 0) f3El.textContent = `${totalF3.toLocaleString("en-IN")} ஆசிரியர்கள்`;
 const f4El = document.getElementById("admEbsStatF4Count");
 if (f4El && totalF4 > 0) f4El.textContent = `${totalF4.toLocaleString("en-IN")} பணியாளர்கள்`;
+if (typeof renderAdminDeleteRequestsTable === "function") {
+renderAdminDeleteRequestsTable();
+}
 const tbody = document.getElementById("admEbsSchoolsTbody");
 if (!tbody) return;
 tbody.innerHTML = filtered.map((s, idx) => {
@@ -23002,6 +23750,10 @@ return `
           </td>
           <td style="text-align:center; font-size:0.80rem; font-weight:800;">
             👨‍🏫 ${tCount} &nbsp;|&nbsp; 🧑‍💼 ${ntCount}
+            ${(() => {
+              const pCnt = (staffDeleteRequests || []).filter(r => r && r.status === "PENDING" && String(r.uNo) === String(s.uNo)).length;
+              return pCnt > 0 ? `<div style="margin-top:3px;"><span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:1px 6px; border-radius:999px; font-size:0.68rem; font-weight:900;">⏳ ${pCnt} ஒப்புதல் நிலுவை</span></div>` : "";
+            })()}
           </td>
           <td style="text-align:center;">
             <div style="display:flex; gap:4px; justify-content:center; flex-wrap:wrap;">
