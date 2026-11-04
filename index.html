@@ -4192,7 +4192,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 <div style="background:#fffbeb; border:1.5px solid #fde68a; border-left:4px solid #d97706; border-radius:10px; padding:10px 14px;">
 <div style="font-size:0.75rem; font-weight:800; color:#b45309;">🧑‍💼 FORM – IV (ஆசிரியரல்லாதோர்)</div>
-<div style="font-size:1.4rem; font-weight:900; color:#78350f;" id="admEbsStatF4Count">540 பணியாளர்கள்</div>
+<div style="font-size:1.4rem; font-weight:900; color:#78350f;" id="admEbsStatF4Count">0 பணியாளர்கள்</div>
 <div style="font-size:0.72rem; color:#d97706; font-weight:700;">போர்ட்டல் நிலையான பணியாளர் பட்டியல்</div>
 </div>
 </div>
@@ -7857,18 +7857,21 @@ const pool = emis.pool || [];
 const uNo = String(s.uNo || "").trim();
 const cleanUNo = uNo.replace(/^0+/, "");
 const rawRows = emis.byUNo[uNo] || (cleanUNo ? emis.byUNo[cleanUNo] : null) || [];
-if (rawRows.length > 0) {
+const teachOnlyRows = rawRows.filter(r => r[0] === 1);
+if (teachOnlyRows.length > 0) {
+const addedF4Items = Array.isArray(extra.staff) ? extra.staff.filter(x => x && !x.isTeaching && x.isAddedEbs) : [];
+const curTeachCount = Array.isArray(extra.staff) ? extra.staff.filter(x => x && x.isTeaching !== false).length : 0;
 const hasOnlyDummy = !extra.staff || extra.staff.length <= 1;
-const fewerThanEmis = extra.staff && extra.staff.length < rawRows.length;
+const fewerThanEmis = curTeachCount < teachOnlyRows.length;
 if (hasOnlyDummy || fewerThanEmis) {
-extra.staff = rawRows.map(r => {
-const isTeach = r[0] === 1;
+extra.staff = teachOnlyRows.map(r => {
+const isTeach = true;
 const staffId = String(r[1] || "");
 const name = String(r[2] || "");
-const desig = pool[r[3]] || (isTeach ? "TEACHER" : "OFFICE STAFF");
+const desig = pool[r[3]] || "TEACHER";
 const gender = r[4] === "F" ? "Female" : "Male";
 const dob = r[5] || "";
-const nature = (String(s.mgmt1 || "").toUpperCase() === "3P") ? "Contract" : (r[6] === "R" ? "Regular (Govt.Salaried )" : "Contract");
+const nature = (String(s.mgmt1 || "").toUpperCase() === "3P") ? "" : (r[6] === "R" ? "Regular (Govt.Salaried )" : "Contract");
 const subject = pool[r[7]] || (isTeach ? "General" : "-");
 const qualification = pool[r[9]] || "";
 const isHm = desig.toUpperCase().includes("HEAD") || desig.toUpperCase().includes("PRINCIPAL");
@@ -7896,8 +7899,9 @@ mobile: (isHm && s.mobile) ? s.mobile : (s.mobile || "-"),
 source: "EMIS",
 isTeaching: isTeach
 };
-});
+}).concat(addedF4Items);
 } else if (Array.isArray(extra.staff)) {
+extra.staff = extra.staff.filter(st => st && (st.isTeaching !== false || st.isAddedEbs));
 const byId = {};
 rawRows.forEach(r => { if (r[1]) byId[String(r[1]).trim()] = r; });
 extra.staff.forEach(st => {
@@ -10430,28 +10434,38 @@ if (staffList.length === 0) {
 tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:18px; color:#64748b;">பணியாளர் விவரங்கள் இன்னும் சேர்க்கப்படவில்லை.</td></tr>`;
 return;
 }
-tbody.innerHTML = staffList.map((st, idx) => `
+const isPrivSch = Boolean(activeSchoolSession && String(activeSchoolSession.mgmt1 || "").toUpperCase().trim() === "3P");
+tbody.innerHTML = staffList.map((st, idx) => {
+const ageInfo = typeof computeAgeAndDorFromDob === "function" ? computeAgeAndDorFromDob(st.dob) : { age27: "", ageText: "", dor: "" };
+const srvInfo = typeof computeServiceYearsMonths === "function" ? computeServiceYearsMonths(st.dojPresPost || st.dojService) : "";
+const dobDisplay = st.dob ? ` | பிறந்த தேதி: <strong>${formatDateDisplayDMY(st.dob)}</strong>${ageInfo.age27 ? ` <span style="color:#15803d;font-weight:800;">(01.04.2027 வயது: ${ageInfo.ageText})</span>` : ""}${ageInfo.dor ? ` <span style="color:#b45309;font-weight:800;">| ஓய்வு நாள்: ${ageInfo.dor}</span>` : ""}` : "";
+const srvDisplay = srvInfo ? `<div style="font-size:0.72rem; color:#4c1d95; font-weight:800; margin-top:2px;">⏳ தற்போதைய பதவியில் பணிக்காலம்: ${srvInfo}</div>` : "";
+const apptDisplay = isPrivSch ? "-" : `${st.firstApp || "TRB"}${st.nature ? " (" + st.nature + ")" : ""}`;
+return `
       <tr style="border-bottom:1px solid #e2e8f0;">
         <td style="text-align:center; font-weight:700; color:#64748b;">${idx + 1}</td>
         <td>
           <div style="font-weight:800; color:#0f294a;">${st.prefix ? st.prefix + " " : ""}${st.name}</div>
+          ${st.nameTa ? `<div style="font-size:0.78rem; color:#4c1d95; font-weight:800;">${st.prefix ? st.prefix + " " : ""}${st.nameTa}</div>` : ""}
           <div style="font-size:0.74rem; color:#475569; font-weight:600; margin-top:2px;">
-            Staff ID: <strong style="color:#1d4ed8;">${st.id}</strong> | ${st.gender}${st.dob ? ' | பிறந்த தேதி: ' + st.dob : ''}
+            Staff ID: <strong style="color:#1d4ed8;">${st.id}</strong> | ${st.gender}${dobDisplay}
           </div>
+          ${srvDisplay}
         </td>
         <td>
           <strong style="color:#0f294a;">${st.desig}</strong>
           ${st.source === 'EMIS' ? '<br><span style="font-size:0.68rem; background:#dcfce7; color:#166534; padding:1px 6px; border-radius:4px; font-weight:800; border:1px solid #bbf7d0;">🟢 EMIS நேரடித் தரவு</span>' : '<br><span style="font-size:0.68rem; background:#fef3c7; color:#92400e; padding:1px 6px; border-radius:4px; font-weight:800;">✏️ புதிய சேர்க்கை</span>'}
         </td>
         <td><strong style="color:#1e40af;">${st.subject || "-"}</strong></td>
-        <td>${st.firstApp || "TRB"} (${st.nature || "Regular"})</td>
+        <td>${apptDisplay}</td>
         <td style="font-size:0.80rem;">தேர்வு: <strong>${st.examDuty || "-"}</strong><br>முகாம்: ${st.campDuty || "-"} (${st.campOption || "-"})</td>
         <td><strong style="color:#0284c7; font-size:0.95rem; letter-spacing:0.4px;">${st.mobile || "-"}</strong></td>
         <td style="white-space:nowrap; text-align:center;">
           <button type="button" class="btn btn-primary btn-sm" onclick="editStaffMember('${st.id}')">✏️ திருத்து</button>
         </td>
       </tr>
-    `).join("");
+    `;
+}).join("");
 }
 function saveSchoolNeedsData(event) {
 event.preventDefault();
@@ -15112,14 +15126,19 @@ dojCellHtml = `
         `;
 }
 let dobCellHtml = "";
+const admAgeInfo = typeof computeAgeAndDorFromDob === "function" ? computeAgeAndDorFromDob(st.dob) : { age27: "", ageText: "", dor: "" };
+const admSrvInfo = typeof computeServiceYearsMonths === "function" ? computeServiceYearsMonths(st.dojPresPost || st.dojService) : "";
+const admAgeDorSub = admAgeInfo.age27
+? `<div style="font-size:0.68rem; color:#15803d; font-weight:800; margin-top:2px;">01.04.2027 வயது: ${admAgeInfo.ageText}</div><div style="font-size:0.68rem; color:#b45309; font-weight:800;">ஓய்வு: ${admAgeInfo.dor}</div>${admSrvInfo ? `<div style="font-size:0.68rem; color:#4c1d95; font-weight:800;">பணிக்காலம்: ${admSrvInfo}</div>` : ""}`
+: "";
 if (isSeniorityMode && cfg.primary === "dob") {
 dobCellHtml = `
           <strong style="color:#b45309; font-size:0.86rem; background:#fef3c7; padding:2px 6px; border-radius:4px; border:1px solid #fde047; display:inline-block;" title="முதன்மை காரணி: வயது மூப்பு">
-            ${st.dob || "-"}
-          </strong>
+            ${formatDateDisplayDMY(st.dob) || "-"}
+          </strong>${admAgeDorSub}
         `;
 } else {
-dobCellHtml = `<span style="font-size:0.90rem; font-weight:800; color:#1e293b;">${st.dob || "-"}</span>`;
+dobCellHtml = `<span style="font-size:0.90rem; font-weight:800; color:#1e293b;">${formatDateDisplayDMY(st.dob) || "-"}</span>${admAgeDorSub}`;
 }
 let rowHtml = `<tr style="border-bottom:1px solid #e2e8f0;">`;
 if (cols.rank) {
@@ -18544,7 +18563,7 @@ return { group: "nonteach", key: "others" };
 }
 function normalizeStaffNatureBySchoolMgmt(rawNature, mgmt1) {
 if (String(mgmt1 || "").toUpperCase().trim() === "3P") {
-return "Contract";
+return "";
 }
 const n = String(rawNature || "").trim();
 if (/Contract|Self|Consolidated|Part/i.test(n)) {
@@ -18651,17 +18670,18 @@ return String((a && a.name) || "").localeCompare(String((b && b.name) || ""));
 function getSchoolFixedPortalStaffList(uNo) {
 uNo = String(uNo || "").trim();
 const sch = masterSchools.find(m => String(m.uNo) === uNo) || { uNo, nameEn: "", nameTa: "", block: "", mgmt1: "1G" };
+const isPrivateSch = String(sch.mgmt1 || "").toUpperCase().trim() === "3P";
 const extra = getSchoolExtra(uNo);
 if (!extra.staff || extra.staff.length <= 1) {
 const emisInit = getEmisStaffData();
 if (emisInit && emisInit.byUNo) {
 const poolInit = emisInit.pool || [];
 const cleanUInit = uNo.replace(/^0+/, "");
-const rawRowsInit = emisInit.byUNo[uNo] || (cleanUInit ? emisInit.byUNo[cleanUInit] : null) || [];
+const rawRowsInit = (emisInit.byUNo[uNo] || (cleanUInit ? emisInit.byUNo[cleanUInit] : null) || []).filter(r => r[0] === 1);
 if (rawRowsInit.length > 0) {
 extra.staff = rawRowsInit.map(r => {
-const isTeach = r[0] === 1;
-const desig = poolInit[r[3]] || (isTeach ? "TEACHER" : "OFFICE STAFF");
+const isTeach = true;
+const desig = poolInit[r[3]] || "TEACHER";
 const isHm = desig.toUpperCase().includes("HEAD") || desig.toUpperCase().includes("PRINCIPAL");
 return {
 id: String(r[1] || ""),
@@ -18672,7 +18692,7 @@ ifhrmsId: String(r[14] || ""),
 gender: r[4] === "F" ? "Female" : "Male",
 dob: r[5] || "",
 desig: desig,
-subject: poolInit[r[7]] || (isTeach ? "General" : "-"),
+subject: poolInit[r[7]] || "General",
 classTaught: poolInit[r[8]] || "-",
 qualification: poolInit[r[9]] || "",
 dojService: r[10] || "",
@@ -18680,12 +18700,12 @@ dojPresPost: r[11] || "",
 dojSchool: r[12] || r[10] || "",
 firstApp: "TRB",
 nature: normalizeStaffNatureBySchoolMgmt(r[6] === "R" ? "Regular (Govt.Salaried )" : "Contract", sch.mgmt1),
-examDuty: isTeach ? (isHm ? "Chief Superintendent" : (desig.toUpperCase().includes("P.G.") ? "Hall Superintendent / AE" : "Hall Superintendent")) : "",
-campDuty: isTeach ? (isHm ? "Camp Officer / CE" : (desig.toUpperCase().includes("P.G.") ? "AE / Tabulator" : "Examiner")) : "", 
+examDuty: isHm ? "Chief Superintendent" : (desig.toUpperCase().includes("P.G.") ? "Hall Superintendent / AE" : "Hall Superintendent"),
+campDuty: isHm ? "Camp Officer / CE" : (desig.toUpperCase().includes("P.G.") ? "AE / Tabulator" : "Examiner"),
 campOption: sch.block || "01-Sivagangai",
 mobile: (isHm && sch.mobile) ? sch.mobile : (sch.mobile || "-"),
 source: "EMIS",
-isTeaching: isTeach
+isTeaching: true
 };
 });
 }
@@ -18761,6 +18781,26 @@ if (addSt.isTempId) exItem.isTempId = true;
 const uPrefix3 = String(uNo || "101").replace(/\D/g, "").padStart(3, "0").slice(0, 3);
 const tempIdRegex = new RegExp("^" + uPrefix3 + "00\\d{3}$");
 const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+const addedIdsSet = new Set(((extra.ebs2026 && Array.isArray(extra.ebs2026.addedStaff)) ? extra.ebs2026.addedStaff : []).map(x => String(x && (x.id || x.staffId) || "").trim()).filter(Boolean));
+let f4KeptCount = 0;
+extra.staff = (extra.staff || []).filter(st => {
+if (!st) return false;
+const sid = String(st.id || st.staffId || "").trim();
+const raw = rawMap[sid] || {};
+const ov = staffOverrides[sid] || {};
+const ebsProf = (extra.ebs2026 && extra.ebs2026.staffProfiles && extra.ebs2026.staffProfiles[sid]) ? extra.ebs2026.staffProfiles[sid] : {};
+const desigStr = String(ov.desig || st.desig || raw.desig || "");
+const isTeach = (typeof st.isTeaching === "boolean")
+? st.isTeaching
+: (typeof raw.isTeaching === "boolean" ? raw.isTeaching : !/(JUNIOR ASSISTANT|LAB ASSISTANT|RECORD|WATCHMAN|OFFICE ASSISTANT|TYPIST|SCAVENGER|SWEEPER|WATER|GARDENER|LIBRARIAN|COOK)/i.test(desigStr));
+if (!isTeach) {
+const wasExplicitlyAdded = Boolean(st.isAddedEbs || ebsProf.isAddedEbs || addedIdsSet.has(sid) || st.isTempId || tempIdRegex.test(sid));
+if (!wasExplicitlyAdded) return false;
+if (isPrivateSch && f4KeptCount >= 2) return false;
+f4KeptCount++;
+}
+return true;
+});
 const list = (extra.staff || []).map(st => {
 const sid = String(st.id || st.staffId || "").trim();
 st.nature = normalizeStaffNatureBySchoolMgmt(st.nature, sch.mgmt1);
@@ -18775,7 +18815,7 @@ const schMobClean = String(sch.mobile || "").replace(/\D/g, "").slice(-10);
 const stMobClean = String(st.mobile || "").replace(/\D/g, "").slice(-10);
 const personalStMob = (stMobClean && stMobClean !== schMobClean) ? stMobClean : "";
 const resolvedNature = normalizeStaffNatureBySchoolMgmt(ebsProf.nature || ov.nature || st.nature || raw.nature || "Regular (Govt.Salaried )", sch.mgmt1);
-const isContractPost = /contract/i.test(resolvedNature);
+const isContractPost = isPrivateSch || /contract/i.test(resolvedNature);
 return {
 staffId: sid,
 ifhrmsId: isContractPost ? "" : (ebsProf.ifhrmsId || raw.ifhrmsId || st.ifhrmsId || ""),
@@ -18872,43 +18912,68 @@ def["8"] = { sub: sub, med: "TM" };
 return def;
 }
 function computeAgeAndDorFromDob(dobStr) {
-if (!dobStr) return { age26: "", dor: "", dd: "", mm: "", yyyy: "" };
+if (!dobStr) return { age26: "", age27: "", ageText: "", dor: "", dd: "", mm: "", yyyy: "" };
 let y = 0, m = 0, d = 0;
 const s = String(dobStr).trim();
 if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)) {
 const p = s.split("-");
 y = Number(p[0]); m = Number(p[1]); d = Number(p[2]);
-} else if (/^\d{1,2}[\/-]\d{1,2}[\/-]\d{4}$/.test(s)) {
-const p = s.split(/[\/-]/);
+} else if (/^\d{1,2}[\/.-]\d{1,2}[\/.-]\d{4}$/.test(s)) {
+const p = s.split(/[\/.-]/);
 d = Number(p[0]); m = Number(p[1]); y = Number(p[2]);
 }
-if (!y || !m || !d) return { age26: "", dor: "", dd: "", mm: "", yyyy: "" };
-let age = 2026 - y;
-if (m > 4 || (m === 4 && d > 1)) age--;
-const dorYear = y + 60;
-const lastDay = new Date(dorYear, m, 0).getDate();
+if (!y || !m || !d) return { age26: "", age27: "", ageText: "", dor: "", dd: "", mm: "", yyyy: "" };
+let ageY = 2027 - y;
+let ageM = 4 - m;
+let ageD = 1 - d;
+if (ageD < 0) {
+ageM -= 1;
+ageD += 31;
+}
+if (ageM < 0) {
+ageY -= 1;
+ageM += 12;
+}
+let dorYear = y + 60;
+let dorMonth = m;
+if (d === 1) {
+if (m === 1) {
+dorYear = y + 59;
+dorMonth = 12;
+} else {
+dorMonth = m - 1;
+}
+}
+const lastDay = new Date(dorYear, dorMonth, 0).getDate();
 const ddStr = String(d).padStart(2, "0");
 const mmStr = String(m).padStart(2, "0");
-const dorStr = `${String(lastDay).padStart(2, "0")}-${mmStr}-${dorYear}`;
-return { age26: age > 0 ? String(age) : "", dor: dorStr, dd: ddStr, mm: mmStr, yyyy: String(y) };
+const dorStr = `${String(lastDay).padStart(2, "0")}-${String(dorMonth).padStart(2, "0")}-${dorYear}`;
+const ageStr = ageY > 0 ? String(ageY) : "";
+const ageText = ageY > 0 ? (ageM > 0 ? `${ageY} வயது ${ageM} மாதம்` : `${ageY} வயது`) : "";
+return { age26: ageStr, age27: ageStr, ageText: ageText, dor: dorStr, dd: ddStr, mm: mmStr, yyyy: String(y) };
 }
 function computeServiceYearsMonths(dojStr) {
 if (!dojStr) return "";
-let y = 0, m = 0;
+let y = 0, m = 0, d = 1;
 const s = String(dojStr).trim();
 if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)) {
 const p = s.split("-");
-y = Number(p[0]); m = Number(p[1]);
-} else if (/^\d{1,2}[\/-]\d{1,2}[\/-]\d{4}$/.test(s)) {
-const p = s.split(/[\/-]/);
-m = Number(p[1]); y = Number(p[2]);
+y = Number(p[0]); m = Number(p[1]); d = Number(p[2]);
+} else if (/^\d{1,2}[\/.-]\d{1,2}[\/.-]\d{4}$/.test(s)) {
+const p = s.split(/[\/.-]/);
+d = Number(p[0]); m = Number(p[1]); y = Number(p[2]);
 }
 if (!y || !m) return "";
-let totalMonths = (2027 - y) * 12 + (4 - m);
-if (totalMonths < 0) totalMonths = 0;
-const yrs = Math.floor(totalMonths / 12);
-const mos = totalMonths % 12;
-return `${yrs} Y, ${mos} M`;
+let yrs = 2027 - y;
+let mos = 4 - m;
+let days = 1 - d;
+if (days < 0) mos -= 1;
+if (mos < 0) {
+yrs -= 1;
+mos += 12;
+}
+if (yrs < 0) return "0 ஆண்டு 0 மாதம் (0 Y, 0 M)";
+return `${yrs} ஆண்டு ${mos} மாதம் (${yrs} Y, ${mos} M)`;
 }
 function formatDateDisplayDMY(dateStr) {
 if (!dateStr) return "";
@@ -19074,9 +19139,10 @@ EBS_TEACHING_CATS.forEach(c => { autoTeachReg[c.key] = 0; autoTeachCon[c.key] = 
 const autoNonTeachReg = {};
 const autoNonTeachCon = {};
 EBS_NONTEACHING_CATS.forEach(c => { autoNonTeachReg[c.key] = 0; autoNonTeachCon[c.key] = 0; });
+const isPrivateSchF1 = String(sch.mgmt1 || "").toUpperCase().trim() === "3P";
 staffList.forEach(st => {
 const cls = classifyPortalStaffForF1(st, isHSS);
-const isContract = /CONTRACT|SELF|CONSOLIDATED|PART/i.test(String(st.nature || ""));
+const isContract = isPrivateSchF1 || /CONTRACT|SELF|CONSOLIDATED|PART/i.test(String(st.nature || ""));
 if (cls.group === "teach") {
 if (isContract) autoTeachCon[cls.key] = (autoTeachCon[cls.key] || 0) + 1;
 else autoTeachReg[cls.key] = (autoTeachReg[cls.key] || 0) + 1;
@@ -19166,7 +19232,7 @@ const ctx = getOrInitSchoolEbs2026Data(uNo, false);
 const { sch, ebs, staffList, isHSS } = ctx;
 const badge = document.getElementById("schEbsHeaderBadge");
 if (badge) badge.textContent = `U.NO: ${sch.uNo} | ${isHSS ? "HSS (F1–F4)" : "HS (F1, F3, F4)"}`;
-const f2Btn = document.getElementById("schEbsQuickBtnF2");
+const f2Btn = document.getElementById("ebsSubBtnF2");
 if (f2Btn) f2Btn.style.display = isHSS ? "inline-flex" : "none";
 const teachList = staffList.filter(s => s.isTeaching);
 const nonTeachList = staffList.filter(s => !s.isTeaching);
@@ -19913,17 +19979,24 @@ if (teachList.length === 0) {
 container.innerHTML = `<div style="padding:18px; text-align:center; color:#dc2626; font-weight:800;">இப்பள்ளியில் ஆசிரியர் பதிவுகள் எதுவும் இல்லை. <button type="button" class="btn btn-primary btn-sm" onclick="openEbsAddStaffModal(true)" style="margin-left:10px; background:#15803d; border-color:#15803d; font-weight:900;">➕ புதிய ஆசிரியர் சேர் (Add Teacher)</button></div>`;
 return;
 }
+const isPrivateSch = String(ctx.sch.mgmt1 || "").toUpperCase().trim() === "3P";
 const rowsHtml = teachList.map((st, idx) => {
 const hasIfhrms = Boolean(st.ifhrmsId && String(st.ifhrmsId).trim().length >= 5);
+const ageInfo = computeAgeAndDorFromDob(st.dob);
+const presPostDoj = st.dojPresPost || st.dojService || "";
+const srvText = computeServiceYearsMonths(presPostDoj);
 const idBadge = st.isTempId
 ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dcfce7; color:#166534; font-weight:900;">Temp ID</span>`
 : (st.isAddedEbs ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dbeafe; color:#1e40af; font-weight:900;">கூடுதல்</span>` : "");
+const subIdLine = isPrivateSch
+? ``
+: `<div style="font-size:0.75rem; font-weight:800; color:${/contract/i.test(st.nature || "") ? "#64748b" : (hasIfhrms ? "#15803d" : "#b45309")};">${/contract/i.test(st.nature || "") ? "Contract (IFHRMS: —)" : ("IFHRMS: " + (st.ifhrmsId || "பதிவு செய்க"))}</div>`;
 return `
         <tr>
           <td style="text-align:center; font-weight:900;">${idx + 1}</td>
           <td>
             <div style="font-weight:900; color:#1e40af;">${st.isTempId ? "TEMP" : "EMIS"}: ${st.staffId || "-"}${idBadge}</div>
-            <div style="font-size:0.75rem; font-weight:800; color:${/contract/i.test(st.nature || "") ? "#64748b" : (hasIfhrms ? "#15803d" : "#b45309")};">${/contract/i.test(st.nature || "") ? "Contract (IFHRMS: —)" : ("IFHRMS: " + (st.ifhrmsId || "பதிவு செய்க"))}</div>
+            ${subIdLine}
           </td>
           <td>
             <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name || "(பெயர் உள்ளிடவும்)")}</div>
@@ -19933,9 +20006,12 @@ return `
             <div style="font-weight:800; color:#0f766e;"><span style="display:inline-block; background:#ccfbf1; color:#115e59; border:1px solid #99f6e4; border-radius:4px; padding:0px 5px; font-size:0.68rem; font-weight:900; margin-right:4px;">Code ${String(st.desigCode || getEbsDesignationCodeNum(st.desig, true)).padStart(2, "0")}</span>${escapeHtmlAttr(st.desig)}</div>
             <div style="font-size:0.75rem; color:#475569;">${escapeHtmlAttr(st.subject)} | ${escapeHtmlAttr(st.qualification)}</div>
           </td>
-          <td style="text-align:center; font-size:0.92rem; font-weight:800; line-height:1.45;">
-            <div style="color:#0f294a; font-weight:900; letter-spacing:0.3px;" title="Date of Joining in Present Post">DOJ: ${formatDateDisplayDMY(st.dojPresPost || st.dojService) || "-"}</div>
-            <div style="color:#334155; font-weight:800; letter-spacing:0.3px;">DOB: ${formatDateDisplayDMY(st.dob) || "-"}</div>
+          <td style="text-align:center; font-size:0.82rem; font-weight:800; line-height:1.4;">
+            <div style="color:#0f294a; font-weight:900; letter-spacing:0.3px;" title="Date of Joining in Present Post">DOJ: ${formatDateDisplayDMY(presPostDoj) || "-"}</div>
+            ${srvText ? `<div style="font-size:0.72rem; color:#4c1d95; font-weight:800; background:#f5f3ff; border:1px solid #ddd6fe; border-radius:4px; padding:1px 5px; margin-top:2px;">⏳ தற்போதைய பதவியில் பணிக்காலம்: ${escapeHtmlAttr(srvText)}</div>` : ""}
+            <div style="color:#1e40af; font-weight:900; margin-top:2px; letter-spacing:0.3px;">🎂 DOB: ${formatDateDisplayDMY(st.dob) || "-"}</div>
+            ${ageInfo.age27 ? `<div style="font-size:0.72rem; color:#15803d; font-weight:800; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:1px 5px; margin-top:2px;">01.04.2027 வயது: ${escapeHtmlAttr(ageInfo.ageText)}</div>` : ""}
+            ${ageInfo.dor ? `<div style="font-size:0.72rem; color:#b45309; font-weight:800; background:#fffbeb; border:1px solid #fde68a; border-radius:4px; padding:1px 5px; margin-top:2px;">ஓய்வு நாள்: ${escapeHtmlAttr(ageInfo.dor)}</div>` : ""}
           </td>
           <td style="text-align:center; font-size:0.84rem; font-weight:800;">
             <div style="font-size:0.96rem; font-weight:900; color:#0f172a; letter-spacing:0.5px;">📱 ${escapeHtmlAttr(st.mobile || "-")}</div>
@@ -19967,7 +20043,7 @@ container.innerHTML = `
               <th>EMIS ID &amp; IFHRMS ID</th>
               <th>ஆசிரியர் பெயர் (English &amp; தமிழ்)</th>
               <th>பதவி, பாடம் &amp; கல்வித்தகுதி</th>
-              <th style="text-align:center;">தற்போதைய பதவியில் சேர்ந்த தேதி (DOJ) &amp; பிறந்த தேதி (DOB)</th>
+              <th style="text-align:center;">பதவியில் சேர்ந்த தேதி (DOJ), பணிக்காலம், பிறந்த தேதி (DOB), வயது (01.04.2027) &amp; ஓய்வு நாள் (DOR)</th>
               <th style="text-align:center;">கைபேசி &amp; முகாம்</th>
               <th style="text-align:center; width:220px;">FORM – III நடவடிக்கை</th>
             </tr>
@@ -19980,30 +20056,49 @@ container.innerHTML = `
 function renderSchoolEbsF4Table(ctx, nonTeachList) {
 const container = document.getElementById("ebsF4NonTeachingTableContainer");
 if (!container) return;
+const isPrivateSch = String(ctx.sch.mgmt1 || "").toUpperCase().trim() === "3P";
+const infoBannerHtml = isPrivateSch
+? `<div style="margin-bottom:10px; padding:10px 14px; background:#eff6ff; border:1.5px solid #93c5fd; border-left:5px solid #2563eb; border-radius:8px; font-size:0.80rem; font-weight:800; color:#1e3a8a; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+           <span>ℹ️ தனியார் பள்ளிகளுக்கு (3P) அலுவலகப் பணியாளர்கள் (F4) தானியங்கி முறையில் பட்டியலிடப்படமாட்டார்கள். EMIS எண் மூலமாகத் தேடி <strong>அதிகபட்சமாக 2 பணியாளர்களை மட்டும்</strong> இணைத்தால் போதுமானது.</span>
+           <span style="background:#dbeafe; color:#1e40af; padding:2px 10px; border-radius:999px; font-weight:900;">இணைக்கப்பட்டோர்: ${nonTeachList.length} / 2</span>
+         </div>`
+: `<div style="margin-bottom:10px; padding:9px 14px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; font-size:0.78rem; font-weight:800; color:#334155;">
+           ℹ️ அலுவலகப் பணியாளர்கள் (F4) தானியங்கிப் பட்டியல் நீக்கப்பட்டுள்ளது. <strong>"➕ புதிய பணியாளர் சேர் (Add Staff - F4)"</strong> பொத்தானை அழுத்தி EMIS எண் மூலம் தேடிப் பணியாளர்களை இணைக்கவும்.
+         </div>`;
 if (nonTeachList.length === 0) {
-container.innerHTML = `<div style="padding:18px; text-align:center; color:#64748b; font-weight:800;">இப்பள்ளியில் ஆசிரியரல்லாத பணியாளர்கள் பதிவுகள் எதுவும் இல்லை. <button type="button" class="btn btn-primary btn-sm" onclick="openEbsAddStaffModal(false)" style="margin-left:10px; background:#15803d; border-color:#15803d; font-weight:900;">➕ புதிய பணியாளர் சேர் (Add Staff)</button></div>`;
+container.innerHTML = infoBannerHtml + `<div style="padding:18px; text-align:center; color:#64748b; font-weight:800; background:#fff; border:1px dashed #cbd5e1; border-radius:8px;">இப்பள்ளியில் அலுவலகப் பணியாளர்கள் (F4) இன்னும் இணைக்கப்படவில்லை. <button type="button" class="btn btn-primary btn-sm" onclick="openEbsAddStaffModal(false)" style="margin-left:10px; background:#15803d; border-color:#15803d; font-weight:900;">🔍 EMIS எண் மூலம் பணியாளர் சேர் (Add Staff - F4)</button></div>`;
 return;
 }
 const rowsHtml = nonTeachList.map((st, idx) => {
 const hasIfhrms = Boolean(st.ifhrmsId && String(st.ifhrmsId).trim().length >= 5);
+const ageInfo = computeAgeAndDorFromDob(st.dob);
+const presPostDoj = st.dojPresPost || st.dojService || "";
+const srvText = computeServiceYearsMonths(presPostDoj);
 const idBadge = st.isTempId
 ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dcfce7; color:#166534; font-weight:900;">Temp ID</span>`
-: (st.isAddedEbs ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dbeafe; color:#1e40af; font-weight:900;">கூடுதல்</span>` : "");
+: (st.isAddedEbs ? `<span style="display:inline-block; margin-left:4px; padding:1px 5px; font-size:0.65rem; border-radius:4px; background:#dbeafe; color:#1e40af; font-weight:900;">EMIS இணைப்பு</span>` : "");
+const subIdLine = isPrivateSch
+? ``
+: `<div style="font-size:0.75rem; font-weight:800; color:${/contract/i.test(st.nature || "") ? "#64748b" : (hasIfhrms ? "#15803d" : "#b45309")};">${/contract/i.test(st.nature || "") ? "Contract (IFHRMS: —)" : ("IFHRMS: " + (st.ifhrmsId || "பதிவு செய்க"))}</div>`;
+const desigNatureLabel = (!isPrivateSch && st.nature) ? ` (${escapeHtmlAttr(st.nature)})` : "";
 return `
         <tr>
           <td style="text-align:center; font-weight:900;">${idx + 1}</td>
           <td>
             <div style="font-weight:900; color:#b45309;">${st.isTempId ? "TEMP" : "EMIS"}: ${st.staffId || "-"}${idBadge}</div>
-            <div style="font-size:0.75rem; font-weight:800; color:${/contract/i.test(st.nature || "") ? "#64748b" : (hasIfhrms ? "#15803d" : "#b45309")};">${/contract/i.test(st.nature || "") ? "Contract (IFHRMS: —)" : ("IFHRMS: " + (st.ifhrmsId || "பதிவு செய்க"))}</div>
+            ${subIdLine}
           </td>
           <td>
             <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.name || "(பெயர் உள்ளிடவும்)")}</div>
             <div style="font-size:0.78rem; color:#78350f; font-weight:800;">${escapeHtmlAttr(st.prefix || "")} ${escapeHtmlAttr(st.nameTa || "(தமிழ் பெயர் சேர்க்க)")}</div>
           </td>
-          <td style="font-weight:800; color:#0f766e;"><span style="display:inline-block; background:#fef3c7; color:#92400e; border:1px solid #fde68a; border-radius:4px; padding:0px 5px; font-size:0.68rem; font-weight:900; margin-right:4px;">Code ${String(st.desigCode || getEbsDesignationCodeNum(st.desig, false)).padStart(2, "0")}</span>${escapeHtmlAttr(st.desig)} (${escapeHtmlAttr(st.nature || "Regular")})</td>
-          <td style="text-align:center; font-size:0.92rem; font-weight:800; line-height:1.45;">
-            <div style="color:#0f294a; font-weight:900; letter-spacing:0.3px;" title="Date of Joining in Present Post">DOJ: ${formatDateDisplayDMY(st.dojPresPost || st.dojService) || "-"}</div>
-            <div style="color:#334155; font-weight:800; letter-spacing:0.3px;">DOB: ${formatDateDisplayDMY(st.dob) || "-"}</div>
+          <td style="font-weight:800; color:#0f766e;"><span style="display:inline-block; background:#fef3c7; color:#92400e; border:1px solid #fde68a; border-radius:4px; padding:0px 5px; font-size:0.68rem; font-weight:900; margin-right:4px;">Code ${String(st.desigCode || getEbsDesignationCodeNum(st.desig, false)).padStart(2, "0")}</span>${escapeHtmlAttr(st.desig)}${desigNatureLabel}</td>
+          <td style="text-align:center; font-size:0.82rem; font-weight:800; line-height:1.4;">
+            <div style="color:#0f294a; font-weight:900; letter-spacing:0.3px;" title="Date of Joining in Present Post">DOJ: ${formatDateDisplayDMY(presPostDoj) || "-"}</div>
+            ${srvText ? `<div style="font-size:0.72rem; color:#4c1d95; font-weight:800; background:#f5f3ff; border:1px solid #ddd6fe; border-radius:4px; padding:1px 5px; margin-top:2px;">⏳ தற்போதைய பதவியில் பணிக்காலம்: ${escapeHtmlAttr(srvText)}</div>` : ""}
+            <div style="color:#1e40af; font-weight:900; margin-top:2px; letter-spacing:0.3px;">🎂 DOB: ${formatDateDisplayDMY(st.dob) || "-"}</div>
+            ${ageInfo.age27 ? `<div style="font-size:0.72rem; color:#15803d; font-weight:800; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:1px 5px; margin-top:2px;">01.04.2027 வயது: ${escapeHtmlAttr(ageInfo.ageText)}</div>` : ""}
+            ${ageInfo.dor ? `<div style="font-size:0.72rem; color:#b45309; font-weight:800; background:#fffbeb; border:1px solid #fde68a; border-radius:4px; padding:1px 5px; margin-top:2px;">ஓய்வு நாள்: ${escapeHtmlAttr(ageInfo.dor)}</div>` : ""}
           </td>
           <td style="text-align:center; font-size:0.84rem; font-weight:800;">
             <div style="font-size:0.96rem; font-weight:900; color:#0f172a; letter-spacing:0.5px;">📱 ${escapeHtmlAttr(st.mobile || "-")}</div>
@@ -20018,13 +20113,13 @@ return `
               <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F4_SINGLE', '${st.staffId}')" style="border-color:#b45309; color:#b45309; background:#fffbeb; font-size:0.75rem; padding:4px 9px; font-weight:800;">
                 🖨️ Form-IV A4
               </button>
-              ${st.isAddedEbs ? `<button type="button" class="btn btn-outline btn-sm" onclick="removeAddedEbsStaff('${ctx.sch.uNo}', '${st.staffId}')" title="கூடுதலாகச் சேர்க்கப்பட்ட பதிவை நீக்கு" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-size:0.72rem; padding:4px 7px; font-weight:800;">🗑️</button>` : ""}
+              <button type="button" class="btn btn-outline btn-sm" onclick="removeAddedEbsStaff('${ctx.sch.uNo}', '${st.staffId}')" title="பட்டியலிலிருந்து நீக்கு" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-size:0.72rem; padding:4px 7px; font-weight:800;">🗑️</button>
             </div>
           </td>
         </tr>
       `;
 }).join("");
-container.innerHTML = `
+container.innerHTML = infoBannerHtml + `
       <div class="table-responsive" style="border:1px solid #cbd5e1; border-radius:8px; max-height:560px; overflow-y:auto;">
         <table class="data-table" style="margin:0;">
           <thead style="position:sticky; top:0; z-index:4;">
@@ -20033,7 +20128,7 @@ container.innerHTML = `
               <th>EMIS ID &amp; IFHRMS ID</th>
               <th>பணியாளர் பெயர் (English &amp; தமிழ்)</th>
               <th>பதவி (Designation)</th>
-              <th style="text-align:center;">தற்போதைய பதவியில் சேர்ந்த தேதி (DOJ) &amp; பிறந்த தேதி (DOB)</th>
+              <th style="text-align:center;">பதவியில் சேர்ந்த தேதி (DOJ), பணிக்காலம், பிறந்த தேதி (DOB), வயது (01.04.2027) &amp; ஓய்வு நாள் (DOR)</th>
               <th style="text-align:center;">கைபேசி &amp; முகாம்</th>
               <th style="text-align:center; width:220px;">FORM – IV நடவடிக்கை</th>
             </tr>
@@ -20202,9 +20297,10 @@ EBS_TEACHING_CATS.forEach(c => { autoTeachReg[c.key] = 0; autoTeachCon[c.key] = 
 const autoNonTeachReg = {};
 const autoNonTeachCon = {};
 EBS_NONTEACHING_CATS.forEach(c => { autoNonTeachReg[c.key] = 0; autoNonTeachCon[c.key] = 0; });
+const isPrivateSchF1 = String(sch.mgmt1 || "").toUpperCase().trim() === "3P";
 staffList.forEach(st => {
 const cls = classifyPortalStaffForF1(st, isHSS);
-const isContract = /CONTRACT|SELF|CONSOLIDATED|PART/i.test(String(st.nature || ""));
+const isContract = isPrivateSchF1 || /CONTRACT|SELF|CONSOLIDATED|PART/i.test(String(st.nature || ""));
 if (cls.group === "teach") {
 if (isContract) autoTeachCon[cls.key] = (autoTeachCon[cls.key] || 0) + 1;
 else autoTeachReg[cls.key] = (autoTeachReg[cls.key] || 0) + 1;
@@ -20223,7 +20319,13 @@ if (!activeSchoolSession) return;
 const uNo = String(activeSchoolSession.uNo || "").trim();
 _ebsAddStaffModeIsTeaching = Boolean(isTeaching);
 _ebsAddStaffSearchResultsCache = [];
-getOrInitSchoolEbs2026Data(uNo, false);
+const ctxInit = getOrInitSchoolEbs2026Data(uNo, false);
+const isPrivSchModal = String((ctxInit.sch && ctxInit.sch.mgmt1) || "").toUpperCase().trim() === "3P";
+const curF4Count = (ctxInit.staffList || []).filter(s => !s.isTeaching).length;
+if (!_ebsAddStaffModeIsTeaching && isPrivSchModal && curF4Count >= 2) {
+showToast("⚠️ தனியார் பள்ளிகள் (3P) FORM – IV பிரிவில் EMIS எண் மூலம் அதிகபட்சமாக 2 அலுவலகப் பணியாளர்களை மட்டுமே இணைக்க முடியும்!", "#dc2626");
+return;
+}
 const modal = document.getElementById("ebsAddStaffModal");
 const titleEl = document.getElementById("ebsAddStaffModalTitle");
 const subEl = document.getElementById("ebsAddStaffModalSub");
@@ -20246,6 +20348,10 @@ if (resEl) resEl.innerHTML = "";
 if (tempPrevEl) tempPrevEl.textContent = nextTempId;
 if (tempBtnEl) {
 tempBtnEl.textContent = `🆕 தற்காலிக எண் (${nextTempId}) உருவாக்கி புதிய ${_ebsAddStaffModeIsTeaching ? "ஆசிரியர் (F3)" : "பணியாளர் (F4)"} படிவம் பூர்த்தி செய்`;
+const tempBoxWrap = tempBtnEl.closest("div[style*='#f0fdf4']");
+if (tempBoxWrap) {
+tempBoxWrap.style.display = (!_ebsAddStaffModeIsTeaching && isPrivSchModal) ? "none" : "block";
+}
 }
 if (modal) {
 modal.classList.add("open");
@@ -20433,7 +20539,7 @@ htmlOut += `
                 <span style="font-size:0.72rem; padding:1px 6px; border-radius:4px; background:#f1f5f9; color:#334155; margin-left:4px;">${escapeHtmlAttr(m.desig)} (${escapeHtmlAttr(m.subject)})</span>
               </div>
               <div style="font-size:0.74rem; color:#475569; font-weight:700; margin-top:2px;">
-                🏫 தற்போதைய பள்ளி: [U.NO: ${escapeHtmlAttr(m.fromUNo)}] ${escapeHtmlAttr(m.fromSchoolName)} | DOB: ${formatDateDisplayDMY(m.dob) || "-"}
+                🏫 தற்போதைய பள்ளி: [U.NO: ${escapeHtmlAttr(m.fromUNo)}] ${escapeHtmlAttr(m.fromSchoolName)} | DOB: ${formatDateDisplayDMY(m.dob) || "-"}${m.dob ? ` | 01.04.2027 வயது: ${computeAgeAndDorFromDob(m.dob).ageText} | ஓய்வு: ${computeAgeAndDorFromDob(m.dob).dor}` : ""}
               </div>
             </div>
             <div>
@@ -20509,8 +20615,17 @@ if (resEl) resEl.innerHTML = liveHtml;
 function addStaffRecordToCurrentSchoolEbs(uNo, staffObj, isTeaching, isTempId) {
 uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
 if (!uNo || !staffObj || !staffObj.staffId) return null;
-getOrInitSchoolEbs2026Data(uNo, false);
+const ctxCheck = getOrInitSchoolEbs2026Data(uNo, false);
 const sch = masterSchools.find(m => String(m.uNo) === uNo) || { uNo, nameEn: "", nameTa: "", mgmt1: "1G", block: "01-Sivagangai" };
+const isPrivSchAdd = String(sch.mgmt1 || "").toUpperCase().trim() === "3P";
+if (!isTeaching && isPrivSchAdd) {
+const existingF4 = (ctxCheck.staffList || []).filter(s => !s.isTeaching);
+const alreadyExists = existingF4.some(s => String(s.staffId) === String(staffObj.staffId).trim());
+if (!alreadyExists && existingF4.length >= 2) {
+showToast("⚠️ தனியார் பள்ளிகள் (3P) FORM – IV பிரிவில் அதிகபட்சமாக 2 அலுவலகப் பணியாளர்களை மட்டுமே இணைக்க முடியும்!", "#dc2626");
+return null;
+}
+}
 const extra = getSchoolExtra(uNo);
 if (!Array.isArray(extra.staff)) extra.staff = [];
 if (!extra.ebs2026) extra.ebs2026 = {};
@@ -20855,40 +20970,46 @@ const exItems = [...(dd.exemptionGrounds || ["Differently Abled", "Cancer Patien
 const exemptionOpts = buildSelectOptionsWithCurrent(exItems, st.exemptionGround, "None (விலக்கு இல்லை)");
 const hasCert = Boolean(st.exemptionCertUrl);
 const isAdminViewing = Boolean(document.body && document.body.classList.contains("admin-mode"));
+const modalAgeInfo = computeAgeAndDorFromDob(st.dob);
+const modalPresPostService = computeServiceYearsMonths(st.dojPresPost || (isContractInitial ? "" : st.dojService));
 bodyEl.innerHTML = `
       <form onsubmit="saveEbsStaffProfileModal(event)" data-orig-ifhrms="${escapeHtmlAttr(st.ifhrmsId || "")}" data-orig-modefirst="${escapeHtmlAttr(st.modeFirstApp || "TRB")}" data-orig-dojservice="${escapeHtmlAttr(st.dojService || "")}" data-orig-firstpost="${escapeHtmlAttr(st.firstJoinPost || st.desig || "")}" data-orig-modepres="${escapeHtmlAttr(st.modePresPost || "NEW APPOINTMENT")}" data-orig-unittransfer="${escapeHtmlAttr(st.unitTransferDate || "")}">
-        <!-- ROW 1: Staff EMIS ID -> Nature of Present Post -> IFHRMS ID -> Name (English) & Name (Tamil with Tanglish) -->
-        <div style="display:grid; grid-template-columns:130px 195px 155px 1fr 1.45fr; gap:8px; margin-bottom:12px; align-items:start;">
+        <!-- ROW 1: Staff EMIS ID -> Nature of Present Post -> IFHRMS ID -->
+        <div style="display:grid; grid-template-columns:${isPrivateSchool ? "220px" : "180px 1fr 1fr"}; gap:10px; margin-bottom:12px; align-items:start;">
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.75rem; font-weight:800;">Staff EMIS ID (8 Digits)</label>
-            <input type="text" id="ebsStfEmisId" maxlength="8" class="form-control" value="${escapeHtmlAttr(st.staffId)}" readonly style="background:#f1f5f9; font-weight:900;">
+            <input type="text" id="ebsStfEmisId" maxlength="8" class="form-control" value="${escapeHtmlAttr(st.staffId)}" readonly style="background:#f1f5f9; font-weight:900; font-size:0.96rem; letter-spacing:0.6px;">
           </div>
-          <div class="form-group" style="margin-bottom:0;">
+          <div class="form-group" style="margin-bottom:0; ${isPrivateSchool ? "display:none;" : ""}">
             <label class="form-label" style="font-size:0.75rem; font-weight:900; color:#1e3a8a;">Nature of Present Post</label>
             <select id="ebsStfNature" class="form-control" onchange="onEbsNatureOfPostChange()" style="font-weight:900; border-color:#2563eb; background:#eff6ff; color:#1e3a8a;">
-              ${natureOpts}
+              ${isPrivateSchool ? '<option value="" selected></option>' : natureOpts}
             </select>
           </div>
-          <div class="form-group" style="margin-bottom:0;">
+          <div class="form-group" style="margin-bottom:0; ${isPrivateSchool ? "display:none;" : ""}">
             <label class="form-label" style="font-size:0.75rem; font-weight:900; color:#4c1d95;">IFHRMS ID* (11 Digits)</label>
             <input type="text" id="ebsStfIfhrmsId" maxlength="11" class="form-control" value="${isContractInitial ? "" : escapeHtmlAttr(st.ifhrmsId || "")}" placeholder="${isContractInitial ? "" : "11-இலக்க IFHRMS எண்"}" ${isContractInitial ? "disabled" : ""} style="font-weight:900; border-color:${isContractInitial ? "#cbd5e1" : "#7c3aed"}; background:${isContractInitial ? "#e2e8f0" : "#fff"}; letter-spacing:1px;">
           </div>
+        </div>
+
+        <!-- ROW 2 (பெயர் அடுத்த வரிசைக்கு நகர்த்தப்பட்டது): Name (In English) & பெயர் (தமிழில்) & Prefix -->
+        <div style="display:grid; grid-template-columns:1fr 1.3fr; gap:12px; margin-bottom:12px; align-items:start; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1;">
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.75rem; font-weight:800;">Name (In English)</label>
-            <input type="text" id="ebsStfNameEn" class="form-control" value="${escapeHtmlAttr(st.name || "")}" style="font-weight:800;">
+            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#0f294a;">Name (In English - BLOCK LETTERS)*</label>
+            <input type="text" id="ebsStfNameEn" class="form-control" value="${escapeHtmlAttr(st.name || "")}" style="font-weight:900; font-size:0.96rem; color:#0f172a;">
           </div>
           <div class="form-group" style="margin-bottom:0; position:relative;">
-            <label class="form-label" style="font-size:0.75rem; font-weight:900; color:#4c1d95;">பெயர் (தமிழில்) &amp; Prefix</label>
-            <div style="display:flex; gap:4px;">
-              <select id="ebsStfPrefix" class="form-control" style="max-width:98px; font-weight:800; padding:6px 4px;">
+            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4c1d95;">பெயர் (தமிழில்) &amp; Prefix</label>
+            <div style="display:flex; gap:6px;">
+              <select id="ebsStfPrefix" class="form-control" style="max-width:105px; font-weight:800; padding:6px 4px;">
                 ${prefixOpts}
               </select>
-              <input type="text" id="ebsStfNameTa" class="form-control" value="${escapeHtmlAttr(st.nameTa || "")}" placeholder="Tanglish-இல் தட்டச்சு செய்க (எ.கா. karthikeyan + Space)" oninput="onEbsNameTaTanglishInput(event)" onkeydown="onEbsNameTaTanglishKeydown(event)" onblur="onEbsNameTaTanglishBlur(event)" autocomplete="off" style="font-weight:800; border-color:#7c3aed;">
+              <input type="text" id="ebsStfNameTa" class="form-control" value="${escapeHtmlAttr(st.nameTa || "")}" placeholder="Tanglish-இல் தட்டச்சு செய்க (எ.கா. karthikeyan + Space)" oninput="onEbsNameTaTanglishInput(event)" onkeydown="onEbsNameTaTanglishKeydown(event)" onblur="onEbsNameTaTanglishBlur(event)" autocomplete="off" style="font-weight:900; font-size:0.95rem; border-color:#7c3aed;">
             </div>
             <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; margin-top:5px; flex-wrap:wrap;">
               <label style="display:inline-flex; align-items:center; gap:4px; font-size:0.72rem; font-weight:900; color:#15803d; background:#dcfce7; border:1px solid #86efac; padding:2px 8px; border-radius:4px; cursor:pointer;" title="ஆங்கில எழுத்துகளில் தட்டச்சு செய்து Space அழுத்தினால் தமிழில் மாறும் (Tanglish Phonetic Typing)">
                 <input type="checkbox" id="ebsTanglishToggle" checked style="margin:0; cursor:pointer;">
-                <span>Tanglish</span>
+                <span>Tanglish (தங்கlish)</span>
               </label>
               <button type="button" onclick="autoFillEbsTamilNameFromEnglish()" title="ஆங்கிலப் பெயரைத் தானாகத் தமிழில் மாற்று" style="background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; border-radius:4px; padding:2px 8px; font-size:0.72rem; font-weight:900; cursor:pointer;">
                 ⚡ ஆங்கிலம்➔தமிழ்
@@ -20898,8 +21019,8 @@ bodyEl.innerHTML = `
           </div>
         </div>
 
-        <!-- Separate Gender and Date of Birth fields -->
-        <div style="display:grid; grid-template-columns:${st.isTeaching ? "125px 178px 1fr 1fr 1fr" : "130px 185px 1fr 1fr"}; gap:10px; margin-bottom:12px;">
+        <!-- ROW 3: Gender, Date of Birth, 01.04.2027 வயது (Age) & ஓய்வு நாள் (Retirement Date - DOR) -->
+        <div style="display:grid; grid-template-columns:130px 180px 1fr 1fr; gap:10px; margin-bottom:12px; align-items:start;">
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.76rem; font-weight:800;">Gender</label>
             <select id="ebsStfGender" class="form-control" style="font-weight:800;">
@@ -20907,9 +21028,21 @@ bodyEl.innerHTML = `
             </select>
           </div>
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.76rem; font-weight:800;">Date of Birth</label>
-            <input type="date" id="ebsStfDob" class="form-control" value="${escapeHtmlAttr(st.dob || "")}" style="font-weight:900; font-size:0.96rem; color:#0f172a; letter-spacing:0.4px;">
+            <label class="form-label" style="font-size:0.76rem; font-weight:800;">Date of Birth (பிறந்த தேதி)</label>
+            <input type="date" id="ebsStfDob" class="form-control" value="${escapeHtmlAttr(st.dob || "")}" oninput="onEbsStaffDobChange()" onchange="onEbsStaffDobChange()" style="font-weight:900; font-size:0.96rem; color:#0f172a; letter-spacing:0.4px;">
           </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#15803d;">🎂 01.04.2027 அன்று வயது (Age)</label>
+            <input type="text" id="ebsStfAge01042027Input" class="form-control" value="${escapeHtmlAttr(modalAgeInfo.ageText || "-")}" readonly style="background:#f0fdf4; border-color:#86efac; color:#15803d; font-weight:900; font-size:0.92rem;">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#b45309;">🏁 ஓய்வு நாள் (DOR - 60 வயது)</label>
+            <input type="text" id="ebsStfDorInput" class="form-control" value="${escapeHtmlAttr(modalAgeInfo.dor || "-")}" readonly style="background:#fffbeb; border-color:#fcd34d; color:#b45309; font-weight:900; font-size:0.95rem; letter-spacing:0.5px;">
+          </div>
+        </div>
+
+        <!-- ROW 4: Designation, Educational Qualification, Main Subject -->
+        <div style="display:grid; grid-template-columns:${st.isTeaching ? "1fr 1fr 1fr" : "1fr 1fr"}; gap:10px; margin-bottom:12px;">
           <div class="form-group" style="margin-bottom:0;">
             <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#0f766e;">Designation (பதவி)</label>
             <select id="ebsStfDesig" class="form-control" style="font-weight:800; border-color:#0f766e;">
@@ -20965,7 +21098,7 @@ ${mainSubOpts}
         </div>
 
         <!-- SECTION 1: முதன் முதலில் அரசுப்பணியேற்ற விவரம் -->
-        <div id="ebsFirstGovtApptSection" style="margin-bottom:12px; background:${isContractInitial ? "#f1f5f9" : "#f0fdfa"}; padding:10px 12px; border-radius:8px; border:1.5px solid ${isContractInitial ? "#cbd5e1" : "#99f6e4"}; opacity:${isContractInitial ? "0.62" : "1"}; transition:all 0.2s;">
+        <div id="ebsFirstGovtApptSection" style="margin-bottom:12px; ${isPrivateSchool ? "display:none;" : ""} background:${isContractInitial ? "#f1f5f9" : "#f0fdfa"}; padding:10px 12px; border-radius:8px; border:1.5px solid ${isContractInitial ? "#cbd5e1" : "#99f6e4"}; opacity:${isContractInitial ? "0.62" : "1"}; transition:all 0.2s;">
           <div style="font-size:0.80rem; font-weight:900; color:${isContractInitial ? "#64748b" : "#0f766e"}; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
             <span>🏛️ முதன் முதலில் அரசுப்பணியேற்ற விவரம்</span>
             <span id="ebsFirstGovtApptContractNote" style="display:${isContractInitial ? "inline-block" : "none"}; font-size:0.71rem; color:#dc2626; background:#fee2e2; padding:1px 8px; border-radius:4px; font-weight:800;">Contract பணியாளர்களுக்குப் பொருந்தாது (Disabled)</span>
@@ -20992,10 +21125,11 @@ ${mainSubOpts}
 
         <!-- SECTION 2: தற்போது வகிக்கும் பதவி சார்ந்த விவரங்கள் -->
         <div style="margin-bottom:12px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1.5px solid #cbd5e1;">
-          <div style="font-size:0.80rem; font-weight:900; color:#1e3a8a; margin-bottom:8px;">
-            📋 தற்போது வகிக்கும் பதவி சார்ந்த விவரங்கள்
+          <div style="font-size:0.80rem; font-weight:900; color:#1e3a8a; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <span>📋 தற்போது வகிக்கும் பதவி சார்ந்த விவரங்கள்</span>
+            <span id="ebsPresPostServiceHeaderBadge" style="font-size:0.74rem; font-weight:900; color:#4c1d95; background:#f5f3ff; border:1px solid #c4b5fd; padding:2px 10px; border-radius:999px;">⏳ தற்போதைய பதவியில் பணிக்காலம்: ${escapeHtmlAttr(modalPresPostService || "-")}</span>
           </div>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:10px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(155px, 1fr)); gap:10px;">
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#1e3a8a;">Mode of Appointment in Present Post</label>
               <select id="ebsStfModePresPost" class="form-control" ${isContractInitial ? "disabled" : ""} style="font-weight:800; border-color:${isContractInitial ? "#cbd5e1" : "#3b82f6"}; background:${isContractInitial ? "#e2e8f0" : "#fff"};">
@@ -21004,7 +21138,11 @@ ${mainSubOpts}
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label" style="font-size:0.74rem; font-weight:800;">Date of Join in Present Post</label>
-              <input type="date" id="ebsStfDojPresPost" class="form-control" value="${escapeHtmlAttr(st.dojPresPost || "")}" style="font-weight:900; font-size:0.96rem; color:#0f172a; letter-spacing:0.4px;">
+              <input type="date" id="ebsStfDojPresPost" class="form-control" value="${escapeHtmlAttr(st.dojPresPost || "")}" oninput="onEbsDojPresPostChange()" onchange="onEbsDojPresPostChange()" style="font-weight:900; font-size:0.96rem; color:#0f172a; letter-spacing:0.4px;">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#4c1d95;">⏳ தற்போதைய பதவியில் பணிக்காலம்</label>
+              <input type="text" id="ebsStfPresPostServiceInput" class="form-control" value="${escapeHtmlAttr(modalPresPostService || "-")}" readonly style="background:#f5f3ff; border-color:#c4b5fd; color:#4c1d95; font-weight:900; font-size:0.90rem;">
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label" style="font-size:0.74rem; font-weight:800;">Unit Transfer Date</label>
@@ -21188,6 +21326,24 @@ ${prac12Opts2}
       </form>
     `;
 modal.classList.add("active");
+}
+function onEbsStaffDobChange() {
+const dobEl = document.getElementById("ebsStfDob");
+const ageInputEl = document.getElementById("ebsStfAge01042027Input");
+const dorInputEl = document.getElementById("ebsStfDorInput");
+if (!dobEl) return;
+const info = computeAgeAndDorFromDob(dobEl.value);
+if (ageInputEl) ageInputEl.value = info.ageText || "-";
+if (dorInputEl) dorInputEl.value = info.dor || "-";
+}
+function onEbsDojPresPostChange() {
+const dojEl = document.getElementById("ebsStfDojPresPost");
+const srvInputEl = document.getElementById("ebsStfPresPostServiceInput");
+const srvBadgeEl = document.getElementById("ebsPresPostServiceHeaderBadge");
+if (!dojEl) return;
+const srv = computeServiceYearsMonths(dojEl.value);
+if (srvInputEl) srvInputEl.value = srv || "-";
+if (srvBadgeEl) srvBadgeEl.textContent = "⏳ தற்போதைய பதவியில் பணிக்காலம்: " + (srv || "-");
 }
 function onEbsNatureOfPostChange() {
 const natureEl = document.getElementById("ebsStfNature");
@@ -21762,8 +21918,10 @@ const nameTaInputEl = document.getElementById("ebsStfNameTa");
 if (nameTaInputEl && typeof convertRemainingTanglishInInput === "function") {
 convertRemainingTanglishInInput(nameTaInputEl);
 }
-const selectedNatureVal = (document.getElementById("ebsStfNature")?.value || "Regular (Govt.Salaried )").trim();
-const isContractSelected = /contract/i.test(selectedNatureVal);
+const schSaveObj = masterSchools.find(m => String(m.uNo) === String(uNo)) || {};
+const isPrivSchSave = String(schSaveObj.mgmt1 || "").toUpperCase().trim() === "3P";
+const selectedNatureVal = isPrivSchSave ? "" : (document.getElementById("ebsStfNature")?.value || "Regular (Govt.Salaried )").trim();
+const isContractSelected = isPrivSchSave || /contract/i.test(selectedNatureVal);
 const prof = {
 ifhrmsId: isContractSelected ? "" : (document.getElementById("ebsStfIfhrmsId")?.value || "").trim(),
 prefix: (document.getElementById("ebsStfPrefix")?.value || "").trim(),
@@ -22242,7 +22400,10 @@ function buildOfficialEbsForm3SingleHtml(sch, st) {
 const ch = st.classesHandling || getDefaultClassesHandlingForStaff(st.desig, st.subject, sch);
 const isSvgCamp = !/Karaikudi|Devakottai/i.test(st.prefCamp || "");
 const isKkdCamp = /Karaikudi|Devakottai/i.test(st.prefCamp || "");
-const isReg = !/Contract|Self/i.test(st.nature || "");
+const isPrivSch = String(sch.mgmt1 || "").toUpperCase().trim() === "3P";
+const isReg = !isPrivSch && !/Contract|Self/i.test(st.nature || "");
+const ageInfo = computeAgeAndDorFromDob(st.dob);
+const presPostSrv = computeServiceYearsMonths(st.dojPresPost || (isReg ? st.dojService : ""));
 const mFirst = isReg ? String(st.modeFirstApp || "TRB") : "";
 const isProm = isReg && /PROMOTION/i.test(st.modePresPost || "");
 const isNewApp = isReg && !isProm;
@@ -22284,8 +22445,11 @@ return `
               <div style="font-size:9.5px; font-weight:800;">(தமிழில்)</div>
               <div style="font-weight:900; font-size:12px;">${escapeHtmlAttr((st.prefix ? st.prefix + " " : "") + (st.nameTa || ""))}</div>
             </td>
-            <td style="font-weight:700;">Date of Birth</td>
-            <td style="font-weight:900; font-size:13.5px; letter-spacing:0.4px;">${escapeHtmlAttr(formatDateDisplayDMY(st.dob))}</td>
+            <td style="font-weight:700;">Date of Birth<br><span style="font-size:9px; font-weight:700;">(01.04.2027 வயது &amp; ஓய்வு)</span></td>
+            <td style="font-weight:900; font-size:13px; letter-spacing:0.3px;">
+              <div>${escapeHtmlAttr(formatDateDisplayDMY(st.dob))}</div>
+              ${ageInfo.age27 ? `<div style="font-size:9.5px; font-weight:800; margin-top:1px;">01.04.2027 வயது: ${escapeHtmlAttr(ageInfo.ageText)} | ஓய்வு நாள்: ${escapeHtmlAttr(ageInfo.dor)}</div>` : ""}
+            </td>
           </tr>
           <tr>
             <td style="font-weight:700;">Designation</td>
@@ -22372,20 +22536,22 @@ return `
 
         <table class="ebs-print-table" style="text-align:center;">
           <tr>
-            <td style="width:32%; font-weight:700;">
+            <td style="width:28%; font-weight:700;">
               <strong>Nature of Present Post</strong><br>
               <span style="font-size:9.5px;">Regular (Govt. Salaried)<br>Contract (Self Fin. / Management)</span>
             </td>
-            <td style="width:20%; font-weight:800;">Date of Join in<br>Present Post</td>
-            <td style="width:28%; font-weight:800;">Unit Transfer Date<br><span style="font-size:9px; font-weight:700;">(துறை மாறுதல் மூலம் தற்போதைய<br>பதவியில் பணியேற்றவர்கள் மட்டும்)</span></td>
-            <td style="width:20%; font-weight:800;">Date of Join in<br>Present School</td>
+            <td style="width:24%; font-weight:800;">Date of Join in<br>Present Post &amp; Service<br><span style="font-size:9px; font-weight:700;">(தற்போதைய பதவியில் பணிக்காலம்)</span></td>
+            <td style="width:26%; font-weight:800;">Unit Transfer Date<br><span style="font-size:9px; font-weight:700;">(துறை மாறுதல் மூலம் தற்போதைய<br>பதவியில் பணியேற்றவர்கள் மட்டும்)</span></td>
+            <td style="width:22%; font-weight:800;">Date of Join in<br>Present School</td>
           </tr>
-          <tr style="height:24px;">
+          <tr style="height:26px;">
             <td>
-              ${renderCheckboxHtml(isReg, "Regular")} &nbsp;&nbsp;
-              ${renderCheckboxHtml(!isReg, "Contract")}
+              ${isPrivSch ? `<span style="font-size:10px; font-weight:700; color:#475569;">— (தனியார் பள்ளி / N/A)</span>` : `${renderCheckboxHtml(isReg, "Regular")} &nbsp;&nbsp; ${renderCheckboxHtml(!isReg, "Contract")}`}
             </td>
-            <td style="font-weight:900; font-size:13.5px; letter-spacing:0.4px;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojPresPost))}</td>
+            <td style="font-weight:900; font-size:13px; letter-spacing:0.3px;">
+              <div>${escapeHtmlAttr(formatDateDisplayDMY(st.dojPresPost))}</div>
+              ${presPostSrv ? `<div style="font-size:9.5px; font-weight:800; margin-top:1px;">பணிக்காலம்: ${escapeHtmlAttr(presPostSrv)}</div>` : ""}
+            </td>
             <td style="font-weight:900; font-size:13.5px; letter-spacing:0.4px;">${escapeHtmlAttr(formatDateDisplayDMY(st.unitTransferDate))}</td>
             <td style="font-weight:900; font-size:13.5px; letter-spacing:0.4px;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojSchool))}</td>
           </tr>
@@ -22462,7 +22628,10 @@ return `
 function buildOfficialEbsForm4SingleHtml(sch, st) {
 const isSvgCamp = !/Karaikudi|Devakottai/i.test(st.prefCamp || "");
 const isKkdCamp = /Karaikudi|Devakottai/i.test(st.prefCamp || "");
-const isReg = !/Contract|Self/i.test(st.nature || "");
+const isPrivSch = String(sch.mgmt1 || "").toUpperCase().trim() === "3P";
+const isReg = !isPrivSch && !/Contract|Self/i.test(st.nature || "");
+const ageInfo = computeAgeAndDorFromDob(st.dob);
+const presPostSrv = computeServiceYearsMonths(st.dojPresPost || st.dojService);
 const ex = String(st.exemptionGround || "");
 return `
       <div class="ebs-a4-page">
@@ -22510,22 +22679,27 @@ return `
         <table class="ebs-print-table" style="margin-bottom:10px; text-align:center;">
           <thead>
             <tr>
-              <th style="width:16%;">Date of Birth</th>
-              <th style="width:18%;">Date of Join in<br>Govt. Service</th>
-              <th style="width:32%;">Nature of<br>Present Post</th>
-              <th style="width:17%;">Date of Join In<br>Present Post</th>
+              <th style="width:18%;">Date of Birth<br><span style="font-size:9px; font-weight:700;">(01.04.2027 வயது &amp; ஓய்வு)</span></th>
+              <th style="width:16%;">Date of Join in<br>Govt. Service</th>
+              <th style="width:28%;">Nature of<br>Present Post</th>
+              <th style="width:21%;">Date of Join In<br>Present Post &amp; Service<br><span style="font-size:9px; font-weight:700;">(தற்போதைய பதவியில் பணிக்காலம்)</span></th>
               <th style="width:17%;">Date of Join in<br>Present School</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="height:38px;">
-              <td style="font-weight:900; font-size:13.5px; letter-spacing:0.4px;">${escapeHtmlAttr(formatDateDisplayDMY(st.dob))}</td>
-              <td style="font-weight:900; font-size:13.5px; letter-spacing:0.4px;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojService))}</td>
-              <td style="text-align:left; padding-left:10px;">
-                <div>${renderCheckboxHtml(isReg, "Regular <span style='font-size:9.5px;font-weight:400;'>(Govt. Salaried)</span>")}</div>
-                <div style="margin-top:4px;">${renderCheckboxHtml(!isReg, "Contract <span style='font-size:9.5px;font-weight:400;'>(Self Finance / Management Staff)</span>")}</div>
+            <tr style="height:40px;">
+              <td style="font-weight:900; font-size:13px; letter-spacing:0.3px;">
+                <div>${escapeHtmlAttr(formatDateDisplayDMY(st.dob))}</div>
+                ${ageInfo.age27 ? `<div style="font-size:9px; font-weight:800; margin-top:2px;">01.04.2027 வயது: ${escapeHtmlAttr(ageInfo.ageText)}<br>ஓய்வு நாள்: ${escapeHtmlAttr(ageInfo.dor)}</div>` : ""}
               </td>
-              <td style="font-weight:900; font-size:13.5px; letter-spacing:0.4px;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojPresPost))}</td>
+              <td style="font-weight:900; font-size:13.5px; letter-spacing:0.4px;">${isPrivSch ? "" : escapeHtmlAttr(formatDateDisplayDMY(st.dojService))}</td>
+              <td style="text-align:left; padding-left:10px;">
+                ${isPrivSch ? `<div style="text-align:center; font-size:10px; font-weight:700; color:#475569;">— (தனியார் பள்ளி / N/A)</div>` : `<div>${renderCheckboxHtml(isReg, "Regular <span style='font-size:9.5px;font-weight:400;'>(Govt. Salaried)</span>")}</div><div style="margin-top:4px;">${renderCheckboxHtml(!isReg, "Contract <span style='font-size:9.5px;font-weight:400;'>(Self Finance / Management Staff)</span>")}</div>`}
+              </td>
+              <td style="font-weight:900; font-size:13px; letter-spacing:0.3px;">
+                <div>${escapeHtmlAttr(formatDateDisplayDMY(st.dojPresPost))}</div>
+                ${presPostSrv ? `<div style="font-size:9px; font-weight:800; margin-top:2px;">பணிக்காலம்: ${escapeHtmlAttr(presPostSrv)}</div>` : ""}
+              </td>
               <td style="font-weight:900; font-size:13.5px; letter-spacing:0.4px;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojSchool))}</td>
             </tr>
           </tbody>
@@ -22856,8 +23030,9 @@ g("comm_eng").tm, g("comm_eng").em, g("comm_eng").tot, nowStr
 }
 const teachList = staffList.filter(s => s.isTeaching);
 const nonTeachList = staffList.filter(s => !s.isTeaching);
+const isPrivSchRow = String(sch.mgmt1 || "").toUpperCase().trim() === "3P";
 const f3Rows = teachList.map((st, idx) => {
-const isContractSt = /contract/i.test(st.nature || "");
+const isContractSt = isPrivSchRow || /contract/i.test(st.nature || "");
 const ageInfo = computeAgeAndDorFromDob(st.dob);
 const srv = computeServiceYearsMonths(st.dojPresPost || (isContractSt ? "" : st.dojService));
 const ch = st.classesHandling || {};
@@ -22866,7 +23041,7 @@ const cMed = (c) => (ch[c] && ch[c].med) || "";
 return [
 idx + 1, sch.uNo, sch.level || "HS", sch.mgmt1 || "1G", sch.block || "", sch.nameEn || "",
 st.staffId || "", isContractSt ? "" : (st.ifhrmsId || ""), st.name || "", st.prefix || "", st.nameTa || "",
-st.gender || "", formatDateDisplayDMY(st.dob), ageInfo.age26, ageInfo.dor,
+st.gender || "", formatDateDisplayDMY(st.dob), ageInfo.age27, ageInfo.dor,
 st.desig || "", st.qualification || "", st.subject || "",
 st.mobile || "", st.altMobile || "", st.email || "", st.resPlace || "", st.resDistrict || "Sivagangai",
 st.prefCamp || "01-Sivagangai",
@@ -22876,7 +23051,7 @@ isContractSt ? "" : (st.modeFirstApp || "TRB"),
 isContractSt ? "" : formatDateDisplayDMY(st.dojService),
 isContractSt ? "" : (st.firstJoinPost || st.desig || ""),
 isContractSt ? "" : (st.modePresPost || "NEW APPOINTMENT"),
-st.nature || "Regular (Govt.Salaried )",
+isPrivSchRow ? "" : (st.nature || "Regular (Govt.Salaried )"),
 formatDateDisplayDMY(st.dojPresPost), srv,
 isContractSt ? "" : formatDateDisplayDMY(st.unitTransferDate),
 formatDateDisplayDMY(st.dojSchool),
@@ -22890,10 +23065,10 @@ const f4Rows = nonTeachList.map((st, idx) => {
 const ageInfo = computeAgeAndDorFromDob(st.dob);
 const srv = computeServiceYearsMonths(st.dojPresPost || st.dojService);
 return [
-sch.uNo, idx + 1, sch.nameEn || "", st.staffId || "", st.ifhrmsId || "",
+sch.uNo, idx + 1, sch.nameEn || "", st.staffId || "", isPrivSchRow ? "" : (st.ifhrmsId || ""),
 st.name || "", st.prefix || "", st.nameTa || "", st.desig || "", st.gender || "",
-formatDateDisplayDMY(st.dob), ageInfo.age26, ageInfo.dor,
-formatDateDisplayDMY(st.dojService), st.nature || "Regular (Govt.Salaried )",
+formatDateDisplayDMY(st.dob), ageInfo.age27, ageInfo.dor,
+isPrivSchRow ? "" : formatDateDisplayDMY(st.dojService), isPrivSchRow ? "" : (st.nature || "Regular (Govt.Salaried )"),
 formatDateDisplayDMY(st.dojPresPost), srv, formatDateDisplayDMY(st.dojSchool),
 st.mobile || "", st.altMobile || "", st.email || "", st.resPlace || "", st.resDistrict || "Sivagangai",
 st.prefCamp || "01-Sivagangai",
@@ -22973,7 +23148,7 @@ sList.forEach(x => { if (x.isTeaching) totalF3++; else totalF4++; });
 const f3El = document.getElementById("admEbsStatF3Count");
 if (f3El && totalF3 > 0) f3El.textContent = `${totalF3.toLocaleString("en-IN")} ஆசிரியர்கள்`;
 const f4El = document.getElementById("admEbsStatF4Count");
-if (f4El && totalF4 > 0) f4El.textContent = `${totalF4.toLocaleString("en-IN")} பணியாளர்கள்`;
+if (f4El) f4El.textContent = `${totalF4.toLocaleString("en-IN")} பணியாளர்கள்`;
 const tbody = document.getElementById("admEbsSchoolsTbody");
 if (!tbody) return;
 tbody.innerHTML = filtered.map((s, idx) => {
@@ -23200,7 +23375,7 @@ const EBS_F2_XLSX_HEADERS = [
 const EBS_F3_XLSX_HEADERS = [
 "SN", "U_NO", "Level", "Management", "Block", "School_Name",
 "Staff_EMIS_ID", "IFHRMS_ID", "Teacher_Name_En", "Salutation", "Teacher_Name_Ta",
-"Gender", "DOB", "Age_01_04_26", "DOR", "Designation", "Qualification", "Main_Subject",
+"Gender", "DOB", "Age_01_04_27", "DOR", "Designation", "Qualification", "Main_Subject",
 "Mobile_WhatsApp", "Alternate_Mobile", "Personal_Email", "Residential_Place", "Residential_District",
 "Preferred_Camp_2026_27",
 "Class6_Sub", "Class6_Med", "Class7_Sub", "Class7_Med", "Class8_Sub", "Class8_Med",
@@ -23215,7 +23390,7 @@ const EBS_F3_XLSX_HEADERS = [
 const EBS_F4_XLSX_HEADERS = [
 "U_NO", "SN", "School_Name", "Staff_EMIS_ID", "IFHRMS_ID",
 "Employee_Name_En", "Salutation", "Employee_Name_Ta", "Designation", "Gender",
-"DOB", "Age_01_04_26", "DOR", "DOJ_Govt_Service", "Nature_Present_Post",
+"DOB", "Age_01_04_27", "DOR", "DOJ_Govt_Service", "Nature_Present_Post",
 "DOJ_Present_Post", "Service_Present_Post", "DOJ_Present_School",
 "Mobile_WhatsApp", "Alternate_Mobile", "Personal_Email", "Residential_Place", "Residential_District",
 "Preferred_Camp_2026_27",
