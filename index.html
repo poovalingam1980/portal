@@ -22385,10 +22385,14 @@ return `
 
         <table class="ebs-print-table">
           <tr>
-            <td style="width:15%; font-weight:700;">Staff EMIS ID</td>
-            <td style="width:33%;">${renderDigitBoxesHtml(st.staffId, 8)}</td>
-            <td style="width:14%; font-weight:700;">IFHRMS ID*</td>
-            <td style="width:38%;">${renderDigitBoxesHtml(st.ifhrmsId, 11)}</td>
+            <td style="width:10%; font-weight:700; line-height:1.15; padding:3px 4px;">Staff<br>EMIS ID</td>
+            <td style="width:23%; text-align:center; padding:3px 2px;">${renderDigitBoxesHtml(st.staffId, 8)}</td>
+            <td style="width:27%; text-align:center; font-weight:700; padding:3px 4px;">
+              <div style="font-weight:800; font-size:11px; margin-bottom:2px;">Nature of Post</div>
+              <div style="white-space:nowrap;">${renderCheckboxHtml(isReg, "Regular")}&nbsp;${renderCheckboxHtml(!isReg, "Contract")}</div>
+            </td>
+            <td style="width:8.5%; font-weight:700; line-height:1.15; padding:3px 4px;">IFHRMS<br>ID*</td>
+            <td style="width:31.5%; text-align:center; padding:3px 2px;">${renderDigitBoxesHtml(st.ifhrmsId, 11)}</td>
           </tr>
         </table>
 
@@ -22484,29 +22488,21 @@ return `
             <td style="text-align:center; font-weight:800;">${isReg ? escapeHtmlAttr(formatDateDisplayDMY(st.dojService)) : ""}</td>
             <td style="text-align:center; font-weight:800;">${isReg ? escapeHtmlAttr(st.firstJoinPost || st.desig || "") : ""}</td>
           </tr>
-          <tr>
-            <td colspan="3" style="text-align:center; font-weight:700; padding:4px;">
-              Mode of Appointment in Present Post : &nbsp;&nbsp;
-              ${renderCheckboxHtml(isProm, "Promotion")} &nbsp;&nbsp;&nbsp;
-              ${renderCheckboxHtml(isNewApp, "New Appointment")}
-            </td>
-          </tr>
         </table>
 
         <table class="ebs-print-table" style="text-align:center;">
           <tr>
-            <td style="width:32%; font-weight:700;">
-              <strong>Nature of Present Post</strong><br>
-              <span style="font-size:9.5px;">Regular (Govt. Salaried)<br>Contract (Self Fin. / Management)</span>
+            <td style="width:34%; font-weight:800;">
+              Mode of Appointment in<br>Present Post
             </td>
-            <td style="width:20%; font-weight:800;">Date of Join in<br>Present Post</td>
+            <td style="width:19%; font-weight:800;">Date of Join in<br>Present Post</td>
             <td style="width:28%; font-weight:800;">Unit Transfer Date<br><span style="font-size:9px; font-weight:700;">(துறை மாறுதல் மூலம் தற்போதைய<br>பதவியில் பணியேற்றவர்கள் மட்டும்)</span></td>
-            <td style="width:20%; font-weight:800;">Date of Join in<br>Present School</td>
+            <td style="width:19%; font-weight:800;">Date of Join in<br>Present School</td>
           </tr>
           <tr style="height:24px;">
-            <td>
-              ${renderCheckboxHtml(isReg, "Regular")} &nbsp;&nbsp;
-              ${renderCheckboxHtml(!isReg, "Contract")}
+            <td style="white-space:nowrap;">
+              ${renderCheckboxHtml(isProm, "Promotion")} &nbsp;
+              ${renderCheckboxHtml(isNewApp, "New Appointment")}
             </td>
             <td style="font-weight:800;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojPresPost))}</td>
             <td style="font-weight:800;">${escapeHtmlAttr(formatDateDisplayDMY(st.unitTransferDate))}</td>
