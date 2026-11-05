@@ -1492,10 +1492,10 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div style="font-size:1.45rem; font-weight:900; color:#14532d;">73,171</div>
 <div style="font-size:0.70rem; color:#15803d; font-weight:700;">6 முதல் 12-ஆம் வகுப்பு வரை</div>
 </div>
-<div onclick="switchAdminTab('centres')" style="cursor:pointer; background:#fdf4ff; border:1.5px solid #f5d0fe; border-left:4px solid #9333ea; border-radius:8px; padding:8px 12px;">
-<div style="font-size:0.72rem; font-weight:800; color:#7e22ce;">10th &amp; +2 தேர்வு மையங்கள் (CENTRES)</div>
-<div style="font-size:1.25rem; font-weight:900; color:#581c87;">10th: 113 | +2: 91</div>
-<div style="font-size:0.70rem; color:#6b21a8; font-weight:700;">10_Ex_Cen &amp; 12_Ex_Cen மையங்கள்</div>
+<div onclick="openOtherExamCentresManager()" style="cursor:pointer; background:#fdf4ff; border:1.5px solid #f5d0fe; border-left:4px solid #9333ea; border-radius:8px; padding:8px 12px;">
+<div style="font-size:0.72rem; font-weight:800; color:#7e22ce;">10th, +2 &amp; மற்ற தேர்வு மையங்கள்</div>
+<div style="font-size:1.18rem; font-weight:900; color:#581c87;" id="admExecCentresSummaryNum">10th: 113 | +2: 91 | மற்றவை</div>
+<div style="font-size:0.70rem; color:#6b21a8; font-weight:800;">கண்காணிப்பாளர் &amp; அலுவலகப் பணியாளர் நிர்ணயம்</div>
 </div>
 <div onclick="openAdminModule('dignitaries')" style="cursor:pointer; background:#fffbeb; border:1.5px solid #fde68a; border-left:4px solid #d97706; border-radius:8px; padding:8px 12px;">
 <div style="font-size:0.72rem; font-weight:800; color:#92400e;">முக்கியப் பிரமுகர்கள் (OFFICIALS)</div>
@@ -1845,6 +1845,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <button type="button" class="nav-pill-btn" id="admTabBtnExamDutySchoolSub" data-mod-group="schoolMaster" onclick="switchAdminTab('examDutyAllotment')" style="border-color:#0f766e; background:#f0fdfa; color:#0f766e; font-weight:900;">🎯 7. பல்வகைத் தேர்வுப் பணி நியமனம் (Auto &amp; Manual)</button>
 <button type="button" class="nav-pill-btn" id="admTabBtnEbsMaster" data-mod-group="ebsMaster" onclick="switchAdminTab('ebsMaster')" style="display:none; border-color:#7c3aed; background:#f5f3ff; color:#5b21b6; font-weight:800;">📋 8a. EBS 2026-27 MASTER (F1, F2, F3, F4 &amp; தனி Google Sheet ஒத்திசைவு)</button>
 <button type="button" class="nav-pill-btn" id="admTabBtnExamDutyAllotment" data-mod-group="ebsMaster" onclick="switchAdminTab('examDutyAllotment')" style="display:none; border-color:#0f766e; background:#f0fdfa; color:#0f766e; font-weight:900;">🎯 8b. பல்வகைத் தேர்வுகள் பணி நியமன மேலாண்மை (தானியங்கி &amp; Manual – 10 பொறுப்புகள்)</button>
+<button type="button" class="nav-pill-btn" id="admTabBtnEbsCentresLink" data-mod-group="ebsMaster" onclick="openOtherExamCentresManager()" style="display:none; border-color:#b45309; background:#fffbeb; color:#92400e; font-weight:900;">🏛️ 8c. மற்ற தேர்வுகள் மையங்கள் &amp; கண்காணிப்பாளர் / அலுவலகப் பணியாளர் நிர்ணயம்</button>
 <!-- GROUP 2: 2. EMIS STAFF MASTER (4 Tabs) -->
 <button type="button" class="nav-pill-btn" id="admTabBtnTeacherMaster" data-mod-group="emisStaff" onclick="switchAdminTab('teacherMaster')" style="display:none;">👨‍🏫 1. பணியாளர் பதிவேடு (Staff Register)</button>
 <button type="button" class="nav-pill-btn" id="admTabBtnSeniorityList" data-mod-group="emisStaff" onclick="switchAdminTab('seniorityList')" style="display:none;">🎖️ 2. பணிமூப்புப் பட்டியல் (Seniority List)</button>
@@ -2143,49 +2144,163 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <!-- ADMIN SUB-TAB 5: 12_Ex_Cen EXAM CENTRES & CIRCULARS -->
-<!-- ADMIN SUB-TAB 5: 10_Ex_Cen & 12_Ex_Cen EXAM CENTRES -->
-<div id="admPaneCentres" class="panel-box" style="display:none;">
+<!-- ADMIN SUB-TAB 5: 10_Ex_Cen, 12_Ex_Cen & OTHER EXAMS CENTRES + INVIGILATOR/OFFICE STAFF ALLOCATION -->
+<div id="admPaneCentres" class="panel-box" style="display:none; border-top:4px solid #0f766e;">
 <div>
 <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-<span>🏛️ 10-ஆம் வகுப்பு (<code>10_Ex_Cen</code>: <span id="admExCen10CountBadge">113</span>) &amp; 12-ஆம் வகுப்பு (<code>12_Ex_Cen</code>: <span id="admExCen12CountBadge">91</span>) பொதுத்தேர்வு மையங்கள்</span>
+<div>
+<span style="font-size:1.12rem; font-weight:900; color:#0f294a;">🏛️ தேர்வு மையங்கள் மேலாண்மை – 10th (<span id="admExCen10CountBadge">113</span>), 12th (<span id="admExCen12CountBadge">91</span>) &amp; மற்ற தேர்வுகள் மையங்கள் (<span id="admExCenOtherCountBadge">0</span>)</span>
+<div style="font-size:0.78rem; color:#475569; font-weight:700; margin-top:2px;">
+10 மற்றும் 12-ஆம் வகுப்பு பொதுத்தேர்வுகள் தவிர்த்து <strong>மற்ற தேர்வுகள் (NMMS, TRUST, TTSE, CMTS, TET/TRB, TNPSC, +1 துணைத்தேர்வு, தொழில்நுட்பத் தேர்வு முதலியன)</strong> நடைபெறும் மையங்களைத் தேர்ந்தெடுக்கவும், ஒவ்வொரு மையத்திற்கும் <strong>அறைக்கண்காணிப்பாளர்கள் &amp; அலுவலகப் பணியாளர்கள்</strong> எண்ணிக்கையை நிர்ணயம் செய்யவும்.
+</div>
+</div>
 <div style="display:flex; gap:6px; flex-wrap:wrap;">
-<button type="button" class="btn btn-primary btn-sm" onclick="syncExamCentresToGoogleSheet(true)" style="font-weight:800; background:linear-gradient(135deg,#1e40af,#0284c7); border:none;">
-📊 10_Ex_Cen &amp; 12_Ex_Cen Google Sheet-ல் ஒத்திசை (Sync to Master DB)
+<button type="button" class="btn btn-primary btn-sm" onclick="switchAdminTab('examDutyAllotment')" style="font-weight:900; background:#7c3aed; border-color:#6d28d9;">
+🎯 பல்வகைத் தேர்வுப் பணி நியமன தளத்திற்குச் செல் (Auto &amp; Manual Duty)
+</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="syncExamCentresToGoogleSheet(true)" style="font-weight:800; background:linear-gradient(135deg,#0f766e,#0284c7); border:none;">
+☁️ சேமி &amp; Cloud ஒத்திசை (Sync to Firebase &amp; Sheet)
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="printExamCentresOfficialA4Report()" style="font-weight:800; border-color:#4c1d95; color:#4c1d95; background:#f5f3ff;">
+🖨️ A4 அறிக்கை அச்சிடு / PDF
 </button>
 <button type="button" class="btn btn-outline btn-sm" onclick="exportExamCentresExcelWorkbook()" style="font-weight:800; border-color:#15803d; color:#15803d; background:#f0fdf4;">
-📗 Excel (.xlsx - 10_Ex_Cen &amp; 12_Ex_Cen Tabs) பதிவிறக்கு
+📗 Excel (.xlsx) பதிவிறக்கு
 </button>
-<button type="button" class="btn btn-primary btn-sm" onclick="switchAdminTab('examDutyAllotment')" style="background:#0f766e; border-color:#0d9488; font-weight:900;">🎯 பல்வகைத் தேர்வுப் பணி நியமனம் (Auto &amp; Manual)</button>
 <button type="button" class="btn btn-success btn-sm" onclick="exportExamCentresCsv()" style="font-weight:800;">📥 CSV பதிவிறக்கு</button>
 </div>
 </div>
-<div style="background:#eff6ff; border:1.5px solid #93c5fd; border-left:5px solid #1d4ed8; border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:0.8rem; color:#1e3a8a; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-<div>
-✅ <strong>Google Sheet தனித் தாவல்கள்:</strong> முதன்மைக் கோப்பான <code>CEO_Sivagangai_School_Portal_Master_DB</code>-ல் <strong><code>10_Ex_Cen</code></strong> (113 மையங்கள்) மற்றும் <strong><code>12_Ex_Cen</code></strong> (91 மையங்கள்) ஆகிய தனித்தனி தாவல்களில் இப்பட்டியல் தானாகப் பதிவாகிறது.
+<!-- KPI SUMMARY CARDS FOR EXAM CENTRES & STAFF ALLOCATION -->
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(185px, 1fr)); gap:10px; margin-bottom:14px;">
+<div onclick="setAdminExamCentreFilterMode('OTHER')" style="cursor:pointer; background:#f0fdfa; border:2px solid #5eead4; border-left:5px solid #0f766e; border-radius:10px; padding:10px 14px;">
+<div style="font-size:0.74rem; font-weight:900; color:#0f766e;">📝 மற்ற தேர்வுகள் மையங்கள் (Other Exams)</div>
+<div style="font-size:1.35rem; font-weight:900; color:#115e59;" id="admExCenKpiOtherCentres">0 மையங்கள்</div>
+<div style="font-size:0.71rem; color:#0d9488; font-weight:800;" id="admExCenKpiOtherExamName">NMMS, TRUST, TTSE, CMTS, TET...</div>
 </div>
-<span id="admExCenLastSyncBadge" style="font-size:0.74rem; font-weight:800; background:#dbeafe; color:#1e40af; padding:2px 9px; border-radius:999px;">Auto Dual-Sync Ready</span>
+<div onclick="setAdminExamCentreFilterMode('10')" style="cursor:pointer; background:#eff6ff; border:1.5px solid #bfdbfe; border-left:4px solid #1d4ed8; border-radius:10px; padding:10px 14px;">
+<div style="font-size:0.74rem; font-weight:900; color:#1e40af;">📘 10th பொதுத்தேர்வு மையங்கள்</div>
+<div style="font-size:1.35rem; font-weight:900; color:#1e3a8a;" id="admExCenKpi10Centres">113 மையங்கள்</div>
+<div style="font-size:0.71rem; color:#2563eb; font-weight:800;">10_Ex_Cen பட்டியல்</div>
 </div>
-<div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+<div onclick="setAdminExamCentreFilterMode('12')" style="cursor:pointer; background:#f0fdf4; border:1.5px solid #bbf7d0; border-left:4px solid #16a34a; border-radius:10px; padding:10px 14px;">
+<div style="font-size:0.74rem; font-weight:900; color:#166534;">🎓 12th (+2) பொதுத்தேர்வு மையங்கள்</div>
+<div style="font-size:1.35rem; font-weight:900; color:#14532d;" id="admExCenKpi12Centres">91 மையங்கள்</div>
+<div style="font-size:0.71rem; color:#15803d; font-weight:800;">12_Ex_Cen பட்டியல்</div>
+</div>
+<div style="background:#f5f3ff; border:1.5px solid #ddd6fe; border-left:4px solid #7c3aed; border-radius:10px; padding:10px 14px;">
+<div style="font-size:0.74rem; font-weight:900; color:#5b21b6;">👨‍🏫 மொத்த அறைக்கண்காணிப்பாளர்கள்</div>
+<div style="font-size:1.35rem; font-weight:900; color:#2e1065;" id="admExCenKpiTotalInvig">0</div>
+<div style="font-size:0.71rem; color:#6d28d9; font-weight:800;">தற்போதைய காட்சி மையங்களுக்கு</div>
+</div>
+<div style="background:#fffbeb; border:1.5px solid #fde68a; border-left:4px solid #d97706; border-radius:10px; padding:10px 14px;">
+<div style="font-size:0.74rem; font-weight:900; color:#92400e;">🧑‍💼 மொத்த அலுவலகப் பணியாளர்கள்</div>
+<div style="font-size:1.35rem; font-weight:900; color:#78350f;" id="admExCenKpiTotalOffice">0</div>
+<div style="font-size:0.71rem; color:#b45309; font-weight:800;" id="admExCenKpiGrandStaff">மொத்தப் பணியாளர்கள்: 0</div>
+</div>
+</div>
+<!-- PRIMARY MODE TABS -->
+<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; background:#f8fafc; padding:10px 12px; border-radius:10px; border:1px solid #cbd5e1;">
 <div style="display:flex; gap:6px; flex-wrap:wrap;">
-<button type="button" id="btnExamCenTabBoth" class="btn btn-primary btn-sm" onclick="setAdminExamCentreFilterMode('BOTH')" style="font-weight:800;">🏫 அனைத்து மையப் பள்ளிகள் (10th &amp; 12th)</button>
+<button type="button" id="btnExamCenTabOther" class="btn btn-primary btn-sm" onclick="setAdminExamCentreFilterMode('OTHER')" style="font-weight:900; background:#0f766e; border-color:#0f766e;">
+📝 மற்ற தேர்வுகள் மையங்கள் &amp; பணியாளர் நிர்ணயம் (10th/12th தவிர்த்து)
+</button>
+<button type="button" id="btnExamCenTabBoth" class="btn btn-outline btn-sm" onclick="setAdminExamCentreFilterMode('BOTH')" style="font-weight:800;">🏫 அனைத்து மையப் பள்ளிகள் (10th &amp; 12th)</button>
 <button type="button" id="btnExamCenTab10" class="btn btn-outline btn-sm" onclick="setAdminExamCentreFilterMode('10')" style="font-weight:800;">📘 10th மையங்கள் (10_Ex_Cen: 113)</button>
 <button type="button" id="btnExamCenTab12" class="btn btn-outline btn-sm" onclick="setAdminExamCentreFilterMode('12')" style="font-weight:800;">🎓 12th மையங்கள் (12_Ex_Cen: 91)</button>
 </div>
-<input type="text" id="admCentreSearch" class="form-control" style="max-width:380px;" placeholder="🔍 மைய எண் (208001), U.No, ஒன்றியம் அல்லது பள்ளிப் பெயர் தேடுக..." oninput="renderAdminExamCentresTable()">
+<span id="admExCenLastSyncBadge" style="font-size:0.74rem; font-weight:800; background:#dbeafe; color:#1e40af; padding:3px 10px; border-radius:999px;">Auto Dual-Sync Ready</span>
 </div>
-<div class="table-wrap" style="max-height:520px;">
+<!-- OTHER EXAMS SELECTION & STAFF ALLOCATION CONTROL PANEL -->
+<div id="admOtherExamsControlBox" style="background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:1.5px solid #5eead4; border-left:5px solid #0f766e; border-radius:12px; padding:14px 16px; margin-bottom:14px;">
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:12px; align-items:end; margin-bottom:12px;">
+<div class="form-group" style="margin-bottom:0;">
+<label class="form-label" style="font-size:0.78rem; font-weight:900; color:#0f766e;">🎯 1. தேர்வினைத் தேர்ந்தெடுக்கவும் (Select Examination):</label>
+<select id="admOtherExamTypeSelect" class="form-control" onchange="onAdminOtherExamTypeChange(this.value)" style="font-weight:900; color:#0f294a; border:2px solid #0f766e; background:#fff;">
+<option value="ALL_OTHER">📋 அனைத்து மற்ற தேர்வுகள் (All Other Exams)</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom:0;">
+<label class="form-label" style="font-size:0.78rem; font-weight:900; color:#1e3a8a;">➕ பட்டியலில் இல்லாத புதிய தேர்வு சேர்க்க (Add New Exam):</label>
+<div style="display:flex; gap:6px;">
+<input type="text" id="admNewOtherExamNameInput" class="form-control" placeholder="எ.கா: NEET மாதிரித் தேர்வு / NAS தேர்வு..." style="font-weight:800; background:#fff;">
+<button type="button" class="btn btn-primary btn-sm" onclick="addAdminCustomOtherExam()" style="white-space:nowrap; font-weight:900; background:#0f766e; border-color:#0f766e;">➕ சேர்</button>
+</div>
+</div>
+<div class="form-group" style="margin-bottom:0;">
+<label class="form-label" style="font-size:0.78rem; font-weight:900; color:#4c1d95;">🏫 2. பள்ளிகள் / மையங்கள் காட்சி நிலை (Display Filter):</label>
+<select id="admOtherExamShowScope" class="form-control" onchange="renderAdminExamCentresTable()" style="font-weight:900; color:#4c1d95; border:2px solid #7c3aed; background:#fff;">
+<option value="ALL_SCHOOLS">🏫 அனைத்து 308 பள்ளிகளிலிருந்து மையங்களைத் தேர்ந்தெடு (Select Centres)</option>
+<option value="SELECTED_ONLY">✅ தேர்ந்தெடுக்கப்பட்ட மையங்கள் மட்டும் காட்டு (Selected Centres Only)</option>
+<option value="EXISTING_10_12">🏛️ 10th / 12th பொதுத்தேர்வு மையப் பள்ளிகள் மட்டும் (123 Schools)</option>
+</select>
+</div>
+</div>
+<!-- BULK ALLOCATION & FILTERS ROW -->
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; align-items:end; padding-top:10px; border-top:1px dashed #99f6e4;">
+<div class="form-group" style="margin-bottom:0;">
+<label class="form-label" style="font-size:0.75rem; font-weight:800;">ஒன்றியம் (Block Filter)</label>
+<select id="admCentreBlockFilter" class="form-control" onchange="renderAdminExamCentresTable()" style="font-weight:800; background:#fff;">
+<option value="">அனைத்து 12 ஒன்றியங்கள் (All Blocks)</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom:0;">
+<label class="form-label" style="font-size:0.75rem; font-weight:800;">நிர்வாகம் (Management)</label>
+<select id="admCentreMgmtFilter" class="form-control" onchange="renderAdminExamCentresTable()" style="font-weight:800; background:#fff;">
+<option value="">அனைத்து நிர்வாகம் (All)</option>
+<option value="1G">1G - அரசுப் பள்ளி (Govt)</option>
+<option value="2A">2A - அரசு உதவிபெறும் (Aided)</option>
+<option value="3P">3P - தனியார் / மெட்ரிக் (Private)</option>
+<option value="4CG_5IC_6CB">KV / ICSE / CBSE (4CG, 5IC, 6CB)</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom:0;">
+<label class="form-label" style="font-size:0.75rem; font-weight:800;">🔍 பள்ளி / மையம் தேடல்</label>
+<input type="text" id="admCentreSearch" class="form-control" placeholder="🔍 மைய எண், U.No, ஒன்றியம், பள்ளி..." oninput="renderAdminExamCentresTable()" style="font-weight:800; background:#fff;">
+</div>
+<div class="form-group" style="margin-bottom:0;">
+<label class="form-label" style="font-size:0.75rem; font-weight:900; color:#b45309;">⚡ தேர்ந்தெடுத்த மையங்களுக்கு மொத்தமாக நிர்ணயம் செய்:</label>
+<div style="display:flex; gap:5px; align-items:center;">
+<input type="number" id="admBulkInvigInput" class="form-control" min="0" max="200" placeholder="கண்காணிப்பாளர்" title="அறைக்கண்காணிப்பாளர்கள் எண்ணிக்கை" style="width:95px; font-weight:900; text-align:center; padding:5px; background:#fff;">
+<input type="number" id="admBulkOfficeInput" class="form-control" min="0" max="100" placeholder="அலுவலகம்" title="அலுவலகப் பணியாளர்கள் எண்ணிக்கை" style="width:88px; font-weight:900; text-align:center; padding:5px; background:#fff;">
+<button type="button" class="btn btn-primary btn-sm" onclick="applyBulkInvigAndOfficeToFilteredCentres()" style="font-weight:900; background:#d97706; border-color:#b45309; white-space:nowrap;">✅ பயன்படுத்து</button>
+</div>
+</div>
+</div>
+<!-- QUICK HELPER ACTIONS -->
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:10px; padding-top:8px; border-top:1px solid #ccfbf1; font-size:0.76rem;">
+<div style="display:flex; gap:6px; flex-wrap:wrap;">
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleSelectAllFilteredOtherCentres(true)" style="font-weight:800; background:#fff; color:#0f766e; border-color:#5eead4; font-size:0.74rem; padding:3px 9px;">
+☑️ காட்டப்படும் பள்ளிகளை மையமாகத் தேர்ந்தெடு
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleSelectAllFilteredOtherCentres(false)" style="font-weight:800; background:#fff; color:#dc2626; border-color:#fca5a5; font-size:0.74rem; padding:3px 9px;">
+✕ காட்டப்படும் மையத் தேர்வை நீக்கு
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="autoFillInvigilatorsFromEligibleRooms()" style="font-weight:800; background:#f5f3ff; color:#4c1d95; border-color:#c4b5fd; font-size:0.74rem; padding:3px 9px;">
+⚡ தகுதியான தேர்வு அறைகள் (EBS F1) எண்ணிக்கையை அறைக்கண்காணிப்பாளராக நிரப்பு
+</button>
+</div>
+<div style="color:#0f766e; font-weight:900;" id="admOtherExamSelectionStatusText">
+💡 குறிப்பு: அட்டவணையில் உள்ள தேர்வு பெயர்களைக் கிளிக் செய்து எந்தெந்த தேர்வுகள் எந்தெந்த மையங்களில் நடத்தப்படுகின்றன என்பதைத் தேர்வு செய்யலாம்.
+</div>
+</div>
+</div>
+<div class="table-wrap" style="max-height:600px;">
 <table class="data-table">
-<thead>
-<tr>
-<th>SN</th>
-<th>U.NO</th>
-<th>10th மைய எண்</th>
-<th>12th மைய எண்</th>
-<th>ஒன்றியம்</th>
-<th>தேர்வு மையப் பள்ளி</th>
+<thead style="position:sticky; top:0; z-index:5;">
+<tr style="background:#0f294a; color:#fff;">
+<th style="width:52px; text-align:center;">மையம்</th>
+<th style="width:45px; text-align:center;">வ.எண்</th>
+<th style="width:85px;">U.NO &amp; வகை</th>
+<th style="min-width:220px;">தேர்வு மையப் பள்ளி &amp; ஒன்றியம் (அறைகள் விவரம்)</th>
+<th style="width:125px; text-align:center;">மைய எண் (10th / 12th / மற்றவை)</th>
+<th style="min-width:260px;">நடத்தப்படும் மற்ற தேர்வுகள் (தேர்ந்தெடுக்க கிளிக் செய்க)</th>
+<th style="width:145px; text-align:center;">👨‍🏫 அறைக்கண்காணிப்பாளர்கள் (Hall Invigilators)</th>
+<th style="width:145px; text-align:center;">🧑‍💼 அலுவலகப் பணியாளர்கள் (Office Staff)</th>
+<th style="width:85px; text-align:center;">மொத்தம்</th>
 </tr>
 </thead>
 <tbody id="admExamCentresTableBody"></tbody>
+<tfoot id="admExamCentresTableFoot"></tfoot>
 </table>
 </div>
 </div>
@@ -4328,7 +4443,11 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <option value="NMMS_2027">🏅 NMMS தேசிய வருவாய் வழி &amp; தகுதிப் படிப்புதவித் தொகைத் தேர்வு (8-ஆம் வகுப்பு)</option>
 <option value="TRUST_2027">🏆 TRUST ஊரகத் திறனாய்வுத் தேர்வு (9-ஆம் வகுப்பு)</option>
 <option value="TTSE_2027">📖 தமிழ் மொழி இலக்கியத் திறனறித் தேர்வு (11-ஆம் வகுப்பு)</option>
-<option value="CMTS_2027">🌟 முதலமைச்சர் திறனறித் தேர்வு (10-ஆம் வகுப்பு)</option>
+<option value="CMTS_2027">🌟 முதலமைச்சர் திறனறித் தேர்வு (10-ஆம் வகுப்பு - CMTS)</option>
+<option value="TET_TRB">👩‍🏫 ஆசிரியர் தகுதித் தேர்வு / போட்டித் தேர்வுகள் (TET / TRB)</option>
+<option value="TNPSC">🏛️ TNPSC / அரசுப் பணியாளர் போட்டித் தேர்வுகள்</option>
+<option value="GOVT_TECH">⌨️ அரசு தொழில்நுட்பத் தேர்வுகள் (Typewriting / COA / Shorthand)</option>
+<option value="ESLC_8TH">📝 8-ஆம் வகுப்பு தனித்தேர்வர் பொதுத்தேர்வு (ESLC)</option>
 <option value="CUSTOM_EXAM">✨ பிற சிறப்பு / போட்டித் தேர்வு (Custom Examination)</option>
 </select>
 </div>
@@ -4349,6 +4468,19 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <div id="admDutyCustomExamNameWrap" style="display:none; margin-top:10px;">
 <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4c1d95;">சிறப்புத் தேர்வின் பெயர் (Custom Examination Title):</label>
 <input type="text" id="admDutyCustomExamTitleInput" class="form-control" value="சிறப்புத் திறனறித் தேர்வு – 2026-27" oninput="saveExamDutyMetaConfig(); renderExamDutyAllotmentDashboard();" style="font-weight:900;">
+</div>
+<!-- LIVE PER-EXAM CENTRES & INVIGILATOR/OFFICE STAFF QUOTA BAR -->
+<div style="margin-top:10px; padding-top:10px; border-top:1px dashed #5eead4; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:0.79rem; font-weight:800; color:#0f294a;">
+<span style="background:#0f766e; color:#fff; padding:3px 10px; border-radius:999px; font-weight:900;" id="admDutyActiveCentresCountPill">🏛️ மையங்கள்: 91</span>
+<span style="background:#ede9fe; color:#4c1d95; border:1px solid #c4b5fd; padding:3px 10px; border-radius:999px; font-weight:900;" id="admDutyActiveInvigQuotaPill">👨‍🏫 நிர்ணயித்த அறைக்கண்காணிப்பாளர்கள்: 0</span>
+<span style="background:#fffbeb; color:#92400e; border:1px solid #fcd34d; padding:3px 10px; border-radius:999px; font-weight:900;" id="admDutyActiveOfficeQuotaPill">🧑‍💼 நிர்ணயித்த அலுவலகப் பணியாளர்கள்: 0</span>
+</div>
+<div style="display:flex; gap:6px; flex-wrap:wrap;">
+<button type="button" class="btn btn-primary btn-sm" onclick="openCentresConfiguratorForActiveDutyExam()" style="background:#b45309; border-color:#92400e; color:#fff; font-weight:900; font-size:0.78rem;">
+🏛️ இத்தேர்விற்கான மையங்களைத் தேர்ந்தெடு &amp; மையம் வாரியாக கண்காணிப்பாளர் / அலுவலகப் பணியாளர் நிர்ணயம் செய் ❯
+</button>
+</div>
 </div>
 </div>
 <!-- STEP 2: 10 ROLES LIVE KPI & FILTER CARDS -->
@@ -4398,12 +4530,13 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:10px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.70rem; font-weight:800;" title="Hall Invigilators per Exam Centre">தேர்வறை கண்காணிப்பாளர் / மையம்</label>
-<select id="admDutyAutoHiCount" class="form-control" style="font-size:0.76rem; font-weight:800;">
+<label class="form-label" style="font-size:0.70rem; font-weight:900; color:#4c1d95;" title="Hall Invigilators per Exam Centre">தேர்வறை கண்காணிப்பாளர் / மையம்</label>
+<select id="admDutyAutoHiCount" class="form-control" style="font-size:0.75rem; font-weight:900; border-color:#7c3aed; color:#2e1065;">
+<option value="CENTRE_CONFIG" selected>🎯 மையம் வாரியாக நிர்ணயித்த எண்ணிக்கை (Configured)</option>
 <option value="AUTO">Auto (20 மாணவருக்கு 1)</option>
 <option value="2">மையத்திற்கு 2 பேர்</option>
 <option value="3">மையத்திற்கு 3 பேர்</option>
-<option value="4" selected>மையத்திற்கு 4 பேர்</option>
+<option value="4">மையத்திற்கு 4 பேர்</option>
 <option value="5">மையத்திற்கு 5 பேர்</option>
 <option value="6">மையத்திற்கு 6 பேர்</option>
 <option value="8">மையத்திற்கு 8 பேர்</option>
@@ -4419,10 +4552,11 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.70rem; font-weight:800;" title="Office Staff per Exam Centre">அலுவலகப் பணியாளர் / மையம்</label>
-<select id="admDutyAutoOsCount" class="form-control" style="font-size:0.76rem; font-weight:800;">
+<label class="form-label" style="font-size:0.70rem; font-weight:900; color:#92400e;" title="Office Staff per Exam Centre">அலுவலகப் பணியாளர் / மையம்</label>
+<select id="admDutyAutoOsCount" class="form-control" style="font-size:0.75rem; font-weight:900; border-color:#d97706; color:#78350f;">
+<option value="CENTRE_CONFIG" selected>🎯 மையம் வாரியாக நிர்ணயித்த எண்ணிக்கை (Configured)</option>
 <option value="1">மையத்திற்கு 1 பேர்</option>
-<option value="2" selected>மையத்திற்கு 2 பேர்</option>
+<option value="2">மையத்திற்கு 2 பேர்</option>
 <option value="3">மையத்திற்கு 3 பேர்</option>
 <option value="4">மையத்திற்கு 4 பேர்</option>
 </select>
@@ -11301,7 +11435,8 @@ dignitaries:    "<span>🏛️</span> 4. முக்கியப் பிர�
 circulars:      "<span>📢</span> 5. சுற்றறிக்கை அனுப்புதல் – மாவட்ட சுற்றறிக்கை &amp; அறிவிப்புகள் கட்டுப்பாட்டகம்",
 emisSync:       "<span>📥</span> அனைத்து Excel / CSV கோப்புகள் ஒற்றைச் சாளரப் பதிவேற்ற மையம்",
 infraNeeds:     "<span>🏗️</span> 7. பள்ளி அடிப்படைத் தேவைகள் தொகுப்பு அறிக்கை (District Infrastructure Needs Dashboard)",
-ebsMaster:      "<span>📋</span> 8. EBS 2026-27 MASTER (F1, F2, F3, F4 படிவங்கள் & தனி Google Sheet ஒத்திசைவு)"
+ebsMaster:      "<span>📋</span> 8. EBS 2026-27 MASTER (F1, F2, F3, F4 படிவங்கள் & தனி Google Sheet ஒத்திசைவு)",
+centres:        "<span>🏛️</span> தேர்வு மையங்கள் மேலாண்மை – 10th, 12th &amp; மற்ற தேர்வுகள் மையங்கள் மற்றும் கண்காணிப்பாளர் / அலுவலகப் பணியாளர் நிர்ணயம்"
 };
 if (headerTitle && groupTitles[activeGroup]) {
 headerTitle.innerHTML = groupTitles[activeGroup];
@@ -11354,6 +11489,8 @@ renderAdminCircularsList();
 renderAdminHssGroupMasterTable();
 } else if (tabKey === "deleteReqs") {
 renderAdminDeleteRequestsTable();
+} else if (tabKey === "centres") {
+if (typeof renderAdminExamCentresTable === "function") renderAdminExamCentresTable();
 }
 }
 function resetAdminDirectoryFilters() {
@@ -11865,12 +12002,94 @@ ta.select();
 try { document.execCommand("copy"); showToast("📲 உள்நுழைவு விவரம் நகலெடுக்கப்பட்டது!", "#22c55e"); } catch (e) {}
 document.body.removeChild(ta);
 }
-let _adminExamCentreFilterMode = "BOTH";
+let _adminExamCentreFilterMode = "OTHER";
+let _activeOtherExamCode = "ALL_OTHER";
+const DEFAULT_OTHER_EXAMS_CATALOG = [
+{ code: "NMMS", short: "NMMS (8th)", label: "NMMS தேர்வு (8-ஆம் வகுப்பு தேசிய வருவாய் வழி மற்றும் படிப்புதவித் தேர்வு)", color: "#0f766e", bg: "#f0fdfa", border: "#5eead4" },
+{ code: "TRUST", short: "TRUST (9th)", label: "TRUST தேர்வு (9-ஆம் வகுப்பு ஊரகத் திறனறித் தேர்வு)", color: "#1d4ed8", bg: "#eff6ff", border: "#93c5fd" },
+{ code: "TTSE", short: "தமிழ் திறனறி (11th)", label: "தமிழ் மொழி இலக்கியத் திறனறித் தேர்வு (11-ஆம் வகுப்பு - TTSE)", color: "#7c3aed", bg: "#f5f3ff", border: "#c4b5fd" },
+{ code: "CMTS", short: "CM திறனறி (11th)", label: "முதலமைச்சர் திறனறித் தேர்வு (11-ஆம் வகுப்பு - CMTS)", color: "#b45309", bg: "#fffbeb", border: "#fcd34d" },
+{ code: "TET_TRB", short: "TET / TRB", label: "ஆசிரியர் தகுதித் தேர்வு / போட்டித் தேர்வுகள் (TET / TRB)", color: "#be123c", bg: "#fff1f2", border: "#fda4af" },
+{ code: "TNPSC", short: "TNPSC", label: "TNPSC / அரசுப் பணியாளர் போட்டித் தேர்வுகள்", color: "#0369a1", bg: "#f0f9ff", border: "#7dd3fc" },
+{ code: "HSC1_SUPP", short: "+1/+2 துணைத்தேர்வு", label: "+1 / +2 துணைத்தேர்வு மற்றும் தனித்தேர்வர் தேர்வு", color: "#15803d", bg: "#f0fdf4", border: "#86efac" },
+{ code: "SSLC_SUPP", short: "10th துணைத்தேர்வு", label: "10-ஆம் வகுப்பு (SSLC) துணைத்தேர்வு / தனித்தேர்வர் தேர்வு", color: "#0284c7", bg: "#e0f2fe", border: "#7dd3fc" },
+{ code: "GOVT_TECH", short: "தொழில்நுட்பத் தேர்வு", label: "அரசு தொழில்நுட்பத் தேர்வுகள் (Typewriting / COA / Shorthand)", color: "#6d28d9", bg: "#faf5ff", border: "#d8b4fe" },
+{ code: "ESLC_8TH", short: "8th தனித்தேர்வர்", label: "8-ஆம் வகுப்பு தனித்தேர்வர் பொதுத்தேர்வு (ESLC)", color: "#c2410c", bg: "#fff7ed", border: "#fdba74" }
+];
+let otherExamsConfigStore = null;
+function getOtherExamsConfigStore() {
+if (otherExamsConfigStore && typeof otherExamsConfigStore === "object" && otherExamsConfigStore.byUNo) {
+return otherExamsConfigStore;
+}
+const saved = safeGetStorage("CEOSVG_OTHER_EXAMS_CONFIG_V1", null);
+if (saved && typeof saved === "object" && saved.byUNo) {
+otherExamsConfigStore = saved;
+if (!Array.isArray(otherExamsConfigStore.catalog) || otherExamsConfigStore.catalog.length === 0) {
+otherExamsConfigStore.catalog = JSON.parse(JSON.stringify(DEFAULT_OTHER_EXAMS_CATALOG));
+}
+return otherExamsConfigStore;
+}
+const byUNo = {};
+const schools = (Array.isArray(masterSchools) && masterSchools.length > 0) ? masterSchools : (typeof INITIAL_MASTER_SCHOOLS !== "undefined" ? INITIAL_MASTER_SCHOOLS : []);
+const seenBlocksForOther = {};
+schools.forEach(s => {
+if (!s || !s.uNo || String(s.uNo) === "999") return;
+const uNo = String(s.uNo).trim();
+const c10 = String(s.centre10 || (typeof EXAM_CENTRE_10_BY_UNO !== "undefined" ? EXAM_CENTRE_10_BY_UNO[uNo] : "") || "").trim();
+const c12 = String(s.centre12 || (typeof EXAM_CENTRE_12_BY_UNO !== "undefined" ? EXAM_CENTRE_12_BY_UNO[uNo] : "") || "").trim();
+const supp = (typeof EBS_F1_SUPP_SEED !== "undefined" && EBS_F1_SUPP_SEED[uNo]) ? EBS_F1_SUPP_SEED[uNo] : null;
+const eligRooms = (supp && Number(supp[6]) > 0) ? Number(supp[6]) : (s.level === "HSS" ? 10 : 6);
+const defaultInvig = Math.max(4, eligRooms);
+const defaultOffice = s.level === "HSS" ? 4 : 3;
+const blk = String(s.block || "").trim();
+const blkCount = seenBlocksForOther[blk] || 0;
+const isMajorHssCentre = Boolean(c12 && c10 && blkCount < 3);
+if (isMajorHssCentre) seenBlocksForOther[blk] = blkCount + 1;
+byUNo[uNo] = {
+uNo: uNo,
+otherCentreNo: c12 || c10 || "",
+otherExams: isMajorHssCentre ? ["NMMS", "TRUST", "TTSE", "CMTS"] : [],
+invig10: c10 ? defaultInvig : 0,
+office10: c10 ? defaultOffice : 0,
+invig12: c12 ? defaultInvig : 0,
+office12: c12 ? defaultOffice : 0,
+invigOther: isMajorHssCentre ? defaultInvig : defaultInvig,
+officeOther: isMajorHssCentre ? defaultOffice : defaultOffice,
+byExam: {}
+};
+});
+otherExamsConfigStore = {
+version: 1,
+catalog: JSON.parse(JSON.stringify(DEFAULT_OTHER_EXAMS_CATALOG)),
+byUNo: byUNo
+};
+safeSetStorage("CEOSVG_OTHER_EXAMS_CONFIG_V1", otherExamsConfigStore, true);
+return otherExamsConfigStore;
+}
+function saveOtherExamsConfigStore(skipToast) {
+const store = getOtherExamsConfigStore();
+safeSetStorage("CEOSVG_OTHER_EXAMS_CONFIG_V1", store);
+if (!skipToast) {
+showToast("✅ தேர்வு மையம் மற்றும் அறைக்கண்காணிப்பாளர் / அலுவலகப் பணியாளர் விவரம் சேமிக்கப்பட்டது!", "#0f766e");
+}
+}
+function openOtherExamCentresManager(examCode) {
+if (examCode) _activeOtherExamCode = examCode;
+_adminExamCentreFilterMode = "OTHER";
+switchAdminTab("centres");
+setAdminExamCentreFilterMode("OTHER");
+}
 function setAdminExamCentreFilterMode(mode) {
-_adminExamCentreFilterMode = mode || "BOTH";
+_adminExamCentreFilterMode = mode || "OTHER";
+const bOther = document.getElementById("btnExamCenTabOther");
 const bBoth = document.getElementById("btnExamCenTabBoth");
 const b10 = document.getElementById("btnExamCenTab10");
 const b12 = document.getElementById("btnExamCenTab12");
+if (bOther) {
+bOther.className = (_adminExamCentreFilterMode === "OTHER") ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
+bOther.style.background = (_adminExamCentreFilterMode === "OTHER") ? "#0f766e" : "";
+bOther.style.borderColor = (_adminExamCentreFilterMode === "OTHER") ? "#0f766e" : "";
+}
 if (bBoth) bBoth.className = (_adminExamCentreFilterMode === "BOTH") ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
 if (b10) b10.className = (_adminExamCentreFilterMode === "10") ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
 if (b12) b12.className = (_adminExamCentreFilterMode === "12") ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
@@ -12068,93 +12287,585 @@ const aoa12 = [
 ];
 const ws12 = XLSX.utils.aoa_to_sheet(aoa12);
 XLSX.utils.book_append_sheet(wb, ws12, "12_Ex_Cen");
-XLSX.writeFile(wb, `CEO_Sivagangai_Exam_Centres_10_Ex_Cen_12_Ex_Cen_${new Date().toISOString().split("T")[0]}.xlsx`);
+const storeOther = getOtherExamsConfigStore();
+const catMapOther = {};
+storeOther.catalog.forEach(x => { catMapOther[x.code] = x.short; });
+const rowsOther = getCombinedExamCentresList();
+const aoaOther = [
+["SN", "U.NO", "UDISE_NO", "BLOCK", "School_Name_Tamil", "School_Name_English", "Active_Centre", "10th_Centre_No", "12th_Centre_No", "Other_Exam_Centre_No", "Other_Exams_Conducted", "Eligible_Exam_Rooms", "Hall_Invigilators", "Office_Staff", "Total_Staff"],
+...rowsOther.map((c, idx) => [c.sn || (idx + 1), c.uNo, c.udiseNo || "", c.block, c.nameTa || "", c.nameEn || "", c.isActiveCentre ? "YES" : "NO", c.centre10, c.centre12, c.otherCentreNo, (c.otherExams || []).map(k => catMapOther[k] || k).join(" | "), c.eligRooms, c.invig, c.office, c.totalStaff])
+];
+XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoaOther), "Other_Exam_Centres");
+XLSX.writeFile(wb, `CEO_Sivagangai_Exam_Centres_10_12_Other_Staff_Alloc_${new Date().toISOString().split("T")[0]}.xlsx`);
 showToast("📗 10_Ex_Cen மற்றும் 12_Ex_Cen தனித்தனி தாவல்களுடன் Excel (.xlsx) கோப்பு பதிவிறக்கப்பட்டது!", "#16a34a");
 }
+function getSchoolCentreStaffAlloc(rec, mode, examCode) {
+if (!rec) return { invig: 0, office: 0 };
+if (mode === "10") {
+return { invig: Math.max(0, Number(rec.invig10 || 0)), office: Math.max(0, Number(rec.office10 || 0)) };
+}
+if (mode === "12") {
+return { invig: Math.max(0, Number(rec.invig12 || 0)), office: Math.max(0, Number(rec.office12 || 0)) };
+}
+if (mode === "OTHER" && examCode && examCode !== "ALL_OTHER" && rec.byExam && rec.byExam[examCode]) {
+const ex = rec.byExam[examCode];
+return {
+invig: ex.invig !== undefined ? Math.max(0, Number(ex.invig)) : Math.max(0, Number(rec.invigOther || 0)),
+office: ex.office !== undefined ? Math.max(0, Number(ex.office)) : Math.max(0, Number(rec.officeOther || 0))
+};
+}
+return { invig: Math.max(0, Number(rec.invigOther || rec.invig10 || rec.invig12 || 0)), office: Math.max(0, Number(rec.officeOther || rec.office10 || rec.office12 || 0)) };
+}
+function setSchoolCentreStaffAlloc(uNo, field, rawVal) {
+const store = getOtherExamsConfigStore();
+uNo = String(uNo || "").trim();
+if (!uNo) return;
+if (!store.byUNo[uNo]) {
+store.byUNo[uNo] = { uNo, otherCentreNo: "", otherExams: [], invig10: 6, office10: 3, invig12: 8, office12: 4, invigOther: 6, officeOther: 3, byExam: {} };
+}
+const rec = store.byUNo[uNo];
+const num = Math.max(0, parseInt(rawVal, 10) || 0);
+if (_adminExamCentreFilterMode === "10") {
+if (field === "invig") rec.invig10 = num;
+else rec.office10 = num;
+} else if (_adminExamCentreFilterMode === "12") {
+if (field === "invig") rec.invig12 = num;
+else rec.office12 = num;
+} else {
+if (field === "invig") rec.invigOther = num;
+else rec.officeOther = num;
+if (_activeOtherExamCode && _activeOtherExamCode !== "ALL_OTHER") {
+if (!rec.byExam) rec.byExam = {};
+if (!rec.byExam[_activeOtherExamCode]) rec.byExam[_activeOtherExamCode] = {};
+rec.byExam[_activeOtherExamCode][field] = num;
+}
+}
+saveOtherExamsConfigStore(true);
+renderAdminExamCentresTable();
+}
+function stepSchoolCentreStaffAlloc(uNo, field, delta) {
+const store = getOtherExamsConfigStore();
+const rec = store.byUNo[String(uNo).trim()] || {};
+const cur = getSchoolCentreStaffAlloc(rec, _adminExamCentreFilterMode, _activeOtherExamCode);
+const nextVal = Math.max(0, (field === "invig" ? cur.invig : cur.office) + delta);
+setSchoolCentreStaffAlloc(uNo, field, nextVal);
+}
+function onAdminOtherCentreNoChange(uNo, val) {
+const store = getOtherExamsConfigStore();
+uNo = String(uNo || "").trim();
+if (!store.byUNo[uNo]) {
+store.byUNo[uNo] = { uNo, otherCentreNo: "", otherExams: [], invig10: 6, office10: 3, invig12: 8, office12: 4, invigOther: 6, officeOther: 3, byExam: {} };
+}
+store.byUNo[uNo].otherCentreNo = String(val || "").trim();
+saveOtherExamsConfigStore(true);
+}
+function toggleSchoolOtherExamBadge(uNo, examCode) {
+const store = getOtherExamsConfigStore();
+uNo = String(uNo || "").trim();
+if (!store.byUNo[uNo]) {
+store.byUNo[uNo] = { uNo, otherCentreNo: "", otherExams: [], invig10: 6, office10: 3, invig12: 8, office12: 4, invigOther: 6, officeOther: 3, byExam: {} };
+}
+const rec = store.byUNo[uNo];
+if (!Array.isArray(rec.otherExams)) rec.otherExams = [];
+const idx = rec.otherExams.indexOf(examCode);
+if (idx >= 0) {
+rec.otherExams.splice(idx, 1);
+} else {
+rec.otherExams.push(examCode);
+if (!rec.otherCentreNo) {
+const sch = masterSchools.find(s => String(s.uNo) === uNo) || {};
+rec.otherCentreNo = sch.centre10 || sch.centre12 || ("208" + uNo.padStart(3, "0"));
+}
+}
+saveOtherExamsConfigStore(true);
+renderAdminExamCentresTable();
+}
+function toggleSchoolAsOtherExamCentreRow(uNo, checked) {
+const store = getOtherExamsConfigStore();
+uNo = String(uNo || "").trim();
+if (!store.byUNo[uNo]) {
+store.byUNo[uNo] = { uNo, otherCentreNo: "", otherExams: [], invig10: 6, office10: 3, invig12: 8, office12: 4, invigOther: 6, officeOther: 3, byExam: {} };
+}
+const rec = store.byUNo[uNo];
+if (!Array.isArray(rec.otherExams)) rec.otherExams = [];
+const targetExam = (_activeOtherExamCode && _activeOtherExamCode !== "ALL_OTHER") ? _activeOtherExamCode : "NMMS";
+if (checked) {
+if (_activeOtherExamCode === "ALL_OTHER") {
+if (rec.otherExams.length === 0) rec.otherExams = ["NMMS", "TRUST"];
+} else if (!rec.otherExams.includes(targetExam)) {
+rec.otherExams.push(targetExam);
+}
+if (!rec.otherCentreNo) {
+const sch = masterSchools.find(s => String(s.uNo) === uNo) || {};
+rec.otherCentreNo = sch.centre10 || sch.centre12 || ("208" + uNo.padStart(3, "0"));
+}
+} else {
+if (_activeOtherExamCode === "ALL_OTHER") {
+rec.otherExams = [];
+} else {
+rec.otherExams = rec.otherExams.filter(x => x !== targetExam);
+}
+}
+saveOtherExamsConfigStore(true);
+renderAdminExamCentresTable();
+}
+function onAdminOtherExamTypeChange(val) {
+_activeOtherExamCode = val || "ALL_OTHER";
+renderAdminExamCentresTable();
+}
+function addAdminCustomOtherExam() {
+const inp = document.getElementById("admNewOtherExamNameInput");
+const rawName = (inp ? inp.value : "").trim();
+if (!rawName) {
+showToast("⚠️ புதிய தேர்வின் பெயரை உள்ளிடவும் (எ.கா: NEET மாதிரித் தேர்வு).", "#f59e0b");
+return;
+}
+const store = getOtherExamsConfigStore();
+const code = "EX_" + rawName.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8) + "_" + (store.catalog.length + 1);
+const shortName = rawName.length > 18 ? rawName.slice(0, 18) + ".." : rawName;
+store.catalog.push({
+code: code,
+short: shortName,
+label: rawName,
+color: "#0f766e",
+bg: "#f0fdfa",
+border: "#5eead4"
+});
+if (inp) inp.value = "";
+_activeOtherExamCode = code;
+saveOtherExamsConfigStore(true);
+renderAdminExamCentresTable();
+showToast(`✅ "${rawName}" புதிய தேர்வாகச் சேர்க்கப்பட்டது! இப்போது மையங்களைத் தேர்ந்தெடுக்கலாம்.`, "#16a34a");
+}
+function populateOtherExamControlsDropdowns() {
+const store = getOtherExamsConfigStore();
+const examSel = document.getElementById("admOtherExamTypeSelect");
+if (examSel) {
+const cur = _activeOtherExamCode || examSel.value || "ALL_OTHER";
+let html = `<option value="ALL_OTHER">📋 அனைத்து மற்ற தேர்வுகள் (All Other Exams - ${store.catalog.length})</option>`;
+store.catalog.forEach(ex => {
+const cnt = Object.values(store.byUNo || {}).filter(r => r && Array.isArray(r.otherExams) && r.otherExams.includes(ex.code)).length;
+html += `<option value="${escapeHtmlAttr(ex.code)}">🎯 ${escapeHtmlAttr(ex.label)} (மையங்கள்: ${cnt})</option>`;
+});
+examSel.innerHTML = html;
+examSel.value = cur;
+}
+const blkSel = document.getElementById("admCentreBlockFilter");
+if (blkSel && blkSel.options.length <= 1) {
+const blocks = Array.from(new Set((masterSchools || []).map(s => s && s.block).filter(Boolean))).sort();
+blocks.forEach(b => {
+const opt = document.createElement("option");
+opt.value = b;
+opt.textContent = b;
+blkSel.appendChild(opt);
+});
+}
+}
 function getCombinedExamCentresList() {
+const store = getOtherExamsConfigStore();
 const list10 = getEffectiveExamCentres10List();
 const list12 = getEffectiveExamCentres12List();
-if (_adminExamCentreFilterMode === "10") {
-return list10.map(c => {
-const sch = masterSchools.find(s => String(s.uNo) === String(c.uNo)) || {};
-return {
-sn: c.sn,
-uNo: c.uNo,
-centre10: c.centreNo,
-centre12: sch.centre12 || (typeof EXAM_CENTRE_12_BY_UNO !== "undefined" ? (EXAM_CENTRE_12_BY_UNO[c.uNo] || "-") : "-"),
-block: c.block || sch.block || "-",
-centreName: (c.nameTa || sch.nameTa) ? `${c.nameTa || sch.nameTa} (${c.centreName})` : c.centreName
-};
-});
+const map10 = {};
+list10.forEach(c => { if (c.uNo) map10[String(c.uNo)] = c.centreNo; });
+const map12 = {};
+list12.forEach(c => { if (c.uNo) map12[String(c.uNo)] = c.centreNo; });
+const blkFilter = (document.getElementById("admCentreBlockFilter")?.value || "").trim();
+const mgmtFilter = (document.getElementById("admCentreMgmtFilter")?.value || "").trim();
+const showScope = (document.getElementById("admOtherExamShowScope")?.value || "ALL_SCHOOLS").trim();
+const q = ((document.getElementById("admCentreSearch") || {}).value || "").trim().toLowerCase();
+const allSchools = (Array.isArray(masterSchools) && masterSchools.length > 0)
+? masterSchools.filter(s => s && s.uNo && String(s.uNo) !== "999")
+: [];
+const rows = [];
+allSchools.forEach(s => {
+const uNo = String(s.uNo).trim();
+const c10 = map10[uNo] || String(s.centre10 || "").trim() || "";
+const c12 = map12[uNo] || String(s.centre12 || "").trim() || "";
+if (!store.byUNo[uNo]) {
+store.byUNo[uNo] = { uNo, otherCentreNo: c12 || c10 || "", otherExams: [], invig10: 6, office10: 3, invig12: 8, office12: 4, invigOther: 6, officeOther: 3, byExam: {} };
 }
-if (_adminExamCentreFilterMode === "12") {
-return list12.map(c => {
-const sch = masterSchools.find(s => String(s.uNo) === String(c.uNo)) || {};
-return {
-sn: c.sn,
-uNo: c.uNo,
-centre10: sch.centre10 || (typeof EXAM_CENTRE_10_BY_UNO !== "undefined" ? (EXAM_CENTRE_10_BY_UNO[c.uNo] || "-") : "-"),
-centre12: c.centreNo,
-block: c.block || sch.block || "-",
-centreName: (c.nameTa || sch.nameTa) ? `${c.nameTa || sch.nameTa} (${c.centreName})` : c.centreName
-};
-});
+const rec = store.byUNo[uNo];
+const otherExams = Array.isArray(rec.otherExams) ? rec.otherExams : [];
+const isSelectedForActiveOther = (_activeOtherExamCode === "ALL_OTHER")
+? (otherExams.length > 0)
+: otherExams.includes(_activeOtherExamCode);
+if (_adminExamCentreFilterMode === "10" && !c10) return;
+if (_adminExamCentreFilterMode === "12" && !c12) return;
+if (_adminExamCentreFilterMode === "BOTH" && !c10 && !c12 && otherExams.length === 0) return;
+if (_adminExamCentreFilterMode === "OTHER") {
+if (showScope === "SELECTED_ONLY" && !isSelectedForActiveOther) return;
+if (showScope === "EXISTING_10_12" && !c10 && !c12) return;
 }
-const list = [];
-let snCounter = 1;
-masterSchools.forEach(s => {
-if (!s || !s.uNo || String(s.uNo) === "999") return;
-const c10 = s.centre10 || (typeof EXAM_CENTRE_10_BY_UNO !== "undefined" ? EXAM_CENTRE_10_BY_UNO[s.uNo] : "") || "";
-const c12 = s.centre12 || (typeof EXAM_CENTRE_12_BY_UNO !== "undefined" ? EXAM_CENTRE_12_BY_UNO[s.uNo] : "") || "";
-if (c10 || c12) {
-list.push({
-sn: snCounter++,
-uNo: s.uNo,
+if (blkFilter && s.block !== blkFilter) return;
+if (mgmtFilter) {
+if (mgmtFilter === "4CG_5IC_6CB") {
+if (!["4CG", "5IC", "6CB"].includes(String(s.mgmt1 || ""))) return;
+} else if (String(s.mgmt1 || "") !== mgmtFilter) {
+return;
+}
+}
+const otherCNo = rec.otherCentreNo || c12 || c10 || "";
+const centreNameFull = s.nameTa ? `${s.nameTa} (${s.nameEn})` : s.nameEn;
+if (q) {
+const hay = `${uNo} ${s.udiseNo || ""} ${c10} ${c12} ${otherCNo} ${s.block || ""} ${centreNameFull} ${otherExams.join(" ")}`.toLowerCase();
+if (!hay.includes(q)) return;
+}
+const supp = (typeof EBS_F1_SUPP_SEED !== "undefined" && EBS_F1_SUPP_SEED[uNo]) ? EBS_F1_SUPP_SEED[uNo] : null;
+const ext = schoolExtraDataStore[uNo];
+const f1 = (ext && ext.ebs2026 && ext.ebs2026.f1) ? ext.ebs2026.f1 : null;
+const totRooms = f1 ? Number(f1.totalClassrooms || 8) : (supp ? Number(supp[5] || 8) : 8);
+const eligRooms = f1 ? Number(f1.eligibleExamRooms || 6) : (supp ? Number(supp[6] || 6) : 6);
+const benches = f1 ? Number(f1.benchDeskPairs || 60) : (supp ? Number(supp[7] || 60) : 60);
+const alloc = getSchoolCentreStaffAlloc(rec, _adminExamCentreFilterMode, _activeOtherExamCode);
+const isActiveCentre = (_adminExamCentreFilterMode === "10")
+? Boolean(c10)
+: (_adminExamCentreFilterMode === "12"
+? Boolean(c12)
+: (_adminExamCentreFilterMode === "BOTH" ? Boolean(c10 || c12 || otherExams.length > 0) : isSelectedForActiveOther));
+rows.push({
+uNo,
+udiseNo: s.udiseNo || "",
+mgmt1: s.mgmt1 || "1G",
+level: s.level || "HS",
+block: s.block || "-",
+nameTa: s.nameTa || s.nameEn || "",
+nameEn: s.nameEn || "",
+centreName: centreNameFull,
 centre10: c10 || "-",
 centre12: c12 || "-",
-block: s.block || "-",
-centreName: s.nameTa ? `${s.nameTa} (${s.nameEn})` : s.nameEn
+otherCentreNo: otherCNo,
+otherExams: otherExams,
+isActiveCentre: isActiveCentre,
+totRooms,
+eligRooms,
+benches,
+invig: alloc.invig,
+office: alloc.office,
+totalStaff: alloc.invig + alloc.office
 });
+});
+rows.sort((a, b) => {
+if (_adminExamCentreFilterMode === "OTHER" && a.isActiveCentre !== b.isActiveCentre) {
+return a.isActiveCentre ? -1 : 1;
 }
+return (Number(a.uNo) || 0) - (Number(b.uNo) || 0);
 });
-return list;
+rows.forEach((r, idx) => { r.sn = idx + 1; });
+return rows;
 }
 function renderAdminExamCentresTable() {
-const q = ((document.getElementById("admCentreSearch") || {}).value || "").trim().toLowerCase();
+populateOtherExamControlsDropdowns();
+const store = getOtherExamsConfigStore();
+const list10 = getEffectiveExamCentres10List();
+const list12 = getEffectiveExamCentres12List();
+const otherActiveCentresCount = Object.values(store.byUNo || {}).filter(r => {
+if (!r || !Array.isArray(r.otherExams)) return false;
+return (_activeOtherExamCode === "ALL_OTHER") ? (r.otherExams.length > 0) : r.otherExams.includes(_activeOtherExamCode);
+}).length;
+const bOtherBadge = document.getElementById("admExCenOtherCountBadge");
+if (bOtherBadge) bOtherBadge.textContent = String(otherActiveCentresCount);
+const kpiOther = document.getElementById("admExCenKpiOtherCentres");
+if (kpiOther) kpiOther.textContent = `${otherActiveCentresCount} மையங்கள்`;
+const kpi10 = document.getElementById("admExCenKpi10Centres");
+if (kpi10) kpi10.textContent = `${list10.length} மையங்கள்`;
+const kpi12 = document.getElementById("admExCenKpi12Centres");
+if (kpi12) kpi12.textContent = `${list12.length} மையங்கள்`;
+const execSum = document.getElementById("admExecCentresSummaryNum");
+if (execSum) execSum.textContent = `10th: ${list10.length} | +2: ${list12.length} | மற்றவை: ${otherActiveCentresCount}`;
+const activeExObj = store.catalog.find(x => x.code === _activeOtherExamCode);
+const kpiExName = document.getElementById("admExCenKpiOtherExamName");
+if (kpiExName) {
+kpiExName.textContent = activeExObj ? activeExObj.label : "NMMS, TRUST, TTSE, CMTS, TET...";
+}
 const tbody = document.getElementById("admExamCentresTableBody");
+const tfoot = document.getElementById("admExamCentresTableFoot");
 if (!tbody) return;
 const rows = getCombinedExamCentresList();
-const filtered = rows.filter(c => {
-if (!q) return true;
-return `${c.uNo} ${c.centre10} ${c.centre12} ${c.block} ${c.centreName}`.toLowerCase().includes(q);
+let sumInvig = 0;
+let sumOffice = 0;
+let activeCountInView = 0;
+rows.forEach(r => {
+if (r.isActiveCentre) {
+activeCountInView++;
+sumInvig += r.invig;
+sumOffice += r.office;
+}
 });
-tbody.innerHTML = filtered.map(c => `
-      <tr>
-        <td>${c.sn || "-"}</td>
-        <td style="font-weight:800; color:#c2410c;">${c.uNo || "-"}</td>
-        <td style="font-weight:900; color:#1e40af; background:#eff6ff; text-align:center;">${c.centre10 || "-"}</td>
-        <td style="font-weight:900; color:#15803d; background:#f0fdf4; text-align:center;">${c.centre12 || "-"}</td>
-        <td>${c.block || "-"}</td>
-        <td style="font-weight:700;">${c.centreName}</td>
-      </tr>
-    `).join("");
+const kpiInv = document.getElementById("admExCenKpiTotalInvig");
+if (kpiInv) kpiInv.textContent = sumInvig.toLocaleString("en-IN");
+const kpiOff = document.getElementById("admExCenKpiTotalOffice");
+if (kpiOff) kpiOff.textContent = sumOffice.toLocaleString("en-IN");
+const kpiGrand = document.getElementById("admExCenKpiGrandStaff");
+if (kpiGrand) kpiGrand.textContent = `மொத்தப் பணியாளர்கள்: ${(sumInvig + sumOffice).toLocaleString("en-IN")} (${activeCountInView} மையங்கள்)`;
+if (rows.length === 0) {
+tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:24px; color:#64748b; font-weight:800;">பொருத்தமான தேர்வு மையங்கள் எதுவும் இல்லை. மேலே உள்ள காட்சி நிலையை (Display Filter) "அனைத்து 308 பள்ளிகளிலிருந்து மையங்களைத் தேர்ந்தெடு" என மாற்றவும்.</td></tr>`;
+if (tfoot) tfoot.innerHTML = "";
+return;
+}
+tbody.innerHTML = rows.map(c => {
+const rowBg = c.isActiveCentre ? "#ffffff" : "#f8fafc";
+const pillsHtml = store.catalog.map(ex => {
+const hasEx = c.otherExams.includes(ex.code);
+const isFocused = (_activeOtherExamCode === ex.code);
+return `<button type="button" onclick="toggleSchoolOtherExamBadge('${c.uNo}', '${escapeHtmlAttr(ex.code)}')" title="${escapeHtmlAttr(ex.label)}" style="cursor:pointer; padding:2px 7px; border-radius:999px; font-size:0.70rem; font-weight:900; border:${isFocused ? '2px' : '1px'} solid ${hasEx ? ex.color : '#cbd5e1'}; background:${hasEx ? ex.bg : '#f1f5f9'}; color:${hasEx ? ex.color : '#64748b'}; transition:all 0.15s;">
+          ${hasEx ? "✅ " : "+ "}${escapeHtmlAttr(ex.short)}
+        </button>`;
+}).join(" ");
+return `
+        <tr style="background:${rowBg}; ${c.isActiveCentre ? 'border-left:4px solid #0f766e;' : 'opacity:0.86;'}">
+          <td style="text-align:center;">
+            <input type="checkbox" ${c.isActiveCentre ? "checked" : ""} onchange="toggleSchoolAsOtherExamCentreRow('${c.uNo}', this.checked)" title="இப்பள்ளியைத் தேர்வு மையமாகத் தேர்ந்தெடு / நீக்கு" style="width:18px; height:18px; cursor:pointer; accent-color:#0f766e;">
+          </td>
+          <td style="text-align:center; font-weight:900;">${c.sn}</td>
+          <td>
+            <div style="font-weight:900; color:#c2410c; font-size:0.90rem;">U.NO: ${c.uNo}</div>
+            <span style="display:inline-block; padding:1px 6px; border-radius:4px; font-size:0.68rem; font-weight:900; background:#e0f2fe; color:#0369a1;">${c.level} | ${c.mgmt1}</span>
+          </td>
+          <td>
+            <div style="font-weight:900; color:#0f294a; font-size:0.88rem;">${escapeHtmlAttr(c.nameTa)}</div>
+            <div style="font-size:0.74rem; color:#475569; font-weight:700;">${escapeHtmlAttr(c.nameEn)} | <strong>${escapeHtmlAttr(c.block)}</strong></div>
+            <div style="font-size:0.71rem; color:#0f766e; font-weight:800; margin-top:2px;">
+              🏫 மொத்த அறைகள்: <strong>${c.totRooms}</strong> | 🎯 தேர்வு அறைகள்: <strong>${c.eligRooms}</strong> | 🪑 Bench: <strong>${c.benches}</strong>
+            </div>
+          </td>
+          <td style="text-align:center;">
+            <div style="display:flex; gap:3px; justify-content:center; margin-bottom:4px; font-size:0.70rem; font-weight:900;">
+              <span style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 5px; border-radius:4px;" title="10th Centre No">10th: ${c.centre10}</span>
+              <span style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; padding:1px 5px; border-radius:4px;" title="12th Centre No">12th: ${c.centre12}</span>
+            </div>
+            <input type="text" class="form-control" value="${escapeHtmlAttr(c.otherCentreNo)}" onchange="onAdminOtherCentreNoChange('${c.uNo}', this.value)" placeholder="மைய எண்" title="மற்ற தேர்வுகளுக்கான மைய எண்" style="height:28px; min-height:28px; padding:2px 6px; font-size:0.78rem; font-weight:900; text-align:center; border-color:#5eead4;">
+          </td>
+          <td>
+            <div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+              ${pillsHtml}
+            </div>
+          </td>
+          <td style="text-align:center;">
+            <div style="display:inline-flex; align-items:center; gap:3px; background:#f5f3ff; padding:3px 5px; border-radius:8px; border:1.5px solid #c4b5fd;">
+              <button type="button" onclick="stepSchoolCentreStaffAlloc('${c.uNo}','invig',-1)" style="width:24px; height:26px; border:1px solid #a78bfa; background:#fff; color:#4c1d95; border-radius:5px; font-weight:900; cursor:pointer;">-</button>
+              <input type="number" min="0" max="300" value="${c.invig}" onchange="setSchoolCentreStaffAlloc('${c.uNo}','invig',this.value)" style="width:52px; height:26px; text-align:center; font-weight:900; font-size:0.92rem; color:#2e1065; border:1px solid #a78bfa; border-radius:5px; background:#fff;">
+              <button type="button" onclick="stepSchoolCentreStaffAlloc('${c.uNo}','invig',1)" style="width:24px; height:26px; border:1px solid #a78bfa; background:#fff; color:#4c1d95; border-radius:5px; font-weight:900; cursor:pointer;">+</button>
+            </div>
+          </td>
+          <td style="text-align:center;">
+            <div style="display:inline-flex; align-items:center; gap:3px; background:#fffbeb; padding:3px 5px; border-radius:8px; border:1.5px solid #fcd34d;">
+              <button type="button" onclick="stepSchoolCentreStaffAlloc('${c.uNo}','office',-1)" style="width:24px; height:26px; border:1px solid #f59e0b; background:#fff; color:#92400e; border-radius:5px; font-weight:900; cursor:pointer;">-</button>
+              <input type="number" min="0" max="150" value="${c.office}" onchange="setSchoolCentreStaffAlloc('${c.uNo}','office',this.value)" style="width:52px; height:26px; text-align:center; font-weight:900; font-size:0.92rem; color:#78350f; border:1px solid #f59e0b; border-radius:5px; background:#fff;">
+              <button type="button" onclick="stepSchoolCentreStaffAlloc('${c.uNo}','office',1)" style="width:24px; height:26px; border:1px solid #f59e0b; background:#fff; color:#92400e; border-radius:5px; font-weight:900; cursor:pointer;">+</button>
+            </div>
+          </td>
+          <td style="text-align:center;">
+            <span style="display:inline-block; padding:4px 9px; border-radius:999px; font-size:0.84rem; font-weight:900; background:${c.isActiveCentre ? '#dcfce7' : '#f1f5f9'}; color:${c.isActiveCentre ? '#14532d' : '#64748b'}; border:1px solid ${c.isActiveCentre ? '#86efac' : '#cbd5e1'};">
+              ${c.totalStaff}
+            </span>
+          </td>
+        </tr>
+      `;
+}).join("");
+if (tfoot) {
+tfoot.innerHTML = `
+        <tr style="background:#0f294a; color:#fff; font-weight:900;">
+          <td colspan="6" style="text-align:right; padding:10px 14px; font-size:0.88rem;">
+            📊 தேர்ந்தெடுக்கப்பட்ட தேர்வு மையங்கள் (${activeCountInView} மையங்கள்) மொத்தப் பணியாளர்கள் தேவை:
+          </td>
+          <td style="text-align:center; font-size:0.98rem; color:#fde047;">👨‍🏫 ${sumInvig.toLocaleString("en-IN")}</td>
+          <td style="text-align:center; font-size:0.98rem; color:#fed7aa;">🧑‍💼 ${sumOffice.toLocaleString("en-IN")}</td>
+          <td style="text-align:center; font-size:1.02rem; color:#4ade80;">${(sumInvig + sumOffice).toLocaleString("en-IN")}</td>
+        </tr>
+      `;
+}
+}
+function applyBulkInvigAndOfficeToFilteredCentres() {
+const invVal = document.getElementById("admBulkInvigInput")?.value;
+const offVal = document.getElementById("admBulkOfficeInput")?.value;
+if ((invVal === "" || invVal === undefined) && (offVal === "" || offVal === undefined)) {
+showToast("⚠️ அறைக்கண்காணிப்பாளர் அல்லது அலுவலகப் பணியாளர் எண்ணிக்கையை உள்ளிடவும்.", "#f59e0b");
+return;
+}
+const store = getOtherExamsConfigStore();
+const rows = getCombinedExamCentresList();
+let updated = 0;
+rows.forEach(r => {
+if (!r.isActiveCentre && _adminExamCentreFilterMode === "OTHER") return;
+const rec = store.byUNo[r.uNo];
+if (!rec) return;
+if (invVal !== "" && invVal !== undefined) {
+const nInv = Math.max(0, parseInt(invVal, 10) || 0);
+if (_adminExamCentreFilterMode === "10") rec.invig10 = nInv;
+else if (_adminExamCentreFilterMode === "12") rec.invig12 = nInv;
+else {
+rec.invigOther = nInv;
+if (_activeOtherExamCode && _activeOtherExamCode !== "ALL_OTHER") {
+if (!rec.byExam) rec.byExam = {};
+if (!rec.byExam[_activeOtherExamCode]) rec.byExam[_activeOtherExamCode] = {};
+rec.byExam[_activeOtherExamCode].invig = nInv;
+}
+}
+}
+if (offVal !== "" && offVal !== undefined) {
+const nOff = Math.max(0, parseInt(offVal, 10) || 0);
+if (_adminExamCentreFilterMode === "10") rec.office10 = nOff;
+else if (_adminExamCentreFilterMode === "12") rec.office12 = nOff;
+else {
+rec.officeOther = nOff;
+if (_activeOtherExamCode && _activeOtherExamCode !== "ALL_OTHER") {
+if (!rec.byExam) rec.byExam = {};
+if (!rec.byExam[_activeOtherExamCode]) rec.byExam[_activeOtherExamCode] = {};
+rec.byExam[_activeOtherExamCode].office = nOff;
+}
+}
+}
+updated++;
+});
+saveOtherExamsConfigStore(true);
+renderAdminExamCentresTable();
+showToast(`✅ ${updated} தேர்வு மையங்களுக்கு அறைக்கண்காணிப்பாளர் & அலுவலகப் பணியாளர் எண்ணிக்கை மொத்தமாகப் புதுப்பிக்கப்பட்டது!`, "#16a34a");
+}
+function toggleSelectAllFilteredOtherCentres(selectFlag) {
+const store = getOtherExamsConfigStore();
+const rows = getCombinedExamCentresList();
+const targetExam = (_activeOtherExamCode && _activeOtherExamCode !== "ALL_OTHER") ? _activeOtherExamCode : "NMMS";
+rows.forEach(r => {
+const rec = store.byUNo[r.uNo];
+if (!rec) return;
+if (!Array.isArray(rec.otherExams)) rec.otherExams = [];
+if (selectFlag) {
+if (!rec.otherExams.includes(targetExam)) rec.otherExams.push(targetExam);
+if (!rec.otherCentreNo) rec.otherCentreNo = (r.centre12 !== "-" ? r.centre12 : (r.centre10 !== "-" ? r.centre10 : ("208" + r.uNo.padStart(3, "0"))));
+} else {
+if (_activeOtherExamCode === "ALL_OTHER") rec.otherExams = [];
+else rec.otherExams = rec.otherExams.filter(x => x !== targetExam);
+}
+});
+saveOtherExamsConfigStore(true);
+renderAdminExamCentresTable();
+showToast(selectFlag ? `✅ காட்டப்படும் ${rows.length} பள்ளிகளும் தேர்வு மையங்களாகத் தேர்ந்தெடுக்கப்பட்டன!` : `ℹ️ காட்டப்படும் பள்ளிகளின் தேர்வு மையத் தேர்வு நீக்கப்பட்டது.`, "#0f766e");
+}
+function autoFillInvigilatorsFromEligibleRooms() {
+const store = getOtherExamsConfigStore();
+const rows = getCombinedExamCentresList();
+let count = 0;
+rows.forEach(r => {
+const rec = store.byUNo[r.uNo];
+if (!rec) return;
+const rooms = Math.max(2, Number(r.eligRooms || 6));
+const offCount = Math.max(2, Math.ceil(rooms / 4));
+if (_adminExamCentreFilterMode === "10") {
+rec.invig10 = rooms;
+rec.office10 = offCount;
+} else if (_adminExamCentreFilterMode === "12") {
+rec.invig12 = rooms;
+rec.office12 = offCount;
+} else {
+rec.invigOther = rooms;
+rec.officeOther = offCount;
+if (_activeOtherExamCode && _activeOtherExamCode !== "ALL_OTHER") {
+if (!rec.byExam) rec.byExam = {};
+rec.byExam[_activeOtherExamCode] = { invig: rooms, office: offCount };
+}
+}
+count++;
+});
+saveOtherExamsConfigStore(true);
+renderAdminExamCentresTable();
+showToast(`⚡ ${count} மையங்களுக்கு EBS F1 தகுதியான தேர்வு அறைகள் அடிப்படையில் அறைக்கண்காணிப்பாளர் & அலுவலகப் பணியாளர் எண்ணிக்கை நிரப்பப்பட்டது!`, "#4c1d95");
 }
 function exportExamCentresCsv() {
+const store = getOtherExamsConfigStore();
+const catMap = {};
+store.catalog.forEach(x => { catMap[x.code] = x.short; });
 const rows = getCombinedExamCentresList();
-let csv = "\uFEFFSN,U.NO,10th_Exam_Centre_No,12th_Exam_Centre_No,Block,School_Name\n";
+let csv = "\uFEFFSN,U.NO,UDISE_NO,Block,School_Name_Tamil,School_Name_English,Active_Centre,10th_Centre_No,12th_Centre_No,Other_Exam_Centre_No,Other_Exams_Conducted,Eligible_Exam_Rooms,Hall_Invigilators,Office_Staff,Total_Staff\n";
 rows.forEach(c => {
-csv += `"${c.sn}","${c.uNo}","${c.centre10}","${c.centre12}","${c.block}","${String(c.centreName || "").replace(/"/g, '""')}"\n`;
+const exNames = (c.otherExams || []).map(k => catMap[k] || k).join(" | ");
+csv += `"${c.sn}","${c.uNo}","${c.udiseNo}","${c.block}","${String(c.nameTa || "").replace(/"/g, '""')}","${String(c.nameEn || "").replace(/"/g, '""')}","${c.isActiveCentre ? 'YES' : 'NO'}","${c.centre10}","${c.centre12}","${c.otherCentreNo}","${String(exNames).replace(/"/g, '""')}","${c.eligRooms}","${c.invig}","${c.office}","${c.totalStaff}"\n`;
 });
 const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
 const url = URL.createObjectURL(blob);
 const a = document.createElement("a");
 a.href = url;
-a.download = "Sivagangai_10th_12th_Exam_Centres.csv";
+a.download = `Sivagangai_Exam_Centres_Staff_Allocation_${_adminExamCentreFilterMode}_${new Date().toISOString().split("T")[0]}.csv`;
 document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
 URL.revokeObjectURL(url);
-showToast("✅ 10th & 12th தேர்வு மையங்கள் CSV பதிவிறக்கம் செய்யப்பட்டது!", "#16a34a");
+showToast("✅ தேர்வு மையங்கள் மற்றும் அறைக்கண்காணிப்பாளர் / அலுவலகப் பணியாளர் பட்டியல் CSV பதிவிறக்கம் செய்யப்பட்டது!", "#16a34a");
+}
+function printExamCentresOfficialA4Report() {
+const store = getOtherExamsConfigStore();
+const catMap = {};
+store.catalog.forEach(x => { catMap[x.code] = x.short; });
+const activeExObj = store.catalog.find(x => x.code === _activeOtherExamCode);
+const modeTitle = _adminExamCentreFilterMode === "10"
+? "10-ஆம் வகுப்பு (SSLC) பொதுத்தேர்வு மையங்கள் & பணியாளர் நிர்ணய அறிக்கை"
+: (_adminExamCentreFilterMode === "12"
+? "12-ஆம் வகுப்பு (+2) பொதுத்தேர்வு மையங்கள் & பணியாளர் நிர்ணய அறிக்கை"
+: (activeExObj ? `${activeExObj.label} - மையங்கள் & பணியாளர் நிர்ணய அறிக்கை` : "மற்ற தேர்வுகள் (Other Exams) மையங்கள் & பணியாளர் நிர்ணய அறிக்கை"));
+const allRows = getCombinedExamCentresList();
+const activeRows = allRows.filter(r => r.isActiveCentre);
+const listToPrint = activeRows.length > 0 ? activeRows : allRows;
+let totInv = 0, totOff = 0;
+const trs = listToPrint.map((c, i) => {
+totInv += c.invig;
+totOff += c.office;
+const exStr = (c.otherExams || []).map(k => catMap[k] || k).join(", ") || "-";
+return `
+        <tr>
+          <td style="text-align:center; font-weight:800;">${i + 1}</td>
+          <td style="text-align:center; font-weight:800;">${c.uNo}</td>
+          <td style="text-align:center; font-weight:800;">${escapeHtmlAttr(c.otherCentreNo || c.centre10 || c.centre12)}</td>
+          <td>${escapeHtmlAttr(c.block)}</td>
+          <td><strong>${escapeHtmlAttr(c.nameTa)}</strong><br><small>${escapeHtmlAttr(c.nameEn)}</small></td>
+          <td style="font-size:11px; font-weight:700;">${escapeHtmlAttr(exStr)}</td>
+          <td style="text-align:center; font-weight:800;">${c.eligRooms}</td>
+          <td style="text-align:center; font-weight:900; font-size:13px;">${c.invig}</td>
+          <td style="text-align:center; font-weight:900; font-size:13px;">${c.office}</td>
+          <td style="text-align:center; font-weight:900; font-size:13px;">${c.invig + c.office}</td>
+        </tr>
+      `;
+}).join("");
+const win = window.open("", "_blank");
+if (!win) {
+showToast("⚠️ Pop-up தடுக்கப்பட்டுள்ளது. அனுமதித்து மீண்டும் முயற்சிக்கவும்.", "#ef4444");
+return;
+}
+win.document.write(`<!DOCTYPE html><html lang="ta"><head><meta charset="UTF-8"><title>${modeTitle}</title>
+      <style>
+        body { font-family: 'Mukta Malar', 'Segoe UI', Arial, sans-serif; margin: 18px; color: #0f172a; }
+        h2, h3 { margin: 4px 0; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
+        th, td { border: 1px solid #334155; padding: 6px 8px; }
+        th { background: #0f294a; color: #fff; }
+        @media print { .no-print { display: none !important; } }
+      </style></head><body>
+      <div class="no-print" style="text-align:right; margin-bottom:10px;">
+        <button onclick="window.print()" style="padding:8px 16px; background:#0f766e; color:#fff; border:none; border-radius:6px; font-weight:900; cursor:pointer;">🖨️ அச்சிடு / Save as PDF</button>
+      </div>
+      <h2>முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம்</h2>
+      <h3>${modeTitle} (2026-27)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>வ.எண்</th><th>U.NO</th><th>மைய எண்</th><th>ஒன்றியம்</th><th>தேர்வு மையப் பள்ளி</th>
+            <th>நடத்தப்படும் மற்ற தேர்வுகள்</th><th>தேர்வு அறைகள்</th><th>அறைக்கண்காணிப்பாளர்கள்</th><th>அலுவலகப் பணியாளர்கள்</th><th>மொத்தம்</th>
+          </tr>
+        </thead>
+        <tbody>${trs}</tbody>
+        <tfoot>
+          <tr style="background:#f1f5f9; font-weight:900;">
+            <td colspan="7" style="text-align:right;">மொத்தம் (${listToPrint.length} மையங்கள்):</td>
+            <td style="text-align:center;">${totInv}</td>
+            <td style="text-align:center;">${totOff}</td>
+            <td style="text-align:center;">${totInv + totOff}</td>
+          </tr>
+        </tfoot>
+      </table>
+      <div style="display:flex; justify-content:space-between; margin-top:42px; font-weight:800; font-size:13px;">
+        <div>நாள்: ${new Date().toLocaleDateString("en-IN")}</div>
+        <div>முதன்மைக் கல்வி அலுவலர், சிவகங்கை</div>
+      </div>
+    </body></html>`);
+win.document.close();
 }
 const CIRCULAR_DRIVE_FOLDER_ID = "1R-0i5OS83fSTLa0p3dw_mI81Pee4rZdA";
 const CIRCULAR_DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1R-0i5OS83fSTLa0p3dw_mI81Pee4rZdA?usp=drive_link";
@@ -13695,6 +14406,9 @@ if (typeof saveToIndexedDbDignitariesVault === "function") {
 saveToIndexedDbDignitariesVault(dignitariesMemoryStore, mergedVault);
 }
 if (typeof updateDignitaryStorageStatusBadge === "function") updateDignitaryStorageStatusBadge();
+} else if (key === "CEOSVG_OTHER_EXAMS_CONFIG_V1" && val && typeof val === "object" && val.byUNo) {
+otherExamsConfigStore = val;
+if (typeof renderAdminExamCentresTable === "function") renderAdminExamCentresTable();
 } else if (key === "CEOSVG_STAFF_OVERRIDES" && val && typeof val === "object") {
 districtFlattenedStaffCache = null;
 } else if (key === "CEOSVG_EMIS_STUDENT_DATA" && typeof val === "object" && typeof EMIS_STUDENT_DATA !== "undefined") {
@@ -18579,6 +19293,9 @@ box.innerHTML = `
             </button>
             <button type="button" class="btn btn-outline btn-sm" onclick="openAdminSchoolEbsDirect('101','F4')" style="background:#fff; color:#b45309; border-color:#fcd34d; font-weight:900; font-size:0.76rem;">
               🧑‍💼 பள்ளி F4 பட்டியல்
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="openOtherExamCentresManager()" style="background:#0f766e; border-color:#115e59; color:#fff; font-weight:900; font-size:0.76rem;">
+              🏛️ மற்ற தேர்வுகள் மையங்கள் &amp; கண்காணிப்பாளர் / அலுவலகப் பணியாளர் நிர்ணயம்
             </button>
             <button type="button" class="btn btn-primary btn-sm" onclick="seedAndExportPureFirebaseLiteHtml()" style="background:#dc2626; border-color:#b91c1c; font-weight:900; font-size:0.76rem;" title="அனைத்துத் தரவுகளையும் Firebase-இல் பதிவேற்றி, தரவுகள் ஏதுமற்ற ~850 KB Pure-Firebase Lite index.html கோப்பினைப் பதிவிறக்கு">
               🔥 Pure-Firebase Lite index.html (~850 KB) பதிவிறக்கு
@@ -24197,16 +24914,20 @@ const EXAM_DUTY_ROLES_CATALOG = [
 { code: "OS",  sn: 10, icon: "🧑‍💼", nameTa: "தேர்வு மைய அலுவலகப் பணியாளர்கள்", nameEn: "Exam Centre Office Staff", badgeBg: "#fdf2f8", badgeColor: "#9d174d", borderColor: "#db2777", locType: "CENTRE" }
 ];
 const EXAM_TYPES_CATALOG = {
-HSC2_2027:      { titleTa: "மேல்நிலை இரண்டாம் ஆண்டு (+2 / HSC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "HSC (+2) Public Examination – March/April 2027", level: "12" },
-HSC1_2027:      { titleTa: "மேல்நிலை முதலாம் ஆண்டு (+1 Arrear) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "HSC (+1 Arrear) Public Examination – March/April 2027", level: "12" },
-SSLC_2027:      { titleTa: "பத்தாம் வகுப்பு (10th / SSLC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "SSLC (10th) Public Examination – March/April 2027", level: "10" },
-HSC_SUPP_2027:  { titleTa: "+2 உடனடித் துணைத்தேர்வு (HSC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "HSC (+2) Supplementary Examination – June/July 2027", level: "12" },
-SSLC_SUPP_2027: { titleTa: "10-ஆம் வகுப்பு துணைத்தேர்வு (SSLC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "SSLC (10th) Supplementary Examination – June/July 2027", level: "10" },
-NMMS_2027:      { titleTa: "NMMS தேசிய வருவாய் வழி மற்றும் தகுதிப் படிப்புதவித் தொகைத் தேர்வு – 2026-27", titleEn: "NMMS Examination – 2026-27", level: "10" },
-TRUST_2027:     { titleTa: "TRUST ஊரகத் திறனாய்வுத் தேர்வு (9-ஆம் வகுப்பு) – 2026-27", titleEn: "TRUST Scholarship Examination – 2026-27", level: "10" },
-TTSE_2027:      { titleTa: "தமிழ் மொழி இலக்கியத் திறனறித் தேர்வு (11-ஆம் வகுப்பு) – 2026-27", titleEn: "Tamil Talent Search Examination (TTSE) – 2026-27", level: "12" },
-CMTS_2027:      { titleTa: "முதலமைச்சர் திறனறித் தேர்வு (10-ஆம் வகுப்பு) – 2026-27", titleEn: "Chief Minister Talent Search Examination (CMTS) – 2026-27", level: "12" },
-CUSTOM_EXAM:    { titleTa: "சிறப்புத் திறனறி / போட்டித் தேர்வு – 2026-27", titleEn: "Special Examination – 2026-27", level: "10" }
+HSC2_2027:      { titleTa: "மேல்நிலை இரண்டாம் ஆண்டு (+2 / HSC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "HSC (+2) Public Examination – March/April 2027", level: "12", otherCode: "" },
+HSC1_2027:      { titleTa: "மேல்நிலை முதலாம் ஆண்டு (+1 Arrear) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "HSC (+1 Arrear) Public Examination – March/April 2027", level: "12", otherCode: "HSC1_SUPP" },
+SSLC_2027:      { titleTa: "பத்தாம் வகுப்பு (10th / SSLC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "SSLC (10th) Public Examination – March/April 2027", level: "10", otherCode: "" },
+HSC_SUPP_2027:  { titleTa: "+2 உடனடித் துணைத்தேர்வு (HSC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "HSC (+2) Supplementary Examination – June/July 2027", level: "12", otherCode: "HSC1_SUPP" },
+SSLC_SUPP_2027: { titleTa: "10-ஆம் வகுப்பு துணைத்தேர்வு (SSLC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "SSLC (10th) Supplementary Examination – June/July 2027", level: "10", otherCode: "SSLC_SUPP" },
+NMMS_2027:      { titleTa: "NMMS தேசிய வருவாய் வழி மற்றும் தகுதிப் படிப்புதவித் தொகைத் தேர்வு – 2026-27", titleEn: "NMMS Examination – 2026-27", level: "10", otherCode: "NMMS" },
+TRUST_2027:     { titleTa: "TRUST ஊரகத் திறனாய்வுத் தேர்வு (9-ஆம் வகுப்பு) – 2026-27", titleEn: "TRUST Scholarship Examination – 2026-27", level: "10", otherCode: "TRUST" },
+TTSE_2027:      { titleTa: "தமிழ் மொழி இலக்கியத் திறனறித் தேர்வு (11-ஆம் வகுப்பு) – 2026-27", titleEn: "Tamil Talent Search Examination (TTSE) – 2026-27", level: "12", otherCode: "TTSE" },
+CMTS_2027:      { titleTa: "முதலமைச்சர் திறனறித் தேர்வு (10-ஆம் வகுப்பு) – 2026-27", titleEn: "Chief Minister Talent Search Examination (CMTS) – 2026-27", level: "12", otherCode: "CMTS" },
+TET_TRB:        { titleTa: "ஆசிரியர் தகுதித் தேர்வு / போட்டித் தேர்வுகள் (TET / TRB) – 2026-27", titleEn: "TET / TRB Competitive Examination – 2026-27", level: "12", otherCode: "TET_TRB" },
+TNPSC:          { titleTa: "TNPSC / அரசுப் பணியாளர் போட்டித் தேர்வுகள் – 2026-27", titleEn: "TNPSC Examination – 2026-27", level: "12", otherCode: "TNPSC" },
+GOVT_TECH:      { titleTa: "அரசு தொழில்நுட்பத் தேர்வுகள் (Typewriting / COA / Shorthand) – 2026-27", titleEn: "Government Technical Examinations – 2026-27", level: "12", otherCode: "GOVT_TECH" },
+ESLC_8TH:       { titleTa: "8-ஆம் வகுப்பு தனித்தேர்வர் பொதுத்தேர்வு (ESLC) – 2026-27", titleEn: "8th Standard ESLC Public Examination – 2026-27", level: "10", otherCode: "ESLC_8TH" },
+CUSTOM_EXAM:    { titleTa: "சிறப்புத் திறனறி / போட்டித் தேர்வு – 2026-27", titleEn: "Special Examination – 2026-27", level: "10", otherCode: "ALL_OTHER" }
 };
 let examDutyStoreCache = null;
 let examDutyMetaCache = null;
@@ -24257,15 +24978,90 @@ if (k === "CUSTOM_EXAM") return meta.customExamTitle || "சிறப்பு�
 if (meta.customExams && meta.customExams[k]) return meta.customExams[k].titleTa;
 return (EXAM_TYPES_CATALOG[k] && EXAM_TYPES_CATALOG[k].titleTa) || k;
 }
+function mapDutyExamKeyToOtherExamCode(examKey) {
+if (examKey === "SSLC_2027") return { mode: "10", code: "10" };
+if (examKey === "HSC2_2027") return { mode: "12", code: "12" };
+const cat = EXAM_TYPES_CATALOG[examKey];
+if (cat && cat.otherCode) return { mode: "OTHER", code: cat.otherCode };
+if (typeof getOtherExamsConfigStore === "function") {
+const st = getOtherExamsConfigStore();
+if (st && Array.isArray(st.catalog) && st.catalog.some(x => x.code === examKey)) {
+return { mode: "OTHER", code: examKey };
+}
+}
+return { mode: "OTHER", code: "ALL_OTHER" };
+}
+function openCentresConfiguratorForActiveDutyExam() {
+const examKey = getActiveExamDutyTypeKey();
+const mapped = mapDutyExamKeyToOtherExamCode(examKey);
+if (mapped.mode === "10") {
+switchAdminTab("centres");
+if (typeof setAdminExamCentreFilterMode === "function") setAdminExamCentreFilterMode("10");
+} else if (mapped.mode === "12") {
+switchAdminTab("centres");
+if (typeof setAdminExamCentreFilterMode === "function") setAdminExamCentreFilterMode("12");
+} else {
+if (typeof openOtherExamCentresManager === "function") {
+openOtherExamCentresManager(mapped.code);
+} else {
+switchAdminTab("centres");
+}
+}
+showToast("🏛️ இத்தேர்விற்கான மையங்கள் மற்றும் மையம் வாரியான அறைக்கண்காணிப்பாளர் / அலுவலகப் பணியாளர் எண்ணிக்கையை இங்கு நிர்ணயம் செய்யலாம்!", "#0f766e");
+}
 function getExamCentresForExamKey(examKey) {
 const meta = getExamDutyMeta();
 const customInfo = (meta.customExams && meta.customExams[examKey]) ? meta.customExams[examKey] : null;
 const lvl = customInfo ? customInfo.level : ((EXAM_TYPES_CATALOG[examKey] && EXAM_TYPES_CATALOG[examKey].level) || "12");
+const mapped = mapDutyExamKeyToOtherExamCode(examKey);
+const otherStore = (typeof getOtherExamsConfigStore === "function") ? getOtherExamsConfigStore() : null;
+const schByUNo = {};
+getEbs282MasterSchools().forEach(s => { schByUNo[String(s.uNo)] = s; });
+if (mapped.mode === "OTHER" && otherStore && otherStore.byUNo) {
+const targetCode = mapped.code;
+const selectedUNos = Object.keys(otherStore.byUNo).filter(uNo => {
+const rec = otherStore.byUNo[uNo];
+if (!rec || !Array.isArray(rec.otherExams)) return false;
+if (targetCode === "ALL_OTHER") return rec.otherExams.length > 0;
+return rec.otherExams.includes(targetCode);
+});
+const effectiveUNos = selectedUNos.length > 0
+? selectedUNos
+: Object.keys(otherStore.byUNo).filter(uNo => {
+const rec = otherStore.byUNo[uNo];
+return rec && Array.isArray(rec.otherExams) && rec.otherExams.length > 0;
+});
+if (effectiveUNos.length > 0) {
+effectiveUNos.sort((a, b) => (Number(a) || 0) - (Number(b) || 0));
+return effectiveUNos.map((uNo, idx) => {
+const rec = otherStore.byUNo[uNo] || {};
+const sch = schByUNo[uNo] || (Array.isArray(masterSchools) ? masterSchools.find(x => String(x.uNo) === String(uNo)) : {}) || {};
+const cNo = String(rec.otherCentreNo || sch.centre12 || sch.centre10 || ("208" + String(uNo).padStart(3, "0"))).trim();
+const cNameEn = sch.nameEn || "";
+const cNameTa = sch.nameTa || cNameEn;
+const block = sch.block || "12 Sivagangai";
+const alloc = (typeof getSchoolCentreStaffAlloc === "function")
+? getSchoolCentreStaffAlloc(rec, "OTHER", targetCode)
+: { invig: Number(rec.invigOther || 6), office: Number(rec.officeOther || 3) };
+return {
+sn: idx + 1,
+uNo: String(uNo),
+centreNo: cNo,
+block: block,
+centreNameEn: cNameEn,
+centreNameTa: cNameTa,
+label: `${cNo} - ${cNameEn}`,
+labelTa: `${cNo} - ${cNameTa}`,
+candidateStrength: Math.max(40, alloc.invig * 20),
+hiQuota: Math.max(1, Number(alloc.invig || 6)),
+osQuota: Math.max(1, Number(alloc.office || 3))
+};
+});
+}
+}
 const rawCentres = (lvl === "10")
 ? (typeof INITIAL_EXAM_CENTRES_10 !== "undefined" && Array.isArray(INITIAL_EXAM_CENTRES_10) ? INITIAL_EXAM_CENTRES_10 : [])
 : (typeof INITIAL_EXAM_CENTRES !== "undefined" && Array.isArray(INITIAL_EXAM_CENTRES) ? INITIAL_EXAM_CENTRES : []);
-const schByUNo = {};
-getEbs282MasterSchools().forEach(s => { schByUNo[String(s.uNo)] = s; });
 return rawCentres.map((c, idx) => {
 const uNo = String(c.uNo || "").trim();
 const sch = schByUNo[uNo] || {};
@@ -24275,6 +25071,10 @@ const cNameTa = sch.nameTa || cNameEn;
 const block = c.block || sch.block || "12 Sivagangai";
 const stu = typeof getSchoolFixedPortal10And12Strength === "function" ? getSchoolFixedPortal10And12Strength(uNo) : null;
 const candidateStrength = stu ? (lvl === "10" ? (stu.sslc.grand || 120) : (stu.hsc2.grand || 140)) : 120;
+const rec = (otherStore && otherStore.byUNo) ? otherStore.byUNo[uNo] : null;
+const alloc = (rec && typeof getSchoolCentreStaffAlloc === "function")
+? getSchoolCentreStaffAlloc(rec, lvl === "10" ? "10" : "12", "")
+: { invig: Math.min(10, Math.max(4, Math.ceil(candidateStrength / 25))), office: (lvl === "12" ? 4 : 3) };
 return {
 sn: idx + 1,
 uNo: uNo,
@@ -24284,7 +25084,9 @@ centreNameEn: cNameEn,
 centreNameTa: cNameTa,
 label: `${cNo} - ${cNameEn}`,
 labelTa: `${cNo} - ${cNameTa}`,
-candidateStrength: Math.max(40, candidateStrength)
+candidateStrength: Math.max(40, candidateStrength),
+hiQuota: Math.max(1, Number(alloc.invig || 6)),
+osQuota: Math.max(1, Number(alloc.office || 3))
 };
 });
 }
@@ -24488,6 +25290,15 @@ sel.innerHTML = opts.join("");
 function onExamDutyManualRoleChange() {
 populateExamDutyManualLocations();
 populateExamDutyManualStaffDropdown();
+const activeCentresForPills = getExamCentresForExamKey(getActiveExamDutyTypeKey());
+const totHiConfigured = activeCentresForPills.reduce((acc, c) => acc + (Number(c.hiQuota) || 0), 0);
+const totOsConfigured = activeCentresForPills.reduce((acc, c) => acc + (Number(c.osQuota) || 0), 0);
+const cPill = document.getElementById("admDutyActiveCentresCountPill");
+if (cPill) cPill.textContent = `🏛️ தேர்ந்தெடுக்கப்பட்ட மையங்கள்: ${activeCentresForPills.length}`;
+const hiPill = document.getElementById("admDutyActiveInvigQuotaPill");
+if (hiPill) hiPill.textContent = `👨‍🏫 நிர்ணயித்த அறைக்கண்காணிப்பாளர்கள்: ${totHiConfigured.toLocaleString("en-IN")}`;
+const osPill = document.getElementById("admDutyActiveOfficeQuotaPill");
+if (osPill) osPill.textContent = `🧑‍💼 நிர்ணயித்த அலுவலகப் பணியாளர்கள்: ${totOsConfigured.toLocaleString("en-IN")}`;
 }
 function onExamDutyManualCentreSelect() {
 const sel = document.getElementById("admDutyManualCentreSelect");
@@ -24566,9 +25377,9 @@ function runExamDutyAutoAllotment(silentSeed) {
 const examKey = getActiveExamDutyTypeKey();
 const targetBlock = (document.getElementById("admDutyAutoBlock")?.value || "").trim();
 const targetRole = silentSeed ? "ALL" : (document.getElementById("admDutyAutoRole")?.value || "ALL").trim();
-const hiQuotaRaw = silentSeed ? "3" : (document.getElementById("admDutyAutoHiCount")?.value || "4");
+const hiQuotaRaw = silentSeed ? "3" : (document.getElementById("admDutyAutoHiCount")?.value || "CENTRE_CONFIG");
 const ssQuota = silentSeed ? 1 : Math.max(1, Number(document.getElementById("admDutyAutoSsCount")?.value || 1));
-const osQuota = silentSeed ? 2 : Math.max(1, Number(document.getElementById("admDutyAutoOsCount")?.value || 2));
+const osQuotaRaw = silentSeed ? "2" : (document.getElementById("admDutyAutoOsCount")?.value || "CENTRE_CONFIG");
 const numRoutes = silentSeed ? 15 : Math.max(1, Number(document.getElementById("admDutyAutoRouteCount")?.value || 15));
 const otherSchoolRule = silentSeed ? true : Boolean(document.getElementById("admDutyAutoOtherSchoolChk")?.checked);
 const govtAidedOnly = silentSeed ? true : Boolean(document.getElementById("admDutyAutoGovtAidedOnlyChk")?.checked);
@@ -24693,9 +25504,11 @@ addAppt("SS", c.centreNo, c.labelTa, c.block, stSs, "நிலையான ப�
 if (shouldRun("HI")) {
 centres.forEach(c => {
 const forbidU = otherSchoolRule ? c.uNo : null;
-const targetHi = hiQuotaRaw === "AUTO"
+const targetHi = hiQuotaRaw === "CENTRE_CONFIG"
+? Math.max(1, Number(c.hiQuota || 6))
+: (hiQuotaRaw === "AUTO"
 ? Math.min(10, Math.max(2, Math.ceil((c.candidateStrength || 80) / 25)))
-: Math.max(1, Number(hiQuotaRaw) || 4);
+: Math.max(1, Number(hiQuotaRaw) || 4));
 const existingHi = currentList.filter(x => x.roleCode === "HI" && x.centreNo === c.centreNo).length;
 for (let m = existingHi; m < targetHi; m++) {
 const stHi = pickStaff(s => s.isTeaching && !s.isHmHss && !s.isHmHs, c.block, forbidU);
@@ -24711,8 +25524,11 @@ const osSubRoles = [
 "இரவுக் காவலர் / தூய்மைப் பணியாளர்"
 ];
 centres.forEach(c => {
+const targetOs = osQuotaRaw === "CENTRE_CONFIG"
+? Math.max(1, Number(c.osQuota || 3))
+: Math.max(1, Number(osQuotaRaw) || 2);
 const existingOs = currentList.filter(x => x.roleCode === "OS" && x.centreNo === c.centreNo).length;
-for (let m = existingOs; m < osQuota; m++) {
+for (let m = existingOs; m < targetOs; m++) {
 let stOs = allStaff.find(s => !usedStaffIds.has(s.staffId) && !s.isTeaching && String(s.uNo) === String(c.uNo));
 if (!stOs) {
 stOs = pickStaff(s => !s.isTeaching, c.block, null);
