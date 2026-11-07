@@ -24676,16 +24676,18 @@ return `
           Name of the School: <span style="font-weight:900;">${escapeHtmlAttr(sch.nameEn)} (${escapeHtmlAttr(sch.nameTa || "")})</span>
         </div>
 
-        <table class="ebs-print-table">
+        <table class="ebs-print-table" style="text-align:center;">
           <tr>
-            <td style="width:11%; font-weight:700; line-height:1.15;">Staff<br>EMIS ID</td>
-            <td style="width:23%; text-align:center;">${renderDigitBoxesHtml(st.staffId, 8)}</td>
-            <td style="width:27%; text-align:center; font-weight:700; padding:3px 4px;">
-              <div style="font-weight:800; font-size:11px; margin-bottom:2px;">Nature of Post${!isReg && st.typeOfContract ? ` (${escapeHtmlAttr(String(st.typeOfContract).split("(")[0].trim())})` : ""}</div>
-              <div style="white-space:nowrap;">${renderCheckboxHtml(isReg, "Regular")}&nbsp;${renderCheckboxHtml(!isReg, "Contract")}</div>
-            </td>
-            <td style="width:9%; font-weight:700; line-height:1.15;">IFHRMS<br>ID*</td>
-            <td style="width:30%; text-align:center;">${renderDigitBoxesHtml(st.ifhrmsId, 11)}</td>
+            <th style="width:24%; font-weight:800; text-align:center; padding:3px 4px;">Staff EMIS ID</th>
+            <th style="width:21%; font-weight:800; text-align:center; padding:3px 4px;">Nature of Post</th>
+            <th style="width:23%; font-weight:800; text-align:center; padding:3px 4px;">Type of Contract</th>
+            <th style="width:32%; font-weight:800; text-align:center; padding:3px 4px;">IFHRMS ID*</th>
+          </tr>
+          <tr style="height:26px;">
+            <td style="text-align:center; padding:3px 4px;">${renderDigitBoxesHtml(st.staffId, 8)}</td>
+            <td style="text-align:center; font-weight:900; font-size:11px; padding:3px 4px;">${isReg ? escapeHtmlAttr(st.nature || "Regular (Govt.Salaried )") : "Contract"}</td>
+            <td style="text-align:center; font-weight:800; font-size:10.5px; padding:3px 4px;">${!isReg ? escapeHtmlAttr(st.typeOfContract || (String(sch.mgmt1 || "").toUpperCase().trim() === "3P" ? "Management / Self-Finance (நிர்வாகம் / சுயநிதி)" : "PTA (பெற்றோர் ஆசிரியர் கழகம்)")) : "NONE"}</td>
+            <td style="text-align:center; padding:3px 4px;">${renderDigitBoxesHtml(isReg ? st.ifhrmsId : "", 11)}</td>
           </tr>
         </table>
 
@@ -24891,12 +24893,18 @@ return `
           Name of the School: <span style="font-weight:900;">${escapeHtmlAttr(sch.nameEn)} (${escapeHtmlAttr(sch.nameTa || "")})</span>
         </div>
 
-        <table class="ebs-print-table" style="margin-bottom:10px;">
+        <table class="ebs-print-table" style="margin-bottom:10px; text-align:center;">
           <tr>
-            <td style="width:15%; font-weight:700;">Staff EMIS ID</td>
-            <td style="width:33%;">${renderDigitBoxesHtml(st.staffId, 8)}</td>
-            <td style="width:14%; font-weight:700;">IFHRMS ID*</td>
-            <td style="width:38%;">${renderDigitBoxesHtml(st.ifhrmsId, 11)}</td>
+            <th style="width:24%; font-weight:800; text-align:center; padding:4px;">Staff EMIS ID</th>
+            <th style="width:21%; font-weight:800; text-align:center; padding:4px;">Nature of Post</th>
+            <th style="width:23%; font-weight:800; text-align:center; padding:4px;">Type of Contract</th>
+            <th style="width:32%; font-weight:800; text-align:center; padding:4px;">IFHRMS ID*</th>
+          </tr>
+          <tr style="height:28px;">
+            <td style="text-align:center; padding:4px;">${renderDigitBoxesHtml(st.staffId, 8)}</td>
+            <td style="text-align:center; font-weight:900; font-size:11px; padding:4px;">${isReg ? escapeHtmlAttr(st.nature || "Regular (Govt.Salaried )") : "Contract"}</td>
+            <td style="text-align:center; font-weight:800; font-size:10.5px; padding:4px;">${!isReg ? escapeHtmlAttr(st.typeOfContract || (String(sch.mgmt1 || "").toUpperCase().trim() === "3P" ? "Management / Self-Finance (நிர்வாகம் / சுயநிதி)" : "PTA (பெற்றோர் ஆசிரியர் கழகம்)")) : "NONE"}</td>
+            <td style="text-align:center; padding:4px;">${renderDigitBoxesHtml(isReg ? st.ifhrmsId : "", 11)}</td>
           </tr>
         </table>
 
@@ -24923,21 +24931,18 @@ return `
         <table class="ebs-print-table" style="margin-bottom:10px; text-align:center;">
           <thead>
             <tr>
-              <th style="width:16%;">Date of Birth</th>
-              <th style="width:18%;">Date of Join in<br>Govt. Service</th>
-              <th style="width:32%;">Nature of<br>Present Post</th>
-              <th style="width:17%;">Date of Join In<br>Present Post</th>
-              <th style="width:17%;">Date of Join in<br>Present School</th>
+              <th style="width:18%;">Date of Birth</th>
+              <th style="width:20%;">Date of Join in<br>First Appt.</th>
+              <th style="width:24%;">Mode of Appt. in<br>Present Post</th>
+              <th style="width:19%;">Date of Join In<br>Present Post</th>
+              <th style="width:19%;">Date of Join in<br>Present School</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="height:38px;">
+            <tr style="height:34px;">
               <td style="font-weight:800;">${escapeHtmlAttr(formatDateDisplayDMY(st.dob))}</td>
-              <td style="font-weight:800;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojService))}</td>
-              <td style="text-align:left; padding-left:10px;">
-                <div>${renderCheckboxHtml(isReg, "Regular <span style='font-size:9.5px;font-weight:400;'>(Govt. Salaried)</span>")}</div>
-                <div style="margin-top:4px;">${renderCheckboxHtml(!isReg, "Contract <span style='font-size:9.5px;font-weight:400;'>(Self Finance / Management Staff)</span>")}</div>
-              </td>
+              <td style="font-weight:800;">${isReg ? escapeHtmlAttr(formatDateDisplayDMY(st.dojService)) : ""}</td>
+              <td style="font-weight:800;">${isReg ? escapeHtmlAttr(st.modePresPost || "New Appointment") : ""}</td>
               <td style="font-weight:800;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojPresPost))}</td>
               <td style="font-weight:800;">${escapeHtmlAttr(formatDateDisplayDMY(st.dojSchool))}</td>
             </tr>
