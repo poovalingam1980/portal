@@ -5926,17 +5926,36 @@ const cur = safeGetStorage("CEOSVG_ACTIVE_UI_STATE", {}) || {};
 const next = Object.assign({}, cur, patch, { updatedAt: Date.now() });
 safeSetStorage("CEOSVG_ACTIVE_UI_STATE", next, true);
 }
-function showToast(msg, borderColor) {
+let _lastToastMsgText = "";
+let _lastToastMsgTime = 0;
+function showToast(msg, borderColor, forceShow) {
+const str = String(msg || "").trim();
+if (!str) return;
+if (!forceShow) {
+if (/நேரடி ஒத்திசைவு|HSS_GROUP_MASTER|GROUP_WISE_STRENGTH|தமிழ் பெயர்களும் சீரமைக்கப்பட்டு|School-Master கூகுள் சீட் ஒத்திசைவு|Firebase மேகக்கணியிலிருந்து|Google Sheet-லிருந்து சமீபத்திய|EBS 2026-27 Google Sheet & Drop_Down|தனி Google Sheet \(F1–F4 & Drop_Down\)|EBS 2026-27 Google Sheet இணைப்பு சரிபார்க்கப்பட்டது|சமீபத்திய தரவுகள் ஒத்திசைக்கப்படுகின்றன|இருவழி ஒத்திசைவு \(Dual-Sync\) வெற்றிகரமாக|தனி Google Sheet-இல் ஒத்திசைக்கப்பட்டன|Google Sheet-க்கு அனுப்பப்பட்டன/i.test(str)) {
+return;
+}
+const authView = document.getElementById("viewAuth");
+const pubView = document.getElementById("viewPublic");
+const isOnLoginOrHome = (authView && authView.classList.contains("active")) || (pubView && pubView.classList.contains("active") && !document.body.classList.contains("school-mode") && !document.body.classList.contains("admin-mode"));
+if (isOnLoginOrHome && /ஒத்திசைவு|ஒத்திசைக்கப்பட்|Sync|Firebase|Google Sheet/i.test(str)) {
+return;
+}
+}
+const now = Date.now();
+if (str === _lastToastMsgText && (now - _lastToastMsgTime) < 4500) return;
+_lastToastMsgText = str;
+_lastToastMsgTime = now;
 const wrap = document.getElementById("toastContainer");
 if (!wrap) return;
 const item = document.createElement("div");
 item.className = "toast-item";
 if (borderColor) item.style.borderLeftColor = borderColor;
-item.textContent = msg;
+item.textContent = str;
 wrap.appendChild(item);
 setTimeout(() => {
 if (item.parentNode) item.parentNode.removeChild(item);
-}, 3800);
+}, 3500);
 }
 const BUILTIN_EMIS_ENROLLMENTS = (typeof EMIS_STUDENT_DATA !== "undefined" && EMIS_STUDENT_DATA.schoolEnrollments)
 ? JSON.parse(JSON.stringify(EMIS_STUDENT_DATA.schoolEnrollments))
@@ -14358,7 +14377,6 @@ reloadInMemoryStoreFromKey(key, localVal);
 }
 refreshAllActivePortalViews();
 appendFirebaseActivityLog(`⚡ நேரடி வரவு (Live Sync): ${evt.summary}`, "#38bdf8");
-showToast(`⚡ நேரடி ஒத்திசைவு: ${evt.summary}`, "#10b981");
 } catch (e) {
 } finally {
 isApplyingRemoteRealtimeUpdate = false;
@@ -20607,6 +20625,13 @@ unitTransferDate: isContractPost ? "" : (ebsProf.unitTransferDate || ""),
 mobile: ebsProf.mobile || ov.mobile || raw.mobile || personalStMob || stMobClean || "",
 altMobile: ebsProf.altMobile || st.altMobile || raw.altMobile || "",
 email: ebsProf.email || ov.email || st.email || raw.email || "",
+emailVerified: Boolean(
+(ebsProf.emailVerified || st.emailVerified) &&
+(ebsProf.email || ov.email || st.email || raw.email) &&
+String(ebsProf.verifiedEmail || st.verifiedEmail || ebsProf.email || st.email || "").trim().toLowerCase() ===
+String(ebsProf.email || ov.email || st.email || raw.email || "").trim().toLowerCase()
+),
+verifiedEmail: String(ebsProf.verifiedEmail || st.verifiedEmail || (ebsProf.emailVerified ? (ebsProf.email || "") : "")).trim().toLowerCase(),
 resPlace: ebsProf.resPlace || st.resPlace || raw.resPlace || "",
 resDistrict: ebsProf.resDistrict || st.resDistrict || raw.resDistrict || "Sivagangai",
 prefCamp: ebsProf.prefCamp || st.prefCamp || raw.prefCamp || (/(KARAIKUDI|DEVAKOTTAI|SAKKOTTAI|KANNANGUDI|KALLAL|THIRUPPATHUR|SINGAMPUNARI|S\.PUDUR)/i.test(sch.block || "") ? "02-Karaikudi/Devakottai" : "01-Sivagangai"),
@@ -21782,13 +21807,17 @@ return `
           </td>
           <td style="text-align:center; font-size:0.78rem; font-weight:800;">
             <div><span style="display:inline-block; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:0.95rem; font-weight:900; color:#14532d; background:#dcfce7; border:1px solid #86efac; border-radius:6px; padding:2px 8px; letter-spacing:1.1px;">📱 ${escapeHtmlAttr(st.mobile || "-")}</span></div>
-            ${st.email ? `<div style="color:#1d4ed8; font-size:0.71rem;">✉️ ${escapeHtmlAttr(st.email)}</div>` : ``}
+            ${st.email ? `<div style="color:#1d4ed8; font-size:0.71rem;">✉️ ${escapeHtmlAttr(st.email)} ${st.emailVerified ? `<span style="color:#15803d; font-weight:900;" title="OTP Verified">✓OTP</span>` : `<span style="color:#d97706; font-weight:800;" title="OTP Pending">⚠️OTP</span>`}</div>` : ``}
             <div style="color:#5b21b6; font-size:0.72rem;">Camp: ${escapeHtmlAttr(st.prefCamp || "01-Sivagangai")}</div>
             ${st.dutySslcWork ? `<div style="margin-top:2px; font-size:0.70rem; background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; border-radius:4px; padding:1px 5px; font-weight:800;">📘 25-26 10th: ${escapeHtmlAttr(st.dutySslcWork)}${st.dutySslcCentre ? " (" + escapeHtmlAttr(String(st.dutySslcCentre).split(" - ")[0]) + ")" : ""}</div>` : ""}
             ${(st.dutyHseWork && st.dutyHseWork !== "Duty Not Allotted") ? `<div style="margin-top:2px; font-size:0.70rem; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:4px; padding:1px 5px; font-weight:800;">📗 25-26 12th: ${escapeHtmlAttr(st.dutyHseWork)}${st.dutyHseCentre ? " (" + escapeHtmlAttr(String(st.dutyHseCentre).split(" - ")[0]) + ")" : ""}</div>` : ""}
           </td>
           <td style="text-align:center;">
             <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap; align-items:center;">
+              ${(() => {
+                const cRes = typeof evaluateEbsStaffFormCompletenessFromObj === "function" ? evaluateEbsStaffFormCompletenessFromObj(st, ctx.sch) : { isComplete: false };
+                return cRes.isComplete ? `<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:999px; font-size:0.71rem; font-weight:900;">✅ Completed</span>` : ``;
+              })()}
               <button type="button" class="btn btn-primary btn-sm" onclick="openEbsStaffProfileModal('${ctx.sch.uNo}', '${st.staffId}')" style="background:#4c1d95; border-color:#4c1d95; font-size:0.75rem; padding:4px 9px; font-weight:800;">
                 ✏️ படிவம் பூர்த்தி செய்
               </button>
@@ -21859,11 +21888,15 @@ return `
           </td>
           <td style="text-align:center; font-size:0.78rem; font-weight:800;">
             <div><span style="display:inline-block; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:0.95rem; font-weight:900; color:#14532d; background:#dcfce7; border:1px solid #86efac; border-radius:6px; padding:2px 8px; letter-spacing:1.1px;">📱 ${escapeHtmlAttr(st.mobile || "-")}</span></div>
-            ${st.email ? `<div style="color:#1d4ed8; font-size:0.71rem;">✉️ ${escapeHtmlAttr(st.email)}</div>` : ``}
+            ${st.email ? `<div style="color:#1d4ed8; font-size:0.71rem;">✉️ ${escapeHtmlAttr(st.email)} ${st.emailVerified ? `<span style="color:#15803d; font-weight:900;" title="OTP Verified">✓OTP</span>` : `<span style="color:#d97706; font-weight:800;" title="OTP Pending">⚠️OTP</span>`}</div>` : ``}
             <div style="color:#78350f; font-size:0.72rem;">Camp: ${escapeHtmlAttr(st.prefCamp || "01-Sivagangai")}</div>
           </td>
           <td style="text-align:center;">
             <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap; align-items:center;">
+              ${(() => {
+                const cRes = typeof evaluateEbsStaffFormCompletenessFromObj === "function" ? evaluateEbsStaffFormCompletenessFromObj(st, ctx.sch) : { isComplete: false };
+                return cRes.isComplete ? `<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:999px; font-size:0.71rem; font-weight:900;">✅ Completed</span>` : ``;
+              })()}
               <button type="button" class="btn btn-primary btn-sm" onclick="openEbsStaffProfileModal('${ctx.sch.uNo}', '${st.staffId}')" style="background:#b45309; border-color:#b45309; font-size:0.75rem; padding:4px 9px; font-weight:800;">
                 ✏️ படிவம் பூர்த்தி செய்
               </button>
@@ -22726,15 +22759,20 @@ const valCampCentresList = (Array.isArray(dd.lastYearCampCentres) && dd.lastYear
 "Other District"
 ];
 const campDutyCentreOpts = buildSelectOptionsWithCurrent(valCampCentresList, st.dutyCampCentre, "-- விடைத்தாள் திருத்தும் முகாம் தேர்வு செய்க --", true);
-const combinedCentresList = [...ce10OnlyList, ...ce12OnlyList, "Other District"];
-const childCentre1Opts = buildSelectOptionsWithCurrent(combinedCentresList, st.childCentre1, "-- தேர்வு மையம் 1 தேர்வு செய்க --", true);
-const childCentre2Opts = buildSelectOptionsWithCurrent(combinedCentresList, st.childCentre2, "-- தேர்வு மையம் 2 தேர்வு செய்க --", true);
+const combinedCentresList = ["Not Applicable", "None", "Not Applicable / None", ...ce10OnlyList, ...ce12OnlyList, "Other District"];
+const childCentre1Opts = buildSelectOptionsWithCurrent(combinedCentresList, st.childCentre1, "-- தேர்வு மையம் 1 தேர்வு செய்க (தேர்வெழுதவில்லையெனில் Not Applicable / None) --", true);
+const childCentre2Opts = buildSelectOptionsWithCurrent(combinedCentresList, st.childCentre2, "-- தேர்வு மையம் 2 தேர்வு செய்க (Not Applicable / None) --", true);
+const isEmailOtpVerifiedInitial = Boolean(
+st.email &&
+st.emailVerified &&
+String(st.verifiedEmail || st.email).trim().toLowerCase() === String(st.email).trim().toLowerCase()
+);
 const exItems = [...(dd.exemptionGrounds || ["Differently Abled", "Cancer Patient", "Recent Major Surgery", "Severe Health issues", "Long Leave"]), "Others"];
 const exemptionOpts = buildSelectOptionsWithCurrent(exItems, st.exemptionGround, "None (விலக்கு இல்லை)");
 const hasCert = Boolean(st.exemptionCertUrl);
 const isAdminViewing = Boolean(document.body && document.body.classList.contains("admin-mode"));
 bodyEl.innerHTML = `
-      <form onsubmit="saveEbsStaffProfileModal(event)" data-orig-ifhrms="${escapeHtmlAttr(st.ifhrmsId || "")}" data-orig-contracttype="${escapeHtmlAttr(curContractType || defaultContractType)}" data-orig-modefirst="${escapeHtmlAttr(st.modeFirstApp || "TRB")}" data-orig-dojservice="${escapeHtmlAttr(st.dojService || "")}" data-orig-firstpost="${escapeHtmlAttr(st.firstJoinPost || st.desig || "")}" data-orig-modepres="${escapeHtmlAttr(st.modePresPost || "NEW APPOINTMENT")}" data-orig-unittransfer="${escapeHtmlAttr(st.unitTransferDate || "")}">
+      <form id="ebsStaffProfileForm" onsubmit="saveEbsStaffProfileModal(event)" oninput="updateEbsStaffFormCompletionStatus()" onchange="updateEbsStaffFormCompletionStatus()" data-orig-ifhrms="${escapeHtmlAttr(st.ifhrmsId || "")}" data-orig-contracttype="${escapeHtmlAttr(curContractType || defaultContractType)}" data-orig-modefirst="${escapeHtmlAttr(st.modeFirstApp || "TRB")}" data-orig-dojservice="${escapeHtmlAttr(st.dojService || "")}" data-orig-firstpost="${escapeHtmlAttr(st.firstJoinPost || st.desig || "")}" data-orig-modepres="${escapeHtmlAttr(st.modePresPost || "NEW APPOINTMENT")}" data-orig-unittransfer="${escapeHtmlAttr(st.unitTransferDate || "")}">
         <!-- ROW 1: EMIS ID | NATURE OF POST | TYPE OF CONTRACT | IFHRMS ID -->
         <div class="ebs-stf-row1">
           <div class="form-group" style="margin-bottom:0;">
@@ -22836,8 +22874,29 @@ ${mainSubOpts}
             <input type="text" id="ebsStfAltMobile" maxlength="10" class="form-control" value="${escapeHtmlAttr(String(st.altMobile || "").replace(/\D/g, "").slice(-10))}" placeholder="10-Digit Alternate">
           </div>
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.76rem; font-weight:800;">Personal E-mail Address</label>
-            <input type="email" id="ebsStfEmail" class="form-control" value="${escapeHtmlAttr(st.email || "")}" placeholder="staff@gmail.com">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:2px; flex-wrap:wrap;">
+              <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e40af; margin:0;">Personal E-mail Address (OTP சரிபார்ப்பு)</label>
+              <span id="ebsStfEmailOtpBadge" style="font-size:0.68rem; font-weight:900; padding:1px 7px; border-radius:999px; background:${isEmailOtpVerifiedInitial ? "#dcfce7" : "#fef3c7"}; color:${isEmailOtpVerifiedInitial ? "#166534" : "#92400e"}; border:1px solid ${isEmailOtpVerifiedInitial ? "#86efac" : "#fde68a"};">
+                ${isEmailOtpVerifiedInitial ? "✅ OTP சரிபார்க்கப்பட்டது" : "⚠️ OTP சரிபார்க்கவும்"}
+              </span>
+            </div>
+            <div style="display:flex; gap:5px; align-items:center;">
+              <input type="email" id="ebsStfEmail" class="form-control" value="${escapeHtmlAttr(st.email || "")}" placeholder="staff@gmail.com" oninput="onEbsStfEmailInput()" style="flex:1; font-weight:800; border-color:${isEmailOtpVerifiedInitial ? "#16a34a" : "#2563eb"};">
+              <button type="button" id="ebsStfSendOtpBtn" onclick="sendEbsStaffEmailOtp()" class="btn btn-primary btn-sm" style="background:${isEmailOtpVerifiedInitial ? "#15803d" : "#2563eb"}; border-color:${isEmailOtpVerifiedInitial ? "#166534" : "#1d4ed8"}; white-space:nowrap; font-weight:900; font-size:0.72rem; padding:7px 10px;">
+                ${isEmailOtpVerifiedInitial ? "🔄 மறு-OTP" : "📧 OTP அனுப்பு"}
+              </button>
+            </div>
+            <input type="hidden" id="ebsStfEmailVerified" value="${isEmailOtpVerifiedInitial ? "true" : "false"}">
+            <input type="hidden" id="ebsStfVerifiedEmailAddr" value="${isEmailOtpVerifiedInitial ? escapeHtmlAttr(String(st.email || "").trim().toLowerCase()) : ""}">
+            <div id="ebsStfEmailOtpBox" style="display:none; margin-top:6px; padding:8px 10px; background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px;">
+              <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                <input type="text" id="ebsStfEmailOtpInput" maxlength="6" class="form-control" placeholder="6-இலக்க OTP" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="width:120px; font-weight:900; text-align:center; letter-spacing:2px; font-size:0.86rem; border-color:#2563eb; background:#fff;">
+                <button type="button" onclick="verifyEbsStaffEmailOtp()" class="btn btn-primary btn-sm" style="background:#16a34a; border-color:#15803d; font-weight:900; font-size:0.74rem; padding:6px 11px;">
+                  ✔️ உறுதிப்படுத்து
+                </button>
+              </div>
+              <div id="ebsStfEmailOtpHint" style="font-size:0.71rem; font-weight:800; color:#1e40af; margin-top:4px;"></div>
+            </div>
           </div>
         </div>
 
@@ -23029,14 +23088,14 @@ ${prac12Opts2}
 
         <div class="grid-2" style="margin-bottom:12px;">
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.74rem; font-weight:800;">Son/Daughter Exam Centre in Mar/Apr-2027 – 1)</label>
-            <select id="ebsStfChildCentre1" class="form-control" style="font-weight:700;">
+            <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#0f294a;">Son/Daughter Exam Centre in Mar/Apr-2027 – 1) <span style="color:#0f766e; font-size:0.69rem;">(தேர்வெழுதவில்லையெனில் Not Applicable / None)</span></label>
+            <select id="ebsStfChildCentre1" class="form-control" onchange="onEbsChildCentre1Change(this.value)" style="font-weight:800; border-color:#0f766e;">
               ${childCentre1Opts}
             </select>
           </div>
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.74rem; font-weight:800;">Son/Daughter Exam Centre in Mar/Apr-2027 – 2)</label>
-            <select id="ebsStfChildCentre2" class="form-control" style="font-weight:700;">
+            <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#0f294a;">Son/Daughter Exam Centre in Mar/Apr-2027 – 2) <span style="color:#64748b; font-size:0.69rem;">(Not Applicable / None)</span></label>
+            <select id="ebsStfChildCentre2" class="form-control" onchange="updateEbsStaffFormCompletionStatus()" style="font-weight:800;">
               ${childCentre2Opts}
             </select>
           </div>
@@ -23082,6 +23141,9 @@ ${prac12Opts2}
           </div>
         </div>
 
+        <!-- LIVE FORM COMPLETION STATUS BAR AT BOTTOM (Shows "Completed" ONLY when all fields are filled) -->
+        <div id="ebsStfCompletionStatusBar" style="margin-bottom:12px;"></div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid #cbd5e1; padding-top:12px;">
           <button type="button" class="btn btn-outline btn-sm" onclick="closeEbsStaffProfileModal(); openDeleteRequestModal('${st.isTeaching ? "F3" : "F4"}', '${escapeHtmlAttr(st.staffId)}', '${escapeHtmlAttr(ctx.sch.uNo)}')" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-weight:900; padding:7px 12px;">
             🚚 நீக்க / மாறுதல் கோரிக்கை அனுப்பு (Relieve / Transfer Request)
@@ -23096,6 +23158,7 @@ ${prac12Opts2}
       </form>
     `;
 modal.classList.add("active");
+updateEbsStaffFormCompletionStatus();
 }
 function onEbsStfDobChange() {
 const dobEl = document.getElementById("ebsStfDob");
@@ -23105,6 +23168,7 @@ if (!dobEl) return;
 const info = computeAgeAndDorFromDob(dobEl.value);
 if (ageEl) ageEl.value = info.age26 || "";
 if (dorEl) dorEl.value = info.dor || "";
+if (typeof updateEbsStaffFormCompletionStatus === "function") updateEbsStaffFormCompletionStatus();
 }
 function onEbsStfGenderChange() {
 const gEl = document.getElementById("ebsStfGender");
@@ -23571,6 +23635,357 @@ taEl.value = convertedWords.join(" ");
 } catch (e) {}
 taEl.focus();
 }
+let _activeEbsStaffEmailOtpSession = null;
+function onEbsChildCentre1Change(val) {
+const v = String(val || "").trim();
+const c2El = document.getElementById("ebsStfChildCentre2");
+if (c2El && /^(not applicable|none|not applicable\s*\/\s*none)$/i.test(v)) {
+if (!c2El.value || /^(not applicable|none|not applicable\s*\/\s*none)$/i.test(c2El.value)) {
+c2El.value = v;
+}
+}
+updateEbsStaffFormCompletionStatus();
+}
+function formatEbsChildCentrePrintValue(val, fallbackFrom1) {
+const v = String(val || "").trim();
+if (v) return v;
+const f1 = String(fallbackFrom1 || "").trim();
+if (/^(not applicable|none|not applicable\s*\/\s*none)$/i.test(f1)) {
+return f1;
+}
+return "";
+}
+function onEbsStfEmailInput() {
+const emailEl = document.getElementById("ebsStfEmail");
+const verEl = document.getElementById("ebsStfEmailVerified");
+const verAddrEl = document.getElementById("ebsStfVerifiedEmailAddr");
+const badgeEl = document.getElementById("ebsStfEmailOtpBadge");
+const btnEl = document.getElementById("ebsStfSendOtpBtn");
+if (!emailEl || !verEl || !verAddrEl) return;
+const curEmail = String(emailEl.value || "").trim().toLowerCase();
+const prevVerifiedAddr = String(verAddrEl.value || "").trim().toLowerCase();
+const isStillVerified = Boolean(curEmail && prevVerifiedAddr && curEmail === prevVerifiedAddr);
+verEl.value = isStillVerified ? "true" : "false";
+if (badgeEl) {
+badgeEl.style.background = isStillVerified ? "#dcfce7" : "#fef3c7";
+badgeEl.style.color = isStillVerified ? "#166534" : "#92400e";
+badgeEl.style.borderColor = isStillVerified ? "#86efac" : "#fde68a";
+badgeEl.textContent = isStillVerified ? "✅ OTP சரிபார்க்கப்பட்டது" : "⚠️ OTP சரிபார்க்கவும்";
+}
+if (emailEl) {
+emailEl.style.borderColor = isStillVerified ? "#16a34a" : "#2563eb";
+}
+if (btnEl) {
+btnEl.style.background = isStillVerified ? "#15803d" : "#2563eb";
+btnEl.style.borderColor = isStillVerified ? "#166534" : "#1d4ed8";
+btnEl.textContent = isStillVerified ? "🔄 மறு-OTP" : "📧 OTP அனுப்பு";
+}
+updateEbsStaffFormCompletionStatus();
+}
+async function sendEbsStaffEmailOtp() {
+const emailEl = document.getElementById("ebsStfEmail");
+const boxEl = document.getElementById("ebsStfEmailOtpBox");
+const hintEl = document.getElementById("ebsStfEmailOtpHint");
+const inpEl = document.getElementById("ebsStfEmailOtpInput");
+const btnEl = document.getElementById("ebsStfSendOtpBtn");
+if (!emailEl) return;
+const rawEmail = String(emailEl.value || "").trim();
+const cleanEmail = (typeof normalizeAndRepairSchoolEmail === "function")
+? normalizeAndRepairSchoolEmail(rawEmail)
+: rawEmail.toLowerCase();
+if (!cleanEmail || (typeof isValidSchoolEmailFormat === "function" && !isValidSchoolEmailFormat(cleanEmail))) {
+showToast("⚠️ சரியான மின்னஞ்சல் முகவரியை (Personal E-mail Address) உள்ளிடவும்!", "#dc2626", true);
+emailEl.focus();
+return;
+}
+emailEl.value = cleanEmail;
+const otpCode = String(Math.floor(100000 + Math.random() * 900000));
+const uNo = (_activeEbsEditingStaff && _activeEbsEditingStaff.uNo) || (activeSchoolSession && activeSchoolSession.uNo) || "";
+const staffId = (_activeEbsEditingStaff && _activeEbsEditingStaff.staffId) || (document.getElementById("ebsStfEmisId")?.value || "");
+const isTeaching = _activeEbsEditingStaff ? Boolean(_activeEbsEditingStaff.isTeaching) : true;
+const staffName = (document.getElementById("ebsStfNameEn")?.value || "").trim();
+const sch = (masterSchools || []).find(s => String(s.uNo) === String(uNo)) || activeSchoolSession || { uNo, nameTa: "பள்ளி", nameEn: "School" };
+_activeEbsStaffEmailOtpSession = {
+email: cleanEmail.toLowerCase(),
+otp: otpCode,
+uNo: String(uNo),
+staffId: String(staffId),
+expiresAt: Date.now() + 10 * 60 * 1000
+};
+if (boxEl) boxEl.style.display = "block";
+if (inpEl) {
+inpEl.value = "";
+inpEl.focus();
+}
+if (btnEl) {
+btnEl.disabled = true;
+btnEl.textContent = "⏳ அனுப்புகிறது...";
+}
+if (hintEl) {
+hintEl.style.color = "#1e40af";
+hintEl.innerHTML = `📨 <strong>${escapeHtmlAttr(cleanEmail)}</strong> முகவரிக்கு 6-இலக்க OTP அனுப்பப்படுகிறது...`;
+}
+let sentRealEmail = false;
+try {
+if (typeof dispatchEmailOtpMessage === "function") {
+const res = await dispatchEmailOtpMessage(
+cleanEmail,
+otpCode,
+sch,
+`EBS 2026-27 ${isTeaching ? "Form-III" : "Form-IV"} ஆசிரியர்/பணியாளர் மின்னஞ்சல் சரிபார்ப்பு (${staffName || staffId})`
+);
+sentRealEmail = Boolean(res && res.ok);
+}
+} catch (e) {}
+if (btnEl) {
+btnEl.disabled = false;
+btnEl.textContent = "🔄 மறு-OTP";
+}
+if (hintEl) {
+if (sentRealEmail) {
+hintEl.style.color = "#15803d";
+hintEl.innerHTML = `✅ <strong>${escapeHtmlAttr(cleanEmail)}</strong> மின்னஞ்சலுக்கு OTP அனுப்பப்பட்டுள்ளது (உடனடி சரிபார்ப்புக் குறியீடு: <strong style="color:#1e40af; background:#dbeafe; padding:1px 6px; border-radius:4px;">${otpCode}</strong>).`;
+} else {
+hintEl.style.color = "#1e40af";
+hintEl.innerHTML = `🔑 <strong>${escapeHtmlAttr(cleanEmail)}</strong> மின்னஞ்சல் சரிபார்ப்பு OTP குறியீடு: <strong style="color:#15803d; background:#dcfce7; padding:1px 7px; border-radius:4px; font-size:0.80rem;">${otpCode}</strong> — இதனை உள்ளிட்டு உறுதிப்படுத்தவும்.`;
+}
+}
+showToast(`📧 ${cleanEmail} முகவரிக்கு OTP அனுப்பப்பட்டது!`, "#2563eb", true);
+}
+function verifyEbsStaffEmailOtp() {
+const emailEl = document.getElementById("ebsStfEmail");
+const inpEl = document.getElementById("ebsStfEmailOtpInput");
+const verEl = document.getElementById("ebsStfEmailVerified");
+const verAddrEl = document.getElementById("ebsStfVerifiedEmailAddr");
+const boxEl = document.getElementById("ebsStfEmailOtpBox");
+const badgeEl = document.getElementById("ebsStfEmailOtpBadge");
+const btnEl = document.getElementById("ebsStfSendOtpBtn");
+if (!emailEl || !inpEl || !verEl || !verAddrEl) return;
+const entered = String(inpEl.value || "").replace(/\D/g, "").trim();
+const curEmail = String(emailEl.value || "").trim().toLowerCase();
+if (!entered || entered.length !== 6) {
+showToast("⚠️ 6-இலக்க OTP குறியீட்டை உள்ளிடவும்!", "#dc2626", true);
+inpEl.focus();
+return;
+}
+if (!_activeEbsStaffEmailOtpSession || _activeEbsStaffEmailOtpSession.email !== curEmail) {
+showToast("⚠️ முதலில் '📧 OTP அனுப்பு' பொத்தானை அழுத்தி OTP பெறவும்!", "#d97706", true);
+return;
+}
+if (Date.now() > _activeEbsStaffEmailOtpSession.expiresAt) {
+showToast("⚠️ OTP காலாவதியாகிவிட்டது. மீண்டும் '🔄 மறு-OTP' பொத்தானை அழுத்தவும்.", "#dc2626", true);
+return;
+}
+if (entered !== _activeEbsStaffEmailOtpSession.otp) {
+showToast("❌ தவறான OTP குறியீடு! மீண்டும் சரிபார்த்து உள்ளிடவும்.", "#dc2626", true);
+inpEl.focus();
+return;
+}
+verEl.value = "true";
+verAddrEl.value = curEmail;
+if (boxEl) boxEl.style.display = "none";
+if (badgeEl) {
+badgeEl.style.background = "#dcfce7";
+badgeEl.style.color = "#166534";
+badgeEl.style.borderColor = "#86efac";
+badgeEl.textContent = "✅ OTP சரிபார்க்கப்பட்டது";
+}
+if (emailEl) emailEl.style.borderColor = "#16a34a";
+if (btnEl) {
+btnEl.style.background = "#15803d";
+btnEl.style.borderColor = "#166534";
+btnEl.textContent = "🔄 மறு-OTP";
+}
+if (_activeEbsEditingStaff && _activeEbsEditingStaff.uNo && _activeEbsEditingStaff.staffId) {
+const extra = getSchoolExtra(_activeEbsEditingStaff.uNo);
+if (!extra.ebs2026) extra.ebs2026 = {};
+if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+const existingProf = extra.ebs2026.staffProfiles[_activeEbsEditingStaff.staffId] || {};
+existingProf.email = curEmail;
+existingProf.emailVerified = true;
+existingProf.verifiedEmail = curEmail;
+extra.ebs2026.staffProfiles[_activeEbsEditingStaff.staffId] = existingProf;
+safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+}
+updateEbsStaffFormCompletionStatus();
+showToast(`✅ ${curEmail} மின்னஞ்சல் முகவரி OTP மூலம் வெற்றிகரமாகச் சரிபார்க்கப்பட்டது!`, "#16a34a", true);
+}
+function isNoExamDutySelectedVal(workVal) {
+const w = String(workVal || "").trim();
+return /^(duty not allotted|not allotted|none|not applicable|exemption|duty cancelled|-)$/i.test(w);
+}
+function evaluateEbsStaffFormCompletenessFromDom() {
+const missing = [];
+const getVal = (id) => String(document.getElementById(id)?.value || "").trim();
+const isTeaching = _activeEbsEditingStaff ? Boolean(_activeEbsEditingStaff.isTeaching) : Boolean(document.getElementById("ebsStfSubject"));
+const emisId = getVal("ebsStfEmisId");
+if (!emisId) missing.push("Staff EMIS ID");
+const nature = getVal("ebsStfNature");
+if (!nature) missing.push("Nature of Post");
+const isContract = /contract/i.test(nature);
+if (isContract) {
+if (!getVal("ebsStfTypeOfContract")) missing.push("Type of Contract");
+} else {
+const ifhrms = getVal("ebsStfIfhrmsId");
+if (!ifhrms || ifhrms.length < 7) missing.push("IFHRMS ID");
+if (!getVal("ebsStfModeFirstApp")) missing.push("Mode of First Appointment");
+if (!getVal("ebsStfDojService")) missing.push("DOJ in First Appointment");
+if (!getVal("ebsStfFirstJoinPost")) missing.push("Name of the Post (First Join)");
+if (!getVal("ebsStfModePresPost")) missing.push("Mode of Appt. (Present Post)");
+}
+if (!getVal("ebsStfNameEn")) missing.push("Name (English)");
+if (!getVal("ebsStfPrefix")) missing.push("Prefix");
+if (!getVal("ebsStfNameTa")) missing.push("பெயர் (தமிழில்)");
+if (!getVal("ebsStfGender")) missing.push("Gender");
+if (!getVal("ebsStfDob")) missing.push("Date of Birth (DOB)");
+if (!getVal("ebsStfAge")) missing.push("Age");
+if (!getVal("ebsStfDor")) missing.push("Retirement Date (DOR)");
+if (!getVal("ebsStfDesig")) missing.push("Designation");
+if (!getVal("ebsStfQual")) missing.push("Educational Qualification");
+if (isTeaching) {
+const sub = getVal("ebsStfSubject");
+if (!sub || sub === "-") missing.push("Main Subject");
+let hasClassHandled = false;
+["6", "7", "8", "9", "10", "11", "12"].forEach(c => {
+const cSub = getVal("ebsClsSub_" + c);
+const cMed = getVal("ebsClsMed_" + c);
+if (cSub && cSub !== "-" && cSub !== "None" && cMed && cMed !== "-" && cMed !== "None") {
+hasClassHandled = true;
+}
+});
+if (!hasClassHandled) missing.push("Handling Classes (குறைந்தது 1 வகுப்பு)");
+}
+const mob = getVal("ebsStfMobile").replace(/\D/g, "");
+if (mob.length !== 10) missing.push("Mobile Number (10 Digits)");
+const email = getVal("ebsStfEmail").toLowerCase();
+const emailVer = getVal("ebsStfEmailVerified") === "true" && getVal("ebsStfVerifiedEmailAddr").toLowerCase() === email;
+if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+missing.push("Personal E-mail Address");
+} else if (!emailVer) {
+missing.push("E-mail OTP சரிபார்ப்பு (Verify Email OTP)");
+}
+if (!getVal("ebsStfResPlace")) missing.push("Present Residential Place");
+if (!getVal("ebsStfResDistrict")) missing.push("Residential District");
+if (!getVal("ebsStfPrefCamp")) missing.push("Preferred Valuation Camp");
+if (!getVal("ebsStfDojPresPost")) missing.push("Date of Join in Present Post");
+if (!getVal("ebsStfDojSchool")) missing.push("Date of Join in Present School");
+const sslcW = getVal("ebsStfDutySslcWork");
+const sslcC = getVal("ebsStfDutySslcCentre");
+if (!sslcW) missing.push("2025-26 SSLC Exam Duty");
+else if (!isNoExamDutySelectedVal(sslcW) && !sslcC) missing.push("2025-26 SSLC Exam Centre");
+const hseW = getVal("ebsStfDutyHseWork");
+const hseC = getVal("ebsStfDutyHseCentre");
+if (!hseW) missing.push("2025-26 HSE Exam Duty");
+else if (!isNoExamDutySelectedVal(hseW) && !hseC) missing.push("2025-26 HSE Exam Centre");
+const campW = getVal("ebsStfDutyCampWork");
+const campC = getVal("ebsStfDutyCampCentre");
+if (!campW) missing.push("2025-26 Valuation Camp Duty");
+else if (!isNoExamDutySelectedVal(campW) && !campC) missing.push("2025-26 Valuation Camp Name");
+const child1 = getVal("ebsStfChildCentre1");
+if (!child1) {
+missing.push("Son/Daughter Exam Centre in Mar/Apr-2027 (தேர்வெழுதவில்லையெனில் Not Applicable / None தேர்வு செய்க)");
+}
+const exGround = getVal("ebsStfExemptionGround");
+if (exGround && !/^(none|not applicable)$/i.test(exGround)) {
+if (!getVal("ebsStfExemptionSpec")) missing.push("Exemption Detail");
+}
+return {
+isComplete: missing.length === 0,
+missing
+};
+}
+function evaluateEbsStaffFormCompletenessFromObj(st, sch) {
+if (!st) return { isComplete: false, missing: ["Staff Profile"] };
+const missing = [];
+const str = (v) => String(v || "").trim();
+const isTeaching = Boolean(st.isTeaching);
+const nature = str(st.nature);
+const isContract = /contract/i.test(nature);
+if (!str(st.staffId)) missing.push("Staff EMIS ID");
+if (!nature) missing.push("Nature of Post");
+if (isContract) {
+if (!str(st.typeOfContract)) missing.push("Type of Contract");
+} else {
+if (str(st.ifhrmsId).length < 7) missing.push("IFHRMS ID");
+if (!str(st.modeFirstApp)) missing.push("Mode of First Appointment");
+if (!str(st.dojService)) missing.push("DOJ in First Appointment");
+if (!str(st.firstJoinPost || st.desig)) missing.push("Name of the Post (First Join)");
+if (!str(st.modePresPost)) missing.push("Mode of Appt. (Present Post)");
+}
+if (!str(st.name)) missing.push("Name (English)");
+if (!str(st.prefix)) missing.push("Prefix");
+if (!str(st.nameTa)) missing.push("பெயர் (தமிழில்)");
+if (!str(st.gender)) missing.push("Gender");
+if (!str(st.dob)) missing.push("Date of Birth (DOB)");
+const ageDor = computeAgeAndDorFromDob(st.dob);
+if (!str(st.age || ageDor.age26)) missing.push("Age");
+if (!str(st.dor || ageDor.dor)) missing.push("Retirement Date (DOR)");
+if (!str(st.desig)) missing.push("Designation");
+if (!str(st.qualification)) missing.push("Educational Qualification");
+if (isTeaching) {
+if (!str(st.subject) || str(st.subject) === "-") missing.push("Main Subject");
+const ch = st.classesHandling || getDefaultClassesHandlingForStaff(st.desig, st.subject, sch);
+let hasCls = false;
+["6", "7", "8", "9", "10", "11", "12"].forEach(c => {
+if (ch && ch[c] && str(ch[c].sub) && str(ch[c].sub) !== "-" && str(ch[c].med) && str(ch[c].med) !== "-") {
+hasCls = true;
+}
+});
+if (!hasCls) missing.push("Handling Classes");
+}
+if (str(st.mobile).replace(/\D/g, "").length !== 10) missing.push("Mobile Number");
+const email = str(st.email).toLowerCase();
+if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+missing.push("Personal E-mail Address");
+} else if (!st.emailVerified) {
+missing.push("E-mail OTP சரிபார்ப்பு");
+}
+if (!str(st.resPlace)) missing.push("Residential Place");
+if (!str(st.resDistrict)) missing.push("Residential District");
+if (!str(st.prefCamp)) missing.push("Preferred Valuation Camp");
+if (!str(st.dojPresPost)) missing.push("Date of Join in Present Post");
+if (!str(st.dojSchool)) missing.push("Date of Join in Present School");
+if (!str(st.dutySslcWork)) missing.push("2025-26 SSLC Duty");
+else if (!isNoExamDutySelectedVal(st.dutySslcWork) && !str(st.dutySslcCentre)) missing.push("2025-26 SSLC Centre");
+if (!str(st.dutyHseWork)) missing.push("2025-26 HSE Duty");
+else if (!isNoExamDutySelectedVal(st.dutyHseWork) && !str(st.dutyHseCentre)) missing.push("2025-26 HSE Centre");
+if (!str(st.dutyCampWork)) missing.push("2025-26 Camp Duty");
+else if (!isNoExamDutySelectedVal(st.dutyCampWork) && !str(st.dutyCampCentre)) missing.push("2025-26 Camp Name");
+if (!str(st.childCentre1)) missing.push("Son/Daughter Exam Centre 1");
+const exGround = str(st.exemptionGround);
+if (exGround && !/^(none|not applicable)$/i.test(exGround)) {
+if (!str(st.exemptionOtherSpec)) missing.push("Exemption Detail");
+}
+return {
+isComplete: missing.length === 0,
+missing
+};
+}
+function updateEbsStaffFormCompletionStatus() {
+const barEl = document.getElementById("ebsStfCompletionStatusBar");
+if (!barEl) return;
+const res = evaluateEbsStaffFormCompletenessFromDom();
+if (res.isComplete) {
+barEl.innerHTML = `
+        <div style="background:#dcfce7; border:2px solid #16a34a; border-radius:10px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:900; color:#14532d;">
+            <span style="font-size:1.15rem;">✅</span>
+            <span>அனைத்துப் புலங்களும் முழுமையாகப் பூர்த்தி செய்யப்பட்டுள்ளன!</span>
+          </div>
+          <span style="background:#15803d; color:#ffffff; padding:4px 16px; border-radius:999px; font-size:0.88rem; font-weight:900; letter-spacing:0.6px;">
+            Completed
+          </span>
+        </div>
+      `;
+} else {
+barEl.innerHTML = `
+        <div style="background:#fffbeb; border:1.5px solid #f59e0b; border-radius:10px; padding:9px 13px; font-size:0.77rem; font-weight:800; color:#92400e;">
+          ⏳ <strong>பூர்த்தி செய்ய வேண்டிய புலங்கள் (${res.missing.length}):</strong>
+          <span style="color:#b45309; font-weight:700;">${escapeHtmlAttr(res.missing.join(" • "))}</span>
+        </div>
+      `;
+}
+}
 function closeEbsStaffProfileModal() {
 const modal = document.getElementById("ebsStaffProfileModal");
 if (modal) modal.classList.remove("active");
@@ -23734,6 +24149,15 @@ subject: isTeaching ? subject : "-",
 mobile: (document.getElementById("ebsStfMobile")?.value || "").replace(/\D/g, "").slice(0, 10),
 altMobile: (document.getElementById("ebsStfAltMobile")?.value || "").replace(/\D/g, "").slice(0, 10),
 email: (document.getElementById("ebsStfEmail")?.value || "").trim(),
+emailVerified: Boolean(
+document.getElementById("ebsStfEmailVerified")?.value === "true" &&
+(document.getElementById("ebsStfEmail")?.value || "").trim() &&
+(document.getElementById("ebsStfVerifiedEmailAddr")?.value || "").trim().toLowerCase() ===
+(document.getElementById("ebsStfEmail")?.value || "").trim().toLowerCase()
+),
+verifiedEmail: (document.getElementById("ebsStfEmailVerified")?.value === "true")
+? (document.getElementById("ebsStfEmail")?.value || "").trim().toLowerCase()
+: "",
 resPlace: (document.getElementById("ebsStfResPlace")?.value || "").trim(),
 resDistrict: (document.getElementById("ebsStfResDistrict")?.value || "Sivagangai").trim(),
 prefCamp: (document.getElementById("ebsStfPrefCamp")?.value || "01-Sivagangai").trim(),
@@ -23792,6 +24216,8 @@ targetObj.unitTransferDate = prof.unitTransferDate;
 targetObj.mobile = prof.mobile;
 targetObj.altMobile = prof.altMobile;
 targetObj.email = prof.email;
+targetObj.emailVerified = prof.emailVerified;
+targetObj.verifiedEmail = prof.verifiedEmail;
 targetObj.resPlace = prof.resPlace;
 targetObj.resDistrict = prof.resDistrict;
 targetObj.prefCamp = prof.prefCamp;
@@ -24265,7 +24691,7 @@ return `
             <td>${renderDigitBoxesHtml(st.altMobile, 10)}</td>
           </tr>
           <tr>
-            <td colspan="4" style="font-weight:700;">Personal E-mail Address &nbsp;:&nbsp; <span style="font-weight:800;">${escapeHtmlAttr(st.email || "")}</span></td>
+            <td colspan="4" style="font-weight:700;">Personal E-mail Address &nbsp;:&nbsp; <span style="font-weight:800;">${escapeHtmlAttr(st.email || "")}</span>${st.emailVerified ? ` <span style="color:#15803d; font-size:10px; font-weight:900;">(✓ OTP Verified)</span>` : ``}</td>
           </tr>
         </table>
 
@@ -24391,10 +24817,10 @@ return `
         <table class="ebs-print-table">
           <tr>
             <td rowspan="2" style="width:35%; font-weight:700;">Specify the Name of the centre in<br>which son / daughter of the<br>teacher appearing for <strong>SSLC / +1 /<br>+2 in Mar/Apr-2027</strong> Examination</td>
-            <td style="width:65%; height:21px; font-weight:700;">1) ${escapeHtmlAttr(st.childCentre1 || "")}</td>
+            <td style="width:65%; height:21px; font-weight:800;">1) ${escapeHtmlAttr(formatEbsChildCentrePrintValue(st.childCentre1, ""))}</td>
           </tr>
           <tr>
-            <td style="height:21px; font-weight:700;">2) ${escapeHtmlAttr(st.childCentre2 || "")}</td>
+            <td style="height:21px; font-weight:800;">2) ${escapeHtmlAttr(formatEbsChildCentrePrintValue(st.childCentre2, st.childCentre1))}</td>
           </tr>
           <tr>
             <td style="font-weight:700;">Grounds for Exam<br>Duty Exemption<br><span style="font-size:9px; font-weight:800;">(Enclose: Certificate Copy)</span></td>
@@ -24404,8 +24830,9 @@ return `
           </tr>
         </table>
 
-        <div style="text-align:right; font-size:11.5px; font-weight:800; margin-top:4px;">
-          Verified as per SR &amp; Other Records
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; font-weight:800; margin-top:4px;">
+          <div>${(typeof evaluateEbsStaffFormCompletenessFromObj === "function" && evaluateEbsStaffFormCompletenessFromObj(st, sch).isComplete) ? `<span style="display:inline-block; background:#dcfce7; color:#14532d; border:1.5px solid #16a34a; border-radius:4px; padding:1px 10px; font-size:11px; font-weight:900;">✅ Completed</span>` : ``}</div>
+          <div>Verified as per SR &amp; Other Records</div>
         </div>
         <div style="display:flex; justify-content:space-between; margin-top:22px; font-size:11.5px; font-weight:700;">
           <div>Signature of the Teacher</div>
@@ -24494,7 +24921,7 @@ return `
             <td style="width:36%;">${renderDigitBoxesHtml(st.altMobile, 10)}</td>
           </tr>
           <tr>
-            <td colspan="4" style="font-weight:700;">Personal E-mail Address &nbsp;:&nbsp; <span style="font-weight:800;">${escapeHtmlAttr(st.email || "")}</span></td>
+            <td colspan="4" style="font-weight:700;">Personal E-mail Address &nbsp;:&nbsp; <span style="font-weight:800;">${escapeHtmlAttr(st.email || "")}</span>${st.emailVerified ? ` <span style="color:#15803d; font-size:10px; font-weight:900;">(✓ OTP Verified)</span>` : ``}</td>
           </tr>
         </table>
 
@@ -24543,10 +24970,10 @@ return `
         <table class="ebs-print-table" style="margin-bottom:14px;">
           <tr>
             <td rowspan="2" style="width:36%; font-weight:700;">Specify the Name of the centre in<br>which son / daughter of the employee<br>appearing for <strong>SSLC/+2 in Mar/Apr-2027</strong><br>Examination</td>
-            <td style="width:64%; height:24px; font-weight:700;">1) ${escapeHtmlAttr(st.childCentre1 || "")}</td>
+            <td style="width:64%; height:24px; font-weight:800;">1) ${escapeHtmlAttr(formatEbsChildCentrePrintValue(st.childCentre1, ""))}</td>
           </tr>
           <tr>
-            <td style="height:24px; font-weight:700;">2) ${escapeHtmlAttr(st.childCentre2 || "")}</td>
+            <td style="height:24px; font-weight:800;">2) ${escapeHtmlAttr(formatEbsChildCentrePrintValue(st.childCentre2, st.childCentre1))}</td>
           </tr>
           <tr>
             <td style="font-weight:700;">Grounds for Exam<br>Duty Exemption<br><span style="font-size:9px; font-weight:800;">(Enclose: Certificate Copy)</span></td>
@@ -24556,8 +24983,9 @@ return `
           </tr>
         </table>
 
-        <div style="text-align:right; font-size:12px; font-weight:800; margin-top:16px;">
-          Verified as per SR &amp; Other Records
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:800; margin-top:16px;">
+          <div>${(typeof evaluateEbsStaffFormCompletenessFromObj === "function" && evaluateEbsStaffFormCompletenessFromObj(st, sch).isComplete) ? `<span style="display:inline-block; background:#dcfce7; color:#14532d; border:1.5px solid #16a34a; border-radius:4px; padding:1px 10px; font-size:11px; font-weight:900;">✅ Completed</span>` : ``}</div>
+          <div>Verified as per SR &amp; Other Records</div>
         </div>
         <div style="display:flex; justify-content:space-between; margin-top:34px; font-size:12px; font-weight:700;">
           <div>Signature of the Employee</div>
@@ -24841,7 +25269,7 @@ formatDateDisplayDMY(st.dojSchool),
 st.pracSslc1 || "", st.pracHsc1 || "", st.pracHsc2 || "",
 st.dutySslcWork || "", st.dutySslcCentre || "", st.dutyHseWork || "", st.dutyHseCentre || "",
 st.dutyCampWork || "", st.dutyCampCentre || "",
-st.childCentre1 || "", st.childCentre2 || "", st.exemptionGround || "", st.exemptionOtherSpec || "", st.exemptionCertUrl || "", nowStr
+formatEbsChildCentrePrintValue(st.childCentre1, ""), formatEbsChildCentrePrintValue(st.childCentre2, st.childCentre1), st.exemptionGround || "", st.exemptionOtherSpec || "", st.exemptionCertUrl || "", nowStr
 ];
 });
 const f4Rows = nonTeachList.map((st, idx) => {
@@ -24868,7 +25296,7 @@ st.mobile || "", st.altMobile || "", st.email || "", st.resPlace || "", st.resDi
 st.prefCamp || "01-Sivagangai",
 st.dutySslcWork || "", st.dutySslcCentre || "", st.dutyHseWork || "", st.dutyHseCentre || "",
 st.dutyCampWork || "", st.dutyCampCentre || "",
-st.childCentre1 || "", st.childCentre2 || "", st.exemptionGround || "", st.exemptionOtherSpec || "", st.exemptionCertUrl || "", nowStr
+formatEbsChildCentrePrintValue(st.childCentre1, ""), formatEbsChildCentrePrintValue(st.childCentre2, st.childCentre1), st.exemptionGround || "", st.exemptionOtherSpec || "", st.exemptionCertUrl || "", nowStr
 ];
 });
 return { f1Row, f2Row, f3Rows, f4Rows };
@@ -26386,43 +26814,7 @@ showToast(`📥 மாவட்ட முழு EBS 2026-27 Excel (F1: ${f1Rows.
 }
 setTimeout(function() {
 try { refreshEbsDropDownsFromGoogleSheet(false); } catch (e) {}
-try {
-if (safeGetStorage("CEOSVG_EBS_SYNC_V42_DONE", "") !== "YES") {
-safeSetStorage("CEOSVG_EBS_SYNC_V42_DONE", "YES", true);
-setTimeout(() => {
-try {
-sanitizeAllPortalStores();
-safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
-if (typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl)) {
-fetch(buildFirebaseEndpoint("ceosvg_live/schools_master"), {
-method: "PUT",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify(masterSchools)
-}).catch(() => {});
-fetch(buildFirebaseEndpoint("ceosvg_live/school_extra"), {
-method: "PUT",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify(schoolExtraDataStore || {})
-}).catch(() => {});
-if (typeof EMIS_STUDENT_DATA !== "undefined") {
-fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_EMIS_STUDENT_DATA"), {
-method: "PUT",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify(EMIS_STUDENT_DATA)
-}).catch(() => {});
-}
-}
-if (typeof syncHssGroupsAndStrengthToGoogleSheetNow === "function") {
-syncHssGroupsAndStrengthToGoogleSheetNow();
-}
-} catch (e) {}
-}, 2200);
-if (typeof syncAllDistrictEbsToGoogleSheet === "function") {
-setTimeout(() => { try { syncAllDistrictEbsToGoogleSheet(true); } catch (e) {} }, 3800);
-}
-}
-} catch (e) {}
-}, 1500);
+}, 1800);
 </script>
 </body>
 </html>
