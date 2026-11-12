@@ -4611,22 +4611,30 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; align-items:end;">
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr) auto; gap:6px; align-items:end;">
         <div>
-          <label class="form-label" style="font-size:0.70rem; font-weight:800;">தேர்வர்கள் (Candidates)</label>
-          <input type="number" id="admDutyAddCenStrengthInput" class="form-control" min="1" value="120" style="font-size:0.78rem; font-weight:800; text-align:center;">
+          <label class="form-label" style="font-size:0.69rem; font-weight:800; color:#1e40af;">ஆண்கள் (Boys)</label>
+          <input type="number" id="admDutyAddCenBoysInput" class="form-control" min="0" value="60" oninput="onDutyAddCentreBoysGirlsInput()" style="font-size:0.78rem; font-weight:800; text-align:center;">
         </div>
         <div>
-          <label class="form-label" style="font-size:0.70rem; font-weight:900; color:#4c1d95;">அறைக்கண்காணிப்பாளர் (HI)</label>
+          <label class="form-label" style="font-size:0.69rem; font-weight:800; color:#9d174d;">பெண்கள் (Girls)</label>
+          <input type="number" id="admDutyAddCenGirlsInput" class="form-control" min="0" value="60" oninput="onDutyAddCentreBoysGirlsInput()" style="font-size:0.78rem; font-weight:800; text-align:center;">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.69rem; font-weight:900; color:#0f294a;">மொத்தம் (Candidates)</label>
+          <input type="number" id="admDutyAddCenStrengthInput" class="form-control" min="1" value="120" style="font-size:0.78rem; font-weight:900; text-align:center; background:#f8fafc;">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.69rem; font-weight:900; color:#4c1d95;">கண்காணிப்பாளர் (HI)</label>
           <input type="number" id="admDutyAddCenHiQuota" class="form-control" min="1" value="6" style="font-size:0.78rem; font-weight:900; text-align:center; border-color:#7c3aed;">
         </div>
         <div>
-          <label class="form-label" style="font-size:0.70rem; font-weight:900; color:#92400e;">அலுவலகப் பணியாளர் (OS)</label>
-          <input type="number" id="admDutyAddCenOsQuota" class="form-control" min="1" value="2" style="font-size:0.78rem; font-weight:900; text-align:center; border-color:#d97706;">
+          <label class="form-label" style="font-size:0.69rem; font-weight:900; color:#92400e;">அலுவலகப் பணி (OS)</label>
+          <input type="number" id="admDutyAddCenOsQuota" class="form-control" min="1" value="3" style="font-size:0.78rem; font-weight:900; text-align:center; border-color:#d97706;">
         </div>
         <div>
-          <button type="button" class="btn btn-primary btn-sm" onclick="addCustomExamCentreForActiveExam()" style="background:#d97706; border-color:#b45309; font-weight:900; padding:9px 14px; font-size:0.80rem; white-space:nowrap;">
-            ➕ தேர்வு மையம் இணை
+          <button type="button" class="btn btn-primary btn-sm" onclick="addCustomExamCentreForActiveExam()" style="background:#d97706; border-color:#b45309; font-weight:900; padding:9px 12px; font-size:0.78rem; white-space:nowrap;">
+            ➕ மையம் இணை
           </button>
         </div>
       </div>
@@ -4636,11 +4644,14 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
       <span style="font-size:0.75rem; font-weight:900; color:#78350f;">📋 இத்தேர்விற்கு இணைக்கப்பட்ட தேர்வு மையங்கள்:</span>
       <div style="display:flex; gap:5px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="restoreOfficialTrustExamCentres()" style="font-size:0.70rem; padding:3px 8px; font-weight:900; background:#fff7ed; color:#9a3412; border-color:#fdba74;">
+          🏆 TRUST 2026 (12 மையங்கள்) ஏற்று
+        </button>
         <button type="button" class="btn btn-outline btn-sm" onclick="importPublicCentresIntoActiveExam('12')" style="font-size:0.70rem; padding:3px 8px; font-weight:800; background:#fff; color:#1e40af; border-color:#93c5fd;">
-          📥 +2 மையங்களை (91) நகலெடு
+          📥 +2 மையங்கள் (91)
         </button>
         <button type="button" class="btn btn-outline btn-sm" onclick="importPublicCentresIntoActiveExam('10')" style="font-size:0.70rem; padding:3px 8px; font-weight:800; background:#fff; color:#15803d; border-color:#86efac;">
-          📥 10th மையங்களை (113) நகலெடு
+          📥 10th மையங்கள் (113)
         </button>
         <button type="button" class="btn btn-outline btn-sm" onclick="clearAllCustomCentresForActiveExam()" style="font-size:0.70rem; padding:3px 8px; font-weight:800; background:#fef2f2; color:#dc2626; border-color:#fca5a5;">
           🧹 மையங்களை நீக்கு
@@ -4648,18 +4659,22 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
       </div>
     </div>
 
-    <div class="table-responsive" style="max-height:245px; overflow-y:auto; background:#fff; border:1px solid #fcd34d; border-radius:8px;">
-      <table class="data-table" style="margin:0; font-size:0.76rem;">
+    <div class="table-responsive" style="max-height:310px; overflow-y:auto; background:#fff; border:1px solid #fcd34d; border-radius:8px;">
+      <table class="data-table" style="margin:0; font-size:0.75rem;">
         <thead style="position:sticky; top:0; z-index:3;">
           <tr style="background:#92400e; color:#fff;">
-            <th style="width:40px; text-align:center;">வ.எண்</th>
-            <th style="width:85px;">மைய எண்</th>
-            <th>தேர்வு மையத்தின் பெயர் &amp; ஒன்றியம்</th>
-            <th style="text-align:center; width:95px;">HI / OS தேவை</th>
-            <th style="text-align:center; width:130px;">நடவடிக்கை</th>
+            <th style="width:36px; text-align:center;">வ.எண்</th>
+            <th style="width:76px;">மைய எண்</th>
+            <th>தேர்வு மையத்தின் பெயர் (Centre Name) &amp; ஒன்றியம்</th>
+            <th style="text-align:center; width:56px;">Boys</th>
+            <th style="text-align:center; width:56px;">Girls</th>
+            <th style="text-align:center; width:68px;">மொத்தம்</th>
+            <th style="text-align:center; width:82px;">HI / OS</th>
+            <th style="text-align:center; width:125px;">நடவடிக்கை</th>
           </tr>
         </thead>
         <tbody id="admDutyCustomCentresTbody"></tbody>
+        <tfoot id="admDutyCustomCentresTfoot"></tfoot>
       </table>
     </div>
   </div>
@@ -12292,10 +12307,48 @@ if (otherExamsConfigStore && typeof otherExamsConfigStore === "object" && otherE
 return otherExamsConfigStore;
 }
 const saved = safeGetStorage("CEOSVG_OTHER_EXAMS_CONFIG_V1", null);
+const applyOfficialTrustCentresToByUNo = (byUNoMap) => {
+  if (!byUNoMap || typeof byUNoMap !== "object") return;
+  const trustOfficialByUNo = {
+    "426": { cNo: "208301", boys: 85,  girls: 119, tot: 204, hi: 11, os: 3 },
+    "236": { cNo: "208302", boys: 62,  girls: 122, tot: 184, hi: 10, os: 3 },
+    "257": { cNo: "208303", boys: 94,  girls: 165, tot: 259, hi: 13, os: 3 },
+    "244": { cNo: "208305", boys: 112, girls: 79,  tot: 191, hi: 10, os: 3 },
+    "252": { cNo: "208306", boys: 106, girls: 165, tot: 271, hi: 14, os: 3 },
+    "418": { cNo: "208307", boys: 65,  girls: 97,  tot: 162, hi: 9,  os: 3 },
+    "212": { cNo: "208308", boys: 50,  girls: 144, tot: 194, hi: 10, os: 3 },
+    "219": { cNo: "208309", boys: 102, girls: 98,  tot: 200, hi: 10, os: 3 },
+    "220": { cNo: "208310", boys: 66,  girls: 150, tot: 216, hi: 11, os: 3 },
+    "407": { cNo: "208311", boys: 110, girls: 111, tot: 221, hi: 12, os: 3 },
+    "211": { cNo: "208312", boys: 77,  girls: 77,  tot: 154, hi: 8,  os: 3 },
+    "409": { cNo: "208314", boys: 97,  girls: 151, tot: 248, hi: 13, os: 3 }
+  };
+  Object.keys(byUNoMap).forEach(u => {
+    const rec = byUNoMap[u];
+    if (!rec) return;
+    if (Array.isArray(rec.otherExams)) {
+      rec.otherExams = rec.otherExams.filter(x => x !== "TRUST");
+    } else {
+      rec.otherExams = [];
+    }
+    if (trustOfficialByUNo[u]) {
+      const t = trustOfficialByUNo[u];
+      rec.otherExams.push("TRUST");
+      rec.otherCentreNo = t.cNo;
+      if (!rec.byExam) rec.byExam = {};
+      rec.byExam.TRUST = { invig: t.hi, office: t.os, centreNo: t.cNo, boys: t.boys, girls: t.girls, total: t.tot };
+    }
+  });
+};
 if (saved && typeof saved === "object" && saved.byUNo) {
 otherExamsConfigStore = saved;
 if (!Array.isArray(otherExamsConfigStore.catalog) || otherExamsConfigStore.catalog.length === 0) {
 otherExamsConfigStore.catalog = JSON.parse(JSON.stringify(DEFAULT_OTHER_EXAMS_CATALOG));
+}
+if (!otherExamsConfigStore.trust2026OfficialAppliedV1) {
+applyOfficialTrustCentresToByUNo(otherExamsConfigStore.byUNo);
+otherExamsConfigStore.trust2026OfficialAppliedV1 = true;
+safeSetStorage("CEOSVG_OTHER_EXAMS_CONFIG_V1", otherExamsConfigStore, true);
 }
 return otherExamsConfigStore;
 }
@@ -12328,8 +12381,10 @@ officeOther: isMajorHssCentre ? defaultOffice : defaultOffice,
 byExam: {}
 };
 });
+applyOfficialTrustCentresToByUNo(byUNo);
 otherExamsConfigStore = {
 version: 1,
+trust2026OfficialAppliedV1: true,
 catalog: JSON.parse(JSON.stringify(DEFAULT_OTHER_EXAMS_CATALOG)),
 byUNo: byUNo
 };
@@ -26778,7 +26833,7 @@ HSC1_2027:      { icon: "📘", shortTa: "+1 (Arrear) பொதுத்தே�
 HSC_SUPP_2027:  { icon: "🔄", shortTa: "+2 உடனடித் துணைத்தேர்வு", titleTa: "+2 உடனடித் துணைத்தேர்வு (HSC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "HSC (+2) Supplementary Examination – June/July 2027", level: "12", isFixedPublic: false, otherCode: "HSC1_SUPP", accent: "#6d28d9", bg: "#f5f3ff", border: "#c4b5fd" },
 SSLC_SUPP_2027: { icon: "🔄", shortTa: "10-ஆம் வகுப்பு துணைத்தேர்வு", titleTa: "10-ஆம் வகுப்பு துணைத்தேர்வு (SSLC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "SSLC (10th) Supplementary Examination – June/July 2027", level: "10", isFixedPublic: false, otherCode: "SSLC_SUPP", accent: "#0f766e", bg: "#f0fdfa", border: "#5eead4" },
 NMMS_2027:      { icon: "🏅", shortTa: "NMMS தேர்வு (8-ஆம் வகுப்பு)", titleTa: "NMMS தேசிய வருவாய் வழி மற்றும் தகுதிப் படிப்புதவித் தொகைத் தேர்வு – 2026-27", titleEn: "NMMS Examination (8th Std) – 2026-27", level: "10", isFixedPublic: false, otherCode: "NMMS", accent: "#b45309", bg: "#fffbeb", border: "#fcd34d" },
-TRUST_2027:     { icon: "🏆", shortTa: "TRUST தேர்வு (9-ஆம் வகுப்பு)", titleTa: "TRUST ஊரகத் திறனாய்வுத் தேர்வு (9-ஆம் வகுப்பு) – 2026-27", titleEn: "TRUST Scholarship Examination (9th Std) – 2026-27", level: "10", isFixedPublic: false, otherCode: "TRUST", accent: "#9a3412", bg: "#fff7ed", border: "#fdba74" },
+TRUST_2027:     { icon: "🏆", shortTa: "TRUST தேர்வு 2026 (12 மையங்கள்)", titleTa: "TRUST ஊரகத் திறனாய்வுத் தேர்வு (9-ஆம் வகுப்பு) – 2026 (12 மையங்கள் | 2,504 தேர்வர்கள்)", titleEn: "TRUST Scholarship Examination – 2026 (12 Centres)", level: "10", isFixedPublic: false, otherCode: "TRUST", accent: "#9a3412", bg: "#fff7ed", border: "#fdba74" },
 TTSE_2027:      { icon: "📖", shortTa: "தமிழ் இலக்கியத் திறனறித் தேர்வு (TTSE)", titleTa: "தமிழ் மொழி இலக்கியத் திறனறித் தேர்வு (11-ஆம் வகுப்பு) – 2026-27", titleEn: "Tamil Talent Search Examination (TTSE) – 2026-27", level: "12", isFixedPublic: false, otherCode: "TTSE", accent: "#be123c", bg: "#fff1f2", border: "#fda4af" },
 CMTS_2027:      { icon: "🌟", shortTa: "முதலமைச்சர் திறனறித் தேர்வு (CMTS)", titleTa: "முதலமைச்சர் திறனறித் தேர்வு (10-ஆம் வகுப்பு) – 2026-27", titleEn: "Chief Minister Talent Search Examination (CMTS) – 2026-27", level: "12", isFixedPublic: false, otherCode: "CMTS", accent: "#4338ca", bg: "#eef2ff", border: "#a5b4fc" },
 TET_TRB:        { icon: "👩‍🏫", shortTa: "TET / TRB போட்டித் தேர்வு", titleTa: "ஆசிரியர் தகுதித் தேர்வு / போட்டித் தேர்வுகள் (TET / TRB) – 2026-27", titleEn: "TET / TRB Competitive Examination – 2026-27", level: "12", isFixedPublic: false, otherCode: "TET_TRB", accent: "#0f766e", bg: "#f0fdfa", border: "#5eead4" },
@@ -26787,6 +26842,20 @@ GOVT_TECH:      { icon: "⌨️", shortTa: "அரசு தொழில்ந�
 ESLC_8TH:       { icon: "📝", shortTa: "8-ஆம் வகுப்பு தனித்தேர்வர் (ESLC)", titleTa: "8-ஆம் வகுப்பு தனித்தேர்வர் பொதுத்தேர்வு (ESLC) – 2026-27", titleEn: "8th Standard ESLC Public Examination – 2026-27", level: "10", isFixedPublic: false, otherCode: "ESLC_8TH", accent: "#7c2d12", bg: "#fff7ed", border: "#fdba74" },
 CUSTOM_EXAM:    { icon: "✨", shortTa: "பிற சிறப்புத் தேர்வு (Custom Exam)", titleTa: "சிறப்புத் திறனறி / போட்டித் தேர்வு – 2026-27", titleEn: "Special Examination – 2026-27", level: "10", isFixedPublic: false, otherCode: "ALL_OTHER", accent: "#701a75", bg: "#fdf4ff", border: "#f0abfc" }
 };
+const INITIAL_TRUST_EXAM_CENTRES = [
+  { sn: 1,  centreNo: "208301", uNo: "426", udiseNo: "33230505413", block: "09 Ilayangudi",    centreNameEn: "ILAYANGUDI HR SEC SCHOOL ILAYANGUDI SIVAGANGAI DISTRICT",     centreNameTa: "இளையான்குடி மேல்நிலைப்பள்ளி இளையான்குடி",            boys: 85,  girls: 119, candidateStrength: 204, hiQuota: 11, osQuota: 3 },
+  { sn: 2,  centreNo: "208302", uNo: "236", udiseNo: "33230201302", block: "08 Kalayarkoil",   centreNameEn: "GOVT HR SEC SCHOOL KALAYARKOIL",                              centreNameTa: "அரசு மேல்நிலைப்பள்ளி காளையார்கோவில்",                 boys: 62,  girls: 122, candidateStrength: 184, hiQuota: 10, osQuota: 3 },
+  { sn: 3,  centreNo: "208303", uNo: "257", udiseNo: "33230104407", block: "12 Sivagangai",    centreNameEn: "GOVT GIRLS HR SEC SCHOOL SIVAGANGAI",                         centreNameTa: "அரசு மகளிர் மேல்நிலைப்பள்ளி சிவகங்கை",                boys: 94,  girls: 165, candidateStrength: 259, hiQuota: 13, osQuota: 3 },
+  { sn: 4,  centreNo: "208305", uNo: "244", udiseNo: "33230303609", block: "10 Manamadurai",   centreNameEn: "GOVT GIRLS HR SEC SCHOOL MANAMADURAI",                        centreNameTa: "அரசு பெண்கள் மேல்நிலைப்பள்ளி மானாமதுரை",              boys: 112, girls: 79,  candidateStrength: 191, hiQuota: 10, osQuota: 3 },
+  { sn: 5,  centreNo: "208306", uNo: "252", udiseNo: "33230400109", block: "11 Thiruppuvanam", centreNameEn: "GOVT GIRLS HR SEC SCHOOL THIRUPPUVANAM",                      centreNameTa: "அரசு மகளிர் மேல்நிலைப்பள்ளி திருப்புவனம்",             boys: 106, girls: 165, candidateStrength: 271, hiQuota: 14, osQuota: 3 },
+  { sn: 6,  centreNo: "208307", uNo: "418", udiseNo: "33230604601", block: "07 Devakottai",    centreNameEn: "N S M V P S HR SEC SCHOOL DEVAKOTTAI",                        centreNameTa: "என்.எஸ்.எம்.வி.பி.எஸ் மேல்நிலைப்பள்ளி தேவகோட்டை",      boys: 65,  girls: 97,  candidateStrength: 162, hiQuota: 9,  osQuota: 3 },
+  { sn: 7,  centreNo: "208308", uNo: "212", udiseNo: "33231000111", block: "02 Singampunari",  centreNameEn: "RM RM GOVT GIRLS HR SEC SCHOOL SINGAMPUNARI",                 centreNameTa: "ராம.ராநி.அரசு பெண்கள் மேல்நிலைப்பள்ளி சிங்கம்புணரி",   boys: 50,  girls: 144, candidateStrength: 194, hiQuota: 10, osQuota: 3 },
+  { sn: 8,  centreNo: "208309", uNo: "219", udiseNo: "33230904802", block: "03 Thiruppathur",  centreNameEn: "A.P.GOVERNMENT HIGHER SECONDARY SCHOOL ,THIRUPPATHUR",        centreNameTa: "ஆ.பி.அரசு மேல்நிலைப்பள்ளி திருப்பத்தூர்",              boys: 102, girls: 98,  candidateStrength: 200, hiQuota: 10, osQuota: 3 },
+  { sn: 9,  centreNo: "208310", uNo: "220", udiseNo: "33230904302", block: "03 Thiruppathur",  centreNameEn: "N. M .GOVT[ GIRLS] HR SEC SCHOOL .THIRUPPATHUR,SIVAGANGAI",   centreNameTa: "நா.ம.அரசு மகளிர் மேல்நிலைப்பள்ளி திருப்பத்தூர்",       boys: 66,  girls: 150, candidateStrength: 216, hiQuota: 11, osQuota: 3 },
+  { sn: 10, centreNo: "208311", uNo: "407", udiseNo: "33230801121", block: "05 Sakkottai",     centreNameEn: "SRI MEENAKSHI GIRLS HR SEC SCHOOL KARAIKUDI",                 centreNameTa: "ஸ்ரீ.மீ. பெண்கள் மேல்நிலைப்பள்ளி காரைக்குடி",          boys: 110, girls: 111, candidateStrength: 221, hiQuota: 12, osQuota: 3 },
+  { sn: 11, centreNo: "208312", uNo: "211", udiseNo: "33231000110", block: "02 Singampunari",  centreNameEn: "GOVT BOYS HSS SINGAMPUNARI",                                  centreNameTa: "அரசு ஆண்கள் மேல்நிலைப்பள்ளி சிங்கம்புணரி",             boys: 77,  girls: 77,  candidateStrength: 154, hiQuota: 8,  osQuota: 3 },
+  { sn: 12, centreNo: "208314", uNo: "409", udiseNo: "33230801124", block: "05 Sakkottai",     centreNameEn: "ALAGAPPA MODEL HR SEC SCHOOL KARAIKUDI",                      centreNameTa: "அழகப்பா மாதிரி மேல்நிலைப்பள்ளி காரைக்குடி",           boys: 97,  girls: 151, candidateStrength: 248, hiQuota: 13, osQuota: 3 }
+];
 let examDutyStoreCache = null;
 let examDutyMetaCache = null;
 function getExamDutyStore() {
@@ -26826,6 +26895,11 @@ examDutyMetaCache.customExams = {};
 }
 if (!examDutyMetaCache.customCentresByExamKey || typeof examDutyMetaCache.customCentresByExamKey !== "object") {
 examDutyMetaCache.customCentresByExamKey = {};
+}
+if (!examDutyMetaCache.trustCentres2026SeededV1 || !Array.isArray(examDutyMetaCache.customCentresByExamKey.TRUST_2027) || examDutyMetaCache.customCentresByExamKey.TRUST_2027.length === 0) {
+examDutyMetaCache.customCentresByExamKey.TRUST_2027 = JSON.parse(JSON.stringify(INITIAL_TRUST_EXAM_CENTRES));
+examDutyMetaCache.trustCentres2026SeededV1 = true;
+safeSetStorage(EXAM_DUTY_META_KEY, examDutyMetaCache, true);
 }
 }
 return examDutyMetaCache;
@@ -26965,18 +27039,24 @@ const cNo = String(c.centreNo || (3001 + idx)).trim();
 const cNameTa = String(c.centreNameTa || c.centreNameEn || "").trim();
 const cNameEn = String(c.centreNameEn || c.centreNameTa || "").trim();
 const block = String(c.block || "12 Sivagangai").trim();
+const boysVal = Number(c.boys || 0);
+const girlsVal = Number(c.girls || 0);
+const candTot = Number(c.candidateStrength || (boysVal + girlsVal) || 120);
 return {
 sn: idx + 1,
 uNo: String(c.uNo || "").trim(),
+udiseNo: String(c.udiseNo || "").trim(),
 centreNo: cNo,
 block: block,
 centreNameEn: cNameEn,
 centreNameTa: cNameTa,
-label: `${cNo} - ${cNameTa || cNameEn}`,
+label: `${cNo} - ${cNameEn || cNameTa}`,
 labelTa: `${cNo} - ${cNameTa || cNameEn}`,
-candidateStrength: Math.max(20, Number(c.candidateStrength || 120)),
-hiQuota: Math.max(1, Number(c.hiQuota || 6)),
-osQuota: Math.max(1, Number(c.osQuota || 2)),
+boys: boysVal,
+girls: girlsVal,
+candidateStrength: Math.max(1, candTot),
+hiQuota: Math.max(1, Number(c.hiQuota || Math.ceil(candTot / 20) || 6)),
+osQuota: Math.max(1, Number(c.osQuota || 3)),
 isCustomCentre: true
 };
 });
@@ -27137,6 +27217,28 @@ if (nameInp) nameInp.value = `${sch.nameTa || sch.nameEn} (U.NO: ${sch.uNo})`;
 if (blkInp) blkInp.value = sch.block || "12 Sivagangai";
 }
 
+function onDutyAddCentreBoysGirlsInput() {
+const b = Math.max(0, Number(document.getElementById("admDutyAddCenBoysInput")?.value || 0));
+const g = Math.max(0, Number(document.getElementById("admDutyAddCenGirlsInput")?.value || 0));
+const tot = b + g;
+const strInp = document.getElementById("admDutyAddCenStrengthInput");
+const hiInp = document.getElementById("admDutyAddCenHiQuota");
+if (strInp && tot > 0) strInp.value = tot;
+if (hiInp && tot > 0) hiInp.value = Math.max(1, Math.ceil(tot / 20));
+}
+
+function restoreOfficialTrustExamCentres() {
+const examKey = getActiveExamDutyTypeKey();
+if (isFixedPublicExamKey(examKey)) return;
+const meta = getExamDutyMeta();
+if (!meta.customCentresByExamKey) meta.customCentresByExamKey = {};
+meta.customCentresByExamKey[examKey] = JSON.parse(JSON.stringify(INITIAL_TRUST_EXAM_CENTRES));
+safeSetStorage(EXAM_DUTY_META_KEY, meta);
+syncExamDutySelectDropdownOptions();
+renderExamDutyAllotmentDashboard();
+showToast("🏆 TRUST EXAM 2026 அதிகாரப்பூர்வ 12 தேர்வு மையங்கள் (2,504 தேர்வர்கள்) வெற்றிகரமாக இணைக்கப்பட்டன!", "#16a34a");
+}
+
 function addCustomExamCentreForActiveExam() {
 const examKey = getActiveExamDutyTypeKey();
 if (isFixedPublicExamKey(examKey)) {
@@ -27147,6 +27249,8 @@ const uNo = (document.getElementById("admDutyAddCenSchoolSelect")?.value || "").
 const codeInp = document.getElementById("admDutyAddCenCodeInput");
 const nameInp = document.getElementById("admDutyAddCenNameInput");
 const blkInp = document.getElementById("admDutyAddCenBlockInput");
+const boysInp = document.getElementById("admDutyAddCenBoysInput");
+const girlsInp = document.getElementById("admDutyAddCenGirlsInput");
 const strInp = document.getElementById("admDutyAddCenStrengthInput");
 const hiInp = document.getElementById("admDutyAddCenHiQuota");
 const osInp = document.getElementById("admDutyAddCenOsQuota");
@@ -27154,9 +27258,11 @@ const osInp = document.getElementById("admDutyAddCenOsQuota");
 const cNo = String(codeInp ? codeInp.value : "").trim();
 const cName = String(nameInp ? nameInp.value : "").trim();
 const blk = String(blkInp ? blkInp.value : "").trim() || "12 Sivagangai";
-const strength = Math.max(20, Number(strInp ? strInp.value : 120) || 120);
-const hiQuota = Math.max(1, Number(hiInp ? hiInp.value : 6) || 6);
-const osQuota = Math.max(1, Number(osInp ? osInp.value : 2) || 2);
+const boys = Math.max(0, Number(boysInp ? boysInp.value : 0) || 0);
+const girls = Math.max(0, Number(girlsInp ? girlsInp.value : 0) || 0);
+const strength = Math.max(1, Number(strInp ? strInp.value : (boys + girls || 120)) || (boys + girls || 120));
+const hiQuota = Math.max(1, Number(hiInp ? hiInp.value : Math.ceil(strength / 20)) || 6);
+const osQuota = Math.max(1, Number(osInp ? osInp.value : 3) || 3);
 
 if (!cNo || !cName) {
 showToast("⚠️ தேர்வு மைய எண் (Centre No) மற்றும் தேர்வு மையத்தின் பெயரை உள்ளிடவும்!", "#dc2626");
@@ -27165,6 +27271,7 @@ else if (nameInp) nameInp.focus();
 return;
 }
 
+const schObj = uNo ? getEbs282MasterSchools().find(s => String(s.uNo) === uNo) : null;
 const meta = getExamDutyMeta();
 if (!meta.customCentresByExamKey) meta.customCentresByExamKey = {};
 if (!Array.isArray(meta.customCentresByExamKey[examKey])) {
@@ -27174,6 +27281,8 @@ centreNo: x.centreNo,
 centreNameTa: x.centreNameTa,
 centreNameEn: x.centreNameEn,
 block: x.block,
+boys: Number(x.boys || 0),
+girls: Number(x.girls || 0),
 candidateStrength: x.candidateStrength,
 hiQuota: x.hiQuota,
 osQuota: x.osQuota
@@ -27183,10 +27292,13 @@ const list = meta.customCentresByExamKey[examKey];
 const existingIdx = list.findIndex(x => String(x.centreNo).toLowerCase() === cNo.toLowerCase());
 const newCen = {
 uNo: uNo,
+udiseNo: schObj ? (schObj.udiseNo || "") : "",
 centreNo: cNo,
-centreNameTa: cName,
-centreNameEn: cName,
+centreNameTa: schObj ? (schObj.nameTa || cName) : cName,
+centreNameEn: schObj ? (schObj.nameEn || cName) : cName,
 block: blk,
+boys: boys,
+girls: girls,
 candidateStrength: strength,
 hiQuota: hiQuota,
 osQuota: osQuota
@@ -27291,19 +27403,35 @@ const centres = getExamCentresForExamKey(examKey);
 const badge = document.getElementById("admDutyCustomCentreCountBadge");
 if (badge) badge.textContent = `${centres.length} மையங்கள்`;
 const tbody = document.getElementById("admDutyCustomCentresTbody");
+const tfoot = document.getElementById("admDutyCustomCentresTfoot");
 if (!tbody) return;
 if (centres.length === 0) {
-tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:18px; color:#92400e; font-weight:800;">இத்தேர்விற்கு இன்னும் தேர்வு மையங்கள் இணைக்கப்படவில்லை. மேலே பள்ளியைத் தேர்ந்தெடுத்தோ அல்லது புதிய மையப் பெயரை உள்ளிட்டோ <strong>"➕ தேர்வு மையம் இணை"</strong> பொத்தானை அழுத்தவும்.</td></tr>`;
+tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:18px; color:#92400e; font-weight:800;">இத்தேர்விற்கு இன்னும் தேர்வு மையங்கள் இணைக்கப்படவில்லை. மேலே பள்ளியைத் தேர்ந்தெடுத்தோ அல்லது புதிய மையப் பெயரை உள்ளிட்டோ <strong>"➕ மையம் இணை"</strong> பொத்தானை அழுத்தவும்.</td></tr>`;
+if (tfoot) tfoot.innerHTML = "";
 return;
 }
-tbody.innerHTML = centres.map((c, idx) => `
+let totBoys = 0, totGirls = 0, totCand = 0, totHi = 0, totOs = 0;
+tbody.innerHTML = centres.map((c, idx) => {
+  const bVal = Number(c.boys || 0);
+  const gVal = Number(c.girls || 0);
+  const cVal = Number(c.candidateStrength || (bVal + gVal) || 0);
+  totBoys += bVal;
+  totGirls += gVal;
+  totCand += cVal;
+  totHi += Number(c.hiQuota || 0);
+  totOs += Number(c.osQuota || 0);
+  return `
     <tr>
       <td style="text-align:center; font-weight:900;">${idx + 1}</td>
       <td><strong style="color:#b45309; font-family:monospace; font-size:0.82rem;">${escapeHtmlAttr(c.centreNo)}</strong></td>
       <td>
-        <div style="font-weight:800; color:#0f294a;">${escapeHtmlAttr(c.centreNameTa || c.centreNameEn)}</div>
-        <div style="font-size:0.70rem; color:#64748b; font-weight:700;">📍 ${escapeHtmlAttr(c.block)}${c.uNo ? ` | U.NO: ${escapeHtmlAttr(c.uNo)}` : ""}</div>
+        <div style="font-weight:900; color:#0f294a; font-size:0.78rem;">${escapeHtmlAttr(c.centreNameEn || c.centreNameTa)}</div>
+        <div style="font-size:0.72rem; color:#4c1d95; font-weight:800;">${escapeHtmlAttr(c.centreNameTa || "")}</div>
+        <div style="font-size:0.68rem; color:#64748b; font-weight:700;">📍 ${escapeHtmlAttr(c.block)}${c.uNo ? ` | U.NO: ${escapeHtmlAttr(c.uNo)}` : ""}</div>
       </td>
+      <td style="text-align:center; font-weight:800; color:#1e40af;">${bVal || "-"}</td>
+      <td style="text-align:center; font-weight:800; color:#9d174d;">${gVal || "-"}</td>
+      <td style="text-align:center; font-weight:900; color:#14532d; background:#f0fdf4;">${cVal}</td>
       <td style="text-align:center; font-weight:800; font-size:0.72rem;">
         <span style="color:#4c1d95;">HI: ${c.hiQuota}</span> | <span style="color:#92400e;">OS: ${c.osQuota}</span>
       </td>
@@ -27314,7 +27442,20 @@ tbody.innerHTML = centres.map((c, idx) => `
         </div>
       </td>
     </tr>
-  `).join("");
+  `;
+}).join("");
+if (tfoot) {
+  tfoot.innerHTML = `
+    <tr style="background:#fef3c7; color:#78350f; font-weight:900; font-size:0.76rem;">
+      <td colspan="3" style="text-align:right; padding:6px 10px;">மொத்தம் (${centres.length} தேர்வு மையங்கள்):</td>
+      <td style="text-align:center; color:#1e40af;">${totBoys.toLocaleString("en-IN")}</td>
+      <td style="text-align:center; color:#9d174d;">${totGirls.toLocaleString("en-IN")}</td>
+      <td style="text-align:center; color:#14532d; background:#dcfce7;">${totCand.toLocaleString("en-IN")}</td>
+      <td style="text-align:center;">HI: ${totHi} | OS: ${totOs}</td>
+      <td></td>
+    </tr>
+  `;
+}
 }
 
 function buildExamRoutesForCentres(centres, numRoutes) {
