@@ -2657,6 +2657,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 <option value="PENDING">⏳ ஒப்புதல் நிலுவையில் உள்ளவை (Pending Approval)</option>
 <option value="ALL">அனைத்துக் கோரிக்கைகள் (All Requests)</option>
 <option value="APPROVED">✅ ஒப்புதல் அளிக்கப்பட்டு நீக்கப்பட்டவை (Approved)</option>
+<option value="RESTORED">♻️ மீண்டும் மீட்டமைக்கப்பட்டவை (Restored)</option>
 <option value="REJECTED">❌ நிராகரிக்கப்பட்டவை (Rejected)</option>
 </select>
 <input type="text" id="admDelReqSearchInput" class="form-control" style="width:240px; padding:5px 10px; font-size:0.82rem;" placeholder="🔍 பள்ளி U.No, பெயர், Staff ID தேடுக..." oninput="renderAdminDeleteRequestsTable()">
@@ -2682,6 +2683,49 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </thead>
 <tbody id="admDeleteRequestsTbody"></tbody>
 </table>
+</div>
+
+<!-- DISTRICT DELETED STAFF ARCHIVE & 1-CLICK RESTORE REGISTRY -->
+<div style="margin-top:22px; background:linear-gradient(135deg,#fff1f2 0%,#f8fafc 100%); border:2px solid #fda4af; border-radius:12px; padding:16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; padding-bottom:10px; border-bottom:1.5px solid #fecdd3;">
+    <div>
+      <div style="font-size:1.02rem; font-weight:900; color:#881337; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span>🗄️ நீக்கப்பட்ட ஆசிரியர்கள் &amp; பணியாளர்கள் தனிக் காப்பகம் மற்றும் மீட்டமைப்பு (Deleted Staff Archive &amp; Restore Registry)</span>
+        <span id="admArcTotalCountBadge" style="background:#be123c; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 10px; border-radius:999px;">0</span>
+      </div>
+      <div style="font-size:0.80rem; color:#9f1239; font-weight:700; margin-top:3px;">
+        நீக்கப்பட்ட அனைத்து ஆசிரியர்கள் (Form-III) மற்றும் அலுவலகப் பணியாளர்களின் (Form-IV) முழுத் தரவுகளும் இங்கே தனித்தரவாகச் சேமிக்கப்பட்டுள்ளன. தேவைப்படும்போது <strong>"♻️ மீண்டும் பள்ளியில் சேர் (Restore)"</strong> பொத்தானை அழுத்தி எந்த நேரத்திலும் மீண்டும் பள்ளிப் பட்டியலில் இணைக்கலாம்.
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+      <select id="admArcFormFilter" class="form-control" style="width:auto; padding:5px 10px; font-size:0.80rem; font-weight:800;" onchange="renderAdminDeletedStaffArchiveTable()">
+        <option value="ALL">அனைத்துப் பிரிவும் (Form-III &amp; Form-IV)</option>
+        <option value="F3">👨‍🏫 Form-III (ஆசிரியர்கள் மட்டும்)</option>
+        <option value="F4">🧑‍💼 Form-IV (அலுவலகப் பணியாளர்கள் மட்டும்)</option>
+      </select>
+      <input type="text" id="admArcSearchInput" class="form-control" style="width:230px; padding:5px 10px; font-size:0.80rem;" placeholder="🔍 பள்ளி U.No, பெயர், EMIS ID தேடுக..." oninput="renderAdminDeletedStaffArchiveTable()">
+      <button type="button" class="btn btn-outline btn-sm" onclick="exportDeletedStaffArchiveCsv('')" style="background:#fff; color:#881337; border-color:#fda4af; font-weight:800;">
+        📥 நீக்கப்பட்டோர் காப்பகம் CSV
+      </button>
+    </div>
+  </div>
+  <div class="table-wrap" style="max-height:440px;">
+    <table class="data-table">
+      <thead>
+        <tr style="background:#881337; color:#fff;">
+          <th style="width:45px; text-align:center;">வ.எண்</th>
+          <th>நீக்கப்பட்ட நாள் &amp; வகை</th>
+          <th>பள்ளி விவரம் (U.NO / UDISE)</th>
+          <th>பணியாளர் பெயர், பதவி &amp; பாடம்</th>
+          <th>EMIS ID &amp; IFHRMS ID</th>
+          <th>கைபேசி (WhatsApp) &amp; Email</th>
+          <th>நீக்கப்பட்ட காரணம்</th>
+          <th style="text-align:center; width:210px;">மீட்டமைப்பு நடவடிக்கை (Restore)</th>
+        </tr>
+      </thead>
+      <tbody id="admDeletedStaffArchiveTbody"></tbody>
+    </table>
+  </div>
 </div>
 </div>
 <!-- ADMIN SUB-TAB 6: EMIS TEACHER & STAFF EXCEL UPLOAD & AUTO-SYNC ENGINE -->
@@ -5832,6 +5876,7 @@ let activeSchoolSession = null;
 let activeRegCandidateSchool = null;
 let flashIndex = 0;
 let staffDeleteRequests = [];
+let deletedStaffArchiveStore = [];
 let masterSheetId = "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ";
 let legacyMasterSheetId = "1QesgNBu6tHCgM5xNIwfi4rwvU8quM2y7qXOc47_A64o";
 let teachersSheetId = "1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A";
@@ -6612,6 +6657,10 @@ if (migratedV35) {
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 }
 safeSetStorage("CEOSVG_EMIS_STUDENT_DATA", EMIS_STUDENT_DATA);
+}
+const savedArcList = safeGetStorage("CEOSVG_DELETED_STAFF_ARCHIVE", null);
+if (Array.isArray(savedArcList)) {
+deletedStaffArchiveStore = savedArcList;
 }
 const savedDelReqs = safeGetStorage("CEOSVG_DELETE_REQUESTS", null);
 if (Array.isArray(savedDelReqs)) {
@@ -14047,6 +14096,7 @@ if (key === "CEOSVG_SCHOOL_EXTRA_V6") return `${schLabel} – மாணவர்
 if (key === "CEOSVG_MASTER_SCHOOLS") return `${schLabel} – பள்ளி சுயவிவரம் / முதன்மைப் பட்டியல் புதுப்பிக்கப்பட்டது`;
 if (key === "CEOSVG_SCHOOL_AUTH") return `${schLabel} – உள்நுழைவு / கடவுச்சொல் / தொடர்பு விவரம் புதுப்பிக்கப்பட்டது`;
 if (key === "CEOSVG_DELETE_REQUESTS") return `${schLabel} – பணியாளர் நீக்கக் கோரிக்கை (Delete Request) புதுப்பிக்கப்பட்டது`;
+if (key === "CEOSVG_DELETED_STAFF_ARCHIVE") return `${schLabel} – நீக்கப்பட்ட பணியாளர் காப்பகம் / மீட்டமைப்பு (Archive / Restore) புதுப்பிக்கப்பட்டது`;
 if (key === "CEOSVG_DIGNITARIES_V1" || key === "CEOSVG_DIGNITARIES_DATA_V2" || key === "CEOSVG_DIGNITARIES_DATA_V3") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் (Dignitaries) விவரம் புதுப்பிக்கப்பட்டது`;
 if (key === "CEOSVG_DIGNITARIES_PHOTO_VAULT") return `மாவட்ட நிர்வாகி – முக்கியப் பிரமுகர்கள் புகைப்படப் பெட்டகம் (Photo Vault) ஒத்திசைக்கப்பட்டது`;
 if (key === "CEOSVG_HSS_GROUP_MASTER_V1") return `மாவட்ட நிர்வாகி – மேல்நிலைப் பாடப்பிரிவு வார்ப்புரு (HSS Group Template) புதுப்பிக்கப்பட்டது`;
@@ -14610,6 +14660,8 @@ schoolExtraDataStore = val;
 schoolAuthStore = val;
 } else if (key === "CEOSVG_DELETE_REQUESTS" && Array.isArray(val)) {
 staffDeleteRequests = val;
+} else if (key === "CEOSVG_DELETED_STAFF_ARCHIVE" && Array.isArray(val)) {
+deletedStaffArchiveStore = val;
 } else if (key === "CEOSVG_CIRCULARS" && Array.isArray(val)) {
 districtCirculars = val;
 } else if ((key === "CEOSVG_DIGNITARIES_V1" || key === "CEOSVG_DIGNITARIES_DATA_V2" || key === "CEOSVG_DIGNITARIES_DATA_V3") && Array.isArray(val)) {
@@ -14849,6 +14901,7 @@ const currentVault = typeof buildPermanentPhotoVaultFromAllSources === "function
 const storesPayload = {
 CEOSVG_MASTER_SCHOOLS: masterSchools,
 CEOSVG_DELETE_REQUESTS: staffDeleteRequests,
+CEOSVG_DELETED_STAFF_ARCHIVE: deletedStaffArchiveStore,
 CEOSVG_CIRCULARS: districtCirculars,
 CEOSVG_DIVISIONS: divisionsRegistry,
 CEOSVG_HSS_GROUP_MASTER_V1: typeof getHssGroupMasterList === "function" ? getHssGroupMasterList() : [],
@@ -17070,18 +17123,6 @@ const needStaff = (typeof EMIS_STAFF_DATA === "undefined" || !EMIS_STAFF_DATA ||
 if (!needSchools && !needStaff) return;
 const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
 if (!cleanUrl) return;
-let loaderEl = document.getElementById("fbDirectBootOverlay");
-if (!loaderEl && document.body) {
-loaderEl = document.createElement("div");
-loaderEl.id = "fbDirectBootOverlay";
-loaderEl.style.cssText = "position:fixed;inset:0;background:rgba(15,41,74,0.92);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:'Mukta Malar','Inter',sans-serif;padding:24px;text-align:center;";
-loaderEl.innerHTML = `<div style="background:#fff;color:#0f294a;padding:24px 32px;border-radius:16px;max-width:480px;box-shadow:0 20px 50px rgba(0,0,0,0.4);border-top:6px solid #4f46e5;">
-        <div style="font-size:2rem;margin-bottom:8px;">☁️⚡</div>
-        <div style="font-size:1.1rem;font-weight:900;color:#1e1b4b;">Firebase நேரடி மேகக்கணித் தரவுத்தளம்</div>
-        <div style="font-size:0.86rem;color:#475569;margin-top:6px;font-weight:700;">சிவகங்கை மாவட்ட 308 பள்ளிகள், 7,081 ஆசிரியர்கள் மற்றும் 1,10,801 மாணவர்களின் தரவுகள் Firebase-லிருந்து நேரடியாகப் பெறப்படுகின்றன...</div>
-      </div>`;
-document.body.appendChild(loaderEl);
-}
 try {
 const res = await fetch(buildFirebaseEndpoint("ceosvg_live/static_master"));
 if (res.ok) {
@@ -17147,9 +17188,7 @@ body: JSON.stringify(EMIS_STAFF_DATA.byUNo)
 }
 }
 } catch (e) {}
-if (loaderEl && loaderEl.parentNode) {
-loaderEl.parentNode.removeChild(loaderEl);
-}
+
 }
 async function seedAndExportPureFirebaseLiteHtml() {
 const okLive = await seedAllPortalDataToFirebase();
@@ -17191,8 +17230,12 @@ showToast(`🔥 100% Pure-Firebase Lite index.html (${Math.round(blob.size / 102
 async function _safeBootPortalOnce() {
 if (window._ceosvgPortalBooted) return;
 window._ceosvgPortalBooted = true;
-await loadStaticMasterDatasetsFromFirebaseIfNeeded();
 initPortal();
+loadStaticMasterDatasetsFromFirebaseIfNeeded().then(() => {
+  try {
+    if (typeof refreshAllActivePortalViews === "function") refreshAllActivePortalViews();
+  } catch (e) {}
+}).catch(() => {});
 if (normalizeFirebaseDbUrl(firebaseDbUrl)) {
 pullAllPortalDataFromFirebase(false);
 setTimeout(async () => {
@@ -19462,7 +19505,9 @@ const badge = r.status === "PENDING"
 ? `<span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">⏳ மாவட்ட நிர்வாகி ஒப்புதல் நிலுவையில்</span>`
 : (r.status === "APPROVED"
 ? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">✅ ஒப்புதல் அளிக்கப்பட்டு ${r.toUNo && r.toUNo !== "OUTSIDE_DISTRICT" ? "மாறுதல் செய்யப்பட்டது" : "நீக்கப்பட்டது"} (${escapeHtmlAttr(r.resolvedAt || "")})</span>`
-: `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">❌ நிராகரிக்கப்பட்டது</span>`);
+: (r.status === "RESTORED"
+? `<span style="background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">♻️ மீண்டும் பள்ளியில் சேர்க்கப்பட்டது (${escapeHtmlAttr(r.restoredAt || "")})</span>`
+: `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">❌ நிராகரிக்கப்பட்டது</span>`));
 return `
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:6px 10px; background:#fff; border:1px solid #e2e8f0; border-radius:6px; margin-top:6px; font-size:0.78rem;">
           <div>
@@ -19471,9 +19516,10 @@ return `
             <span style="color:#475569; font-weight:700;">${escapeHtmlAttr(r.desig)}</span> |
             <span style="color:#7c2d12; font-weight:800;">${escapeHtmlAttr(r.reason)}</span>
           </div>
-          <div style="display:flex; align-items:center; gap:6px;">
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
             ${badge}
             ${r.status === "PENDING" ? `<button type="button" class="btn btn-outline btn-sm" onclick="cancelSchoolDeleteRequest('${escapeHtmlAttr(r.formType || "F3")}', '${escapeHtmlAttr(r.emisId)}', '${escapeHtmlAttr(r.uNo)}')" style="font-size:0.71rem; padding:2px 8px; color:#dc2626; border-color:#fca5a5; font-weight:800;">↩️ கோரிக்கை ரத்து</button>` : ""}
+
           </div>
         </div>
       `;
@@ -19516,13 +19562,17 @@ const statusBadge = r.status === "PENDING"
 ? `<span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">⏳ நிலுவையில்</span>`
 : (r.status === "APPROVED"
 ? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">✅ ${r.toUNo && r.toUNo !== "OUTSIDE_DISTRICT" ? "மாறுதல் செய்யப்பட்டது" : "நீக்கப்பட்டது"} (${escapeHtmlAttr(r.resolvedAt || "")})</span>`
-: `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">❌ நிராகரிக்கப்பட்டது</span>`);
+: (r.status === "RESTORED"
+? `<span style="background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">♻️ மீட்டமைக்கப்பட்டது (${escapeHtmlAttr(r.restoredAt || "")})</span>`
+: `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">❌ நிராகரிக்கப்பட்டது</span>`));
 const actionBtns = r.status === "PENDING"
 ? `<div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">
              <button type="button" class="btn btn-success btn-sm" onclick="resolveAdminDeleteRequest('${escapeHtmlAttr(r.reqId)}', 'APPROVED')" style="font-size:0.73rem; padding:4px 9px; font-weight:900;">✅ ஒப்புதல் &amp; ${r.toUNo && r.toUNo !== "OUTSIDE_DISTRICT" ? "மாறுதல் செய்" : "நீக்கு"}</button>
              <button type="button" class="btn btn-danger btn-sm" onclick="resolveAdminDeleteRequest('${escapeHtmlAttr(r.reqId)}', 'REJECTED')" style="font-size:0.73rem; padding:4px 9px; font-weight:900;">❌ நிராகரி</button>
            </div>`
-: `<span style="font-size:0.74rem; color:#64748b; font-weight:800;">முடிக்கப்பட்டது</span>`;
+: (r.status === "APPROVED"
+? `<button type="button" class="btn btn-primary btn-sm" onclick="restoreArchivedStaffMember('${escapeHtmlAttr(r.uNo)}', '${escapeHtmlAttr(r.emisId)}')" style="background:#0f766e; border-color:#0f766e; font-size:0.72rem; padding:3px 9px; font-weight:900;">♻️ மீண்டும் சேர் (Restore)</button>`
+: `<span style="font-size:0.74rem; color:#64748b; font-weight:800;">முடிக்கப்பட்டது</span>`);
 return `
         <tr>
           <td style="font-size:0.76rem;"><strong>${escapeHtmlAttr(r.reqId)}</strong><br><span style="color:#64748b;">${escapeHtmlAttr(r.requestedAt)}</span></td>
@@ -19575,7 +19625,10 @@ box.innerHTML = `
             <span style="font-size:0.95rem; font-weight:900; color:#881337;">🚚 பள்ளிகளிலிருந்து பெறப்பட்ட EBS FORM – III (F3) &amp; FORM – IV (F4) நீக்க மற்றும் மாறுதல் கோரிக்கைகள் (நிலுவையில்: ${pendingList.length})</span>
             <div style="font-size:0.76rem; color:#9f1239; font-weight:700;">ஒப்புதல் அளித்தவுடன் சம்பந்தப்பட்ட பள்ளியின் F3/F4 பட்டியலிலிருந்து நீக்கப்படும் (மாவட்டத்திற்குள் மாறுதல் எனில் புதிய பள்ளியில் தானாகச் சேர்க்கப்படும்).</div>
           </div>
-          <button type="button" class="btn btn-outline btn-sm" onclick="exportDeleteRequestsCsv()" style="background:#fff; color:#881337; border-color:#fda4af; font-weight:800;">📥 கோரிக்கைகள் CSV பதிவிறக்கு</button>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="switchAdminTab('deleteReqs')" style="background:#881337; border-color:#881337; color:#fff; font-weight:900;">🗄️ நீக்கப்பட்டோர் காப்பகம் &amp; Restore (${getDeletedStaffArchiveList('').length})</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="exportDeleteRequestsCsv()" style="background:#fff; color:#881337; border-color:#fda4af; font-weight:800;">📥 கோரிக்கைகள் CSV பதிவிறக்கு</button>
+          </div>
         </div>
         <div class="table-responsive" style="max-height:260px; overflow-y:auto; background:#fff; border:1px solid #fecdd3; border-radius:8px;">
           <table class="data-table" style="margin:0;">
@@ -19597,6 +19650,9 @@ box.innerHTML = `
     `;
 }
 function renderAdminDeleteRequestsTable() {
+if (typeof renderAdminDeletedStaffArchiveTable === "function") {
+renderAdminDeletedStaffArchiveTable();
+}
 const tbody = document.getElementById("admDeleteRequestsTbody");
 if (!tbody) return;
 const statusFilter = (document.getElementById("admDelReqStatusFilter")?.value || "PENDING");
@@ -19618,13 +19674,17 @@ const statusBadge = r.status === "PENDING"
 ? `<span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">⏳ நிலுவையில் (Pending)</span>`
 : (r.status === "APPROVED"
 ? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">✅ ${r.toUNo && r.toUNo !== "OUTSIDE_DISTRICT" ? "மாறுதல் செய்யப்பட்டது" : "நீக்கப்பட்டது"} (${r.resolvedAt || ''})</span>`
-: `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">❌ நிராகரிக்கப்பட்டது</span>`);
+: (r.status === "RESTORED"
+? `<span style="background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">♻️ மீண்டும் சேர்க்கப்பட்டது (${r.restoredAt || ''})</span>`
+: `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:3px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">❌ நிராகரிக்கப்பட்டது</span>`));
 const actionHtml = r.status === "PENDING"
 ? `<div style="display:flex; gap:6px; flex-wrap:wrap;">
              <button type="button" class="btn btn-success btn-sm" onclick="resolveAdminDeleteRequest('${r.reqId}', 'APPROVED')">✅ ஒப்புதல் &amp; ${r.toUNo && r.toUNo !== "OUTSIDE_DISTRICT" ? "மாறுதல் செய்" : "நீக்கு"}</button>
              <button type="button" class="btn btn-danger btn-sm" onclick="resolveAdminDeleteRequest('${r.reqId}', 'REJECTED')">❌ நிராகரி</button>
            </div>`
-: `<span style="font-size:0.78rem; color:#64748b; font-weight:700;">முடிக்கப்பட்டது</span>`;
+: (r.status === "APPROVED"
+? `<button type="button" class="btn btn-primary btn-sm" onclick="restoreArchivedStaffMember('${escapeHtmlAttr(r.uNo)}', '${escapeHtmlAttr(r.emisId)}')" style="background:#0f766e; border-color:#0f766e; font-weight:900;">♻️ மீண்டும் பள்ளியில் சேர் (Restore)</button>`
+: `<span style="font-size:0.78rem; color:#64748b; font-weight:700;">முடிக்கப்பட்டது</span>`);
 return `
         <tr>
           <td><strong style="color:#0f294a;">${r.reqId}</strong><br><small style="color:#64748b;">${r.requestedAt}</small></td>
@@ -19649,6 +19709,24 @@ const fromUNo = String(req.uNo || "").trim();
 const toUNo = String(req.toUNo || "").trim();
 const extraFrom = getSchoolExtra(fromUNo);
 if (decision === "APPROVED") {
+const existingProfFrom = (extraFrom && extraFrom.ebs2026 && extraFrom.ebs2026.staffProfiles && extraFrom.ebs2026.staffProfiles[sid])
+? Object.assign({}, extraFrom.ebs2026.staffProfiles[sid])
+: {};
+const existingStaffFrom = (extraFrom && Array.isArray(extraFrom.staff))
+? (extraFrom.staff.find(st => String(st.id || st.staffId) === sid) || req.staffSnapshot || {})
+: (req.staffSnapshot || {});
+if (typeof archiveDeletedStaffRecord === "function" && sid && fromUNo) {
+archiveDeletedStaffRecord(fromUNo, sid, existingStaffFrom, existingProfFrom, {
+reasonCategory: req.reasonCategory || "நிர்வாக ஒப்புதல் நீக்கம்",
+reasonDetail: req.reasonDetail || req.reason || "",
+reason: req.reason || "",
+toUNo: toUNo,
+toSchoolName: req.toSchoolName || "",
+reqId: req.reqId || "",
+formType: req.formType || (existingStaffFrom.isTeaching === false ? "F4" : "F3"),
+deletedBy: "CEO_ADMIN"
+});
+}
 if (extraFrom) {
 if (!extraFrom.ebs2026) extraFrom.ebs2026 = {};
 if (!Array.isArray(extraFrom.ebs2026.removedStaffIds)) extraFrom.ebs2026.removedStaffIds = [];
@@ -23075,11 +23153,506 @@ openEbsStaffProfileModal(uNo, sid);
 setTimeout(() => { const nmEl = document.getElementById("ebsStfNameEn"); if (nmEl) nmEl.focus(); }, 100);
 }
 }
+function archiveDeletedStaffRecord(uNo, staffId, staffObj, ebsProfileObj, metaInfo) {
+  uNo = String(uNo || "").trim();
+  staffId = String(staffId || "").trim();
+  if (!uNo || !staffId) return null;
+  const sch = (masterSchools || []).find(s => String(s.uNo) === uNo) || { uNo, nameTa: "பள்ளி " + uNo, nameEn: "School " + uNo, udiseNo: "", block: "-" };
+  const extra = getSchoolExtra(uNo);
+  if (!extra.ebs2026) extra.ebs2026 = {};
+  if (!extra.ebs2026.deletedStaffArchive || typeof extra.ebs2026.deletedStaffArchive !== "object") {
+    extra.ebs2026.deletedStaffArchive = {};
+  }
+  const st = Object.assign({}, staffObj || {});
+  const prof = Object.assign({}, ebsProfileObj || {});
+  const meta = Object.assign({}, metaInfo || {});
+  const desigStr = normalizeCanonicalStaffDesignation(prof.desig || st.desig || "");
+  const isTeach = (typeof prof.isTeaching === "boolean")
+    ? prof.isTeaching
+    : (typeof st.isTeaching === "boolean"
+      ? st.isTeaching
+      : (meta.formType === "F4" ? false : !/(JUNIOR ASSISTANT|LAB ASSISTANT|RECORD|WATCHMAN|OFFICE ASSISTANT|TYPIST|SCAVENGER|SWEEPER|WATER|GARDENER|LIBRARIAN|COOK)/i.test(desigStr)));
+  const formType = isTeach ? "F3" : "F4";
+  const nowStr = new Date().toLocaleString("en-IN");
+  const arcRecord = {
+    archiveId: "ARC_" + uNo + "_" + staffId,
+    uNo: uNo,
+    udiseNo: sch.udiseNo || st.udiseNo || "",
+    schoolNameTa: sch.nameTa || st.schoolNameTa || "",
+    schoolNameEn: sch.nameEn || st.schoolNameEn || "",
+    block: sch.block || st.block || "-",
+    staffId: staffId,
+    ifhrmsId: prof.ifhrmsId || st.ifhrmsId || "",
+    prefix: prof.prefix || st.prefix || "திரு.",
+    name: prof.name || st.name || meta.staffName || "",
+    nameTa: prof.nameTa || st.nameTa || "",
+    desig: desigStr || (isTeach ? "BT ASSISTANT" : "JUNIOR ASSISTANT"),
+    subject: isTeach ? (prof.subject || st.subject || "-") : "-",
+    qualification: prof.qualification || st.qualification || "",
+    gender: prof.gender || st.gender || "Male",
+    dob: prof.dob || st.dob || "",
+    age: prof.age || st.age || "",
+    dor: prof.dor || st.dor || "",
+    nature: prof.nature || st.nature || "Regular (Govt.Salaried )",
+    typeOfContract: prof.typeOfContract || st.typeOfContract || "",
+    dojService: prof.dojService || st.dojService || "",
+    dojPresPost: prof.dojPresPost || st.dojPresPost || "",
+    dojSchool: prof.dojSchool || st.dojSchool || "",
+    mobile: prof.mobile || st.mobile || "",
+    whatsappVerified: Boolean(prof.whatsappVerified || st.whatsappVerified),
+    verifiedMobile: prof.verifiedMobile || st.verifiedMobile || "",
+    altMobile: prof.altMobile || st.altMobile || "",
+    email: prof.email || st.email || "",
+    emailVerified: Boolean(prof.emailVerified || st.emailVerified),
+    verifiedEmail: prof.verifiedEmail || st.verifiedEmail || "",
+    isTeaching: isTeach,
+    formType: formType,
+    isAddedEbs: Boolean(st.isAddedEbs || prof.isAddedEbs),
+    isTempId: Boolean(st.isTempId || prof.isTempId),
+    reasonCategory: meta.reasonCategory || "பட்டியல் நீக்கம் (Removed from Roster)",
+    reasonDetail: meta.reasonDetail || "",
+    reason: meta.reason || meta.reasonCategory || "பள்ளிப் பட்டியலிலிருந்து நீக்கப்பட்டது",
+    toUNo: meta.toUNo || "",
+    toSchoolName: meta.toSchoolName || "",
+    reqId: meta.reqId || "",
+    deletedAt: nowStr,
+    deletedBy: meta.deletedBy || (activeSchoolSession ? ("SCHOOL_" + uNo) : "CEO_ADMIN"),
+    fullStaffObject: st,
+    fullEbsProfile: prof
+  };
+  extra.ebs2026.deletedStaffArchive[staffId] = arcRecord;
+  if (!Array.isArray(deletedStaffArchiveStore)) deletedStaffArchiveStore = [];
+  deletedStaffArchiveStore = deletedStaffArchiveStore.filter(
+    item => !(item && String(item.uNo) === uNo && String(item.staffId) === staffId)
+  );
+  deletedStaffArchiveStore.unshift(arcRecord);
+  safeSetStorage("CEOSVG_DELETED_STAFF_ARCHIVE", deletedStaffArchiveStore);
+  return arcRecord;
+}
+
+function getDeletedStaffArchiveList(optionalUNo) {
+  const filterUNo = String(optionalUNo || "").trim();
+  const byKey = {};
+  const addItem = (rec) => {
+    if (!rec || !rec.uNo || !rec.staffId) return;
+    const u = String(rec.uNo).trim();
+    const sid = String(rec.staffId).trim();
+    if (filterUNo && u !== filterUNo) return;
+    const key = u + "_" + sid;
+    if (!byKey[key]) {
+      byKey[key] = Object.assign({}, rec, { uNo: u, staffId: sid });
+    }
+  };
+  if (Array.isArray(deletedStaffArchiveStore)) {
+    deletedStaffArchiveStore.forEach(addItem);
+  }
+  const uNosToScan = filterUNo ? [filterUNo] : Object.keys(schoolExtraDataStore || {});
+  uNosToScan.forEach(u => {
+    const ext = schoolExtraDataStore && schoolExtraDataStore[u];
+    if (!ext || !ext.ebs2026) return;
+    if (ext.ebs2026.deletedStaffArchive && typeof ext.ebs2026.deletedStaffArchive === "object") {
+      Object.values(ext.ebs2026.deletedStaffArchive).forEach(addItem);
+    }
+    const remIds = Array.isArray(ext.ebs2026.removedStaffIds) ? ext.ebs2026.removedStaffIds : [];
+    const sch = (masterSchools || []).find(s => String(s.uNo) === String(u)) || { uNo: u };
+    remIds.forEach(rawSid => {
+      const sid = String(rawSid || "").trim();
+      if (!sid) return;
+      const key = String(u) + "_" + sid;
+      if (byKey[key]) return;
+      const reqMatch = (staffDeleteRequests || []).find(
+        r => r && String(r.uNo) === String(u) && (String(r.emisId) === sid || String(r.staffRecordId) === sid)
+      );
+      const snap = (reqMatch && reqMatch.staffSnapshot) ? reqMatch.staffSnapshot : {};
+      const prof = (ext.ebs2026.staffProfiles && ext.ebs2026.staffProfiles[sid]) ? ext.ebs2026.staffProfiles[sid] : {};
+      let rawEmis = {};
+      if (typeof EMIS_STAFF_DATA !== "undefined" && EMIS_STAFF_DATA.byUNo && Array.isArray(EMIS_STAFF_DATA.byUNo[u])) {
+        const pool = EMIS_STAFF_DATA.pool || [];
+        const r = EMIS_STAFF_DATA.byUNo[u].find(row => String(row[1]) === sid);
+        if (r) {
+          rawEmis = {
+            staffId: sid,
+            name: r[2] || "",
+            desig: normalizeCanonicalStaffDesignation(pool[r[3]] || ""),
+            gender: r[4] === "F" ? "Female" : "Male",
+            dob: r[5] || "",
+            nature: r[6] === "R" ? "Regular (Govt.Salaried )" : "Contract",
+            subject: pool[r[7]] || "-",
+            qualification: pool[r[9]] || "-",
+            dojService: r[10] || "",
+            dojPresPost: r[11] || "",
+            dojSchool: r[12] || r[10] || "",
+            mobile: String(r[13] || ""),
+            isTeaching: r[14] === 1,
+            ifhrmsId: String(r[15] || ""),
+            prefix: String(r[16] || ""),
+            nameTa: String(r[17] || ""),
+            email: String(r[19] || "")
+          };
+        }
+      }
+      const combined = Object.assign({}, rawEmis, snap, prof);
+      const desigStr = normalizeCanonicalStaffDesignation(combined.desig || (reqMatch ? reqMatch.desig : "") || "");
+      const isTeach = (typeof combined.isTeaching === "boolean")
+        ? combined.isTeaching
+        : (reqMatch && reqMatch.formType === "F4" ? false : !/(JUNIOR ASSISTANT|LAB ASSISTANT|RECORD|WATCHMAN|OFFICE ASSISTANT|TYPIST|SCAVENGER|SWEEPER|WATER|GARDENER|LIBRARIAN|COOK)/i.test(desigStr));
+      addItem({
+        archiveId: "ARC_" + u + "_" + sid,
+        uNo: String(u),
+        udiseNo: sch.udiseNo || (reqMatch ? reqMatch.udiseNo : ""),
+        schoolNameTa: sch.nameTa || (reqMatch ? reqMatch.schoolName : ""),
+        schoolNameEn: sch.nameEn || "",
+        block: sch.block || "-",
+        staffId: sid,
+        ifhrmsId: combined.ifhrmsId || "",
+        prefix: combined.prefix || "திரு.",
+        name: combined.name || (reqMatch ? reqMatch.staffName : ("Staff " + sid)),
+        nameTa: combined.nameTa || (reqMatch ? reqMatch.staffNameTa : ""),
+        desig: desigStr || (isTeach ? "BT ASSISTANT" : "JUNIOR ASSISTANT"),
+        subject: isTeach ? (combined.subject || (reqMatch ? reqMatch.subject : "-")) : "-",
+        qualification: combined.qualification || "",
+        gender: combined.gender || "Male",
+        dob: combined.dob || "",
+        age: combined.age || "",
+        dor: combined.dor || "",
+        nature: combined.nature || "Regular (Govt.Salaried )",
+        mobile: combined.mobile || "",
+        whatsappVerified: Boolean(combined.whatsappVerified),
+        verifiedMobile: combined.verifiedMobile || "",
+        email: combined.email || "",
+        emailVerified: Boolean(combined.emailVerified),
+        verifiedEmail: combined.verifiedEmail || "",
+        isTeaching: isTeach,
+        formType: isTeach ? "F3" : "F4",
+        reasonCategory: reqMatch ? reqMatch.reasonCategory : "நீக்கப்பட்டது",
+        reasonDetail: reqMatch ? reqMatch.reasonDetail : "",
+        reason: reqMatch ? reqMatch.reason : "பள்ளிப் பட்டியலிலிருந்து நீக்கப்பட்டது",
+        toUNo: reqMatch ? (reqMatch.toUNo || "") : "",
+        toSchoolName: reqMatch ? (reqMatch.toSchoolName || "") : "",
+        reqId: reqMatch ? (reqMatch.reqId || "") : "",
+        deletedAt: reqMatch ? (reqMatch.resolvedAt || reqMatch.requestedAt || "-") : "-",
+        fullStaffObject: combined,
+        fullEbsProfile: prof
+      });
+    });
+  });
+  (staffDeleteRequests || []).forEach(r => {
+    if (!r || r.status !== "APPROVED") return;
+    const u = String(r.uNo || "").trim();
+    const sid = String(r.emisId || r.staffRecordId || "").trim();
+    if (!u || !sid) return;
+    if (filterUNo && u !== filterUNo) return;
+    const key = u + "_" + sid;
+    if (byKey[key]) return;
+    const snap = r.staffSnapshot || {};
+    const isTeach = !(r.formType === "F4" || /Non-Teaching/i.test(r.staffCategory || ""));
+    addItem({
+      archiveId: "ARC_" + u + "_" + sid,
+      uNo: u,
+      udiseNo: r.udiseNo || "",
+      schoolNameTa: r.schoolName || "",
+      schoolNameEn: "",
+      block: "-",
+      staffId: sid,
+      ifhrmsId: snap.ifhrmsId || "",
+      prefix: snap.prefix || "",
+      name: snap.name || r.staffName || "",
+      nameTa: snap.nameTa || r.staffNameTa || "",
+      desig: normalizeCanonicalStaffDesignation(snap.desig || r.desig || ""),
+      subject: snap.subject || r.subject || "-",
+      qualification: snap.qualification || "",
+      gender: snap.gender || "Male",
+      dob: snap.dob || "",
+      mobile: snap.mobile || "",
+      whatsappVerified: Boolean(snap.whatsappVerified),
+      email: snap.email || "",
+      emailVerified: Boolean(snap.emailVerified),
+      isTeaching: isTeach,
+      formType: isTeach ? "F3" : "F4",
+      reasonCategory: r.reasonCategory || "",
+      reasonDetail: r.reasonDetail || "",
+      reason: r.reason || "",
+      toUNo: r.toUNo || "",
+      toSchoolName: r.toSchoolName || "",
+      reqId: r.reqId || "",
+      deletedAt: r.resolvedAt || r.requestedAt || "-",
+      fullStaffObject: snap,
+      fullEbsProfile: snap
+    });
+  });
+  return Object.values(byKey);
+}
+
+function restoreArchivedStaffMember(uNo, staffId) {
+  uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+  staffId = String(staffId || "").trim();
+  if (!uNo || !staffId) return;
+  const arcList = getDeletedStaffArchiveList(uNo);
+  const arc = arcList.find(x => String(x.staffId) === staffId) ||
+    getDeletedStaffArchiveList("").find(x => String(x.uNo) === uNo && String(x.staffId) === staffId);
+  const extra = getSchoolExtra(uNo);
+  if (!extra.ebs2026) extra.ebs2026 = {};
+  if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+  if (!Array.isArray(extra.staff)) extra.staff = [];
+  if (!Array.isArray(extra.ebs2026.addedStaff)) extra.ebs2026.addedStaff = [];
+
+  if (Array.isArray(extra.ebs2026.removedStaffIds)) {
+    extra.ebs2026.removedStaffIds = extra.ebs2026.removedStaffIds.filter(x => String(x).trim() !== staffId);
+  }
+  const restoredProf = Object.assign({}, (arc && arc.fullEbsProfile) || {}, (arc && arc.fullStaffObject) || {});
+  if (arc) {
+    restoredProf.staffId = staffId;
+    restoredProf.name = arc.name || restoredProf.name || "";
+    restoredProf.nameTa = arc.nameTa || restoredProf.nameTa || "";
+    restoredProf.prefix = arc.prefix || restoredProf.prefix || "திரு.";
+    restoredProf.desig = normalizeCanonicalStaffDesignation(arc.desig || restoredProf.desig || "");
+    restoredProf.subject = arc.subject || restoredProf.subject || "-";
+    restoredProf.qualification = arc.qualification || restoredProf.qualification || "";
+    restoredProf.gender = arc.gender || restoredProf.gender || "Male";
+    restoredProf.dob = arc.dob || restoredProf.dob || "";
+    restoredProf.ifhrmsId = arc.ifhrmsId || restoredProf.ifhrmsId || "";
+    restoredProf.mobile = arc.mobile || restoredProf.mobile || "";
+    restoredProf.whatsappVerified = Boolean(arc.whatsappVerified || restoredProf.whatsappVerified);
+    restoredProf.verifiedMobile = arc.verifiedMobile || restoredProf.verifiedMobile || "";
+    restoredProf.email = arc.email || restoredProf.email || "";
+    restoredProf.emailVerified = Boolean(arc.emailVerified || restoredProf.emailVerified);
+    restoredProf.verifiedEmail = arc.verifiedEmail || restoredProf.verifiedEmail || "";
+    restoredProf.isTeaching = Boolean(arc.isTeaching);
+  }
+  delete restoredProf.deleteReqStatus;
+  extra.ebs2026.staffProfiles[staffId] = Object.assign({}, extra.ebs2026.staffProfiles[staffId] || {}, restoredProf);
+
+  const staffEntry = Object.assign({}, (arc && arc.fullStaffObject) || {}, restoredProf, {
+    id: staffId,
+    staffId: staffId
+  });
+  delete staffEntry.deleteReqStatus;
+
+  const existingIdx = extra.staff.findIndex(x => String(x && (x.id || x.staffId) || "").trim() === staffId);
+  if (existingIdx >= 0) {
+    extra.staff[existingIdx] = Object.assign({}, extra.staff[existingIdx], staffEntry);
+    delete extra.staff[existingIdx].deleteReqStatus;
+  } else {
+    extra.staff.push(staffEntry);
+  }
+
+  if (arc && (arc.isAddedEbs || arc.isTempId)) {
+    if (!extra.ebs2026.addedStaff.some(x => String(x && (x.id || x.staffId) || "").trim() === staffId)) {
+      extra.ebs2026.addedStaff.push(staffEntry);
+    }
+  }
+
+  if (arc && arc.toUNo && arc.toUNo !== "OUTSIDE_DISTRICT" && String(arc.toUNo) !== uNo) {
+    const extraTo = getSchoolExtra(arc.toUNo);
+    if (extraTo) {
+      if (Array.isArray(extraTo.staff)) {
+        extraTo.staff = extraTo.staff.filter(x => String(x && (x.id || x.staffId) || "").trim() !== staffId);
+      }
+      if (extraTo.ebs2026 && Array.isArray(extraTo.ebs2026.addedStaff)) {
+        extraTo.ebs2026.addedStaff = extraTo.ebs2026.addedStaff.filter(x => String(x && (x.id || x.staffId) || "").trim() !== staffId);
+      }
+      if (typeof recalcSchoolEbsF1StaffCountsFromList === "function") {
+        recalcSchoolEbsF1StaffCountsFromList(arc.toUNo);
+      }
+    }
+  }
+
+  const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+  if (staffOverrides[staffId]) {
+    const sch = (masterSchools || []).find(s => String(s.uNo) === uNo);
+    staffOverrides[staffId].deleted = false;
+    staffOverrides[staffId].uNo = uNo;
+    delete staffOverrides[staffId].removedFromUNo;
+    if (sch) {
+      staffOverrides[staffId].schoolNameTa = sch.nameTa || "";
+      staffOverrides[staffId].schoolNameEn = sch.nameEn || "";
+      staffOverrides[staffId].udiseNo = sch.udiseNo || "";
+      staffOverrides[staffId].block = sch.block || "-";
+    }
+    staffOverrides[staffId].updatedAt = new Date().toISOString();
+    safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
+  }
+
+  if (extra.ebs2026.deletedStaffArchive && extra.ebs2026.deletedStaffArchive[staffId]) {
+    delete extra.ebs2026.deletedStaffArchive[staffId];
+  }
+  if (Array.isArray(deletedStaffArchiveStore)) {
+    deletedStaffArchiveStore = deletedStaffArchiveStore.filter(
+      item => !(item && String(item.uNo) === uNo && String(item.staffId) === staffId)
+    );
+    safeSetStorage("CEOSVG_DELETED_STAFF_ARCHIVE", deletedStaffArchiveStore);
+  }
+
+  const nowDateStr = new Date().toLocaleDateString("en-IN");
+  (staffDeleteRequests || []).forEach(r => {
+    if (r && String(r.uNo) === uNo && (String(r.emisId) === staffId || String(r.staffRecordId) === staffId) && r.status === "APPROVED") {
+      r.status = "RESTORED";
+      r.restoredAt = nowDateStr;
+    }
+  });
+  safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
+
+  window._activeSyncTargetUNo = uNo;
+  recalcSchoolEbsF1StaffCountsFromList(uNo);
+  safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+
+  if (typeof getDistrictAllStaffList === "function") getDistrictAllStaffList(true);
+  updateAllSummaryCounters();
+  if (activeSchoolSession && String(activeSchoolSession.uNo) === uNo) {
+    renderSchoolStaffTable(extra);
+    renderSchoolEbsModule();
+    saveSchoolEbs2026Data(false, uNo);
+  } else if (typeof renderSchoolEbsModule === "function") {
+    renderSchoolEbsModule();
+  }
+  if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+  if (typeof renderAdminEbsDeleteReqsBox === "function") renderAdminEbsDeleteReqsBox();
+  if (typeof renderAdminDeletedStaffArchiveTable === "function") renderAdminDeletedStaffArchiveTable();
+  if (typeof renderAdminEbsMasterDashboard === "function") renderAdminEbsMasterDashboard();
+
+  const dispName = (arc && arc.name) || staffEntry.name || staffId;
+  const fLabel = (arc && arc.formType === "F4") || staffEntry.isTeaching === false ? "Form-IV பணியாளர்" : "Form-III ஆசிரியர்";
+  showToast(`♻️ [${dispName} - EMIS: ${staffId}] மீண்டும் பள்ளிப் பட்டியலில் (${fLabel}) வெற்றிகரமாக மீட்டமைக்கப்பட்டார் (Restored)!`, "#16a34a", true);
+}
+
+function permanentlyDeleteFromStaffArchive(uNo, staffId) {
+  uNo = String(uNo || "").trim();
+  staffId = String(staffId || "").trim();
+  if (!uNo || !staffId) return;
+  const extra = getSchoolExtra(uNo);
+  if (extra && extra.ebs2026 && extra.ebs2026.deletedStaffArchive && extra.ebs2026.deletedStaffArchive[staffId]) {
+    delete extra.ebs2026.deletedStaffArchive[staffId];
+  }
+  if (Array.isArray(deletedStaffArchiveStore)) {
+    deletedStaffArchiveStore = deletedStaffArchiveStore.filter(
+      item => !(item && String(item.uNo) === uNo && String(item.staffId) === staffId)
+    );
+    safeSetStorage("CEOSVG_DELETED_STAFF_ARCHIVE", deletedStaffArchiveStore);
+  }
+  safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+  if (typeof renderSchoolEbsModule === "function") renderSchoolEbsModule();
+  if (typeof renderAdminDeletedStaffArchiveTable === "function") renderAdminDeletedStaffArchiveTable();
+  showToast(`🗑️ [${staffId}] காப்பகப் பதிவிலிருந்து நீக்கப்பட்டது.`, "#64748b");
+}
+
+function renderAdminDeletedStaffArchiveTable() {
+  const tbody = document.getElementById("admDeletedStaffArchiveTbody");
+  const badge = document.getElementById("admArcTotalCountBadge");
+  const allArc = getDeletedStaffArchiveList("");
+  if (badge) badge.textContent = allArc.length;
+  if (!tbody) return;
+  const formFilter = (document.getElementById("admArcFormFilter")?.value || "ALL");
+  const q = (document.getElementById("admArcSearchInput")?.value || "").trim().toLowerCase();
+  const filtered = allArc.filter(item => {
+    if (formFilter !== "ALL" && item.formType !== formFilter) return false;
+    if (q) {
+      const hay = `${item.uNo} ${item.udiseNo} ${item.schoolNameTa} ${item.schoolNameEn} ${item.staffId} ${item.name} ${item.nameTa} ${item.desig} ${item.subject} ${item.mobile} ${item.email} ${item.reason}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:22px; color:#64748b; font-weight:800;">நீக்கப்பட்ட ஆசிரியர்கள் / பணியாளர்கள் காப்பகத்தில் பதிவுகள் எதுவும் இல்லை.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map((st, idx) => {
+    const fBadge = st.formType === "F4"
+      ? `<span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 7px; border-radius:4px; font-size:0.70rem; font-weight:900;">FORM-IV (பணியாளர்)</span>`
+      : `<span style="background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; padding:2px 7px; border-radius:4px; font-size:0.70rem; font-weight:900;">FORM-III (ஆசிரியர்)</span>`;
+    return `
+      <tr>
+        <td style="text-align:center; font-weight:900;">${idx + 1}</td>
+        <td style="font-size:0.75rem;">
+          ${fBadge}
+          <div style="color:#64748b; font-weight:700; margin-top:3px;">${escapeHtmlAttr(st.deletedAt || "-")}</div>
+        </td>
+        <td style="font-size:0.78rem;">
+          <strong style="color:#0f294a;">[U.NO: ${escapeHtmlAttr(st.uNo)}] ${escapeHtmlAttr(st.schoolNameTa || st.schoolNameEn || "-")}</strong><br>
+          <small style="color:#64748b;">UDISE: ${escapeHtmlAttr(st.udiseNo || "-")}</small>
+        </td>
+        <td style="font-size:0.80rem;">
+          <strong style="color:#0f294a;">${escapeHtmlAttr(st.name || "-")}</strong> ${st.nameTa ? `<span style="color:#4c1d95; font-weight:800;">(${escapeHtmlAttr(st.nameTa)})</span>` : ""}<br>
+          <span style="color:#0f766e; font-weight:800;">${escapeHtmlAttr(st.desig || "-")}</span> (${escapeHtmlAttr(st.subject || "-")})
+        </td>
+        <td style="font-size:0.76rem; font-weight:800;">
+          <div style="color:#1d4ed8;">EMIS: <strong>${escapeHtmlAttr(st.staffId)}</strong></div>
+          <div style="color:#475569;">IFHRMS: ${escapeHtmlAttr(st.ifhrmsId || "-")}</div>
+        </td>
+        <td style="font-size:0.75rem; font-weight:800;">
+          <div style="color:#14532d;">📱 ${escapeHtmlAttr(st.mobile || "-")} ${st.whatsappVerified ? "✓OTP" : ""}</div>
+          <div style="color:#1e40af;">✉️ ${escapeHtmlAttr(st.email || "-")} ${st.emailVerified ? "✓OTP" : ""}</div>
+        </td>
+        <td style="font-size:0.76rem; color:#7c2d12; font-weight:800; max-width:220px;">
+          ${escapeHtmlAttr(st.reason || "-")}
+        </td>
+        <td style="text-align:center;">
+          <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="restoreArchivedStaffMember('${escapeHtmlAttr(st.uNo)}', '${escapeHtmlAttr(st.staffId)}')" style="background:#15803d; border-color:#15803d; font-weight:900; font-size:0.73rem; padding:4px 10px;">
+              ♻️ மீண்டும் பள்ளியில் சேர் (Restore)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="permanentlyDeleteFromStaffArchive('${escapeHtmlAttr(st.uNo)}', '${escapeHtmlAttr(st.staffId)}')" title="காப்பகத்திலிருந்து நிரந்தரமாக நீக்கு" style="border-color:#fca5a5; color:#dc2626; font-size:0.72rem; padding:4px 7px;">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function exportDeletedStaffArchiveCsv(optionalUNo) {
+  const list = getDeletedStaffArchiveList(optionalUNo || "");
+  if (list.length === 0) {
+    showToast("⚠️ பதிவிறக்க நீக்கப்பட்ட பணியாளர் பதிவுகள் எதுவும் இல்லை.", "#f59e0b");
+    return;
+  }
+  const headers = [
+    "S.No", "U.NO", "UDISE_NO", "School_Name", "Form_Type", "Staff_EMIS_ID", "IFHRMS_ID",
+    "Staff_Name_En", "Staff_Name_Ta", "Designation", "Subject", "Qualification",
+    "Gender", "DOB", "Mobile_WhatsApp", "WhatsApp_OTP_Verified", "Email", "Email_OTP_Verified",
+    "Deletion_Reason", "Deleted_At"
+  ];
+  const rows = list.map((st, i) => [
+    i + 1, st.uNo, st.udiseNo, st.schoolNameTa || st.schoolNameEn, st.formType,
+    st.staffId, st.ifhrmsId, st.name, st.nameTa, st.desig, st.subject, st.qualification,
+    st.gender, st.dob, st.mobile, st.whatsappVerified ? "YES" : "NO",
+    st.email, st.emailVerified ? "YES" : "NO", st.reason, st.deletedAt
+  ]);
+  const csvContent = "\uFEFF" + [headers, ...rows]
+    .map(r => r.map(c => `"${String(c || "").replace(/"/g, '""')}"`).join(","))
+    .join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `CEO_Sivagangai_Deleted_Staff_Archive_${optionalUNo ? ("UNO_" + optionalUNo) : "District"}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("📥 நீக்கப்பட்ட ஆசிரியர்கள் & பணியாளர்கள் காப்பகப் பட்டியல் (CSV) பதிவிறக்கப்பட்டது!", "#16a34a");
+}
+
 function removeAddedEbsStaff(uNo, staffId) {
 uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
 staffId = String(staffId || "").trim();
 if (!uNo || !staffId) return;
 const extra = getSchoolExtra(uNo);
+const stFromStaff = Array.isArray(extra.staff) ? extra.staff.find(x => String(x && (x.id || x.staffId) || "").trim() === staffId) : null;
+const stFromAdded = (extra.ebs2026 && Array.isArray(extra.ebs2026.addedStaff)) ? extra.ebs2026.addedStaff.find(x => String(x && (x.id || x.staffId) || "").trim() === staffId) : null;
+const profFromEbs = (extra.ebs2026 && extra.ebs2026.staffProfiles && extra.ebs2026.staffProfiles[staffId]) ? extra.ebs2026.staffProfiles[staffId] : null;
+archiveDeletedStaffRecord(
+  uNo,
+  staffId,
+  stFromAdded || stFromStaff || { staffId },
+  profFromEbs || {},
+  {
+    reasonCategory: "நேரடி நீக்கம் (Direct Removal)",
+    reasonDetail: "பள்ளி F3/F4 பட்டியலிலிருந்து நேரடியாக நீக்கப்பட்டது",
+    reason: "பள்ளி F3/F4 பட்டியலிலிருந்து நேரடியாக நீக்கப்பட்டது (காப்பகத்தில் சேமிக்கப்பட்டுள்ளது)",
+    deletedBy: activeSchoolSession ? ("SCHOOL_" + uNo) : "CEO_ADMIN"
+  }
+);
 if (Array.isArray(extra.staff)) {
 extra.staff = extra.staff.filter(x => String(x && (x.id || x.staffId) || "").trim() !== staffId);
 }
@@ -23097,7 +23670,7 @@ recalcSchoolEbsF1StaffCountsFromList(uNo);
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 renderSchoolEbsModule();
 saveSchoolEbs2026Data(false);
-showToast(`🗑️ பணியாளர் பதிவு [${staffId}] பட்டியலிலிருந்து நீக்கப்பட்டது.`, "#dc2626");
+showToast(`🗑️ பணியாளர் பதிவு [${staffId}] நீக்கப்பட்டு '♻️ நீக்கப்பட்டோர் காப்பகத்தில்' பாதுகாப்பாகச் சேமிக்கப்பட்டது! (எப்போது வேண்டுமானாலும் Restore செய்யலாம்)`, "#dc2626", true);
 }
 function openEbsStaffProfileModal(uNo, staffId) {
 uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "");
