@@ -4440,24 +4440,24 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </table>
 </div>
 </div>
-<!-- ADMIN PANE: MULTI-EXAM AUTOMATIC & MANUAL DUTY APPOINTMENT ENGINE (#admPaneExamDutyAllotment) -->
+<!-- ADMIN PANE: MULTI-EXAM MANUAL DUTY APPOINTMENT & CUSTOM CENTRE ENGINE (#admPaneExamDutyAllotment) -->
 <div id="admPaneExamDutyAllotment" class="panel-box" style="display:none; border-top:4px solid #0f766e;">
 <div class="panel-title" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
 <div>
 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-<span style="font-size:1.2rem; font-weight:900; color:#0f766e;">🎯 சிவகங்கை மாவட்டம் – பல்வகைத் தேர்வுகள் பணி நியமன மேலாண்மை (தானியங்கி &amp; Manual – 10 பொறுப்புகள்)</span>
-<span style="background:#ccfbf1; color:#115e59; border:1px solid #5eead4; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">Auto &amp; Manual Duty Engine v1.0</span>
+<span style="font-size:1.2rem; font-weight:900; color:#0f766e;">🎯 சிவகங்கை மாவட்டம் – பல்வகைத் தேர்வுகள் பணி நியமன மேலாண்மை (10 பொறுப்புகள் – கைமுறை நியமனம்)</span>
+<span style="background:#ccfbf1; color:#115e59; border:1px solid #5eead4; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">Manual Duty &amp; Custom Centre Engine v2.0</span>
 </div>
 <div style="font-size:0.82rem; color:#475569; margin-top:4px;">
-பல்வகைப் பொதுத்தேர்வுகள் மற்றும் திறனறித் தேர்வுகளுக்கு <strong>முதன்மை கண்காணிப்பாளர் (CS), துறை அலுவலர் (DO), பறக்கும் படையினர், நிலையான படையினர், வினாத்தாள் கட்டுக்காப்பாளர், தொடர்பு அலுவலர், வழித்தட அலுவலர், வழித்தட அலுவலர் உதவியாளர், தேர்வறை கண்காணிப்பாளர் மற்றும் தேர்வு மைய அலுவலகப் பணியாளர்கள்</strong> ஆகிய 10 பொறுப்புகளையும் தானியங்கி (Auto) அல்லது கைமுறை (Manual) முறையில் நியமித்து ஆணை பெறலாம்.
+கீழேயுள்ள <strong>ஒவ்வொரு தேர்விற்கும் உரிய தனித்தனிப் பெட்டியை (Exam Box)</strong> கிளிக் செய்து, <strong>10 தேர்வுப் பொறுப்புகளுக்கும்</strong> (CS, DO, Flying Squad, Standing Squad, QP Custodian, Liaison Officer, Route Officer, RO Assistant, Hall Invigilator, Office Staff) அலுவலர்கள் மற்றும் பணியாளர்களை நியமித்து ஆணை பெறலாம். <strong>10 மற்றும் 12-ஆம் வகுப்பு பொதுத்தேர்வு தவிர்த்து பிற அனைத்துத் தேர்வுகளுக்கும் புதிய தேர்வு மையங்களை நேரடியாக இணைக்கலாம்.</strong>
 </div>
 </div>
 <div style="display:flex; gap:6px; flex-wrap:wrap;">
 <button type="button" class="btn btn-outline btn-sm" onclick="switchAdminTab('ebsMaster')" style="background:#f5f3ff; color:#4c1d95; border-color:#a78bfa; font-weight:900;">
-📋 EBS 2026-27 (F1–F4) கட்டுப்பாட்டகத்திற்குச் செல்
+📋 EBS 2026-27 (F1–F4) கட்டுப்பாட்டகம்
 </button>
 <button type="button" class="btn btn-primary btn-sm" onclick="syncExamDutyAllotmentToEbsForms()" style="background:#7c3aed; border-color:#6d28d9; font-weight:900;">
-🔄 EBS (Form-III &amp; IV) படிவங்களில் இப்பணிகளை ஒத்திசை
+🔄 EBS (Form-III &amp; IV) படிவங்களில் ஒத்திசை
 </button>
 <button type="button" class="btn btn-primary btn-sm" onclick="printExamDutyAppointmentsReport('ROSTER')" style="background:#0f294a; border-color:#0f294a; font-weight:900;">
 🖨️ A4 நியமனப் பட்டியல் அச்சிடு
@@ -4473,316 +4473,341 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </button>
 </div>
 </div>
-<!-- STEP 1: EXAM TYPE SELECTOR & PROCEEDINGS METADATA BAR -->
-<div style="background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:1.5px solid #5eead4; border-left:5px solid #0f766e; border-radius:12px; padding:12px 16px; margin-bottom:14px;">
-<div style="display:grid; grid-template-columns:2fr 1.2fr 1fr auto; gap:10px; align-items:end;">
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.78rem; font-weight:900; color:#0f766e;">1️⃣ தேர்வு வகை (Select Examination Type)</label>
-<select id="admDutyExamTypeSelect" class="form-control" onchange="onExamDutyTypeChanged()" style="font-weight:900; border-color:#0f766e; background:#fff; color:#0f294a;">
-<option value="HSC2_2027">🎓 மேல்நிலை இரண்டாம் ஆண்டு (+2 / HSC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027 (91 மையங்கள்)</option>
-<option value="HSC1_2027">📘 மேல்நிலை முதலாம் ஆண்டு (+1 Arrear) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027 (91 மையங்கள்)</option>
-<option value="SSLC_2027">📗 பத்தாம் வகுப்பு (10th / SSLC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027 (113 மையங்கள்)</option>
-<option value="HSC_SUPP_2027">🔄 +2 உடனடித் துணைத்தேர்வு (HSC Supplementary Exam) – ஜூன்/ஜூலை 2027</option>
-<option value="SSLC_SUPP_2027">🔄 10-ஆம் வகுப்பு துணைத்தேர்வு (SSLC Supplementary Exam) – ஜூன்/ஜூலை 2027</option>
-<option value="NMMS_2027">🏅 NMMS தேசிய வருவாய் வழி &amp; தகுதிப் படிப்புதவித் தொகைத் தேர்வு (8-ஆம் வகுப்பு)</option>
-<option value="TRUST_2027">🏆 TRUST ஊரகத் திறனாய்வுத் தேர்வு (9-ஆம் வகுப்பு)</option>
-<option value="TTSE_2027">📖 தமிழ் மொழி இலக்கியத் திறனறித் தேர்வு (11-ஆம் வகுப்பு)</option>
-<option value="CMTS_2027">🌟 முதலமைச்சர் திறனறித் தேர்வு (10-ஆம் வகுப்பு - CMTS)</option>
-<option value="TET_TRB">👩‍🏫 ஆசிரியர் தகுதித் தேர்வு / போட்டித் தேர்வுகள் (TET / TRB)</option>
-<option value="TNPSC">🏛️ TNPSC / அரசுப் பணியாளர் போட்டித் தேர்வுகள்</option>
-<option value="GOVT_TECH">⌨️ அரசு தொழில்நுட்பத் தேர்வுகள் (Typewriting / COA / Shorthand)</option>
-<option value="ESLC_8TH">📝 8-ஆம் வகுப்பு தனித்தேர்வர் பொதுத்தேர்வு (ESLC)</option>
-<option value="CUSTOM_EXAM">✨ பிற சிறப்பு / போட்டித் தேர்வு (Custom Examination)</option>
-</select>
+
+<!-- STEP 1: DEDICATED EXAM BOXES / CARDS GRID (SHOWN IMMEDIATELY ON OPEN) -->
+<div id="admDutyExamCardsSection" style="background:linear-gradient(135deg,#f8fafc 0%,#f0fdfa 100%); border:1.5px solid #99f6e4; border-radius:14px; padding:14px 16px; margin-bottom:16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; padding-bottom:10px; border-bottom:1.5px solid #ccfbf1;">
+    <div>
+      <div style="font-size:1rem; font-weight:900; color:#0f294a; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span>🗂️ 1️⃣ தேர்வு வாரியான தனித்தனிப் பெட்டிகள் (தேர்வைத் தேர்ந்தெடுக்க பெட்டியைக் கிளிக் செய்க)</span>
+        <span style="background:#0f766e; color:#fff; font-size:0.72rem; font-weight:900; padding:2px 10px; border-radius:999px;" id="admDutyTotalExamsBadge">14 தேர்வுகள்</span>
+      </div>
+      <div style="font-size:0.78rem; color:#0f766e; font-weight:700; margin-top:2px;">
+        📌 <strong>10th &amp; +2 பொதுத்தேர்வுகளுக்கு</strong> நிலையான தேர்வு மையங்கள் (113 / 91) உள்ளமைக்கப்பட்டுள்ளன. <strong>மற்ற அனைத்துத் தேர்வுகளுக்கும்</strong> புதிய தேர்வு மையங்களை நீங்களே உருவாக்கி இணைத்துக் கொள்ளலாம்.
+      </div>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+      <input type="text" id="admDutyNewExamBoxTitleInput" class="form-control" placeholder="✨ புதிய தேர்வின் பெயர் (எ.கா: NEET / Navodaya Exam)..." style="width:240px; padding:6px 10px; font-size:0.80rem; font-weight:800; border-color:#0f766e;">
+      <button type="button" class="btn btn-primary btn-sm" onclick="createNewCustomExamCardBox()" style="background:#0f766e; border-color:#0d9488; font-weight:900; font-size:0.78rem; padding:7px 12px;">
+        ➕ புதிய தேர்வுப் பெட்டி சேர்
+      </button>
+    </div>
+  </div>
+  <div id="admDutyExamCardsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(265px, 1fr)); gap:12px;"></div>
 </div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e3a8a;">முதன்மைக் கல்வி அலுவலர் ந.க.எண் (Proceedings Rc.No)</label>
-<input type="text" id="admDutyRcNoInput" class="form-control" value="ந.க.எண்: 2450/அ3/2026" oninput="saveExamDutyMetaConfig()" placeholder="எ.கா: ந.க.எண்: 2450/அ3/2026" style="font-weight:800;">
+
+<!-- STEP 2: SELECTED EXAM ACTIVE HEADER & PROCEEDINGS METADATA BAR -->
+<div style="background:linear-gradient(135deg,#eff6ff 0%,#f0fdfa 100%); border:2px solid #0f766e; border-left:6px solid #0f766e; border-radius:12px; padding:12px 16px; margin-bottom:14px;">
+  <div style="display:grid; grid-template-columns:2fr 1.1fr 0.9fr auto; gap:10px; align-items:end;">
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label" style="font-size:0.78rem; font-weight:900; color:#0f766e;">🎯 தற்போது தேர்ந்தெடுக்கப்பட்டுள்ள தேர்வு (Active Examination)</label>
+      <select id="admDutyExamTypeSelect" class="form-control" onchange="onExamDutyTypeChanged()" style="font-weight:900; border-color:#0f766e; background:#fff; color:#0f294a;">
+        <option value="HSC2_2027">🎓 மேல்நிலை இரண்டாம் ஆண்டு (+2 / HSC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027 (91 மையங்கள்)</option>
+        <option value="SSLC_2027">📗 பத்தாம் வகுப்பு (10th / SSLC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027 (113 மையங்கள்)</option>
+        <option value="HSC1_2027">📘 மேல்நிலை முதலாம் ஆண்டு (+1 Arrear) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027</option>
+        <option value="HSC_SUPP_2027">🔄 +2 உடனடித் துணைத்தேர்வு (HSC Supplementary Exam) – ஜூன்/ஜூலை 2027</option>
+        <option value="SSLC_SUPP_2027">🔄 10-ஆம் வகுப்பு துணைத்தேர்வு (SSLC Supplementary Exam) – ஜூன்/ஜூலை 2027</option>
+        <option value="NMMS_2027">🏅 NMMS தேசிய வருவாய் வழி &amp; தகுதிப் படிப்புதவித் தொகைத் தேர்வு (8-ஆம் வகுப்பு)</option>
+        <option value="TRUST_2027">🏆 TRUST ஊரகத் திறனாய்வுத் தேர்வு (9-ஆம் வகுப்பு)</option>
+        <option value="TTSE_2027">📖 தமிழ் மொழி இலக்கியத் திறனறித் தேர்வு (11-ஆம் வகுப்பு)</option>
+        <option value="CMTS_2027">🌟 முதலமைச்சர் திறனறித் தேர்வு (10-ஆம் வகுப்பு - CMTS)</option>
+        <option value="TET_TRB">👩‍🏫 ஆசிரியர் தகுதித் தேர்வு / போட்டித் தேர்வுகள் (TET / TRB)</option>
+        <option value="TNPSC">🏛️ TNPSC / அரசுப் பணியாளர் போட்டித் தேர்வுகள்</option>
+        <option value="GOVT_TECH">⌨️ அரசு தொழில்நுட்பத் தேர்வுகள் (Typewriting / COA / Shorthand)</option>
+        <option value="ESLC_8TH">📝 8-ஆம் வகுப்பு தனித்தேர்வர் பொதுத்தேர்வு (ESLC)</option>
+        <option value="CUSTOM_EXAM">✨ பிற சிறப்பு / போட்டித் தேர்வு (Custom Examination)</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e3a8a;">முதன்மைக் கல்வி அலுவலர் ந.க.எண் (Proceedings Rc.No)</label>
+      <input type="text" id="admDutyRcNoInput" class="form-control" value="ந.க.எண்: 2450/அ3/2026" oninput="saveExamDutyMetaConfig()" placeholder="எ.கா: ந.க.எண்: 2450/அ3/2026" style="font-weight:800;">
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e3a8a;">ஆணை நாள் / தேர்வுக் காலம் (Date)</label>
+      <input type="text" id="admDutyOrderDateInput" class="form-control" value="05.11.2026" oninput="saveExamDutyMetaConfig()" placeholder="DD.MM.YYYY" style="font-weight:800;">
+    </div>
+    <div style="display:flex; gap:6px;">
+      <button type="button" class="btn btn-outline btn-sm" onclick="clearCurrentExamDutyAppointments()" style="height:42px; border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-weight:800;">
+        🧹 இத்தேர்வின் நியமனங்களை மீட்டமை
+      </button>
+    </div>
+  </div>
+  <div id="admDutyCustomExamNameWrap" style="display:none; margin-top:10px;">
+    <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4c1d95;">சிறப்புத் தேர்வின் பெயர் (Custom Examination Title):</label>
+    <input type="text" id="admDutyCustomExamTitleInput" class="form-control" value="சிறப்புத் திறனறித் தேர்வு – 2026-27" oninput="saveExamDutyMetaConfig(); renderExamDutyAllotmentDashboard();" style="font-weight:900;">
+  </div>
+  <!-- LIVE PER-EXAM CENTRES & INVIGILATOR/OFFICE STAFF QUOTA BAR -->
+  <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #5eead4; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:0.79rem; font-weight:800; color:#0f294a;">
+      <span style="background:#0f766e; color:#fff; padding:3px 10px; border-radius:999px; font-weight:900;" id="admDutyActiveCentresCountPill">🏛️ மையங்கள்: 91</span>
+      <span style="background:#ede9fe; color:#4c1d95; border:1px solid #c4b5fd; padding:3px 10px; border-radius:999px; font-weight:900;" id="admDutyActiveInvigQuotaPill">👨‍🏫 நிர்ணயித்த அறைக்கண்காணிப்பாளர்கள்: 0</span>
+      <span style="background:#fffbeb; color:#92400e; border:1px solid #fcd34d; padding:3px 10px; border-radius:999px; font-weight:900;" id="admDutyActiveOfficeQuotaPill">🧑‍💼 நிர்ணயித்த அலுவலகப் பணியாளர்கள்: 0</span>
+      <span id="admDutyPublicCentreFixedNote" style="font-size:0.75rem; color:#15803d; font-weight:900;">🔒 10th / +2 பொதுத்தேர்வு நிலையான மையங்கள்</span>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <button type="button" id="admDutyJumpToAddCentresBtn" class="btn btn-primary btn-sm" onclick="scrollToNonPublicCentreAdder()" style="display:none; background:#b45309; border-color:#92400e; color:#fff; font-weight:900; font-size:0.78rem;">
+        ➕ இத்தேர்விற்குப் புதிய தேர்வு மையங்களை இணை / நிர்வகி ❯
+      </button>
+    </div>
+  </div>
 </div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e3a8a;">ஆணை நாள் / தேர்வுக் காலம் (Date)</label>
-<input type="text" id="admDutyOrderDateInput" class="form-control" value="05.11.2026" oninput="saveExamDutyMetaConfig()" placeholder="DD.MM.YYYY" style="font-weight:800;">
-</div>
-<div>
-<button type="button" class="btn btn-outline btn-sm" onclick="promptAddCustomExamType()" style="height:42px; font-weight:900; background:#fff; color:#0f766e; border-color:#0f766e;">
-➕ புதிய தேர்வு சேர்
-</button>
-</div>
-</div>
-<div id="admDutyCustomExamNameWrap" style="display:none; margin-top:10px;">
-<label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4c1d95;">சிறப்புத் தேர்வின் பெயர் (Custom Examination Title):</label>
-<input type="text" id="admDutyCustomExamTitleInput" class="form-control" value="சிறப்புத் திறனறித் தேர்வு – 2026-27" oninput="saveExamDutyMetaConfig(); renderExamDutyAllotmentDashboard();" style="font-weight:900;">
-</div>
-<!-- LIVE PER-EXAM CENTRES & INVIGILATOR/OFFICE STAFF QUOTA BAR -->
-<div style="margin-top:10px; padding-top:10px; border-top:1px dashed #5eead4; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:0.79rem; font-weight:800; color:#0f294a;">
-<span style="background:#0f766e; color:#fff; padding:3px 10px; border-radius:999px; font-weight:900;" id="admDutyActiveCentresCountPill">🏛️ மையங்கள்: 91</span>
-<span style="background:#ede9fe; color:#4c1d95; border:1px solid #c4b5fd; padding:3px 10px; border-radius:999px; font-weight:900;" id="admDutyActiveInvigQuotaPill">👨‍🏫 நிர்ணயித்த அறைக்கண்காணிப்பாளர்கள்: 0</span>
-<span style="background:#fffbeb; color:#92400e; border:1px solid #fcd34d; padding:3px 10px; border-radius:999px; font-weight:900;" id="admDutyActiveOfficeQuotaPill">🧑‍💼 நிர்ணயித்த அலுவலகப் பணியாளர்கள்: 0</span>
-</div>
-<div style="display:flex; gap:6px; flex-wrap:wrap;">
-<button type="button" class="btn btn-primary btn-sm" onclick="openCentresConfiguratorForActiveDutyExam()" style="background:#b45309; border-color:#92400e; color:#fff; font-weight:900; font-size:0.78rem;">
-🏛️ இத்தேர்விற்கான மையங்களைத் தேர்ந்தெடு &amp; மையம் வாரியாக கண்காணிப்பாளர் / அலுவலகப் பணியாளர் நிர்ணயம் செய் ❯
-</button>
-</div>
-</div>
-</div>
-<!-- STEP 2: 10 ROLES LIVE KPI & FILTER CARDS -->
+
+<!-- STEP 3: 10 ROLES LIVE KPI & FILTER CARDS -->
 <div style="margin-bottom:14px;">
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
-<span style="font-size:0.80rem; font-weight:900; color:#0f294a;">📊 10 தேர்வுப் பொறுப்புகள் வாரியான நியமன எண்ணிக்கை (அட்டையைக் கிளிக் செய்து வடிகட்டலாம்):</span>
-<button type="button" class="btn btn-outline btn-sm" onclick="setExamDutyRoleFilter('')" style="font-size:0.73rem; padding:2px 10px; font-weight:900; background:#eff6ff; color:#1d4ed8; border-color:#93c5fd;">
-👁️ அனைத்து 10 பொறுப்புகளையும் காட்டு (மொத்தம்: <span id="admDutyTotalCountBadge">0</span>)
-</button>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+    <span style="font-size:0.80rem; font-weight:900; color:#0f294a;">📊 2️⃣ 10 தேர்வுப் பொறுப்புகள் வாரியான நியமன எண்ணிக்கை (அட்டையைக் கிளிக் செய்து வடிகட்டலாம்):</span>
+    <button type="button" class="btn btn-outline btn-sm" onclick="setExamDutyRoleFilter('')" style="font-size:0.73rem; padding:2px 10px; font-weight:900; background:#eff6ff; color:#1d4ed8; border-color:#93c5fd;">
+      👁️ அனைத்து 10 பொறுப்புகளையும் காட்டு (மொத்தம்: <span id="admDutyTotalCountBadge">0</span>)
+    </button>
+  </div>
+  <div id="admDutyRolesKpiGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:8px;"></div>
 </div>
-<div id="admDutyRolesKpiGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:8px;"></div>
+
+<!-- STEP 4: WORKSPACE GRID (CENTRE ADDITION FOR NON-10th/12th EXAMS + MANUAL DUTY ASSIGNMENT) -->
+<div id="admDutyWorkspaceGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(430px, 1fr)); gap:14px; margin-bottom:16px; align-items:start;">
+
+  <!-- PANEL A (SHOWN FOR ALL EXAMS EXCEPT 10th & 12th PUBLIC EXAMS): ADD & MANAGE NEW EXAM CENTRES -->
+  <div id="admDutyNonPublicCentresManagerPanel" style="display:none; background:#fffbeb; border:2px solid #f59e0b; border-top:5px solid #d97706; border-radius:12px; padding:14px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #fde68a;">
+      <div>
+        <div style="font-size:0.96rem; font-weight:900; color:#92400e;">🏛️ இத்தேர்விற்கான புதிய தேர்வு மையங்களை இணைத்தல் (Add Exam Centres)</div>
+        <div style="font-size:0.75rem; color:#78350f; font-weight:700; margin-top:2px;">
+          10 மற்றும் 12-ஆம் வகுப்பு பொதுத்தேர்வு தவிர்த்து, இத்தேர்விற்கெனப் பள்ளிகள் அல்லது தனித் தேர்வு மையங்களை (கல்லூரி / மையம்) புதியதாக இணைக்கலாம்.
+        </div>
+      </div>
+      <span id="admDutyCustomCentreCountBadge" style="background:#d97706; color:#fff; font-size:0.72rem; font-weight:900; padding:3px 10px; border-radius:999px;">0 மையங்கள்</span>
+    </div>
+
+    <!-- Option 1: Select from District Schools -->
+    <div style="background:#ffffff; border:1px solid #fcd34d; border-radius:9px; padding:10px; margin-bottom:10px;">
+      <div style="font-size:0.76rem; font-weight:900; color:#0f294a; margin-bottom:6px;">🏫 முறை 1: மாவட்டப் பள்ளிகளிலிருந்து தேர்வு செய்து இணை (அல்லது கீழே புதிய மையப் பெயரை உள்ளிடுக)</div>
+      <div style="display:grid; grid-template-columns:0.9fr 1.4fr; gap:8px; margin-bottom:8px;">
+        <div>
+          <label class="form-label" style="font-size:0.71rem; font-weight:800;">ஒன்றியம் வடிகட்டி (Block)</label>
+          <select id="admDutyAddCenBlockFilter" class="form-control" onchange="populateDutyNewCentreSchoolSelect()" style="font-size:0.76rem; font-weight:800;">
+            <option value="">அனைத்து 12 ஒன்றியங்கள்</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.71rem; font-weight:800;">பள்ளியைத் தேர்ந்தெடு (Select School to Autofill)</label>
+          <select id="admDutyAddCenSchoolSelect" class="form-control" onchange="onDutyAddCentreSchoolPicked()" style="font-size:0.76rem; font-weight:800;">
+            <option value="">-- பள்ளியைத் தேர்ந்தெடுக்கவும் (அல்லது கீழே நேரடியாக உள்ளிடவும்) --</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:0.7fr 1.5fr 0.9fr; gap:8px; margin-bottom:8px;">
+        <div>
+          <label class="form-label" style="font-size:0.71rem; font-weight:900; color:#b45309;">மைய எண் (Centre No) <span class="required">*</span></label>
+          <input type="text" id="admDutyAddCenCodeInput" class="form-control" placeholder="எ.கா: 3001" style="font-size:0.80rem; font-weight:900; border-color:#d97706;">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.71rem; font-weight:900; color:#0f294a;">தேர்வு மையத்தின் பெயர் (Centre Name) <span class="required">*</span></label>
+          <input type="text" id="admDutyAddCenNameInput" class="form-control" placeholder="பள்ளி / கல்லூரி / தேர்வு மையப் பெயர்" style="font-size:0.80rem; font-weight:800;">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.71rem; font-weight:800;">ஒன்றியம் (Block)</label>
+          <input type="text" id="admDutyAddCenBlockInput" class="form-control" placeholder="எ.கா: 12 Sivagangai" style="font-size:0.78rem; font-weight:800;">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; align-items:end;">
+        <div>
+          <label class="form-label" style="font-size:0.70rem; font-weight:800;">தேர்வர்கள் (Candidates)</label>
+          <input type="number" id="admDutyAddCenStrengthInput" class="form-control" min="1" value="120" style="font-size:0.78rem; font-weight:800; text-align:center;">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.70rem; font-weight:900; color:#4c1d95;">அறைக்கண்காணிப்பாளர் (HI)</label>
+          <input type="number" id="admDutyAddCenHiQuota" class="form-control" min="1" value="6" style="font-size:0.78rem; font-weight:900; text-align:center; border-color:#7c3aed;">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.70rem; font-weight:900; color:#92400e;">அலுவலகப் பணியாளர் (OS)</label>
+          <input type="number" id="admDutyAddCenOsQuota" class="form-control" min="1" value="2" style="font-size:0.78rem; font-weight:900; text-align:center; border-color:#d97706;">
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="addCustomExamCentreForActiveExam()" style="background:#d97706; border-color:#b45309; font-weight:900; padding:9px 14px; font-size:0.80rem; white-space:nowrap;">
+            ➕ தேர்வு மையம் இணை
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Import / Clear Toolbar for Custom Exam Centres -->
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+      <span style="font-size:0.75rem; font-weight:900; color:#78350f;">📋 இத்தேர்விற்கு இணைக்கப்பட்ட தேர்வு மையங்கள்:</span>
+      <div style="display:flex; gap:5px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="importPublicCentresIntoActiveExam('12')" style="font-size:0.70rem; padding:3px 8px; font-weight:800; background:#fff; color:#1e40af; border-color:#93c5fd;">
+          📥 +2 மையங்களை (91) நகலெடு
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="importPublicCentresIntoActiveExam('10')" style="font-size:0.70rem; padding:3px 8px; font-weight:800; background:#fff; color:#15803d; border-color:#86efac;">
+          📥 10th மையங்களை (113) நகலெடு
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="clearAllCustomCentresForActiveExam()" style="font-size:0.70rem; padding:3px 8px; font-weight:800; background:#fef2f2; color:#dc2626; border-color:#fca5a5;">
+          🧹 மையங்களை நீக்கு
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive" style="max-height:245px; overflow-y:auto; background:#fff; border:1px solid #fcd34d; border-radius:8px;">
+      <table class="data-table" style="margin:0; font-size:0.76rem;">
+        <thead style="position:sticky; top:0; z-index:3;">
+          <tr style="background:#92400e; color:#fff;">
+            <th style="width:40px; text-align:center;">வ.எண்</th>
+            <th style="width:85px;">மைய எண்</th>
+            <th>தேர்வு மையத்தின் பெயர் &amp; ஒன்றியம்</th>
+            <th style="text-align:center; width:95px;">HI / OS தேவை</th>
+            <th style="text-align:center; width:130px;">நடவடிக்கை</th>
+          </tr>
+        </thead>
+        <tbody id="admDutyCustomCentresTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL B: MANUAL DUTY ASSIGNMENT & EDIT ENGINE -->
+  <div style="background:#f8fafc; border:1.5px solid #c4b5fd; border-top:5px solid #7c3aed; border-radius:12px; padding:14px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+      <div>
+        <div style="font-size:0.96rem; font-weight:900; color:#4c1d95;">✍️ 3️⃣ தேர்வுப் பணி நியமனம் &amp; மாற்றம் (Manual Duty Assignment)</div>
+        <div style="font-size:0.74rem; color:#475569; font-weight:700;">குறிப்பிட்ட பொறுப்பு, தேர்வு மையம் / வழித்தடம் மற்றும் அலுவலர் / ஆசிரியரைத் தேர்ந்தெடுத்து நேரடியாக நியமிக்கவும்</div>
+      </div>
+      <span id="admDutyManualEditBadge" style="background:#ede9fe; color:#5b21b6; font-size:0.71rem; font-weight:900; padding:2px 8px; border-radius:999px;">Manual Mode</span>
+    </div>
+    <div style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:8px; margin-bottom:8px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#4c1d95;">1. தேர்வுப் பொறுப்பு (Select Duty Role) <span class="required">*</span></label>
+        <select id="admDutyManualRole" class="form-control" onchange="onExamDutyManualRoleChange()" style="font-size:0.80rem; font-weight:900; border-color:#7c3aed; color:#4c1d95;">
+          <option value="CS">1. முதன்மை கண்காணிப்பாளர் (Chief Superintendent)</option>
+          <option value="DO">2. துறை அலுவலர் (Departmental Officer)</option>
+          <option value="FS">3. பறக்கும் படையினர் (Flying Squad)</option>
+          <option value="SS">4. நிலையான படையினர் (Standing Squad)</option>
+          <option value="QPC">5. வினாத்தாள் கட்டுக்காப்பாளர் (QP Custodian)</option>
+          <option value="LO">6. தொடர்பு அலுவலர் (Liaison Officer)</option>
+          <option value="RO">7. வழித்தட அலுவலர் (Route Officer)</option>
+          <option value="ROA">8. வழித்தட அலுவலரின் உதவியாளர் (RO Assistant)</option>
+          <option value="HI">9. தேர்வறை கண்காணிப்பாளர் (Hall Invigilator)</option>
+          <option value="OS">10. தேர்வு மைய அலுவலகப் பணியாளர்கள் (Office Staff)</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0;" id="admDutyManualOsSubRoleWrap">
+        <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#b45309;">பணி உட்பிரிவு / குறிப்பு (Sub-Role / Note)</label>
+        <select id="admDutyManualSubRole" class="form-control" style="font-size:0.78rem; font-weight:800;">
+          <option value="">— பொதுப் பொறுப்பு (Standard) —</option>
+          <option value="தேர்வு மைய எழுத்தர் (Clerk / Jr.Asst)">தேர்வு மைய எழுத்தர் (Clerk / Jr.Asst)</option>
+          <option value="ஆய்வக உதவியாளர் (Lab Assistant)">ஆய்வக உதவியாளர் (Lab Assistant)</option>
+          <option value="பதிவறை எழுத்தர் (Record Clerk)">பதிவறை எழுத்தர் (Record Clerk)</option>
+          <option value="அலுவலக உதவியாளர் (Office Assistant)">அலுவலக உதவியாளர் (Office Assistant)</option>
+          <option value="குடிநீர்ப் பணியாளர் (Waterman)">குடிநீர்ப் பணியாளர் (Waterman)</option>
+          <option value="இரவுக் காவலர் (Night Watchman)">இரவுக் காவலர் (Night Watchman)</option>
+          <option value="தூய்மைப் பணியாளர் (Sweeper / Sanitary)">தூய்மைப் பணியாளர் (Sweeper / Sanitary)</option>
+          <option value="மாற்றுக் கண்காணிப்பாளர் (Reserve Invigilator)">மாற்றுக் கண்காணிப்பாளர் (Reserve Invigilator)</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1.25fr 0.75fr; gap:8px; margin-bottom:8px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#0f294a;">2. ஒதுக்கப்படும் தேர்வு மையம் / வழித்தடம் / குழு (Target Location) <span class="required">*</span></label>
+        <select id="admDutyManualCentreSelect" class="form-control" onchange="onExamDutyManualCentreSelect()" style="font-size:0.78rem; font-weight:800;"></select>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label" style="font-size:0.74rem; font-weight:800;">அல்லது மையம்/வழித்தடம் தட்டச்சு செய்க</label>
+        <input type="text" id="admDutyManualCentreCustom" class="form-control" placeholder="எ.கா: Route 01 / 208001 - ..." style="font-size:0.78rem; font-weight:800;">
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:0.9fr 1.1fr 1.2fr; gap:6px; margin-bottom:8px;">
+      <div>
+        <select id="admDutyManualFilterBlock" class="form-control" onchange="populateExamDutyManualStaffDropdown()" style="font-size:0.75rem; font-weight:800;">
+          <option value="">அனைத்து ஒன்றியம்</option>
+        </select>
+      </div>
+      <div>
+        <select id="admDutyManualFilterSchool" class="form-control" onchange="populateExamDutyManualStaffDropdown()" style="font-size:0.75rem; font-weight:800;">
+          <option value="">அனைத்துப் பள்ளிகள் (282)</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" id="admDutyManualStaffSearch" class="form-control" placeholder="🔍 EMIS ID, பெயர், பதவி தேடுக..." oninput="populateExamDutyManualStaffDropdown()" style="font-size:0.76rem; font-weight:800;">
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#1e3a8a;">3. பணியாளரைத் தேர்ந்தெடு (Select Officer / Teacher / Office Staff — <span id="admDutyManualMatchedStaffCount">0</span> பேர்):</label>
+      <select id="admDutyManualStaffSelect" class="form-control" style="font-size:0.80rem; font-weight:800; border-color:#2563eb; background:#fff;"></select>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button type="button" class="btn btn-primary btn-sm" onclick="assignExamDutyManually()" style="flex:1; background:#7c3aed; border-color:#6d28d9; font-weight:900; padding:9px 14px; font-size:0.84rem;">
+        ➕ பணி நியமனம் செய் / புதுப்பி (Save Duty Appointment)
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="resetExamDutyManualForm()" style="font-weight:800; padding:9px 12px;">
+        🔄 படிவம் மீட்டமை
+      </button>
+    </div>
+  </div>
 </div>
-<!-- STEP 3: TWO SIDE-BY-SIDE PANELS: AUTOMATIC ALLOTMENT ENGINE & MANUAL ASSIGNMENT -->
-<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:14px; margin-bottom:16px; align-items:start;">
-<!-- PANEL A: AUTOMATIC SMART ALLOTMENT ENGINE -->
-<div style="background:#f8fafc; border:1.5px solid #99f6e4; border-top:4px solid #0f766e; border-radius:12px; padding:14px;">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
-<div>
-<div style="font-size:0.95rem; font-weight:900; color:#0f766e;">⚡ 1. தானியங்கி பணி நியமன எஞ்சின் (Automatic Smart Allotment)</div>
-<div style="font-size:0.74rem; color:#475569; font-weight:700;">பதவி மூப்பு, சொந்தப் பள்ளி தவிர்ப்பு (Other-School Rule) மற்றும் விலக்கு விதிகளின்படி 1 கிளிக்கில் நியமனம்</div>
-</div>
-<span style="background:#dcfce7; color:#166534; font-size:0.71rem; font-weight:900; padding:2px 8px; border-radius:999px;">Smart Rules Ready</span>
-</div>
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:800;">இலக்கு ஒன்றியம் (Target Block)</label>
-<select id="admDutyAutoBlock" class="form-control" style="font-size:0.80rem; font-weight:800;">
-<option value="">அனைத்து 12 ஒன்றியங்கள் (All Blocks)</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:900; color:#0f766e;">நியமிக்க வேண்டிய பொறுப்பு (Role to Auto-Allot)</label>
-<select id="admDutyAutoRole" class="form-control" style="font-size:0.80rem; font-weight:900; border-color:#0f766e; color:#0f766e;">
-<option value="ALL">🌟 அனைத்து 10 பொறுப்புகளும் (All 10 Roles)</option>
-<option value="CS">1. முதன்மை கண்காணிப்பாளர் (Chief Superintendent)</option>
-<option value="DO">2. துறை அலுவலர் (Departmental Officer)</option>
-<option value="FS">3. பறக்கும் படையினர் (Flying Squad)</option>
-<option value="SS">4. நிலையான படையினர் (Standing Squad)</option>
-<option value="QPC">5. வினாத்தாள் கட்டுக்காப்பாளர் (QP Custodian)</option>
-<option value="LO">6. தொடர்பு அலுவலர் (Liaison Officer)</option>
-<option value="RO">7. வழித்தட அலுவலர் (Route Officer)</option>
-<option value="ROA">8. வழித்தட அலுவலரின் உதவியாளர் (RO Assistant)</option>
-<option value="HI">9. தேர்வறை கண்காணிப்பாளர் (Hall Invigilator)</option>
-<option value="OS">10. தேர்வு மைய அலுவலகப் பணியாளர்கள் (Office Staff)</option>
-</select>
-</div>
-</div>
-<div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:10px;">
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.70rem; font-weight:900; color:#4c1d95;" title="Hall Invigilators per Exam Centre">தேர்வறை கண்காணிப்பாளர் / மையம்</label>
-<select id="admDutyAutoHiCount" class="form-control" style="font-size:0.75rem; font-weight:900; border-color:#7c3aed; color:#2e1065;">
-<option value="CENTRE_CONFIG" selected>🎯 மையம் வாரியாக நிர்ணயித்த எண்ணிக்கை (Configured)</option>
-<option value="AUTO">Auto (20 மாணவருக்கு 1)</option>
-<option value="2">மையத்திற்கு 2 பேர்</option>
-<option value="3">மையத்திற்கு 3 பேர்</option>
-<option value="4">மையத்திற்கு 4 பேர்</option>
-<option value="5">மையத்திற்கு 5 பேர்</option>
-<option value="6">மையத்திற்கு 6 பேர்</option>
-<option value="8">மையத்திற்கு 8 பேர்</option>
-<option value="10">மையத்திற்கு 10 பேர்</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.70rem; font-weight:800;" title="Standing Squad per Exam Centre">நிலையான படை / மையம்</label>
-<select id="admDutyAutoSsCount" class="form-control" style="font-size:0.76rem; font-weight:800;">
-<option value="1" selected>மையத்திற்கு 1 பேர்</option>
-<option value="2">மையத்திற்கு 2 பேர்</option>
-<option value="3">மையத்திற்கு 3 பேர்</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.70rem; font-weight:900; color:#92400e;" title="Office Staff per Exam Centre">அலுவலகப் பணியாளர் / மையம்</label>
-<select id="admDutyAutoOsCount" class="form-control" style="font-size:0.75rem; font-weight:900; border-color:#d97706; color:#78350f;">
-<option value="CENTRE_CONFIG" selected>🎯 மையம் வாரியாக நிர்ணயித்த எண்ணிக்கை (Configured)</option>
-<option value="1">மையத்திற்கு 1 பேர்</option>
-<option value="2">மையத்திற்கு 2 பேர்</option>
-<option value="3">மையத்திற்கு 3 பேர்</option>
-<option value="4">மையத்திற்கு 4 பேர்</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.70rem; font-weight:800;" title="Number of Question Paper Routes">வழித்தடங்கள் (Routes)</label>
-<input type="number" id="admDutyAutoRouteCount" class="form-control" min="1" max="50" value="15" style="font-size:0.78rem; font-weight:900; text-align:center;">
-</div>
-</div>
-<div style="display:flex; flex-wrap:wrap; gap:10px; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px; margin-bottom:10px; font-size:0.75rem; font-weight:800; color:#1e293b;">
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;">
-<input type="checkbox" id="admDutyAutoOtherSchoolChk" checked>
-<span>🏫 சொந்தப் பள்ளி தவிர்ப்பு (Other-School Rule: CS, DO, SS, HI)</span>
-</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;">
-<input type="checkbox" id="admDutyAutoGovtAidedOnlyChk" checked>
-<span>🏛️ அரசு &amp; உதவிபெறும் (1G &amp; 2A) முன்னுரிமை</span>
-</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;">
-<input type="checkbox" id="admDutyAutoKeepExistingChk" checked>
-<span>🔒 ஏற்கனவே உள்ள கைமுறை (Manual) நியமனங்களைப் பாதுகாக்க</span>
-</label>
-</div>
-<div style="display:flex; gap:8px; flex-wrap:wrap;">
-<button type="button" class="btn btn-primary btn-sm" onclick="runExamDutyAutoAllotment()" style="flex:1; background:#0f766e; border-color:#0d9488; font-weight:900; padding:9px 14px; font-size:0.84rem;">
-⚡ தானியங்கி பணி நியமனம் உருவாக்கு (Run Auto-Allotment)
-</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="clearCurrentExamDutyAppointments()" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-weight:800; padding:9px 12px;">
-🧹 மீட்டமை (Clear)
-</button>
-</div>
-</div>
-<!-- PANEL B: MANUAL DUTY ASSIGNMENT & EDIT ENGINE -->
-<div style="background:#f8fafc; border:1.5px solid #c4b5fd; border-top:4px solid #7c3aed; border-radius:12px; padding:14px;">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
-<div>
-<div style="font-size:0.95rem; font-weight:900; color:#4c1d95;">✍️ 2. கைமுறை பணி நியமனம் &amp; மாற்றம் (Manual Assignment / Edit)</div>
-<div style="font-size:0.74rem; color:#475569; font-weight:700;">குறிப்பிட்ட ஆசிரியர் / அலுவலரைத் தேர்ந்தெடுத்து எந்தத் தேர்வு மையம் / வழித்தடத்திற்கும் நேரடியாக நியமிக்கலாம்</div>
-</div>
-<span id="admDutyManualEditBadge" style="background:#ede9fe; color:#5b21b6; font-size:0.71rem; font-weight:900; padding:2px 8px; border-radius:999px;">Manual Mode</span>
-</div>
-<div style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:8px; margin-bottom:8px;">
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:900; color:#4c1d95;">1. தேர்வுப் பொறுப்பு (Select Duty Role) <span class="required">*</span></label>
-<select id="admDutyManualRole" class="form-control" onchange="onExamDutyManualRoleChange()" style="font-size:0.80rem; font-weight:900; border-color:#7c3aed; color:#4c1d95;">
-<option value="CS">1. முதன்மை கண்காணிப்பாளர் (Chief Superintendent)</option>
-<option value="DO">2. துறை அலுவலர் (Departmental Officer)</option>
-<option value="FS">3. பறக்கும் படையினர் (Flying Squad)</option>
-<option value="SS">4. நிலையான படையினர் (Standing Squad)</option>
-<option value="QPC">5. வினாத்தாள் கட்டுக்காப்பாளர் (QP Custodian)</option>
-<option value="LO">6. தொடர்பு அலுவலர் (Liaison Officer)</option>
-<option value="RO">7. வழித்தட அலுவலர் (Route Officer)</option>
-<option value="ROA">8. வழித்தட அலுவலரின் உதவியாளர் (RO Assistant)</option>
-<option value="HI">9. தேர்வறை கண்காணிப்பாளர் (Hall Invigilator)</option>
-<option value="OS">10. தேர்வு மைய அலுவலகப் பணியாளர்கள் (Office Staff)</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;" id="admDutyManualOsSubRoleWrap">
-<label class="form-label" style="font-size:0.74rem; font-weight:800; color:#b45309;">பணி உட்பிரிவு / குறிப்பு (Sub-Role / Note)</label>
-<select id="admDutyManualSubRole" class="form-control" style="font-size:0.78rem; font-weight:800;">
-<option value="">— பொதுப் பொறுப்பு (Standard) —</option>
-<option value="தேர்வு மைய எழுத்தர் (Clerk / Jr.Asst)">தேர்வு மைய எழுத்தர் (Clerk / Jr.Asst)</option>
-<option value="ஆய்வக உதவியாளர் (Lab Assistant)">ஆய்வக உதவியாளர் (Lab Assistant)</option>
-<option value="பதிவறை எழுத்தர் (Record Clerk)">பதிவறை எழுத்தர் (Record Clerk)</option>
-<option value="அலுவலக உதவியாளர் (Office Assistant)">அலுவலக உதவியாளர் (Office Assistant)</option>
-<option value="குடிநீர்ப் பணியாளர் (Waterman)">குடிநீர்ப் பணியாளர் (Waterman)</option>
-<option value="இரவுக் காவலர் (Night Watchman)">இரவுக் காவலர் (Night Watchman)</option>
-<option value="தூய்மைப் பணியாளர் (Sweeper / Sanitary)">தூய்மைப் பணியாளர் (Sweeper / Sanitary)</option>
-<option value="மாற்றுக் கண்காணிப்பாளர் (Reserve Invigilator)">மாற்றுக் கண்காணிப்பாளர் (Reserve Invigilator)</option>
-</select>
-</div>
-</div>
-<div style="display:grid; grid-template-columns:1.25fr 0.75fr; gap:8px; margin-bottom:8px;">
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:900; color:#0f294a;">2. ஒதுக்கப்படும் தேர்வு மையம் / வழித்தடம் / குழு (Target Location) <span class="required">*</span></label>
-<select id="admDutyManualCentreSelect" class="form-control" onchange="onExamDutyManualCentreSelect()" style="font-size:0.78rem; font-weight:800;"></select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:800;">அல்லது மையம்/வழித்தடம் தட்டச்சு செய்க</label>
-<input type="text" id="admDutyManualCentreCustom" class="form-control" placeholder="எ.கா: Route 01 / 208001 - ..." style="font-size:0.78rem; font-weight:800;">
-</div>
-</div>
-<div style="display:grid; grid-template-columns:0.9fr 1.1fr 1.2fr; gap:6px; margin-bottom:8px;">
-<div>
-<select id="admDutyManualFilterBlock" class="form-control" onchange="populateExamDutyManualStaffDropdown()" style="font-size:0.75rem; font-weight:800;">
-<option value="">அனைத்து ஒன்றியம்</option>
-</select>
-</div>
-<div>
-<select id="admDutyManualFilterSchool" class="form-control" onchange="populateExamDutyManualStaffDropdown()" style="font-size:0.75rem; font-weight:800;">
-<option value="">அனைத்துப் பள்ளிகள் (282)</option>
-</select>
-</div>
-<div>
-<input type="text" id="admDutyManualStaffSearch" class="form-control" placeholder="🔍 EMIS ID, பெயர், பதவி தேடுக..." oninput="populateExamDutyManualStaffDropdown()" style="font-size:0.76rem; font-weight:800;">
-</div>
-</div>
-<div class="form-group" style="margin-bottom:10px;">
-<label class="form-label" style="font-size:0.74rem; font-weight:900; color:#1e3a8a;">3. பணியாளரைத் தேர்ந்தெடு (Select Officer / Teacher / Office Staff — <span id="admDutyManualMatchedStaffCount">0</span> பேர்):</label>
-<select id="admDutyManualStaffSelect" class="form-control" style="font-size:0.80rem; font-weight:800; border-color:#2563eb; background:#fff;"></select>
-</div>
-<div style="display:flex; gap:8px;">
-<button type="button" class="btn btn-primary btn-sm" onclick="assignExamDutyManually()" style="flex:1; background:#7c3aed; border-color:#6d28d9; font-weight:900; padding:9px 14px; font-size:0.84rem;">
-➕ கைமுறையாகப் பணி நியமனம் செய் / புதுப்பி (Save Manual Duty)
-</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="resetExamDutyManualForm()" style="font-weight:800; padding:9px 12px;">
-🔄 படிவம் மீட்டமை
-</button>
-</div>
-</div>
-</div>
-<!-- STEP 4: FILTERS FOR APPOINTED EXAM DUTY ROSTER TABLE -->
+
+<!-- STEP 5: FILTERS FOR APPOINTED EXAM DUTY ROSTER TABLE -->
 <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:12px;">
-<div style="display:grid; grid-template-columns:1.2fr 1fr 1.2fr 0.8fr 1.4fr; gap:8px; align-items:end;">
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:800;">1. பொறுப்பு வகை (Role Filter)</label>
-<select id="admDutyTableFilterRole" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
-<option value="">அனைத்து 10 பொறுப்புகளும் (All Roles)</option>
-<option value="CS">1. முதன்மை கண்காணிப்பாளர் (CS)</option>
-<option value="DO">2. துறை அலுவலர் (DO)</option>
-<option value="FS">3. பறக்கும் படையினர் (Flying Squad)</option>
-<option value="SS">4. நிலையான படையினர் (Standing Squad)</option>
-<option value="QPC">5. வினாத்தாள் கட்டுக்காப்பாளர் (QPC)</option>
-<option value="LO">6. தொடர்பு அலுவலர் (Liaison Officer)</option>
-<option value="RO">7. வழித்தட அலுவலர் (Route Officer)</option>
-<option value="ROA">8. வழித்தட அலுவலரின் உதவியாளர் (RO Asst)</option>
-<option value="HI">9. தேர்வறை கண்காணிப்பாளர் (Hall Invigilator)</option>
-<option value="OS">10. தேர்வு மைய அலுவலகப் பணியாளர்கள் (Office Staff)</option>
-</select>
+  <div style="display:grid; grid-template-columns:1.2fr 1fr 1.2fr 1.4fr; gap:8px; align-items:end;">
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label" style="font-size:0.74rem; font-weight:800;">1. பொறுப்பு வகை (Role Filter)</label>
+      <select id="admDutyTableFilterRole" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
+        <option value="">அனைத்து 10 பொறுப்புகளும் (All Roles)</option>
+        <option value="CS">1. முதன்மை கண்காணிப்பாளர் (CS)</option>
+        <option value="DO">2. துறை அலுவலர் (DO)</option>
+        <option value="FS">3. பறக்கும் படையினர் (Flying Squad)</option>
+        <option value="SS">4. நிலையான படையினர் (Standing Squad)</option>
+        <option value="QPC">5. வினாத்தாள் கட்டுக்காப்பாளர் (QPC)</option>
+        <option value="LO">6. தொடர்பு அலுவலர் (Liaison Officer)</option>
+        <option value="RO">7. வழித்தட அலுவலர் (Route Officer)</option>
+        <option value="ROA">8. வழித்தட அலுவலரின் உதவியாளர் (RO Asst)</option>
+        <option value="HI">9. தேர்வறை கண்காணிப்பாளர் (Hall Invigilator)</option>
+        <option value="OS">10. தேர்வு மைய அலுவலகப் பணியாளர்கள் (Office Staff)</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label" style="font-size:0.74rem; font-weight:800;">2. ஒன்றியம் (Block)</label>
+      <select id="admDutyTableFilterBlock" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
+        <option value="">அனைத்து 12 ஒன்றியங்கள்</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label" style="font-size:0.74rem; font-weight:800;">3. தேர்வு மையம் / வழித்தடம் (Centre/Route)</label>
+      <select id="admDutyTableFilterCentre" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
+        <option value="">அனைத்து மையங்கள் &amp; வழித்தடங்கள்</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label" style="font-size:0.74rem; font-weight:800;">4. தேடல் (EMIS ID / பெயர் / பள்ளி / மையம்)</label>
+      <input type="text" id="admDutyTableFilterSearch" class="form-control" placeholder="🔍 EMIS ID, பெயர், பதவி, பள்ளி, மையம் தேடுக..." oninput="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
+    </div>
+  </div>
+  <input type="hidden" id="admDutyTableFilterMode" value="">
 </div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:800;">2. ஒன்றியம் (Block)</label>
-<select id="admDutyTableFilterBlock" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
-<option value="">அனைத்து 12 ஒன்றியங்கள்</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:800;">3. தேர்வு மையம் / வழித்தடம் (Centre/Route)</label>
-<select id="admDutyTableFilterCentre" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
-<option value="">அனைத்து மையங்கள் &amp; வழித்தடங்கள்</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:800;">4. நியமன முறை (Mode)</label>
-<select id="admDutyTableFilterMode" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
-<option value="">அனைத்தும் (Auto &amp; Manual)</option>
-<option value="AUTO">⚡ தானியங்கி (Auto)</option>
-<option value="MANUAL">✍️ கைமுறை (Manual)</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.74rem; font-weight:800;">5. தேடல் (EMIS ID / பெயர் / பள்ளி / மையம்)</label>
-<input type="text" id="admDutyTableFilterSearch" class="form-control" placeholder="🔍 EMIS ID, பெயர், பதவி, பள்ளி, மையம் தேடுக..." oninput="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
-</div>
-</div>
-</div>
-<!-- STEP 5: APPOINTED EXAM DUTY ROSTER TABLE -->
+
+<!-- STEP 6: APPOINTED EXAM DUTY ROSTER TABLE -->
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-<div style="font-size:0.84rem; font-weight:900; color:#0f294a;">
-📋 நியமிக்கப்பட்ட அலுவலர்கள் / ஆசிரியர்கள் / பணியாளர்கள் பட்டியல் (பொருந்தியவை: <span id="admDutyFilteredCountBadge" style="color:#0f766e;">0</span>)
-</div>
-<div style="font-size:0.75rem; color:#475569; font-weight:700;">
-💡 எந்தவொரு வரிசையிலும் <strong>"✏️ மாற்று"</strong> கிளிக் செய்து மையம்/பணியை மாற்றலாம்; <strong>"🖨️ ஆணை"</strong> கிளிக் செய்து தனிநபர் நியமன ஆணையை அச்சிடலாம்.
-</div>
+  <div style="font-size:0.84rem; font-weight:900; color:#0f294a;">
+    📋 நியமிக்கப்பட்ட அலுவலர்கள் / ஆசிரியர்கள் / பணியாளர்கள் பட்டியல் (மொத்தம்: <span id="admDutyFilteredCountBadge" style="color:#0f766e;">0</span>)
+  </div>
+  <div style="font-size:0.75rem; color:#475569; font-weight:700;">
+    💡 எந்தவொரு வரிசையிலும் <strong>"✏️ மாற்று"</strong> கிளிக் செய்து மையம்/பணியை மாற்றலாம்; <strong>"🖨️ ஆணை"</strong> கிளிக் செய்து தனிநபர் நியமன ஆணையை அச்சிடலாம்.
+  </div>
 </div>
 <div class="table-responsive" style="max-height:560px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px;">
-<table class="data-table" style="margin:0;">
-<thead style="position:sticky; top:0; z-index:5;">
-<tr style="background:#0f294a; color:#fff;">
-<th style="width:45px; text-align:center;">வ.எண்</th>
-<th style="min-width:170px;">தேர்வுப் பொறுப்பு (Duty Role)</th>
-<th style="min-width:220px;">ஒதுக்கப்பட்ட தேர்வு மையம் / வழித்தடம் / குழு</th>
-<th style="min-width:190px;">பணியாளர் பெயர் &amp; EMIS ID</th>
-<th style="min-width:150px;">பதவி &amp; பாடம்</th>
-<th style="min-width:210px;">பணிபுரியும் பள்ளி &amp; ஒன்றியம்</th>
-<th style="text-align:center; width:115px;">அலைபேசி</th>
-<th style="text-align:center; width:85px;">முறை</th>
-<th style="text-align:center; min-width:175px;">நடவடிக்கை (மாற்று / ஆணை / நீக்கு)</th>
-</tr>
-</thead>
-<tbody id="admExamDutyAppointmentsTbody"></tbody>
-</table>
+  <table class="data-table" style="margin:0;">
+    <thead style="position:sticky; top:0; z-index:5;">
+      <tr style="background:#0f294a; color:#fff;">
+        <th style="width:45px; text-align:center;">வ.எண்</th>
+        <th style="min-width:170px;">தேர்வுப் பொறுப்பு (Duty Role)</th>
+        <th style="min-width:220px;">ஒதுக்கப்பட்ட தேர்வு மையம் / வழித்தடம் / குழு</th>
+        <th style="min-width:190px;">பணியாளர் பெயர் &amp; EMIS ID</th>
+        <th style="min-width:150px;">பதவி &amp; பாடம்</th>
+        <th style="min-width:210px;">பணிபுரியும் பள்ளி &amp; ஒன்றியம்</th>
+        <th style="text-align:center; width:115px;">அலைபேசி</th>
+        <th style="text-align:center; min-width:175px;">நடவடிக்கை (மாற்று / ஆணை / நீக்கு)</th>
+      </tr>
+    </thead>
+    <tbody id="admExamDutyAppointmentsTbody"></tbody>
+  </table>
 </div>
 </div>
 <!-- Bottom Return Button -->
@@ -26747,26 +26772,33 @@ const EXAM_DUTY_ROLES_CATALOG = [
 { code: "OS",  sn: 10, icon: "🧑‍💼", nameTa: "தேர்வு மைய அலுவலகப் பணியாளர்கள்", nameEn: "Exam Centre Office Staff", badgeBg: "#fdf2f8", badgeColor: "#9d174d", borderColor: "#db2777", locType: "CENTRE" }
 ];
 const EXAM_TYPES_CATALOG = {
-HSC2_2027:      { titleTa: "மேல்நிலை இரண்டாம் ஆண்டு (+2 / HSC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "HSC (+2) Public Examination – March/April 2027", level: "12", otherCode: "" },
-HSC1_2027:      { titleTa: "மேல்நிலை முதலாம் ஆண்டு (+1 Arrear) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "HSC (+1 Arrear) Public Examination – March/April 2027", level: "12", otherCode: "HSC1_SUPP" },
-SSLC_2027:      { titleTa: "பத்தாம் வகுப்பு (10th / SSLC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "SSLC (10th) Public Examination – March/April 2027", level: "10", otherCode: "" },
-HSC_SUPP_2027:  { titleTa: "+2 உடனடித் துணைத்தேர்வு (HSC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "HSC (+2) Supplementary Examination – June/July 2027", level: "12", otherCode: "HSC1_SUPP" },
-SSLC_SUPP_2027: { titleTa: "10-ஆம் வகுப்பு துணைத்தேர்வு (SSLC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "SSLC (10th) Supplementary Examination – June/July 2027", level: "10", otherCode: "SSLC_SUPP" },
-NMMS_2027:      { titleTa: "NMMS தேசிய வருவாய் வழி மற்றும் தகுதிப் படிப்புதவித் தொகைத் தேர்வு – 2026-27", titleEn: "NMMS Examination – 2026-27", level: "10", otherCode: "NMMS" },
-TRUST_2027:     { titleTa: "TRUST ஊரகத் திறனாய்வுத் தேர்வு (9-ஆம் வகுப்பு) – 2026-27", titleEn: "TRUST Scholarship Examination – 2026-27", level: "10", otherCode: "TRUST" },
-TTSE_2027:      { titleTa: "தமிழ் மொழி இலக்கியத் திறனறித் தேர்வு (11-ஆம் வகுப்பு) – 2026-27", titleEn: "Tamil Talent Search Examination (TTSE) – 2026-27", level: "12", otherCode: "TTSE" },
-CMTS_2027:      { titleTa: "முதலமைச்சர் திறனறித் தேர்வு (10-ஆம் வகுப்பு) – 2026-27", titleEn: "Chief Minister Talent Search Examination (CMTS) – 2026-27", level: "12", otherCode: "CMTS" },
-TET_TRB:        { titleTa: "ஆசிரியர் தகுதித் தேர்வு / போட்டித் தேர்வுகள் (TET / TRB) – 2026-27", titleEn: "TET / TRB Competitive Examination – 2026-27", level: "12", otherCode: "TET_TRB" },
-TNPSC:          { titleTa: "TNPSC / அரசுப் பணியாளர் போட்டித் தேர்வுகள் – 2026-27", titleEn: "TNPSC Examination – 2026-27", level: "12", otherCode: "TNPSC" },
-GOVT_TECH:      { titleTa: "அரசு தொழில்நுட்பத் தேர்வுகள் (Typewriting / COA / Shorthand) – 2026-27", titleEn: "Government Technical Examinations – 2026-27", level: "12", otherCode: "GOVT_TECH" },
-ESLC_8TH:       { titleTa: "8-ஆம் வகுப்பு தனித்தேர்வர் பொதுத்தேர்வு (ESLC) – 2026-27", titleEn: "8th Standard ESLC Public Examination – 2026-27", level: "10", otherCode: "ESLC_8TH" },
-CUSTOM_EXAM:    { titleTa: "சிறப்புத் திறனறி / போட்டித் தேர்வு – 2026-27", titleEn: "Special Examination – 2026-27", level: "10", otherCode: "ALL_OTHER" }
+HSC2_2027:      { icon: "🎓", shortTa: "+2 (HSC) பொதுத்தேர்வு", titleTa: "மேல்நிலை இரண்டாம் ஆண்டு (+2 / HSC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "HSC (+2) Public Examination – March/April 2027", level: "12", isFixedPublic: true, accent: "#1e40af", bg: "#eff6ff", border: "#93c5fd" },
+SSLC_2027:      { icon: "📗", shortTa: "10-ஆம் வகுப்பு (SSLC) பொதுத்தேர்வு", titleTa: "பத்தாம் வகுப்பு (10th / SSLC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "SSLC (10th) Public Examination – March/April 2027", level: "10", isFixedPublic: true, accent: "#15803d", bg: "#f0fdf4", border: "#86efac" },
+HSC1_2027:      { icon: "📘", shortTa: "+1 (Arrear) பொதுத்தேர்வு", titleTa: "மேல்நிலை முதலாம் ஆண்டு (+1 Arrear) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027", titleEn: "HSC (+1 Arrear) Public Examination – March/April 2027", level: "12", isFixedPublic: false, otherCode: "HSC1_SUPP", accent: "#0369a1", bg: "#f0f9ff", border: "#7dd3fc" },
+HSC_SUPP_2027:  { icon: "🔄", shortTa: "+2 உடனடித் துணைத்தேர்வு", titleTa: "+2 உடனடித் துணைத்தேர்வு (HSC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "HSC (+2) Supplementary Examination – June/July 2027", level: "12", isFixedPublic: false, otherCode: "HSC1_SUPP", accent: "#6d28d9", bg: "#f5f3ff", border: "#c4b5fd" },
+SSLC_SUPP_2027: { icon: "🔄", shortTa: "10-ஆம் வகுப்பு துணைத்தேர்வு", titleTa: "10-ஆம் வகுப்பு துணைத்தேர்வு (SSLC Supplementary Exam) – ஜூன்/ஜூலை 2027", titleEn: "SSLC (10th) Supplementary Examination – June/July 2027", level: "10", isFixedPublic: false, otherCode: "SSLC_SUPP", accent: "#0f766e", bg: "#f0fdfa", border: "#5eead4" },
+NMMS_2027:      { icon: "🏅", shortTa: "NMMS தேர்வு (8-ஆம் வகுப்பு)", titleTa: "NMMS தேசிய வருவாய் வழி மற்றும் தகுதிப் படிப்புதவித் தொகைத் தேர்வு – 2026-27", titleEn: "NMMS Examination (8th Std) – 2026-27", level: "10", isFixedPublic: false, otherCode: "NMMS", accent: "#b45309", bg: "#fffbeb", border: "#fcd34d" },
+TRUST_2027:     { icon: "🏆", shortTa: "TRUST தேர்வு (9-ஆம் வகுப்பு)", titleTa: "TRUST ஊரகத் திறனாய்வுத் தேர்வு (9-ஆம் வகுப்பு) – 2026-27", titleEn: "TRUST Scholarship Examination (9th Std) – 2026-27", level: "10", isFixedPublic: false, otherCode: "TRUST", accent: "#9a3412", bg: "#fff7ed", border: "#fdba74" },
+TTSE_2027:      { icon: "📖", shortTa: "தமிழ் இலக்கியத் திறனறித் தேர்வு (TTSE)", titleTa: "தமிழ் மொழி இலக்கியத் திறனறித் தேர்வு (11-ஆம் வகுப்பு) – 2026-27", titleEn: "Tamil Talent Search Examination (TTSE) – 2026-27", level: "12", isFixedPublic: false, otherCode: "TTSE", accent: "#be123c", bg: "#fff1f2", border: "#fda4af" },
+CMTS_2027:      { icon: "🌟", shortTa: "முதலமைச்சர் திறனறித் தேர்வு (CMTS)", titleTa: "முதலமைச்சர் திறனறித் தேர்வு (10-ஆம் வகுப்பு) – 2026-27", titleEn: "Chief Minister Talent Search Examination (CMTS) – 2026-27", level: "12", isFixedPublic: false, otherCode: "CMTS", accent: "#4338ca", bg: "#eef2ff", border: "#a5b4fc" },
+TET_TRB:        { icon: "👩‍🏫", shortTa: "TET / TRB போட்டித் தேர்வு", titleTa: "ஆசிரியர் தகுதித் தேர்வு / போட்டித் தேர்வுகள் (TET / TRB) – 2026-27", titleEn: "TET / TRB Competitive Examination – 2026-27", level: "12", isFixedPublic: false, otherCode: "TET_TRB", accent: "#0f766e", bg: "#f0fdfa", border: "#5eead4" },
+TNPSC:          { icon: "🏛️", shortTa: "TNPSC போட்டித் தேர்வு", titleTa: "TNPSC / அரசுப் பணியாளர் போட்டித் தேர்வுகள் – 2026-27", titleEn: "TNPSC Examination – 2026-27", level: "12", isFixedPublic: false, otherCode: "TNPSC", accent: "#1e3a8a", bg: "#eff6ff", border: "#93c5fd" },
+GOVT_TECH:      { icon: "⌨️", shortTa: "அரசு தொழில்நுட்பத் தேர்வு (Typewriting)", titleTa: "அரசு தொழில்நுட்பத் தேர்வுகள் (Typewriting / COA / Shorthand) – 2026-27", titleEn: "Government Technical Examinations – 2026-27", level: "12", isFixedPublic: false, otherCode: "GOVT_TECH", accent: "#334155", bg: "#f8fafc", border: "#cbd5e1" },
+ESLC_8TH:       { icon: "📝", shortTa: "8-ஆம் வகுப்பு தனித்தேர்வர் (ESLC)", titleTa: "8-ஆம் வகுப்பு தனித்தேர்வர் பொதுத்தேர்வு (ESLC) – 2026-27", titleEn: "8th Standard ESLC Public Examination – 2026-27", level: "10", isFixedPublic: false, otherCode: "ESLC_8TH", accent: "#7c2d12", bg: "#fff7ed", border: "#fdba74" },
+CUSTOM_EXAM:    { icon: "✨", shortTa: "பிற சிறப்புத் தேர்வு (Custom Exam)", titleTa: "சிறப்புத் திறனறி / போட்டித் தேர்வு – 2026-27", titleEn: "Special Examination – 2026-27", level: "10", isFixedPublic: false, otherCode: "ALL_OTHER", accent: "#701a75", bg: "#fdf4ff", border: "#f0abfc" }
 };
 let examDutyStoreCache = null;
 let examDutyMetaCache = null;
 function getExamDutyStore() {
 if (!examDutyStoreCache) {
-examDutyStoreCache = safeGetStorage(EXAM_DUTY_STORAGE_KEY, {}) || {};
+const rawStore = safeGetStorage(EXAM_DUTY_STORAGE_KEY, {}) || {};
+// Purge any legacy automatic appointments so only manual assignments remain
+Object.keys(rawStore).forEach(k => {
+if (Array.isArray(rawStore[k])) {
+rawStore[k] = rawStore[k].filter(x => x && x.mode === "MANUAL");
+}
+});
+examDutyStoreCache = rawStore;
 }
 return examDutyStoreCache;
 }
@@ -26786,8 +26818,15 @@ examDutyMetaCache = safeGetStorage(EXAM_DUTY_META_KEY, {
 rcNo: "ந.க.எண்: 2450/அ3/2026",
 orderDate: new Date().toLocaleDateString("en-GB").replace(/\//g, "."),
 customExamTitle: "சிறப்புத் திறனறித் தேர்வு – 2026-27",
-customExams: {}
+customExams: {},
+customCentresByExamKey: {}
 }) || {};
+if (!examDutyMetaCache.customExams || typeof examDutyMetaCache.customExams !== "object") {
+examDutyMetaCache.customExams = {};
+}
+if (!examDutyMetaCache.customCentresByExamKey || typeof examDutyMetaCache.customCentresByExamKey !== "object") {
+examDutyMetaCache.customCentresByExamKey = {};
+}
 }
 return examDutyMetaCache;
 }
@@ -26800,6 +26839,54 @@ if (rcEl) meta.rcNo = rcEl.value.trim();
 if (dtEl) meta.orderDate = dtEl.value.trim();
 if (cuEl) meta.customExamTitle = cuEl.value.trim();
 safeSetStorage(EXAM_DUTY_META_KEY, meta);
+}
+function isFixedPublicExamKey(examKey) {
+return examKey === "SSLC_2027" || examKey === "HSC2_2027";
+}
+function getAllExamDutyCatalogEntries() {
+const meta = getExamDutyMeta();
+const entries = Object.keys(EXAM_TYPES_CATALOG).map(k => {
+const base = EXAM_TYPES_CATALOG[k];
+return Object.assign({}, base, {
+key: k,
+titleTa: (k === "CUSTOM_EXAM" && meta.customExamTitle) ? meta.customExamTitle : base.titleTa
+});
+});
+if (meta.customExams && typeof meta.customExams === "object") {
+Object.keys(meta.customExams).forEach(ck => {
+if (EXAM_TYPES_CATALOG[ck]) return;
+const cObj = meta.customExams[ck];
+if (!cObj || !cObj.titleTa) return;
+entries.push({
+key: ck,
+icon: cObj.icon || "📝",
+shortTa: cObj.shortTa || cObj.titleTa,
+titleTa: cObj.titleTa,
+titleEn: cObj.titleEn || cObj.titleTa,
+level: cObj.level || "10",
+isFixedPublic: false,
+accent: "#0f766e",
+bg: "#f0fdfa",
+border: "#5eead4",
+isUserCreatedExam: true
+});
+});
+}
+return entries;
+}
+function syncExamDutySelectDropdownOptions() {
+const sel = document.getElementById("admDutyExamTypeSelect");
+if (!sel) return;
+const curVal = sel.value || "HSC2_2027";
+const entries = getAllExamDutyCatalogEntries();
+sel.innerHTML = entries.map(e => {
+const cList = getExamCentresForExamKey(e.key);
+const cText = e.isFixedPublic ? ` (${cList.length} நிலையான மையங்கள்)` : ` (${cList.length} மையங்கள்)`;
+return `<option value="${escapeHtmlAttr(e.key)}">${escapeHtmlAttr(e.icon)} ${escapeHtmlAttr(e.titleTa)}${escapeHtmlAttr(cText)}</option>`;
+}).join("");
+if (entries.some(e => e.key === curVal)) {
+sel.value = curVal;
+}
 }
 function getActiveExamDutyTypeKey() {
 return (document.getElementById("admDutyExamTypeSelect")?.value || "HSC2_2027").trim();
@@ -26816,82 +26903,24 @@ if (examKey === "SSLC_2027") return { mode: "10", code: "10" };
 if (examKey === "HSC2_2027") return { mode: "12", code: "12" };
 const cat = EXAM_TYPES_CATALOG[examKey];
 if (cat && cat.otherCode) return { mode: "OTHER", code: cat.otherCode };
-if (typeof getOtherExamsConfigStore === "function") {
-const st = getOtherExamsConfigStore();
-if (st && Array.isArray(st.catalog) && st.catalog.some(x => x.code === examKey)) {
 return { mode: "OTHER", code: examKey };
 }
+function scrollToNonPublicCentreAdder() {
+const el = document.getElementById("admDutyNonPublicCentresManagerPanel");
+if (el) {
+el.style.display = "block";
+el.scrollIntoView({ behavior: "smooth", block: "center" });
+document.getElementById("admDutyAddCenSchoolSelect")?.focus();
 }
-return { mode: "OTHER", code: "ALL_OTHER" };
-}
-function openCentresConfiguratorForActiveDutyExam() {
-const examKey = getActiveExamDutyTypeKey();
-const mapped = mapDutyExamKeyToOtherExamCode(examKey);
-if (mapped.mode === "10") {
-switchAdminTab("centres");
-if (typeof setAdminExamCentreFilterMode === "function") setAdminExamCentreFilterMode("10");
-} else if (mapped.mode === "12") {
-switchAdminTab("centres");
-if (typeof setAdminExamCentreFilterMode === "function") setAdminExamCentreFilterMode("12");
-} else {
-if (typeof openOtherExamCentresManager === "function") {
-openOtherExamCentresManager(mapped.code);
-} else {
-switchAdminTab("centres");
-}
-}
-showToast("🏛️ இத்தேர்விற்கான மையங்கள் மற்றும் மையம் வாரியான அறைக்கண்காணிப்பாளர் / அலுவலகப் பணியாளர் எண்ணிக்கையை இங்கு நிர்ணயம் செய்யலாம்!", "#0f766e");
 }
 function getExamCentresForExamKey(examKey) {
-const meta = getExamDutyMeta();
-const customInfo = (meta.customExams && meta.customExams[examKey]) ? meta.customExams[examKey] : null;
-const lvl = customInfo ? customInfo.level : ((EXAM_TYPES_CATALOG[examKey] && EXAM_TYPES_CATALOG[examKey].level) || "12");
-const mapped = mapDutyExamKeyToOtherExamCode(examKey);
-const otherStore = (typeof getOtherExamsConfigStore === "function") ? getOtherExamsConfigStore() : null;
 const schByUNo = {};
 getEbs282MasterSchools().forEach(s => { schByUNo[String(s.uNo)] = s; });
-if (mapped.mode === "OTHER" && otherStore && otherStore.byUNo) {
-const targetCode = mapped.code;
-const selectedUNos = Object.keys(otherStore.byUNo).filter(uNo => {
-const rec = otherStore.byUNo[uNo];
-if (!rec || !Array.isArray(rec.otherExams)) return false;
-if (targetCode === "ALL_OTHER") return rec.otherExams.length > 0;
-return rec.otherExams.includes(targetCode);
-});
-const effectiveUNos = selectedUNos.length > 0
-? selectedUNos
-: Object.keys(otherStore.byUNo).filter(uNo => {
-const rec = otherStore.byUNo[uNo];
-return rec && Array.isArray(rec.otherExams) && rec.otherExams.length > 0;
-});
-if (effectiveUNos.length > 0) {
-effectiveUNos.sort((a, b) => (Number(a) || 0) - (Number(b) || 0));
-return effectiveUNos.map((uNo, idx) => {
-const rec = otherStore.byUNo[uNo] || {};
-const sch = schByUNo[uNo] || (Array.isArray(masterSchools) ? masterSchools.find(x => String(x.uNo) === String(uNo)) : {}) || {};
-const cNo = String(rec.otherCentreNo || sch.centre12 || sch.centre10 || ("208" + String(uNo).padStart(3, "0"))).trim();
-const cNameEn = sch.nameEn || "";
-const cNameTa = sch.nameTa || cNameEn;
-const block = sch.block || "12 Sivagangai";
-const alloc = (typeof getSchoolCentreStaffAlloc === "function")
-? getSchoolCentreStaffAlloc(rec, "OTHER", targetCode)
-: { invig: Number(rec.invigOther || 6), office: Number(rec.officeOther || 3) };
-return {
-sn: idx + 1,
-uNo: String(uNo),
-centreNo: cNo,
-block: block,
-centreNameEn: cNameEn,
-centreNameTa: cNameTa,
-label: `${cNo} - ${cNameEn}`,
-labelTa: `${cNo} - ${cNameTa}`,
-candidateStrength: Math.max(40, alloc.invig * 20),
-hiQuota: Math.max(1, Number(alloc.invig || 6)),
-osQuota: Math.max(1, Number(alloc.office || 3))
-};
-});
-}
-}
+const otherStore = (typeof getOtherExamsConfigStore === "function") ? getOtherExamsConfigStore() : null;
+
+// 1. For 10th and 12th Public Exams ONLY: return the fixed 113 / 91 public exam centres
+if (examKey === "SSLC_2027" || examKey === "HSC2_2027") {
+const lvl = examKey === "SSLC_2027" ? "10" : "12";
 const rawCentres = (lvl === "10")
 ? (typeof INITIAL_EXAM_CENTRES_10 !== "undefined" && Array.isArray(INITIAL_EXAM_CENTRES_10) ? INITIAL_EXAM_CENTRES_10 : [])
 : (typeof INITIAL_EXAM_CENTRES !== "undefined" && Array.isArray(INITIAL_EXAM_CENTRES) ? INITIAL_EXAM_CENTRES : []);
@@ -26919,14 +26948,379 @@ label: `${cNo} - ${cNameEn}`,
 labelTa: `${cNo} - ${cNameTa}`,
 candidateStrength: Math.max(40, candidateStrength),
 hiQuota: Math.max(1, Number(alloc.invig || 6)),
-osQuota: Math.max(1, Number(alloc.office || 3))
+osQuota: Math.max(1, Number(alloc.office || 3)),
+isFixedPublic: true
 };
 });
 }
+
+// 2. For all other exams: check customCentresByExamKey[examKey] first
+const meta = getExamDutyMeta();
+const customList = (meta.customCentresByExamKey && Array.isArray(meta.customCentresByExamKey[examKey]))
+? meta.customCentresByExamKey[examKey]
+: null;
+if (customList) {
+return customList.map((c, idx) => {
+const cNo = String(c.centreNo || (3001 + idx)).trim();
+const cNameTa = String(c.centreNameTa || c.centreNameEn || "").trim();
+const cNameEn = String(c.centreNameEn || c.centreNameTa || "").trim();
+const block = String(c.block || "12 Sivagangai").trim();
+return {
+sn: idx + 1,
+uNo: String(c.uNo || "").trim(),
+centreNo: cNo,
+block: block,
+centreNameEn: cNameEn,
+centreNameTa: cNameTa,
+label: `${cNo} - ${cNameTa || cNameEn}`,
+labelTa: `${cNo} - ${cNameTa || cNameEn}`,
+candidateStrength: Math.max(20, Number(c.candidateStrength || 120)),
+hiQuota: Math.max(1, Number(c.hiQuota || 6)),
+osQuota: Math.max(1, Number(c.osQuota || 2)),
+isCustomCentre: true
+};
+});
+}
+
+// Fallback if otherExamsConfigStore had centres tagged specifically for this exam code
+const mapped = mapDutyExamKeyToOtherExamCode(examKey);
+if (otherStore && otherStore.byUNo && mapped.code && mapped.code !== "ALL_OTHER") {
+const selectedUNos = Object.keys(otherStore.byUNo).filter(uNo => {
+const rec = otherStore.byUNo[uNo];
+return rec && Array.isArray(rec.otherExams) && rec.otherExams.includes(mapped.code);
+});
+if (selectedUNos.length > 0) {
+selectedUNos.sort((a, b) => (Number(a) || 0) - (Number(b) || 0));
+return selectedUNos.map((uNo, idx) => {
+const rec = otherStore.byUNo[uNo] || {};
+const sch = schByUNo[uNo] || {};
+const cNo = String(rec.otherCentreNo || sch.centre12 || sch.centre10 || ("3" + String(uNo).padStart(3, "0"))).trim();
+const cNameEn = sch.nameEn || "";
+const cNameTa = sch.nameTa || cNameEn;
+const block = sch.block || "12 Sivagangai";
+const alloc = (typeof getSchoolCentreStaffAlloc === "function")
+? getSchoolCentreStaffAlloc(rec, "OTHER", mapped.code)
+: { invig: Number(rec.invigOther || 6), office: Number(rec.officeOther || 2) };
+return {
+sn: idx + 1,
+uNo: String(uNo),
+centreNo: cNo,
+block: block,
+centreNameEn: cNameEn,
+centreNameTa: cNameTa,
+label: `${cNo} - ${cNameTa || cNameEn}`,
+labelTa: `${cNo} - ${cNameTa || cNameEn}`,
+candidateStrength: Math.max(40, alloc.invig * 20),
+hiQuota: Math.max(1, Number(alloc.invig || 6)),
+osQuota: Math.max(1, Number(alloc.office || 2))
+};
+});
+}
+}
+return [];
+}
+
+function renderExamDutyExamCardsGrid() {
+const grid = document.getElementById("admDutyExamCardsGrid");
+if (!grid) return;
+const entries = getAllExamDutyCatalogEntries();
+const activeKey = getActiveExamDutyTypeKey();
+const store = getExamDutyStore();
+const totBadge = document.getElementById("admDutyTotalExamsBadge");
+if (totBadge) totBadge.textContent = `${entries.length} தேர்வுப் பெட்டிகள்`;
+
+grid.innerHTML = entries.map(e => {
+const isSelected = e.key === activeKey;
+const centres = getExamCentresForExamKey(e.key);
+const appts = Array.isArray(store[e.key]) ? store[e.key] : [];
+const centreBadgeHtml = e.isFixedPublic
+? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:2px 8px; border-radius:999px; font-size:0.69rem; font-weight:900;">🔒 நிலையான மையங்கள்: ${centres.length}</span>`
+: `<span style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; padding:2px 8px; border-radius:999px; font-size:0.69rem; font-weight:900;">🏛️ இணைத்த மையங்கள்: ${centres.length}</span>`;
+return `
+      <div onclick="selectExamDutyCard('${escapeHtmlAttr(e.key)}')" style="cursor:pointer; background:${isSelected ? e.bg : "#ffffff"}; border:${isSelected ? "2.5px" : "1.5px"} solid ${isSelected ? e.accent : "#cbd5e1"}; border-top:5px solid ${e.accent}; border-radius:12px; padding:12px 14px; transition:all 0.18s ease; box-shadow:${isSelected ? "0 8px 20px rgba(15,41,74,0.14)" : "0 2px 6px rgba(15,23,42,0.04)"}; display:flex; flex-direction:column; justify-content:space-between; gap:8px; position:relative;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
+            <span style="font-size:1.35rem; line-height:1;">${e.icon}</span>
+            <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
+              ${isSelected ? `<span style="background:${e.accent}; color:#fff; font-size:0.66rem; font-weight:900; padding:2px 7px; border-radius:999px;">✓ தேர்ந்தெடுக்கப்பட்டது</span>` : ""}
+              ${e.isUserCreatedExam ? `<button type="button" onclick="event.stopPropagation(); deleteCustomExamCardBox('${escapeHtmlAttr(e.key)}')" title="இத்தேர்வுப் பெட்டியை நீக்கு" style="background:#fef2f2; color:#dc2626; border:1px solid #fca5a5; border-radius:4px; padding:1px 5px; font-size:0.66rem; font-weight:900; cursor:pointer;">🗑️</button>` : ""}
+            </div>
+          </div>
+          <div style="font-size:0.88rem; font-weight:900; color:#0f294a; margin-top:6px; line-height:1.3;">${escapeHtmlAttr(e.shortTa || e.titleTa)}</div>
+          <div style="font-size:0.71rem; color:#475569; font-weight:700; margin-top:2px; line-height:1.3;">${escapeHtmlAttr(e.titleEn)}</div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:8px;">
+            ${centreBadgeHtml}
+            <span style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:2px 8px; border-radius:999px; font-size:0.69rem; font-weight:900;">👨‍🏫 நியமனம்: ${appts.length}</span>
+          </div>
+          <button type="button" class="btn btn-sm" style="width:100%; background:${isSelected ? e.accent : "#f8fafc"}; color:${isSelected ? "#ffffff" : e.accent}; border:1.5px solid ${e.accent}; font-weight:900; font-size:0.74rem; padding:5px 10px;">
+            ${isSelected ? "📂 பணி நியமனம் & மையங்கள் திறந்துள்ளது" : (e.isFixedPublic ? "🎯 பணி நியமனம் திற ❯" : "🏛️ மையங்கள் இணை & பணி நியமி ❯")}
+          </button>
+        </div>
+      </div>
+    `;
+}).join("");
+}
+
+function selectExamDutyCard(examKey) {
+syncExamDutySelectDropdownOptions();
+const sel = document.getElementById("admDutyExamTypeSelect");
+if (sel) sel.value = examKey;
+onExamDutyTypeChanged();
+const wsEl = document.getElementById("admDutyWorkspaceGrid");
+if (wsEl) wsEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function createNewCustomExamCardBox() {
+const inp = document.getElementById("admDutyNewExamBoxTitleInput");
+const titleTa = String(inp ? inp.value : "").trim();
+if (!titleTa) {
+showToast("⚠️ புதிய தேர்வின் பெயரை உள்ளிடவும் (எ.கா: NEET / Navodaya / Olympiad)!", "#dc2626");
+if (inp) inp.focus();
+return;
+}
+const meta = getExamDutyMeta();
+const newKey = "EXAM_" + Date.now().toString().slice(-6);
+meta.customExams[newKey] = {
+key: newKey,
+icon: "✨",
+shortTa: titleTa,
+titleTa: titleTa,
+titleEn: titleTa,
+level: "10",
+createdAt: new Date().toLocaleDateString("en-IN")
+};
+if (!meta.customCentresByExamKey[newKey]) {
+meta.customCentresByExamKey[newKey] = [];
+}
+safeSetStorage(EXAM_DUTY_META_KEY, meta);
+if (inp) inp.value = "";
+syncExamDutySelectDropdownOptions();
+selectExamDutyCard(newKey);
+showToast(`✅ "${titleTa}" புதிய தேர்வுப் பெட்டி உருவாக்கப்பட்டது! இப்போது இத்தேர்விற்கான மையங்களை இணைக்கலாம்.`, "#0f766e");
+}
+
+function deleteCustomExamCardBox(examKey) {
+const meta = getExamDutyMeta();
+if (!meta.customExams || !meta.customExams[examKey]) return;
+const title = meta.customExams[examKey].titleTa || examKey;
+delete meta.customExams[examKey];
+if (meta.customCentresByExamKey) delete meta.customCentresByExamKey[examKey];
+safeSetStorage(EXAM_DUTY_META_KEY, meta);
+syncExamDutySelectDropdownOptions();
+selectExamDutyCard("HSC2_2027");
+showToast(`🗑️ "${title}" தேர்வுப் பெட்டி நீக்கப்பட்டது.`, "#dc2626");
+}
+
+function populateDutyNewCentreSchoolSelect() {
+const blkFilter = (document.getElementById("admDutyAddCenBlockFilter")?.value || "").trim();
+const schSel = document.getElementById("admDutyAddCenSchoolSelect");
+if (!schSel) return;
+const schools = getEbs282MasterSchools().filter(s => !blkFilter || s.block === blkFilter);
+schSel.innerHTML = `<option value="">-- பள்ளியைத் தேர்ந்தெடுக்கவும் (${schools.length} பள்ளிகள்) --</option>` +
+schools.map(s => `<option value="${escapeHtmlAttr(s.uNo)}">[U.NO: ${escapeHtmlAttr(s.uNo)}] ${escapeHtmlAttr(s.nameTa || s.nameEn)} (${escapeHtmlAttr(s.block)})</option>`).join("");
+}
+
+function onDutyAddCentreSchoolPicked() {
+const uNo = (document.getElementById("admDutyAddCenSchoolSelect")?.value || "").trim();
+if (!uNo) return;
+const sch = getEbs282MasterSchools().find(s => String(s.uNo) === uNo);
+if (!sch) return;
+const codeInp = document.getElementById("admDutyAddCenCodeInput");
+const nameInp = document.getElementById("admDutyAddCenNameInput");
+const blkInp = document.getElementById("admDutyAddCenBlockInput");
+const existingCentres = getExamCentresForExamKey(getActiveExamDutyTypeKey());
+const suggestedCode = sch.centre12 || sch.centre10 || String(3000 + existingCentres.length + 1);
+if (codeInp) codeInp.value = suggestedCode;
+if (nameInp) nameInp.value = `${sch.nameTa || sch.nameEn} (U.NO: ${sch.uNo})`;
+if (blkInp) blkInp.value = sch.block || "12 Sivagangai";
+}
+
+function addCustomExamCentreForActiveExam() {
+const examKey = getActiveExamDutyTypeKey();
+if (isFixedPublicExamKey(examKey)) {
+showToast("ℹ️ 10 மற்றும் 12-ஆம் வகுப்பு பொதுத்தேர்வுகளுக்கு நிலையான மையங்கள் ஏற்கனவே இணைக்கப்பட்டுள்ளன.", "#0284c7");
+return;
+}
+const uNo = (document.getElementById("admDutyAddCenSchoolSelect")?.value || "").trim();
+const codeInp = document.getElementById("admDutyAddCenCodeInput");
+const nameInp = document.getElementById("admDutyAddCenNameInput");
+const blkInp = document.getElementById("admDutyAddCenBlockInput");
+const strInp = document.getElementById("admDutyAddCenStrengthInput");
+const hiInp = document.getElementById("admDutyAddCenHiQuota");
+const osInp = document.getElementById("admDutyAddCenOsQuota");
+
+const cNo = String(codeInp ? codeInp.value : "").trim();
+const cName = String(nameInp ? nameInp.value : "").trim();
+const blk = String(blkInp ? blkInp.value : "").trim() || "12 Sivagangai";
+const strength = Math.max(20, Number(strInp ? strInp.value : 120) || 120);
+const hiQuota = Math.max(1, Number(hiInp ? hiInp.value : 6) || 6);
+const osQuota = Math.max(1, Number(osInp ? osInp.value : 2) || 2);
+
+if (!cNo || !cName) {
+showToast("⚠️ தேர்வு மைய எண் (Centre No) மற்றும் தேர்வு மையத்தின் பெயரை உள்ளிடவும்!", "#dc2626");
+if (!cNo && codeInp) codeInp.focus();
+else if (nameInp) nameInp.focus();
+return;
+}
+
+const meta = getExamDutyMeta();
+if (!meta.customCentresByExamKey) meta.customCentresByExamKey = {};
+if (!Array.isArray(meta.customCentresByExamKey[examKey])) {
+meta.customCentresByExamKey[examKey] = getExamCentresForExamKey(examKey).map(x => ({
+uNo: x.uNo || "",
+centreNo: x.centreNo,
+centreNameTa: x.centreNameTa,
+centreNameEn: x.centreNameEn,
+block: x.block,
+candidateStrength: x.candidateStrength,
+hiQuota: x.hiQuota,
+osQuota: x.osQuota
+}));
+}
+const list = meta.customCentresByExamKey[examKey];
+const existingIdx = list.findIndex(x => String(x.centreNo).toLowerCase() === cNo.toLowerCase());
+const newCen = {
+uNo: uNo,
+centreNo: cNo,
+centreNameTa: cName,
+centreNameEn: cName,
+block: blk,
+candidateStrength: strength,
+hiQuota: hiQuota,
+osQuota: osQuota
+};
+if (existingIdx >= 0) {
+list[existingIdx] = newCen;
+} else {
+list.push(newCen);
+}
+safeSetStorage(EXAM_DUTY_META_KEY, meta);
+if (codeInp) codeInp.value = String((Number(cNo) || 3000) + 1);
+if (nameInp) nameInp.value = "";
+const schSel = document.getElementById("admDutyAddCenSchoolSelect");
+if (schSel) schSel.value = "";
+syncExamDutySelectDropdownOptions();
+renderExamDutyAllotmentDashboard();
+showToast(`✅ தேர்வு மையம் [${cNo} - ${cName}] இத்தேர்விற்கு வெற்றிகரமாக இணைக்கப்பட்டது!`, "#16a34a");
+}
+
+function removeCustomExamCentreFromActiveExam(centreNo) {
+const examKey = getActiveExamDutyTypeKey();
+if (isFixedPublicExamKey(examKey)) return;
+const meta = getExamDutyMeta();
+if (!meta.customCentresByExamKey) meta.customCentresByExamKey = {};
+const cur = Array.isArray(meta.customCentresByExamKey[examKey])
+? meta.customCentresByExamKey[examKey]
+: getExamCentresForExamKey(examKey);
+meta.customCentresByExamKey[examKey] = cur.filter(x => String(x.centreNo) !== String(centreNo));
+safeSetStorage(EXAM_DUTY_META_KEY, meta);
+syncExamDutySelectDropdownOptions();
+renderExamDutyAllotmentDashboard();
+showToast(`🗑️ தேர்வு மையம் [${centreNo}] இத்தேர்விலிருந்து நீக்கப்பட்டது.`, "#dc2626");
+}
+
+function importPublicCentresIntoActiveExam(levelStr) {
+const examKey = getActiveExamDutyTypeKey();
+if (isFixedPublicExamKey(examKey)) return;
+const sourceKey = levelStr === "10" ? "SSLC_2027" : "HSC2_2027";
+const pubCentres = getExamCentresForExamKey(sourceKey);
+const meta = getExamDutyMeta();
+if (!meta.customCentresByExamKey) meta.customCentresByExamKey = {};
+meta.customCentresByExamKey[examKey] = pubCentres.map(c => ({
+uNo: c.uNo || "",
+centreNo: c.centreNo,
+centreNameTa: c.centreNameTa,
+centreNameEn: c.centreNameEn,
+block: c.block,
+candidateStrength: c.candidateStrength || 120,
+hiQuota: c.hiQuota || 6,
+osQuota: c.osQuota || 2
+}));
+safeSetStorage(EXAM_DUTY_META_KEY, meta);
+syncExamDutySelectDropdownOptions();
+renderExamDutyAllotmentDashboard();
+showToast(`📥 ${pubCentres.length} மையங்கள் இத்தேர்விற்கு நகலெடுக்கப்பட்டன! தேவையற்ற மையங்களை நீக்கலாம் அல்லது புதிய மையங்களைச் சேர்க்கலாம்.`, "#0f766e");
+}
+
+function clearAllCustomCentresForActiveExam() {
+const examKey = getActiveExamDutyTypeKey();
+if (isFixedPublicExamKey(examKey)) return;
+const meta = getExamDutyMeta();
+if (!meta.customCentresByExamKey) meta.customCentresByExamKey = {};
+meta.customCentresByExamKey[examKey] = [];
+safeSetStorage(EXAM_DUTY_META_KEY, meta);
+syncExamDutySelectDropdownOptions();
+renderExamDutyAllotmentDashboard();
+showToast("🧹 இத்தேர்விற்கான அனைத்து மையங்களும் நீக்கப்பட்டன. இப்போது புதிய மையங்களை இணைக்கலாம்.", "#f59e0b");
+}
+
+function selectCustomCentreForManualDuty(centreNo) {
+const cSel = document.getElementById("admDutyManualCentreSelect");
+const cInp = document.getElementById("admDutyManualCentreCustom");
+if (cSel) {
+for (let i = 0; i < cSel.options.length; i++) {
+if (cSel.options[i].getAttribute("data-cno") === String(centreNo)) {
+cSel.selectedIndex = i;
+if (cInp) cInp.value = cSel.options[i].value;
+break;
+}
+}
+}
+document.getElementById("admDutyManualStaffSelect")?.focus();
+showToast(`🎯 மையம் [${centreNo}] பணி நியமனப் பெட்டியில் தேர்ந்தெடுக்கப்பட்டது! பணியாளரைத் தேர்ந்தெடுத்து நியமிக்கவும்.`, "#7c3aed");
+}
+
+function renderCustomCentresManagerForActiveExam() {
+const examKey = getActiveExamDutyTypeKey();
+const panel = document.getElementById("admDutyNonPublicCentresManagerPanel");
+const jumpBtn = document.getElementById("admDutyJumpToAddCentresBtn");
+const pubNote = document.getElementById("admDutyPublicCentreFixedNote");
+const isPub = isFixedPublicExamKey(examKey);
+if (panel) panel.style.display = isPub ? "none" : "block";
+if (jumpBtn) jumpBtn.style.display = isPub ? "none" : "inline-flex";
+if (pubNote) {
+pubNote.innerHTML = isPub
+? `🔒 <strong>${examKey === "SSLC_2027" ? "10-ஆம் வகுப்பு (113 மையங்கள்)" : "+2 பொதுத்தேர்வு (91 மையங்கள்)"}</strong> நிலையான பொதுத்தேர்வு மையங்கள்`
+: `🏛️ இத்தேர்விற்குக் கீழேயுள்ள பெட்டியில் புதிய தேர்வு மையங்களை உருவாக்கி இணைக்கலாம்`;
+}
+if (isPub) return;
+
+const centres = getExamCentresForExamKey(examKey);
+const badge = document.getElementById("admDutyCustomCentreCountBadge");
+if (badge) badge.textContent = `${centres.length} மையங்கள்`;
+const tbody = document.getElementById("admDutyCustomCentresTbody");
+if (!tbody) return;
+if (centres.length === 0) {
+tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:18px; color:#92400e; font-weight:800;">இத்தேர்விற்கு இன்னும் தேர்வு மையங்கள் இணைக்கப்படவில்லை. மேலே பள்ளியைத் தேர்ந்தெடுத்தோ அல்லது புதிய மையப் பெயரை உள்ளிட்டோ <strong>"➕ தேர்வு மையம் இணை"</strong> பொத்தானை அழுத்தவும்.</td></tr>`;
+return;
+}
+tbody.innerHTML = centres.map((c, idx) => `
+    <tr>
+      <td style="text-align:center; font-weight:900;">${idx + 1}</td>
+      <td><strong style="color:#b45309; font-family:monospace; font-size:0.82rem;">${escapeHtmlAttr(c.centreNo)}</strong></td>
+      <td>
+        <div style="font-weight:800; color:#0f294a;">${escapeHtmlAttr(c.centreNameTa || c.centreNameEn)}</div>
+        <div style="font-size:0.70rem; color:#64748b; font-weight:700;">📍 ${escapeHtmlAttr(c.block)}${c.uNo ? ` | U.NO: ${escapeHtmlAttr(c.uNo)}` : ""}</div>
+      </td>
+      <td style="text-align:center; font-weight:800; font-size:0.72rem;">
+        <span style="color:#4c1d95;">HI: ${c.hiQuota}</span> | <span style="color:#92400e;">OS: ${c.osQuota}</span>
+      </td>
+      <td style="text-align:center;">
+        <div style="display:flex; gap:4px; justify-content:center;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="selectCustomCentreForManualDuty('${escapeHtmlAttr(c.centreNo)}')" style="background:#7c3aed; border-color:#6d28d9; font-size:0.69rem; padding:2px 7px; font-weight:800;">🎯 பணி நியமி</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="removeCustomExamCentreFromActiveExam('${escapeHtmlAttr(c.centreNo)}')" style="border-color:#fca5a5; color:#dc2626; background:#fef2f2; font-size:0.69rem; padding:2px 6px; font-weight:800;">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
 function buildExamRoutesForCentres(centres, numRoutes) {
 const n = Math.max(1, Number(numRoutes) || 15);
 const sorted = centres.slice().sort((a, b) => String(a.block).localeCompare(String(b.block)) || String(a.centreNo).localeCompare(String(b.centreNo)));
-const perRoute = Math.max(1, Math.ceil(sorted.length / n));
+const perRoute = Math.max(1, Math.ceil(Math.max(1, sorted.length) / n));
 const routes = [];
 for (let i = 0; i < n; i++) {
 const slice = sorted.slice(i * perRoute, (i + 1) * perRoute);
@@ -26938,7 +27332,7 @@ routes.push({
 routeCode: `ROUTE-${rNo}`,
 block: blk,
 centresCount: slice.length,
-label: `வழித்தடம் ${rNo} (Route-${rNo} | ${blk} | மையங்கள்: ${cNums || "-"})`
+label: `வழித்தடம் ${rNo} (Route-${rNo} | ${blk}${cNums ? " | மையங்கள்: " + cNums : ""})`
 });
 }
 return routes;
@@ -27028,20 +27422,7 @@ function onExamDutyTypeChanged() {
 const k = getActiveExamDutyTypeKey();
 const wrap = document.getElementById("admDutyCustomExamNameWrap");
 if (wrap) wrap.style.display = (k === "CUSTOM_EXAM") ? "block" : "none";
-populateExamDutyManualLocations();
 renderExamDutyAllotmentDashboard();
-}
-function promptAddCustomExamType() {
-const sel = document.getElementById("admDutyExamTypeSelect");
-if (!sel) return;
-sel.value = "CUSTOM_EXAM";
-onExamDutyTypeChanged();
-const inp = document.getElementById("admDutyCustomExamTitleInput");
-if (inp) {
-inp.focus();
-inp.select();
-}
-showToast("✨ சிறப்புத் தேர்வின் பெயரை உள்ளிட்டு நேரடியாகப் பணி நியமனம் செய்யலாம்!", "#0f766e");
 }
 function setExamDutyRoleFilter(roleCode) {
 const sel = document.getElementById("admDutyTableFilterRole");
@@ -27086,8 +27467,7 @@ const sel = document.getElementById("admDutyManualCentreSelect");
 if (!sel) return;
 const examKey = getActiveExamDutyTypeKey();
 const centres = getExamCentresForExamKey(examKey);
-const numRoutes = Number(document.getElementById("admDutyAutoRouteCount")?.value || 15);
-const routes = buildExamRoutesForCentres(centres, numRoutes);
+const routes = buildExamRoutesForCentres(centres, 15);
 const hubs = buildCustodianHubs();
 let opts = [];
 if (roleMeta.locType === "ROUTE") {
@@ -27114,9 +27494,13 @@ centres.forEach(c => {
 opts.push(`<option value="${escapeHtmlAttr(c.label)}" data-block="${escapeHtmlAttr(c.block)}" data-cno="${escapeHtmlAttr(c.centreNo)}">மையம்: ${escapeHtmlAttr(c.labelTa)} (${escapeHtmlAttr(c.block)})</option>`);
 });
 } else {
+if (centres.length === 0) {
+opts.push(`<option value="">-- முதலில் இத்தேர்விற்கான தேர்வு மையங்களை இணைக்கவும் --</option>`);
+} else {
 centres.forEach(c => {
-opts.push(`<option value="${escapeHtmlAttr(c.label)}" data-block="${escapeHtmlAttr(c.block)}" data-cno="${escapeHtmlAttr(c.centreNo)}" data-uno="${escapeHtmlAttr(c.uNo)}">[${escapeHtmlAttr(c.centreNo)}] ${escapeHtmlAttr(c.centreNameTa)} (${escapeHtmlAttr(c.block)} | U.NO: ${escapeHtmlAttr(c.uNo)})</option>`);
+opts.push(`<option value="${escapeHtmlAttr(c.label)}" data-block="${escapeHtmlAttr(c.block)}" data-cno="${escapeHtmlAttr(c.centreNo)}" data-uno="${escapeHtmlAttr(c.uNo)}">[${escapeHtmlAttr(c.centreNo)}] ${escapeHtmlAttr(c.centreNameTa)} (${escapeHtmlAttr(c.block)}${c.uNo ? " | U.NO: " + escapeHtmlAttr(c.uNo) : ""})</option>`);
 });
+}
 }
 sel.innerHTML = opts.join("");
 }
@@ -27127,7 +27511,7 @@ const activeCentresForPills = getExamCentresForExamKey(getActiveExamDutyTypeKey(
 const totHiConfigured = activeCentresForPills.reduce((acc, c) => acc + (Number(c.hiQuota) || 0), 0);
 const totOsConfigured = activeCentresForPills.reduce((acc, c) => acc + (Number(c.osQuota) || 0), 0);
 const cPill = document.getElementById("admDutyActiveCentresCountPill");
-if (cPill) cPill.textContent = `🏛️ தேர்ந்தெடுக்கப்பட்ட மையங்கள்: ${activeCentresForPills.length}`;
+if (cPill) cPill.textContent = `🏛️ தேர்வு மையங்கள்: ${activeCentresForPills.length}`;
 const hiPill = document.getElementById("admDutyActiveInvigQuotaPill");
 if (hiPill) hiPill.textContent = `👨‍🏫 நிர்ணயித்த அறைக்கண்காணிப்பாளர்கள்: ${totHiConfigured.toLocaleString("en-IN")}`;
 const osPill = document.getElementById("admDutyActiveOfficeQuotaPill");
@@ -27184,7 +27568,7 @@ if (dtEl && !dtEl.value) dtEl.value = meta.orderDate || "05.11.2026";
 if (cuEl && !cuEl.value) cuEl.value = meta.customExamTitle || "சிறப்புத் திறனறித் தேர்வு – 2026-27";
 const ebsSchools = getEbs282MasterSchools();
 const blocks = Array.from(new Set(ebsSchools.map(s => s.block).filter(Boolean))).sort();
-["admDutyAutoBlock", "admDutyManualFilterBlock", "admDutyTableFilterBlock"].forEach(id => {
+["admDutyAddCenBlockFilter", "admDutyManualFilterBlock", "admDutyTableFilterBlock"].forEach(id => {
 const el = document.getElementById(id);
 if (el && el.options.length <= 1) {
 const firstText = el.options[0] ? el.options[0].textContent : "அனைத்து ஒன்றியங்கள்";
@@ -27195,189 +27579,13 @@ const schSel = document.getElementById("admDutyManualFilterSchool");
 if (schSel && schSel.options.length <= 1) {
 schSel.innerHTML = `<option value="">அனைத்துப் பள்ளிகள் (282)</option>` + ebsSchools.map(s => `<option value="${escapeHtmlAttr(s.uNo)}">[${escapeHtmlAttr(s.uNo)}] ${escapeHtmlAttr(s.nameTa || s.nameEn)}</option>`).join("");
 }
-populateExamDutyManualLocations();
-populateExamDutyManualStaffDropdown();
-const store = getExamDutyStore();
-const curExam = getActiveExamDutyTypeKey();
-if (!Array.isArray(store[curExam]) || store[curExam].length === 0) {
-runExamDutyAutoAllotment(true);
-} else {
+populateDutyNewCentreSchoolSelect();
+syncExamDutySelectDropdownOptions();
+renderExamDutyExamCardsGrid();
+renderCustomCentresManagerForActiveExam();
+onExamDutyManualRoleChange();
 renderExamDutyRoleKpiCards();
 renderExamDutyAppointmentsTable();
-}
-}
-function runExamDutyAutoAllotment(silentSeed) {
-const examKey = getActiveExamDutyTypeKey();
-const targetBlock = (document.getElementById("admDutyAutoBlock")?.value || "").trim();
-const targetRole = silentSeed ? "ALL" : (document.getElementById("admDutyAutoRole")?.value || "ALL").trim();
-const hiQuotaRaw = silentSeed ? "3" : (document.getElementById("admDutyAutoHiCount")?.value || "CENTRE_CONFIG");
-const ssQuota = silentSeed ? 1 : Math.max(1, Number(document.getElementById("admDutyAutoSsCount")?.value || 1));
-const osQuotaRaw = silentSeed ? "2" : (document.getElementById("admDutyAutoOsCount")?.value || "CENTRE_CONFIG");
-const numRoutes = silentSeed ? 15 : Math.max(1, Number(document.getElementById("admDutyAutoRouteCount")?.value || 15));
-const otherSchoolRule = silentSeed ? true : Boolean(document.getElementById("admDutyAutoOtherSchoolChk")?.checked);
-const govtAidedOnly = silentSeed ? true : Boolean(document.getElementById("admDutyAutoGovtAidedOnlyChk")?.checked);
-const keepExisting = silentSeed ? false : Boolean(document.getElementById("admDutyAutoKeepExistingChk")?.checked);
-const store = getExamDutyStore();
-let currentList = Array.isArray(store[examKey]) ? store[examKey].slice() : [];
-currentList = currentList.filter(item => {
-if (!item) return false;
-if (keepExisting && item.mode === "MANUAL") return true;
-if (targetBlock && item.block !== targetBlock) return true;
-if (targetRole !== "ALL" && item.roleCode !== targetRole) return true;
-return false;
-});
-const usedStaffIds = new Set(currentList.map(x => String(x.staffId)));
-const allStaff = getAllEligibleDistrictStaffForExamDuty().filter(st => {
-if (st.isExempt) return false;
-if (govtAidedOnly && st.mgmt1 !== "1G" && st.mgmt1 !== "2A") return false;
-return true;
-});
-const allCentres = getExamCentresForExamKey(examKey);
-const centres = targetBlock ? allCentres.filter(c => c.block === targetBlock) : allCentres;
-const routes = buildExamRoutesForCentres(centres, targetBlock ? Math.max(2, Math.ceil(centres.length / 6)) : numRoutes);
-const allHubs = buildCustodianHubs();
-const hubs = targetBlock ? allHubs.filter(h => h.block === targetBlock) : allHubs;
-const pickStaff = (predicate, preferBlock, forbidUNo) => {
-if (preferBlock) {
-const m1 = allStaff.find(st => !usedStaffIds.has(st.staffId) && st.block === preferBlock && (!forbidUNo || String(st.uNo) !== String(forbidUNo)) && predicate(st));
-if (m1) return m1;
-}
-const m2 = allStaff.find(st => !usedStaffIds.has(st.staffId) && (!forbidUNo || String(st.uNo) !== String(forbidUNo)) && predicate(st));
-if (m2) return m2;
-return allStaff.find(st => !usedStaffIds.has(st.staffId) && predicate(st)) || null;
-};
-const addAppt = (roleCode, locCode, locLabel, locBlock, st, subRole, modeStr) => {
-if (!st) return;
-usedStaffIds.add(st.staffId);
-const rMeta = EXAM_DUTY_ROLES_CATALOG.find(r => r.code === roleCode) || EXAM_DUTY_ROLES_CATALOG[0];
-currentList.push({
-apptId: `${examKey}_${roleCode}_${st.staffId}`,
-examKey: examKey,
-roleCode: roleCode,
-roleNameTa: rMeta.nameTa,
-roleNameEn: rMeta.nameEn,
-subRole: subRole || "",
-centreNo: locCode || "",
-locationLabel: locLabel || "",
-block: locBlock || st.block || "",
-staffId: st.staffId,
-staffName: st.name,
-staffNameTa: st.nameTa || st.name,
-prefix: st.prefix || "",
-desig: st.desig,
-subject: st.subject || "-",
-uNo: st.uNo,
-schoolNameTa: st.schoolNameTa,
-schoolNameEn: st.schoolNameEn,
-mobile: st.mobile || "-",
-mode: modeStr || "AUTO",
-assignedAt: new Date().toLocaleDateString("en-IN")
-});
-};
-const shouldRun = (rCode) => (targetRole === "ALL" || targetRole === rCode);
-const hasSlotFilled = (rCode, cNo) => currentList.some(x => x.roleCode === rCode && x.centreNo === cNo);
-if (shouldRun("QPC")) {
-hubs.forEach((h, idx) => {
-const cNo = "HUB-" + String(idx + 1).padStart(2, "0");
-if (keepExisting && hasSlotFilled("QPC", cNo)) return;
-const st = pickStaff(s => s.isTeaching && s.mgmt1 === "1G" && (s.isHmHss || s.isHmHs || s.isPg), h.block, null);
-addAppt("QPC", cNo, h.hub, h.block, st, "வினாத்தாள் கட்டுக்காப்பாளர்", "AUTO");
-});
-}
-if (shouldRun("LO")) {
-hubs.forEach((h, idx) => {
-const cNo = "HUB-" + String(idx + 1).padStart(2, "0");
-if (keepExisting && hasSlotFilled("LO", cNo)) return;
-const st = pickStaff(s => s.isTeaching && (s.isHmHs || s.isPg || s.isBt), h.block, null);
-addAppt("LO", cNo, h.hub, h.block, st, "தொடர்பு அலுவலர்", "AUTO");
-});
-}
-routes.forEach(rt => {
-if (shouldRun("RO") && !(keepExisting && hasSlotFilled("RO", rt.routeCode))) {
-const stRo = pickStaff(s => s.isTeaching && (s.isPg || s.isHmHs || s.isBt), rt.block, null);
-addAppt("RO", rt.routeCode, rt.label, rt.block, stRo, "வழித்தட அலுவலர்", "AUTO");
-}
-if (shouldRun("ROA") && !(keepExisting && hasSlotFilled("ROA", rt.routeCode))) {
-const stRoa = pickStaff(s => (s.isTeaching && (s.isBt || !s.isHmHss)) || (!s.isTeaching && /LAB|JUNIOR|RECORD/i.test(s.desig)), rt.block, null);
-addAppt("ROA", rt.routeCode, rt.label, rt.block, stRoa, "வழித்தட அலுவலர் உதவியாளர்", "AUTO");
-}
-});
-centres.forEach(c => {
-const forbidU = otherSchoolRule ? c.uNo : null;
-if (shouldRun("CS") && !(keepExisting && hasSlotFilled("CS", c.centreNo))) {
-const stCs = pickStaff(s => s.isTeaching && (s.isHmHss || s.isHmHs || s.isPg), c.block, forbidU);
-addAppt("CS", c.centreNo, c.labelTa, c.block, stCs, "முதன்மை கண்காணிப்பாளர்", "AUTO");
-}
-if (shouldRun("DO") && !(keepExisting && hasSlotFilled("DO", c.centreNo))) {
-const stDo = pickStaff(s => s.isTeaching && (s.isHmHs || s.isPg || s.isBt), c.block, forbidU);
-addAppt("DO", c.centreNo, c.labelTa, c.block, stDo, "துறை அலுவலர்", "AUTO");
-}
-});
-if (shouldRun("FS")) {
-hubs.forEach((h, idx) => {
-const sqCode = "SQUAD-" + String(idx + 1).padStart(2, "0");
-const sqLabel = `பறக்கும் படைக் குழு ${String(idx + 1).padStart(2, "0")} (${h.block} மண்டலம்)`;
-const existingFs = currentList.filter(x => x.roleCode === "FS" && x.centreNo === sqCode).length;
-for (let m = existingFs; m < 2; m++) {
-const stFs = pickStaff(s => s.isTeaching && (s.isPg || s.isBt || s.isHmHs), h.block, null);
-addAppt("FS", sqCode, sqLabel, h.block, stFs, m === 0 ? "பறக்கும் படைத் தலைவர்" : "பறக்கும் படை உறுப்பினர்", "AUTO");
-}
-});
-}
-if (shouldRun("SS")) {
-centres.forEach(c => {
-const forbidU = otherSchoolRule ? c.uNo : null;
-const existingSs = currentList.filter(x => x.roleCode === "SS" && x.centreNo === c.centreNo).length;
-for (let m = existingSs; m < ssQuota; m++) {
-const stSs = pickStaff(s => s.isTeaching && (s.isPg || s.isBt), c.block, forbidU);
-addAppt("SS", c.centreNo, c.labelTa, c.block, stSs, "நிலையான படையினர்", "AUTO");
-}
-});
-}
-if (shouldRun("HI")) {
-centres.forEach(c => {
-const forbidU = otherSchoolRule ? c.uNo : null;
-const targetHi = hiQuotaRaw === "CENTRE_CONFIG"
-? Math.max(1, Number(c.hiQuota || 6))
-: (hiQuotaRaw === "AUTO"
-? Math.min(10, Math.max(2, Math.ceil((c.candidateStrength || 80) / 25)))
-: Math.max(1, Number(hiQuotaRaw) || 4));
-const existingHi = currentList.filter(x => x.roleCode === "HI" && x.centreNo === c.centreNo).length;
-for (let m = existingHi; m < targetHi; m++) {
-const stHi = pickStaff(s => s.isTeaching && !s.isHmHss && !s.isHmHs, c.block, forbidU);
-addAppt("HI", c.centreNo, c.labelTa, c.block, stHi, "தேர்வறை கண்காணிப்பாளர்", "AUTO");
-}
-});
-}
-if (shouldRun("OS")) {
-const osSubRoles = [
-"தேர்வு மைய எழுத்தர் (Clerk / Jr.Asst)",
-"ஆய்வக உதவியாளர் (Lab Assistant)",
-"அலுவலக உதவியாளர் (Office Assistant)",
-"இரவுக் காவலர் / தூய்மைப் பணியாளர்"
-];
-centres.forEach(c => {
-const targetOs = osQuotaRaw === "CENTRE_CONFIG"
-? Math.max(1, Number(c.osQuota || 3))
-: Math.max(1, Number(osQuotaRaw) || 2);
-const existingOs = currentList.filter(x => x.roleCode === "OS" && x.centreNo === c.centreNo).length;
-for (let m = existingOs; m < targetOs; m++) {
-let stOs = allStaff.find(s => !usedStaffIds.has(s.staffId) && !s.isTeaching && String(s.uNo) === String(c.uNo));
-if (!stOs) {
-stOs = pickStaff(s => !s.isTeaching, c.block, null);
-}
-addAppt("OS", c.centreNo, c.labelTa, c.block, stOs, osSubRoles[m % osSubRoles.length], "AUTO");
-}
-});
-}
-store[examKey] = currentList;
-saveExamDutyStore();
-renderExamDutyRoleKpiCards();
-populateExamDutyManualStaffDropdown();
-renderExamDutyAppointmentsTable();
-if (!silentSeed) {
-showToast(`✅ தானியங்கி பணி நியமனம் வெற்றி! மொத்தம் ${currentList.length.toLocaleString("en-IN")} அலுவலர்கள்/பணியாளர்கள் நியமிக்கப்பட்டனர்.`, "#0f766e");
-}
 }
 function assignExamDutyManually() {
 const examKey = getActiveExamDutyTypeKey();
@@ -27398,7 +27606,11 @@ return;
 }
 const rMeta = EXAM_DUTY_ROLES_CATALOG.find(r => r.code === roleCode) || EXAM_DUTY_ROLES_CATALOG[0];
 const optEl = centreSel && centreSel.selectedIndex >= 0 ? centreSel.options[centreSel.selectedIndex] : null;
-const locLabel = customLoc || (centreSel ? centreSel.value : "") || "-";
+const locLabel = customLoc || (centreSel ? centreSel.value : "") || "";
+if (!locLabel) {
+showToast("⚠️ ஒதுக்கப்படும் தேர்வு மையம் / வழித்தடத்தைத் தேர்ந்தெடுக்கவும் (அல்லது முதலில் தேர்வு மையத்தை இணைக்கவும்)!", "#ef4444");
+return;
+}
 const locCode = (optEl && optEl.getAttribute("data-cno")) ? optEl.getAttribute("data-cno") : (locLabel.split(" ")[0] || "");
 const locBlock = (optEl && optEl.getAttribute("data-block")) ? optEl.getAttribute("data-block") : st.block;
 const store = getExamDutyStore();
@@ -27434,6 +27646,7 @@ list[existingIdx] = rec;
 list.unshift(rec);
 }
 saveExamDutyStore();
+renderExamDutyExamCardsGrid();
 renderExamDutyRoleKpiCards();
 populateExamDutyManualStaffDropdown();
 renderExamDutyAppointmentsTable();
@@ -27443,7 +27656,7 @@ badge.textContent = "✅ சேமிக்கப்பட்டது";
 badge.style.background = "#dcfce7";
 badge.style.color = "#166534";
 }
-showToast(`✅ [${st.staffId}] ${st.nameTa || st.name} ➔ ${rMeta.nameTa} (${locLabel}) கைமுறையாக நியமிக்கப்பட்டார்!`, "#7c3aed");
+showToast(`✅ [${st.staffId}] ${st.nameTa || st.name} ➔ ${rMeta.nameTa} (${locLabel}) பணி நியமனம் செய்யப்பட்டது!`, "#7c3aed");
 }
 function editExamDutyAppointmentRow(staffId) {
 const examKey = getActiveExamDutyTypeKey();
@@ -27483,7 +27696,7 @@ badge.style.background = "#fef3c7";
 badge.style.color = "#92400e";
 }
 document.getElementById("admDutyManualRole")?.scrollIntoView({ behavior: "smooth", block: "center" });
-showToast(`✏️ [${rec.staffId}] ${rec.staffNameTa} விவரம் கைமுறைத் திருத்தப் பெட்டியில் ஏற்றப்பட்டது.`, "#0284c7");
+showToast(`✏️ [${rec.staffId}] ${rec.staffNameTa} விவரம் திருத்தப் பெட்டியில் ஏற்றப்பட்டது.`, "#0284c7");
 }
 function removeExamDutyAppointmentRow(staffId) {
 const examKey = getActiveExamDutyTypeKey();
@@ -27491,6 +27704,7 @@ const store = getExamDutyStore();
 if (!Array.isArray(store[examKey])) return;
 store[examKey] = store[examKey].filter(x => x && String(x.staffId) !== String(staffId));
 saveExamDutyStore();
+renderExamDutyExamCardsGrid();
 renderExamDutyRoleKpiCards();
 populateExamDutyManualStaffDropdown();
 renderExamDutyAppointmentsTable();
@@ -27518,6 +27732,7 @@ const examKey = getActiveExamDutyTypeKey();
 const store = getExamDutyStore();
 store[examKey] = [];
 saveExamDutyStore();
+renderExamDutyExamCardsGrid();
 renderExamDutyRoleKpiCards();
 populateExamDutyManualStaffDropdown();
 renderExamDutyAppointmentsTable();
@@ -27530,21 +27745,20 @@ const list = Array.isArray(store[examKey]) ? store[examKey] : [];
 const fRole = (document.getElementById("admDutyTableFilterRole")?.value || "").trim();
 const fBlock = (document.getElementById("admDutyTableFilterBlock")?.value || "").trim();
 const fCentre = (document.getElementById("admDutyTableFilterCentre")?.value || "").trim();
-const fMode = (document.getElementById("admDutyTableFilterMode")?.value || "").trim();
 const fSearch = (document.getElementById("admDutyTableFilterSearch")?.value || "").trim().toLowerCase();
 return list.filter(r => {
 if (!r) return false;
 if (fRole && r.roleCode !== fRole) return false;
 if (fBlock && r.block !== fBlock) return false;
 if (fCentre && r.centreNo !== fCentre && r.locationLabel !== fCentre) return false;
-if (fMode && r.mode !== fMode) return false;
 if (fSearch) {
-const hay = `${r.staffId} ${r.staffName} ${r.staffNameTa} ${r.desig} ${r.subject} ${r.uNo} ${r.schoolNameTa} ${r.schoolNameEn} ${r.centreNo} ${r.locationLabel} ${r.roleNameTa} ${r.subRole || ""}`.toLowerCase();
+const hay = `${r.staffId} ${r.staffName} ${r.staffNameTa} ${r.desig} ${r.subject} ${stSafe(r.uNo)} ${stSafe(r.schoolNameTa)} ${stSafe(r.schoolNameEn)} ${stSafe(r.centreNo)} ${stSafe(r.locationLabel)} ${stSafe(r.roleNameTa)} ${stSafe(r.subRole)}`.toLowerCase();
 if (!hay.includes(fSearch)) return false;
 }
 return true;
 });
 }
+function stSafe(v) { return String(v || ""); }
 function renderExamDutyAppointmentsTable() {
 const tbody = document.getElementById("admExamDutyAppointmentsTbody");
 if (!tbody) return;
@@ -27562,14 +27776,13 @@ const filtered = getFilteredExamDutyAppointments();
 const badge = document.getElementById("admDutyFilteredCountBadge");
 if (badge) badge.textContent = filtered.length.toLocaleString("en-IN");
 if (filtered.length === 0) {
-tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:24px; color:#64748b; font-weight:800;">பொருத்தமான பணி நியமனங்கள் எதுவும் இல்லை. மேலே உள்ள <strong>"⚡ தானியங்கி பணி நியமனம் உருவாக்கு"</strong> அல்லது <strong>"✍️ கைமுறை பணி நியமனம்"</strong> மூலம் நியமிக்கவும்.</td></tr>`;
+tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:#64748b; font-weight:800;">இத்தேர்விற்கு இன்னும் பணி நியமனங்கள் செய்யப்படவில்லை. மேலே உள்ள <strong>"✍️ தேர்வுப் பணி நியமனம்"</strong> பகுதியில் பொறுப்பு, தேர்வு மையம் மற்றும் பணியாளரைத் தேர்ந்தெடுத்து நியமிக்கவும்.</td></tr>`;
 return;
 }
 const roleByCode = {};
 EXAM_DUTY_ROLES_CATALOG.forEach(r => { roleByCode[r.code] = r; });
 tbody.innerHTML = filtered.slice(0, 500).map((r, idx) => {
 const rm = roleByCode[r.roleCode] || EXAM_DUTY_ROLES_CATALOG[0];
-const isMan = r.mode === "MANUAL";
 return `
         <tr>
           <td style="text-align:center; font-weight:900;">${idx + 1}</td>
@@ -27597,11 +27810,6 @@ return `
           </td>
           <td style="text-align:center;">
             <span style="display:inline-block; font-family:'Inter',sans-serif; font-size:0.82rem; font-weight:900; color:#14532d; background:#dcfce7; border:1px solid #86efac; border-radius:6px; padding:2px 7px;">📱 ${escapeHtmlAttr(r.mobile || "-")}</span>
-          </td>
-          <td style="text-align:center;">
-            <span style="display:inline-block; padding:2px 7px; border-radius:999px; font-size:0.69rem; font-weight:900; background:${isMan ? "#ede9fe" : "#e0f2fe"}; color:${isMan ? "#5b21b6" : "#0369a1"};">
-              ${isMan ? "✍️ Manual" : "⚡ Auto"}
-            </span>
           </td>
           <td style="text-align:center;">
             <div style="display:flex; gap:4px; justify-content:center; flex-wrap:wrap;">
