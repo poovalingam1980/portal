@@ -1259,6 +1259,8 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </button>
 </div>
 </div>
+<!-- HM FINAL DECLARATION LOCK BANNER -->
+<div id="schEbsFinalDeclarationBox" style="margin-bottom:14px;"></div>
 <!-- 4 Sub-Tabs for Form-I, Form-II, Form-III, Form-IV -->
 <div class="ebs-subtab-bar">
 <button type="button" class="ebs-subtab-btn active" id="ebsSubBtnF1" onclick="switchSchoolEbsSubTab('F1')">
@@ -4392,8 +4394,28 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 <!-- Admin EBS F3 & F4 Delete / Transfer Requests Approval Box -->
 <div id="admEbsDeleteReqsBox" style="margin-bottom:16px;"></div>
+<!-- CEO BLOCK-WISE & SCHOOL-WISE OTP + COMPLETION % PROGRESS TRACKER -->
+<div id="admEbsProgressTrackerPanel" style="background:linear-gradient(135deg,#f8fafc 0%,#f0fdf4 100%); border:1.5px solid #86efac; border-left:5px solid #16a34a; border-radius:12px; padding:14px 16px; margin-bottom:14px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+    <div>
+      <div style="font-size:1rem; font-weight:900; color:#14532d;">📊 முதன்மைக் கல்வி அலுவலர் கண்காணிப்புப் பலகை — ஒன்றியம் &amp; பள்ளி வாரியான OTP மற்றும் படிவ நிறைவு %</div>
+      <div style="font-size:0.78rem; color:#166534; font-weight:700;">ஆசிரியர்கள் (F3) மற்றும் பணியாளர்களின் (F4) WhatsApp / Email OTP சரிபார்ப்பு நிலை, படிவ நிறைவு % மற்றும் HM இறுதி உறுதிமொழிப் பூட்டு</div>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button type="button" class="btn btn-primary btn-sm" onclick="openBulkEbsWaReminderModal()" style="background:#15803d; border-color:#166534; font-weight:900;">
+        📲 நிலுவைப் பள்ளிகளுக்கு WhatsApp நினைவூட்டல்
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="exportAdminEbsProgressExcel()" style="background:#fff; color:#15803d; border-color:#16a34a; font-weight:900;">
+        📥 நிறைவு % &amp; OTP நிலுவை Excel (.xlsx)
+      </button>
+    </div>
+  </div>
+  <div id="admEbsTrackerKpiRow" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:8px; margin-bottom:10px;"></div>
+  <div style="font-size:0.75rem; font-weight:900; color:#0f294a; margin-bottom:6px;">📍 12 ஒன்றியங்கள் வாரியான முன்னேற்றம் (ஒன்றியத்தை வடிகட்ட கிளிக் செய்க):</div>
+  <div id="admEbsBlockChipsRow" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+</div>
 <!-- Filters for Admin EBS School Table -->
-<div class="grid-4" style="margin-bottom:14px; background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:10px; margin-bottom:14px; background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
 <div class="form-group" style="margin-bottom:0;">
 <label class="form-label" style="font-size:0.76rem; font-weight:800;">1. ஒன்றியம் (Block)</label>
 <select id="admEbsFilterBlock" class="form-control" onchange="renderAdminEbsMasterDashboard()">
@@ -4418,7 +4440,17 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">4. பள்ளி தேடல் (U.NO / பெயர்)</label>
+<label class="form-label" style="font-size:0.76rem; font-weight:800;">4. OTP &amp; நிறைவு நிலை (Status)</label>
+<select id="admEbsFilterStatus" class="form-control" onchange="renderAdminEbsMasterDashboard()">
+<option value="">அனைத்து நிலைகளும் (All Schools)</option>
+<option value="OTP_PENDING">⏳ WhatsApp / Email OTP நிலுவையில் உள்ளவை</option>
+<option value="FORMS_INCOMPLETE">📝 படிவங்கள் 100% பூர்த்தி ஆகாதவை</option>
+<option value="READY_UNLOCKED">🟢 100% தயார் — HM பூட்டு நிலுவை</option>
+<option value="FINAL_LOCKED">🔒 HM Final Verified &amp; Locked</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom:0;">
+<label class="form-label" style="font-size:0.76rem; font-weight:800;">5. பள்ளி தேடல் (U.NO / பெயர்)</label>
 <input type="text" id="admEbsFilterSearch" class="form-control" placeholder="🔍 U.NO, UDISE, பள்ளிப் பெயர்..." oninput="renderAdminEbsMasterDashboard()">
 </div>
 </div>
@@ -4433,6 +4465,8 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <th style="text-align:center;">10th மாணவர் (TM/EM/Tot)</th>
 <th style="text-align:center;">+2 மாணவர் (TM/EM/Tot)</th>
 <th style="text-align:center;">ஆசிரியர் (F3) / பணியாளர் (F4)</th>
+<th style="text-align:center; min-width:195px;">OTP &amp; படிவ நிறைவு %</th>
+<th style="text-align:center; min-width:170px;">HM பூட்டு &amp; நினைவூட்டல்</th>
 <th style="text-align:center; min-width:255px;">EBS படிவம் திருத்து &amp; A4 பதிவிறக்கம்</th>
 </tr>
 </thead>
@@ -21458,6 +21492,9 @@ renderSchoolEbsF4Table(ctx, nonTeachList);
 if (typeof renderSchoolEbsDeleteTransferStrip === "function") {
 renderSchoolEbsDeleteTransferStrip(uNo);
 }
+  if (typeof renderSchoolEbsFinalDeclarationBox === "function") {
+    renderSchoolEbsFinalDeclarationBox(uNo);
+  }
 }
 function renderSchoolEbsF1Interactive(ctx) {
 const container = document.getElementById("ebsF1InteractiveContainer");
@@ -25803,6 +25840,7 @@ return `
       <div class="ebs-a4-page">
         <div class="ebs-top-header-row">
           <div class="ebs-form-pill">FORM – I</div>
+          ${renderEbsA4VerificationStampHtml(sch.uNo)}
           ${renderUnoHeaderTableHtml(sch.uNo)}
         </div>
 
@@ -26054,6 +26092,7 @@ return `
       <div class="ebs-a4-page">
         <div class="ebs-top-header-row">
           <div class="ebs-form-pill">FORM – II <span style="font-size:11px; font-weight:700;">( Hr.Sec.Schools only )</span></div>
+          ${renderEbsA4VerificationStampHtml(sch.uNo)}
           ${renderUnoHeaderTableHtml(sch.uNo)}
         </div>
 
@@ -26108,6 +26147,7 @@ return `
       <div class="ebs-a4-page">
         <div class="ebs-top-header-row">
           <div class="ebs-form-pill">FORM – III</div>
+          ${renderEbsA4VerificationStampHtml(sch.uNo)}
           ${renderUnoHeaderTableHtml(sch.uNo)}
         </div>
 
@@ -26324,6 +26364,7 @@ return `
       <div class="ebs-a4-page">
         <div class="ebs-top-header-row">
           <div class="ebs-form-pill">FORM – IV</div>
+          ${renderEbsA4VerificationStampHtml(sch.uNo)}
           ${renderUnoHeaderTableHtml(sch.uNo)}
         </div>
 
@@ -28201,99 +28242,630 @@ document.body.removeChild(a);
 URL.revokeObjectURL(url);
 showToast(`📥 ${filtered.length.toLocaleString("en-IN")} பணி நியமனங்கள் CSV கோப்பாகப் பதிவிறக்கப்பட்டது!`, "#16a34a");
 }
+function evaluateSchoolEbsOverallReadiness(uNo) {
+  const ctx = getOrInitSchoolEbs2026Data(uNo, false);
+  const { sch, ebs, staffList, isHSS } = ctx;
+  const f1 = ebs.f1 || {};
+  const teachList = staffList.filter(s => s.isTeaching);
+  const nonTeachList = staffList.filter(s => !s.isTeaching);
+
+  const f1Ok = Boolean(
+    String(f1.hmName || sch.hmName || "").trim() &&
+    String(f1.hmMobile || "").replace(/\D/g, "").length === 10 &&
+    String(f1.gmail || "").trim() &&
+    (Number(f1.totalClassrooms || 0) > 0 || Number(f1.eligibleExamRooms || 0) > 0)
+  );
+  const f2Ok = !isHSS || Boolean(ebs.f2 && Object.keys(ebs.f2).length > 0);
+
+  let teachComplete = 0, teachWaOk = 0, teachEmailOk = 0;
+  teachList.forEach(st => {
+    const cRes = typeof evaluateEbsStaffFormCompletenessFromObj === "function"
+      ? evaluateEbsStaffFormCompletenessFromObj(st, sch)
+      : { isComplete: false };
+    if (cRes.isComplete) teachComplete++;
+    if (st.whatsappVerified) teachWaOk++;
+    if (st.emailVerified) teachEmailOk++;
+  });
+
+  let ntComplete = 0, ntWaOk = 0, ntEmailOk = 0;
+  nonTeachList.forEach(st => {
+    const cRes = typeof evaluateEbsStaffFormCompletenessFromObj === "function"
+      ? evaluateEbsStaffFormCompletenessFromObj(st, sch)
+      : { isComplete: false };
+    if (cRes.isComplete) ntComplete++;
+    if (st.whatsappVerified) ntWaOk++;
+    if (st.emailVerified) ntEmailOk++;
+  });
+
+  const totalStaff = teachList.length + nonTeachList.length;
+  const totalComplete = teachComplete + ntComplete;
+  const totalWaOk = teachWaOk + ntWaOk;
+  const totalEmailOk = teachEmailOk + ntEmailOk;
+
+  const waOtpPct = totalStaff > 0 ? Math.round((totalWaOk / totalStaff) * 100) : 100;
+  const emailOtpPct = totalStaff > 0 ? Math.round((totalEmailOk / totalStaff) * 100) : 100;
+
+  const totalUnits = (isHSS ? 2 : 1) + totalStaff;
+  const doneUnits = (f1Ok ? 1 : 0) + (isHSS ? (f2Ok ? 1 : 0) : 0) + totalComplete;
+  const overallPct = totalUnits > 0 ? Math.round((doneUnits / totalUnits) * 100) : 0;
+
+  const is100PercentReady = Boolean(f1Ok && f2Ok && totalStaff > 0 && totalComplete === totalStaff && totalWaOk === totalStaff && totalEmailOk === totalStaff);
+  const finalLock = (ebs.finalLock && typeof ebs.finalLock === "object") ? ebs.finalLock : { locked: false };
+
+  return {
+    uNo: String(sch.uNo),
+    sch,
+    ebs,
+    f1,
+    isHSS,
+    f1Ok,
+    f2Ok,
+    teachTotal: teachList.length,
+    teachComplete,
+    teachWaOk,
+    teachEmailOk,
+    ntTotal: nonTeachList.length,
+    ntComplete,
+    ntWaOk,
+    ntEmailOk,
+    totalStaff,
+    totalComplete,
+    totalWaOk,
+    totalEmailOk,
+    pendingWaOtp: totalStaff - totalWaOk,
+    pendingEmailOtp: totalStaff - totalEmailOk,
+    pendingProfiles: totalStaff - totalComplete,
+    waOtpPct,
+    emailOtpPct,
+    overallPct,
+    is100PercentReady,
+    finalLock
+  };
+}
+
+function renderEbsA4VerificationStampHtml(uNo) {
+  const ctx = getOrInitSchoolEbs2026Data(uNo, false);
+  const fl = ctx && ctx.ebs && ctx.ebs.finalLock;
+  if (fl && fl.locked) {
+    return `<div style="display:inline-flex; flex-direction:column; align-items:center; justify-content:center; border:2px solid #15803d; background:#f0fdf4; color:#15803d; padding:3px 10px; border-radius:6px; font-weight:900; font-size:10.5px; line-height:1.25; text-align:center;">
+      <span>✅ FINAL VERIFIED COPY</span>
+      <span style="font-size:8.2px; font-weight:800; color:#166534;">HM Locked: ${escapeHtmlAttr(fl.lockedDisplay || "")} | ${escapeHtmlAttr(fl.declarationId || "")}</span>
+    </div>`;
+  }
+  return `<div style="display:inline-flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px dashed #d97706; background:#fffbeb; color:#b45309; padding:3px 10px; border-radius:6px; font-weight:900; font-size:10px; line-height:1.25; text-align:center;">
+    <span>⏳ DRAFT COPY (UNVERIFIED)</span>
+    <span style="font-size:8px; font-weight:700;">HM Final Declaration Lock Pending</span>
+  </div>`;
+}
+
+function renderSchoolEbsFinalDeclarationBox(uNo) {
+  const box = document.getElementById("schEbsFinalDeclarationBox");
+  if (!box) return;
+  const r = evaluateSchoolEbsOverallReadiness(uNo);
+  const isAdmin = Boolean(document.body && document.body.classList.contains("admin-mode")) || Boolean(activeSchoolSession && activeSchoolSession.isAdminInspection);
+
+  if (r.finalLock && r.finalLock.locked) {
+    box.innerHTML = `
+      <div style="background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%); border:2px solid #16a34a; border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="font-size:0.96rem; font-weight:900; color:#14532d;">✅ FINAL VERIFIED COPY — தலைமை ஆசிரியர் இறுதி உறுதிமொழிப் பூட்டு செய்யப்பட்டது</div>
+          <div style="font-size:0.78rem; color:#166534; font-weight:800; margin-top:3px;">
+            உறுதிமொழி எண்: <strong>${escapeHtmlAttr(r.finalLock.declarationId || "-")}</strong> &nbsp;|&nbsp;
+            தலைமை ஆசிரியர்: <strong>${escapeHtmlAttr(r.finalLock.hmName || r.f1.hmName || "-")}</strong> &nbsp;|&nbsp;
+            பூட்டிய நேரம்: <strong>${escapeHtmlAttr(r.finalLock.lockedDisplay || "-")}</strong>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="openEbsA4PreviewModal('ALL')" style="background:#15803d; border-color:#166534; font-weight:900;">
+            🖨️ FINAL VERIFIED A4 கையேடு அச்சிடு
+          </button>
+          ${isAdmin ? `
+            <button type="button" class="btn btn-outline btn-sm" onclick="adminUnlockSchoolEbsFinalLock('${r.uNo}')" style="background:#fff; color:#dc2626; border-color:#ef4444; font-weight:900;">
+              🔓 நிர்வாகி பூட்டு நீக்கம் (Unlock)
+            </button>
+          ` : ``}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (r.is100PercentReady) {
+    box.innerHTML = `
+      <div style="background:linear-gradient(135deg,#eff6ff 0%,#dcfce7 100%); border:2px solid #22c55e; border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="font-size:0.95rem; font-weight:900; color:#14532d;">🎉 100% பூர்த்தியானது! தலைமை ஆசிரியர் இறுதி உறுதிமொழிப் பூட்டுக்குத் தயார்</div>
+          <div style="font-size:0.78rem; color:#1e3a8a; font-weight:700; margin-top:2px;">
+            Form I${r.isHSS ? ", II" : ""}, III (${r.teachComplete}/${r.teachTotal}) &amp; IV (${r.ntComplete}/${r.ntTotal}) மற்றும் அனைத்து WhatsApp / Email OTP சரிபார்ப்புகளும் முடிந்துவிட்டன.
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="openEbsHmFinalLockModal('${r.uNo}')" style="background:#15803d; border-color:#166534; font-weight:900;">
+          🔐 தலைமை ஆசிரியர் இறுதி உறுதிமொழி &amp; பூட்டு (Final Lock &amp; Submit)
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML = `
+    <div style="background:#fffbeb; border:1.5px solid #fcd34d; border-left:5px solid #d97706; border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div style="flex:1; min-width:260px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span style="font-size:0.90rem; font-weight:900; color:#92400e;">⏳ EBS பதிவு முன்னேற்றம்: ${r.overallPct}%</span>
+          <span style="background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">
+            Form-I: ${r.f1Ok ? "✅" : "⚠️"} | F3: ${r.teachComplete}/${r.teachTotal} | F4: ${r.ntComplete}/${r.ntTotal} | WA OTP: ${r.totalWaOk}/${r.totalStaff} | Email OTP: ${r.totalEmailOk}/${r.totalStaff}
+          </span>
+        </div>
+        <div style="width:100%; height:7px; background:#fde68a; border-radius:999px; overflow:hidden; margin-top:6px;">
+          <div style="width:${r.overallPct}%; height:100%; background:linear-gradient(90deg,#f59e0b,#16a34a);"></div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" disabled style="opacity:0.65; cursor:not-allowed; background:#fff; color:#92400e; border-color:#f59e0b; font-weight:800;">
+        🔒 100% பூர்த்தியான பின்னரே HM Final Lock திறக்கும்
+      </button>
+    </div>
+  `;
+}
+
+let _activeHmLockTargetUNo = "";
+function openEbsHmFinalLockModal(uNo) {
+  const r = evaluateSchoolEbsOverallReadiness(uNo);
+  if (!r.is100PercentReady) {
+    showToast("⚠️ அனைத்துப் படிவங்களும் (F1–F4) மற்றும் OTP சரிபார்ப்புகளும் 100% நிறைவடைந்த பின்னரே இறுதி உறுதிமொழி அளிக்க முடியும்!", "#d97706", true);
+    return;
+  }
+  _activeHmLockTargetUNo = r.uNo;
+  const subEl = document.getElementById("ebsHmLockModalSub");
+  const sumEl = document.getElementById("ebsHmLockSummaryBox");
+  const nmEl = document.getElementById("ebsHmLockNameInput");
+  const chkEl = document.getElementById("ebsHmLockAgreeChk");
+  if (subEl) subEl.textContent = `U.NO: ${r.uNo} | ${r.sch.nameTa || r.sch.nameEn}`;
+  if (sumEl) {
+    sumEl.innerHTML = `✅ Form-I: பூர்த்தி &nbsp;|&nbsp; ${r.isHSS ? "✅ Form-II: பூர்த்தி &nbsp;|&nbsp; " : ""}✅ Form-III: ${r.teachTotal}/${r.teachTotal} &nbsp;|&nbsp; ✅ Form-IV: ${r.ntTotal}/${r.ntTotal} &nbsp;|&nbsp; ✅ WhatsApp &amp; Email OTP: ${r.totalStaff}/${r.totalStaff} (100%)`;
+  }
+  if (nmEl) nmEl.value = r.f1.hmName || r.sch.hmName || "";
+  if (chkEl) chkEl.checked = false;
+  const modal = document.getElementById("ebsHmFinalLockModal");
+  if (modal) modal.classList.add("active");
+}
+
+function closeEbsHmFinalLockModal() {
+  const modal = document.getElementById("ebsHmFinalLockModal");
+  if (modal) modal.classList.remove("active");
+}
+
+async function confirmEbsHmFinalLock() {
+  const uNo = _activeHmLockTargetUNo || (activeSchoolSession && activeSchoolSession.uNo) || "";
+  if (!uNo) return;
+  const nmEl = document.getElementById("ebsHmLockNameInput");
+  const chkEl = document.getElementById("ebsHmLockAgreeChk");
+  const hmName = String(nmEl ? nmEl.value : "").trim();
+  if (!hmName) {
+    showToast("⚠️ தலைமை ஆசிரியர் / முதல்வர் பெயரை உள்ளிடவும்!", "#dc2626", true);
+    if (nmEl) nmEl.focus();
+    return;
+  }
+  if (!chkEl || !chkEl.checked) {
+    showToast("⚠️ உறுதிமொழிப் பெட்டியை (Checkbox) டிக் செய்யவும்!", "#dc2626", true);
+    return;
+  }
+  const extra = getSchoolExtra(uNo);
+  if (!extra.ebs2026) getOrInitSchoolEbs2026Data(uNo, false);
+  const now = new Date();
+  const lockedDisplay = now.toLocaleString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  const declId = `CEOSVG-EBS27-U${uNo}-${String(now.getTime()).slice(-4)}`;
+  extra.ebs2026.finalLock = {
+    locked: true,
+    lockedAt: now.toISOString(),
+    lockedDisplay,
+    hmName,
+    declarationId: declId
+  };
+  extra.ebs2026.f1.hmName = hmName;
+  closeEbsHmFinalLockModal();
+  await saveSchoolEbs2026Data(false, uNo);
+  renderSchoolEbsModule();
+  if (typeof renderAdminEbsMasterDashboard === "function") {
+    const ebsPane = document.getElementById("admPaneEbsMaster");
+    if (ebsPane && ebsPane.style.display !== "none") renderAdminEbsMasterDashboard();
+  }
+  showToast(`✅ பள்ளி [${uNo}] இறுதி உறுதிமொழிப் பூட்டு (FINAL VERIFIED COPY) வெற்றிகரமாகப் பதிவு செய்யப்பட்டது!`, "#15803d", true);
+}
+
+async function adminUnlockSchoolEbsFinalLock(uNo) {
+  const extra = getSchoolExtra(uNo);
+  if (!extra || !extra.ebs2026 || !extra.ebs2026.finalLock) return;
+  extra.ebs2026.finalLock = { locked: false, unlockedAt: new Date().toISOString() };
+  await saveSchoolEbs2026Data(false, uNo);
+  renderSchoolEbsModule();
+  if (typeof renderAdminEbsMasterDashboard === "function") {
+    renderAdminEbsMasterDashboard();
+  }
+  showToast(`🔓 பள்ளி [${uNo}] HM இறுதிப் பூட்டு நிர்வாகியால் திறக்கப்பட்டது.`, "#d97706", true);
+}
+
+function buildSchoolEbsReminderMessage(r) {
+  const schName = r.sch.nameTa || r.sch.nameEn;
+  const parts = [];
+  if (!r.f1Ok) parts.push("Form-I பள்ளி விவரம்");
+  if (r.pendingProfiles > 0) parts.push(`${r.pendingProfiles} பணியாளர் படிவங்கள்`);
+  if (r.pendingWaOtp > 0) parts.push(`${r.pendingWaOtp} WhatsApp OTP`);
+  if (r.pendingEmailOtp > 0) parts.push(`${r.pendingEmailOtp} Email OTP`);
+  if (r.is100PercentReady && !(r.finalLock && r.finalLock.locked)) parts.push("HM Final Declaration Lock");
+  const pendingTxt = parts.length > 0 ? parts.join(", ") : "EBS 2026-27 பதிவு";
+  return `அன்புள்ள தலைமை ஆசிரியர் / முதல்வர் அவர்களுக்கு, [U.NO: ${r.uNo}] ${schName} பள்ளியின் EBS 2026-27 (portal.ceosvg.in) பதிவில் ${pendingTxt} நிலுவையில் உள்ளது (நிறைவு: ${r.overallPct}%). உடனடியாகப் பூர்த்தி செய்து Final Lock செய்யுமாறு முதன்மைக் கல்வி அலுவலர், சிவகங்கை கேட்டுக்கொள்கிறார்.`;
+}
+
+function sendSingleSchoolEbsWaReminder(uNo) {
+  const r = evaluateSchoolEbsOverallReadiness(uNo);
+  const mob = String(r.f1.hmMobile || r.sch.hmMobile || "").replace(/\D/g, "").slice(-10);
+  const msg = buildSchoolEbsReminderMessage(r);
+  if (mob.length !== 10) {
+    showToast(`⚠️ [U.NO: ${uNo}] தலைமை ஆசிரியர் 10-இலக்க கைபேசி எண் Form-I-இல் பதிவு செய்யப்படவில்லை!`, "#dc2626", true);
+    return;
+  }
+  window.open(`https://wa.me/91${mob}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+}
+
+async function dispatchSingleSchoolWaReminderViaApi(uNo, btnEl) {
+  const r = evaluateSchoolEbsOverallReadiness(uNo);
+  const mob = String(r.f1.hmMobile || r.sch.hmMobile || "").replace(/\D/g, "").slice(-10);
+  if (mob.length !== 10) {
+    showToast(`⚠️ [U.NO: ${uNo}] சரியான HM கைபேசி எண் இல்லை.`, "#dc2626");
+    return false;
+  }
+  if (btnEl) {
+    btnEl.disabled = true;
+    btnEl.textContent = "⏳...";
+  }
+  let ok = false;
+  try {
+    if (typeof dispatchWhatsappOtpMessage === "function") {
+      const hmLabel = r.f1.hmName || r.sch.hmName || `HM (U.NO ${uNo})`;
+      const summaryCode = `${r.overallPct}% (WA:${r.pendingWaOtp}, EM:${r.pendingEmailOtp})`;
+      const res = await dispatchWhatsappOtpMessage(mob, summaryCode, r.sch, `EBS 2026-27 Reminder`);
+      ok = Boolean(res && res.apiDispatched);
+    }
+  } catch (e) {}
+  if (btnEl) {
+    btnEl.disabled = false;
+    btnEl.textContent = ok ? "✅ அனுப்பப்பட்டது" : "⚠️ API தோல்வி";
+  }
+  if (!ok) {
+    sendSingleSchoolEbsWaReminder(uNo);
+  }
+  return ok;
+}
+
+let _pendingWaReminderListCache = [];
+function openBulkEbsWaReminderModal() {
+  const ebsSchools = getEbs282MasterSchools();
+  const fBlock = (document.getElementById("admEbsFilterBlock")?.value || "").trim();
+  const list = [];
+  ebsSchools.forEach(s => {
+    if (fBlock && s.block !== fBlock) return;
+    const r = evaluateSchoolEbsOverallReadiness(s.uNo);
+    if (!(r.finalLock && r.finalLock.locked)) {
+      list.push(r);
+    }
+  });
+  _pendingWaReminderListCache = list;
+  const subEl = document.getElementById("admEbsWaRemSub");
+  const tbody = document.getElementById("admEbsWaRemTbody");
+  if (subEl) subEl.textContent = `${fBlock || "அனைத்து 12 ஒன்றியங்கள்"} — நிலுவையில் உள்ள பள்ளிகள்: ${list.length}`;
+  if (tbody) {
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:18px; color:#15803d; font-weight:900;">🎉 தேர்ந்தெடுக்கப்பட்ட ஒன்றியத்தில் அனைத்துப் பள்ளிகளும் Final Verified &amp; Locked ஆகிவிட்டன!</td></tr>`;
+    } else {
+      tbody.innerHTML = list.map((r, idx) => {
+        const mob = String(r.f1.hmMobile || r.sch.hmMobile || "").replace(/\D/g, "").slice(-10);
+        const hmName = r.f1.hmName || r.sch.hmName || "-";
+        const msg = buildSchoolEbsReminderMessage(r);
+        return `
+          <tr>
+            <td style="text-align:center; font-weight:900;">${idx + 1}</td>
+            <td style="font-size:0.78rem;">
+              <strong style="color:#4c1d95;">U.NO: ${r.uNo}</strong> — ${escapeHtmlAttr(r.sch.nameTa || r.sch.nameEn)}<br>
+              <span style="color:#64748b; font-weight:700;">${escapeHtmlAttr(r.sch.block)}</span>
+            </td>
+            <td style="font-size:0.78rem; font-weight:800;">
+              ${escapeHtmlAttr(hmName)}<br>
+              <span style="color:${mob.length === 10 ? "#15803d" : "#dc2626"};">${mob.length === 10 ? "📱 +91 " + mob : "⚠️ எண் இல்லை"}</span>
+            </td>
+            <td style="font-size:0.74rem; font-weight:800; color:#92400e;">
+              நிறைவு: <strong>${r.overallPct}%</strong> | WA OTP நிலுவை: <strong>${r.pendingWaOtp}</strong> | Email OTP நிலுவை: <strong>${r.pendingEmailOtp}</strong>
+            </td>
+            <td style="text-align:center;">
+              <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">
+                ${mob.length === 10 ? `
+                  <a href="https://wa.me/91${mob}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener" class="btn btn-primary btn-sm" style="background:#16a34a; border-color:#15803d; text-decoration:none; font-size:0.72rem; padding:3px 8px;">
+                    💬 WhatsApp Web
+                  </a>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="dispatchSingleSchoolWaReminderViaApi('${r.uNo}', this)" style="font-size:0.72rem; padding:3px 8px; border-color:#0f766e; color:#0f766e;">
+                    ⚡ API
+                  </button>
+                ` : `<span style="font-size:0.72rem; color:#dc2626; font-weight:800;">எண் இல்லை</span>`}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+  }
+  const modal = document.getElementById("admEbsWaReminderModal");
+  if (modal) modal.classList.add("active");
+}
+
+function closeBulkEbsWaReminderModal() {
+  const modal = document.getElementById("admEbsWaReminderModal");
+  if (modal) modal.classList.remove("active");
+}
+
+async function dispatchBulkEbsWaRemindersViaApi() {
+  const list = (_pendingWaReminderListCache || []).filter(r => String(r.f1.hmMobile || r.sch.hmMobile || "").replace(/\D/g, "").slice(-10).length === 10);
+  if (list.length === 0) {
+    showToast("⚠️ அனுப்பத் தகுதியான கைபேசி எண்கள் இல்லை.", "#f59e0b");
+    return;
+  }
+  const prog = document.getElementById("admEbsWaRemProgress");
+  if (prog) {
+    prog.style.display = "block";
+    prog.textContent = `⏳ ${list.length} பள்ளிகளுக்கு WhatsApp நினைவூட்டல் அனுப்பப்படுகிறது...`;
+  }
+  let sent = 0;
+  for (let i = 0; i < list.length; i++) {
+    const r = list[i];
+    const mob = String(r.f1.hmMobile || r.sch.hmMobile || "").replace(/\D/g, "").slice(-10);
+    try {
+      if (typeof dispatchWhatsappOtpMessage === "function") {
+        const res = await dispatchWhatsappOtpMessage(mob, `${r.overallPct}% (WA:${r.pendingWaOtp}, EM:${r.pendingEmailOtp})`, r.sch, "EBS Bulk Reminder");
+        if (res && res.apiDispatched) sent++;
+      }
+    } catch (e) {}
+    if (prog) prog.textContent = `⏳ ${i + 1}/${list.length} செயலாக்கப்பட்டது (வெற்றி: ${sent})...`;
+  }
+  if (prog) prog.textContent = `✅ நிறைவு: ${sent}/${list.length} பள்ளிகளுக்கு Cloud API வழியாக நினைவூட்டல் அனுப்பப்பட்டது.`;
+  showToast(`✅ ${sent}/${list.length} பள்ளிகளுக்கு WhatsApp நினைவூட்டல் அனுப்பப்பட்டது!`, "#16a34a", true);
+}
+
+function exportAdminEbsProgressExcel() {
+  if (typeof XLSX === "undefined") {
+    showToast("⚠️ Excel நூலகம் (XLSX) ஏற்றப்படவில்லை.", "#dc2626");
+    return;
+  }
+  const ebsSchools = getEbs282MasterSchools();
+  const rows = ebsSchools.map((s, idx) => {
+    const r = evaluateSchoolEbsOverallReadiness(s.uNo);
+    return {
+      "S.No": idx + 1,
+      "U.NO": r.uNo,
+      "UDISE": s.udiseNo || "",
+      "Block": s.block || "",
+      "School Name": s.nameEn || "",
+      "HM Name": r.f1.hmName || s.hmName || "",
+      "HM Mobile": r.f1.hmMobile || s.hmMobile || "",
+      "Form-I": r.f1Ok ? "Complete" : "Pending",
+      "F3 Total": r.teachTotal,
+      "F3 Complete": r.teachComplete,
+      "F4 Total": r.ntTotal,
+      "F4 Complete": r.ntComplete,
+      "WA OTP Verified": r.totalWaOk,
+      "WA OTP Pending": r.pendingWaOtp,
+      "Email OTP Verified": r.totalEmailOk,
+      "Email OTP Pending": r.pendingEmailOtp,
+      "Completion %": r.overallPct,
+      "HM Final Lock": (r.finalLock && r.finalLock.locked) ? "LOCKED (" + (r.finalLock.declarationId || "") + ")" : "PENDING"
+    };
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb, ws, "EBS_Progress_OTP");
+  XLSX.writeFile(wb, "CEO_Sivagangai_EBS_2026_27_Progress_OTP_Tracker.xlsx");
+  showToast("📥 EBS நிறைவு % & OTP கண்காணிப்பு அறிக்கை (Excel) பதிவிறக்கப்பட்டது!", "#16a34a");
+}
+
+function selectAdmEbsBlockFilterChip(blockName) {
+  const sel = document.getElementById("admEbsFilterBlock");
+  if (!sel) return;
+  sel.value = (sel.value === blockName) ? "" : blockName;
+  renderAdminEbsMasterDashboard();
+}
+
 function renderAdminEbsMasterDashboard() {
-const ebsSchools = getEbs282MasterSchools();
-const blockSel = document.getElementById("admEbsFilterBlock");
-if (blockSel && blockSel.options.length <= 1) {
-const blocks = Array.from(new Set(ebsSchools.map(s => s.block).filter(Boolean))).sort();
-blocks.forEach(b => {
-const opt = document.createElement("option");
-opt.value = b;
-opt.textContent = b;
-blockSel.appendChild(opt);
-});
-}
-const idInput = document.getElementById("admEbsSheetIdInput");
-if (idInput) idInput.value = getDedicatedEbsSheetId();
-const fBlock = (document.getElementById("admEbsFilterBlock")?.value || "").trim();
-const fLevel = (document.getElementById("admEbsFilterLevel")?.value || "").trim();
-const fMgmt = (document.getElementById("admEbsFilterMgmt")?.value || "").trim();
-const fSearch = (document.getElementById("admEbsFilterSearch")?.value || "").trim().toLowerCase();
-let hssCount = 0;
-ebsSchools.forEach(s => { if (isHigherSecondarySchool(s)) hssCount++; });
-const filtered = ebsSchools.filter(s => {
-if (fBlock && s.block !== fBlock) return false;
-const isHss = isHigherSecondarySchool(s);
-if (fLevel === "HSS" && !isHss) return false;
-if (fLevel === "HS" && isHss) return false;
-if (fMgmt && !String(s.mgmt1 || "").startsWith(fMgmt.charAt(0))) return false;
-if (fSearch) {
-const hay = `${s.uNo} ${s.udiseNo} ${s.nameEn} ${s.nameTa} ${s.block}`.toLowerCase();
-if (!hay.includes(fSearch)) return false;
-}
-return true;
-});
-const f1El = document.getElementById("admEbsStatF1Count");
-if (f1El) f1El.textContent = `${ebsSchools.length} பள்ளிகள்`;
-const f2El = document.getElementById("admEbsStatF2Count");
-if (f2El) f2El.textContent = `${hssCount} மேல்நிலைப் பள்ளிகள்`;
-let totalF3 = 0, totalF4 = 0;
-ebsSchools.forEach(s => {
-const sList = getSchoolFixedPortalStaffList(s.uNo);
-sList.forEach(x => { if (x.isTeaching) totalF3++; else totalF4++; });
-});
-const f3El = document.getElementById("admEbsStatF3Count");
-if (f3El && totalF3 > 0) f3El.textContent = `${totalF3.toLocaleString("en-IN")} ஆசிரியர்கள்`;
-const f4El = document.getElementById("admEbsStatF4Count");
-if (f4El && totalF4 > 0) f4El.textContent = `${totalF4.toLocaleString("en-IN")} பணியாளர்கள்`;
-if (typeof renderAdminEbsDeleteReqsBox === "function") {
-renderAdminEbsDeleteReqsBox();
-}
-const tbody = document.getElementById("admEbsSchoolsTbody");
-if (!tbody) return;
-tbody.innerHTML = filtered.map((s, idx) => {
-const ctx = getOrInitSchoolEbs2026Data(s.uNo, false);
-const { ebs, staffList, stu10_12, isHSS } = ctx;
-const f1 = ebs.f1;
-const tCount = staffList.filter(x => x.isTeaching).length;
-const ntCount = staffList.filter(x => !x.isTeaching).length;
-return `
-        <tr>
-          <td style="text-align:center; font-weight:900;">${idx + 1}</td>
-          <td>
-            <div style="font-weight:900; color:#4c1d95; font-size:0.92rem;">U.NO: ${s.uNo}</div>
-            <span style="display:inline-block; padding:1px 7px; border-radius:4px; font-size:0.70rem; font-weight:900; background:${isHSS ? "#dcfce7" : "#dbeafe"}; color:${isHSS ? "#166534" : "#1e40af"};">${isHSS ? "HSS" : "HS"} | ${s.mgmt1 || "1G"}</span>
-          </td>
-          <td>
-            <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(s.nameTa || s.nameEn)}</div>
-            <div style="font-size:0.75rem; color:#475569; font-weight:700;">${escapeHtmlAttr(s.nameEn)} | ${escapeHtmlAttr(s.block)}</div>
-          </td>
-          <td style="text-align:center; font-size:0.78rem; font-weight:800;">
-            🏫 ${f1.totalClassrooms} | 🎯 ${f1.eligibleExamRooms} | 🪑 ${f1.benchDeskPairs}
-          </td>
-          <td style="text-align:center; font-size:0.80rem; font-weight:800;">
-            <span style="color:#1d4ed8;">${stu10_12.sslc.tm_tot}</span> + <span style="color:#0369a1;">${stu10_12.sslc.em_tot}</span> = <strong style="color:#15803d;">${stu10_12.sslc.grand}</strong>
-          </td>
-          <td style="text-align:center; font-size:0.80rem; font-weight:800;">
-            ${isHSS ? `<span style="color:#1d4ed8;">${stu10_12.hsc2.tm_tot}</span> + <span style="color:#0369a1;">${stu10_12.hsc2.em_tot}</span> = <strong style="color:#0f766e;">${stu10_12.hsc2.grand}</strong>` : `<span style="color:#94a3b8;">— (HS)</span>`}
-          </td>
-          <td style="text-align:center; font-size:0.80rem; font-weight:800;">
-            👨‍🏫 ${tCount} &nbsp;|&nbsp; 🧑‍💼 ${ntCount}
-          </td>
-          <td style="text-align:center;">
-            <div style="display:flex; gap:4px; justify-content:center; flex-wrap:wrap;">
-              <button type="button" class="btn btn-primary btn-sm" onclick="openAdminSchoolEbsDirect('${s.uNo}','F1')" title="பள்ளியின் EBS (F1-F4) கட்டுப்பாட்டகத்தைத் திற" style="background:#4c1d95; border-color:#4c1d95; padding:3px 7px; font-size:0.72rem; font-weight:800;">✏️ திற</button>
-              <button type="button" class="btn btn-primary btn-sm" onclick="openAdminSchoolEbsDirect('${s.uNo}','F3')" title="இப்பள்ளியின் ஆசிரியர்கள் (F3) படிவம் திருத்து & நீக்க/மாறுதல்" style="background:#1d4ed8; border-color:#1e40af; padding:3px 7px; font-size:0.72rem; font-weight:800;">👨‍🏫 F3 திருத்து</button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F1','','${s.uNo}')" style="padding:3px 6px; font-size:0.72rem; font-weight:800;">F1</button>
-              ${isHSS ? `<button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F2','','${s.uNo}')" style="padding:3px 6px; font-size:0.72rem; font-weight:800; color:#0f766e; border-color:#5eead4;">F2</button>` : ``}
-              <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F3_ALL','','${s.uNo}')" style="padding:3px 6px; font-size:0.72rem; font-weight:800; color:#1d4ed8; border-color:#93c5fd;">F3</button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F4_ALL','','${s.uNo}')" style="padding:3px 6px; font-size:0.72rem; font-weight:800; color:#b45309; border-color:#fcd34d;">F4</button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('ALL','','${s.uNo}')" style="padding:3px 7px; font-size:0.72rem; font-weight:900; background:#f5f3ff; color:#4c1d95; border-color:#a78bfa;">📚 PDF</button>
-            </div>
-          </td>
-        </tr>
-      `;
-}).join("");
+  const ebsSchools = getEbs282MasterSchools();
+  const blockSel = document.getElementById("admEbsFilterBlock");
+  if (blockSel && blockSel.options.length <= 1) {
+    const blocks = Array.from(new Set(ebsSchools.map(s => s.block).filter(Boolean))).sort();
+    blocks.forEach(b => {
+      const opt = document.createElement("option");
+      opt.value = b;
+      opt.textContent = b;
+      blockSel.appendChild(opt);
+    });
+  }
+  const idInput = document.getElementById("admEbsSheetIdInput");
+  if (idInput) idInput.value = getDedicatedEbsSheetId();
+  const fBlock = (document.getElementById("admEbsFilterBlock")?.value || "").trim();
+  const fLevel = (document.getElementById("admEbsFilterLevel")?.value || "").trim();
+  const fMgmt = (document.getElementById("admEbsFilterMgmt")?.value || "").trim();
+  const fStatus = (document.getElementById("admEbsFilterStatus")?.value || "").trim();
+  const fSearch = (document.getElementById("admEbsFilterSearch")?.value || "").trim().toLowerCase();
+
+  let hssCount = 0;
+  let totalF3 = 0, totalF4 = 0;
+  let distStaff = 0, distWaOk = 0, distEmailOk = 0, distLocked = 0, distOtpPendingSchools = 0, distPctSum = 0;
+  const blockStats = {};
+
+  const readinessMap = {};
+  ebsSchools.forEach(s => {
+    if (isHigherSecondarySchool(s)) hssCount++;
+    const r = evaluateSchoolEbsOverallReadiness(s.uNo);
+    readinessMap[s.uNo] = r;
+    totalF3 += r.teachTotal;
+    totalF4 += r.ntTotal;
+    distStaff += r.totalStaff;
+    distWaOk += r.totalWaOk;
+    distEmailOk += r.totalEmailOk;
+    distPctSum += r.overallPct;
+    if (r.finalLock && r.finalLock.locked) distLocked++;
+    if (r.pendingWaOtp > 0 || r.pendingEmailOtp > 0) distOtpPendingSchools++;
+
+    const blk = s.block || "Other";
+    if (!blockStats[blk]) blockStats[blk] = { schools: 0, locked: 0, pctSum: 0, otpPending: 0 };
+    blockStats[blk].schools++;
+    blockStats[blk].pctSum += r.overallPct;
+    if (r.finalLock && r.finalLock.locked) blockStats[blk].locked++;
+    if (r.pendingWaOtp > 0 || r.pendingEmailOtp > 0) blockStats[blk].otpPending++;
+  });
+
+  const trackerKpiEl = document.getElementById("admEbsTrackerKpiRow");
+  if (trackerKpiEl) {
+    const avgPct = ebsSchools.length > 0 ? Math.round(distPctSum / ebsSchools.length) : 0;
+    const waPct = distStaff > 0 ? Math.round((distWaOk / distStaff) * 100) : 0;
+    const emPct = distStaff > 0 ? Math.round((distEmailOk / distStaff) * 100) : 0;
+    trackerKpiEl.innerHTML = `
+      <div style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px;">
+        <div style="font-size:0.71rem; font-weight:800; color:#475569;">📈 மாவட்ட சராசரி நிறைவு %</div>
+        <div style="font-size:1.15rem; font-weight:900; color:#15803d;">${avgPct}%</div>
+      </div>
+      <div style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px;">
+        <div style="font-size:0.71rem; font-weight:800; color:#475569;">🔒 HM Final Verified &amp; Locked</div>
+        <div style="font-size:1.15rem; font-weight:900; color:#4c1d95;">${distLocked} / ${ebsSchools.length} பள்ளிகள்</div>
+      </div>
+      <div style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px;">
+        <div style="font-size:0.71rem; font-weight:800; color:#475569;">📲 WhatsApp OTP சரிபார்ப்பு</div>
+        <div style="font-size:1.15rem; font-weight:900; color:#16a34a;">${distWaOk.toLocaleString("en-IN")} / ${distStaff.toLocaleString("en-IN")} (${waPct}%)</div>
+      </div>
+      <div style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px;">
+        <div style="font-size:0.71rem; font-weight:800; color:#475569;">✉️ Email OTP சரிபார்ப்பு</div>
+        <div style="font-size:1.15rem; font-weight:900; color:#1d4ed8;">${distEmailOk.toLocaleString("en-IN")} / ${distStaff.toLocaleString("en-IN")} (${emPct}%)</div>
+      </div>
+      <div style="background:#fff; border:1px solid #fca5a5; border-radius:8px; padding:8px 10px;">
+        <div style="font-size:0.71rem; font-weight:800; color:#991b1b;">⏳ OTP நிலுவைப் பள்ளிகள்</div>
+        <div style="font-size:1.15rem; font-weight:900; color:#dc2626;">${distOtpPendingSchools} பள்ளிகள்</div>
+      </div>
+    `;
+  }
+
+  const blockChipsEl = document.getElementById("admEbsBlockChipsRow");
+  if (blockChipsEl) {
+    blockChipsEl.innerHTML = Object.keys(blockStats).sort().map(blk => {
+      const st = blockStats[blk];
+      const bPct = st.schools > 0 ? Math.round(st.pctSum / st.schools) : 0;
+      const isAct = fBlock === blk;
+      return `<button type="button" onclick="selectAdmEbsBlockFilterChip('${escapeHtmlAttr(blk)}')" style="cursor:pointer; border:1.5px solid ${isAct ? "#15803d" : "#cbd5e1"}; background:${isAct ? "#dcfce7" : "#fff"}; color:${isAct ? "#14532d" : "#0f294a"}; border-radius:8px; padding:4px 9px; font-size:0.72rem; font-weight:800;">
+        ${escapeHtmlAttr(blk)}: <span style="color:#15803d;">${bPct}%</span> <span style="color:#dc2626;">(${st.otpPending} நிலுவை)</span>
+      </button>`;
+    }).join("");
+  }
+
+  const filtered = ebsSchools.filter(s => {
+    if (fBlock && s.block !== fBlock) return false;
+    const isHss = isHigherSecondarySchool(s);
+    if (fLevel === "HSS" && !isHss) return false;
+    if (fLevel === "HS" && isHss) return false;
+    if (fMgmt && !String(s.mgmt1 || "").startsWith(fMgmt.charAt(0))) return false;
+    const r = readinessMap[s.uNo];
+    if (fStatus === "OTP_PENDING" && r.pendingWaOtp === 0 && r.pendingEmailOtp === 0) return false;
+    if (fStatus === "FORMS_INCOMPLETE" && r.is100PercentReady) return false;
+    if (fStatus === "READY_UNLOCKED" && (!r.is100PercentReady || (r.finalLock && r.finalLock.locked))) return false;
+    if (fStatus === "FINAL_LOCKED" && !(r.finalLock && r.finalLock.locked)) return false;
+    if (fSearch) {
+      const hay = `${s.uNo} ${s.udiseNo} ${s.nameEn} ${s.nameTa} ${s.block}`.toLowerCase();
+      if (!hay.includes(fSearch)) return false;
+    }
+    return true;
+  });
+
+  const f1El = document.getElementById("admEbsStatF1Count");
+  if (f1El) f1El.textContent = `${ebsSchools.length} பள்ளிகள்`;
+  const f2El = document.getElementById("admEbsStatF2Count");
+  if (f2El) f2El.textContent = `${hssCount} மேல்நிலைப் பள்ளிகள்`;
+  const f3El = document.getElementById("admEbsStatF3Count");
+  if (f3El && totalF3 > 0) f3El.textContent = `${totalF3.toLocaleString("en-IN")} ஆசிரியர்கள்`;
+  const f4El = document.getElementById("admEbsStatF4Count");
+  if (f4El && totalF4 > 0) f4El.textContent = `${totalF4.toLocaleString("en-IN")} பணியாளர்கள்`;
+  if (typeof renderAdminEbsDeleteReqsBox === "function") {
+    renderAdminEbsDeleteReqsBox();
+  }
+
+  const tbody = document.getElementById("admEbsSchoolsTbody");
+  if (!tbody) return;
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:18px; color:#64748b; font-weight:800;">தேர்ந்தெடுக்கப்பட்ட வடிகட்டிகளுக்குப் பள்ளிகள் எதுவும் இல்லை.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map((s, idx) => {
+    const ctx = getOrInitSchoolEbs2026Data(s.uNo, false);
+    const { ebs, staffList, stu10_12, isHSS } = ctx;
+    const f1 = ebs.f1;
+    const r = readinessMap[s.uNo];
+    const tCount = r.teachTotal;
+    const ntCount = r.ntTotal;
+    const isLocked = Boolean(r.finalLock && r.finalLock.locked);
+    const progColor = r.overallPct === 100 ? "#16a34a" : (r.overallPct >= 50 ? "#2563eb" : "#d97706");
+    return `
+      <tr>
+        <td style="text-align:center; font-weight:900;">${idx + 1}</td>
+        <td>
+          <div style="font-weight:900; color:#4c1d95; font-size:0.92rem;">U.NO: ${s.uNo}</div>
+          <span style="display:inline-block; padding:1px 7px; border-radius:4px; font-size:0.70rem; font-weight:900; background:${isHSS ? "#f3e8ff; color:#6b21a8;" : "#e0f2fe; color:#0369a1;"}">${isHSS ? "HSS" : "HS"} | ${s.mgmt1}</span>
+        </td>
+        <td>
+          <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(s.nameTa || s.nameEn)}</div>
+          <div style="font-size:0.75rem; color:#475569; font-weight:700;">${escapeHtmlAttr(s.nameEn)} | ${escapeHtmlAttr(s.block)}</div>
+        </td>
+        <td style="text-align:center; font-size:0.78rem; font-weight:800;">
+          🏫 ${f1.totalClassrooms} | 🎯 ${f1.eligibleExamRooms} | 🪑 ${f1.benchDeskPairs}
+        </td>
+        <td style="text-align:center; font-size:0.80rem; font-weight:800;">
+          <span style="color:#1d4ed8;">${stu10_12.sslc.tm_tot}</span> + <span style="color:#0369a1;">${stu10_12.sslc.em_tot}</span> = <strong>${stu10_12.sslc.grand}</strong>
+        </td>
+        <td style="text-align:center; font-size:0.80rem; font-weight:800;">
+          ${isHSS ? `<span style="color:#1d4ed8;">${stu10_12.hsc2.tm_tot}</span> + <span style="color:#0369a1;">${stu10_12.hsc2.em_tot}</span> = <strong>${stu10_12.hsc2.grand}</strong>` : `<span style="color:#94a3b8;">-</span>`}
+        </td>
+        <td style="text-align:center; font-size:0.80rem; font-weight:800;">
+          👨‍🏫 ${tCount} &nbsp;|&nbsp; 🧑‍💼 ${ntCount}
+        </td>
+        <td style="font-size:0.74rem; font-weight:800;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+            <span style="color:${progColor}; font-weight:900;">நிறைவு: ${r.overallPct}%</span>
+            <span style="color:#475569;">(${r.totalComplete}/${r.totalStaff})</span>
+          </div>
+          <div style="width:100%; height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; margin-bottom:4px;">
+            <div style="width:${r.overallPct}%; height:100%; background:${progColor};"></div>
+          </div>
+          <div style="display:flex; gap:4px; flex-wrap:wrap;">
+            <span style="padding:1px 5px; border-radius:4px; background:${r.pendingWaOtp === 0 ? "#dcfce7; color:#15803d;" : "#fee2e2; color:#b91c1c;"}">📲 ${r.totalWaOk}/${r.totalStaff}</span>
+            <span style="padding:1px 5px; border-radius:4px; background:${r.pendingEmailOtp === 0 ? "#dbeafe; color:#1e40af;" : "#fef3c7; color:#b45309;"}">✉️ ${r.totalEmailOk}/${r.totalStaff}</span>
+          </div>
+        </td>
+        <td style="text-align:center; font-size:0.74rem;">
+          ${isLocked
+            ? `<div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                 <span style="background:#dcfce7; color:#15803d; border:1px solid #22c55e; padding:2px 7px; border-radius:6px; font-weight:900;">🔒 FINAL VERIFIED</span>
+                 <button type="button" class="btn btn-outline btn-sm" onclick="adminUnlockSchoolEbsFinalLock('${s.uNo}')" style="padding:2px 6px; font-size:0.68rem; color:#dc2626; border-color:#fca5a5;">🔓 Unlock</button>
+               </div>`
+            : `<div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                 <span style="background:${r.is100PercentReady ? "#dbeafe; color:#1e40af;" : "#fef3c7; color:#92400e;"} padding:2px 7px; border-radius:6px; font-weight:800;">${r.is100PercentReady ? "🟢 Lock Ready" : "⏳ நிலுவை"}</span>
+                 <button type="button" class="btn btn-primary btn-sm" onclick="sendSingleSchoolEbsWaReminder('${s.uNo}')" style="padding:2px 7px; font-size:0.70rem; background:#16a34a; border-color:#15803d;">📲 நினைவூட்டல்</button>
+               </div>`
+          }
+        </td>
+        <td style="text-align:center;">
+          <div style="display:flex; gap:4px; justify-content:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="openAdminSchoolEbsDirect('${s.uNo}','F1')" title="பள்ளியின் EBS படிவங்களைத் திறந்து திருத்த" style="padding:3px 7px; font-size:0.72rem; background:#4c1d95; border-color:#4c1d95;">✏️ திருத்து</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="openAdminSchoolEbsDirect('${s.uNo}','F3')" title="இப்பள்ளியின் ஆசிரியர் & பணியாளர் விவரங்களைத் திருத்த" style="padding:3px 7px; font-size:0.72rem; background:#1d4ed8; border-color:#1d4ed8;">👨‍🏫 F3</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F1','','${s.uNo}')" style="padding:3px 6px; font-size:0.70rem; font-weight:900;">F1</button>
+            ${isHSS ? `<button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F2','','${s.uNo}')" style="padding:3px 6px; font-size:0.70rem; font-weight:900;">F2</button>` : ``}
+            <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F3_ALL','','${s.uNo}')" style="padding:3px 6px; font-size:0.70rem; font-weight:900;">F3</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('F4_ALL','','${s.uNo}')" style="padding:3px 6px; font-size:0.70rem; font-weight:900;">F4</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="openEbsA4PreviewModal('ALL','','${s.uNo}')" style="padding:3px 7px; font-size:0.70rem; font-weight:900; border-color:#4c1d95; color:#4c1d95;">📚 A4</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
 }
 function openAdminSchoolEbsDirect(uNo, initialSubTab) {
 const sch = getEbs282MasterSchools().find(s => String(s.uNo) === String(uNo)) || masterSchools.find(s => String(s.uNo) === String(uNo));
@@ -28570,5 +29142,77 @@ setTimeout(function() {
 try { refreshEbsDropDownsFromGoogleSheet(false); } catch (e) {}
 }, 1800);
 </script>
+
+<!-- HM FINAL DECLARATION LOCK MODAL -->
+<div id="ebsHmFinalLockModal" class="modal-backdrop">
+  <div class="modal-card" style="max-width:600px;">
+    <div class="modal-header" style="background:linear-gradient(135deg,#14532d,#15803d); color:#fff;">
+      <div>
+        <h3 style="margin:0; font-size:1.08rem; font-weight:900;">🔐 தலைமை ஆசிரியர் இறுதி உறுதிமொழிப் பூட்டு (HM Final Declaration Lock)</h3>
+        <div id="ebsHmLockModalSub" style="font-size:0.78rem; color:#dcfce7; margin-top:2px;"></div>
+      </div>
+      <button type="button" onclick="closeEbsHmFinalLockModal()" style="background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer; font-weight:900;">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:18px;">
+      <div id="ebsHmLockSummaryBox" style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:12px; margin-bottom:14px; font-size:0.82rem; color:#14532d; font-weight:700;"></div>
+      <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:10px; padding:12px; margin-bottom:14px; font-size:0.82rem; color:#78350f; line-height:1.55;">
+        <strong>உறுதிமொழி (Declaration):</strong><br>
+        "எங்கள் பள்ளியின் 2026–2027 ஆம் கல்வி ஆண்டிற்கான <strong>EBS Form – I, II, III மற்றும் IV</strong> விவரங்கள் அனைத்தும் 100% சரிபார்க்கப்பட்டு, அனைத்து ஆசிரியர்கள் மற்றும் பணியாளர்களின் WhatsApp மற்றும் Email OTP சரிபார்ப்புகளும் முழுமையாக நிறைவு செய்யப்பட்டுள்ளன என உறுதியளிக்கிறேன். இறுதிப் பூட்டு (Final Lock) செய்த பின்னரே <strong>FINAL VERIFIED COPY</strong> முத்திரையுடன் A4 கையேடு அச்சிடப்படும் என்பதை அறிவேன்."
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label" style="font-weight:900; font-size:0.80rem;">தலைமை ஆசிரியர் / முதல்வர் பெயர் (HM / Principal Name)</label>
+        <input type="text" id="ebsHmLockNameInput" class="form-control" style="font-weight:800;">
+      </div>
+      <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:0.82rem; font-weight:800; color:#0f294a; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+        <input type="checkbox" id="ebsHmLockAgreeChk" style="margin-top:3px; width:16px; height:16px;">
+        <span>மேற்கண்ட விவரங்கள் அனைத்தும் உண்மையானவை என உறுதி செய்து, இறுதிப் பூட்டு (Final Lock &amp; Submit) செய்கிறேன்.</span>
+      </label>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+        <button type="button" class="btn btn-outline" onclick="closeEbsHmFinalLockModal()">ரத்து செய்</button>
+        <button type="button" class="btn btn-primary" onclick="confirmEbsHmFinalLock()" style="background:#15803d; border-color:#166534; font-weight:900;">
+          🔒 இறுதி உறுதிமொழி &amp; பூட்டு (Final Lock)
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN BULK / SINGLE WHATSAPP REMINDER MODAL -->
+<div id="admEbsWaReminderModal" class="modal-backdrop">
+  <div class="modal-card" style="max-width:860px;">
+    <div class="modal-header" style="background:linear-gradient(135deg,#064e3b,#15803d); color:#fff;">
+      <div>
+        <h3 style="margin:0; font-size:1.08rem; font-weight:900;">📲 நிலுவைப் பள்ளிகளுக்கான 1-Click WhatsApp நினைவூட்டல்</h3>
+        <div id="admEbsWaRemSub" style="font-size:0.78rem; color:#d1fae5; margin-top:2px;"></div>
+      </div>
+      <button type="button" onclick="closeBulkEbsWaReminderModal()" style="background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer; font-weight:900;">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; background:#f0fdf4; border:1px solid #86efac; padding:10px 12px; border-radius:8px;">
+        <div style="font-size:0.80rem; font-weight:800; color:#14532d;">
+          கீழ்க்காணும் பள்ளிகளின் தலைமை ஆசிரியர்களுக்கு நேரடியாக <strong>WhatsApp Web / App (📲)</strong> அல்லது <strong>Cloud API</strong> வழியாக நினைவூட்டல் அனுப்பலாம்.
+        </div>
+        <button type="button" id="admEbsBulkApiSendBtn" class="btn btn-primary btn-sm" onclick="dispatchBulkEbsWaRemindersViaApi()" style="background:#15803d; border-color:#166534; font-weight:900;">
+          ⚡ அனைத்திற்கும் Cloud API வழியாக அனுப்பு
+        </button>
+      </div>
+      <div id="admEbsWaRemProgress" style="display:none; margin-bottom:10px; font-size:0.80rem; font-weight:800; color:#1d4ed8;"></div>
+      <div class="table-responsive" style="max-height:420px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px;">
+        <table class="data-table" style="margin:0;">
+          <thead style="position:sticky; top:0; z-index:4;">
+            <tr style="background:#0f294a; color:#fff; font-size:0.78rem;">
+              <th style="width:40px; text-align:center;">#</th>
+              <th>U.NO &amp; பள்ளி</th>
+              <th>தலைமை ஆசிரியர் &amp; கைபேசி</th>
+              <th>நிலுவை விவரம்</th>
+              <th style="text-align:center; min-width:190px;">நினைவூட்டல் அனுப்புக</th>
+            </tr>
+          </thead>
+          <tbody id="admEbsWaRemTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
