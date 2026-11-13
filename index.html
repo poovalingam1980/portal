@@ -5967,16 +5967,18 @@ let firebaseSseSource = null;
 let firebasePollTimer = null;
 let realtimeBroadcastChannel = null;
 let lastProcessedRealtimeEventId = "";
+const _recentLocalRealtimeEventIds = new Set();
 let isApplyingRemoteRealtimeUpdate = false;
 let isPortalInitializing = true;
 let fbLiveActivityLog = [];
 let currentSchoolTabKey = "staffStrength";
 const _firebaseMemoryKvStore = {};
 const _SESSION_ONLY_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ACTIVE_UI_STATE", "CEOSVG_PORTAL_CFG", "CEOSVG_FIREBASE_CFG"]);
+const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1"]);
 try {
 if (typeof localStorage !== "undefined") {
 Object.keys(localStorage).forEach(k => {
-if ((k.startsWith("CEOSVG_") || k.includes("EMIS_STAFF")) && !_SESSION_ONLY_KEYS.has(k)) {
+if ((k.startsWith("CEOSVG_") || k.includes("EMIS_STAFF")) && !_SESSION_ONLY_KEYS.has(k) && !_LOCAL_PERSIST_KEYS.has(k)) {
 localStorage.removeItem(k);
 }
 });
@@ -6016,6 +6018,16 @@ return fallbackVal;
 if (_firebaseMemoryKvStore[key] !== undefined) {
 return _firebaseMemoryKvStore[key];
 }
+if (_LOCAL_PERSIST_KEYS.has(key)) {
+try {
+const lRaw = typeof localStorage !== "undefined" ? localStorage.getItem(key) : null;
+if (lRaw && lRaw !== "null") {
+const parsed = JSON.parse(lRaw);
+_firebaseMemoryKvStore[key] = parsed;
+return parsed;
+}
+} catch (le) {}
+}
 return fallbackVal;
 }
 function safeSetStorage(key, val, skipCloudPush) {
@@ -6023,6 +6035,14 @@ if (val === null || val === undefined) {
 delete _firebaseMemoryKvStore[key];
 } else {
 _firebaseMemoryKvStore[key] = val;
+}
+if (_LOCAL_PERSIST_KEYS.has(key)) {
+try {
+if (typeof localStorage !== "undefined") {
+if (val === null || val === undefined) localStorage.removeItem(key);
+else localStorage.setItem(key, JSON.stringify(val));
+}
+} catch (le) {}
 }
 if (_SESSION_ONLY_KEYS.has(key)) {
 _writeWinNameStore(key, val);
@@ -9181,206 +9201,188 @@ const DIGNITARIES_STORAGE_KEY = "CEOSVG_DIGNITARIES_DATA_V3";
 const DIGNITARIES_PHOTO_VAULT_KEY = "CEOSVG_DIGNITARIES_PHOTO_VAULT";
 let dignitariesMemoryStore = null;
 function isCustomUploadedOrEditedPhoto(photoStr, defPhotoStr) {
-if (!photoStr || typeof photoStr !== "string") return false;
-const trimmed = photoStr.trim();
-if (!trimmed) return false;
-if (/^data:image\/(jpeg|jpg|png|webp|gif)/i.test(trimmed)) return true;
-if (!trimmed.startsWith("data:image/svg+xml") && trimmed !== (defPhotoStr || "")) return true;
-return false;
+  if (!photoStr || typeof photoStr !== "string") return false;
+  const trimmed = photoStr.trim();
+  if (!trimmed) return false;
+  if (/^data:image\/(jpeg|jpg|png|webp|gif)/i.test(trimmed)) return true;
+  if (!trimmed.startsWith("data:image/svg+xml") && trimmed !== (defPhotoStr || "")) return true;
+  return false;
+}
+function isDignitaryModifiedFromDefault(d, def) {
+  if (!d || typeof d !== "object") return false;
+  if (d.userEdited) return true;
+  if (!def) return true;
+  if (isCustomUploadedOrEditedPhoto(d.photo, def.photo)) return true;
+  if (String(d.name || "").trim() !== String(def.name || "").trim()) return true;
+  if (String(d.role || "").trim() !== String(def.role || "").trim()) return true;
+  if (String(d.honorific || "").trim() !== String(def.honorific || "").trim()) return true;
+  if (String(d.tierBadge || "").trim() !== String(def.tierBadge || "").trim()) return true;
+  if (Boolean(d.privateOnly) !== Boolean(def.privateOnly)) return true;
+  return false;
 }
 function buildPermanentPhotoVaultFromAllSources(currentList) {
-const vault = safeGetStorage(DIGNITARIES_PHOTO_VAULT_KEY, {}) || {};
-try {
-if (window.name && window.name.startsWith("CEOSVG_VAULT:")) {
-const wnData = JSON.parse(window.name.substring("CEOSVG_VAULT:".length));
-if (wnData && typeof wnData === "object") {
-Object.assign(vault, wnData);
-}
-}
-} catch (e) {}
-const allKeys = [
-DIGNITARIES_STORAGE_KEY,
-"CEOSVG_DIGNITARIES_DATA_V2",
-"CEOSVG_DIGNITARIES_DATA_V1",
-"CEOSVG_DIGNITARIES_V1"
-];
-allKeys.forEach(k => {
-const arr = safeGetStorage(k, null);
-if (Array.isArray(arr)) {
-arr.forEach(d => {
-if (!d || !d.id) return;
-const def = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(d.id));
-if (isCustomUploadedOrEditedPhoto(d.photo, def ? def.photo : "")) {
-if (!vault[d.id] || !isCustomUploadedOrEditedPhoto(vault[d.id].photo, def ? def.photo : "")) {
-vault[d.id] = {
-photo: d.photo,
-name: d.name,
-role: d.role,
-honorific: d.honorific,
-tierBadge: d.tierBadge,
-updatedAt: Date.now()
-};
-}
-}
-});
-}
-});
-if (Array.isArray(currentList)) {
-currentList.forEach(d => {
-if (!d || !d.id) return;
-const def = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(d.id));
-if (isCustomUploadedOrEditedPhoto(d.photo, def ? def.photo : "")) {
-vault[d.id] = {
-photo: d.photo,
-name: d.name,
-role: d.role,
-honorific: d.honorific,
-tierBadge: d.tierBadge,
-updatedAt: Date.now()
-};
-}
-});
-}
-return vault;
+  const vault = Object.assign({}, safeGetStorage(DIGNITARIES_PHOTO_VAULT_KEY, {}) || {});
+  if (Array.isArray(currentList)) {
+    currentList.forEach(d => {
+      if (!d || !d.id) return;
+      const def = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(d.id));
+      if (isDignitaryModifiedFromDefault(d, def)) {
+        const prev = vault[d.id] || {};
+        const finalPhoto = isCustomUploadedOrEditedPhoto(d.photo, def ? def.photo : "")
+          ? d.photo
+          : (isCustomUploadedOrEditedPhoto(prev.photo, def ? def.photo : "") ? prev.photo : (d.photo || (def ? def.photo : "")));
+        vault[d.id] = {
+          id: d.id,
+          photo: finalPhoto,
+          name: d.name,
+          role: d.role,
+          honorific: d.honorific,
+          honorificClass: d.honorificClass || getHonorificClass(d.honorific),
+          tier: d.tier,
+          tierBadge: d.tierBadge,
+          icon: d.icon,
+          privateOnly: Boolean(d.privateOnly),
+          userEdited: true,
+          updatedAt: d.updatedAt || prev.updatedAt || Date.now()
+        };
+      }
+    });
+  }
+  return vault;
 }
 function saveToIndexedDbDignitariesVault(list, vault) {
-try {
-if (typeof indexedDB === "undefined") return;
-const req = indexedDB.open("CEOSVG_PERMANENT_VAULT_DB", 1);
-req.onupgradeneeded = function(e) {
-const db = e.target.result;
-if (!db.objectStoreNames.contains("dignitaries_store")) {
-db.createObjectStore("dignitaries_store");
-}
-};
-req.onsuccess = function(e) {
-try {
-const db = e.target.result;
-const tx = db.transaction("dignitaries_store", "readwrite");
-const store = tx.objectStore("dignitaries_store");
-store.put(list, "dignitaries_list");
-store.put(vault, "dignitaries_photo_vault");
-} catch (err) {}
-};
-} catch (e) {}
+  try {
+    if (typeof indexedDB === "undefined") return;
+    const req = indexedDB.open("CEOSVG_PERMANENT_VAULT_DB", 1);
+    req.onupgradeneeded = function(e) {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains("dignitaries_store")) {
+        db.createObjectStore("dignitaries_store");
+      }
+    };
+    req.onsuccess = function(e) {
+      try {
+        const db = e.target.result;
+        const tx = db.transaction("dignitaries_store", "readwrite");
+        const store = tx.objectStore("dignitaries_store");
+        store.put(list, "dignitaries_list");
+        store.put(vault, "dignitaries_photo_vault");
+      } catch (err) {}
+    };
+  } catch (e) {}
 }
 function restoreFromIndexedDbDignitariesVault() {
-try {
-if (typeof indexedDB === "undefined") return;
-const req = indexedDB.open("CEOSVG_PERMANENT_VAULT_DB", 1);
-req.onupgradeneeded = function(e) {
-const db = e.target.result;
-if (!db.objectStoreNames.contains("dignitaries_store")) {
-db.createObjectStore("dignitaries_store");
-}
-};
-req.onsuccess = function(e) {
-try {
-const db = e.target.result;
-const tx = db.transaction("dignitaries_store", "readonly");
-const store = tx.objectStore("dignitaries_store");
-const getVault = store.get("dignitaries_photo_vault");
-getVault.onsuccess = function() {
-const idbVault = getVault.result;
-if (idbVault && typeof idbVault === "object" && Object.keys(idbVault).length > 0) {
-const curVault = safeGetStorage(DIGNITARIES_PHOTO_VAULT_KEY, {}) || {};
-const mergedVault = Object.assign({}, idbVault, curVault);
-safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, mergedVault, true);
-const curList = getDignitariesList();
-let changed = false;
-curList.forEach(d => {
-if (mergedVault[d.id] && mergedVault[d.id].photo && d.photo !== mergedVault[d.id].photo) {
-d.photo = mergedVault[d.id].photo;
-changed = true;
-}
-});
-if (changed) {
-dignitariesMemoryStore = curList;
-safeSetStorage(DIGNITARIES_STORAGE_KEY, curList, true);
-renderSchoolDignitaries();
-renderAdminDignitariesManager();
-}
-}
-};
-} catch (err) {}
-};
-} catch (e) {}
+  try {
+    if (typeof indexedDB === "undefined") return;
+    const req = indexedDB.open("CEOSVG_PERMANENT_VAULT_DB", 1);
+    req.onupgradeneeded = function(e) {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains("dignitaries_store")) {
+        db.createObjectStore("dignitaries_store");
+      }
+    };
+    req.onsuccess = function(e) {
+      try {
+        const db = e.target.result;
+        const tx = db.transaction("dignitaries_store", "readonly");
+        const store = tx.objectStore("dignitaries_store");
+        const getVault = store.get("dignitaries_photo_vault");
+        const getList = store.get("dignitaries_list");
+        getVault.onsuccess = function() {
+          const idbVault = getVault.result || {};
+          getList.onsuccess = function() {
+            const idbList = getList.result;
+            const curVault = safeGetStorage(DIGNITARIES_PHOTO_VAULT_KEY, {}) || {};
+            const mergedVault = Object.assign({}, idbVault);
+            Object.keys(curVault).forEach(k => {
+              if (!mergedVault[k] || (curVault[k].updatedAt || 0) >= (mergedVault[k].updatedAt || 0)) {
+                mergedVault[k] = curVault[k];
+              }
+            });
+            if (Object.keys(mergedVault).length > 0) {
+              safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, mergedVault, true);
+            }
+            const baseList = (Array.isArray(idbList) && idbList.length > 0 && (!dignitariesMemoryStore || dignitariesMemoryStore.length === 0))
+              ? idbList
+              : getDignitariesList();
+            const migrated = migrateDignitariesList(baseList);
+            dignitariesMemoryStore = migrated;
+            safeSetStorage(DIGNITARIES_STORAGE_KEY, migrated, true);
+            renderSchoolDignitaries();
+            renderAdminDignitariesManager();
+            updateDignitaryStorageStatusBadge();
+          };
+        };
+      } catch (err) {}
+    };
+  } catch (e) {}
 }
 function migrateDignitariesList(list) {
-if (!Array.isArray(list) || list.length === 0) list = JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES));
-const vault = buildPermanentPhotoVaultFromAllSources(list);
-let migrated = false;
-const updated = list.map(d => {
-const def = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(d.id));
-const vEntry = vault[d.id];
-if (def) {
-if (String(d.id) === "sec" && (!d.name || d.name.includes("செந்தில் குமார்") || d.name.includes("Senthil") || d.name.includes("சந்திரமோகன்") || d.name.includes("Chandra"))) {
-d.name = def.name;
-d.role = def.role;
-if (!isCustomUploadedOrEditedPhoto(d.photo, def.photo)) {
-d.photo = (vEntry && vEntry.photo) ? vEntry.photo : def.photo;
-}
-d.fallbackPhoto = def.fallbackPhoto;
-migrated = true;
-}
-if (vEntry && vEntry.photo && !isCustomUploadedOrEditedPhoto(d.photo, def.photo)) {
-d.photo = vEntry.photo;
-migrated = true;
-}
-if (!d.photo || d.photo === "") {
-d.photo = (vEntry && vEntry.photo) ? vEntry.photo : def.photo;
-}
-if (!d.fallbackPhoto) {
-d.fallbackPhoto = def.fallbackPhoto;
-}
-} else if (vEntry && vEntry.photo && (!d.photo || d.photo === "")) {
-d.photo = vEntry.photo;
-}
-return d;
-});
-if (Object.keys(vault).length > 0) {
-safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, vault, true);
-}
-if (migrated) {
-try {
-safeSetStorage(DIGNITARIES_STORAGE_KEY, updated, true);
-safeSetStorage("CEOSVG_DIGNITARIES_DATA_V2", updated, true);
-safeSetStorage("CEOSVG_DIGNITARIES_DATA_V1", updated, true);
-safeSetStorage("CEOSVG_DIGNITARIES_V1", updated, true);
-} catch (e) {}
-}
-return updated;
+  if (!Array.isArray(list) || list.length === 0) list = JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES));
+  const vault = buildPermanentPhotoVaultFromAllSources(list);
+  const updated = list.map(d => {
+    const def = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(d.id));
+    const vEntry = vault[d.id];
+    if (vEntry && typeof vEntry === "object") {
+      const vTime = Number(vEntry.updatedAt || 0);
+      const dTime = Number(d.updatedAt || 0);
+      if (vTime >= dTime || !d.userEdited) {
+        if (vEntry.name) d.name = vEntry.name;
+        if (vEntry.role) d.role = vEntry.role;
+        if (vEntry.honorific) {
+          d.honorific = vEntry.honorific;
+          d.honorificClass = vEntry.honorificClass || getHonorificClass(vEntry.honorific);
+        }
+        if (vEntry.tier) d.tier = vEntry.tier;
+        if (vEntry.tierBadge) d.tierBadge = vEntry.tierBadge;
+        if (vEntry.icon) d.icon = vEntry.icon;
+        if (typeof vEntry.privateOnly === "boolean") d.privateOnly = vEntry.privateOnly;
+        if (vEntry.photo && (isCustomUploadedOrEditedPhoto(vEntry.photo, def ? def.photo : "") || !isCustomUploadedOrEditedPhoto(d.photo, def ? def.photo : ""))) {
+          d.photo = vEntry.photo;
+        }
+        d.userEdited = true;
+        d.updatedAt = Math.max(vTime, dTime);
+      }
+    }
+    if (def) {
+      if (!d.photo || d.photo === "") {
+        d.photo = (vEntry && vEntry.photo) ? vEntry.photo : def.photo;
+      }
+      if (!d.fallbackPhoto) {
+        d.fallbackPhoto = def.fallbackPhoto;
+      }
+    } else if (vEntry && vEntry.photo && (!d.photo || d.photo === "")) {
+      d.photo = vEntry.photo;
+    }
+    return d;
+  });
+  if (Object.keys(vault).length > 0) {
+    safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, vault, true);
+  }
+  return updated;
 }
 function getDignitariesList() {
-if (Array.isArray(dignitariesMemoryStore) && dignitariesMemoryStore.length > 0) {
-return dignitariesMemoryStore;
-}
-const saved = safeGetStorage(DIGNITARIES_STORAGE_KEY, null)
-|| safeGetStorage("CEOSVG_DIGNITARIES_DATA_V2", null)
-|| safeGetStorage("CEOSVG_DIGNITARIES_DATA_V1", null)
-|| safeGetStorage("CEOSVG_DIGNITARIES_V1", null);
-if (Array.isArray(saved) && saved.length > 0) {
-dignitariesMemoryStore = migrateDignitariesList(saved);
-return dignitariesMemoryStore;
-}
-dignitariesMemoryStore = migrateDignitariesList(JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES)));
-return dignitariesMemoryStore;
+  if (Array.isArray(dignitariesMemoryStore) && dignitariesMemoryStore.length > 0) {
+    return dignitariesMemoryStore;
+  }
+  const saved = safeGetStorage(DIGNITARIES_STORAGE_KEY, null);
+  if (Array.isArray(saved) && saved.length > 0) {
+    dignitariesMemoryStore = migrateDignitariesList(saved);
+    return dignitariesMemoryStore;
+  }
+  dignitariesMemoryStore = migrateDignitariesList(JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES)));
+  return dignitariesMemoryStore;
 }
 function saveDignitariesList(list) {
-dignitariesMemoryStore = JSON.parse(JSON.stringify(list));
-const vault = buildPermanentPhotoVaultFromAllSources(dignitariesMemoryStore);
-safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, vault);
-safeSetStorage(DIGNITARIES_STORAGE_KEY, dignitariesMemoryStore);
-safeSetStorage("CEOSVG_DIGNITARIES_DATA_V2", dignitariesMemoryStore, true);
-safeSetStorage("CEOSVG_DIGNITARIES_DATA_V1", dignitariesMemoryStore, true);
-safeSetStorage("CEOSVG_DIGNITARIES_V1", dignitariesMemoryStore, true);
-try {
-window.name = "CEOSVG_VAULT:" + JSON.stringify(vault);
-} catch (e) {}
-saveToIndexedDbDignitariesVault(dignitariesMemoryStore, vault);
-renderSchoolDignitaries();
-renderAdminDignitariesManager();
-updateDignitaryStorageStatusBadge();
+  dignitariesMemoryStore = JSON.parse(JSON.stringify(list));
+  const vault = buildPermanentPhotoVaultFromAllSources(dignitariesMemoryStore);
+  safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, vault, true);
+  safeSetStorage("CEOSVG_DIGNITARIES_V1", dignitariesMemoryStore, true);
+  safeSetStorage(DIGNITARIES_STORAGE_KEY, dignitariesMemoryStore, false);
+  saveToIndexedDbDignitariesVault(dignitariesMemoryStore, vault);
+  renderSchoolDignitaries();
+  renderAdminDignitariesManager();
+  updateDignitaryStorageStatusBadge();
 }
 function updateDignitaryStorageStatusBadge() {
 const el = document.getElementById("admDignitaryStatStatus");
@@ -9905,7 +9907,9 @@ icon: icon,
 photo: photo,
 fallbackPhoto: (existingObj && existingObj.fallbackPhoto) || (defObj && defObj.fallbackPhoto) || "",
 avatarBg: getDefaultAvatarBg(tier),
-privateOnly: privateOnly
+privateOnly: privateOnly,
+userEdited: true,
+updatedAt: Date.now()
 };
 if (existingIdx >= 0) {
 list[existingIdx] = digObj;
@@ -14582,6 +14586,7 @@ key: key,
 summary: getFriendlySyncSummaryTa(key, targetUNo, schoolName)
 };
 lastProcessedRealtimeEventId = evt.eventId;
+_recentLocalRealtimeEventIds.add(evt.eventId);
 appendFirebaseActivityLog(`📤 Dual-Sync அனுப்பப்படுகிறது: ${evt.summary}`, "#4ade80");
 if (realtimeBroadcastChannel) {
 try {
@@ -14663,6 +14668,25 @@ method: "PUT",
 headers: { "Content-Type": "application/json" },
 body: JSON.stringify(val)
 });
+} else if (key === "CEOSVG_DIGNITARIES_DATA_V3") {
+const curVault = safeGetStorage("CEOSVG_DIGNITARIES_PHOTO_VAULT", {}) || {};
+await Promise.all([
+  fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_DIGNITARIES_PHOTO_VAULT"), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(curVault)
+  }),
+  fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_DIGNITARIES_DATA_V3"), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(val)
+  }),
+  fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_DIGNITARIES_V1"), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(val)
+  })
+]);
 } else {
 await fetch(buildFirebaseEndpoint(`ceosvg_live/stores/${encodeURIComponent(key)}`), {
 method: "PUT",
@@ -14683,8 +14707,9 @@ appendFirebaseActivityLog(`⚠️ Firebase மேகக்கணி அனுப
 })();
 }
 async function applyIncomingRealtimeEvent(evt, optionalGranular) {
-if (!evt || !evt.eventId || evt.eventId === lastProcessedRealtimeEventId) return;
+if (!evt || !evt.eventId || evt.eventId === lastProcessedRealtimeEventId || _recentLocalRealtimeEventIds.has(evt.eventId)) return;
 lastProcessedRealtimeEventId = evt.eventId;
+_recentLocalRealtimeEventIds.add(evt.eventId);
 isApplyingRemoteRealtimeUpdate = true;
 try {
 const key = evt.key;
@@ -14778,8 +14803,34 @@ staffDeleteRequests = val;
 deletedStaffArchiveStore = val;
 } else if (key === "CEOSVG_CIRCULARS" && Array.isArray(val)) {
 districtCirculars = val;
-} else if ((key === "CEOSVG_DIGNITARIES_V1" || key === "CEOSVG_DIGNITARIES_DATA_V2" || key === "CEOSVG_DIGNITARIES_DATA_V3") && Array.isArray(val)) {
-dignitariesMemoryStore = typeof migrateDignitariesList === "function" ? migrateDignitariesList(val) : val;
+} else if (key === "CEOSVG_DIGNITARIES_DATA_V3" && Array.isArray(val)) {
+const localList = Array.isArray(dignitariesMemoryStore) && dignitariesMemoryStore.length > 0
+  ? dignitariesMemoryStore
+  : (safeGetStorage("CEOSVG_DIGNITARIES_DATA_V3", null) || []);
+const mergedInput = val.map(remItem => {
+  if (!remItem || !remItem.id) return remItem;
+  const locItem = Array.isArray(localList) ? localList.find(x => x && String(x.id) === String(remItem.id)) : null;
+  if (locItem && locItem.userEdited && Number(locItem.updatedAt || 0) > Number(remItem.updatedAt || 0)) {
+    return locItem;
+  }
+  return remItem;
+});
+if (Array.isArray(localList)) {
+  localList.forEach(locItem => {
+    if (locItem && locItem.id && !mergedInput.some(x => x && String(x.id) === String(locItem.id))) {
+      mergedInput.push(locItem);
+    }
+  });
+}
+dignitariesMemoryStore = typeof migrateDignitariesList === "function" ? migrateDignitariesList(mergedInput) : mergedInput;
+safeSetStorage("CEOSVG_DIGNITARIES_DATA_V3", dignitariesMemoryStore, true);
+if (typeof saveToIndexedDbDignitariesVault === "function") {
+  saveToIndexedDbDignitariesVault(dignitariesMemoryStore, safeGetStorage("CEOSVG_DIGNITARIES_PHOTO_VAULT", {}) || {});
+}
+} else if ((key === "CEOSVG_DIGNITARIES_V1" || key === "CEOSVG_DIGNITARIES_DATA_V2") && Array.isArray(val)) {
+if (!Array.isArray(dignitariesMemoryStore) || dignitariesMemoryStore.length === 0) {
+  dignitariesMemoryStore = typeof migrateDignitariesList === "function" ? migrateDignitariesList(val) : val;
+}
 } else if (key === "CEOSVG_DIVISIONS" && typeof val === "object") {
 divisionsRegistry = val;
 } else if (key === "CEOSVG_HSS_GROUP_MASTER_V1" && Array.isArray(val) && val.length > 0) {
@@ -14791,7 +14842,12 @@ if (typeof refreshHssGroupDropdownsEverywhere === "function") refreshHssGroupDro
 if (typeof renderAdminHssGroupMasterTable === "function") renderAdminHssGroupMasterTable();
 } else if (key === "CEOSVG_DIGNITARIES_PHOTO_VAULT" && val && typeof val === "object") {
 const curVault = safeGetStorage("CEOSVG_DIGNITARIES_PHOTO_VAULT", {}) || {};
-const mergedVault = Object.assign({}, curVault, val);
+const mergedVault = Object.assign({}, val);
+Object.keys(curVault).forEach(k => {
+  if (!mergedVault[k] || (curVault[k].updatedAt || 0) >= (mergedVault[k].updatedAt || 0)) {
+    mergedVault[k] = curVault[k];
+  }
+});
 safeSetStorage("CEOSVG_DIGNITARIES_PHOTO_VAULT", mergedVault, true);
 if (Array.isArray(dignitariesMemoryStore)) {
 dignitariesMemoryStore = migrateDignitariesList(dignitariesMemoryStore);
@@ -14907,6 +14963,7 @@ const evt = packet && packet.data ? packet.data : null;
 if (evt && evt.eventId) {
 if (!lastProcessedRealtimeEventId) {
 lastProcessedRealtimeEventId = evt.eventId;
+_recentLocalRealtimeEventIds.add(evt.eventId);
 } else if (evt.eventId !== lastProcessedRealtimeEventId) {
 applyIncomingRealtimeEvent(evt, null);
 }
@@ -14928,6 +14985,7 @@ const evt = await res.json();
 if (evt && evt.eventId) {
 if (!lastProcessedRealtimeEventId) {
 lastProcessedRealtimeEventId = evt.eventId;
+_recentLocalRealtimeEventIds.add(evt.eventId);
 } else if (evt.eventId !== lastProcessedRealtimeEventId) {
 applyIncomingRealtimeEvent(evt, null);
 }
@@ -15105,8 +15163,12 @@ schoolAuthStore = Object.assign({}, schoolAuthStore, rootData.school_auth);
 safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
 }
 if (rootData.stores && typeof rootData.stores === "object") {
+if (rootData.stores.CEOSVG_DIGNITARIES_PHOTO_VAULT) {
+  reloadInMemoryStoreFromKey("CEOSVG_DIGNITARIES_PHOTO_VAULT", rootData.stores.CEOSVG_DIGNITARIES_PHOTO_VAULT);
+}
 for (const [k, v] of Object.entries(rootData.stores)) {
 if (k === "CEOSVG_ACTIVE_SESSION" || k === "CEOSVG_ACTIVE_UI_STATE" || k === "CEOSVG_AUTH_RESET_V37_DONE" || k === "CEOSVG_EMIS_STUDENT_DATA") continue;
+if ((k === "CEOSVG_DIGNITARIES_V1" || k === "CEOSVG_DIGNITARIES_DATA_V2" || k === "CEOSVG_DIGNITARIES_DATA_V1") && rootData.stores.CEOSVG_DIGNITARIES_DATA_V3) continue;
 if (v !== null && v !== undefined) {
 safeSetStorage(k, v, true);
 reloadInMemoryStoreFromKey(k, v);
@@ -15214,7 +15276,7 @@ changed = true;
 }
 if (data.portalStores && typeof data.portalStores === "object") {
 Object.entries(data.portalStores).forEach(([k, v]) => {
-if (k === "CEOSVG_MASTER_SCHOOLS" || k === "CEOSVG_ACTIVE_SESSION" || k === "CEOSVG_ACTIVE_UI_STATE" || k === "CEOSVG_AUTH_RESET_V37_DONE" || k === "CEOSVG_EMIS_STUDENT_DATA") return;
+if (k === "CEOSVG_MASTER_SCHOOLS" || k === "CEOSVG_ACTIVE_SESSION" || k === "CEOSVG_ACTIVE_UI_STATE" || k === "CEOSVG_AUTH_RESET_V37_DONE" || k === "CEOSVG_EMIS_STUDENT_DATA" || k.startsWith("CEOSVG_DIGNITARIES")) return;
 if (v !== null && v !== undefined) {
 safeSetStorage(k, v, true);
 reloadInMemoryStoreFromKey(k, v);
