@@ -568,9 +568,14 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <span class="topmenu-label"><span class="topmenu-num">4.</span> <span class="topmenu-title">சுற்றறிக்கைகள் &amp; அறிவிப்புகள் <span id="schMenuUnreadCirBadge" style="display:none; background:#dc2626; color:#fff; font-size:0.68rem; font-weight:900; padding:1px 7px; border-radius:999px; margin-left:4px; vertical-align:middle;">0</span></span></span>
 <span class="topmenu-en">(Circulars &amp; Notifications)</span>
 </button>
+<button type="button" class="school-topmenu-item" id="schTabBtnMidTerm" onclick="switchSchoolTab('midTerm')" style="border-color:#0d9488; background:linear-gradient(135deg,#f0fdfa 0%,#ecfeff 100%);">
+<span class="topmenu-icon">📈</span>
+<span class="topmenu-label"><span class="topmenu-num">5.</span> <span class="topmenu-title" style="color:#0f766e;">2-ஆம் இடைப்பருவத் தேர்வு பகுப்பாய்வு</span></span>
+<span class="topmenu-en" style="color:#0d9488; font-weight:800;">(2nd Mid-Term Analysis - F1 &amp; F2)</span>
+</button>
 <button type="button" class="school-topmenu-item" id="schTabBtnSecurity" onclick="switchSchoolTab('security')">
 <span class="topmenu-icon">🔑</span>
-<span class="topmenu-label"><span class="topmenu-num">5.</span> <span class="topmenu-title">கடவுச்சொல் மாற்றம்</span></span>
+<span class="topmenu-label"><span class="topmenu-num">6.</span> <span class="topmenu-title">கடவுச்சொல் மாற்றம்</span></span>
 <span class="topmenu-en">(Change Password)</span>
 </button>
 </div>
@@ -587,9 +592,15 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 2026-2027 ஆம் கல்வி ஆண்டிற்கான <strong>EBS படிவங்கள் (FORM I, II, III &amp; IV)</strong> ஆன்லைன் பதிவு மற்றும் A4 PDF பதிவிறக்கம்:
 </span>
 </div>
+<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+<div onclick="switchSchoolTab('midTerm')" style="cursor:pointer; display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, #0f766e 0%, #0284c7 100%); color:#ffffff; padding:6px 14px; border-radius:8px; font-weight:900; font-size:0.83rem; border:1.5px solid #99f6e4; box-shadow:0 3px 10px rgba(13,148,136,0.28);">
+<span style="background:#fef08a; color:#0f294a; padding:2px 8px; border-radius:5px; font-size:0.74rem; font-weight:900;">📈 Nov'26 2nd Mid-Term</span>
+<span>10th தேர்ச்சிப் பகுப்பாய்வு (F1 &amp; F2) ❯</span>
+</div>
 <div onclick="openSchoolEbsStandaloneMode()" style="cursor:pointer; display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); color:#ffffff; padding:6px 14px; border-radius:8px; font-weight:900; font-size:0.84rem; border:1.5px solid #ddd6fe; box-shadow:0 3px 10px rgba(124,58,237,0.28);">
 <span style="background:#fef08a; color:#4c1d95; padding:2px 8px; border-radius:5px; font-size:0.75rem; font-weight:900;">📋 EBS - 27</span>
 <span>படிவங்கள் திறக்க (Open EBS) ❯</span>
+</div>
 </div>
 </div>
 <!-- SCHOOL HOME UNREAD CIRCULARS & ANNOUNCEMENTS BOX (WITH MARK AS READ) -->
@@ -1479,6 +1490,127 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div id="ebsF4NonTeachingTableContainer"></div>
 </div>
 </div>
+<!-- ===================================================================== -->
+<!-- SCHOOL SUB-TAB: 2ND MID-TERM EXAM RESULT ANALYSIS (FORM-I(1) & I(2))   -->
+<!-- ===================================================================== -->
+<div id="schPaneMidTerm" class="panel-box" style="display:none; border-top:4px solid #0f766e;">
+  <!-- Top Header Banner -->
+  <div class="panel-title" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; border-bottom:2px solid #cbd5e1; padding-bottom:12px; margin-bottom:14px;">
+    <div>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span style="font-size:1.16rem; font-weight:900; color:#0f294a;" id="schMidTermMainHeading">📈 Nov'2026 - இரண்டாம் இடைப்பருவத் தேர்வு தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (10th Std Result Analysis - FORM I(1) &amp; I(2))</span>
+        <span id="schMidTermStatusBadge" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">⏳ பதிவு நிலுவை (Draft)</span>
+      </div>
+      <div style="font-size:0.80rem; color:#475569; margin-top:4px; font-weight:700;">
+        💡 <strong>தானியங்கி உருவாக்கம்:</strong> 1) 10-ஆம் வகுப்பு பிரிவு வாரியாகப் பாட ஆசிரியர்களைத் தேர்ந்தெடுத்து, 2) மாணவர்களின் <strong>Roll No, பெயர் மற்றும் 5 பாட மதிப்பெண்களைப்</strong> பதிவு செய்தால் போதும் — <strong>FORM - I (1)</strong>, <strong>FORM - I (2)</strong> மற்றும் <strong>மாவட்ட Google Sheet (F1 &amp; F2)</strong> விவரங்கள் 100% கூட்டல் பிழையின்றித் தானாகவே உருவாகும்!
+      </div>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+      <select id="schMidTermExamSelect" class="form-control" style="width:auto; font-size:0.78rem; font-weight:900; padding:5px 10px; border-color:#0f766e; background:#f0fdfa; color:#0f766e;" onchange="onSchoolMidTermExamTermChange(this.value)">
+        <option value="2026_MIDTERM_2" selected>📅 Nov'2026 - இரண்டாம் இடைப்பருவத் தேர்வு (Second Mid-Term Exam)</option>
+        <option value="2026_HALF_YEARLY">📅 Dec'2026 - அரையாண்டுத் தேர்வு (Half-Yearly Exam)</option>
+        <option value="2027_REVISION_1">📅 Jan'2027 - முதல் திருப்புதல் தேர்வு (First Revision Exam)</option>
+        <option value="2027_REVISION_2">📅 Feb'2027 - இரண்டாம் திருப்புதல் தேர்வு (Second Revision Exam)</option>
+        <option value="2026_QUARTERLY">📅 Sep'2026 - காலாண்டுத் தேர்வு (Quarterly Exam)</option>
+      </select>
+      <button type="button" class="btn btn-primary btn-sm" onclick="saveSchoolMidTermData(true, false)" style="background:#0284c7; border-color:#0369a1; font-weight:900;">
+        💾 வரைவாகச் சேமி (Save Draft)
+      </button>
+      <button type="button" class="btn btn-success btn-sm" onclick="saveSchoolMidTermData(true, true)" style="background:#16a34a; border-color:#15803d; font-weight:900;">
+        🔒 இறுதிச் சமர்ப்பிப்பு &amp; Cloud Sync (Final Submit)
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="printSchoolMidTermFormsA4('BOTH')" style="background:#4c1d95; border-color:#4c1d95; font-weight:900;">
+        🖨️ FORM-I(1) &amp; I(2) A4 அச்சிடு / PDF
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="exportSingleSchoolMidTermExcelCsv()" style="background:#fff; color:#0f766e; border-color:#5eead4; font-weight:900;">
+        📥 பள்ளி F1 &amp; F2 Excel (.csv)
+      </button>
+    </div>
+  </div>
+
+  <!-- Live School KPI & 5-Rule Tally Strip -->
+  <div id="schMidTermLiveKpiStrip" style="margin-bottom:14px;"></div>
+
+  <!-- 4 Sub-Navigation Tabs -->
+  <div class="ebs-subtab-bar" style="margin-bottom:14px;">
+    <button type="button" class="ebs-subtab-btn active" id="mtSubBtnSecTeachers" onclick="switchSchoolMidTermSubTab('SEC_TEACHERS')">
+      <span style="font-size:1.25rem;">👨‍🏫</span>
+      <div>
+        <div>1. பிரிவு &amp; பாட ஆசிரியர் இணைப்பு</div>
+        <div style="font-size:0.71rem; opacity:0.85; font-weight:700;">10th Sections &amp; EBS F3 Teachers</div>
+      </div>
+    </button>
+    <button type="button" class="ebs-subtab-btn" id="mtSubBtnStuMarks" onclick="switchSchoolMidTermSubTab('STU_MARKS')">
+      <span style="font-size:1.25rem;">📝</span>
+      <div>
+        <div>2. மாணவர் Roll No &amp; மதிப்பெண் பதிவு (<span id="mtTabStuCountBadge">0</span>)</div>
+        <div style="font-size:0.71rem; opacity:0.85; font-weight:700;">Roll No, Name &amp; 5 Subject Marks</div>
+      </div>
+    </button>
+    <button type="button" class="ebs-subtab-btn" id="mtSubBtnForm1_1" onclick="switchSchoolMidTermSubTab('FORM1_1')">
+      <span style="font-size:1.25rem;">🏫</span>
+      <div>
+        <div>3. FORM – I ( 1 ) பள்ளித் தேர்ச்சி அறிக்கை</div>
+        <div style="font-size:0.71rem; opacity:0.85; font-weight:700;">Auto-Generated School Performance</div>
+      </div>
+    </button>
+    <button type="button" class="ebs-subtab-btn" id="mtSubBtnForm1_2" onclick="switchSchoolMidTermSubTab('FORM1_2')">
+      <span style="font-size:1.25rem;">📊</span>
+      <div>
+        <div>4. FORM – I ( 2 ) பாட ஆசிரியர் அறிக்கை</div>
+        <div style="font-size:0.71rem; opacity:0.85; font-weight:700;">Auto-Generated Subject Performance</div>
+      </div>
+    </button>
+  </div>
+
+  <!-- SUB-PANE 1: SECTION & SUBJECT TEACHER MAPPING -->
+  <div id="mtSubPaneSecTeachers"></div>
+
+  <!-- SUB-PANE 2: STUDENT ROLL NO, NAME & SUBJECT MARKS REGISTER -->
+  <div id="mtSubPaneStuMarks" style="display:none;"></div>
+
+  <!-- SUB-PANE 3: AUTO-GENERATED FORM - I (1) (SCHOOL PERFORMANCE) -->
+  <div id="mtSubPaneForm1_1" style="display:none;"></div>
+
+  <!-- SUB-PANE 4: AUTO-GENERATED FORM - I (2) (SUBJECT & TEACHER PERFORMANCE) -->
+  <div id="mtSubPaneForm1_2" style="display:none;"></div>
+</div>
+
+<!-- MODAL FOR EXCEL COPY-PASTE STUDENT MARKS -->
+<div id="midTermBulkPasteModal" class="modal-backdrop" onclick="if(event.target===this) closeMidTermBulkPasteModal()" style="z-index:9998;">
+  <div class="modal-card" style="max-width:780px; width:96%; border-top:6px solid #0f766e;">
+    <div class="modal-header">
+      <div class="modal-title" style="color:#0f766e;">📋 Excel / தாள் பட்டியலிலிருந்து மாணவர் பெயர் &amp; மதிப்பெண்களை Copy-Paste செய்தல்</div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeMidTermBulkPasteModal()">✕ மூடுக</button>
+    </div>
+    <div style="background:#f0fdfa; border:1px solid #99f6e4; border-radius:8px; padding:10px 12px; margin-bottom:10px; font-size:0.80rem; color:#115e59; line-height:1.45;">
+      💡 <strong>பயன்படுத்தும் முறை:</strong> உங்கள் Excel கோப்பில் உள்ள மாணவர் வரிசைகளை (<strong>Roll No, பெயர், பாலினம் (M/F), பிரிவு (A/B), தமிழ், ஆங்கிலம், கணிதம், அறிவியல், சமூக அறிவியல்</strong>) அப்படியே Copy செய்து கீழே உள்ள பெட்டியில் Paste செய்யவும். (வருகை புரியாத பாடத்திற்கு <code>AB</code> என்றும், விலக்கு எனில் <code>EX</code> என்றும் குறிப்பிடலாம்).
+    </div>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+      <label style="font-size:0.78rem; font-weight:800; color:#0f294a;">இயல்புநிலைப் பிரிவு (Default Section):</label>
+      <select id="mtBulkPasteDefaultSec" class="form-control" style="width:auto; padding:4px 8px; font-size:0.80rem; font-weight:800;">
+        <option value="A">Section A</option>
+        <option value="B">Section B</option>
+        <option value="C">Section C</option>
+        <option value="D">Section D</option>
+      </select>
+      <label style="font-size:0.78rem; font-weight:800; color:#0f294a; margin-left:8px;">இயல்புநிலைப் பாலினம்:</label>
+      <select id="mtBulkPasteDefaultGender" class="form-control" style="width:auto; padding:4px 8px; font-size:0.80rem; font-weight:800;">
+        <option value="Male">ஆண் (Male)</option>
+        <option value="Female">பெண் (Female)</option>
+      </select>
+      <label style="display:inline-flex; align-items:center; gap:5px; font-size:0.78rem; font-weight:800; color:#b45309; margin-left:auto; cursor:pointer;">
+        <input type="checkbox" id="mtBulkPasteReplaceAll"> ஏற்கனவே உள்ள வரிசைகளை மாற்றிப் புதியதாகச் சேர்
+      </label>
+    </div>
+    <textarea id="mtBulkPasteTextarea" class="form-control" rows="9" style="font-family:monospace; font-size:0.80rem; line-height:1.4;" placeholder="உதாரணம் (Tab அல்லது Comma பிரிக்கப்பட்ட வரிசைகள்):&#10;1001&#9;அருண் குமார் க&#9;M&#9;A&#9;78&#9;65&#9;84&#9;91&#9;88&#10;1002&#9;காவியா ம&#9;F&#9;A&#9;85&#9;79&#9;92&#9;95&#9;90&#10;1003&#9;செந்தில் ந&#9;M&#9;A&#9;42&#9;35&#9;28&#9;54&#9;60"></textarea>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:12px;">
+      <button type="button" class="btn btn-outline" onclick="closeMidTermBulkPasteModal()">ரத்து செய்</button>
+      <button type="button" class="btn btn-primary" onclick="processMidTermBulkPasteStudents()" style="background:#0f766e; border-color:#0f766e; font-weight:900;">⚡ மாணவர் மதிப்பெண்களைப் பட்டியலில் சேர் &amp; கணக்கிடு</button>
+    </div>
+  </div>
+</div>
+
 <!-- SCHOOL SUB-TAB 5: CHANGE PASSWORD & 6-DIGIT PIN -->
 <div id="schPaneSecurity" class="panel-box" style="display:none;">
 <div class="panel-title"><span>🔑 பள்ளி உள்நுழைவு கடவுச்சொல் &amp; 6-இலக்க PIN மாற்றம் (Change Password &amp; 6-Digit PIN)</span></div>
@@ -1536,6 +1668,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div style="display:flex; gap:8px; flex-wrap:wrap;">
 <button type="button" class="btn btn-outline btn-sm" onclick="goToMainHome()" style="background:#fff; color:#0f294a; font-weight:800; font-size:0.84rem;">🏠 முதன்மை முகப்பு (Home)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('infraNeeds')" style="background:#fff7ed; color:#9a3412; border-color:#fb923c; font-weight:900; font-size:0.84rem;">🏗️ அடிப்படைத் தேவைகள் அறிக்கை</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('midTermMaster')" style="background:#f0fdfa; color:#0f766e; border-color:#2dd4bf; font-weight:900; font-size:0.84rem;">📈 2-ஆம் இடைப்பருவத் தேர்வு பகுப்பாய்வு (F1 &amp; F2)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('ebsMaster')" style="background:#f5f3ff; color:#4c1d95; border-color:#a78bfa; font-weight:900; font-size:0.84rem;">📋 EBS 2026-27 (F1–F4)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('auditTrail')" style="background:#fef2f2; color:#991b1b; border-color:#f87171; font-weight:900; font-size:0.84rem;">📜 தணிக்கைப் பதிவேடு (Audit Trail)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminSecurityVaultModal()" style="background:#f0fdf4; color:#14532d; border-color:#4ade80; font-weight:900; font-size:0.84rem;">🔐 பாதுகாப்பு &amp; SHA-256 Vault</button>
@@ -1900,6 +2033,30 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 👉 📜 மாற்றங்களின் தணிக்கைப் பதிவேட்டைத் திற ❯
 </button>
 </div>
+<!-- CARD 11: SECOND MID-TERM EXAM RESULT ANALYSIS (10th F1 & F2) -->
+<div class="portal-chooser-card" onclick="openAdminModule('midTermMaster')" style="cursor:pointer; background:linear-gradient(145deg, #ffffff 0%, #f0fdfa 100%); border:2.5px solid #0d9488; border-radius:16px; padding:22px; box-shadow:0 10px 25px rgba(13,148,136,0.12); transition:transform 0.2s, box-shadow 0.2s; display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden;">
+<div>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+<span style="background:#0f766e; color:#fff; font-weight:900; font-size:0.75rem; padding:4px 12px; border-radius:999px; letter-spacing:0.5px;">MODULE 11 • NOV 2026 SECOND MID-TERM</span>
+<span style="font-size:2rem;">📈</span>
+</div>
+<h4 style="font-size:1.22rem; font-weight:900; color:#134e4a; margin-bottom:6px;">
+11. இரண்டாம் இடைப்பருவத் தேர்வு தேர்ச்சிப் பகுப்பாய்வு (10th Result Analysis)
+</h4>
+<p style="font-size:0.83rem; color:#334155; line-height:1.5; margin-bottom:14px;">
+பள்ளிகள் பதிவு செய்யும் 10-ஆம் வகுப்பு பிரிவு ஆசிரியர்கள் மற்றும் மாணவர் மதிப்பெண்களிலிருந்து <strong>FORM-I(1) பள்ளித் தேர்ச்சி</strong>, <strong>FORM-I(2) பாட ஆசிரியர் தேர்ச்சி</strong> மற்றும் மாவட்ட Google Sheet (F1 &amp; F2) தொகுப்பு.
+</p>
+<div style="background:#ccfbf1; border:1px solid #5eead4; border-radius:10px; padding:10px 12px; margin-bottom:14px;">
+<div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:800; color:#115e59;">
+<span>🏫 சமர்ப்பித்த பள்ளிகள்:</span>
+<span style="background:#0f766e; color:#fff; padding:2px 8px; border-radius:6px;" id="admChooserMidTermCountBadge">0 / 281 பள்ளிகள்</span>
+</div>
+</div>
+</div>
+<button type="button" class="btn btn-primary" style="width:100%; font-size:1rem; font-weight:900; padding:12px; border-radius:8px; background:#0f766e; border-color:#0f766e; color:#fff;">
+👉 📈 2-ஆம் இடைப்பருவத் தேர்வு பகுப்பாய்வு மையத்தைத் திற ❯
+</button>
+</div>
 </div>
 </div>
 <!-- ========================================================================= -->
@@ -1994,6 +2151,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <button type="button" class="nav-pill-btn" id="admTabBtnCirculars" data-mod-group="circulars" onclick="switchAdminTab('circulars')" style="display:none;">📢 சுற்றறிக்கை அனுப்புதல் &amp; அறிவிப்புகள் மேலாண்மை (Circulars)</button>
 <!-- GROUP 6: SINGLE-WINDOW ALL EXCEL SYNC -->
 <button type="button" class="nav-pill-btn" id="admTabBtnEmisSync" data-mod-group="emisSync" onclick="switchAdminTab('emisSync')" style="display:none;">📥 அனைத்து Excel / CSV பதிவேற்ற மையம் (Single Window)</button>
+<button type="button" class="nav-pill-btn" id="admTabBtnMidTermMaster" data-mod-group="midTermMaster" onclick="switchAdminTab('midTermMaster')" style="display:none; border-color:#0d9488; background:#f0fdfa; color:#0f766e; font-weight:900;">📈 11. இரண்டாம் இடைப்பருவத் தேர்வு தேர்ச்சிப் பகுப்பாய்வு (F1_School &amp; F2_Subject Master)</button>
 </div>
 <!-- ADMIN SUB-TAB 1: DIRECTORY & FILTER -->
 <div id="admPaneDirectory" class="panel-box">
@@ -5359,6 +5517,89 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     </table>
   </div>
 </div>
+<!-- ========================================================================= -->
+<!-- 16. ADMIN SECOND MID-TERM EXAM RESULT ANALYSIS PANE (#admPaneMidTermMaster) -->
+<!-- ========================================================================= -->
+<div id="admPaneMidTermMaster" class="panel-box" style="display:none; border-top:4px solid #0f766e;">
+  <div class="panel-title" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; border-bottom:2px solid #cbd5e1; padding-bottom:12px; margin-bottom:14px;">
+    <div>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span style="font-size:1.22rem; font-weight:900; color:#134e4a;">📈 சிவகங்கை மாவட்டம் – இரண்டாம் இடைப்பருவத் தேர்வு தேர்ச்சிப் பகுப்பாய்வுக் கட்டுப்பாட்டகம் (10th Std Result Analysis)</span>
+        <span style="background:#ccfbf1; color:#0f766e; border:1px solid #5eead4; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">FORM-I(1) &amp; FORM-I(2) • F1 &amp; F2 Master</span>
+      </div>
+      <div style="font-size:0.81rem; color:#475569; margin-top:4px; font-weight:700;">
+        பள்ளிகள் பதிவு செய்யும் 10-ஆம் வகுப்பு பிரிவு வாரியான பாட ஆசிரியர்கள் மற்றும் மாணவர் மதிப்பெண்களிலிருந்து தொகுக்கப்பட்ட <strong>பள்ளி வாரியான (F1_School Performance - 109 Cols)</strong> மற்றும் <strong>பாட ஆசிரியர் வாரியான (F2_Subject Performance - 49 Cols)</strong> தேர்ச்சிப் பகுப்பாய்வு அறிக்கை.
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+      <select id="admMidTermExamSelect" class="form-control" style="width:auto; font-size:0.78rem; font-weight:900; padding:6px 10px; border-color:#0f766e; background:#f0fdfa; color:#0f766e;" onchange="onAdminMidTermExamTermChange(this.value)">
+        <option value="2026_MIDTERM_2" selected>📅 Nov'2026 - இரண்டாம் இடைப்பருவத் தேர்வு (Second Mid-Term)</option>
+        <option value="2026_HALF_YEARLY">📅 Dec'2026 - அரையாண்டுத் தேர்வு (Half-Yearly)</option>
+        <option value="2027_REVISION_1">📅 Jan'2027 - முதல் திருப்புதல் தேர்வு (First Revision)</option>
+        <option value="2027_REVISION_2">📅 Feb'2027 - இரண்டாம் திருப்புதல் தேர்வு (Second Revision)</option>
+        <option value="2026_QUARTERLY">📅 Sep'2026 - காலாண்டுத் தேர்வு (Quarterly)</option>
+      </select>
+      <button type="button" class="btn btn-success btn-sm" onclick="exportDistrictMidTermF1Csv()" style="background:#0f766e; border-color:#115e59; font-weight:900;">
+        📥 F1_School Performance (109 Cols CSV) பதிவிறக்கு
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportDistrictMidTermF2Csv()" style="background:#1d4ed8; border-color:#1e40af; font-weight:900;">
+        📥 F2_Subject Performance (49 Cols CSV) பதிவிறக்கு
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="syncAllMidTermResultsToGoogleSheet()" style="background:#7c3aed; border-color:#6d28d9; font-weight:900;">
+        ☁️ Google Sheet உடன் ஒத்திசை
+      </button>
+    </div>
+  </div>
+
+  <!-- District KPI Summary Row -->
+  <div id="admMidTermKpiRow" style="margin-bottom:14px;"></div>
+
+  <!-- Sub-View Switcher: F1_School Performance vs F2_Subject Performance vs Single Subject Failures -->
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 14px; margin-bottom:14px;">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button type="button" class="btn btn-primary btn-sm" id="admMtTabBtnF1" onclick="switchAdminMidTermView('F1')" style="background:#0f766e; border-color:#0f766e; font-weight:900;">
+        🏫 1. F1_School Performance (பள்ளி வாரியான தேர்ச்சி - 281 பள்ளிகள்)
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" id="admMtTabBtnF2" onclick="switchAdminMidTermView('F2')" style="font-weight:900; color:#1e3a8a; border-color:#93c5fd; background:#fff;">
+        👨‍🏫 2. F2_Subject Performance (பாட ஆசிரியர் வாரியான தேர்ச்சி)
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" id="admMtTabBtnRemedial" onclick="switchAdminMidTermView('REMEDIAL')" style="font-weight:900; color:#9a3412; border-color:#fdba74; background:#fff7ed;">
+        🎯 3. ஒரு பாடம் தோல்வி &amp; மெல்லக் கற்கும் மாணவர்கள் பெயர்ப் பட்டியல்
+      </button>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <select id="admMtFilterBlock" class="form-control" style="width:auto; padding:5px 8px; font-size:0.78rem; font-weight:800;" onchange="renderAdminMidTermDashboard()">
+        <option value="">அனைத்து 12 ஒன்றியங்கள்</option>
+      </select>
+      <select id="admMtFilterMgmt" class="form-control" style="width:auto; padding:5px 8px; font-size:0.78rem; font-weight:800;" onchange="renderAdminMidTermDashboard()">
+        <option value="">அனைத்து நிர்வாகம் (1G/2A/3P)</option>
+        <option value="1G">1G - அரசுப் பள்ளி</option>
+        <option value="2A">2A - அரசு உதவிபெறும்</option>
+        <option value="3P">3P - தனியார்</option>
+      </select>
+      <select id="admMtFilterStatus" class="form-control" style="width:auto; padding:5px 8px; font-size:0.78rem; font-weight:800;" onchange="renderAdminMidTermDashboard()">
+        <option value="ALL">அனைத்துப் பள்ளிகள் (All)</option>
+        <option value="COMPLETED">✅ சமர்ப்பித்த பள்ளிகள் (Completed)</option>
+        <option value="PENDING">⏳ நிலுவைப் பள்ளிகள் (Pending)</option>
+        <option value="PASS_100">🏆 100% தேர்ச்சிப் பள்ளிகள்</option>
+        <option value="BELOW_80">⚠️ 80%-க்குக் குறைவான தேர்ச்சி</option>
+      </select>
+      <select id="admMtFilterSubject" class="form-control" style="width:auto; padding:5px 8px; font-size:0.78rem; font-weight:800; display:none;" onchange="renderAdminMidTermDashboard()">
+        <option value="">அனைத்து 5 பாடங்கள்</option>
+        <option value="TAMIL">தமிழ் (LANGUAGE)</option>
+        <option value="ENGLISH">ஆங்கிலம் (ENGLISH)</option>
+        <option value="MATHS">கணிதம் (MATHS)</option>
+        <option value="SCIENCE">அறிவியல் (SCIENCE)</option>
+        <option value="SOCIAL">சமூக அறிவியல் (SOCIAL SCIENCE)</option>
+      </select>
+      <input type="text" id="admMtFilterSearch" class="form-control" style="width:210px; padding:5px 10px; font-size:0.78rem; font-weight:800;" placeholder="🔍 U.No, பள்ளி, ஆசிரியர் தேடுக..." oninput="renderAdminMidTermDashboard()">
+    </div>
+  </div>
+
+  <!-- Admin Mid-Term Dynamic Table Container -->
+  <div id="admMidTermTableContainer"></div>
+</div>
+
 <!-- Bottom Return Button -->
 <div style="text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid #cbd5e1;">
 <button type="button" class="btn btn-outline" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff;">
@@ -6559,7 +6800,7 @@ let fbLiveActivityLog = [];
 let currentSchoolTabKey = "staffStrength";
 const _firebaseMemoryKvStore = {};
 const _SESSION_ONLY_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ACTIVE_UI_STATE", "CEOSVG_PORTAL_CFG", "CEOSVG_FIREBASE_CFG"]);
-const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1"]);
+const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1", "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1"]);
 try {
 if (typeof localStorage !== "undefined") {
 Object.keys(localStorage).forEach(k => {
@@ -9302,6 +9543,7 @@ students: ["schTabBtnStudents", "schPaneStudents"],
 staff: ["schTabBtnStaff", "schPaneStaff"],
 needs: ["schTabBtnNeeds", "schPaneNeeds"],
 ebs: ["schTabBtnEbs", "schPaneEbs"],
+midTerm: ["schTabBtnMidTerm", "schPaneMidTerm"],
 security: ["schTabBtnSecurity", "schPaneSecurity"]
 };
 Object.keys(map).forEach(k => {
@@ -9318,6 +9560,7 @@ if (pane) pane.style.display = (k === tabKey) ? "block" : "none";
 });
 if (document.body) { document.body.classList.toggle("ebs-standalone-mode", tabKey === "ebs"); }
 if (tabKey === "ebs" && typeof renderSchoolEbsModule === "function") { try { renderSchoolEbsModule(); } catch (err) { console.error("renderSchoolEbsModule error:", err); } }
+if (tabKey === "midTerm" && typeof renderSchoolMidTermModule === "function") { try { renderSchoolMidTermModule(); } catch (err) { console.error("renderSchoolMidTermModule error:", err); } }
 if ((tabKey === "needs" || tabKey === "staffStrength") && activeSchoolSession && typeof renderSchoolCircularsAndNotifications === "function") {
 try { renderSchoolCircularsAndNotifications(activeSchoolSession); } catch (err) {}
 }
@@ -12940,6 +13183,8 @@ switchAdminTab("ebsMaster");
 switchAdminTab("examDutyAllotment");
 } else if (modKey === "auditTrail") {
 switchAdminTab("auditTrail");
+} else if (modKey === "midTermMaster") {
+switchAdminTab("midTermMaster");
 }
 window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -12999,7 +13244,8 @@ emisSync:           { btn: "admTabBtnEmisSync",       pane: "admPaneEmisSync",  
 infraNeeds:         { btn: "admTabBtnInfraNeeds",     pane: "admPaneInfraNeeds",     group: "infraNeeds" },
 ebsMaster:          { btn: "admTabBtnEbsMaster",          pane: "admPaneEbsMaster",          group: "ebsMaster" },
 examDutyAllotment:  { btn: "admTabBtnExamDutyAllotment",  pane: "admPaneExamDutyAllotment",  group: "ebsMaster" },
-auditTrail:         { btn: "admTabBtnAuditTrail",         pane: "admPaneAuditTrail",         group: "auditTrail" }
+auditTrail:         { btn: "admTabBtnAuditTrail",         pane: "admPaneAuditTrail",         group: "auditTrail" },
+midTermMaster:      { btn: "admTabBtnMidTermMaster",      pane: "admPaneMidTermMaster",      group: "midTermMaster" }
 };
 const current = tabConfig[tabKey] || tabConfig.directory;
 const activeGroup = current.group;
@@ -13025,7 +13271,8 @@ emisSync:       "<span>📥</span> அனைத்து Excel / CSV கோப�
 infraNeeds:     "<span>🏗️</span> 7. பள்ளி அடிப்படைத் தேவைகள் தொகுப்பு அறிக்கை (District Infrastructure Needs Dashboard)",
 ebsMaster:      "<span>📋</span> 8. EBS 2026-27 MASTER (F1, F2, F3, F4 படிவங்கள் & தனி Google Sheet ஒத்திசைவு)",
 centres:        "<span>🏛️</span> தேர்வு மையங்கள் மேலாண்மை – 10th, 12th &amp; மற்ற தேர்வுகள் மையங்கள் மற்றும் கண்காணிப்பாளர் / அலுவலகப் பணியாளர் நிர்ணயம்",
-auditTrail:     "<span>📜</span> 10. ADMIN AUDIT TRAIL – மாற்றங்களின் தணிக்கைப் பதிவேடு (Timestamped Log)"
+auditTrail:     "<span>📜</span> 10. ADMIN AUDIT TRAIL – மாற்றங்களின் தணிக்கைப் பதிவேடு (Timestamped Log)",
+midTermMaster:  "<span>📈</span> 11. இரண்டாம் இடைப்பருவத் தேர்வு தேர்ச்சிப் பகுப்பாய்வு (10th Second Mid-Term Result Analysis – FORM I(1) &amp; I(2))"
 };
 if (headerTitle && groupTitles[activeGroup]) {
 headerTitle.innerHTML = groupTitles[activeGroup];
@@ -13040,7 +13287,7 @@ const allPanes = [
 "admPaneDirectory", "admPaneAddSchool", "admPaneDivisions", "admPaneCredentials",
 "admPaneCentres", "admPaneTeacherMaster", "admPaneEmisSync", "admPaneStudentsMaster",
 "admPaneDignitaries", "admPaneCirculars", "admPaneHssGroups", "admPaneDeleteReqs",
-"admPaneInfraNeeds", "admPaneEbsMaster", "admPaneExamDutyAllotment", "admPaneAuditTrail"
+"admPaneInfraNeeds", "admPaneEbsMaster", "admPaneExamDutyAllotment", "admPaneAuditTrail", "admPaneMidTermMaster"
 ];
 allPanes.forEach(pId => {
 const pane = document.getElementById(pId);
@@ -13082,6 +13329,8 @@ renderAdminDeleteRequestsTable();
 if (typeof renderAdminExamCentresTable === "function") renderAdminExamCentresTable();
 } else if (tabKey === "auditTrail") {
 if (typeof renderAdminAuditTrailDashboard === "function") renderAdminAuditTrailDashboard();
+} else if (tabKey === "midTermMaster") {
+if (typeof renderAdminMidTermDashboard === "function") renderAdminMidTermDashboard();
 }
 }
 function resetAdminDirectoryFilters() {
@@ -33215,6 +33464,2273 @@ if (typeof window !== "undefined") {
   } else {
     setTimeout(initCeosvgProgressiveWebApp, 50);
   }
+}
+
+
+
+// ============================================================================
+// 📈 SECOND MID-TERM EXAM RESULT ANALYSIS ENGINE (10th STD FORM-I(1) & I(2))
+// ============================================================================
+const EXAM_RESULT_TERMS_META = {
+  "2026_MIDTERM_2": {
+    key: "2026_MIDTERM_2",
+    reportHeaderEn: "Nov'2026 - Second Mid-Term Exam - Result Analysis Report",
+    reportHeaderTa: "நவம்பர் 2026 - இரண்டாம் இடைப்பருவத் தேர்வு தேர்ச்சிப் பகுப்பாய்வு அறிக்கை",
+    shortName: "2-ஆம் இடைப்பருவத் தேர்வு (Nov'2026)"
+  },
+  "2026_HALF_YEARLY": {
+    key: "2026_HALF_YEARLY",
+    reportHeaderEn: "Dec'2026 - Half-Yearly Exam - Result Analysis Report",
+    reportHeaderTa: "டிசம்பர் 2026 - அரையாண்டுத் தேர்வு தேர்ச்சிப் பகுப்பாய்வு அறிக்கை",
+    shortName: "அரையாண்டுத் தேர்வு (Dec'2026)"
+  },
+  "2027_REVISION_1": {
+    key: "2027_REVISION_1",
+    reportHeaderEn: "Jan'2027 - First Revision Exam - Result Analysis Report",
+    reportHeaderTa: "ஜனவரி 2027 - முதல் திருப்புதல் தேர்வு தேர்ச்சிப் பகுப்பாய்வு அறிக்கை",
+    shortName: "முதல் திருப்புதல் தேர்வு (Jan'2027)"
+  },
+  "2027_REVISION_2": {
+    key: "2027_REVISION_2",
+    reportHeaderEn: "Feb'2027 - Second Revision Exam - Result Analysis Report",
+    reportHeaderTa: "பிப்ரவரி 2027 - இரண்டாம் திருப்புதல் தேர்வு தேர்ச்சிப் பகுப்பாய்வு அறிக்கை",
+    shortName: "இரண்டாம் திருப்புதல் தேர்வு (Feb'2027)"
+  },
+  "2026_QUARTERLY": {
+    key: "2026_QUARTERLY",
+    reportHeaderEn: "Sep'2026 - Quarterly Exam - Result Analysis Report",
+    reportHeaderTa: "செப்டம்பர் 2026 - காலாண்டுத் தேர்வு தேர்ச்சிப் பகுப்பாய்வு அறிக்கை",
+    shortName: "காலாண்டுத் தேர்வு (Sep'2026)"
+  }
+};
+
+const MIDTERM_CORE_SUBJECTS = [
+  { key: "TAMIL", labelEn: "LANGUAGE", labelTa: "தமிழ் (Language)", code: "101", matchRe: /TAMIL|தமிழ்|LANG/i },
+  { key: "ENGLISH", labelEn: "ENGLISH", labelTa: "ஆங்கிலம் (English)", code: "102", matchRe: /ENGLISH|ஆங்கிலம்/i },
+  { key: "MATHS", labelEn: "MATHS", labelTa: "கணிதம் (Maths)", code: "103", matchRe: /MATH|கணிதம்/i },
+  { key: "SCIENCE", labelEn: "SCIENCE", labelTa: "அறிவியல் (Science)", code: "104", matchRe: /SCI|PHY|CHEM|BIO|BOT|ZOO|அறிவியல்/i },
+  { key: "SOCIAL", labelEn: "SOCIAL SCIENCE", labelTa: "சமூக அறிவியல் (Social)", code: "105", matchRe: /SOC|HIST|GEO|சமூக/i }
+];
+
+let _activeMidTermTermKey = "2026_MIDTERM_2";
+let _activeSchoolMidTermSubTab = "SEC_TEACHERS";
+let _activeAdminMidTermSubView = "F1";
+let _examResultAnalysisStoreCache = null;
+
+function getExamResultAnalysisStore() {
+  if (_examResultAnalysisStoreCache && typeof _examResultAnalysisStoreCache === "object") {
+    return _examResultAnalysisStoreCache;
+  }
+  const saved = safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", null);
+  _examResultAnalysisStoreCache = (saved && typeof saved === "object") ? saved : {};
+  return _examResultAnalysisStoreCache;
+}
+
+function saveExamResultAnalysisStore() {
+  const store = getExamResultAnalysisStore();
+  safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", store);
+  if (typeof updateAdminMidTermChooserBadge === "function") {
+    updateAdminMidTermChooserBadge();
+  }
+}
+
+function getSchoolTenStdEmisStrength(uNo) {
+  uNo = String(uNo || "").trim();
+  const extra = getSchoolExtra(uNo);
+  const emisSch = (typeof EMIS_STUDENT_DATA !== "undefined" && EMIS_STUDENT_DATA && EMIS_STUDENT_DATA.schoolEnrollments)
+    ? EMIS_STUDENT_DATA.schoolEnrollments[uNo]
+    : null;
+  let c10 = (extra && extra.students && extra.students["10"]) ? extra.students["10"] : ((emisSch && emisSch.classes && emisSch.classes["10"]) ? emisSch.classes["10"] : {});
+  if (emisSch && emisSch.classes && emisSch.classes["10"] && (Number(c10.boys || 0) + Number(c10.girls || 0) === 0)) {
+    c10 = emisSch.classes["10"];
+  }
+  const boys = Math.max(0, Number(c10.boys || 0));
+  const girls = Math.max(0, Number(c10.girls || 0));
+  const tm = Math.max(0, Number(c10.tm || 0));
+  const em = Math.max(0, Number(c10.em || 0));
+  return { boys, girls, total: boys + girls, tm, em };
+}
+
+function getSchoolTeachingStaffCandidatesFor10th(uNo) {
+  uNo = String(uNo || "").trim();
+  if (!uNo) return [];
+  const all = (typeof getSchoolFixedPortalStaffList === "function") ? getSchoolFixedPortalStaffList(uNo) : [];
+  const teachList = all.filter(st => st && st.isTeaching !== false);
+  if (teachList.length > 0) return teachList;
+  const distAll = (typeof getDistrictAllStaffList === "function") ? getDistrictAllStaffList() : [];
+  return distAll.filter(st => st && String(st.uNo) === uNo && st.isTeaching !== false);
+}
+
+function autoBuildDefaultSectionsForSchool(uNo) {
+  uNo = String(uNo || "").trim();
+  const st10 = getSchoolTenStdEmisStrength(uNo);
+  const teachers = getSchoolTeachingStaffCandidatesFor10th(uNo);
+  const sections = [];
+
+  const createSecObj = (secId, med) => {
+    const tMap = {};
+    MIDTERM_CORE_SUBJECTS.forEach(sub => {
+      // Find best matching teacher in school who handles 10th or matches subject
+      let match = teachers.find(t => {
+        const ch10 = t.classesHandling && t.classesHandling["10"];
+        return ch10 && ch10.sub && sub.matchRe.test(ch10.sub) && (!ch10.med || ch10.med === "Both" || ch10.med === med);
+      });
+      if (!match) {
+        match = teachers.find(t => sub.matchRe.test(String(t.subject || "")));
+      }
+      tMap[sub.key] = {
+        staffId: match ? String(match.staffId || match.id || "") : "",
+        nameEn: match ? String(match.name || "") : "",
+        nameTa: match ? String((match.prefix ? match.prefix + " " : "") + (match.nameTa || match.name || "")) : "",
+        gender: match ? String(match.gender || "Male") : "",
+        desig: match ? String(match.desig || "BT ASSISTANT") : "",
+        nature: match ? String(match.nature || "Regular") : "Regular",
+        mobile: match ? String(match.mobile || "") : "",
+        appointedSub: match ? String(match.subject || sub.labelEn) : sub.labelEn,
+        pubAppear: "",
+        pubPass: "",
+        pubAvg: "",
+        pubCentum: "",
+        pubMax: "",
+        pubMin: ""
+      };
+    });
+    return {
+      secId: secId,
+      secName: "Section " + secId,
+      medium: med,
+      teachers: tMap
+    };
+  };
+
+  if (st10.tm > 0 && st10.em > 0) {
+    sections.push(createSecObj("A", "TM"));
+    sections.push(createSecObj("B", "EM"));
+  } else if (st10.em > 0 && st10.tm === 0) {
+    sections.push(createSecObj("A", "EM"));
+  } else {
+    sections.push(createSecObj("A", "TM"));
+  }
+  return sections;
+}
+
+function getSchoolMidTermRecord(uNo, termKey) {
+  uNo = String(uNo || "").trim();
+  termKey = termKey || _activeMidTermTermKey || "2026_MIDTERM_2";
+  const store = getExamResultAnalysisStore();
+  if (!store[termKey]) store[termKey] = {};
+  if (!store[termKey][uNo]) {
+    store[termKey][uNo] = {
+      uNo: uNo,
+      examTerm: termKey,
+      markScale: "100",
+      sections: autoBuildDefaultSectionsForSchool(uNo),
+      students: [],
+      optLangExemption: 0,
+      optLangFailed: 0,
+      optLangAvg: "",
+      optLangHighest: "",
+      optLang35_45: 0,
+      optLang46_60: 0,
+      optLang61_80: 0,
+      optLang81_99: 0,
+      optLangCentum: 0,
+      isSubmitted: false,
+      submittedAt: "",
+      updatedAt: ""
+    };
+  }
+  const rec = store[termKey][uNo];
+  if (!Array.isArray(rec.sections) || rec.sections.length === 0) {
+    rec.sections = autoBuildDefaultSectionsForSchool(uNo);
+  }
+  if (!Array.isArray(rec.students)) {
+    rec.students = [];
+  }
+  return rec;
+}
+
+// ============================================================================
+// CORE MATHEMATICAL ENGINE: STUDENT MARKS -> FORM-I(1) & FORM-I(2)
+// ============================================================================
+function computeSchoolExamResultAnalysis(uNo, termKey) {
+  uNo = String(uNo || "").trim();
+  termKey = termKey || _activeMidTermTermKey || "2026_MIDTERM_2";
+  const sch = (masterSchools || []).find(s => String(s.uNo) === uNo) || { uNo, nameTa: "பள்ளி " + uNo, nameEn: "School " + uNo, block: "-", mgmt1: "1G", udiseNo: "-", hmName: "", hmTa: "", mobile: "" };
+  const rec = getSchoolMidTermRecord(uNo, termKey);
+  const st10Emis = getSchoolTenStdEmisStrength(uNo);
+  const students = Array.isArray(rec.students) ? rec.students : [];
+  const hasStudentEntries = students.length > 0;
+
+  let laM = 0, laF = 0;
+  let abM = 0, abF = 0;
+  let hbM = 0, hbF = 0;
+  let appM = 0, appF = 0;
+  let passM = 0, passF = 0;
+  let failM = 0, failF = 0;
+
+  let count1S = 0, count2S = 0, count3S = 0, count4S = 0, count5S = 0;
+  let schoolFirstMark = 0;
+  let allAppearedTotal500Sum = 0;
+  let rangeBelow60 = 0; // <= 300
+  let range60To80 = 0;  // 301 - 400
+  let rangeAbove80 = 0; // 401 - 500
+
+  const subStats = {};
+  MIDTERM_CORE_SUBJECTS.forEach(s => {
+    subStats[s.key] = {
+      key: s.key,
+      labelEn: s.labelEn,
+      labelTa: s.labelTa,
+      exemption: 0,
+      failed: 0,
+      passed: 0,
+      appeared: 0,
+      markSum: 0,
+      scoredCount: 0,
+      avgMark: 0,
+      highestMark: 0,
+      lowestMark: null,
+      r35_45: 0,
+      r46_60: 0,
+      r61_80: 0,
+      r81_99: 0,
+      centum: 0,
+      singleSubFailed: 0,
+      statusOk: true
+    };
+  });
+
+  // Per-section per-subject stats for FORM-I(2)
+  const secSubStats = {};
+  (rec.sections || []).forEach(sec => {
+    secSubStats[sec.secId] = {};
+    MIDTERM_CORE_SUBJECTS.forEach(s => {
+      secSubStats[sec.secId][s.key] = {
+        secId: sec.secId,
+        medium: sec.medium || "TM",
+        subKey: s.key,
+        subLabelEn: s.labelEn,
+        subLabelTa: s.labelTa,
+        subCode: s.code,
+        teacher: (sec.teachers && sec.teachers[s.key]) ? sec.teachers[s.key] : {},
+        stuCount: 0,
+        la: 0,
+        ab: 0,
+        hb: 0,
+        ex: 0,
+        appear: 0,
+        pass: 0,
+        fail: 0,
+        passPct: "0.00%",
+        markSum: 0,
+        scoredCount: 0,
+        avgMark: 0,
+        maxMark: 0,
+        minMark: null,
+        r35_45: 0,
+        r46_60: 0,
+        r61_80: 0,
+        r81_99: 0,
+        centum: 0,
+        failThisSubOnly: 0
+      };
+    });
+  });
+
+  const evaluatedStudents = [];
+  const singleSubFailedStudents = [];
+  const slowLearnerStudents = [];
+  const centumStudents = [];
+
+  students.forEach((stu, idx) => {
+    const isFem = stu.gender === "Female" || stu.gender === "F";
+    const secId = (stu.section && secSubStats[stu.section]) ? stu.section : ((rec.sections[0] && rec.sections[0].secId) || "A");
+    const attStatus = String(stu.status || "PRESENT").toUpperCase();
+
+    // Increment total enrolled in each subject of this section
+    if (secSubStats[secId]) {
+      MIDTERM_CORE_SUBJECTS.forEach(s => {
+        secSubStats[secId][s.key].stuCount++;
+      });
+    }
+
+    if (attStatus === "LA") {
+      if (isFem) laF++; else laM++;
+      if (secSubStats[secId]) MIDTERM_CORE_SUBJECTS.forEach(s => { secSubStats[secId][s.key].la++; });
+      evaluatedStudents.push(Object.assign({}, stu, { total500: "-", avgPct: "-", resultType: "LA", resultBadge: "⚪ Long Absent (LA)", failedSubs: [] }));
+      return;
+    }
+    if (attStatus === "HB") {
+      if (isFem) hbF++; else hbM++;
+      if (secSubStats[secId]) MIDTERM_CORE_SUBJECTS.forEach(s => { secSubStats[secId][s.key].hb++; });
+      evaluatedStudents.push(Object.assign({}, stu, { total500: "-", avgPct: "-", resultType: "HB", resultBadge: "🏠 Home Based (HB)", failedSubs: [] }));
+      return;
+    }
+
+    // Check if absent in all 5 subjects
+    const marksObj = stu.marks || {};
+    const allFiveAb = attStatus === "AB" || MIDTERM_CORE_SUBJECTS.every(s => {
+      const raw = String(marksObj[s.key] !== undefined ? marksObj[s.key] : "").trim().toUpperCase();
+      return raw === "AB";
+    });
+    if (allFiveAb) {
+      if (isFem) abF++; else abM++;
+      if (secSubStats[secId]) MIDTERM_CORE_SUBJECTS.forEach(s => { secSubStats[secId][s.key].ab++; });
+      evaluatedStudents.push(Object.assign({}, stu, { total500: "-", avgPct: "-", resultType: "AB", resultBadge: "⚪ 5-Sub Absent (AB)", failedSubs: [] }));
+      return;
+    }
+
+    // Student Appeared!
+    if (isFem) appF++; else appM++;
+
+    let stuTotal500 = 0;
+    const failedSubs = [];
+    const centumSubs = [];
+
+    MIDTERM_CORE_SUBJECTS.forEach(s => {
+      const sk = s.key;
+      const rawVal = String(marksObj[sk] !== undefined ? marksObj[sk] : "").trim().toUpperCase();
+      const gStat = subStats[sk];
+      const cStat = secSubStats[secId] ? secSubStats[secId][sk] : null;
+
+      if (rawVal === "EX") {
+        gStat.exemption++;
+        if (cStat) cStat.ex++;
+        return;
+      }
+
+      if (rawVal === "AB" || rawVal === "") {
+        // Absent or unentered in this specific subject -> counts as Failed in school summary
+        gStat.failed++;
+        gStat.appeared++;
+        if (cStat) {
+          if (rawVal === "AB") cStat.ab++;
+          else { cStat.appear++; cStat.fail++; }
+        }
+        failedSubs.push({ key: sk, labelTa: s.labelTa, labelEn: s.labelEn, mark: "AB" });
+        return;
+      }
+
+      let numMark = Number(rawVal);
+      if (isNaN(numMark)) numMark = 0;
+      numMark = Math.max(0, Math.min(100, Math.round(numMark)));
+
+      stuTotal500 += numMark;
+      gStat.appeared++;
+      gStat.markSum += numMark;
+      gStat.scoredCount++;
+      if (numMark > gStat.highestMark) gStat.highestMark = numMark;
+      if (gStat.lowestMark === null || numMark < gStat.lowestMark) gStat.lowestMark = numMark;
+
+      if (cStat) {
+        cStat.appear++;
+        cStat.markSum += numMark;
+        cStat.scoredCount++;
+        if (numMark > cStat.maxMark) cStat.maxMark = numMark;
+        if (cStat.minMark === null || numMark < cStat.minMark) cStat.minMark = numMark;
+      }
+
+      if (numMark >= 35) {
+        gStat.passed++;
+        if (cStat) cStat.pass++;
+        if (numMark <= 45) { gStat.r35_45++; if (cStat) cStat.r35_45++; }
+        else if (numMark <= 60) { gStat.r46_60++; if (cStat) cStat.r46_60++; }
+        else if (numMark <= 80) { gStat.r61_80++; if (cStat) cStat.r61_80++; }
+        else if (numMark <= 99) { gStat.r81_99++; if (cStat) cStat.r81_99++; }
+        else if (numMark === 100) {
+          gStat.centum++;
+          if (cStat) cStat.centum++;
+          centumSubs.push(s.labelTa);
+        }
+      } else {
+        gStat.failed++;
+        if (cStat) cStat.fail++;
+        failedSubs.push({ key: sk, labelTa: s.labelTa, labelEn: s.labelEn, mark: numMark });
+      }
+    });
+
+    allAppearedTotal500Sum += stuTotal500;
+    if (stuTotal500 > schoolFirstMark) {
+      schoolFirstMark = stuTotal500;
+    }
+
+    if (centumSubs.length > 0) {
+      centumStudents.push({
+        rollNo: stu.rollNo || String(idx + 1),
+        name: stu.name || "-",
+        gender: isFem ? "Female" : "Male",
+        section: secId,
+        total500: stuTotal500,
+        centumSubs: centumSubs
+      });
+    }
+
+    const fCount = failedSubs.length;
+    if (fCount === 0) {
+      if (isFem) passF++; else passM++;
+      if (stuTotal500 <= 300) rangeBelow60++;
+      else if (stuTotal500 <= 400) range60To80++;
+      else rangeAbove80++;
+      evaluatedStudents.push(Object.assign({}, stu, {
+        total500: stuTotal500,
+        avgPct: (stuTotal500 / 5).toFixed(1),
+        resultType: "PASS",
+        resultBadge: `🟢 தேர்ச்சி (${stuTotal500}/500)`,
+        failedSubs: []
+      }));
+    } else {
+      if (isFem) failF++; else failM++;
+      if (fCount === 1) {
+        count1S++;
+        const onlySub = failedSubs[0].key;
+        if (subStats[onlySub]) subStats[onlySub].singleSubFailed++;
+        if (secSubStats[secId] && secSubStats[secId][onlySub]) {
+          secSubStats[secId][onlySub].failThisSubOnly++;
+        }
+        singleSubFailedStudents.push({
+          rollNo: stu.rollNo || String(idx + 1),
+          name: stu.name || "-",
+          gender: isFem ? "Female" : "Male",
+          section: secId,
+          failedSubKey: onlySub,
+          failedSubLabel: failedSubs[0].labelTa,
+          failedMark: failedSubs[0].mark,
+          total500: stuTotal500
+        });
+      } else if (fCount === 2) count2S++;
+      else if (fCount === 3) count3S++;
+      else if (fCount === 4) count4S++;
+      else count5S++;
+
+      slowLearnerStudents.push({
+        rollNo: stu.rollNo || String(idx + 1),
+        name: stu.name || "-",
+        gender: isFem ? "Female" : "Male",
+        section: secId,
+        failedCount: fCount,
+        failedSummary: failedSubs.map(x => `${x.labelEn}(${x.mark})`).join(", "),
+        total500: stuTotal500
+      });
+
+      evaluatedStudents.push(Object.assign({}, stu, {
+        total500: stuTotal500,
+        avgPct: (stuTotal500 / 5).toFixed(1),
+        resultType: fCount === 1 ? "FAIL_1S" : "FAIL",
+        resultBadge: fCount === 1
+          ? `🟠 1-பாடம் தோல்வி: ${failedSubs[0].labelEn} (${failedSubs[0].mark})`
+          : `🔴 தோல்வி (${fCount} பாடங்கள்)`,
+        failedSubs: failedSubs
+      }));
+    }
+  });
+
+  // Finalize subject averages
+  MIDTERM_CORE_SUBJECTS.forEach(s => {
+    const g = subStats[s.key];
+    g.avgMark = g.scoredCount > 0 ? Math.round(g.markSum / g.scoredCount) : 0;
+    const passedBucketsSum = g.r35_45 + g.r46_60 + g.r61_80 + g.r81_99 + g.centum;
+    g.statusOk = (passedBucketsSum + g.failed + g.exemption) === (appM + appF);
+  });
+
+  // Finalize F1_2 rows
+  const f2Rows = [];
+  let f2Sno = 1;
+  (rec.sections || []).forEach(sec => {
+    MIDTERM_CORE_SUBJECTS.forEach(s => {
+      const c = secSubStats[sec.secId][s.key];
+      c.sno = f2Sno++;
+      c.avgMark = c.scoredCount > 0 ? Math.round(c.markSum / c.scoredCount) : 0;
+      c.passPct = c.appear > 0 ? ((c.pass / c.appear) * 100).toFixed(2) + "%" : "0.00%";
+      if (c.minMark === null) c.minMark = 0;
+      const t = c.teacher || {};
+      const pubApp = Number(t.pubAppear || 0);
+      const pubPass = Number(t.pubPass || 0);
+      c.pubPassPct = (pubApp > 0 && pubPass >= 0) ? ((pubPass / pubApp) * 100).toFixed(2) + "%" : "";
+      f2Rows.push(c);
+    });
+  });
+
+  const emisM = hasStudentEntries ? (appM + laM + abM + hbM) : st10Emis.boys;
+  const emisF = hasStudentEntries ? (appF + laF + abF + hbF) : st10Emis.girls;
+  const emisT = emisM + emisF;
+
+  const laT = laM + laF;
+  const abT = abM + abF;
+  const hbT = hbM + hbF;
+  const appT = appM + appF;
+  const passT = passM + passF;
+  const failT = failM + failF;
+  const passPctNum = appT > 0 ? ((passT / appT) * 100) : 0;
+  const passPctStr = appT > 0 ? passPctNum.toFixed(2) + "%" : "0.00%";
+
+  // School average mark (out of 100 across all 5 subjects, matching column AM in F1_School Performance)
+  const schoolAvgMark100 = appT > 0 ? Math.round((allAppearedTotal500Sum / (appT * 5))) : 0;
+  const rangeTotal = rangeBelow60 + range60To80 + rangeAbove80;
+
+  // 5 Tally Verifications
+  const sumFailedBuckets = count1S + count2S + count3S + count4S + count5S;
+  const r1Tallied = (sumFailedBuckets === failT);
+
+  const totalSubFailuresCount = MIDTERM_CORE_SUBJECTS.reduce((acc, s) => acc + subStats[s.key].failed, 0);
+  const weightedSubFailures = (1 * count1S) + (2 * count2S) + (3 * count3S) + (4 * count4S) + (5 * count5S);
+  const r2Tallied = (totalSubFailuresCount === weightedSubFailures);
+
+  const r3Tallied = (rangeTotal === passT);
+
+  const sumSingleSubBySub = MIDTERM_CORE_SUBJECTS.reduce((acc, s) => acc + subStats[s.key].singleSubFailed, 0);
+  const r4Tallied = (sumSingleSubBySub === count1S);
+
+  const allSubStatusOk = MIDTERM_CORE_SUBJECTS.every(s => subStats[s.key].statusOk);
+
+  return {
+    uNo,
+    sch,
+    rec,
+    termMeta: EXAM_RESULT_TERMS_META[termKey] || EXAM_RESULT_TERMS_META["2026_MIDTERM_2"],
+    hasStudentEntries,
+    emis: { m: emisM, f: emisF, t: emisT, origBoys: st10Emis.boys, origGirls: st10Emis.girls, origTotal: st10Emis.total },
+    la: { m: laM, f: laF, t: laT },
+    ab: { m: abM, f: abF, t: abT },
+    hb: { m: hbM, f: hbF, t: hbT },
+    appeared: { m: appM, f: appF, t: appT },
+    passed: { m: passM, f: passF, t: passT },
+    failed: { m: failM, f: failF, t: failT },
+    passPctNum,
+    passPctStr,
+    failedSubCounts: { s1: count1S, s2: count2S, s3: count3S, s4: count4S, s5: count5S, total: sumFailedBuckets },
+    schoolFirstMark,
+    schoolAvgMark100,
+    totalMarkRanges: { below60: rangeBelow60, r60_80: range60To80, above80: rangeAbove80, total: rangeTotal },
+    subStats,
+    totalSubFailuresCount,
+    weightedSubFailures,
+    sumSingleSubBySub,
+    tallies: {
+      r1: r1Tallied,
+      r2: r2Tallied,
+      r3: r3Tallied,
+      r4: r4Tallied,
+      subOk: allSubStatusOk,
+      allTallied: Boolean(hasStudentEntries && r1Tallied && r2Tallied && r3Tallied && r4Tallied && allSubStatusOk)
+    },
+    f2Rows,
+    evaluatedStudents,
+    singleSubFailedStudents,
+    slowLearnerStudents,
+    centumStudents
+  };
+}
+
+// ============================================================================
+// SCHOOL PORTAL UI RENDERING FOR SECOND MID-TERM RESULT ANALYSIS
+// ============================================================================
+function onSchoolMidTermExamTermChange(termKey) {
+  _activeMidTermTermKey = termKey || "2026_MIDTERM_2";
+  renderSchoolMidTermModule();
+}
+
+function switchSchoolMidTermSubTab(subKey) {
+  _activeSchoolMidTermSubTab = subKey || "SEC_TEACHERS";
+  const map = {
+    SEC_TEACHERS: ["mtSubBtnSecTeachers", "mtSubPaneSecTeachers"],
+    STU_MARKS:    ["mtSubBtnStuMarks",    "mtSubPaneStuMarks"],
+    FORM1_1:      ["mtSubBtnForm1_1",     "mtSubPaneForm1_1"],
+    FORM1_2:      ["mtSubBtnForm1_2",     "mtSubPaneForm1_2"]
+  };
+  Object.keys(map).forEach(k => {
+    const [bId, pId] = map[k];
+    const bEl = document.getElementById(bId);
+    const pEl = document.getElementById(pId);
+    if (bEl) bEl.classList.toggle("active", k === _activeSchoolMidTermSubTab);
+    if (pEl) pEl.style.display = (k === _activeSchoolMidTermSubTab) ? "block" : "none";
+  });
+  renderSchoolMidTermModule();
+}
+
+function renderSchoolMidTermModule() {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey);
+  const rec = calc.rec;
+
+  const headingEl = document.getElementById("schMidTermMainHeading");
+  if (headingEl) {
+    headingEl.textContent = `📈 ${calc.termMeta.reportHeaderTa} (10th Std - FORM I(1) & I(2))`;
+  }
+  const stBadge = document.getElementById("schMidTermStatusBadge");
+  if (stBadge) {
+    if (rec.isSubmitted) {
+      stBadge.style.background = "#dcfce7";
+      stBadge.style.color = "#166534";
+      stBadge.style.borderColor = "#86efac";
+      stBadge.textContent = `✅ இறுதிச் சமர்ப்பிப்பு முடிந்தது (${formatDateDisplayDMY(rec.submittedAt || "")})`;
+    } else if (calc.hasStudentEntries) {
+      stBadge.style.background = "#dbeafe";
+      stBadge.style.color = "#1e40af";
+      stBadge.style.borderColor = "#93c5fd";
+      stBadge.textContent = `📝 வரைவு நிலை (${calc.evaluatedStudents.length} மாணவர்கள் பதிவு)`;
+    } else {
+      stBadge.style.background = "#fef3c7";
+      stBadge.style.color = "#92400e";
+      stBadge.style.borderColor = "#f59e0b";
+      stBadge.textContent = "⏳ மதிப்பெண் பதிவு நிலுவை";
+    }
+  }
+  const cntBadge = document.getElementById("mtTabStuCountBadge");
+  if (cntBadge) cntBadge.textContent = calc.evaluatedStudents.length;
+
+  renderSchoolMidTermLiveKpiStrip(calc);
+
+  if (_activeSchoolMidTermSubTab === "SEC_TEACHERS") {
+    renderSchoolMidTermSecTeachersPane(calc);
+  } else if (_activeSchoolMidTermSubTab === "STU_MARKS") {
+    renderSchoolMidTermStuMarksPane(calc);
+  } else if (_activeSchoolMidTermSubTab === "FORM1_1") {
+    renderSchoolMidTermForm1_1Pane(calc);
+  } else if (_activeSchoolMidTermSubTab === "FORM1_2") {
+    renderSchoolMidTermForm1_2Pane(calc);
+  }
+}
+
+function renderSchoolMidTermLiveKpiStrip(calc) {
+  const box = document.getElementById("schMidTermLiveKpiStrip");
+  if (!box) return;
+  const t = calc.tallies;
+  const pill = (ok, lbl) => `<span style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900; background:${ok ? '#dcfce7' : '#fee2e2'}; color:${ok ? '#166534' : '#991b1b'}; border:1px solid ${ok ? '#86efac' : '#fca5a5'};">${ok ? '✓' : '✗'} ${lbl}: ${ok ? 'Tallied' : 'Check'}</span>`;
+
+  box.innerHTML = `
+    <div style="background:linear-gradient(135deg, #f0fdfa 0%, #eff6ff 100%); border:1.5px solid #5eead4; border-radius:10px; padding:10px 14px;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(135px, 1fr)); gap:8px; margin-bottom:8px;">
+        <div style="background:#fff; border:1px solid #cbd5e1; border-left:4px solid #0f294a; border-radius:8px; padding:6px 10px;">
+          <div style="font-size:0.70rem; color:#64748b; font-weight:800;">10th EMIS மாணவர்கள்</div>
+          <div style="font-size:1.15rem; font-weight:900; color:#0f294a;">${calc.emis.t} <span style="font-size:0.74rem; color:#475569;">(B:${calc.emis.m} | G:${calc.emis.f})</span></div>
+        </div>
+        <div style="background:#fff; border:1px solid #cbd5e1; border-left:4px solid #0284c7; border-radius:8px; padding:6px 10px;">
+          <div style="font-size:0.70rem; color:#0369a1; font-weight:800;">தேர்வெழுதியோர் (Appeared)</div>
+          <div style="font-size:1.15rem; font-weight:900; color:#0284c7;">${calc.appeared.t} <span style="font-size:0.74rem; color:#475569;">(B:${calc.appeared.m} | G:${calc.appeared.f})</span></div>
+        </div>
+        <div style="background:#fff; border:1px solid #cbd5e1; border-left:4px solid #16a34a; border-radius:8px; padding:6px 10px;">
+          <div style="font-size:0.70rem; color:#15803d; font-weight:800;">தேர்ச்சி பெற்றோர் (Passed)</div>
+          <div style="font-size:1.15rem; font-weight:900; color:#16a34a;">${calc.passed.t} <span style="font-size:0.74rem; color:#15803d;">(${calc.passPctStr})</span></div>
+        </div>
+        <div style="background:#fff; border:1px solid #cbd5e1; border-left:4px solid #dc2626; border-radius:8px; padding:6px 10px;">
+          <div style="font-size:0.70rem; color:#b91c1c; font-weight:800;">தோல்வியடைந்தோர் (Failed)</div>
+          <div style="font-size:1.15rem; font-weight:900; color:#dc2626;">${calc.failed.t} <span style="font-size:0.74rem; color:#991b1b;">(1-Sub: ${calc.failedSubCounts.s1})</span></div>
+        </div>
+        <div style="background:#fff; border:1px solid #cbd5e1; border-left:4px solid #7c3aed; border-radius:8px; padding:6px 10px;">
+          <div style="font-size:0.70rem; color:#6d28d9; font-weight:800;">முதல் மதிப்பெண் &amp; சராசரி</div>
+          <div style="font-size:1.15rem; font-weight:900; color:#5b21b6;">${calc.schoolFirstMark}/500 <span style="font-size:0.74rem; color:#6d28d9;">(Avg: ${calc.schoolAvgMark100})</span></div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:0.75rem;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <strong style="color:#0f294a;">🛡️ தானியங்கித் தணிக்கை நிலை (5 Tally Rules):</strong>
+          ${pill(t.r1, "R1 (1S..5S = Failed)")}
+          ${pill(t.r2, "R2 (Sub Fails)")}
+          ${pill(t.r3, "R3 (Mark Range = Passed)")}
+          ${pill(t.r4, "R4 (Single Sub Fail)")}
+          ${pill(t.subOk, "5 Subjects Status: OK")}
+        </div>
+        <div style="font-weight:800; color:#0f766e;">
+          பிரிவுகள்: <strong>${calc.rec.sections.length}</strong> | பதிவு செய்யப்பட்ட மாணவர்கள்: <strong>${calc.evaluatedStudents.length}</strong>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
+// SUB-PANE 1: SECTION & SUBJECT TEACHER MAPPING
+// ============================================================================
+function renderSchoolMidTermSecTeachersPane(calc) {
+  const pane = document.getElementById("mtSubPaneSecTeachers");
+  if (!pane) return;
+  const uNo = calc.uNo;
+  const rec = calc.rec;
+  const teachers = getSchoolTeachingStaffCandidatesFor10th(uNo);
+
+  const secCardsHtml = (rec.sections || []).map((sec, sIdx) => {
+    const rowsHtml = MIDTERM_CORE_SUBJECTS.map(sub => {
+      const tCur = (sec.teachers && sec.teachers[sub.key]) ? sec.teachers[sub.key] : {};
+      const optsHtml = `<option value="">-- பாட ஆசிரியரைத் தேர்ந்தெடுக்கவும் (EMIS / EBS F3) --</option>` +
+        teachers.map(st => {
+          const sid = String(st.staffId || st.id || "");
+          const sel = (sid && sid === String(tCur.staffId || "")) ? "selected" : "";
+          const nameDisp = `${st.prefix ? st.prefix + " " : ""}${st.nameTa || st.name} (${st.name}) — ${st.desig} [${st.subject || "-"}] (EMIS: ${sid})`;
+          return `<option value="${escapeHtmlAttr(sid)}" ${sel}>${escapeHtmlAttr(nameDisp)}</option>`;
+        }).join("");
+
+      return `
+        <tr>
+          <td style="font-weight:900; color:#0f294a; background:#f8fafc; width:155px;">
+            <div>${sub.labelTa}</div>
+            <div style="font-size:0.70rem; color:#64748b;">Code: ${sub.code} (${sub.labelEn})</div>
+          </td>
+          <td style="min-width:270px;">
+            <select class="form-control" style="font-weight:800; font-size:0.80rem; padding:5px 8px; border-color:#93c5fd;" onchange="onMidTermSectionTeacherSelect('${escapeHtmlAttr(sec.secId)}', '${sub.key}', this.value)">
+              ${optsHtml}
+            </select>
+            <div style="display:flex; gap:6px; margin-top:4px;">
+              <input type="text" class="form-control" style="font-size:0.76rem; padding:3px 7px; font-weight:800;" placeholder="ஆசிரியர் பெயர் (English / தமிழ்)" value="${escapeHtmlAttr(tCur.nameEn || "")}" oninput="onMidTermSectionTeacherFieldInput('${escapeHtmlAttr(sec.secId)}', '${sub.key}', 'nameEn', this.value)">
+              <input type="text" class="form-control" style="font-size:0.76rem; padding:3px 7px; width:125px; font-family:monospace;" placeholder="EMIS ID" value="${escapeHtmlAttr(tCur.staffId || "")}" oninput="onMidTermSectionTeacherFieldInput('${escapeHtmlAttr(sec.secId)}', '${sub.key}', 'staffId', this.value)">
+              <input type="text" class="form-control" style="font-size:0.76rem; padding:3px 7px; width:110px;" placeholder="கைபேசி எண்" value="${escapeHtmlAttr(tCur.mobile || "")}" oninput="onMidTermSectionTeacherFieldInput('${escapeHtmlAttr(sec.secId)}', '${sub.key}', 'mobile', this.value)">
+            </div>
+          </td>
+          <td style="width:78px;"><input type="number" min="0" class="form-control" style="text-align:center; font-weight:800; padding:4px;" placeholder="Appear" value="${escapeHtmlAttr(tCur.pubAppear || "")}" oninput="onMidTermSectionTeacherFieldInput('${escapeHtmlAttr(sec.secId)}', '${sub.key}', 'pubAppear', this.value)"></td>
+          <td style="width:78px;"><input type="number" min="0" class="form-control" style="text-align:center; font-weight:800; padding:4px;" placeholder="Pass" value="${escapeHtmlAttr(tCur.pubPass || "")}" oninput="onMidTermSectionTeacherFieldInput('${escapeHtmlAttr(sec.secId)}', '${sub.key}', 'pubPass', this.value)"></td>
+          <td style="width:78px;"><input type="number" min="0" max="100" step="0.1" class="form-control" style="text-align:center; font-weight:800; padding:4px;" placeholder="Avg" value="${escapeHtmlAttr(tCur.pubAvg || "")}" oninput="onMidTermSectionTeacherFieldInput('${escapeHtmlAttr(sec.secId)}', '${sub.key}', 'pubAvg', this.value)"></td>
+          <td style="width:72px;"><input type="number" min="0" class="form-control" style="text-align:center; font-weight:800; padding:4px;" placeholder="100s" value="${escapeHtmlAttr(tCur.pubCentum || "")}" oninput="onMidTermSectionTeacherFieldInput('${escapeHtmlAttr(sec.secId)}', '${sub.key}', 'pubCentum', this.value)"></td>
+        </tr>
+      `;
+    }).join("");
+
+    return `
+      <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-left:5px solid #0f766e; border-radius:10px; padding:12px 14px; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span style="background:#0f766e; color:#fff; font-weight:900; font-size:0.85rem; padding:4px 12px; border-radius:8px;">🏫 10-ஆம் வகுப்பு — பிரிவு ${escapeHtmlAttr(sec.secId)} (Section ${escapeHtmlAttr(sec.secId)})</span>
+            <label style="font-size:0.80rem; font-weight:800; color:#0f294a; display:inline-flex; align-items:center; gap:6px;">
+              <span>பயிற்று மொழி (Medium):</span>
+              <select class="form-control" style="width:auto; padding:3px 8px; font-size:0.80rem; font-weight:900;" onchange="onMidTermSectionMediumChange('${escapeHtmlAttr(sec.secId)}', this.value)">
+                <option value="TM" ${sec.medium === "TM" ? "selected" : ""}>தமிழ் வழி (Tamil Medium - TM)</option>
+                <option value="EM" ${sec.medium === "EM" ? "selected" : ""}>ஆங்கில வழி (English Medium - EM)</option>
+              </select>
+            </label>
+          </div>
+          ${rec.sections.length > 1 ? `<button type="button" class="btn btn-outline btn-sm" onclick="removeMidTermSection('${escapeHtmlAttr(sec.secId)}')" style="color:#dc2626; border-color:#fca5a5; font-size:0.74rem; font-weight:800;">🗑️ பிரிவு ${escapeHtmlAttr(sec.secId)}-ஐ நீக்கு</button>` : ""}
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" style="margin:0; font-size:0.80rem;">
+            <thead>
+              <tr style="background:#0f294a; color:#fff;">
+                <th>பாடம் (Subject)</th>
+                <th>பாட ஆசிரியர் தேர்வு (EMIS / EBS Form-3 பட்டியலிலிருந்து)</th>
+                <th colspan="4" style="text-align:center; background:#1e3a8a;">Mar/Apr' 2026 PUBLIC EXAM (கடந்த பொதுத்தேர்வு ஒப்பீடு - Optional)</th>
+              </tr>
+              <tr style="background:#334155; color:#fff; font-size:0.72rem;">
+                <th>10th Standard</th>
+                <th>Name, EMIS ID &amp; Mobile</th>
+                <th style="text-align:center;">Appear</th>
+                <th style="text-align:center;">Pass</th>
+                <th style="text-align:center;">Avg Mark</th>
+                <th style="text-align:center;">Centum</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  pane.innerHTML = `
+    <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+        <div>
+          <div style="font-size:0.95rem; font-weight:900; color:#0f294a;">1️⃣ 10-ஆம் வகுப்பு பிரிவு வாரியான பாட ஆசிரியர்கள் இணைப்பு (Section-wise Subject Teachers)</div>
+          <div style="font-size:0.78rem; color:#475569; font-weight:700;">இங்கே தேர்ந்தெடுக்கப்படும் ஆசிரியர்களின் பெயர், EMIS ID, பதவி மற்றும் கைபேசி எண் ஆகியவை <strong>FORM - I (2)</strong> மற்றும் மாவட்ட Google Sheet (<code>F2_Subject Performance</code>) தாளில் தானாகவே இணைக்கப்படும்.</div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="autoReMapSchoolMidTermTeachers()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900;">
+            ⚡ EBS Form-3 ஆசிரியர்களிலிருந்து தானாக இணை
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="addNewMidTermSection()" style="background:#0f766e; border-color:#0f766e; font-weight:900;">
+            ➕ புதிய பிரிவு சேர் (+ Add Section B/C/D)
+          </button>
+          <button type="button" class="btn btn-success btn-sm" onclick="switchSchoolMidTermSubTab('STU_MARKS')" style="font-weight:900;">
+            அடுத்த படிநிலை: மாணவர் மதிப்பெண் பதிவு ➔
+          </button>
+        </div>
+      </div>
+      ${secCardsHtml}
+    </div>
+  `;
+}
+
+function onMidTermSectionMediumChange(secId, medVal) {
+  if (!activeSchoolSession) return;
+  const rec = getSchoolMidTermRecord(activeSchoolSession.uNo, _activeMidTermTermKey);
+  const sec = (rec.sections || []).find(s => s.secId === secId);
+  if (sec) {
+    sec.medium = medVal || "TM";
+    saveExamResultAnalysisStore();
+  }
+}
+
+function onMidTermSectionTeacherSelect(secId, subKey, staffId) {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+  const sec = (rec.sections || []).find(s => s.secId === secId);
+  if (!sec) return;
+  if (!sec.teachers) sec.teachers = {};
+  const teachers = getSchoolTeachingStaffCandidatesFor10th(uNo);
+  const match = teachers.find(t => String(t.staffId || t.id || "") === String(staffId));
+  const cur = sec.teachers[subKey] || {};
+  if (match) {
+    sec.teachers[subKey] = Object.assign({}, cur, {
+      staffId: String(match.staffId || match.id || ""),
+      nameEn: String(match.name || ""),
+      nameTa: String((match.prefix ? match.prefix + " " : "") + (match.nameTa || match.name || "")),
+      gender: String(match.gender || "Male"),
+      desig: String(match.desig || "BT ASSISTANT"),
+      nature: String(match.nature || "Regular"),
+      mobile: String(match.mobile || ""),
+      appointedSub: String(match.subject || subKey)
+    });
+  } else {
+    sec.teachers[subKey] = Object.assign({}, cur, { staffId: "" });
+  }
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+}
+
+function onMidTermSectionTeacherFieldInput(secId, subKey, field, val) {
+  if (!activeSchoolSession) return;
+  const rec = getSchoolMidTermRecord(activeSchoolSession.uNo, _activeMidTermTermKey);
+  const sec = (rec.sections || []).find(s => s.secId === secId);
+  if (!sec) return;
+  if (!sec.teachers) sec.teachers = {};
+  if (!sec.teachers[subKey]) sec.teachers[subKey] = {};
+  sec.teachers[subKey][field] = val;
+  saveExamResultAnalysisStore();
+}
+
+function addNewMidTermSection() {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+  const letters = ["A", "B", "C", "D", "E", "F", "G", "H"];
+  const used = new Set((rec.sections || []).map(s => s.secId));
+  const nextId = letters.find(l => !used.has(l)) || ("S" + (rec.sections.length + 1));
+  const defaultSecs = autoBuildDefaultSectionsForSchool(uNo);
+  const templateTeachers = (defaultSecs[0] && defaultSecs[0].teachers) ? JSON.parse(JSON.stringify(defaultSecs[0].teachers)) : {};
+  rec.sections.push({
+    secId: nextId,
+    secName: "Section " + nextId,
+    medium: "TM",
+    teachers: templateTeachers
+  });
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+  showToast(`➕ புதிய பிரிவு (Section ${nextId}) சேர்க்கப்பட்டது!`, "#0f766e", true);
+}
+
+function removeMidTermSection(secId) {
+  if (!activeSchoolSession) return;
+  const rec = getSchoolMidTermRecord(activeSchoolSession.uNo, _activeMidTermTermKey);
+  if (!Array.isArray(rec.sections) || rec.sections.length <= 1) return;
+  rec.sections = rec.sections.filter(s => s.secId !== secId);
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+  showToast(`🗑️ பிரிவு ${secId} நீக்கப்பட்டது.`, "#d97706", true);
+}
+
+function autoReMapSchoolMidTermTeachers() {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+  const fresh = autoBuildDefaultSectionsForSchool(uNo);
+  rec.sections.forEach((sec, idx) => {
+    const sample = fresh[idx] || fresh[0];
+    if (sample && sample.teachers) {
+      MIDTERM_CORE_SUBJECTS.forEach(sub => {
+        const ex = (sec.teachers && sec.teachers[sub.key]) || {};
+        sec.teachers[sub.key] = Object.assign({}, sample.teachers[sub.key], {
+          pubAppear: ex.pubAppear || "",
+          pubPass: ex.pubPass || "",
+          pubAvg: ex.pubAvg || "",
+          pubCentum: ex.pubCentum || ""
+        });
+      });
+    }
+  });
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+  showToast("✅ EBS Form-3 தரவிலிருந்து 10-ஆம் வகுப்பு பாட ஆசிரியர்கள் தானாக இணைக்கப்பட்டனர்!", "#16a34a", true);
+}
+
+// ============================================================================
+// SUB-PANE 2: STUDENT ROLL NO, NAME & 5 SUBJECT MARKS REGISTER
+// ============================================================================
+let _mtStuFilterSec = "ALL";
+let _mtStuFilterRes = "ALL";
+
+function renderSchoolMidTermStuMarksPane(calc) {
+  const pane = document.getElementById("mtSubPaneStuMarks");
+  if (!pane) return;
+  const rec = calc.rec;
+  const secOpts = (rec.sections || []).map(s => `<option value="${escapeHtmlAttr(s.secId)}">${escapeHtmlAttr(s.secId)} (${s.medium})</option>`).join("");
+
+  const filteredList = calc.evaluatedStudents.map((st, idx) => ({ st, origIdx: idx })).filter(item => {
+    if (_mtStuFilterSec !== "ALL" && item.st.section !== _mtStuFilterSec) return false;
+    if (_mtStuFilterRes === "PASS" && item.st.resultType !== "PASS") return false;
+    if (_mtStuFilterRes === "FAIL_ALL" && !["FAIL", "FAIL_1S"].includes(item.st.resultType)) return false;
+    if (_mtStuFilterRes === "FAIL_1S" && item.st.resultType !== "FAIL_1S") return false;
+    return true;
+  });
+
+  const rowsHtml = filteredList.length === 0
+    ? `<tr><td colspan="14" style="text-align:center; padding:26px; color:#64748b; font-weight:800;">
+        📋 மாணவர்கள் பட்டியல் காலியாக உள்ளது. மேலுள்ள <strong>"⚡ 10th EMIS எண்ணிக்கைக்கு ஏற்ப வரிசைகளை உருவாக்கு"</strong> அல்லது <strong>"🌱 மாதிரி மதிப்பெண்கள் ஏற்று"</strong> அல்லது <strong>"📋 Excel Copy-Paste"</strong> பொத்தானை அழுத்தி உடனடியாகத் தொடங்கலாம்!
+       </td></tr>`
+    : filteredList.map(({ st, origIdx }) => {
+        const secSelectHtml = (rec.sections || []).map(sec =>
+          `<option value="${escapeHtmlAttr(sec.secId)}" ${st.section === sec.secId ? "selected" : ""}>${escapeHtmlAttr(sec.secId)}</option>`
+        ).join("");
+        const m = st.marks || {};
+        const cellStyle = (val) => {
+          const v = String(val !== undefined ? val : "").trim().toUpperCase();
+          if (v === "AB") return "background:#fef2f2; color:#dc2626; border-color:#fca5a5;";
+          if (v === "EX") return "background:#eff6ff; color:#1d4ed8; border-color:#93c5fd;";
+          const n = Number(v);
+          if (v !== "" && !isNaN(n)) {
+            if (n < 35) return "background:#fee2e2; color:#991b1b; border-color:#f87171; font-weight:900;";
+            if (n === 100) return "background:#dcfce7; color:#166534; border-color:#4ade80; font-weight:900;";
+          }
+          return "background:#fff; color:#0f294a; font-weight:800;";
+        };
+        return `
+          <tr id="mtStuRow_${origIdx}">
+            <td style="text-align:center; font-weight:900; color:#475569; width:42px;">${origIdx + 1}</td>
+            <td style="width:88px;"><input type="text" class="form-control" style="padding:4px 6px; font-size:0.80rem; font-weight:900; font-family:monospace; text-align:center;" value="${escapeHtmlAttr(st.rollNo || "")}" placeholder="Roll No" oninput="onMidTermStudentCellInput(${origIdx}, 'rollNo', this.value)"></td>
+            <td style="min-width:175px;"><input type="text" class="form-control" style="padding:4px 8px; font-size:0.82rem; font-weight:800;" value="${escapeHtmlAttr(st.name || "")}" placeholder="மாணவர் பெயர்" oninput="onMidTermStudentCellInput(${origIdx}, 'name', this.value)"></td>
+            <td style="width:92px;">
+              <select class="form-control" style="padding:4px 5px; font-size:0.78rem; font-weight:800;" onchange="onMidTermStudentCellInput(${origIdx}, 'gender', this.value, true)">
+                <option value="Male" ${st.gender !== "Female" ? "selected" : ""}>👦 ஆண்</option>
+                <option value="Female" ${st.gender === "Female" ? "selected" : ""}>👧 பெண்</option>
+              </select>
+            </td>
+            <td style="width:68px;">
+              <select class="form-control" style="padding:4px 5px; font-size:0.78rem; font-weight:900; text-align:center;" onchange="onMidTermStudentCellInput(${origIdx}, 'section', this.value, true)">
+                ${secSelectHtml}
+              </select>
+            </td>
+            <td style="width:118px;">
+              <select class="form-control" style="padding:4px 5px; font-size:0.75rem; font-weight:800;" onchange="onMidTermStudentCellInput(${origIdx}, 'status', this.value, true)">
+                <option value="PRESENT" ${(!st.status || st.status === "PRESENT") ? "selected" : ""}>✅ Present</option>
+                <option value="LA" ${st.status === "LA" ? "selected" : ""}>⏳ Long Absent (LA)</option>
+                <option value="AB" ${st.status === "AB" ? "selected" : ""}>⚪ 5-Sub Absent</option>
+                <option value="HB" ${st.status === "HB" ? "selected" : ""}>🏠 Home Based (HB)</option>
+              </select>
+            </td>
+            <td style="width:74px;"><input type="text" maxlength="3" class="form-control" style="padding:4px; text-align:center; font-size:0.84rem; ${cellStyle(m.TAMIL)}" value="${escapeHtmlAttr(m.TAMIL !== undefined ? m.TAMIL : "")}" placeholder="0-100" oninput="onMidTermStudentMarkInput(${origIdx}, 'TAMIL', this)"></td>
+            <td style="width:74px;"><input type="text" maxlength="3" class="form-control" style="padding:4px; text-align:center; font-size:0.84rem; ${cellStyle(m.ENGLISH)}" value="${escapeHtmlAttr(m.ENGLISH !== undefined ? m.ENGLISH : "")}" placeholder="0-100" oninput="onMidTermStudentMarkInput(${origIdx}, 'ENGLISH', this)"></td>
+            <td style="width:74px;"><input type="text" maxlength="3" class="form-control" style="padding:4px; text-align:center; font-size:0.84rem; ${cellStyle(m.MATHS)}" value="${escapeHtmlAttr(m.MATHS !== undefined ? m.MATHS : "")}" placeholder="0-100" oninput="onMidTermStudentMarkInput(${origIdx}, 'MATHS', this)"></td>
+            <td style="width:74px;"><input type="text" maxlength="3" class="form-control" style="padding:4px; text-align:center; font-size:0.84rem; ${cellStyle(m.SCIENCE)}" value="${escapeHtmlAttr(m.SCIENCE !== undefined ? m.SCIENCE : "")}" placeholder="0-100" oninput="onMidTermStudentMarkInput(${origIdx}, 'SCIENCE', this)"></td>
+            <td style="width:74px;"><input type="text" maxlength="3" class="form-control" style="padding:4px; text-align:center; font-size:0.84rem; ${cellStyle(m.SOCIAL)}" value="${escapeHtmlAttr(m.SOCIAL !== undefined ? m.SOCIAL : "")}" placeholder="0-100" oninput="onMidTermStudentMarkInput(${origIdx}, 'SOCIAL', this)"></td>
+            <td style="text-align:center; font-weight:900; font-size:0.88rem; color:#0f294a; width:68px;" id="mtStuTot_${origIdx}">${st.total500}</td>
+            <td style="font-size:0.75rem; font-weight:800; width:165px;" id="mtStuRes_${origIdx}">${st.resultBadge}</td>
+            <td style="text-align:center; width:44px;">
+              <button type="button" onclick="deleteMidTermStudentRow(${origIdx})" title="மாணவர் வரிசையை நீக்கு" style="border:none; background:transparent; color:#dc2626; cursor:pointer; font-size:0.85rem; font-weight:900;">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+  pane.innerHTML = `
+    <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px 14px;">
+      <!-- Action Toolbar -->
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; padding-bottom:10px; border-bottom:1px dashed #cbd5e1;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="generateMidTermRowsFromEmisStrength()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">
+            ⚡ 10th EMIS எண்ணிக்கைக்கு ஏற்ப வரிசைகள் உருவாக்கு (${calc.emis.origTotal} Stu)
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="seedSampleMidTermStudentMarksForSchool()" style="background:#f0fdf4; color:#15803d; border-color:#86efac; font-weight:900; font-size:0.76rem;" title="மாதிரி மாணவர் பெயர்கள் மற்றும் மதிப்பெண்களைக் கொண்டு FORM-I(1) & I(2) எவ்வாறு தானாக உருவாகிறது என்பதைச் சோதித்துப் பார்க்க">
+            🌱 மாதிரி மதிப்பெண்கள் ஏற்று (Demo Test)
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="openMidTermBulkPasteModal()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900; font-size:0.76rem;">
+            📋 Excel-லிருந்து Copy-Paste செய்
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(1)" style="font-weight:800; font-size:0.76rem;">
+            ➕ +1 மாணவர்
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(10)" style="font-weight:800; font-size:0.76rem;">
+            ➕ +10 வரிசைகள்
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="convertAllMidTermMarks50To100()" style="background:#fffbeb; color:#92400e; border-color:#fcd34d; font-weight:800; font-size:0.74rem;" title="50 மதிப்பெண்களுக்கு உள்ளீடு செய்திருந்தால் அதனை x2 செய்து 100-க்கு மாற்ற">
+            ✖️2 (50➔100 மாற்று)
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="clearAllMidTermStudentRows()" style="color:#dc2626; border-color:#fca5a5; font-weight:800; font-size:0.74rem;">
+            🧹 அனைத்தும் அழி
+          </button>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+          <select class="form-control" style="width:auto; padding:4px 8px; font-size:0.76rem; font-weight:800;" onchange="_mtStuFilterSec=this.value; renderSchoolMidTermModule();">
+            <option value="ALL" ${_mtStuFilterSec === "ALL" ? "selected" : ""}>அனைத்துப் பிரிவுகள் (All Sec)</option>
+            ${secOpts}
+          </select>
+          <select class="form-control" style="width:auto; padding:4px 8px; font-size:0.76rem; font-weight:800;" onchange="_mtStuFilterRes=this.value; renderSchoolMidTermModule();">
+            <option value="ALL" ${_mtStuFilterRes === "ALL" ? "selected" : ""}>அனைத்து மாணவர்கள் (${calc.evaluatedStudents.length})</option>
+            <option value="PASS" ${_mtStuFilterRes === "PASS" ? "selected" : ""}>🟢 தேர்ச்சி பெற்றோர் (${calc.passed.t})</option>
+            <option value="FAIL_ALL" ${_mtStuFilterRes === "FAIL_ALL" ? "selected" : ""}>🔴 தோல்வியடைந்தோர் (${calc.failed.t})</option>
+            <option value="FAIL_1S" ${_mtStuFilterRes === "FAIL_1S" ? "selected" : ""}>🟠 1-பாடம் மட்டும் தோல்வி (${calc.failedSubCounts.s1})</option>
+          </select>
+          <button type="button" class="btn btn-success btn-sm" onclick="switchSchoolMidTermSubTab('FORM1_1')" style="font-weight:900; font-size:0.76rem;">
+            🏫 FORM-I(1) பார்வை ➔
+          </button>
+        </div>
+      </div>
+
+      <div style="font-size:0.74rem; color:#475569; margin-bottom:8px; font-weight:700;">
+        💡 <strong>குறிப்பு:</strong> மதிப்பெண்ணை <code>0</code> முதல் <code>100</code> வரை உள்ளிடவும் (தேர்ச்சி மதிப்பெண்: <code>35</code>). குறிப்பிட்ட பாடத் தேர்விற்கு வரவில்லை எனில் <code>AB</code> என்றும், விலக்கு எனில் <code>EX</code> என்றும் தட்டச்சு செய்யவும்.
+      </div>
+
+      <div class="table-responsive" style="max-height:540px; overflow:auto; border:1px solid #cbd5e1; border-radius:8px;">
+        <table class="data-table" style="margin:0; font-size:0.80rem;">
+          <thead style="position:sticky; top:0; z-index:5;">
+            <tr style="background:#0f294a; color:#fff;">
+              <th style="text-align:center;">வ.எண்</th>
+              <th style="text-align:center;">Roll No.</th>
+              <th>மாணவர் பெயர் (Student Name)</th>
+              <th>பாலினம்</th>
+              <th style="text-align:center;">பிரிவு</th>
+              <th>வருகை நிலை</th>
+              <th style="text-align:center; background:#1e3a8a;">தமிழ்</th>
+              <th style="text-align:center; background:#1e3a8a;">ஆங்கிலம்</th>
+              <th style="text-align:center; background:#1e3a8a;">கணிதம்</th>
+              <th style="text-align:center; background:#1e3a8a;">அறிவியல்</th>
+              <th style="text-align:center; background:#1e3a8a;">சமூக அறி.</th>
+              <th style="text-align:center; background:#0f766e;">மொத்தம் (500)</th>
+              <th style="background:#0f766e;">முடிவு (Result)</th>
+              <th style="text-align:center;">நீக்கு</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function onMidTermStudentCellInput(idx, field, val, rerenderAll) {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+  if (!rec.students[idx]) return;
+  rec.students[idx][field] = val;
+  saveExamResultAnalysisStore();
+  if (rerenderAll) {
+    renderSchoolMidTermModule();
+  }
+}
+
+function onMidTermStudentMarkInput(idx, subKey, inpEl) {
+  if (!activeSchoolSession || !inpEl) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+  if (!rec.students[idx]) return;
+  if (!rec.students[idx].marks) rec.students[idx].marks = {};
+  const val = String(inpEl.value || "").trim().toUpperCase();
+  rec.students[idx].marks[subKey] = val;
+  saveExamResultAnalysisStore();
+
+  // Live update this row's Total & Result badge + Top KPI strip without losing input focus!
+  const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey);
+  renderSchoolMidTermLiveKpiStrip(calc);
+  const evStu = calc.evaluatedStudents[idx];
+  if (evStu) {
+    const totEl = document.getElementById("mtStuTot_" + idx);
+    const resEl = document.getElementById("mtStuRes_" + idx);
+    if (totEl) totEl.textContent = evStu.total500;
+    if (resEl) resEl.innerHTML = evStu.resultBadge;
+  }
+  const num = Number(val);
+  if (val === "AB") {
+    inpEl.style.background = "#fef2f2"; inpEl.style.color = "#dc2626";
+  } else if (val === "EX") {
+    inpEl.style.background = "#eff6ff"; inpEl.style.color = "#1d4ed8";
+  } else if (val !== "" && !isNaN(num) && num < 35) {
+    inpEl.style.background = "#fee2e2"; inpEl.style.color = "#991b1b"; inpEl.style.fontWeight = "900";
+  } else if (val !== "" && !isNaN(num) && num === 100) {
+    inpEl.style.background = "#dcfce7"; inpEl.style.color = "#166534"; inpEl.style.fontWeight = "900";
+  } else {
+    inpEl.style.background = "#fff"; inpEl.style.color = "#0f294a";
+  }
+}
+
+function addMidTermStudentRows(count) {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+  const startNum = rec.students.length + 1;
+  const defSec = (rec.sections && rec.sections[0]) ? rec.sections[0].secId : "A";
+  for (let i = 0; i < count; i++) {
+    const n = startNum + i;
+    rec.students.push({
+      id: "STU_" + Date.now() + "_" + n,
+      rollNo: String(1000 + n),
+      name: "",
+      gender: "Male",
+      section: defSec,
+      status: "PRESENT",
+      marks: { TAMIL: "", ENGLISH: "", MATHS: "", SCIENCE: "", SOCIAL: "" }
+    });
+  }
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+}
+
+function deleteMidTermStudentRow(idx) {
+  if (!activeSchoolSession) return;
+  const rec = getSchoolMidTermRecord(activeSchoolSession.uNo, _activeMidTermTermKey);
+  rec.students.splice(idx, 1);
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+}
+
+function clearAllMidTermStudentRows() {
+  if (!activeSchoolSession) return;
+  const rec = getSchoolMidTermRecord(activeSchoolSession.uNo, _activeMidTermTermKey);
+  rec.students = [];
+  rec.isSubmitted = false;
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+  showToast("🧹 அனைத்து மாணவர் வரிசைகளும் நீக்கப்பட்டன.", "#d97706", true);
+}
+
+function generateMidTermRowsFromEmisStrength() {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+  const st10 = getSchoolTenStdEmisStrength(uNo);
+  const bCount = st10.boys || 12;
+  const gCount = st10.girls || 12;
+  const tot = bCount + gCount;
+  const secs = rec.sections || [{ secId: "A" }];
+  rec.students = [];
+  for (let i = 1; i <= tot; i++) {
+    const isGirl = i > bCount;
+    const secIdx = secs.length > 1 ? ((i - 1) % secs.length) : 0;
+    rec.students.push({
+      id: "STU_" + uNo + "_" + i,
+      rollNo: String(1000 + i),
+      name: `மாணவர் ${i}`,
+      gender: isGirl ? "Female" : "Male",
+      section: secs[secIdx].secId,
+      status: "PRESENT",
+      marks: { TAMIL: "", ENGLISH: "", MATHS: "", SCIENCE: "", SOCIAL: "" }
+    });
+  }
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+  showToast(`⚡ 10th EMIS எண்ணிக்கையின்படி ${tot} மாணவர் வரிசைகள் (${bCount} ஆண் + ${gCount} பெண்) உருவாக்கப்பட்டன!`, "#0f766e", true);
+}
+
+function seedSampleMidTermStudentMarksForSchool() {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+  const st10 = getSchoolTenStdEmisStrength(uNo);
+  const bCount = Math.min(60, Math.max(8, st10.boys || 12));
+  const gCount = Math.min(60, Math.max(8, st10.girls || 13));
+  const tot = bCount + gCount;
+  const secs = rec.sections && rec.sections.length > 0 ? rec.sections : autoBuildDefaultSectionsForSchool(uNo);
+  const boyNames = ["அருண் குமார் க", "கார்த்திக் சு", "செந்தில் நாதன் மு", "பிரவீன் குமார் ரா", "விக்னேஷ் பா", "சரவணன் த", "மணிகண்டன் செ", "தினேஷ் குமார் அ", "பாலாஜி வெ", "கவின் ராஜ் சி", "சூர்யா மு", "அஜய் குமார் ப"];
+  const girlNames = ["காவியா ம", "திவ்யா பா", "பிரியதர்ஷினி சு", "அபிநயா க", "கீர்த்தனா செ", "பவித்ரா ரா", "ஐஸ்வர்யா மு", "நந்தினி வெ", "சौमியா த", "ஹரிணி சி", "மீனாட்சி அ", "ஜனனி ப"];
+
+  rec.students = [];
+  for (let i = 1; i <= tot; i++) {
+    const isGirl = i > bCount;
+    const secIdx = secs.length > 1 ? ((i - 1) % secs.length) : 0;
+    const baseName = isGirl ? girlNames[(i - bCount - 1) % girlNames.length] : boyNames[(i - 1) % boyNames.length];
+    // Deterministic realistic mark distribution including 100s, high scorers, and 1-2 single subject failures
+    const seed = (Number(uNo) * 17 + i * 31) % 100;
+    let t = Math.min(99, 52 + (seed % 46));
+    let e = Math.min(98, 46 + ((seed * 3) % 50));
+    let m = Math.min(100, 42 + ((seed * 7) % 59));
+    let s = Math.min(100, 50 + ((seed * 5) % 51));
+    let ss = Math.min(100, 54 + ((seed * 11) % 47));
+    if (i === 1) { m = 100; s = 100; t = 96; e = 92; ss = 98; }
+    if (i === tot && tot > 6) { m = 28; t = 58; e = 49; s = 62; ss = 66; } // 1 single-subject failure in Maths
+    rec.students.push({
+      id: "STU_" + uNo + "_" + i,
+      rollNo: String(1000 + i),
+      name: `${baseName} (${1000 + i})`,
+      gender: isGirl ? "Female" : "Male",
+      section: secs[secIdx].secId,
+      status: "PRESENT",
+      marks: {
+        TAMIL: String(t),
+        ENGLISH: String(e),
+        MATHS: String(m),
+        SCIENCE: String(s),
+        SOCIAL: String(ss)
+      }
+    });
+  }
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+  showToast(`🌱 ${tot} மாணவர்களின் மாதிரி மதிப்பெண்கள் பதிவேற்றப்பட்டு FORM-I(1) & FORM-I(2) தானாகக் கணக்கிடப்பட்டன!`, "#16a34a", true);
+}
+
+function convertAllMidTermMarks50To100() {
+  if (!activeSchoolSession) return;
+  const rec = getSchoolMidTermRecord(activeSchoolSession.uNo, _activeMidTermTermKey);
+  let converted = 0;
+  (rec.students || []).forEach(st => {
+    if (!st.marks) return;
+    MIDTERM_CORE_SUBJECTS.forEach(s => {
+      const v = String(st.marks[s.key] || "").trim();
+      const n = Number(v);
+      if (v !== "" && !isNaN(n) && n >= 0 && n <= 50) {
+        st.marks[s.key] = String(Math.min(100, Math.round(n * 2)));
+        converted++;
+      }
+    });
+  });
+  saveExamResultAnalysisStore();
+  renderSchoolMidTermModule();
+  showToast(`✖️2 மொத்தம் ${converted} பாட மதிப்பெண்கள் 50-லிருந்து 100-க்கு மாற்றப்பட்டன!`, "#0284c7", true);
+}
+
+function openMidTermBulkPasteModal() {
+  const modal = document.getElementById("midTermBulkPasteModal");
+  if (modal) modal.classList.add("open");
+}
+
+function closeMidTermBulkPasteModal() {
+  const modal = document.getElementById("midTermBulkPasteModal");
+  if (modal) modal.classList.remove("open");
+}
+
+function processMidTermBulkPasteStudents() {
+  if (!activeSchoolSession) return;
+  const rawText = (document.getElementById("mtBulkPasteTextarea")?.value || "").trim();
+  if (!rawText) {
+    showToast("⚠️ தயவுசெய்து Excel வரிசைகளை Paste செய்யவும்.", "#f59e0b");
+    return;
+  }
+  const defSec = document.getElementById("mtBulkPasteDefaultSec")?.value || "A";
+  const defGender = document.getElementById("mtBulkPasteDefaultGender")?.value || "Male";
+  const replaceAll = Boolean(document.getElementById("mtBulkPasteReplaceAll")?.checked);
+  const rec = getSchoolMidTermRecord(activeSchoolSession.uNo, _activeMidTermTermKey);
+  if (replaceAll) rec.students = [];
+
+  const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  let added = 0;
+  lines.forEach((line, idx) => {
+    const cols = line.includes("\t") ? line.split("\t").map(c => c.trim()) : line.split(",").map(c => c.trim());
+    if (cols.length < 2) return;
+    // Skip header line if first col is "Roll" or "S.No"
+    if (/^(s\.?no|roll|வ\.?எண்)/i.test(cols[0])) return;
+
+    let rollNo = "", name = "", gender = defGender, sec = defSec;
+    let mT = "", mE = "", mM = "", mS = "", mSS = "";
+
+    if (cols.length >= 9) {
+      rollNo = cols[0];
+      name = cols[1];
+      gender = /^(f|female|பெண்|g)/i.test(cols[2]) ? "Female" : "Male";
+      sec = cols[3].toUpperCase().replace(/[^A-Z0-9]/g, "") || defSec;
+      mT = cols[4]; mE = cols[5]; mM = cols[6]; mS = cols[7]; mSS = cols[8];
+    } else if (cols.length >= 7) {
+      rollNo = cols[0];
+      name = cols[1];
+      mT = cols[2]; mE = cols[3]; mM = cols[4]; mS = cols[5]; mSS = cols[6];
+    } else {
+      rollNo = String(1000 + rec.students.length + 1);
+      name = cols[0];
+      mT = cols[1] || ""; mE = cols[2] || ""; mM = cols[3] || ""; mS = cols[4] || ""; mSS = cols[5] || "";
+    }
+
+    rec.students.push({
+      id: "STU_" + Date.now() + "_" + idx,
+      rollNo: rollNo || String(1000 + rec.students.length + 1),
+      name: name,
+      gender: gender,
+      section: sec,
+      status: "PRESENT",
+      marks: { TAMIL: mT, ENGLISH: mE, MATHS: mM, SCIENCE: mS, SOCIAL: mSS }
+    });
+    added++;
+  });
+
+  saveExamResultAnalysisStore();
+  closeMidTermBulkPasteModal();
+  renderSchoolMidTermModule();
+  showToast(`✅ ${added} மாணவர்களின் மதிப்பெண்கள் வெற்றிகரமாகச் சேர்க்கப்பட்டு FORM-I(1) & I(2) கணக்கிடப்பட்டன!`, "#16a34a", true);
+}
+
+// ============================================================================
+// SUB-PANE 3: FORM - I ( 1 ) EXACT REPLICA OF OFFICIAL EXCEL FORM
+// ============================================================================
+function buildMidTermForm1_1ExactHtml(calc, forPrint) {
+  const s = calc.sch;
+  const sub = calc.subStats;
+  const rec = calc.rec;
+  const bdr = "border:1.5px solid #0f294a; padding:5px 6px; text-align:center;";
+  const hdrBg = "background:#e2e8f0; color:#0f294a; font-weight:900;";
+
+  const remedialHtml = (!forPrint && calc.singleSubFailedStudents.length > 0) ? `
+    <div style="margin-top:16px; background:#fff7ed; border:1.5px solid #fdba74; border-left:5px solid #ea580c; border-radius:10px; padding:12px 14px;">
+      <div style="font-size:0.90rem; font-weight:900; color:#9a3412; margin-bottom:6px;">
+        🎯 ஒரு பாடத்தில் மட்டும் தோல்வியடைந்த மாணவர்கள் பெயர்ப் பட்டியல் (Single Subject Failed Students — சிறப்புப் பயிற்சிக்காக: ${calc.singleSubFailedStudents.length} மாணவர்கள்)
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        ${calc.singleSubFailedStudents.map((st, i) => `
+          <span style="background:#fff; border:1px solid #fb923c; border-radius:6px; padding:4px 10px; font-size:0.78rem; font-weight:800; color:#7c2d12;">
+            ${i + 1}. <strong>${escapeHtmlAttr(st.name)}</strong> (Roll: ${escapeHtmlAttr(st.rollNo)}, Sec: ${escapeHtmlAttr(st.section)}) — <span style="color:#dc2626;">${escapeHtmlAttr(st.failedSubLabel)}: <strong>${escapeHtmlAttr(st.failedMark)}</strong></span> (மொத்தம்: ${st.total500}/500)
+          </span>
+        `).join("")}
+      </div>
+    </div>
+  ` : "";
+
+  return `
+    <div style="background:#ffffff; color:#000; padding:${forPrint ? '4px' : '14px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'}; font-family:'Mukta Malar','Inter',sans-serif;">
+      <!-- Official Form-I(1) Header -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px; font-size:0.84rem;">
+        <tr>
+          <td style="${bdr} font-weight:900; width:22%; background:#f8fafc;">SIVAGANGAI DISTRICT</td>
+          <td style="${bdr} font-weight:900; font-size:1.0rem; background:#eff6ff; color:#1e3a8a;" colspan="2">
+            ${escapeHtmlAttr(calc.termMeta.reportHeaderEn)}<br>
+            <span style="font-size:0.86rem; color:#0f294a;">SCHOOL PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})</span>
+          </td>
+          <td style="${bdr} font-weight:900; width:18%; background:#fef3c7; color:#92400e; font-size:0.95rem;">
+            FORM - I ( 1 )<br>
+            <span style="font-size:0.82rem; color:#0f294a;">UNIQUE NO : ${escapeHtmlAttr(s.uNo)}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="${bdr} font-weight:900; text-align:left;" colspan="3">
+            NAME OF THE SCHOOL : <strong style="color:#1e3a8a;">[${escapeHtmlAttr(s.uNo)}] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</strong> &nbsp;|&nbsp; UDISE: <strong>${escapeHtmlAttr(s.udiseNo || "-")}</strong>
+          </td>
+          <td style="${bdr} font-weight:900; background:#f8fafc;">STD : <strong style="font-size:0.98rem; color:#dc2626;">10th</strong></td>
+        </tr>
+      </table>
+
+      <!-- PART 1: ATTENDANCE & OVERALL PASS/FAIL -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:0.78rem;">
+        <thead>
+          <tr style="${hdrBg}">
+            <th colspan="3" style="${bdr}">No.of Students as per EMIS</th>
+            <th colspan="3" style="${bdr}">Long Absent</th>
+            <th colspan="3" style="${bdr}">Absent<br><span style="font-size:0.66rem; font-weight:700;">(5 பாடத் தேர்வுகளுக்கும் வருகைதராதவர்கள்)</span></th>
+            <th colspan="3" style="${bdr}">Home Based Students<br><span style="font-size:0.66rem; font-weight:700;">(பொதுத்தேர்விற்கு வருகை தர இயலாதவர்கள்)</span></th>
+            <th colspan="3" style="${bdr} background:#dbeafe;">No.of Students Appeared</th>
+            <th colspan="3" style="${bdr} background:#dcfce7;">No.of Students Passed</th>
+            <th rowspan="2" style="${bdr} background:#fef3c7; width:68px;">Pass<br>%</th>
+            <th colspan="3" style="${bdr} background:#fee2e2;">No.of Students Failed</th>
+          </tr>
+          <tr style="background:#f1f5f9; font-weight:800; font-size:0.73rem;">
+            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
+            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
+            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
+            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
+            <th style="${bdr} background:#eff6ff;">Male</th><th style="${bdr} background:#eff6ff;">Female</th><th style="${bdr} background:#dbeafe;">Total</th>
+            <th style="${bdr} background:#f0fdf4;">Male</th><th style="${bdr} background:#f0fdf4;">Female</th><th style="${bdr} background:#dcfce7;">Total</th>
+            <th style="${bdr} background:#fef2f2;">Male</th><th style="${bdr} background:#fef2f2;">Female</th><th style="${bdr} background:#fee2e2;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="font-weight:900; font-size:0.86rem;">
+            <td style="${bdr}">${calc.emis.m}</td><td style="${bdr}">${calc.emis.f}</td><td style="${bdr} background:#f8fafc;">${calc.emis.t}</td>
+            <td style="${bdr}">${calc.la.m}</td><td style="${bdr}">${calc.la.f}</td><td style="${bdr} background:#f8fafc;">${calc.la.t}</td>
+            <td style="${bdr}">${calc.ab.m}</td><td style="${bdr}">${calc.ab.f}</td><td style="${bdr} background:#f8fafc;">${calc.ab.t}</td>
+            <td style="${bdr}">${calc.hb.m}</td><td style="${bdr}">${calc.hb.f}</td><td style="${bdr} background:#f8fafc;">${calc.hb.t}</td>
+            <td style="${bdr} background:#eff6ff;">${calc.appeared.m}</td><td style="${bdr} background:#eff6ff;">${calc.appeared.f}</td><td style="${bdr} background:#dbeafe; color:#1d4ed8;">${calc.appeared.t}</td>
+            <td style="${bdr} background:#f0fdf4;">${calc.passed.m}</td><td style="${bdr} background:#f0fdf4;">${calc.passed.f}</td><td style="${bdr} background:#dcfce7; color:#15803d;">${calc.passed.t}</td>
+            <td style="${bdr} background:#fef3c7; color:#92400e; font-size:0.92rem;">${calc.passPctStr}</td>
+            <td style="${bdr} background:#fef2f2;">${calc.failed.m}</td><td style="${bdr} background:#fef2f2;">${calc.failed.f}</td><td style="${bdr} background:#fee2e2; color:#dc2626;">${calc.failed.t}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- PART 2: COUNT OF FAILED SUBJECTS, FIRST MARK, AVG MARK & TOTAL MARK RANGE -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:0.78rem;">
+        <thead>
+          <tr style="${hdrBg}">
+            <th colspan="5" style="${bdr}">Count of Failed Subjects</th>
+            <th rowspan="2" style="${bdr} background:#f5f3ff;">School<br>First Mark<br><span style="font-size:0.68rem;">(Out of 500)</span></th>
+            <th rowspan="2" style="${bdr} background:#f5f3ff;">*School Average Mark<br>(All Subjects)</th>
+            <th colspan="4" style="${bdr} background:#ecfeff;">No.of Students - MARK RANGE ( Total Marks )</th>
+          </tr>
+          <tr style="background:#f1f5f9; font-weight:800; font-size:0.73rem;">
+            <th style="${bdr}">Single<br>Subject</th>
+            <th style="${bdr}">Two<br>Subjects</th>
+            <th style="${bdr}">Three<br>Subjects</th>
+            <th style="${bdr}">Four<br>Subjects</th>
+            <th style="${bdr}">All<br>Subjects</th>
+            <th style="${bdr}">Below 60%<br>(&lt;= 300 Marks)</th>
+            <th style="${bdr}">60% to 80%<br>(301 - 400 Marks)</th>
+            <th style="${bdr}">Above 80%<br>(401 - 500 Marks)</th>
+            <th style="${bdr} background:#cffafe;">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="font-weight:900; font-size:0.88rem;">
+            <td style="${bdr} color:#d97706;">${calc.failedSubCounts.s1}</td>
+            <td style="${bdr}">${calc.failedSubCounts.s2}</td>
+            <td style="${bdr}">${calc.failedSubCounts.s3}</td>
+            <td style="${bdr}">${calc.failedSubCounts.s4}</td>
+            <td style="${bdr} color:#dc2626;">${calc.failedSubCounts.s5}</td>
+            <td style="${bdr} background:#f5f3ff; color:#5b21b6; font-size:0.96rem;">${calc.schoolFirstMark}</td>
+            <td style="${bdr} background:#f5f3ff; color:#5b21b6; font-size:0.96rem;">${calc.schoolAvgMark100}</td>
+            <td style="${bdr}">${calc.totalMarkRanges.below60}</td>
+            <td style="${bdr}">${calc.totalMarkRanges.r60_80}</td>
+            <td style="${bdr}">${calc.totalMarkRanges.above80}</td>
+            <td style="${bdr} background:#cffafe; color:#0e7490;">${calc.totalMarkRanges.total}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- PART 3: SUBJECT-WISE PERFORMANCE MATRIX -->
+      <table style="width:100%; border-collapse:collapse; font-size:0.79rem;">
+        <thead>
+          <tr style="${hdrBg}">
+            <th colspan="2" style="${bdr} text-align:left;">SUBJECTS &rArr;</th>
+            <th style="${bdr} width:13%;">LANGUAGE<br><span style="font-size:0.68rem;">(தமிழ்)</span></th>
+            <th style="${bdr} width:13%;">ENGLISH<br><span style="font-size:0.68rem;">(ஆங்கிலம்)</span></th>
+            <th style="${bdr} width:13%;">MATHS<br><span style="font-size:0.68rem;">(கணிதம்)</span></th>
+            <th style="${bdr} width:13%;">SCIENCE<br><span style="font-size:0.68rem;">(அறிவியல்)</span></th>
+            <th style="${bdr} width:13%;">SOCIAL SCIENCE<br><span style="font-size:0.68rem;">(சமூக அறிவியல்)</span></th>
+            <th style="${bdr} width:14%;">Part-IV Optional Language</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2" style="${bdr} text-align:left; font-weight:800;">Exemption</td>
+            <td style="${bdr} font-weight:800;">${sub.TAMIL.exemption}</td>
+            <td style="${bdr} font-weight:800;">${sub.ENGLISH.exemption}</td>
+            <td style="${bdr} font-weight:800;">${sub.MATHS.exemption}</td>
+            <td style="${bdr} font-weight:800;">${sub.SCIENCE.exemption}</td>
+            <td style="${bdr} font-weight:800;">${sub.SOCIAL.exemption}</td>
+            <td style="${bdr} font-weight:800;">${rec.optLangExemption || 0}</td>
+          </tr>
+          <tr style="background:#fef2f2;">
+            <td colspan="2" style="${bdr} text-align:left; font-weight:900; color:#991b1b;">No.of Students - Failed</td>
+            <td style="${bdr} font-weight:900; color:#dc2626;">${sub.TAMIL.failed}</td>
+            <td style="${bdr} font-weight:900; color:#dc2626;">${sub.ENGLISH.failed}</td>
+            <td style="${bdr} font-weight:900; color:#dc2626;">${sub.MATHS.failed}</td>
+            <td style="${bdr} font-weight:900; color:#dc2626;">${sub.SCIENCE.failed}</td>
+            <td style="${bdr} font-weight:900; color:#dc2626;">${sub.SOCIAL.failed}</td>
+            <td style="${bdr} font-weight:900;">${rec.optLangFailed || 0}</td>
+          </tr>
+          <tr style="background:#eff6ff;">
+            <td colspan="2" style="${bdr} text-align:left; font-weight:900; color:#1e3a8a;">SUBJECT AVERAGE MARK</td>
+            <td style="${bdr} font-weight:900; color:#1d4ed8;">${sub.TAMIL.avgMark}</td>
+            <td style="${bdr} font-weight:900; color:#1d4ed8;">${sub.ENGLISH.avgMark}</td>
+            <td style="${bdr} font-weight:900; color:#1d4ed8;">${sub.MATHS.avgMark}</td>
+            <td style="${bdr} font-weight:900; color:#1d4ed8;">${sub.SCIENCE.avgMark}</td>
+            <td style="${bdr} font-weight:900; color:#1d4ed8;">${sub.SOCIAL.avgMark}</td>
+            <td style="${bdr} font-weight:900;">${rec.optLangAvg || "-"}</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="${bdr} text-align:left; font-weight:900;">HIGHEST MARK</td>
+            <td style="${bdr} font-weight:900;">${sub.TAMIL.highestMark}</td>
+            <td style="${bdr} font-weight:900;">${sub.ENGLISH.highestMark}</td>
+            <td style="${bdr} font-weight:900;">${sub.MATHS.highestMark}</td>
+            <td style="${bdr} font-weight:900;">${sub.SCIENCE.highestMark}</td>
+            <td style="${bdr} font-weight:900;">${sub.SOCIAL.highestMark}</td>
+            <td style="${bdr} font-weight:900;">${rec.optLangHighest || "-"}</td>
+          </tr>
+          <tr>
+            <td rowspan="5" style="${bdr} font-weight:900; width:12%; background:#f8fafc;">MARK RANGE<br>(SUBJECT WISE)<br><span style="font-size:0.68rem; color:#475569;">(Passed Stu.)</span></td>
+            <td style="${bdr} text-align:left; font-weight:800;">35-45 Marks</td>
+            <td style="${bdr} font-weight:800;">${sub.TAMIL.r35_45}</td>
+            <td style="${bdr} font-weight:800;">${sub.ENGLISH.r35_45}</td>
+            <td style="${bdr} font-weight:800;">${sub.MATHS.r35_45}</td>
+            <td style="${bdr} font-weight:800;">${sub.SCIENCE.r35_45}</td>
+            <td style="${bdr} font-weight:800;">${sub.SOCIAL.r35_45}</td>
+            <td style="${bdr} font-weight:800;">${rec.optLang35_45 || 0}</td>
+          </tr>
+          <tr>
+            <td style="${bdr} text-align:left; font-weight:800;">46-60 Marks</td>
+            <td style="${bdr} font-weight:800;">${sub.TAMIL.r46_60}</td>
+            <td style="${bdr} font-weight:800;">${sub.ENGLISH.r46_60}</td>
+            <td style="${bdr} font-weight:800;">${sub.MATHS.r46_60}</td>
+            <td style="${bdr} font-weight:800;">${sub.SCIENCE.r46_60}</td>
+            <td style="${bdr} font-weight:800;">${sub.SOCIAL.r46_60}</td>
+            <td style="${bdr} font-weight:800;">${rec.optLang46_60 || 0}</td>
+          </tr>
+          <tr>
+            <td style="${bdr} text-align:left; font-weight:800;">61-80 Marks</td>
+            <td style="${bdr} font-weight:800;">${sub.TAMIL.r61_80}</td>
+            <td style="${bdr} font-weight:800;">${sub.ENGLISH.r61_80}</td>
+            <td style="${bdr} font-weight:800;">${sub.MATHS.r61_80}</td>
+            <td style="${bdr} font-weight:800;">${sub.SCIENCE.r61_80}</td>
+            <td style="${bdr} font-weight:800;">${sub.SOCIAL.r61_80}</td>
+            <td style="${bdr} font-weight:800;">${rec.optLang61_80 || 0}</td>
+          </tr>
+          <tr>
+            <td style="${bdr} text-align:left; font-weight:800;">81-99 Marks</td>
+            <td style="${bdr} font-weight:800;">${sub.TAMIL.r81_99}</td>
+            <td style="${bdr} font-weight:800;">${sub.ENGLISH.r81_99}</td>
+            <td style="${bdr} font-weight:800;">${sub.MATHS.r81_99}</td>
+            <td style="${bdr} font-weight:800;">${sub.SCIENCE.r81_99}</td>
+            <td style="${bdr} font-weight:800;">${sub.SOCIAL.r81_99}</td>
+            <td style="${bdr} font-weight:800;">${rec.optLang81_99 || 0}</td>
+          </tr>
+          <tr style="background:#f0fdf4;">
+            <td style="${bdr} text-align:left; font-weight:900; color:#166534;">No.of Centum (100)</td>
+            <td style="${bdr} font-weight:900; color:#15803d;">${sub.TAMIL.centum}</td>
+            <td style="${bdr} font-weight:900; color:#15803d;">${sub.ENGLISH.centum}</td>
+            <td style="${bdr} font-weight:900; color:#15803d;">${sub.MATHS.centum}</td>
+            <td style="${bdr} font-weight:900; color:#15803d;">${sub.SCIENCE.centum}</td>
+            <td style="${bdr} font-weight:900; color:#15803d;">${sub.SOCIAL.centum}</td>
+            <td style="${bdr} font-weight:900;">${rec.optLangCentum || 0}</td>
+          </tr>
+          <tr style="background:#fffbeb;">
+            <td colspan="2" style="${bdr} text-align:left; font-weight:900; color:#92400e;">Single Subject Failed Sub.Wise</td>
+            <td style="${bdr} font-weight:900; color:#b45309;">${sub.TAMIL.singleSubFailed}</td>
+            <td style="${bdr} font-weight:900; color:#b45309;">${sub.ENGLISH.singleSubFailed}</td>
+            <td style="${bdr} font-weight:900; color:#b45309;">${sub.MATHS.singleSubFailed}</td>
+            <td style="${bdr} font-weight:900; color:#b45309;">${sub.SCIENCE.singleSubFailed}</td>
+            <td style="${bdr} font-weight:900; color:#b45309;">${sub.SOCIAL.singleSubFailed}</td>
+            <td style="${bdr} font-weight:800;">0</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:26px; padding:0 12px; font-size:0.84rem; font-weight:900;">
+        <div>நாள் (Date): ${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</div>
+        <div>தலைமையாசிரியர் கையொப்பம் (Signature of the Headmaster)</div>
+      </div>
+    </div>
+    ${remedialHtml}
+  `;
+}
+
+function renderSchoolMidTermForm1_1Pane(calc) {
+  const pane = document.getElementById("mtSubPaneForm1_1");
+  if (!pane) return;
+  pane.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+      <div style="font-size:0.92rem; font-weight:900; color:#0f294a;">
+        🏫 FORM – I ( 1 ) : SCHOOL PERFORMANCE (மாணவர் மதிப்பெண் பதிவிலிருந்து 100% தானாக உருவாக்கப்பட்டது)
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="printSchoolMidTermFormsA4('F1_1')" style="background:#4c1d95; border-color:#4c1d95; font-weight:900;">
+          🖨️ FORM - I (1) மட்டும் A4 அச்சிடு
+        </button>
+        <button type="button" class="btn btn-success btn-sm" onclick="switchSchoolMidTermSubTab('FORM1_2')" style="font-weight:900;">
+          📊 FORM - I (2) பாட ஆசிரியர் அறிக்கை பார்வை ➔
+        </button>
+      </div>
+    </div>
+    ${buildMidTermForm1_1ExactHtml(calc, false)}
+  `;
+}
+
+// ============================================================================
+// SUB-PANE 4: FORM - I ( 2 ) EXACT REPLICA OF OFFICIAL EXCEL FORM
+// ============================================================================
+function buildMidTermForm1_2ExactHtml(calc, forPrint) {
+  const s = calc.sch;
+  const bdr = "border:1.5px solid #0f294a; padding:5px 5px; text-align:center;";
+  const hdrBg = "background:#e2e8f0; color:#0f294a; font-weight:900;";
+
+  // Ensure at least 12 rows in print mode just like the official Excel form F1_2
+  const rowsList = calc.f2Rows.slice();
+  if (forPrint) {
+    while (rowsList.length < 12) {
+      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
+    }
+  }
+
+  const tbodyHtml = rowsList.map(r => {
+    if (r.isBlank) {
+      return `<tr style="height:26px;">
+        <td style="${bdr}">${r.sno}</td>
+        <td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td>
+        <td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}">0</td>
+        <td style="${bdr}"></td><td style="${bdr}">0</td><td style="${bdr}"></td><td style="${bdr}"></td>
+        <td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td>
+        <td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td>
+        <td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td><td style="${bdr}"></td>
+      </tr>`;
+    }
+    const t = r.teacher || {};
+    const tNameDisp = t.nameTa || t.nameEn || "(பிரிவு 1-ல் ஆசிரியரைத் தேர்ந்தெடுக்கவும்)";
+    return `
+      <tr style="font-weight:800; font-size:0.78rem;">
+        <td style="${bdr} font-weight:900;">${r.sno}</td>
+        <td style="${bdr} text-align:left; min-width:165px;">
+          <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(tNameDisp)}</div>
+          ${t.staffId ? `<div style="font-size:0.68rem; color:#475569;">EMIS: ${escapeHtmlAttr(t.staffId)} | ${escapeHtmlAttr(t.desig || "")}</div>` : ""}
+        </td>
+        <td style="${bdr} font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(r.subLabelEn)}<br><span style="font-size:0.68rem; color:#0f766e;">(Sec ${escapeHtmlAttr(r.secId)} - ${escapeHtmlAttr(r.medium)})</span></td>
+        <td style="${bdr} font-weight:900;">${r.stuCount}</td>
+        <td style="${bdr}">${r.la}</td>
+        <td style="${bdr}">${r.ab}</td>
+        <td style="${bdr}">${r.hb}</td>
+        <td style="${bdr}">${r.ex}</td>
+        <td style="${bdr} background:#eff6ff; font-weight:900; color:#1d4ed8;">${r.appear}</td>
+        <td style="${bdr} background:#f0fdf4; font-weight:900; color:#15803d;">${r.pass}</td>
+        <td style="${bdr} background:#fef2f2; font-weight:900; color:#dc2626;">${r.fail}</td>
+        <td style="${bdr} background:#fef3c7; font-weight:900; color:#92400e;">${r.passPct}</td>
+        <td style="${bdr} font-weight:900;">${r.avgMark}</td>
+        <td style="${bdr}">${r.maxMark}</td>
+        <td style="${bdr}">${r.minMark}</td>
+        <td style="${bdr}">${r.r35_45}</td>
+        <td style="${bdr}">${r.r46_60}</td>
+        <td style="${bdr}">${r.r61_80}</td>
+        <td style="${bdr}">${r.r81_99}</td>
+        <td style="${bdr} background:#f0fdf4; color:#15803d; font-weight:900;">${r.centum}</td>
+        <td style="${bdr} background:#fffbeb; color:#b45309; font-weight:900;">${r.failThisSubOnly}</td>
+        <td style="${bdr}">${escapeHtmlAttr(t.pubAppear || "-")}</td>
+        <td style="${bdr}">${escapeHtmlAttr(t.pubPass || "-")}</td>
+        <td style="${bdr}">${escapeHtmlAttr(r.pubPassPct || "-")}</td>
+        <td style="${bdr}">${escapeHtmlAttr(t.pubAvg || "-")}</td>
+        <td style="${bdr}">${escapeHtmlAttr(t.pubCentum || "-")}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <div style="background:#ffffff; color:#000; padding:${forPrint ? '4px' : '14px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'}; font-family:'Mukta Malar','Inter',sans-serif;">
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px; font-size:0.84rem;">
+        <tr>
+          <td style="${bdr} font-weight:900; width:22%; background:#f8fafc;">SIVAGANGAI DISTRICT</td>
+          <td style="${bdr} font-weight:900; font-size:1.0rem; background:#eff6ff; color:#1e3a8a;" colspan="2">
+            ${escapeHtmlAttr(calc.termMeta.reportHeaderEn)}<br>
+            <span style="font-size:0.86rem; color:#0f294a;">SUBJECT PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})</span>
+          </td>
+          <td style="${bdr} font-weight:900; width:18%; background:#fef3c7; color:#92400e; font-size:0.95rem;">
+            FORM - I ( 2 )<br>
+            <span style="font-size:0.82rem; color:#0f294a;">UNIQUE NO : ${escapeHtmlAttr(s.uNo)}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="${bdr} font-weight:900; text-align:left;" colspan="3">
+            NAME OF THE SCHOOL : <strong style="color:#1e3a8a;">[${escapeHtmlAttr(s.uNo)}] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</strong>
+          </td>
+          <td style="${bdr} font-weight:900; background:#f8fafc;">STD : <strong style="font-size:0.98rem; color:#dc2626;">10th</strong></td>
+        </tr>
+      </table>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
+          <thead>
+            <tr style="${hdrBg}">
+              <th rowspan="2" style="${bdr} width:34px;">S.<br>No</th>
+              <th rowspan="2" style="${bdr}">Name of the Teacher</th>
+              <th rowspan="2" style="${bdr}">Subject</th>
+              <th rowspan="2" style="${bdr}">No.of<br>Stu.</th>
+              <th rowspan="2" style="${bdr}">LA</th>
+              <th rowspan="2" style="${bdr}">AB</th>
+              <th rowspan="2" style="${bdr}">HB</th>
+              <th rowspan="2" style="${bdr}">Ex.</th>
+              <th rowspan="2" style="${bdr} background:#dbeafe;">Appear</th>
+              <th rowspan="2" style="${bdr} background:#dcfce7;">Pass</th>
+              <th rowspan="2" style="${bdr} background:#fee2e2;">Fail</th>
+              <th rowspan="2" style="${bdr} background:#fef3c7;">Pass<br>%</th>
+              <th rowspan="2" style="${bdr}">Average<br>Mark</th>
+              <th rowspan="2" style="${bdr}">Max.<br>Mark</th>
+              <th rowspan="2" style="${bdr}">Min.<br>Mark</th>
+              <th colspan="5" style="${bdr} background:#ecfeff;">Mark Range (No.of Passed Stu.)</th>
+              <th rowspan="2" style="${bdr} background:#fffbeb;">Fail<br>this<br>Sub.<br>only</th>
+              <th colspan="5" style="${bdr} background:#f5f3ff;">Mar/Apr' 2026 PUBLIC EXAM</th>
+            </tr>
+            <tr style="background:#f1f5f9; font-weight:900;">
+              <th style="${bdr}">35-45</th>
+              <th style="${bdr}">46-60</th>
+              <th style="${bdr}">61-80</th>
+              <th style="${bdr}">81-99</th>
+              <th style="${bdr}">Cen<br>tum</th>
+              <th style="${bdr}">Appear</th>
+              <th style="${bdr}">Pass</th>
+              <th style="${bdr}">Pass<br>%</th>
+              <th style="${bdr}">Average<br>Mark</th>
+              <th style="${bdr}">Cen<br>-tum</th>
+            </tr>
+          </thead>
+          <tbody>${tbodyHtml}</tbody>
+        </table>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:26px; padding:0 12px; font-size:0.84rem; font-weight:900;">
+        <div>நாள் (Date): ${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</div>
+        <div>தலைமையாசிரியர் கையொப்பம் (Signature of the Headmaster)</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSchoolMidTermForm1_2Pane(calc) {
+  const pane = document.getElementById("mtSubPaneForm1_2");
+  if (!pane) return;
+  pane.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+      <div style="font-size:0.92rem; font-weight:900; color:#0f294a;">
+        📊 FORM – I ( 2 ) : SUBJECT PERFORMANCE (பிரிவு வாரியான பாட ஆசிரியர் தேர்ச்சிப் பகுப்பாய்வு)
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="printSchoolMidTermFormsA4('F1_2')" style="background:#4c1d95; border-color:#4c1d95; font-weight:900;">
+          🖨️ FORM - I (2) மட்டும் A4 அச்சிடு
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="printSchoolMidTermFormsA4('BOTH')" style="background:#0f766e; border-color:#0f766e; font-weight:900;">
+          🖨️ FORM - I (1) &amp; I (2) இரண்டும் A4 அச்சிடு
+        </button>
+      </div>
+    </div>
+    ${buildMidTermForm1_2ExactHtml(calc, false)}
+  `;
+}
+
+function saveSchoolMidTermData(showMsg, markSubmitted) {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey);
+  const rec = calc.rec;
+  if (markSubmitted) {
+    if (!calc.hasStudentEntries) {
+      showToast("⚠️ இறுதிச் சமர்ப்பிப்பிற்கு முன் குறைந்தபட்சம் மாணவர்களின் மதிப்பெண்களைப் பதிவு செய்யவும்!", "#f59e0b", true);
+      switchSchoolMidTermSubTab("STU_MARKS");
+      return;
+    }
+    rec.isSubmitted = true;
+    rec.submittedAt = formatDateDisplayDMY(new Date().toISOString().slice(0, 10));
+  }
+  rec.updatedAt = new Date().toISOString();
+  saveExamResultAnalysisStore();
+  if (typeof pushCloudUpdate === "function") {
+    pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `School [${uNo}] saved ${_activeMidTermTermKey} Result Analysis`);
+  }
+  renderSchoolMidTermModule();
+  if (showMsg) {
+    showToast(
+      markSubmitted
+        ? `🔒 [${uNo}] ${calc.termMeta.shortName} தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (FORM-I(1) & I(2)) இறுதிச் சமர்ப்பிப்பு செய்யப்பட்டு Cloud-ல் ஒத்திசைக்கப்பட்டது!`
+        : `💾 [${uNo}] தேர்ச்சிப் பகுப்பாய்வு விவரங்கள் சேமிக்கப்பட்டன!`,
+      "#16a34a",
+      true
+    );
+  }
+}
+
+function printSchoolMidTermFormsA4(mode, explicitUNo) {
+  const uNo = String(explicitUNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+  if (!uNo) return;
+  const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey);
+  const area = document.getElementById("printReportArea");
+  if (!area) return;
+
+  let htmlParts = "";
+  if (mode === "F1_1") {
+    htmlParts = buildMidTermForm1_1ExactHtml(calc, true);
+  } else if (mode === "F1_2") {
+    htmlParts = buildMidTermForm1_2ExactHtml(calc, true);
+  } else {
+    htmlParts = `
+      <div>${buildMidTermForm1_1ExactHtml(calc, true)}</div>
+      <div style="page-break-before:always; margin-top:16px;">${buildMidTermForm1_2ExactHtml(calc, true)}</div>
+    `;
+  }
+  area.innerHTML = htmlParts;
+  window.print();
+}
+
+function exportSingleSchoolMidTermExcelCsv(explicitUNo) {
+  const uNo = String(explicitUNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+  if (!uNo) return;
+  const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey);
+  const s = calc.sch;
+  const sub = calc.subStats;
+
+  const esc = v => `"${String(v !== undefined && v !== null ? v : "").replace(/"/g, '""')}"`;
+  const rows = [
+    [calc.termMeta.reportHeaderEn, "", "", "FORM - I ( 1 )"],
+    ["SIVAGANGAI DISTRICT", "SCHOOL PERFORMANCE", "UNIQUE NO :", s.uNo],
+    ["NAME OF THE SCHOOL :", `${s.nameEn} (${s.nameTa})`, "STD :", "10th"],
+    [],
+    ["Category", "Male", "Female", "Total"],
+    ["No.of Students as per EMIS", calc.emis.m, calc.emis.f, calc.emis.t],
+    ["Long Absent (LA)", calc.la.m, calc.la.f, calc.la.t],
+    ["Absent (5 Subjects)", calc.ab.m, calc.ab.f, calc.ab.t],
+    ["Home Based Students (HB)", calc.hb.m, calc.hb.f, calc.hb.t],
+    ["No.of Students Appeared", calc.appeared.m, calc.appeared.f, calc.appeared.t],
+    ["No.of Students Passed", calc.passed.m, calc.passed.f, calc.passed.t],
+    ["Pass %", "", "", calc.passPctStr],
+    ["No.of Students Failed", calc.failed.m, calc.failed.f, calc.failed.t],
+    [],
+    ["Single Subject Failed", "Two Subjects", "Three Subjects", "Four Subjects", "All Subjects", "School First Mark", "School Average Mark", "Below 60% (<=300)", "60% to 80% (301-400)", "Above 80% (401-500)", "TOTAL Passed"],
+    [calc.failedSubCounts.s1, calc.failedSubCounts.s2, calc.failedSubCounts.s3, calc.failedSubCounts.s4, calc.failedSubCounts.s5, calc.schoolFirstMark, calc.schoolAvgMark100, calc.totalMarkRanges.below60, calc.totalMarkRanges.r60_80, calc.totalMarkRanges.above80, calc.totalMarkRanges.total],
+    [],
+    ["SUBJECT MATRIX", "LANGUAGE", "ENGLISH", "MATHS", "SCIENCE", "SOCIAL SCIENCE"],
+    ["Exemption", sub.TAMIL.exemption, sub.ENGLISH.exemption, sub.MATHS.exemption, sub.SCIENCE.exemption, sub.SOCIAL.exemption],
+    ["No.of Students - Failed", sub.TAMIL.failed, sub.ENGLISH.failed, sub.MATHS.failed, sub.SCIENCE.failed, sub.SOCIAL.failed],
+    ["SUBJECT AVERAGE MARK", sub.TAMIL.avgMark, sub.ENGLISH.avgMark, sub.MATHS.avgMark, sub.SCIENCE.avgMark, sub.SOCIAL.avgMark],
+    ["HIGHEST MARK", sub.TAMIL.highestMark, sub.ENGLISH.highestMark, sub.MATHS.highestMark, sub.SCIENCE.highestMark, sub.SOCIAL.highestMark],
+    ["35-45 Marks", sub.TAMIL.r35_45, sub.ENGLISH.r35_45, sub.MATHS.r35_45, sub.SCIENCE.r35_45, sub.SOCIAL.r35_45],
+    ["46-60 Marks", sub.TAMIL.r46_60, sub.ENGLISH.r46_60, sub.MATHS.r46_60, sub.SCIENCE.r46_60, sub.SOCIAL.r46_60],
+    ["61-80 Marks", sub.TAMIL.r61_80, sub.ENGLISH.r61_80, sub.MATHS.r61_80, sub.SCIENCE.r61_80, sub.SOCIAL.r61_80],
+    ["81-99 Marks", sub.TAMIL.r81_99, sub.ENGLISH.r81_99, sub.MATHS.r81_99, sub.SCIENCE.r81_99, sub.SOCIAL.r81_99],
+    ["No.of Centum", sub.TAMIL.centum, sub.ENGLISH.centum, sub.MATHS.centum, sub.SCIENCE.centum, sub.SOCIAL.centum],
+    ["Single Subject Failed Sub.Wise", sub.TAMIL.singleSubFailed, sub.ENGLISH.singleSubFailed, sub.MATHS.singleSubFailed, sub.SCIENCE.singleSubFailed, sub.SOCIAL.singleSubFailed],
+    [],
+    ["FORM - I ( 2 ) : SUBJECT PERFORMANCE"],
+    ["S.No", "Section", "Medium", "Teacher Name (Tamil)", "Teacher Name (English)", "EMIS ID", "Designation", "Mobile", "Subject", "No.of Stu.", "LA", "AB", "HB", "Ex.", "Appear", "Pass", "Fail", "Pass %", "Average Mark", "Max. Mark", "Min. Mark", "35-45", "46-60", "61-80", "81-99", "Centum", "Fail this Sub. only"]
+  ];
+
+  calc.f2Rows.forEach(r => {
+    const t = r.teacher || {};
+    rows.push([
+      r.sno, r.secId, r.medium, t.nameTa || "", t.nameEn || "", t.staffId || "", t.desig || "", t.mobile || "",
+      r.subLabelEn, r.stuCount, r.la, r.ab, r.hb, r.ex, r.appear, r.pass, r.fail, r.passPct,
+      r.avgMark, r.maxMark, r.minMark, r.r35_45, r.r46_60, r.r61_80, r.r81_99, r.centum, r.failThisSubOnly
+    ]);
+  });
+
+  const csvContent = "\uFEFF" + rows.map(r => r.map(esc).join(",")).join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `[${s.uNo}]_${_activeMidTermTermKey}_Result_Analysis_F1_F2.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`📥 [${s.uNo}] FORM-I(1) & FORM-I(2) Excel (CSV) கோப்பு பதிவிறக்கப்பட்டது!`, "#16a34a", true);
+}
+
+// ============================================================================
+// ADMIN PORTAL DASHBOARD FOR SECOND MID-TERM RESULT ANALYSIS (281 SCHOOLS)
+// ============================================================================
+function getHighAndHigherSecSchoolsList() {
+  return (masterSchools || []).filter(s => s && s.uNo && String(s.uNo) !== "999" && Number(s.uNo) < 900);
+}
+
+function updateAdminMidTermChooserBadge() {
+  const badge = document.getElementById("admChooserMidTermCountBadge");
+  if (!badge) return;
+  const schools = getHighAndHigherSecSchoolsList();
+  const store = getExamResultAnalysisStore()[_activeMidTermTermKey] || {};
+  const doneCount = schools.filter(s => {
+    const r = store[String(s.uNo)];
+    return r && (r.isSubmitted || (Array.isArray(r.students) && r.students.length > 0));
+  }).length;
+  badge.textContent = `${doneCount} / ${schools.length} பள்ளிகள்`;
+}
+
+function onAdminMidTermExamTermChange(termKey) {
+  _activeMidTermTermKey = termKey || "2026_MIDTERM_2";
+  const schSel = document.getElementById("schMidTermExamSelect");
+  if (schSel) schSel.value = _activeMidTermTermKey;
+  renderAdminMidTermDashboard();
+}
+
+function switchAdminMidTermView(viewKey) {
+  _activeAdminMidTermSubView = viewKey || "F1";
+  const b1 = document.getElementById("admMtTabBtnF1");
+  const b2 = document.getElementById("admMtTabBtnF2");
+  const b3 = document.getElementById("admMtTabBtnRemedial");
+  const subSel = document.getElementById("admMtFilterSubject");
+  if (b1) {
+    b1.className = viewKey === "F1" ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
+    b1.style.background = viewKey === "F1" ? "#0f766e" : "#fff";
+    b1.style.color = viewKey === "F1" ? "#fff" : "#0f766e";
+  }
+  if (b2) {
+    b2.className = viewKey === "F2" ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
+    b2.style.background = viewKey === "F2" ? "#1d4ed8" : "#fff";
+    b2.style.color = viewKey === "F2" ? "#fff" : "#1e3a8a";
+  }
+  if (b3) {
+    b3.className = viewKey === "REMEDIAL" ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
+    b3.style.background = viewKey === "REMEDIAL" ? "#ea580c" : "#fff7ed";
+    b3.style.color = viewKey === "REMEDIAL" ? "#fff" : "#9a3412";
+  }
+  if (subSel) {
+    subSel.style.display = (viewKey === "F2" || viewKey === "REMEDIAL") ? "inline-block" : "none";
+  }
+  renderAdminMidTermDashboard();
+}
+
+function openAdminSchoolMidTermDirect(uNo) {
+  uNo = String(uNo || "").trim();
+  const s = (masterSchools || []).find(m => String(m.uNo) === uNo);
+  if (!s) return;
+  activeSchoolSession = Object.assign({}, s, { isAdminInspection: true });
+  showView("viewSchool");
+  renderSchoolDashboard();
+  const backBtn = document.getElementById("schBackToAdminBtn");
+  if (backBtn) backBtn.style.display = "inline-flex";
+  switchSchoolTab("midTerm");
+}
+
+function renderAdminMidTermDashboard() {
+  const kpiRow = document.getElementById("admMidTermKpiRow");
+  const tblContainer = document.getElementById("admMidTermTableContainer");
+  if (!tblContainer) return;
+
+  // Populate Block Filter if needed
+  const blkSel = document.getElementById("admMtFilterBlock");
+  if (blkSel && blkSel.options.length <= 1) {
+    const blocks = Array.from(new Set(getHighAndHigherSecSchoolsList().map(s => s.block).filter(Boolean))).sort();
+    blkSel.innerHTML = `<option value="">அனைத்து 12 ஒன்றியங்கள்</option>` + blocks.map(b => `<option value="${escapeHtmlAttr(b)}">${escapeHtmlAttr(b)}</option>`).join("");
+  }
+
+  const schools = getHighAndHigherSecSchoolsList();
+  const allCalcs = schools.map(s => computeSchoolExamResultAnalysis(s.uNo, _activeMidTermTermKey));
+
+  let submittedCount = 0;
+  let distEmis = 0, distApp = 0, distPass = 0, distFail = 0, dist1S = 0, distCentums = 0;
+  allCalcs.forEach(c => {
+    distEmis += c.emis.t;
+    if (c.hasStudentEntries || c.rec.isSubmitted) {
+      submittedCount++;
+      distApp += c.appeared.t;
+      distPass += c.passed.t;
+      distFail += c.failed.t;
+      dist1S += c.failedSubCounts.s1;
+      MIDTERM_CORE_SUBJECTS.forEach(s => { distCentums += c.subStats[s.key].centum; });
+    }
+  });
+  const pendingCount = schools.length - submittedCount;
+  const distPassPct = distApp > 0 ? ((distPass / distApp) * 100).toFixed(2) + "%" : "0.00%";
+
+  if (kpiRow) {
+    kpiRow.innerHTML = `
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:10px;">
+        <div style="background:#f0fdfa; border:1.5px solid #99f6e4; border-left:4px solid #0f766e; border-radius:10px; padding:10px 12px;">
+          <div style="font-size:0.73rem; font-weight:800; color:#115e59;">🏫 பதிவு செய்த பள்ளிகள்</div>
+          <div style="font-size:1.4rem; font-weight:900; color:#0f766e;">${submittedCount} / ${schools.length}</div>
+          <div style="font-size:0.71rem; color:#0d9488; font-weight:700;">நிலுவை: ${pendingCount} பள்ளிகள்</div>
+        </div>
+        <div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-left:4px solid #1d4ed8; border-radius:10px; padding:10px 12px;">
+          <div style="font-size:0.73rem; font-weight:800; color:#1e40af;">👨‍🎓 தேர்வெழுதிய மாணவர்கள்</div>
+          <div style="font-size:1.4rem; font-weight:900; color:#1e3a8a;">${distApp.toLocaleString("en-IN")}</div>
+          <div style="font-size:0.71rem; color:#2563eb; font-weight:700;">EMIS மொத்தம்: ${distEmis.toLocaleString("en-IN")}</div>
+        </div>
+        <div style="background:#f0fdf4; border:1.5px solid #86efac; border-left:4px solid #16a34a; border-radius:10px; padding:10px 12px;">
+          <div style="font-size:0.73rem; font-weight:800; color:#166534;">✅ தேர்ச்சி &amp; மாவட்டத் தேர்ச்சி %</div>
+          <div style="font-size:1.4rem; font-weight:900; color:#15803d;">${distPass.toLocaleString("en-IN")} (${distPassPct})</div>
+          <div style="font-size:0.71rem; color:#16a34a; font-weight:700;">தோல்வி: ${distFail.toLocaleString("en-IN")} மாணவர்கள்</div>
+        </div>
+        <div style="background:#fff7ed; border:1.5px solid #fdba74; border-left:4px solid #ea580c; border-radius:10px; padding:10px 12px;">
+          <div style="font-size:0.73rem; font-weight:800; color:#9a3412;">🎯 1-பாடம் மட்டும் தோல்வி &amp; சதம்</div>
+          <div style="font-size:1.4rem; font-weight:900; color:#c2410c;">1S: ${dist1S} &nbsp;|&nbsp; 💯: ${distCentums}</div>
+          <div style="font-size:0.71rem; color:#ea580c; font-weight:700;">சிறப்புக் கவனம் தேவைப்படுவோர்</div>
+        </div>
+      </div>
+    `;
+  }
+
+  const blkFilter = document.getElementById("admMtFilterBlock")?.value || "";
+  const mgmtFilter = document.getElementById("admMtFilterMgmt")?.value || "";
+  const stFilter = document.getElementById("admMtFilterStatus")?.value || "ALL";
+  const subFilter = document.getElementById("admMtFilterSubject")?.value || "";
+  const q = (document.getElementById("admMtFilterSearch")?.value || "").trim().toLowerCase();
+
+  const filteredCalcs = allCalcs.filter(c => {
+    if (blkFilter && c.sch.block !== blkFilter) return false;
+    if (mgmtFilter && c.sch.mgmt1 !== mgmtFilter) return false;
+    const isDone = c.hasStudentEntries || c.rec.isSubmitted;
+    if (stFilter === "COMPLETED" && !isDone) return false;
+    if (stFilter === "PENDING" && isDone) return false;
+    if (stFilter === "PASS_100" && (!isDone || c.passPctNum < 99.99)) return false;
+    if (stFilter === "BELOW_80" && (!isDone || c.passPctNum >= 80)) return false;
+    if (q) {
+      const hay = `${c.uNo} ${c.sch.udiseNo} ${c.sch.nameTa} ${c.sch.nameEn} ${c.sch.hmName} ${c.sch.block}`.toLowerCase();
+      if (_activeAdminMidTermSubView === "F1" && !hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (_activeAdminMidTermSubView === "F1") {
+    const trs = filteredCalcs.map((c, idx) => {
+      const isDone = c.hasStudentEntries || c.rec.isSubmitted;
+      const stBadge = c.rec.isSubmitted
+        ? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:2px 7px; border-radius:999px; font-size:0.70rem; font-weight:900;">✅ F1_Completed</span>`
+        : (c.hasStudentEntries
+          ? `<span style="background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; padding:2px 7px; border-radius:999px; font-size:0.70rem; font-weight:900;">📝 Draft (${c.evaluatedStudents.length})</span>`
+          : `<span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:2px 7px; border-radius:999px; font-size:0.70rem; font-weight:800;">⏳ Pending</span>`);
+      return `
+        <tr>
+          <td style="text-align:center; font-weight:800;">${idx + 1}</td>
+          <td style="text-align:center; font-weight:900; color:#c2410c;">${escapeHtmlAttr(c.uNo)}</td>
+          <td>
+            <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(c.sch.nameTa || c.sch.nameEn)}</div>
+            <div style="font-size:0.72rem; color:#475569;">${escapeHtmlAttr(c.sch.block)} | <span class="${getMgmtBadgeClass(c.sch.mgmt1)}" style="padding:0 5px; font-size:0.66rem;">${escapeHtmlAttr(c.sch.mgmt1)}</span> | 📱 ${escapeHtmlAttr(c.sch.mobile || "-")}</div>
+          </td>
+          <td style="text-align:center; font-weight:800;">${c.emis.t}<br><span style="font-size:0.68rem; color:#64748b;">(${c.emis.m}+${c.emis.f})</span></td>
+          <td style="text-align:center; font-weight:900; color:#1d4ed8;">${isDone ? c.appeared.t : "-"}</td>
+          <td style="text-align:center; font-weight:900; color:#15803d;">${isDone ? c.passed.t : "-"}</td>
+          <td style="text-align:center; font-weight:900; color:#dc2626;">${isDone ? c.failed.t : "-"}</td>
+          <td style="text-align:center; font-weight:900; background:${isDone ? '#fef3c7' : 'transparent'}; color:#92400e;">${isDone ? c.passPctStr : "-"}</td>
+          <td style="text-align:center; font-size:0.74rem; font-weight:800;">${isDone ? `${c.failedSubCounts.s1} / ${c.failedSubCounts.s2} / ${c.failedSubCounts.s3}+` : "-"}</td>
+          <td style="text-align:center; font-weight:800; color:#5b21b6;">${isDone ? `${c.schoolFirstMark} (Avg:${c.schoolAvgMark100})` : "-"}</td>
+          <td style="text-align:center; font-size:0.73rem; font-weight:800;">
+            ${isDone ? `T:${c.subStats.TAMIL.failed} | E:${c.subStats.ENGLISH.failed} | M:${c.subStats.MATHS.failed} | S:${c.subStats.SCIENCE.failed} | SS:${c.subStats.SOCIAL.failed}` : "-"}
+          </td>
+          <td style="text-align:center;">${stBadge}</td>
+          <td style="text-align:center; white-space:nowrap;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="openAdminSchoolMidTermDirect('${escapeHtmlAttr(c.uNo)}')" style="background:#0f766e; border-color:#0f766e; font-size:0.72rem; padding:3px 8px; font-weight:900;">
+              👁️ திற / மதிப்பெண் பதிவு
+            </button>
+            ${isDone ? `<button type="button" class="btn btn-outline btn-sm" onclick="printSchoolMidTermFormsA4('BOTH', '${escapeHtmlAttr(c.uNo)}')" style="font-size:0.72rem; padding:3px 7px; font-weight:800; margin-left:4px;">🖨️ A4</button>` : ""}
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    tblContainer.innerHTML = `
+      <div class="table-responsive" style="max-height:580px; overflow:auto; border:1.5px solid #cbd5e1; border-radius:10px;">
+        <table class="data-table" style="margin:0; font-size:0.79rem;">
+          <thead style="position:sticky; top:0; z-index:5;">
+            <tr style="background:#0f294a; color:#fff;">
+              <th style="width:42px; text-align:center;">SN</th>
+              <th style="width:60px; text-align:center;">U.No</th>
+              <th>பள்ளியின் பெயர், ஒன்றியம் &amp; கைபேசி</th>
+              <th style="text-align:center;">EMIS<br>Stu</th>
+              <th style="text-align:center; background:#1e3a8a;">Appeared</th>
+              <th style="text-align:center; background:#166534;">Passed</th>
+              <th style="text-align:center; background:#991b1b;">Failed</th>
+              <th style="text-align:center; background:#b45309;">Pass %</th>
+              <th style="text-align:center;">தோல்விப் பாடம்<br>(1S / 2S / 3S+)</th>
+              <th style="text-align:center;">First Mark<br>&amp; Avg</th>
+              <th style="text-align:center;">பாடவாரியான தோல்வி<br>(T | E | M | S | SS)</th>
+              <th style="text-align:center;">நிலை (Status)</th>
+              <th style="text-align:center;">நடவடிக்கை</th>
+            </tr>
+          </thead>
+          <tbody>${trs}</tbody>
+        </table>
+      </div>
+    `;
+  } else if (_activeAdminMidTermSubView === "F2") {
+    const teacherRows = [];
+    filteredCalcs.forEach(c => {
+      if (!c.hasStudentEntries && !c.rec.isSubmitted) return;
+      c.f2Rows.forEach(r => {
+        if (subFilter && r.subKey !== subFilter) return;
+        const t = r.teacher || {};
+        if (q) {
+          const hay = `${c.uNo} ${c.sch.nameTa} ${c.sch.nameEn} ${t.nameTa || ""} ${t.nameEn || ""} ${t.staffId || ""} ${r.subLabelEn}`.toLowerCase();
+          if (!hay.includes(q)) return;
+        }
+        teacherRows.push({ c, r, t });
+      });
+    });
+
+    const trs = teacherRows.length === 0
+      ? `<tr><td colspan="16" style="text-align:center; padding:26px; color:#64748b; font-weight:800;">பொருத்தமான பாட ஆசிரியர் தேர்ச்சிப் பதிவுகள் எதுவும் இல்லை. (பள்ளியின் வரிசையில் <strong>"👁️ திற / மதிப்பெண் பதிவு"</strong> அழுத்தி மாதிரி அல்லது அசல் மதிப்பெண்களைப் பதிவேற்றலாம்).</td></tr>`
+      : teacherRows.map(({ c, r, t }, idx) => `
+          <tr>
+            <td style="text-align:center; font-weight:800;">${idx + 1}</td>
+            <td style="text-align:center; font-weight:900; color:#c2410c;">${escapeHtmlAttr(c.uNo)}</td>
+            <td style="font-size:0.75rem; font-weight:800; color:#0f294a;">${escapeHtmlAttr(c.sch.nameTa || c.sch.nameEn)}</td>
+            <td>
+              <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(t.nameTa || t.nameEn || "-")}</div>
+              <div style="font-size:0.70rem; color:#475569;">EMIS: <strong>${escapeHtmlAttr(t.staffId || "-")}</strong> | 📱 ${escapeHtmlAttr(t.mobile || "-")}</div>
+            </td>
+            <td style="font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(r.subLabelEn)} (${escapeHtmlAttr(r.secId)}-${escapeHtmlAttr(r.medium)})</td>
+            <td style="text-align:center; font-weight:900;">${r.appear}</td>
+            <td style="text-align:center; font-weight:900; color:#15803d;">${r.pass}</td>
+            <td style="text-align:center; font-weight:900; color:#dc2626;">${r.fail}</td>
+            <td style="text-align:center; font-weight:900; background:#fef3c7; color:#92400e;">${r.passPct}</td>
+            <td style="text-align:center; font-weight:800;">${r.avgMark}</td>
+            <td style="text-align:center;">${r.maxMark} / ${r.minMark}</td>
+            <td style="text-align:center;">${r.r35_45}</td>
+            <td style="text-align:center;">${r.r46_60}</td>
+            <td style="text-align:center;">${r.r61_80}</td>
+            <td style="text-align:center;">${r.r81_99}</td>
+            <td style="text-align:center; font-weight:900; color:#15803d;">${r.centum} (1S:${r.failThisSubOnly})</td>
+          </tr>
+        `).join("");
+
+    tblContainer.innerHTML = `
+      <div class="table-responsive" style="max-height:580px; overflow:auto; border:1.5px solid #cbd5e1; border-radius:10px;">
+        <table class="data-table" style="margin:0; font-size:0.78rem;">
+          <thead style="position:sticky; top:0; z-index:5;">
+            <tr style="background:#1e3a8a; color:#fff;">
+              <th>SN</th>
+              <th>U.No</th>
+              <th>பள்ளி (School)</th>
+              <th>ஆசிரியர் பெயர், EMIS ID &amp; கைபேசி</th>
+              <th>பாடம் &amp; பிரிவு</th>
+              <th>Appear</th>
+              <th>Pass</th>
+              <th>Fail</th>
+              <th>Pass %</th>
+              <th>Avg</th>
+              <th>Max/Min</th>
+              <th>35-45</th>
+              <th>46-60</th>
+              <th>61-80</th>
+              <th>81-99</th>
+              <th>100 (1S Fail)</th>
+            </tr>
+          </thead>
+          <tbody>${trs}</tbody>
+        </table>
+      </div>
+    `;
+  } else {
+    // REMEDIAL VIEW: Single-subject failed students across the district
+    const remList = [];
+    filteredCalcs.forEach(c => {
+      c.singleSubFailedStudents.forEach(st => {
+        if (subFilter && st.failedSubKey !== subFilter) return;
+        remList.push({ c, st });
+      });
+    });
+    const trs = remList.length === 0
+      ? `<tr><td colspan="8" style="text-align:center; padding:26px; color:#64748b; font-weight:800;">தற்போது பதிவு செய்யப்பட்ட பள்ளிகளில் ஒரு பாடத்தில் மட்டும் தோல்வியடைந்த மாணவர்கள் எவரும் இல்லை.</td></tr>`
+      : remList.map(({ c, st }, idx) => `
+          <tr>
+            <td style="text-align:center; font-weight:800;">${idx + 1}</td>
+            <td style="text-align:center; font-weight:900; color:#c2410c;">${escapeHtmlAttr(c.uNo)}</td>
+            <td style="font-weight:800; color:#0f294a;">${escapeHtmlAttr(c.sch.nameTa || c.sch.nameEn)} (${escapeHtmlAttr(c.sch.block)})</td>
+            <td style="text-align:center; font-family:monospace; font-weight:900;">${escapeHtmlAttr(st.rollNo)}</td>
+            <td style="font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(st.name)} (${st.gender === "Female" ? "பெண்" : "ஆண்"})</td>
+            <td style="text-align:center; font-weight:800;">Sec ${escapeHtmlAttr(st.section)}</td>
+            <td style="font-weight:900; color:#dc2626;">${escapeHtmlAttr(st.failedSubLabel)} (மதிப்பெண்: ${escapeHtmlAttr(st.failedMark)})</td>
+            <td style="text-align:center; font-weight:900; color:#0f766e;">${st.total500} / 500</td>
+          </tr>
+        `).join("");
+
+    tblContainer.innerHTML = `
+      <div class="table-responsive" style="max-height:580px; overflow:auto; border:1.5px solid #cbd5e1; border-radius:10px;">
+        <table class="data-table" style="margin:0; font-size:0.80rem;">
+          <thead style="position:sticky; top:0; z-index:5;">
+            <tr style="background:#9a3412; color:#fff;">
+              <th>வ.எண்</th>
+              <th>U.No</th>
+              <th>பள்ளி &amp; ஒன்றியம்</th>
+              <th>Roll No.</th>
+              <th>மாணவர் பெயர் &amp; பாலினம்</th>
+              <th>பிரிவு</th>
+              <th>தோல்வியடைந்த ஒரே பாடம் &amp; மதிப்பெண்</th>
+              <th>மொத்த மதிப்பெண்</th>
+            </tr>
+          </thead>
+          <tbody>${trs}</tbody>
+        </table>
+      </div>
+    `;
+  }
+}
+
+// Exports District-wide F1_School Performance CSV matching the exact Google Sheet structure
+function exportDistrictMidTermF1Csv() {
+  const schools = getHighAndHigherSecSchoolsList();
+  const esc = v => `"${String(v !== undefined && v !== null ? v : "").replace(/"/g, '""')}"`;
+  const headers = [
+    "SN", "UN", "Name of the School (English)", "பள்ளியின் பெயர் (Tamil)", "HM Name (English)", "HM Name (Tamil)", "MOBILE NO",
+    "EMIS_B", "EMIS_G", "EMIS_Total",
+    "LA_B", "LA_G", "LA_Total",
+    "Absent_5Sub_B", "Absent_5Sub_G", "Absent_5Sub_Total",
+    "HomeBased_B", "HomeBased_G", "HomeBased_Total",
+    "Appeared_B", "Appeared_G", "Appeared_Total",
+    "Passed_B", "Passed_G", "Passed_Total", "Pass_%",
+    "Failed_B", "Failed_G", "Failed_Total",
+    "1S_Single_Sub", "2S_Two_Sub", "3S_Three_Sub", "4S_Four_Sub", "5S_All_Sub", "Remark_1",
+    "TAMIL_Ex", "TAMIL_Fail", "TAMIL_Avg", "TAMIL_Highest", "TAMIL_35_45", "TAMIL_46_60", "TAMIL_61_80", "TAMIL_81_99", "TAMIL_100", "TAMIL_Status",
+    "ENGLISH_Ex", "ENGLISH_Fail", "ENGLISH_Avg", "ENGLISH_Highest", "ENGLISH_35_45", "ENGLISH_46_60", "ENGLISH_61_80", "ENGLISH_81_99", "ENGLISH_100", "ENGLISH_Status",
+    "MATHS_Fail", "MATHS_Avg", "MATHS_Highest", "MATHS_35_45", "MATHS_46_60", "MATHS_61_80", "MATHS_81_99", "MATHS_100", "MATHS_Status",
+    "SCIENCE_Fail", "SCIENCE_Avg", "SCIENCE_Highest", "SCIENCE_35_45", "SCIENCE_46_60", "SCIENCE_61_80", "SCIENCE_81_99", "SCIENCE_100", "SCIENCE_Status",
+    "SOCIAL_Fail", "SOCIAL_Avg", "SOCIAL_Highest", "SOCIAL_35_45", "SOCIAL_46_60", "SOCIAL_61_80", "SOCIAL_81_99", "SOCIAL_100", "SOCIAL_Status",
+    "Total_Sub_Fails", "Weighted_Fails", "Remark_2",
+    "School_First_Mark", "School_Average_Mark",
+    "MarkRange_Below_60%(<=300)", "MarkRange_60_to_80%(301-400)", "MarkRange_Above_80%(401-500)", "MarkRange_TOTAL", "Remark_3",
+    "Single_Sub_Failed_Total", "Single_Fail_TAMIL", "Single_Fail_ENGLISH", "Single_Fail_MATHS", "Single_Fail_SCIENCE", "Single_Fail_SOCIAL", "Remark_4",
+    "Form_1_Filled_Status"
+  ];
+
+  const rows = [headers.map(esc).join(",")];
+  schools.forEach((s, idx) => {
+    const c = computeSchoolExamResultAnalysis(s.uNo, _activeMidTermTermKey);
+    const sub = c.subStats;
+    const isDone = c.hasStudentEntries || c.rec.isSubmitted;
+    const row = [
+      idx + 1, s.uNo, s.nameEn || "", s.nameTa || "", s.hmName || "", s.hmTa || "", s.mobile || "",
+      c.emis.m, c.emis.f, c.emis.t,
+      c.la.m, c.la.f, c.la.t,
+      c.ab.m, c.ab.f, c.ab.t,
+      c.hb.m, c.hb.f, c.hb.t,
+      c.appeared.m, c.appeared.f, c.appeared.t,
+      c.passed.m, c.passed.f, c.passed.t, c.passPctStr,
+      c.failed.m, c.failed.f, c.failed.t,
+      c.failedSubCounts.s1, c.failedSubCounts.s2, c.failedSubCounts.s3, c.failedSubCounts.s4, c.failedSubCounts.s5,
+      isDone ? (c.tallies.r1 ? "Tallied" : "Mismatch") : "Pending",
+      sub.TAMIL.exemption, sub.TAMIL.failed, sub.TAMIL.avgMark, sub.TAMIL.highestMark, sub.TAMIL.r35_45, sub.TAMIL.r46_60, sub.TAMIL.r61_80, sub.TAMIL.r81_99, sub.TAMIL.centum, isDone ? "OK" : "",
+      sub.ENGLISH.exemption, sub.ENGLISH.failed, sub.ENGLISH.avgMark, sub.ENGLISH.highestMark, sub.ENGLISH.r35_45, sub.ENGLISH.r46_60, sub.ENGLISH.r61_80, sub.ENGLISH.r81_99, sub.ENGLISH.centum, isDone ? "OK" : "",
+      sub.MATHS.failed, sub.MATHS.avgMark, sub.MATHS.highestMark, sub.MATHS.r35_45, sub.MATHS.r46_60, sub.MATHS.r61_80, sub.MATHS.r81_99, sub.MATHS.centum, isDone ? "OK" : "",
+      sub.SCIENCE.failed, sub.SCIENCE.avgMark, sub.SCIENCE.highestMark, sub.SCIENCE.r35_45, sub.SCIENCE.r46_60, sub.SCIENCE.r61_80, sub.SCIENCE.r81_99, sub.SCIENCE.centum, isDone ? "OK" : "",
+      sub.SOCIAL.failed, sub.SOCIAL.avgMark, sub.SOCIAL.highestMark, sub.SOCIAL.r35_45, sub.SOCIAL.r46_60, sub.SOCIAL.r61_80, sub.SOCIAL.r81_99, sub.SOCIAL.centum, isDone ? "OK" : "",
+      c.totalSubFailuresCount, c.weightedSubFailures, isDone ? (c.tallies.r2 ? "Tallied" : "Mismatch") : "",
+      c.schoolFirstMark, c.schoolAvgMark100,
+      c.totalMarkRanges.below60, c.totalMarkRanges.r60_80, c.totalMarkRanges.above80, c.totalMarkRanges.total, isDone ? (c.tallies.r3 ? "Tallied" : "Mismatch") : "",
+      c.failedSubCounts.s1, sub.TAMIL.singleSubFailed, sub.ENGLISH.singleSubFailed, sub.MATHS.singleSubFailed, sub.SCIENCE.singleSubFailed, sub.SOCIAL.singleSubFailed, isDone ? (c.tallies.r4 ? "Tallied" : "Mismatch") : "",
+      isDone ? "F1_Completed" : "Pending"
+    ];
+    rows.push(row.map(esc).join(","));
+  });
+
+  const blob = new Blob(["\uFEFF" + rows.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Sivagangai_10th_${_activeMidTermTermKey}_F1_School_Performance.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("📥 மாவட்ட F1_School Performance முழு அறிக்கை (CSV) பதிவிறக்கம் செய்யப்பட்டது!", "#16a34a", true);
+}
+
+// Exports District-wide F2_Subject Performance CSV matching the exact Google Sheet structure
+function exportDistrictMidTermF2Csv() {
+  const schools = getHighAndHigherSecSchoolsList();
+  const esc = v => `"${String(v !== undefined && v !== null ? v : "").replace(/"/g, '""')}"`;
+  const headers = [
+    "SN", "U.No", "Sec_S.No", "Name of the School", "Name of the Teacher (English)", "Gender",
+    "ஆசிரியர் பெயர் (தமிழில்)", "பதவி (Designation)", "Teacher EMIS ID", "Nature of Appointment",
+    "Mobile Number", "Appointed for Subject", "Sub. Code", "Teaching Subject", "Medium",
+    "No.of Students", "Long Absent", "Absent", "Home Based", "Exemption",
+    "Appeared", "Passed", "Failed", "Pass %", "Average Mark", "Max Mark", "Min Mark",
+    "35-45", "46-60", "61-80", "81-99", "100 (Centum)", "Status", "Fail this Sub.only",
+    "Pub_2026_Appear", "Pub_2026_Pass", "Pub_2026_Pass%", "Pub_2026_AvgMark", "Pub_2026_Centum"
+  ];
+
+  const rows = [headers.map(esc).join(",")];
+  let globalSn = 1;
+  schools.forEach(s => {
+    const c = computeSchoolExamResultAnalysis(s.uNo, _activeMidTermTermKey);
+    if (!c.hasStudentEntries && !c.rec.isSubmitted) return;
+    c.f2Rows.forEach(r => {
+      const t = r.teacher || {};
+      rows.push([
+        globalSn++, s.uNo, r.sno, `${s.nameEn} (${s.nameTa})`,
+        t.nameEn || "", t.gender || "", t.nameTa || "", t.desig || "", t.staffId || "", t.nature || "Regular",
+        t.mobile || "", t.appointedSub || r.subLabelEn, r.subCode, r.subLabelEn, r.medium,
+        r.stuCount, r.la, r.ab, r.hb, r.ex,
+        r.appear, r.pass, r.fail, r.passPct, r.avgMark, r.maxMark, r.minMark,
+        r.r35_45, r.r46_60, r.r61_80, r.r81_99, r.centum, "OK", r.failThisSubOnly,
+        t.pubAppear || "", t.pubPass || "", r.pubPassPct || "", t.pubAvg || "", t.pubCentum || ""
+      ].map(esc).join(","));
+    });
+  });
+
+  const blob = new Blob(["\uFEFF" + rows.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Sivagangai_10th_${_activeMidTermTermKey}_F2_Subject_Performance.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("📥 மாவட்ட F2_Subject Performance பாட ஆசிரியர் அறிக்கை (CSV) பதிவிறக்கம் செய்யப்பட்டது!", "#1d4ed8", true);
+}
+
+function syncAllMidTermResultsToGoogleSheet() {
+  saveExamResultAnalysisStore();
+  if (typeof pushCloudUpdate === "function") {
+    pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `Admin synced ${_activeMidTermTermKey} Result Analysis`);
+  }
+  sendToAppsScript({
+    action: "sync_exam_result_analysis_2026",
+    examTerm: _activeMidTermTermKey,
+    targetSheetId: "1PC2YnAk-atKQPLUemHoOYWuZ7UOm4Sd9EzYM0hEdRXQ",
+    timestamp: new Date().toISOString()
+  });
+  showToast("☁️ இரண்டாம் இடைப்பருவத் தேர்வு தேர்ச்சிப் பகுப்பாய்வு விவரங்கள் Firebase மற்றும் Google Sheet உடன் ஒத்திசைக்கப்பட்டன!", "#16a34a", true);
 }
 
 </script>
