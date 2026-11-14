@@ -7533,36 +7533,47 @@ return "";
 }
 }
 function getWhatsappApiCredentials() {
-const saved = safeGetStorage("CEOSVG_WA_CLOUD_CFG", {}) || {};
-const defaultEnc = WA_DEFAULT_CONFIG.accessTokenEnc;
-const defaultDecrypted = decryptLocalVaultSecret(defaultEnc);
-let savedEnc = String(saved.accessTokenEnc || "").trim();
-if (!savedEnc || savedEnc === "SERVER_PROXY_VAULT_ONLY") {
-savedEnc = defaultEnc;
-}
-let resolvedToken = String(saved.accessToken || "").trim();
-if (!resolvedToken || resolvedToken.includes("•") || resolvedToken === "SERVER_PROXY_VAULT_ONLY") {
-resolvedToken = decryptLocalVaultSecret(savedEnc) || defaultDecrypted;
-}
-let savedPid = (saved.phoneNumberId || "").trim();
-if (!savedPid || savedPid === "2186573131933924") {
-savedPid = WA_DEFAULT_CONFIG.phoneNumberId;
-}
-return {
-phoneNumberId: savedPid,
-altPhoneNumberId: (saved.altPhoneNumberId || WA_DEFAULT_CONFIG.altPhoneNumberId || "1457353970785529").trim(),
-messagingAccountId: (saved.messagingAccountId || WA_DEFAULT_CONFIG.messagingAccountId).trim(),
-businessId: (saved.businessId || WA_DEFAULT_CONFIG.businessId).trim(),
-accessToken: resolvedToken,
-accessTokenEnc: encryptLocalVaultSecret(resolvedToken) || defaultEnc,
-templateName: (saved.templateName || WA_DEFAULT_CONFIG.templateName).trim(),
-templateLang: (saved.templateLang || WA_DEFAULT_CONFIG.templateLang).trim(),
-templateId: (saved.templateId || WA_DEFAULT_CONFIG.templateId).trim(),
-supportContact: (saved.supportContact || WA_DEFAULT_CONFIG.supportContact || "04575-240408").trim(),
-payloadMode: (saved.payloadMode || WA_DEFAULT_CONFIG.payloadMode || "auto_2param_fallback").trim(),
-proxyRouteMode: (saved.proxyRouteMode || WA_DEFAULT_CONFIG.proxyRouteMode || "AUTO_SERVER_PROXY").trim(),
-cloudflareWorkerUrl: (saved.cloudflareWorkerUrl || WA_DEFAULT_CONFIG.cloudflareWorkerUrl || "").trim()
-};
+  const saved = safeGetStorage("CEOSVG_WA_CLOUD_CFG", null) || {};
+  const isUpdatedVaultV43 = saved.vaultVersion === "v4.3_1307132059159317_ceosivagangai";
+  const defaultEnc = WA_DEFAULT_CONFIG.accessTokenEnc;
+  const defaultToken = decryptLocalVaultSecret(defaultEnc);
+  const rawSavedEnc = isUpdatedVaultV43 ? String(saved.accessTokenEnc || saved.accessToken || "").trim() : "";
+  const effectiveTokenEnc = (rawSavedEnc && !rawSavedEnc.includes("•") && rawSavedEnc !== "SERVER_PROXY_VAULT_ONLY")
+    ? rawSavedEnc
+    : defaultEnc;
+  const token = decryptLocalVaultSecret(effectiveTokenEnc) || defaultToken;
+  const secretKey = decryptLocalVaultSecret(saved.secretKeyEnc || saved.secretKey || _WA_TOTP_VAULT_ENC);
+  const savedPid = (saved.phoneNumberId || "").trim();
+  const primaryPid = (isUpdatedVaultV43 && savedPid && savedPid !== "1457353970785529" && savedPid !== "1399324686595291" && savedPid !== "2186573131933924")
+    ? savedPid
+    : WA_DEFAULT_CONFIG.phoneNumberId;
+  const savedTpl = (saved.templateName || "").trim();
+  const effectiveTpl = (isUpdatedVaultV43 && savedTpl && savedTpl !== "hello_world" && savedTpl !== "whatsapp_verfication_code")
+    ? savedTpl
+    : WA_DEFAULT_CONFIG.templateName;
+  const savedTid = (saved.templateId || "").trim();
+  const effectiveTid = (isUpdatedVaultV43 && savedTid && savedTid !== "2600197680404000")
+    ? savedTid
+    : WA_DEFAULT_CONFIG.templateId;
+  const supportContact = (isUpdatedVaultV43 && (saved.supportContact || "").trim()) || WA_DEFAULT_CONFIG.supportContact || "04575-240408";
+  return {
+    accessToken: token,
+    accessTokenEnc: encryptLocalVaultSecret(token) || defaultEnc,
+    phoneNumberId: primaryPid,
+    altPhoneNumberId: WA_DEFAULT_CONFIG.altPhoneNumberId,
+    messagingAccountId: WA_DEFAULT_CONFIG.messagingAccountId,
+    businessId: WA_DEFAULT_CONFIG.businessId,
+    templateName: effectiveTpl,
+    templateLang: (isUpdatedVaultV43 && (saved.templateLang || "").trim()) || WA_DEFAULT_CONFIG.templateLang || "en_US",
+    templateId: effectiveTid,
+    supportContact: supportContact,
+    payloadMode: (isUpdatedVaultV43 && (saved.payloadMode || "").trim()) || "auto_2body",
+    proxyRouteMode: (saved.proxyRouteMode || "").trim() || "DIRECT_META_FIRST",
+    cloudflareWorkerUrl: (saved.cloudflareWorkerUrl || "").trim() || "",
+    registeredSender: WA_DEFAULT_CONFIG.registeredSender,
+    gatewayWebhookUrl: (saved.gatewayWebhookUrl || "").trim() || "",
+    secretKey: secretKey
+  };
 }
 function refreshAndCopyMetaTotpCode() {
   const code = String(Math.floor(100000 + Math.random() * 900000));
@@ -7806,146 +7817,131 @@ async function dispatchWhatsappOtpMessage(mobileNumber, otpCode, schoolObj, purp
   let templateDispatched = false;
   let proxyUsed = "";
 
-  const phoneIdsToTry = [creds.phoneNumberId || "1307132059159317"];
-  if (creds.altPhoneNumberId && !phoneIdsToTry.includes(creds.altPhoneNumberId)) {
-    phoneIdsToTry.push(creds.altPhoneNumberId);
-  }
-  const tplName = (creds.templateName || "ceosivagangai").trim();
+  const phoneIdsToTry = [creds.phoneNumberId || "1307132059159317", creds.altPhoneNumberId].filter(Boolean);
+  const primaryTpl = (creds.templateName || "ceosivagangai").trim();
+  const tplNames = primaryTpl === "ceosivagangai"
+    ? ["ceosivagangai", "whatsapp_verfication_code"]
+    : [primaryTpl, "ceosivagangai", "whatsapp_verfication_code"];
   const tplLang = (creds.templateLang || "en_US").trim();
-  const payloadMode = (creds.payloadMode || "auto_2param_fallback").trim();
 
-  // ROUTE 1: DIRECT META WHATSAPP CLOUD API (v21.0 / v22.0) WITH PERMANENT SYSTEM USER TOKEN
-  if (creds.accessToken && toPhone.length >= 10) {
-    for (let pidIdx = 0; pidIdx < phoneIdsToTry.length && !apiDispatched; pidIdx++) {
-      const activePid = phoneIdsToTry[pidIdx];
-      const endpoint = `https://graph.facebook.com/v21.0/${encodeURIComponent(activePid)}/messages`;
-      const reqHeaders = {
-        "Authorization": `Bearer ${creds.accessToken}`,
-        "Content-Type": "application/json"
-      };
-
-      const sendMetaPayload = async (payloadObj) => {
-        const res = await fetchWithTimeout(endpoint, {
-          method: "POST",
-          headers: reqHeaders,
-          body: JSON.stringify(payloadObj)
-        }, 7500);
-        let j = null;
-        try { j = await res.json(); } catch (e) {}
-        return { ok: Boolean(res && res.ok), status: res ? res.status : 0, data: j };
-      };
-
+  // ROUTE 1: DIRECT META WHATSAPP CLOUD API (v21.0 / v22.0) WITH CORRECT PARAMETER ORDER
+  // buildCeosvgWhatsappTemplatePayload(toPhone, templateName, langCode, otpCode, supportContact, useTwoBodyParams, includeCopyCodeButton)
+  if (creds.accessToken && phoneIdsToTry.length > 0 && toPhone.length >= 10) {
+    for (const pid of phoneIdsToTry) {
+      if (apiDispatched) break;
+      const endpoint = `https://graph.facebook.com/v21.0/${encodeURIComponent(pid)}/messages`;
       try {
-        // Attempt 1A: Configured template (ceosivagangai) with 2 Body Params ({{1}}=OTP, {{2}}=Support) + Copy Code URL button
-        const firstTryWithBtn = (payloadMode !== "two_body_only");
-        const tplPayload1 = buildCeosvgWhatsappTemplatePayload(toPhone, otpCode, tplName, tplLang, supportContact, firstTryWithBtn);
-        const r1 = await sendMetaPayload(tplPayload1);
-        if (r1.ok && r1.data && Array.isArray(r1.data.messages) && r1.data.messages.length > 0) {
-          apiDispatched = true;
-          templateDispatched = true;
-          proxyUsed = "META_CLOUD_API_DIRECT_V21";
-          apiMessageId = r1.data.messages[0].id || "";
-          apiErrorNote = "";
-          break;
-        }
-        const errCode1 = (r1.data && r1.data.error && r1.data.error.code) ? Number(r1.data.error.code) : 0;
-        apiErrorCode = errCode1;
-        apiErrorNote = (r1.data && r1.data.error && r1.data.error.message) ? r1.data.error.message : ("HTTP " + r1.status);
+        for (const tName of tplNames) {
+          if (templateDispatched) break;
+          const isTwoParamTpl = (tName === "ceosivagangai");
+          const payloadVariants = tName === "hello_world"
+            ? [{ messaging_product: "whatsapp", recipient_type: "individual", to: toPhone, type: "template", template: { name: tName, language: { code: tplLang } } }]
+            : (isTwoParamTpl
+              ? [
+                  buildCeosvgWhatsappTemplatePayload(toPhone, tName, tplLang, otpCode, supportContact, true, true),
+                  buildCeosvgWhatsappTemplatePayload(toPhone, tName, tplLang, otpCode, supportContact, true, false),
+                  buildCeosvgWhatsappTemplatePayload(toPhone, tName, tplLang, otpCode, supportContact, false, true),
+                  buildCeosvgWhatsappTemplatePayload(toPhone, tName, tplLang, otpCode, supportContact, false, false)
+                ]
+              : [
+                  buildCeosvgWhatsappTemplatePayload(toPhone, tName, tplLang, otpCode, supportContact, false, true),
+                  buildCeosvgWhatsappTemplatePayload(toPhone, tName, tplLang, otpCode, supportContact, false, false),
+                  buildCeosvgWhatsappTemplatePayload(toPhone, tName, tplLang, otpCode, supportContact, true, false)
+                ]);
 
-        // Attempt 1B: Retry without Copy Code button (2 Body Params only) if button/param mismatch
-        if (!apiDispatched && firstTryWithBtn) {
-          const tplPayload2 = buildCeosvgWhatsappTemplatePayload(toPhone, otpCode, tplName, tplLang, supportContact, false);
-          const r2 = await sendMetaPayload(tplPayload2);
-          if (r2.ok && r2.data && Array.isArray(r2.data.messages) && r2.data.messages.length > 0) {
-            apiDispatched = true;
-            templateDispatched = true;
-            proxyUsed = "META_CLOUD_API_2PARAM_V21";
-            apiMessageId = r2.data.messages[0].id || "";
-            apiErrorNote = "";
-            break;
-          }
-        }
-
-        // Attempt 1C: Fallback to 1-body-param template or whatsapp_verfication_code
-        if (!apiDispatched) {
-          const tplPayload1Param = {
-            messaging_product: "whatsapp",
-            recipient_type: "individual",
-            to: toPhone,
-            type: "template",
-            template: {
-              name: tplName,
-              language: { code: tplLang },
-              components: [
-                { type: "body", parameters: [{ type: "text", text: String(otpCode) }] }
-              ]
+          for (const tplPayload of payloadVariants) {
+            const resTpl = await fetchWithTimeout(endpoint, {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${creds.accessToken}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(tplPayload)
+            }, 7500);
+            if (resTpl) {
+              let resJson = null;
+              try { resJson = await resTpl.json(); } catch (e) {}
+              if (resTpl.ok && resJson && Array.isArray(resJson.messages) && resJson.messages.length > 0) {
+                templateDispatched = true;
+                apiDispatched = true;
+                proxyUsed = "META_CLOUD_API_V21";
+                apiErrorNote = "";
+                apiMessageId = resJson.messages[0].id || "";
+                break;
+              } else if (resJson && resJson.error) {
+                apiErrorCode = resJson.error.code || resTpl.status;
+                const detailStr = (resJson.error.error_data && resJson.error.error_data.details) ? ` (${resJson.error.error_data.details})` : "";
+                apiErrorNote = (resJson.error.message || ("HTTP " + resTpl.status)) + detailStr;
+                if (apiErrorCode === 190 || apiErrorCode === 132001) break;
+              }
             }
-          };
-          const r3 = await sendMetaPayload(tplPayload1Param);
-          if (r3.ok && r3.data && Array.isArray(r3.data.messages) && r3.data.messages.length > 0) {
-            apiDispatched = true;
-            templateDispatched = true;
-            proxyUsed = "META_CLOUD_API_1PARAM_V21";
-            apiMessageId = r3.data.messages[0].id || "";
-            apiErrorNote = "";
-            break;
           }
+          if (apiErrorCode === 190 || templateDispatched) break;
         }
 
-        // Attempt 1D: Standard text message within 24h customer care window
-        if (!apiDispatched) {
-          const txtPayload = {
-            messaging_product: "whatsapp",
-            recipient_type: "individual",
-            to: toPhone,
-            type: "text",
-            text: { preview_url: false, body: bodyText }
-          };
-          const rTxt = await sendMetaPayload(txtPayload);
-          if (rTxt.ok && rTxt.data && Array.isArray(rTxt.data.messages) && rTxt.data.messages.length > 0) {
-            apiDispatched = true;
-            textDispatched = true;
-            proxyUsed = "META_CLOUD_API_TEXT_V21";
-            apiMessageId = rTxt.data.messages[0].id || "";
-            apiErrorNote = "";
-            break;
+        // Also try standard text message if template did not dispatch and token is valid
+        if (!apiDispatched && apiErrorCode !== 190) {
+          const resText = await fetchWithTimeout(endpoint, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${creds.accessToken}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              messaging_product: "whatsapp",
+              recipient_type: "individual",
+              to: toPhone,
+              type: "text",
+              text: { preview_url: false, body: bodyText }
+            })
+          }, 5000);
+          if (resText && resText.ok) {
+            let txtJson = null;
+            try { txtJson = await resText.json(); } catch (e) {}
+            if (txtJson && Array.isArray(txtJson.messages) && txtJson.messages.length > 0) {
+              textDispatched = true;
+              apiDispatched = true;
+              proxyUsed = "META_CLOUD_TEXT_V21";
+              apiErrorNote = "";
+              apiMessageId = txtJson.messages[0].id || "";
+              break;
+            }
           }
         }
-      } catch (metaErr) {
-        apiErrorNote = "Meta Direct: " + (metaErr.message || "Network Error");
+      } catch (err) {
+        if (!apiDispatched) apiErrorNote = err.message || "Network/Timeout";
       }
     }
   }
 
-  // ROUTE 2: CLOUDFLARE WORKER PROXY FALLBACK (if configured)
+  // ROUTE 2: CLOUDFLARE WORKER PROXY (if configured)
   const cfWorkerUrl = (creds.cloudflareWorkerUrl || "").trim();
   if (!apiDispatched && cfWorkerUrl && cfWorkerUrl.startsWith("http") && toPhone.length >= 10) {
     try {
       const nowIso = new Date().toISOString();
       const clientSig = await computeClientProxySignature(toPhone, otpCode, nowIso);
-      const cfPayload = {
-        action: "send_whatsapp_otp",
-        toPhone: toPhone,
-        otp: String(otpCode),
-        supportContact: supportContact,
-        phoneNumberId: creds.phoneNumberId || "1307132059159317",
-        templateName: tplName,
-        templateLang: tplLang,
-        uNo: schoolObj ? String(schoolObj.uNo || "") : "",
-        schoolName: schoolObj ? (schoolObj.nameEn || schoolObj.nameTa || "") : "CEO Sivagangai",
-        purpose: purposeLabel || "OTP_VERIFY",
-        timestamp: nowIso,
-        clientSignature: clientSig
-      };
       const cfRes = await fetchWithTimeout(cfWorkerUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cfPayload)
+        body: JSON.stringify({
+          action: "send_whatsapp_otp",
+          toPhone: toPhone,
+          otp: String(otpCode),
+          supportContact: supportContact,
+          phoneNumberId: creds.phoneNumberId || "1307132059159317",
+          templateName: primaryTpl,
+          templateLang: tplLang,
+          uNo: schoolObj ? String(schoolObj.uNo || "") : "",
+          schoolName: schoolObj ? (schoolObj.nameEn || schoolObj.nameTa || "") : "CEO Sivagangai",
+          purpose: purposeLabel || "OTP_VERIFY",
+          timestamp: nowIso,
+          clientSignature: clientSig
+        })
       }, 6000);
       if (cfRes && cfRes.ok) {
         let cfJson = null;
         try { cfJson = await cfRes.json(); } catch (e) {}
-        if (cfJson && (cfJson.ok || cfJson.whatsappSent || (Array.isArray(cfJson.messages) && cfJson.messages.length > 0))) {
+        if (cfJson && (cfJson.whatsappSent || (Array.isArray(cfJson.messages) && cfJson.messages.length > 0))) {
           apiDispatched = true;
           templateDispatched = true;
           proxyUsed = "CLOUDFLARE_WORKER_PROXY";
@@ -7956,37 +7952,57 @@ async function dispatchWhatsappOtpMessage(mobileNumber, otpCode, schoolObj, purp
     } catch (cfErr) {}
   }
 
-  // ROUTE 3: GOOGLE APPS SCRIPT SERVER RELAY FALLBACK
-  if (!apiDispatched && toPhone.length >= 10) {
-    try {
-      const proxyPayload = {
-        action: "send_whatsapp_otp",
-        uNo: schoolObj ? schoolObj.uNo : "",
-        udiseNo: schoolObj ? schoolObj.udiseNo : "",
-        schoolNameEn: schoolObj ? schoolObj.nameEn : "",
-        schoolNameTa: schoolObj ? schoolObj.nameTa : "",
-        mobile: mobileNumber,
-        toPhone: toPhone,
-        whatsappOtp: String(otpCode),
-        otp: String(otpCode),
-        supportContact: supportContact,
-        phoneNumberId: creds.phoneNumberId || "1307132059159317",
-        accessTokenEnc: creds.accessTokenEnc || WA_DEFAULT_CONFIG.accessTokenEnc,
-        templateName: tplName,
-        templateLang: tplLang,
-        purpose: purposeLabel || "WHATSAPP_OTP_VERIFY",
-        message: bodyText
-      };
-      const gsRes = await sendToAppsScript(proxyPayload);
-      if (gsRes && (gsRes.whatsappSent === true || gsRes.ok === true)) {
-        apiDispatched = true;
-        templateDispatched = true;
-        proxyUsed = "GOOGLE_APPS_SCRIPT_PROXY";
-        apiMessageId = gsRes.messageId || "GAS_PROXY_DISPATCHED";
-        apiErrorNote = "";
-      }
-    } catch (gsErr) {}
+  // ROUTE 3: GOOGLE APPS SCRIPT SERVER RELAY & LOGGING
+  const logPromise = sendToAppsScript({
+    action: "send_whatsapp_otp",
+    uNo: schoolObj ? schoolObj.uNo : "",
+    udiseNo: schoolObj ? schoolObj.udiseNo : "",
+    schoolNameEn: schoolObj ? schoolObj.nameEn : "",
+    schoolNameTa: schoolObj ? schoolObj.nameTa : "",
+    phone: toPhone,
+    otp: String(otpCode),
+    whatsappOtp: String(otpCode),
+    supportContact: supportContact,
+    browserAlreadySent: apiDispatched,
+    accessTokenEnc: creds.accessTokenEnc,
+    phoneNumberId: creds.phoneNumberId || "1307132059159317",
+    altPhoneNumberId: creds.altPhoneNumberId || "1457353970785529",
+    messagingAccountId: creds.messagingAccountId || "2186573131933924",
+    templateName: primaryTpl,
+    templateLang: tplLang,
+    templateId: creds.templateId || "1069753392749982",
+    gatewayWebhookUrl: creds.gatewayWebhookUrl || "",
+    purpose: purposeLabel || "OTP_VERIFY",
+    message: bodyText
+  });
+
+  if (apiDispatched) {
+    logPromise.catch(() => {});
+    return {
+      ok: true,
+      apiDispatched: true,
+      textDispatched,
+      templateDispatched,
+      proxyUsed,
+      toPhone,
+      messageId: apiMessageId,
+      errorCode: 0,
+      apiErrorCode: 0,
+      errorNote: "",
+      apiErrorNote: "",
+      bodyText
+    };
   }
+
+  try {
+    const gsRes = await logPromise;
+    if (gsRes && gsRes.whatsappSent === true) {
+      apiDispatched = true;
+      templateDispatched = true;
+      proxyUsed = "GOOGLE_APPS_SCRIPT_RELAY";
+      apiErrorNote = "";
+    }
+  } catch (e) {}
 
   return {
     ok: apiDispatched,
@@ -7997,7 +8013,9 @@ async function dispatchWhatsappOtpMessage(mobileNumber, otpCode, schoolObj, purp
     toPhone,
     messageId: apiMessageId,
     errorCode: apiErrorCode,
+    apiErrorCode,
     errorNote: apiErrorNote,
+    apiErrorNote,
     bodyText
   };
 }
@@ -8010,13 +8028,11 @@ async function dispatchEmailOtpMessage(emailAddress, otpCode, schoolObj, purpose
   const uNoStr = schoolObj && schoolObj.uNo ? String(schoolObj.uNo) : "";
   const schNameStr = schoolObj ? (schoolObj.nameEn || schoolObj.nameTa || "Sivagangai School") : "Sivagangai School";
   const purposeStr = purposeLabel || "EMAIL_OTP_VERIFY";
-  const sheetIdStr = (typeof masterSheetId === "string" && masterSheetId.trim()) ? masterSheetId.trim() : "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ";
   const subjectStr = `🔐 CEO Sivagangai School Portal - OTP Verification (${otpCode})`;
   const msgBodyStr = `பள்ளிக்கல்வித்துறை - முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (Chief Educational Office, Sivagangai)\nபள்ளி / School: [${uNoStr}] ${schNameStr}\nஉங்கள் 6-இலக்க மின்னஞ்சல் சரிபார்ப்பு OTP எண் (Your 6-digit Email Verification OTP): ${otpCode}`;
 
   const payload = {
     action: "send_email_otp",
-    masterSheetId: sheetIdStr,
     uNo: uNoStr,
     udiseNo: schoolObj && schoolObj.udiseNo ? String(schoolObj.udiseNo) : "",
     schoolNameEn: schNameStr,
@@ -8030,74 +8046,37 @@ async function dispatchEmailOtpMessage(emailAddress, otpCode, schoolObj, purpose
     message: msgBodyStr
   };
 
-  const primaryUrl = (typeof appsScriptUrl === "string" && appsScriptUrl.trim().startsWith("http"))
+  const targetUrl = (typeof appsScriptUrl === "string" && appsScriptUrl.trim().startsWith("http"))
     ? appsScriptUrl.trim()
     : "https://script.google.com/macros/s/AKfycbzuu9CZez1T8Sam8ofLAJHIF8Jp-jgkgd3ErxuhiD9OtiFrSd-RbInw9393pWaqKPFC/exec";
-  const backupUrl = "https://script.google.com/macros/s/AKfycbzDu0rRh1KcdmkkqOFJzbx80J7VtBYFzjowRzu1IeAdPU7iZgP5Q6J6cdKT4VkopxAI/exec";
-  const urlsToInvoke = [primaryUrl];
-  if (backupUrl !== primaryUrl) urlsToInvoke.push(backupUrl);
+  const sep = targetUrl.includes("?") ? "&" : "?";
+  // Do NOT pass masterSheetId=1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ in GET query string so deployed Apps Script uses its bound/active sheet cleanly
+  const getUrl = `${targetUrl}${sep}action=send_email_otp&email=${encodeURIComponent(cleanEmail)}&otp=${encodeURIComponent(otpCode)}&emailOtp=${encodeURIComponent(otpCode)}&uNo=${encodeURIComponent(uNoStr)}&schoolNameEn=${encodeURIComponent(schNameStr)}&purpose=${encodeURIComponent(purposeStr)}&t=${Date.now()}`;
 
-  const buildGetUrl = (baseUrl) => {
-    const sep = baseUrl.includes("?") ? "&" : "?";
-    return `${baseUrl}${sep}action=send_email_otp&masterSheetId=${encodeURIComponent(sheetIdStr)}&email=${encodeURIComponent(cleanEmail)}&otp=${encodeURIComponent(otpCode)}&emailOtp=${encodeURIComponent(otpCode)}&uNo=${encodeURIComponent(uNoStr)}&schoolNameEn=${encodeURIComponent(schNameStr)}&purpose=${encodeURIComponent(purposeStr)}&subject=${encodeURIComponent(subjectStr)}&t=${Date.now()}`;
-  };
-
-  const attemptGet = async (baseUrl) => {
-    const gUrl = buildGetUrl(baseUrl);
-    try {
-      const gRes = await fetchWithTimeout(gUrl, { method: "GET", redirect: "follow" }, 7500);
-      if (gRes && gRes.ok) {
-        const gJson = await gRes.json();
-        if (gJson && (gJson.emailSent || gJson.ok)) return { ok: true, email: cleanEmail, emailSent: true };
+  // 1) Try fast GET request first (Apps Script doGet handles send_email_otp cleanly without CORS preflight)
+  try {
+    const gRes = await fetchWithTimeout(getUrl, { method: "GET", redirect: "follow" }, 10000);
+    if (gRes && gRes.ok) {
+      const gJson = await gRes.json();
+      if (gJson && (gJson.emailSent === true || gJson.ok === true)) {
+        return { ok: true, email: cleanEmail, emailSent: true };
       }
-    } catch (e) {
-      try {
-        await fetchWithTimeout(gUrl, { method: "GET", mode: "no-cors" }, 6500);
-        return { ok: true, email: cleanEmail, emailSent: true, mode: "no-cors-get" };
-      } catch (e2) {}
     }
-    return null;
-  };
+  } catch (ge) {}
 
-  const attemptPost = async (baseUrl) => {
-    const bodyStr = JSON.stringify(payload);
-    try {
-      const pRes = await fetchWithTimeout(baseUrl, {
-        method: "POST",
-        redirect: "follow",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: bodyStr
-      }, 7500);
-      if (pRes && pRes.ok) {
-        const pJson = await pRes.json();
-        if (pJson && (pJson.emailSent || pJson.ok)) return { ok: true, email: cleanEmail, emailSent: true };
-      }
-    } catch (e) {
-      try {
-        await fetchWithTimeout(baseUrl, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: bodyStr
-        }, 6500);
-        return { ok: true, email: cleanEmail, emailSent: true, mode: "no-cors-post" };
-      } catch (e2) {}
-    }
-    return null;
-  };
+  // 2) Try POST via sendToAppsScript
+  const gsRes = await sendToAppsScript(payload);
+  if (gsRes && gsRes.emailSent === true) {
+    return { ok: true, email: cleanEmail, emailSent: true };
+  }
 
-  // Fire GET and POST on primaryUrl in parallel so whichever succeeds first resolves immediately
-  const tasks = [attemptGet(primaryUrl), attemptPost(primaryUrl)];
-  if (urlsToInvoke.length > 1) {
-    tasks.push(attemptGet(backupUrl));
+  // 3) Fallback no-cors GET trigger if browser blocked reading redirect response
+  try {
+    await fetchWithTimeout(getUrl, { method: "GET", mode: "no-cors" }, 8000);
+    return { ok: true, email: cleanEmail, emailSent: true, mode: "no-cors" };
+  } catch (err) {
+    return { ok: Boolean(gsRes && gsRes.ok), email: cleanEmail, emailSent: Boolean(gsRes && (gsRes.emailSent || gsRes.ok)) };
   }
-  const results = await Promise.allSettled(tasks);
-  for (const r of results) {
-    if (r.status === "fulfilled" && r.value && r.value.ok) {
-      return r.value;
-    }
-  }
-  return { ok: true, email: cleanEmail, emailSent: true, fallback: true };
 }
 function selectSchoolFromFinder(uNo) {
 closeQuickFinderModal();
@@ -8634,7 +8613,7 @@ Promise.allSettled([
 dispatchEmailOtpMessage(email, emOtp, activeRegCandidateSchool, "First-Time School Registration"),
 dispatchWhatsappOtpMessage(mob, emOtp, activeRegCandidateSchool, "First-Time School Registration")
 ]),
-new Promise(resolve => setTimeout(resolve, 4200))
+new Promise(resolve => setTimeout(resolve, 11000))
 ]);
 } catch (e) {}
 if (btn) {
@@ -8848,7 +8827,7 @@ Promise.allSettled([
 dispatchEmailOtpMessage(email, otp, s, "Password Reset OTP"),
 resetPhone.length === 10 ? dispatchWhatsappOtpMessage(resetPhone, otp, s, "Password Reset OTP") : Promise.resolve()
 ]),
-new Promise(resolve => setTimeout(resolve, 3200))
+new Promise(resolve => setTimeout(resolve, 11000))
 ]);
 } catch (e) {}
 renderResetMsg("✅ உங்கள் பள்ளி");
@@ -16102,7 +16081,7 @@ if (rootData.stores.CEOSVG_DIGNITARIES_PHOTO_VAULT) {
   reloadInMemoryStoreFromKey("CEOSVG_DIGNITARIES_PHOTO_VAULT", rootData.stores.CEOSVG_DIGNITARIES_PHOTO_VAULT);
 }
 for (const [k, v] of Object.entries(rootData.stores)) {
-if (k === "CEOSVG_ACTIVE_SESSION" || k === "CEOSVG_ACTIVE_UI_STATE" || k === "CEOSVG_AUTH_RESET_V37_DONE" || k === "CEOSVG_EMIS_STUDENT_DATA") continue;
+if (k === "CEOSVG_ACTIVE_SESSION" || k === "CEOSVG_ACTIVE_UI_STATE" || k === "CEOSVG_AUTH_RESET_V37_DONE" || k === "CEOSVG_EMIS_STUDENT_DATA" || k === "CEOSVG_WA_CLOUD_CFG" || k === "CEOSVG_WA_OTP_CONFIG_V1") continue;
 if ((k === "CEOSVG_DIGNITARIES_V1" || k === "CEOSVG_DIGNITARIES_DATA_V2" || k === "CEOSVG_DIGNITARIES_DATA_V1") && rootData.stores.CEOSVG_DIGNITARIES_DATA_V3) continue;
 if (v !== null && v !== undefined) {
 safeSetStorage(k, v, true);
@@ -16141,7 +16120,7 @@ return;
 }
 try {
 const sep = appsScriptUrl.includes("?") ? "&" : "?";
-const effectiveSheetId = (typeof masterSheetId === "string" && masterSheetId.trim()) ? masterSheetId.trim() : "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ";
+const effectiveSheetId = (masterSheetId && masterSheetId !== "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ") ? masterSheetId : "";
 const url = `${appsScriptUrl}${sep}action=get_full_portal_snapshot&masterSheetId=${encodeURIComponent(effectiveSheetId)}&t=${Date.now()}`;
 const res = await fetch(url, { method: "GET" });
 if (!res || !res.ok) throw new Error("HTTP " + (res ? res.status : "ERR"));
@@ -16421,7 +16400,7 @@ let totalUpdated = 0;
 if (appsScriptUrl && appsScriptUrl.startsWith("http")) {
 try {
 const sep = appsScriptUrl.includes("?") ? "&" : "?";
-const effectiveSheetId = (typeof masterSheetId === "string" && masterSheetId.trim()) ? masterSheetId.trim() : "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ";
+const effectiveSheetId = (masterSheetId && masterSheetId !== "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ") ? masterSheetId : "";
 const url = `${appsScriptUrl}${sep}action=get_full_portal_snapshot&masterSheetId=${encodeURIComponent(effectiveSheetId)}&t=${Date.now()}`;
 const res = await fetch(url, { method: "GET" });
 if (res && res.ok) {
@@ -16492,7 +16471,7 @@ showToast(`✅ School-Master கூகுள் சீட் ஒத்திச�
 }
 async function sendToAppsScript(payload) {
 if (!appsScriptUrl || !appsScriptUrl.startsWith("http")) return { ok: false, reason: "NO_URL" };
-const effectiveSheetId = (typeof masterSheetId === "string" && masterSheetId.trim()) ? masterSheetId.trim() : "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ";
+const effectiveSheetId = (masterSheetId && masterSheetId !== "1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ") ? masterSheetId : "";
 const fullPayload = Object.assign({
 masterSheetId: effectiveSheetId,
 ownerAccount: "ceosvgweb@gmail.com",
