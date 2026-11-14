@@ -35343,13 +35343,27 @@ function switchAdminMidTermView(viewKey) {
 function openAdminSchoolMidTermDirect(uNo) {
   uNo = String(uNo || "").trim();
   const s = (masterSchools || []).find(m => String(m.uNo) === uNo);
-  if (!s) return;
-  activeSchoolSession = Object.assign({}, s, { isAdminInspection: true });
-  showView("viewSchool");
+  if (!s) {
+    showToast("⚠️ பள்ளி விவரம் காணப்படவில்லை (U.No: " + uNo + ")", "#f59e0b");
+    return;
+  }
+  const sch = Object.assign({}, s, { isAdminInspection: true, _fromAdminMidTerm: true });
+  activeSchoolSession = sch;
+  saveActivePortalUiState({
+    role: "admin",
+    view: "viewSchool",
+    isAdminInspection: true,
+    uNo: String(sch.uNo),
+    schoolTab: "midTerm"
+  });
+  const badge = document.getElementById("headerActiveUserBadge");
+  if (badge) badge.textContent = `🛡️ [Admin ➔ U.NO: ${sch.uNo}] ${sch.nameEn}`;
+  switchMainView("viewSchool");
   renderSchoolDashboard();
   const backBtn = document.getElementById("schBackToAdminBtn");
   if (backBtn) backBtn.style.display = "inline-flex";
   switchSchoolTab("midTerm");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function renderAdminMidTermDashboard() {
