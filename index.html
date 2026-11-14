@@ -1513,6 +1513,10 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
         <option value="2027_REVISION_2">📅 Feb'2027 - இரண்டாம் திருப்புதல் தேர்வு (Second Revision Exam)</option>
         <option value="2026_QUARTERLY">📅 Sep'2026 - காலாண்டுத் தேர்வு (Quarterly Exam)</option>
       </select>
+      <input type="file" id="schMidTermEmisExcelInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleMidTermEmisStudentExcelUpload(this)">
+      <button type="button" class="btn btn-primary btn-sm" onclick="triggerMidTermEmisStudentExcelUpload()" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900;" title="EMIS தளத்திலிருந்து பதிவிறக்கம் செய்யப்பட்ட Student List (.xlsx / .csv) கோப்பினை நேரடியாகப் பதிவேற்ற">
+        📤 EMIS Student List (.xlsx) பதிவேற்று
+      </button>
       <button type="button" class="btn btn-primary btn-sm" onclick="saveSchoolMidTermData(true, false)" style="background:#0284c7; border-color:#0369a1; font-weight:900;">
         💾 வரைவாகச் சேமி (Save Draft)
       </button>
@@ -33517,12 +33521,334 @@ let _activeSchoolMidTermSubTab = "SEC_TEACHERS";
 let _activeAdminMidTermSubView = "F1";
 let _examResultAnalysisStoreCache = null;
 
+
+const ULAGAMPATTI_206_PRELOADED_STUDENTS = [{"id": "STU_206_1020155598", "rollNo": "1001", "emisId": "1020155598", "name": "பாகன் பா (BHAGAN P)", "nameEn": "BHAGAN P", "nameTa": "பாகன் பா", "gender": "Male", "section": "A", "medium": "TM", "dob": "19-10-2011", "admNo": "2815", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020432129", "rollNo": "1002", "emisId": "1020432129", "name": "பரத் சொ (BHARATH C)", "nameEn": "BHARATH C", "nameTa": "பரத் சொ", "gender": "Male", "section": "A", "medium": "TM", "dob": "18-12-2011", "admNo": "2853", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020103281", "rollNo": "1003", "emisId": "1020103281", "name": "பவதேஷ் பா (BHAVADESH B)", "nameEn": "BHAVADESH B", "nameTa": "பவதேஷ் பா", "gender": "Male", "section": "A", "medium": "TM", "dob": "03-07-2012", "admNo": "2819", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020444852", "rollNo": "1004", "emisId": "1020444852", "name": "பூபதி க (BOOPATHI K)", "nameEn": "BOOPATHI K", "nameTa": "பூபதி க", "gender": "Male", "section": "A", "medium": "TM", "dob": "10-02-2012", "admNo": "2842", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020154671", "rollNo": "1005", "emisId": "1020154671", "name": "தினகரன் கு (DHINAKARAN K)", "nameEn": "DHINAKARAN K", "nameTa": "தினகரன் கு", "gender": "Male", "section": "A", "medium": "TM", "dob": "09-04-2012", "admNo": "3040", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020245324", "rollNo": "1006", "emisId": "1020245324", "name": "ஹரிகிருஷ்ணா ம (HARIKRISHNA M)", "nameEn": "HARIKRISHNA M", "nameTa": "ஹரிகிருஷ்ணா ம", "gender": "Male", "section": "A", "medium": "TM", "dob": "16-08-2012", "admNo": "3378", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1019992685", "rollNo": "1007", "emisId": "1019992685", "name": "ஜெயபிரகாஷ் மு (JAYAPRAKASH M)", "nameEn": "JAYAPRAKASH M", "nameTa": "ஜெயபிரகாஷ் மு", "gender": "Male", "section": "A", "medium": "TM", "dob": "02-11-2011", "admNo": "3164", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020052761", "rollNo": "1008", "emisId": "1020052761", "name": "கிருஷ்ணன் க (KRISHNAN G)", "nameEn": "KRISHNAN G", "nameTa": "கிருஷ்ணன் க", "gender": "Male", "section": "A", "medium": "TM", "dob": "13-05-2012", "admNo": "2843", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020162732", "rollNo": "1009", "emisId": "1020162732", "name": "லெட்சுமணன்  மு (LAKSHMANAN M)", "nameEn": "LAKSHMANAN M", "nameTa": "லெட்சுமணன்  மு", "gender": "Male", "section": "A", "medium": "TM", "dob": "08-04-2012", "admNo": "2810", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020162638", "rollNo": "1010", "emisId": "1020162638", "name": "மாதவன் அ (MADHAVAN A)", "nameEn": "MADHAVAN A", "nameTa": "மாதவன் அ", "gender": "Male", "section": "A", "medium": "TM", "dob": "01-02-2012", "admNo": "2860", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020432518", "rollNo": "1011", "emisId": "1020432518", "name": "நித்தீஷ் பாண்டி சி (NITHESH PANDI S)", "nameEn": "NITHESH PANDI S", "nameTa": "நித்தீஷ் பாண்டி சி", "gender": "Male", "section": "A", "medium": "TM", "dob": "16-05-2012", "admNo": "3276", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020710974", "rollNo": "1012", "emisId": "1020710974", "name": "நித்திஸ்  சரண் பா (NITHISH SARAN B)", "nameEn": "NITHISH SARAN B", "nameTa": "நித்திஸ்  சரண் பா", "gender": "Male", "section": "A", "medium": "TM", "dob": "25-08-2012", "admNo": "2912", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020710924", "rollNo": "1013", "emisId": "1020710924", "name": "நிவாஷ்சரண் பா (NIVASHSARAN B)", "nameEn": "NIVASHSARAN B", "nameTa": "நிவாஷ்சரண் பா", "gender": "Male", "section": "A", "medium": "TM", "dob": "25-08-2012", "admNo": "2911", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020191608", "rollNo": "1014", "emisId": "1020191608", "name": "பழனிச்சாமி சு (PALANISAMY S)", "nameEn": "PALANISAMY S", "nameTa": "பழனிச்சாமி சு", "gender": "Male", "section": "A", "medium": "TM", "dob": "10-05-2012", "admNo": "3214", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020111318", "rollNo": "1015", "emisId": "1020111318", "name": "பழனிவேலன் செ (PAZHANIVELAN S)", "nameEn": "PAZHANIVELAN S", "nameTa": "பழனிவேலன் செ", "gender": "Male", "section": "A", "medium": "TM", "dob": "09-03-2012", "admNo": "2864", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020052701", "rollNo": "1016", "emisId": "1020052701", "name": "சஞ்சய் வ (SANJAI V)", "nameEn": "SANJAI V", "nameTa": "சஞ்சய் வ", "gender": "Male", "section": "A", "medium": "TM", "dob": "23-03-2012", "admNo": "3226", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1022694152", "rollNo": "1017", "emisId": "1022694152", "name": "ஆதிதர்ஷனி மு (AATHIDHARSHANI M)", "nameEn": "AATHIDHARSHANI M", "nameTa": "ஆதிதர்ஷனி மு", "gender": "Female", "section": "A", "medium": "TM", "dob": "01-12-2011", "admNo": "3248", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020137181", "rollNo": "1018", "emisId": "1020137181", "name": "அபிநயா ப (ABINAYA P)", "nameEn": "ABINAYA P", "nameTa": "அபிநயா ப", "gender": "Female", "section": "A", "medium": "TM", "dob": "25-02-2012", "admNo": "3163", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020033009", "rollNo": "1019", "emisId": "1020033009", "name": "அபிராமி ப (ABIRAMI P)", "nameEn": "ABIRAMI P", "nameTa": "அபிராமி ப", "gender": "Female", "section": "A", "medium": "TM", "dob": "24-11-2011", "admNo": "3259", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020742126", "rollNo": "1020", "emisId": "1020742126", "name": "அனிதா சு (ANITHA S)", "nameEn": "ANITHA S", "nameTa": "அனிதா சு", "gender": "Female", "section": "A", "medium": "TM", "dob": "14-07-2012", "admNo": "3223", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020192365", "rollNo": "1021", "emisId": "1020192365", "name": "அனுஸ்கா பா (ANUSHKA P)", "nameEn": "ANUSHKA P", "nameTa": "அனுஸ்கா பா", "gender": "Female", "section": "A", "medium": "TM", "dob": "12-06-2012", "admNo": "3213", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020249548", "rollNo": "1022", "emisId": "1020249548", "name": "திவ்யா சா (DHIVYA S)", "nameEn": "DHIVYA S", "nameTa": "திவ்யா சா", "gender": "Female", "section": "A", "medium": "TM", "dob": "07-02-2012", "admNo": "3229", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020175804", "rollNo": "1023", "emisId": "1020175804", "name": "காயத்திரி ப (GAYATHIRI P)", "nameEn": "GAYATHIRI P", "nameTa": "காயத்திரி ப", "gender": "Female", "section": "A", "medium": "TM", "dob": "10-06-2012", "admNo": "2837", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020445754", "rollNo": "1024", "emisId": "1020445754", "name": "கீதா செ (GEETHA S)", "nameEn": "GEETHA S", "nameTa": "கீதா செ", "gender": "Female", "section": "A", "medium": "TM", "dob": "03-11-2011", "admNo": "3254", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020171137", "rollNo": "1025", "emisId": "1020171137", "name": "கீதாலெட்சுமி பெ (GEETHALAKSHMI P)", "nameEn": "GEETHALAKSHMI P", "nameTa": "கீதாலெட்சுமி பெ", "gender": "Female", "section": "A", "medium": "TM", "dob": "21-02-2012", "admNo": "2851", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020079450", "rollNo": "1026", "emisId": "1020079450", "name": "ஹரிணி தி (HARINI T)", "nameEn": "HARINI T", "nameTa": "ஹரிணி தி", "gender": "Female", "section": "A", "medium": "TM", "dob": "22-06-2012", "admNo": "3261", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020163111", "rollNo": "1027", "emisId": "1020163111", "name": "ஹேமலதா பெ (HEMALATHA P)", "nameEn": "HEMALATHA P", "nameTa": "ஹேமலதா பெ", "gender": "Female", "section": "A", "medium": "TM", "dob": "24-09-2011", "admNo": "3176", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020033052", "rollNo": "1028", "emisId": "1020033052", "name": "ஜெயலெட்சுமி ப (JAYALAKSHMI P)", "nameEn": "JAYALAKSHMI P", "nameTa": "ஜெயலெட்சுமி ப", "gender": "Female", "section": "A", "medium": "TM", "dob": "24-11-2011", "admNo": "3258", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020162994", "rollNo": "1029", "emisId": "1020162994", "name": "காவியா ஆ (KAVIYA A)", "nameEn": "KAVIYA A", "nameTa": "காவியா ஆ", "gender": "Female", "section": "A", "medium": "TM", "dob": "28-12-2011", "admNo": "3169", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020329877", "rollNo": "1030", "emisId": "1020329877", "name": "கீர்த்திகா தேவி ச (KEERTHIGADEVI S)", "nameEn": "KEERTHIGADEVI S", "nameTa": "கீர்த்திகா தேவி ச", "gender": "Female", "section": "A", "medium": "TM", "dob": "07-03-2012", "admNo": "3186", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020552626", "rollNo": "1031", "emisId": "1020552626", "name": "லீலாவதி பா (LEELAVATHI B)", "nameEn": "LEELAVATHI B", "nameTa": "லீலாவதி பா", "gender": "Female", "section": "A", "medium": "TM", "dob": "14-10-2011", "admNo": "3267", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020054108", "rollNo": "1032", "emisId": "1020054108", "name": "மகாலெட்சுமி ஞா (MAHALAKSHMI G)", "nameEn": "MAHALAKSHMI G", "nameTa": "மகாலெட்சுமி ஞா", "gender": "Female", "section": "A", "medium": "TM", "dob": "15-12-2011", "admNo": "3165", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020429563", "rollNo": "1033", "emisId": "1020429563", "name": "மேகவர்ஷினி ச (MEHAVARSHINI C)", "nameEn": "MEHAVARSHINI C", "nameTa": "மேகவர்ஷினி ச", "gender": "Female", "section": "A", "medium": "TM", "dob": "21-07-2012", "admNo": "3233", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020162797", "rollNo": "1034", "emisId": "1020162797", "name": "நிவிதா அ (NIVITHA A)", "nameEn": "NIVITHA A", "nameTa": "நிவிதா அ", "gender": "Female", "section": "A", "medium": "TM", "dob": "09-04-2012", "admNo": "2808", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020277422", "rollNo": "1035", "emisId": "1020277422", "name": "போதுலெட்சுமி க (POTHULAKSHMI K)", "nameEn": "POTHULAKSHMI K", "nameTa": "போதுலெட்சுமி க", "gender": "Female", "section": "A", "medium": "TM", "dob": "21-01-2012", "admNo": "3230", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020508883", "rollNo": "1036", "emisId": "1020508883", "name": "பிரேமலதா சி (PREMALATHA S)", "nameEn": "PREMALATHA S", "nameTa": "பிரேமலதா சி", "gender": "Female", "section": "A", "medium": "TM", "dob": "26-08-2012", "admNo": "3192", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1019992698", "rollNo": "1037", "emisId": "1019992698", "name": "ராஜேஸ்வரி சி (RAJESHWARI C)", "nameEn": "RAJESHWARI C", "nameTa": "ராஜேஸ்வரி சி", "gender": "Female", "section": "A", "medium": "TM", "dob": "26-07-2012", "admNo": "3190", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020163031", "rollNo": "1038", "emisId": "1020163031", "name": "ரூபாஸ்ரீ அ (ROOPASRI A)", "nameEn": "ROOPASRI A", "nameTa": "ரூபாஸ்ரீ அ", "gender": "Female", "section": "A", "medium": "TM", "dob": "07-04-2012", "admNo": "2812", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020175575", "rollNo": "1039", "emisId": "1020175575", "name": "சங்கீதா பெ (SANGEETHA P)", "nameEn": "SANGEETHA P", "nameTa": "சங்கீதா பெ", "gender": "Female", "section": "A", "medium": "TM", "dob": "16-04-2012", "admNo": "2816", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020175725", "rollNo": "1040", "emisId": "1020175725", "name": "சந்தியா ரெ (SANTHIYA R)", "nameEn": "SANTHIYA R", "nameTa": "சந்தியா ரெ", "gender": "Female", "section": "A", "medium": "TM", "dob": "05-03-2012", "admNo": "2878", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020054026", "rollNo": "1041", "emisId": "1020054026", "name": "சரஸ்வதி செ (SARASWATHI S)", "nameEn": "SARASWATHI S", "nameTa": "சரஸ்வதி செ", "gender": "Female", "section": "A", "medium": "TM", "dob": "10-01-2012", "admNo": "3170", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1021195139", "rollNo": "1042", "emisId": "1021195139", "name": "ஷாலினி ர (SHALINI R)", "nameEn": "SHALINI R", "nameTa": "ஷாலினி ர", "gender": "Female", "section": "A", "medium": "TM", "dob": "01-07-2011", "admNo": "3172", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020177646", "rollNo": "1043", "emisId": "1020177646", "name": "ஷாலினி ர (SHALINI R)", "nameEn": "SHALINI R", "nameTa": "ஷாலினி ர", "gender": "Female", "section": "A", "medium": "TM", "dob": "25-10-2012", "admNo": "3263", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020788478", "rollNo": "1044", "emisId": "1020788478", "name": "சிவானிஸ்ரீ  பூ (SHIVANISRI B)", "nameEn": "SHIVANISRI B", "nameTa": "சிவானிஸ்ரீ  பூ", "gender": "Female", "section": "A", "medium": "TM", "dob": "08-11-2011", "admNo": "3175", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020175142", "rollNo": "1045", "emisId": "1020175142", "name": "சிவஸ்ரீ வெ (SIVASRI V)", "nameEn": "SIVASRI V", "nameTa": "சிவஸ்ரீ வெ", "gender": "Female", "section": "A", "medium": "TM", "dob": "17-03-2012", "admNo": "3171", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020378865", "rollNo": "1046", "emisId": "1020378865", "name": "ஸ்ருதிகா கு (SRUTHIKA K)", "nameEn": "SRUTHIKA K", "nameTa": "ஸ்ருதிகா கு", "gender": "Female", "section": "A", "medium": "TM", "dob": "01-06-2012", "admNo": "3231", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020052873", "rollNo": "1047", "emisId": "1020052873", "name": "சுமித்ராதேவி அ (SUMITHRADEVI A)", "nameEn": "SUMITHRADEVI A", "nameTa": "சுமித்ராதேவி அ", "gender": "Female", "section": "A", "medium": "TM", "dob": "18-05-2012", "admNo": "2826", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020818760", "rollNo": "1048", "emisId": "1020818760", "name": "தேன்மொழி செ (THENMOZHI S)", "nameEn": "THENMOZHI S", "nameTa": "தேன்மொழி செ", "gender": "Female", "section": "A", "medium": "TM", "dob": "07-07-2012", "admNo": "3222", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020460886", "rollNo": "1049", "emisId": "1020460886", "name": "வெண்ணிலா கு (VENNILA K)", "nameEn": "VENNILA K", "nameTa": "வெண்ணிலா கு", "gender": "Female", "section": "A", "medium": "TM", "dob": "09-12-2011", "admNo": "4834", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020246090", "rollNo": "1050", "emisId": "1020246090", "name": "அன்புச்செல்வன்  சா (ANBUSELVAN S)", "nameEn": "ANBUSELVAN S", "nameTa": "அன்புச்செல்வன்  சா", "gender": "Male", "section": "B", "medium": "TM", "dob": "09-12-2011", "admNo": "3217", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020244839", "rollNo": "1051", "emisId": "1020244839", "name": "கோபாலகண்ணன் பொ (GOPALA KANNAN P)", "nameEn": "GOPALA KANNAN P", "nameTa": "கோபாலகண்ணன் பொ", "gender": "Male", "section": "B", "medium": "TM", "dob": "20-03-2012", "admNo": "3218", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_2020856484", "rollNo": "1052", "emisId": "2020856484", "name": "ஹரிஷ் குமார் க (HARISH KUMAR K)", "nameEn": "HARISH KUMAR K", "nameTa": "ஹரிஷ் குமார் க", "gender": "Male", "section": "B", "medium": "TM", "dob": "20-07-2012", "admNo": "2888", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020191302", "rollNo": "1053", "emisId": "1020191302", "name": "ஹேமநாதன் அ (HEMANATHAN A)", "nameEn": "HEMANATHAN A", "nameTa": "ஹேமநாதன் அ", "gender": "Male", "section": "B", "medium": "TM", "dob": "06-03-2012", "admNo": "3166", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1021034805", "rollNo": "1054", "emisId": "1021034805", "name": "ஜெயராம்ஸ்ரீ வை (JAYARAMSRI V)", "nameEn": "JAYARAMSRI V", "nameTa": "ஜெயராம்ஸ்ரீ வை", "gender": "Male", "section": "B", "medium": "TM", "dob": "05-03-2011", "admNo": "2835", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_2020326816", "rollNo": "1055", "emisId": "2020326816", "name": "லோகநாதன் லெ (LOGANATHAN L)", "nameEn": "LOGANATHAN L", "nameTa": "லோகநாதன் லெ", "gender": "Male", "section": "B", "medium": "TM", "dob": "26-11-2011", "admNo": "2824", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_2020144408", "rollNo": "1056", "emisId": "2020144408", "name": "முகமது இப்ராஹிம் மு (MOHAMED IBRAHIM M)", "nameEn": "MOHAMED IBRAHIM M", "nameTa": "முகமது இப்ராஹிம் மு", "gender": "Male", "section": "B", "medium": "TM", "dob": "26-10-2011", "admNo": "2841", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020162668", "rollNo": "1057", "emisId": "1020162668", "name": "பிரியதர்ஷன் சே (PRIYADHARSAN S)", "nameEn": "PRIYADHARSAN S", "nameTa": "பிரியதர்ஷன் சே", "gender": "Male", "section": "B", "medium": "TM", "dob": "26-09-2011", "admNo": "3105", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020162753", "rollNo": "1058", "emisId": "1020162753", "name": "ரித்திக் ரோஷன் க (RITHICK ROSHAN K)", "nameEn": "RITHICK ROSHAN K", "nameTa": "ரித்திக் ரோஷன் க", "gender": "Male", "section": "B", "medium": "TM", "dob": "12-02-2012", "admNo": "3115", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1021991849", "rollNo": "1059", "emisId": "1021991849", "name": "சந்தோஷ்  கு (SANTHOSH K)", "nameEn": "SANTHOSH K", "nameTa": "சந்தோஷ்  கு", "gender": "Male", "section": "B", "medium": "TM", "dob": "19-02-2011", "admNo": "3168", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1022460149", "rollNo": "1060", "emisId": "1022460149", "name": "சரவண பெருமாள் கி (SARAVANA PERUMAL K)", "nameEn": "SARAVANA PERUMAL K", "nameTa": "சரவண பெருமாள் கி", "gender": "Male", "section": "B", "medium": "TM", "dob": "04-03-2012", "admNo": "3184", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020155689", "rollNo": "1061", "emisId": "1020155689", "name": "சதீஷ் க (SATHEESH K)", "nameEn": "SATHEESH K", "nameTa": "சதீஷ் க", "gender": "Male", "section": "B", "medium": "TM", "dob": "05-09-2011", "admNo": "2823", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020053611", "rollNo": "1062", "emisId": "1020053611", "name": "யோகேஸ்வரன் நா (YOGESHWARAN N)", "nameEn": "YOGESHWARAN N", "nameTa": "யோகேஸ்வரன் நா", "gender": "Male", "section": "B", "medium": "TM", "dob": "05-10-2011", "admNo": "3219", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020154852", "rollNo": "1063", "emisId": "1020154852", "name": "யுவராஜ் ந (YUVARAJ N)", "nameEn": "YUVARAJ N", "nameTa": "யுவராஜ் ந", "gender": "Male", "section": "B", "medium": "TM", "dob": "03-10-2011", "admNo": "2840", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020748989", "rollNo": "1064", "emisId": "1020748989", "name": "அபி க (ABI K)", "nameEn": "ABI K", "nameTa": "அபி க", "gender": "Female", "section": "B", "medium": "TM", "dob": "10-03-2012", "admNo": "3232", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020742232", "rollNo": "1065", "emisId": "1020742232", "name": "அனுஷ்கா கு (ANUSHKA K)", "nameEn": "ANUSHKA K", "nameTa": "அனுஷ்கா கு", "gender": "Female", "section": "B", "medium": "TM", "dob": "15-03-2012", "admNo": "3194", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020181998", "rollNo": "1066", "emisId": "1020181998", "name": "அர்ச்சனா சொ (ARCHANA C)", "nameEn": "ARCHANA C", "nameTa": "அர்ச்சனா சொ", "gender": "Female", "section": "B", "medium": "TM", "dob": "10-10-2011", "admNo": "3225", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020137795", "rollNo": "1067", "emisId": "1020137795", "name": "அவினேஸ்வரி ஆ (AVINESHWARI A)", "nameEn": "AVINESHWARI A", "nameTa": "அவினேஸ்வரி ஆ", "gender": "Female", "section": "B", "medium": "TM", "dob": "07-04-2012", "admNo": "3160", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020053938", "rollNo": "1068", "emisId": "1020053938", "name": "தன்ஷிகா சி (DHANSHIKA S)", "nameEn": "DHANSHIKA S", "nameTa": "தன்ஷிகா சி", "gender": "Female", "section": "B", "medium": "TM", "dob": "06-06-2012", "admNo": "3167", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1019962712", "rollNo": "1069", "emisId": "1019962712", "name": "திவ்யஸ்ரீ த (DIVYA SREE T)", "nameEn": "DIVYA SREE T", "nameTa": "திவ்யஸ்ரீ த", "gender": "Female", "section": "B", "medium": "TM", "dob": "27-10-2011", "admNo": "3216", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020746321", "rollNo": "1070", "emisId": "1020746321", "name": "கங்கா தேவி ந (GANKA DEVI N)", "nameEn": "GANKA DEVI N", "nameTa": "கங்கா தேவி ந", "gender": "Female", "section": "B", "medium": "TM", "dob": "03-11-2011", "admNo": "3180", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020171043", "rollNo": "1071", "emisId": "1020171043", "name": "கோபிகா ரா (GOBIKA R)", "nameEn": "GOBIKA R", "nameTa": "கோபிகா ரா", "gender": "Female", "section": "B", "medium": "TM", "dob": "22-09-2011", "admNo": "2834", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020579938", "rollNo": "1072", "emisId": "1020579938", "name": "கௌரி மு (GOWRI M)", "nameEn": "GOWRI M", "nameTa": "கௌரி மு", "gender": "Female", "section": "B", "medium": "TM", "dob": "17-11-2011", "admNo": "3183", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020171288", "rollNo": "1073", "emisId": "1020171288", "name": "ஹாசினி பி (HASINI P)", "nameEn": "HASINI P", "nameTa": "ஹாசினி பி", "gender": "Female", "section": "B", "medium": "TM", "dob": "15-06-2012", "admNo": "2848", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020354010", "rollNo": "1074", "emisId": "1020354010", "name": "இந்துமதி க‌ (INDHUMATHI K)", "nameEn": "INDHUMATHI K", "nameTa": "இந்துமதி க‌", "gender": "Female", "section": "B", "medium": "TM", "dob": "16-02-2012", "admNo": "3228", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020717000", "rollNo": "1075", "emisId": "1020717000", "name": "கலையரசி க (KALAIYARASI K)", "nameEn": "KALAIYARASI K", "nameTa": "கலையரசி க", "gender": "Female", "section": "B", "medium": "TM", "dob": "24-05-2012", "admNo": "3193", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1019992648", "rollNo": "1076", "emisId": "1019992648", "name": "காவியா சி (KAVIYA C)", "nameEn": "KAVIYA C", "nameTa": "காவியா சி", "gender": "Female", "section": "B", "medium": "TM", "dob": "23-05-2012", "admNo": "3189", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020576744", "rollNo": "1077", "emisId": "1020576744", "name": "காவியா ரா (KAVIYA R)", "nameEn": "KAVIYA R", "nameTa": "காவியா ரா", "gender": "Female", "section": "B", "medium": "TM", "dob": "17-09-2011", "admNo": "3173", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020163064", "rollNo": "1078", "emisId": "1020163064", "name": "கவியரசி க (KAVIYARASI K)", "nameEn": "KAVIYARASI K", "nameTa": "கவியரசி க", "gender": "Female", "section": "B", "medium": "TM", "dob": "21-09-2011", "admNo": "3257", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_2020602101", "rollNo": "1079", "emisId": "2020602101", "name": "கீர்த்தனா ஸ்ரீ க (KEERTHANA SRI K)", "nameEn": "KEERTHANA SRI K", "nameTa": "கீர்த்தனா ஸ்ரீ க", "gender": "Female", "section": "B", "medium": "TM", "dob": "19-06-2011", "admNo": "9083", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020175537", "rollNo": "1080", "emisId": "1020175537", "name": "மங்கையற்கரசி அ (MANGAIYARKARASI A)", "nameEn": "MANGAIYARKARASI A", "nameTa": "மங்கையற்கரசி அ", "gender": "Female", "section": "B", "medium": "TM", "dob": "08-02-2012", "admNo": "2822", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020176789", "rollNo": "1081", "emisId": "1020176789", "name": "மீனாட்சி ச (MEENAKSHI S)", "nameEn": "MEENAKSHI S", "nameTa": "மீனாட்சி ச", "gender": "Female", "section": "B", "medium": "TM", "dob": "11-01-2012", "admNo": "3220", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020315428", "rollNo": "1082", "emisId": "1020315428", "name": "மீனாட்சி சு (MEENAKSHI S)", "nameEn": "MEENAKSHI S", "nameTa": "மீனாட்சி சு", "gender": "Female", "section": "B", "medium": "TM", "dob": "05-06-2012", "admNo": "3181", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020836178", "rollNo": "1083", "emisId": "1020836178", "name": "மெர்லின் மா (MERLIN M)", "nameEn": "MERLIN M", "nameTa": "மெர்லின் மா", "gender": "Female", "section": "B", "medium": "TM", "dob": "12-07-2012", "admNo": "3376", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020163089", "rollNo": "1084", "emisId": "1020163089", "name": "மோனிஷா மு (MONISHA M)", "nameEn": "MONISHA M", "nameTa": "மோனிஷா மு", "gender": "Female", "section": "B", "medium": "TM", "dob": "14-01-2012", "admNo": "3074", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020445010", "rollNo": "1085", "emisId": "1020445010", "name": "முத்துலெட்சுமி ரா (MUTHULAKSHMI R)", "nameEn": "MUTHULAKSHMI R", "nameTa": "முத்துலெட்சுமி ரா", "gender": "Female", "section": "B", "medium": "TM", "dob": "26-05-2012", "admNo": "3023", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020445099", "rollNo": "1086", "emisId": "1020445099", "name": "நந்தினி செ (NANDHINI S)", "nameEn": "NANDHINI S", "nameTa": "நந்தினி செ", "gender": "Female", "section": "B", "medium": "TM", "dob": "03-08-2012", "admNo": "2836", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020445156", "rollNo": "1087", "emisId": "1020445156", "name": "நித்ய ஸ்ரீ க (NITHYA SRI K)", "nameEn": "NITHYA SRI K", "nameTa": "நித்ய ஸ்ரீ க", "gender": "Female", "section": "B", "medium": "TM", "dob": "07-08-2011", "admNo": "2811", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_2020134338", "rollNo": "1088", "emisId": "2020134338", "name": "நிவேதா அ (NIVETHA A)", "nameEn": "NIVETHA A", "nameTa": "நிவேதா அ", "gender": "Female", "section": "B", "medium": "TM", "dob": "10-04-2012", "admNo": "3271", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020162827", "rollNo": "1089", "emisId": "1020162827", "name": "ஓவியா அ (OVIYA A)", "nameEn": "OVIYA A", "nameTa": "ஓவியா அ", "gender": "Female", "section": "B", "medium": "TM", "dob": "02-02-2012", "admNo": "2807", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020111897", "rollNo": "1090", "emisId": "1020111897", "name": "பவித்ரா சி (PAVITHRA C)", "nameEn": "PAVITHRA C", "nameTa": "பவித்ரா சி", "gender": "Female", "section": "B", "medium": "TM", "dob": "03-07-2012", "admNo": "2860", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020165640", "rollNo": "1091", "emisId": "1020165640", "name": "போதும்பொண்ணு ச (POTHUMPONNU S)", "nameEn": "POTHUMPONNU S", "nameTa": "போதும்பொண்ணு ச", "gender": "Female", "section": "B", "medium": "TM", "dob": "27-12-2011", "admNo": "3188", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_2020273422", "rollNo": "1092", "emisId": "2020273422", "name": "பிரிய தர்ஷினி ச (PRIYA DHARSHINI C)", "nameEn": "PRIYA DHARSHINI C", "nameTa": "பிரிய தர்ஷினி ச", "gender": "Female", "section": "B", "medium": "TM", "dob": "31-08-2011", "admNo": "3262", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020967992", "rollNo": "1093", "emisId": "1020967992", "name": "சத்யா மு (SATHYA M)", "nameEn": "SATHYA M", "nameTa": "சத்யா மு", "gender": "Female", "section": "B", "medium": "TM", "dob": "14-03-2012", "admNo": "3178", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020864229", "rollNo": "1094", "emisId": "1020864229", "name": "செல்வலெட்சுமி வெ (SELVALAKSHMI V)", "nameEn": "SELVALAKSHMI V", "nameTa": "செல்வலெட்சுமி வெ", "gender": "Female", "section": "B", "medium": "TM", "dob": "28-05-2012", "admNo": "3266", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_2020101932", "rollNo": "1095", "emisId": "2020101932", "name": "சஜானா அ (SHAZANA A)", "nameEn": "SHAZANA A", "nameTa": "சஜானா அ", "gender": "Female", "section": "B", "medium": "TM", "dob": "09-02-2012", "admNo": "2827", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020171210", "rollNo": "1096", "emisId": "1020171210", "name": "சுபாஷினி ம (SUBASHINI M)", "nameEn": "SUBASHINI M", "nameTa": "சுபாஷினி ம", "gender": "Female", "section": "B", "medium": "TM", "dob": "30-01-2012", "admNo": "2813", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020163146", "rollNo": "1097", "emisId": "1020163146", "name": "சுபாஸ்ரீ க (SUBHASRI K)", "nameEn": "SUBHASRI K", "nameTa": "சுபாஸ்ரீ க", "gender": "Female", "section": "B", "medium": "TM", "dob": "09-11-2011", "admNo": "3250", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020175428", "rollNo": "1098", "emisId": "1020175428", "name": "சுகந்தி அ (SUGANTHI A)", "nameEn": "SUGANTHI A", "nameTa": "சுகந்தி அ", "gender": "Female", "section": "B", "medium": "TM", "dob": "25-03-2012", "admNo": "3260", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_2021120981", "rollNo": "1099", "emisId": "2021120981", "name": "சுருதிஸ்வனா பெ (SURUTHISWANA P)", "nameEn": "SURUTHISWANA P", "nameTa": "சுருதிஸ்வனா பெ", "gender": "Female", "section": "B", "medium": "TM", "dob": "20-04-2012", "admNo": "2890", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020314421", "rollNo": "1100", "emisId": "1020314421", "name": "வர்ஸ்னி கு (VARSHNI K)", "nameEn": "VARSHNI K", "nameTa": "வர்ஸ்னி கு", "gender": "Female", "section": "B", "medium": "TM", "dob": "07-04-2012", "admNo": "3182", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020562666", "rollNo": "1101", "emisId": "1020562666", "name": "வெண்ணிலா ம (VENNILA M)", "nameEn": "VENNILA M", "nameTa": "வெண்ணிலா ம", "gender": "Female", "section": "B", "medium": "TM", "dob": "02-02-2012", "admNo": "2825", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}, {"id": "STU_206_1020444935", "rollNo": "1102", "emisId": "1020444935", "name": "விசாலினி க (VISHALINI K)", "nameEn": "VISHALINI K", "nameTa": "விசாலினி க", "gender": "Female", "section": "B", "medium": "TM", "dob": "17-10-2011", "admNo": "3022", "disability": "None", "status": "PRESENT", "marks": {"TAMIL": "", "ENGLISH": "", "MATHS": "", "SCIENCE": "", "SOCIAL": ""}}];
+
+function ensureUlagampatti206PreloadedInMidTermStore(store) {
+  if (!store || typeof store !== "object") return;
+  const termKey = "2026_MIDTERM_2";
+  if (!store[termKey]) store[termKey] = {};
+  const existing = store[termKey]["206"];
+  if (!existing || !Array.isArray(existing.students) || existing.students.length === 0) {
+    const baseSecs = autoBuildDefaultSectionsForSchool("206");
+    // Ensure both Section A and Section B (Tamil Medium) exist for Ulagampatti HSS (U.No 206)
+    const secA = baseSecs[0] || { secId: "A", secName: "Section A", medium: "TM", teachers: {} };
+    secA.secId = "A";
+    secA.secName = "Section A";
+    secA.medium = "TM";
+    const secB = {
+      secId: "B",
+      secName: "Section B",
+      medium: "TM",
+      teachers: JSON.parse(JSON.stringify(secA.teachers || {}))
+    };
+    store[termKey]["206"] = {
+      uNo: "206",
+      examTerm: termKey,
+      markScale: "100",
+      sections: [secA, secB],
+      students: JSON.parse(JSON.stringify(ULAGAMPATTI_206_PRELOADED_STUDENTS)),
+      isSubmitted: false,
+      submittedAt: "",
+      updatedAt: new Date().toISOString()
+    };
+  }
+}
+
+function triggerMidTermEmisStudentExcelUpload() {
+  const inp = document.getElementById("schMidTermEmisExcelInput");
+  if (inp) {
+    inp.value = "";
+    inp.click();
+  }
+}
+
+function handleMidTermEmisStudentExcelUpload(fileInput) {
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) return;
+  if (!activeSchoolSession) {
+    showToast("⚠️ முதலில் பள்ளியைத் தேர்ந்தெடுக்கவும்.", "#f59e0b");
+    return;
+  }
+  const file = fileInput.files[0];
+  const uNo = String(activeSchoolSession.uNo);
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      const bytes = new Uint8Array(e.target.result);
+      let rowsAoA = [];
+      if (typeof XLSX !== "undefined") {
+        const wb = XLSX.read(bytes, { type: "array", codepage: 65001 });
+        const firstSheet = wb.Sheets[wb.SheetNames[0]];
+        rowsAoA = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: "" });
+      } else {
+        const text = new TextDecoder("utf-8").decode(bytes);
+        rowsAoA = text.split(/\r?\n/).map(line => line.split(","));
+      }
+
+      if (!Array.isArray(rowsAoA) || rowsAoA.length < 2) {
+        showToast("⚠️ பதிவேற்றிய கோப்பில் மாணவர் வரிசைகள் காணப்படவில்லை.", "#ef4444");
+        return;
+      }
+
+      // Locate header row (looks for 'EMIS Id', 'Name', 'Section', 'Gender', etc.)
+      let hdrRowIdx = 0;
+      for (let r = 0; r < Math.min(10, rowsAoA.length); r++) {
+        const joined = (rowsAoA[r] || []).map(x => String(x || "").trim().toLowerCase()).join(" | ");
+        if (joined.includes("emis") || (joined.includes("name") && (joined.includes("section") || joined.includes("gender") || joined.includes("tamil")))) {
+          hdrRowIdx = r;
+          break;
+        }
+      }
+
+      const headers = (rowsAoA[hdrRowIdx] || []).map(h => String(h || "").trim());
+      const findCol = (regexList) => {
+        for (const rx of regexList) {
+          const idx = headers.findIndex(h => rx.test(h));
+          if (idx !== -1) return idx;
+        }
+        return -1;
+      };
+
+      const colEmis = findCol([/^emis\s*id$/i, /emis\s*no/i, /student\s*id/i, /^emis/i]);
+      const colNameEn = findCol([/^name$/i, /^student\s*name$/i, /name\s*in\s*english/i, /^பெயர்$/i]);
+      const colNameTa = findCol([/name\s*in\s*tamil/i, /tamil\s*name/i, /தமிழில்\s*பெயர்/i]);
+      const colClass = findCol([/^class$/i, /^std$/i, /^standard$/i, /வகுப்பு/i]);
+      const colSec = findCol([/^section$/i, /^sec$/i, /பிரிவு/i]);
+      const colGender = findCol([/^gender$/i, /^sex$/i, /பாலினம்/i]);
+      const colDob = findCol([/data\s*of\s*birth/i, /date\s*of\s*birth/i, /^dob$/i, /பிறந்த/i]);
+      const colMed = findCol([/medium\s*of\s*instruction/i, /^medium$/i, /பயிற்று\s*மொழி/i]);
+      const colAdm = findCol([/admission\s*number/i, /admission\s*no/i, /^adm/i]);
+      const colComm = findCol([/^community$/i, /சமூகம்/i]);
+      const colDisab = findCol([/disability/i, /மாற்றுத்திறன்/i]);
+      const colRoll = findCol([/^roll\s*no/i, /^roll$/i, /வ\.எண்/i]);
+
+      // Optional Subject Mark columns (if school uploads a Mark Sheet Excel/CSV!)
+      const colMarkTam = findCol([/^tamil$/i, /^language$/i, /^தமிழ்$/i]);
+      const colMarkEng = findCol([/^english$/i, /^ஆங்கிலம்$/i]);
+      const colMarkMat = findCol([/^maths$/i, /^mathematics$/i, /^கணிதம்$/i]);
+      const colMarkSci = findCol([/^science$/i, /^அறிவியல்$/i]);
+      const colMarkSoc = findCol([/^social/i, /^சமூக/i]);
+
+      const dataRows = rowsAoA.slice(hdrRowIdx + 1);
+      // Check if Class column has 'X' / '10' rows
+      const hasTenClassRows = colClass !== -1 && dataRows.some(row => {
+        const cv = String(row[colClass] || "").trim().toUpperCase();
+        return cv === "X" || cv === "10" || cv === "10TH" || cv === "X-STD" || cv === "SSLC" || cv === "10-ஆம் வகுப்பு";
+      });
+
+      const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+      // Map of existing student marks by emisId or rollNo or name so re-uploading doesn't wipe already-typed marks unless new marks are in the file
+      const existingMarksMap = {};
+      (rec.students || []).forEach(st => {
+        if (st.emisId) existingMarksMap["EMIS_" + String(st.emisId).trim()] = st.marks;
+        if (st.nameEn) existingMarksMap["NAME_" + String(st.nameEn).trim().toUpperCase()] = st.marks;
+      });
+
+      const extracted = [];
+      const discoveredSecs = new Map(); // secId -> medium ("TM" | "EM")
+
+      dataRows.forEach(row => {
+        if (!Array.isArray(row) || row.length === 0) return;
+        if (hasTenClassRows && colClass !== -1) {
+          const cv = String(row[colClass] || "").trim().toUpperCase();
+          if (!(cv === "X" || cv === "10" || cv === "10TH" || cv === "X-STD" || cv === "SSLC" || cv === "10-ஆம் வகுப்பு")) {
+            return;
+          }
+        }
+        const emisId = colEmis !== -1 ? String(row[colEmis] || "").trim() : "";
+        const nameEn = colNameEn !== -1 ? String(row[colNameEn] || "").trim() : "";
+        const nameTa = colNameTa !== -1 ? String(row[colNameTa] || "").trim() : "";
+        if (!emisId && !nameEn && !nameTa) return;
+
+        let secId = colSec !== -1 ? String(row[colSec] || "A").trim().toUpperCase() : "A";
+        secId = secId.replace(/^SECTION\s*/i, "").replace(/[^A-Z0-9]/g, "") || "A";
+
+        const rawGen = colGender !== -1 ? String(row[colGender] || "Male").trim() : "Male";
+        const gender = /^(f|female|பெண்|girl|g)/i.test(rawGen) ? "Female" : "Male";
+
+        const rawMed = colMed !== -1 ? String(row[colMed] || "Tamil").trim() : "Tamil";
+        const med = /eng|em|ஆங்கிலம்/i.test(rawMed) ? "EM" : "TM";
+
+        if (!discoveredSecs.has(secId)) {
+          discoveredSecs.set(secId, med);
+        }
+
+        const dob = colDob !== -1 ? formatDateDisplayDMY(String(row[colDob] || "").trim()) : "";
+        const admNo = colAdm !== -1 ? String(row[colAdm] || "").trim() : "";
+        const comm = colComm !== -1 ? String(row[colComm] || "").trim() : "";
+        const disab = colDisab !== -1 ? String(row[colDisab] || "None").trim() : "None";
+        const explicitRoll = colRoll !== -1 ? String(row[colRoll] || "").trim() : "";
+
+        const prevMarks = (emisId && existingMarksMap["EMIS_" + emisId]) || (nameEn && existingMarksMap["NAME_" + nameEn.toUpperCase()]) || {};
+        const marks = {
+          TAMIL: colMarkTam !== -1 && String(row[colMarkTam] || "").trim() !== "" ? String(row[colMarkTam]).trim() : (prevMarks.TAMIL || ""),
+          ENGLISH: colMarkEng !== -1 && String(row[colMarkEng] || "").trim() !== "" ? String(row[colMarkEng]).trim() : (prevMarks.ENGLISH || ""),
+          MATHS: colMarkMat !== -1 && String(row[colMarkMat] || "").trim() !== "" ? String(row[colMarkMat]).trim() : (prevMarks.MATHS || ""),
+          SCIENCE: colMarkSci !== -1 && String(row[colMarkSci] || "").trim() !== "" ? String(row[colMarkSci]).trim() : (prevMarks.SCIENCE || ""),
+          SOCIAL: colMarkSoc !== -1 && String(row[colMarkSoc] || "").trim() !== "" ? String(row[colMarkSoc]).trim() : (prevMarks.SOCIAL || "")
+        };
+
+        extracted.push({
+          emisId,
+          nameEn,
+          nameTa,
+          gender,
+          section: secId,
+          medium: med,
+          dob,
+          admNo,
+          community: comm,
+          disability: disab,
+          explicitRoll,
+          marks
+        });
+      });
+
+      if (extracted.length === 0) {
+        showToast("⚠️ இக்கோப்பில் 10-ஆம் வகுப்பு (Class X) மாணவர்கள் எவரும் காணப்படவில்லை.", "#f59e0b", true);
+        return;
+      }
+
+      // Sort by Section (A, B...), then Gender (Male first, Female second), then Name
+      extracted.sort((a, b) => {
+        if (a.section !== b.section) return a.section.localeCompare(b.section);
+        const gA = a.gender === "Male" ? 0 : 1;
+        const gB = b.gender === "Male" ? 0 : 1;
+        if (gA !== gB) return gA - gB;
+        return (a.nameEn || a.nameTa).localeCompare(b.nameEn || b.nameTa);
+      });
+
+      // Reconcile Sections on the school record
+      const existingSecMap = {};
+      (rec.sections || []).forEach(s => { existingSecMap[s.secId] = s; });
+      const defaultSecs = autoBuildDefaultSectionsForSchool(uNo);
+      const fallbackTeachers = (defaultSecs[0] && defaultSecs[0].teachers) ? defaultSecs[0].teachers : {};
+
+      const sortedSecIds = Array.from(discoveredSecs.keys()).sort();
+      rec.sections = sortedSecIds.map(sId => {
+        if (existingSecMap[sId]) {
+          existingSecMap[sId].medium = discoveredSecs.get(sId) || existingSecMap[sId].medium || "TM";
+          return existingSecMap[sId];
+        }
+        return {
+          secId: sId,
+          secName: "Section " + sId,
+          medium: discoveredSecs.get(sId) || "TM",
+          teachers: JSON.parse(JSON.stringify(fallbackTeachers))
+        };
+      });
+
+      // Build final students list
+      let boysCount = 0, girlsCount = 0, tmCount = 0, emCount = 0;
+      rec.students = extracted.map((item, idx) => {
+        if (item.gender === "Female") girlsCount++; else boysCount++;
+        if (item.medium === "EM") emCount++; else tmCount++;
+        const dispName = (item.nameTa && item.nameEn)
+          ? `${item.nameTa} (${item.nameEn})`
+          : (item.nameTa || item.nameEn || `மாணவர் ${idx + 1}`);
+        return {
+          id: "STU_" + uNo + "_" + (item.emisId || (idx + 1)),
+          rollNo: item.explicitRoll || String(1000 + idx + 1),
+          emisId: item.emisId,
+          name: dispName,
+          nameEn: item.nameEn,
+          nameTa: item.nameTa,
+          gender: item.gender,
+          section: item.section,
+          medium: item.medium,
+          dob: item.dob,
+          admNo: item.admNo,
+          community: item.community,
+          disability: item.disability,
+          status: "PRESENT",
+          marks: item.marks
+        };
+      });
+
+      // Also sync 10th Std student strength in extra.students["10"] so School Dashboard & Form-I(1) EMIS count match 100%
+      const extra = getSchoolExtra(uNo);
+      if (extra) {
+        if (!extra.students) extra.students = {};
+        extra.students["10"] = {
+          boys: boysCount,
+          girls: girlsCount,
+          tm: tmCount,
+          em: emCount
+        };
+        safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+      }
+
+      saveExamResultAnalysisStore();
+      if (typeof pushCloudUpdate === "function") {
+        pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `School [${uNo}] uploaded EMIS 10th Student List (${rec.students.length} students)`);
+      }
+      switchSchoolMidTermSubTab("STU_MARKS");
+      showToast(
+        `✅ EMIS கோப்பிலிருந்து ${rec.students.length} மாணவர்கள் (ஆண்: ${boysCount}, பெண்: ${girlsCount} | பிரிவுகள்: ${sortedSecIds.join(", ")}) வெற்றிகரமாகப் பதிவேற்றப்பட்டனர்!`,
+        "#16a34a",
+        true
+      );
+    } catch (err) {
+      console.error("EMIS Student Excel Upload Error:", err);
+      showToast("❌ Excel கோப்பினை வாசிப்பதில் பிழை: " + (err.message || err), "#ef4444");
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function downloadMidTermStudentMarkTemplateCsv() {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+  const students = rec.students || [];
+  if (students.length === 0) {
+    showToast("⚠️ முதலில் EMIS Student List கோப்பினைப் பதிவேற்றவும் அல்லது மாணவர் வரிசைகளை உருவாக்கவும்.", "#f59e0b");
+    return;
+  }
+  const esc = v => `"${String(v !== undefined && v !== null ? v : "").replace(/"/g, '""')}"`;
+  const rows = [
+    ["Roll No", "EMIS Id", "Name", "Name in Tamil", "Class", "Section", "Gender", "Medium of Instruction", "Admission Number", "Data of Birth", "Tamil", "English", "Maths", "Science", "Social Science"]
+  ];
+  students.forEach(st => {
+    const m = st.marks || {};
+    rows.push([
+      st.rollNo || "",
+      st.emisId || "",
+      st.nameEn || st.name || "",
+      st.nameTa || "",
+      "X",
+      st.section || "A",
+      st.gender || "Male",
+      st.medium === "EM" ? "English" : "Tamil",
+      st.admNo || "",
+      st.dob || "",
+      m.TAMIL !== undefined ? m.TAMIL : "",
+      m.ENGLISH !== undefined ? m.ENGLISH : "",
+      m.MATHS !== undefined ? m.MATHS : "",
+      m.SCIENCE !== undefined ? m.SCIENCE : "",
+      m.SOCIAL !== undefined ? m.SOCIAL : ""
+    ]);
+  });
+  const blob = new Blob(["\uFEFF" + rows.map(r => r.map(esc).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `[${uNo}]_10th_Students_Mark_Entry_Sheet.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`📥 ${students.length} மாணவர்களின் பெயர்களுடன் மதிப்பெண் உள்ளீட்டு Excel (CSV) கோப்பு பதிவிறக்கப்பட்டது!`, "#0284c7", true);
+}
+
 function getExamResultAnalysisStore() {
   if (_examResultAnalysisStoreCache && typeof _examResultAnalysisStoreCache === "object") {
     return _examResultAnalysisStoreCache;
   }
   const saved = safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", null);
   _examResultAnalysisStoreCache = (saved && typeof saved === "object") ? saved : {};
+  ensureUlagampatti206PreloadedInMidTermStore(_examResultAnalysisStoreCache);
   return _examResultAnalysisStoreCache;
 }
 
@@ -34395,7 +34721,10 @@ function renderSchoolMidTermStuMarksPane(calc) {
           <tr id="mtStuRow_${origIdx}">
             <td style="text-align:center; font-weight:900; color:#475569; width:42px;">${origIdx + 1}</td>
             <td style="width:88px;"><input type="text" class="form-control" style="padding:4px 6px; font-size:0.80rem; font-weight:900; font-family:monospace; text-align:center;" value="${escapeHtmlAttr(st.rollNo || "")}" placeholder="Roll No" oninput="onMidTermStudentCellInput(${origIdx}, 'rollNo', this.value)"></td>
-            <td style="min-width:175px;"><input type="text" class="form-control" style="padding:4px 8px; font-size:0.82rem; font-weight:800;" value="${escapeHtmlAttr(st.name || "")}" placeholder="மாணவர் பெயர்" oninput="onMidTermStudentCellInput(${origIdx}, 'name', this.value)"></td>
+            <td style="min-width:215px;">
+              <input type="text" class="form-control" style="padding:4px 8px; font-size:0.81rem; font-weight:800;" value="${escapeHtmlAttr(st.name || "")}" placeholder="மாணவர் பெயர் (தமிழ் / English)" oninput="onMidTermStudentCellInput(${origIdx}, 'name', this.value)">
+              ${st.emisId ? `<div style="font-size:0.68rem; color:#0369a1; font-weight:800; margin-top:2px; font-family:monospace;">EMIS: ${escapeHtmlAttr(st.emisId)}${st.dob ? " | DOB: " + escapeHtmlAttr(formatDateDisplayDMY(st.dob)) : ""}${st.admNo ? " | Adm: " + escapeHtmlAttr(st.admNo) : ""}${st.disability && st.disability !== "None" ? ` | <span style="color:#dc2626;">♿ ${escapeHtmlAttr(st.disability)}</span>` : ""}</div>` : ""}
+            </td>
             <td style="width:92px;">
               <select class="form-control" style="padding:4px 5px; font-size:0.78rem; font-weight:800;" onchange="onMidTermStudentCellInput(${origIdx}, 'gender', this.value, true)">
                 <option value="Male" ${st.gender !== "Female" ? "selected" : ""}>👦 ஆண்</option>
@@ -34434,8 +34763,14 @@ function renderSchoolMidTermStuMarksPane(calc) {
       <!-- Action Toolbar -->
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; padding-bottom:10px; border-bottom:1px dashed #cbd5e1;">
         <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-          <button type="button" class="btn btn-primary btn-sm" onclick="generateMidTermRowsFromEmisStrength()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">
-            ⚡ 10th EMIS எண்ணிக்கைக்கு ஏற்ப வரிசைகள் உருவாக்கு (${calc.emis.origTotal} Stu)
+          <button type="button" class="btn btn-primary btn-sm" onclick="triggerMidTermEmisStudentExcelUpload()" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; font-size:0.77rem;" title="EMIS தளத்திலிருந்து பதிவிறக்கம் செய்த Student List (.xlsx / .csv) கோப்பினைப் பதிவேற்றி மாணவர் பெயர், EMIS ID, பாலினம் & பிரிவுகளைத் தானாக ஏற்ற">
+            📤 EMIS Student List (.xlsx) பதிவேற்று
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="downloadMidTermStudentMarkTemplateCsv()" style="background:#ecfeff; color:#0e7490; border-color:#67e8f9; font-weight:900; font-size:0.75rem;" title="இப்பள்ளியின் மாணவர் பெயர்களுடன் கூடிய மதிப்பெண் உள்ளீட்டு Excel (CSV) கோப்பினைப் பதிவிறக்கி, மதிப்பெண் நிரப்பி மீண்டும் பதிவேற்றலாம்">
+            📥 மாணவர் பெயருடன் Mark Sheet Template
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="generateMidTermRowsFromEmisStrength()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.75rem;">
+            ⚡ EMIS எண்ணிக்கை வரிசைகள் (${calc.emis.origTotal} Stu)
           </button>
           <button type="button" class="btn btn-outline btn-sm" onclick="seedSampleMidTermStudentMarksForSchool()" style="background:#f0fdf4; color:#15803d; border-color:#86efac; font-weight:900; font-size:0.76rem;" title="மாதிரி மாணவர் பெயர்கள் மற்றும் மதிப்பெண்களைக் கொண்டு FORM-I(1) & I(2) எவ்வாறு தானாக உருவாகிறது என்பதைச் சோதித்துப் பார்க்க">
             🌱 மாதிரி மதிப்பெண்கள் ஏற்று (Demo Test)
