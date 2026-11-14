@@ -6162,7 +6162,7 @@ let fbLiveActivityLog = [];
 let currentSchoolTabKey = "staffStrength";
 const _firebaseMemoryKvStore = {};
 const _SESSION_ONLY_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ACTIVE_UI_STATE", "CEOSVG_PORTAL_CFG", "CEOSVG_FIREBASE_CFG"]);
-const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_ADMIN_AUDIT_LOGS_V1"]);
+const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG"]);
 try {
 if (typeof localStorage !== "undefined") {
 Object.keys(localStorage).forEach(k => {
@@ -30245,11 +30245,32 @@ function generateCeosvgPwaIconDataUrl(size) {
   }
 }
 
+let _pwaBannerAutoHideTimer = null;
+let _pwaBannerCountdownInterval = null;
+let _pwaModalAutoHideTimer = null;
+let _pwaModalCountdownInterval = null;
+
 function isRunningStandalonePwa() {
-  return Boolean(
-    (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
-    window.navigator.standalone === true
-  );
+  try {
+    const mqStandalone = window.matchMedia && (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.matchMedia("(display-mode: window-controls-overlay)").matches ||
+      window.matchMedia("(display-mode: minimal-ui)").matches ||
+      window.matchMedia("(display-mode: fullscreen)").matches
+    );
+    const navStandalone = window.navigator.standalone === true;
+    const refAndroid = typeof document !== "undefined" && document.referrer && document.referrer.includes("android-app://");
+    const params = new URLSearchParams(window.location.search || "");
+    const fromPwaParam = params.get("source") === "pwa" || params.has("view");
+    const installedFlag = typeof safeGetStorage === "function" ? Boolean(safeGetStorage("CEOSVG_PWA_INSTALLED_FLAG", false)) : false;
+    if (mqStandalone || navStandalone || refAndroid || fromPwaParam) {
+      if (typeof safeSetStorage === "function") safeSetStorage("CEOSVG_PWA_INSTALLED_FLAG", true, true);
+      return true;
+    }
+    return installedFlag;
+  } catch (e) {
+    return false;
+  }
 }
 
 function initCeosvgProgressiveWebApp() {
@@ -30261,27 +30282,24 @@ function initCeosvgProgressiveWebApp() {
       appleLink.href = _generatedPwaIcon192;
     }
 
-    // Check if external manifest.json is reachable; if not, attach dynamic Blob manifest with PNG icons
-    const manifestLink = document.getElementById("pwaManifestLink");
     const attachDynamicManifest = () => {
+      const manifestLink = document.getElementById("pwaManifestLink");
       if (!manifestLink) return;
       const dynManifest = JSON.parse(JSON.stringify(CEOSVG_PWA_MANIFEST_OBJECT));
-      const baseHref = window.location.href.split("?")[0].split("#")[0];
-      dynManifest.start_url = baseHref;
-      dynManifest.scope = baseHref.substring(0, baseHref.lastIndexOf("/") + 1) || "./";
-      if (_generatedPwaIcon192 && _generatedPwaIcon512) {
-        dynManifest.icons = [
-          { src: _generatedPwaIcon192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
-          { src: _generatedPwaIcon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
-        ];
-      }
+      const baseUrl = window.location.href.split("?")[0].split("#")[0];
+      const baseDir = baseUrl.substring(0, baseUrl.lastIndexOf("/") + 1);
+      dynManifest.start_url = baseDir + "index.html?source=pwa";
+      dynManifest.scope = baseDir;
+      dynManifest.icons = [
+        { src: _generatedPwaIcon192 || dynManifest.icons[0].src, sizes: "192x192", type: "image/png", purpose: "any maskable" },
+        { src: _generatedPwaIcon512 || dynManifest.icons[1].src, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+      ];
       const blob = new Blob([JSON.stringify(dynManifest)], { type: "application/manifest+json" });
       manifestLink.href = URL.createObjectURL(blob);
     };
 
     attachDynamicManifest();
 
-    // Register Service Worker (sw.js) when on HTTPS or localhost
     if ("serviceWorker" in navigator && (window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
       navigator.serviceWorker.register("./sw.js", { scope: "./" }).then((reg) => {
         const swBadge = document.getElementById("pwaStatusSwBadge");
@@ -30295,9 +30313,35 @@ function initCeosvgProgressiveWebApp() {
       });
     }
 
+    // Ensure modal and floating banner start strictly hidden
+    const modal = document.getElementById("pwaInstallGuideModal");
+    if (modal) {
+      modal.classList.remove("active", "open");
+      modal.style.display = "none";
+    }
+    if (isRunningStandalonePwa()) {
+      const banner = document.getElementById("pwaInstallFloatingBanner");
+      if (banner) banner.style.display = "none";
+    }
+
     updatePwaUiStatusIndicators();
 
-    // Handle URL launch shortcuts (?view=schoolLogin | ?view=ebs | ?view=adminLogin)
+    // Listen for display-mode changes dynamically
+    if (window.matchMedia) {
+      try {
+        window.matchMedia("(display-mode: standalone)").addEventListener("change", () => {
+          updatePwaUiStatusIndicators();
+        });
+      } catch (e) {}
+    }
+
+    // Close modal on Escape key
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") {
+        closePwaInstallGuideModal();
+      }
+    });
+
     const params = new URLSearchParams(window.location.search);
     const launchView = params.get("view");
     if (launchView === "adminLogin") {
@@ -30319,23 +30363,79 @@ function updatePwaUiStatusIndicators() {
   const modeBadge = document.getElementById("pwaStatusDisplayModeBadge");
   const hdrBtn = document.getElementById("pwaHeaderInstallBtn");
   const banner = document.getElementById("pwaInstallFloatingBanner");
+  const modal = document.getElementById("pwaInstallGuideModal");
   const admBox = document.getElementById("pwaAdminOnlyDeveloperBox");
   if (admBox) {
     admBox.style.display = isCurrentUserAdminView() ? "block" : "none";
   }
   if (standalone) {
-    if (modeBadge) modeBadge.textContent = "✅ கைபேசி செயலி நிலை (Standalone App)";
+    if (modeBadge) modeBadge.textContent = "✅ கைபேசி / கணினி செயலி நிலை (Standalone App)";
     if (hdrBtn) hdrBtn.style.display = "none";
     if (banner) banner.style.display = "none";
+    if (modal) {
+      modal.classList.remove("active", "open");
+      modal.style.display = "none";
+    }
   } else {
     if (modeBadge) modeBadge.textContent = "🌐 உலாவி நிலை (Installable)";
     if (hdrBtn) hdrBtn.style.display = "inline-flex";
   }
 }
 
+function startPwaFloatingBannerAutoHide(seconds) {
+  if (_pwaBannerAutoHideTimer) clearTimeout(_pwaBannerAutoHideTimer);
+  if (_pwaBannerCountdownInterval) clearInterval(_pwaBannerCountdownInterval);
+  let remaining = Number(seconds || 8);
+  const timerBadge = document.getElementById("pwaBannerAutoHideTimerText");
+  if (timerBadge) timerBadge.textContent = `${remaining}s`;
+  _pwaBannerCountdownInterval = setInterval(() => {
+    remaining -= 1;
+    if (timerBadge && remaining > 0) {
+      timerBadge.textContent = `${remaining}s`;
+    }
+    if (remaining <= 0) {
+      clearInterval(_pwaBannerCountdownInterval);
+      _pwaBannerCountdownInterval = null;
+    }
+  }, 1000);
+  _pwaBannerAutoHideTimer = setTimeout(() => {
+    const banner = document.getElementById("pwaInstallFloatingBanner");
+    if (banner) banner.style.display = "none";
+    if (_pwaBannerCountdownInterval) {
+      clearInterval(_pwaBannerCountdownInterval);
+      _pwaBannerCountdownInterval = null;
+    }
+  }, remaining * 1000);
+}
+
+function startPwaModalAutoHide(seconds) {
+  if (_pwaModalAutoHideTimer) clearTimeout(_pwaModalAutoHideTimer);
+  if (_pwaModalCountdownInterval) clearInterval(_pwaModalCountdownInterval);
+  let remaining = Number(seconds || 12);
+  const timerEl = document.getElementById("pwaModalAutoHideCountdown");
+  if (timerEl) timerEl.textContent = `⏱️ ${remaining} வினாடிகளில் தானாக மறையும்`;
+  _pwaModalCountdownInterval = setInterval(() => {
+    remaining -= 1;
+    if (timerEl && remaining > 0) {
+      timerEl.textContent = `⏱️ ${remaining} வினாடிகளில் தானாக மறையும்`;
+    }
+    if (remaining <= 0) {
+      clearInterval(_pwaModalCountdownInterval);
+      _pwaModalCountdownInterval = null;
+    }
+  }, 1000);
+  _pwaModalAutoHideTimer = setTimeout(() => {
+    closePwaInstallGuideModal();
+  }, remaining * 1000);
+}
+
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   _deferredPwaInstallPrompt = e;
+  if (isRunningStandalonePwa()) {
+    updatePwaUiStatusIndicators();
+    return;
+  }
   const statusTxt = document.getElementById("pwaNativePromptStatusText");
   if (statusTxt) {
     statusTxt.textContent = "✅ உங்கள் சாதனத்தில் நேரடி 1-Click செயலி நிறுவல் (Native Install Prompt) தயாராக உள்ளது!";
@@ -30344,43 +30444,76 @@ window.addEventListener("beforeinstallprompt", (e) => {
   const banner = document.getElementById("pwaInstallFloatingBanner");
   if (banner && !dismissed && !isRunningStandalonePwa()) {
     banner.style.display = "flex";
+    startPwaFloatingBannerAutoHide(8);
   }
 });
 
 window.addEventListener("appinstalled", () => {
   _deferredPwaInstallPrompt = null;
-  updatePwaUiStatusIndicators();
+  safeSetStorage("CEOSVG_PWA_INSTALLED_FLAG", true, true);
+  safeSetStorage("CEOSVG_PWA_BANNER_DISMISSED", true, true);
   closePwaInstallGuideModal();
+  dismissPwaFloatingBanner();
+  updatePwaUiStatusIndicators();
   if (typeof appendAdminAuditLog === "function") {
     appendAdminAuditLog({
       category: "MASTER_ADMIN",
-      actionType: "📲 PWA கைபேசி செயலி நிறுவல்",
+      actionType: "📲 PWA கைபேசி / கணினி செயலி நிறுவல்",
       uNo: (activeSchoolSession && activeSchoolSession.uNo) || "DEVICE",
       schoolName: (activeSchoolSession && (activeSchoolSession.nameTa || activeSchoolSession.nameEn)) || "கைபேசி / கணினி சாதனம்",
-      summary: "portal.ceosvg.in இணையதளம் கைபேசி / கணினியில் தனிச் செயலியாக (PWA - Add to Home Screen) வெற்றிகரமாக நிறுவப்பட்டது."
+      summary: "portal.ceosvg.in இணையதளம் கைபேசி / கணினியில் தனிச் செயலியாக (PWA - Desktop/Home Screen Icon) வெற்றிகரமாக நிறுவப்பட்டது."
     });
   }
   showToast("🎉 portal.ceosvg.in உங்கள் சாதனத்தில் தனிச் செயலியாக (App) வெற்றிகரமாக நிறுவப்பட்டது!", "#16a34a", true);
 });
 
 function triggerOrOpenPwaInstallGuide() {
+  if (isRunningStandalonePwa() && !isCurrentUserAdminView()) {
+    return;
+  }
   updatePwaUiStatusIndicators();
   const modal = document.getElementById("pwaInstallGuideModal");
-  if (modal) modal.classList.add("active");
+  if (modal) {
+    modal.style.display = "flex";
+    modal.classList.add("active", "open");
+    startPwaModalAutoHide(12);
+  }
 }
 
 function closePwaInstallGuideModal() {
+  if (_pwaModalAutoHideTimer) {
+    clearTimeout(_pwaModalAutoHideTimer);
+    _pwaModalAutoHideTimer = null;
+  }
+  if (_pwaModalCountdownInterval) {
+    clearInterval(_pwaModalCountdownInterval);
+    _pwaModalCountdownInterval = null;
+  }
   const modal = document.getElementById("pwaInstallGuideModal");
-  if (modal) modal.classList.remove("active");
+  if (modal) {
+    modal.classList.remove("active", "open");
+    modal.style.display = "none";
+  }
 }
 
 function dismissPwaFloatingBanner() {
+  if (_pwaBannerAutoHideTimer) {
+    clearTimeout(_pwaBannerAutoHideTimer);
+    _pwaBannerAutoHideTimer = null;
+  }
+  if (_pwaBannerCountdownInterval) {
+    clearInterval(_pwaBannerCountdownInterval);
+    _pwaBannerCountdownInterval = null;
+  }
   const banner = document.getElementById("pwaInstallFloatingBanner");
   if (banner) banner.style.display = "none";
   safeSetStorage("CEOSVG_PWA_BANNER_DISMISSED", true, true);
 }
 
 async function triggerNativePwaInstallOrShowSteps() {
+  if (isRunningStandalonePwa() && !isCurrentUserAdminView()) {
+    return;
+  }
   if (_deferredPwaInstallPrompt) {
     await triggerNativePwaInstallPrompt();
   } else {
@@ -30395,12 +30528,16 @@ async function triggerNativePwaInstallPrompt() {
       const choice = await _deferredPwaInstallPrompt.userChoice;
       if (choice && choice.outcome === "accepted") {
         _deferredPwaInstallPrompt = null;
+        safeSetStorage("CEOSVG_PWA_INSTALLED_FLAG", true, true);
         dismissPwaFloatingBanner();
+        closePwaInstallGuideModal();
+        updatePwaUiStatusIndicators();
       }
     } catch (e) {}
     return;
   }
   if (isRunningStandalonePwa()) {
+    closePwaInstallGuideModal();
     showToast("✅ நீங்கள் ஏற்கனவே நிறுவப்பட்ட portal.ceosvg.in செயலியைப் பயன்படுத்திக் கொண்டிருக்கிறீர்கள்!", "#16a34a");
     return;
   }
@@ -30530,42 +30667,48 @@ if (typeof window !== "undefined") {
 <!-- ========================================================================= -->
 <!-- PROGRESSIVE WEB APP (PWA) FLOATING INSTALL BANNER & MODAL                 -->
 <!-- ========================================================================= -->
-<div id="pwaInstallFloatingBanner" style="display:none; position:fixed; bottom:14px; left:50%; transform:translateX(-50%); z-index:9990; width:min(96vw, 640px); background:linear-gradient(135deg,#061224 0%,#0f294a 60%,#1e3a8a 100%); color:#fff; border:2px solid #f59e0b; border-radius:14px; padding:12px 16px; box-shadow:0 12px 32px rgba(6,18,36,0.45); align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+<div id="pwaInstallFloatingBanner" style="display:none; position:fixed; bottom:14px; left:50%; transform:translateX(-50%); z-index:9990; width:min(96vw, 650px); background:linear-gradient(135deg,#061224 0%,#0f294a 60%,#1e3a8a 100%); color:#fff; border:2px solid #f59e0b; border-radius:14px; padding:12px 16px; box-shadow:0 12px 32px rgba(6,18,36,0.45); align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
   <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:220px;">
-    <div style="width:46px; height:46px; border-radius:12px; background:#1e3a8a; border:2px solid #fde047; display:flex; align-items:center; justify-content:center; font-size:1.55rem; flex-shrink:0;">📲</div>
+    <div style="width:44px; height:44px; border-radius:12px; background:#1e3a8a; border:2px solid #fde047; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0;">📲</div>
     <div>
-      <div style="font-size:0.72rem; font-weight:900; color:#fde047; letter-spacing:0.6px; text-transform:uppercase;">PORTAL.CEOSVG.IN • MOBILE APP (PWA)</div>
-      <div style="font-size:0.95rem; font-weight:900; color:#fff;">கைபேசியில் தனிச் செயலியாக நிறுவுக (Add to Home Screen)</div>
-      <div style="font-size:0.75rem; color:#cbd5e1;">தலைமை ஆசிரியர்கள் &amp; அலுவலர்கள் ஒரே கிளிக்கில் திறந்து பயன்படுத்தலாம்</div>
+      <div style="font-size:0.71rem; font-weight:900; color:#fde047; letter-spacing:0.5px; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+        <span>PORTAL.CEOSVG.IN • APP INSTALL</span>
+        <span style="background:rgba(255,255,255,0.18); color:#fff; padding:1px 6px; border-radius:999px; font-size:0.68rem;">⏱️ <span id="pwaBannerAutoHideTimerText">8s</span></span>
+      </div>
+      <div style="font-size:0.93rem; font-weight:900; color:#fff;">கைபேசி / கணினியில் தனிச் செயலியாக நிறுவுக</div>
+      <div style="font-size:0.74rem; color:#cbd5e1;">ஒரே கிளிக்கில் நிறுவலாம் (8 வினாடிகளில் தானாக மறையும்)</div>
     </div>
   </div>
   <div style="display:flex; align-items:center; gap:8px;">
     <button type="button" class="btn btn-primary btn-sm" onclick="triggerNativePwaInstallOrShowSteps()" style="background:#16a34a; border-color:#22c55e; color:#fff; font-weight:900; padding:8px 14px; font-size:0.84rem;">
-      📲 இப்போதே நிறுவு (Install)
+      📲 நிறுவு (Install)
     </button>
-    <button type="button" class="btn btn-outline btn-sm" onclick="dismissPwaFloatingBanner()" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.3); color:#e2e8f0; font-weight:800; padding:7px 10px;">
-      ✕
+    <button type="button" class="btn btn-outline btn-sm" onclick="dismissPwaFloatingBanner()" title="மூடுக (Close)" style="background:#dc2626; border-color:#f87171; color:#fff; font-weight:900; padding:7px 11px; cursor:pointer;">
+      ✕ மூடுக
     </button>
   </div>
 </div>
 
-<div id="pwaInstallGuideModal" class="modal-overlay" style="z-index:10050;">
-  <div class="modal-card" style="max-width:720px; width:96%; border-top:5px solid #0f766e;">
-    <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0f766e 100%); color:#fff; padding:14px 18px; border-radius:8px 8px 0 0; display:flex; justify-content:space-between; align-items:center;">
+<div id="pwaInstallGuideModal" class="modal-backdrop" onclick="if(event.target===this) closePwaInstallGuideModal();" style="display:none; z-index:10050;">
+  <div class="modal-card" style="max-width:720px; width:96%; border-top:5px solid #0f766e; padding:0; overflow:hidden;">
+    <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0f766e 100%); color:#fff; padding:14px 18px; margin:0; display:flex; justify-content:space-between; align-items:center; gap:10px;">
       <div>
-        <div style="font-size:0.72rem; font-weight:800; color:#fde047; letter-spacing:0.8px; text-transform:uppercase;">CHIEF EDUCATIONAL OFFICE, SIVAGANGAI • MOBILE &amp; DESKTOP APP</div>
-        <h3 style="font-size:1.15rem; font-weight:900; margin:2px 0 0 0; color:#fff;">📲 portal.ceosvg.in – கைபேசி செயலி நிறுவல் வழிகாட்டி</h3>
+        <div style="font-size:0.72rem; font-weight:800; color:#fde047; letter-spacing:0.8px; text-transform:uppercase; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span>CHIEF EDUCATIONAL OFFICE, SIVAGANGAI • APP</span>
+          <span id="pwaModalAutoHideCountdown" style="background:rgba(255,255,255,0.2); color:#fff; padding:2px 8px; border-radius:999px; font-size:0.70rem;">⏱️ 12 வினாடிகளில் தானாக மறையும்</span>
+        </div>
+        <h3 style="font-size:1.12rem; font-weight:900; margin:3px 0 0 0; color:#fff;">📲 portal.ceosvg.in – கைபேசி செயலி நிறுவல் வழிகாட்டி</h3>
       </div>
-      <button type="button" onclick="closePwaInstallGuideModal()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.35); color:#fff; width:32px; height:32px; border-radius:8px; font-weight:900; cursor:pointer;">✕</button>
+      <button type="button" onclick="closePwaInstallGuideModal()" title="மூடுக (Close)" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:6px 12px; border-radius:8px; font-weight:900; font-size:0.85rem; cursor:pointer; flex-shrink:0;">✕ மூடுக</button>
     </div>
 
-    <div class="modal-body" style="padding:16px 18px; max-height:80vh; overflow-y:auto;">
+    <div class="modal-body" style="padding:16px 18px; max-height:76vh; overflow-y:auto;">
       <!-- Direct 1-Click Install Callout for Schools & Officers -->
       <div style="background:linear-gradient(135deg,#ecfdf5 0%,#f0fdfa 100%); border:2px solid #10b981; border-radius:12px; padding:14px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <div style="flex:1; min-width:240px;">
           <div style="font-size:0.98rem; font-weight:900; color:#065f46;">🚀 ஒரே கிளிக்கில் கைபேசி / கணினியில் செயலியாக நிறுவுக</div>
           <div style="font-size:0.80rem; color:#047857; margin-top:2px;" id="pwaNativePromptStatusText">
-            தலைமை ஆசிரியர்கள் மற்றும் ஆசிரியர்கள் ஒவ்வொரு முறையும் இணைய முகவரியைத் தேடாமல், கைபேசி முகப்புத் திரையிலிருந்து (Home Screen) நேரடியாகத் திறக்க கீழேயுள்ள பொத்தானை அழுத்தவும்.
+            தலைமை ஆசிரியர்கள் மற்றும் ஆசிரியர்கள் ஒவ்வொரு முறையும் இணைய முகவரியைத் தேடாமல், முகப்புத் திரையிலிருந்து (Home Screen / Desktop) நேரடியாகத் திறக்க கீழேயுள்ள பொத்தானை அழுத்தவும்.
           </div>
         </div>
         <button type="button" id="pwaModalDirectInstallBtn" class="btn btn-primary" onclick="triggerNativePwaInstallPrompt()" style="background:#15803d; border-color:#166534; color:#fff; font-weight:900; padding:10px 18px; font-size:0.92rem; border-radius:10px;">
@@ -30577,7 +30720,7 @@ if (typeof window !== "undefined") {
       <div style="font-size:0.92rem; font-weight:900; color:#0f294a; margin-bottom:8px;">
         📱 உங்கள் சாதனத்தில் நிறுவும் எளிய வழிமுறைகள் (3 படிகள்):
       </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:12px; margin-bottom:6px;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(205px, 1fr)); gap:12px; margin-bottom:6px;">
         <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-top:4px solid #16a34a; border-radius:10px; padding:12px;">
           <div style="font-weight:900; color:#15803d; font-size:0.86rem; margin-bottom:6px;">🤖 Android கைபேசி (Chrome)</div>
           <ol style="padding-left:18px; font-size:0.79rem; color:#334155; line-height:1.6; font-weight:700; margin:0;">
@@ -30646,8 +30789,9 @@ if (typeof window !== "undefined") {
       </div>
     </div>
 
-    <div class="modal-footer" style="padding:12px 18px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:8px; border-radius:0 0 8px 8px;">
-      <button type="button" class="btn btn-outline btn-sm" onclick="closePwaInstallGuideModal()" style="font-weight:800;">மூடுக (Close)</button>
+    <div class="modal-footer" style="padding:12px 18px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+      <span style="font-size:0.75rem; color:#64748b; font-weight:700;">💡 சாளரத்திற்கு வெளியே கிளிக் செய்தாலோ அல்லது Esc அழுத்தினாலோ மூடிக்கொள்ளும்</span>
+      <button type="button" class="btn btn-danger btn-sm" onclick="closePwaInstallGuideModal()" style="font-weight:900; padding:7px 16px;">✕ மூடுக (Close)</button>
     </div>
   </div>
 </div>
