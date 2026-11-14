@@ -3191,33 +3191,99 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </div>
 </div>
 </div>
-<!-- CUSTOMIZABLE COLUMNS SELECTOR FOR TEACHERS TABLE -->
-<div style="background:#ffffff; border:1.5px solid #bae6fd; border-radius:10px; padding:10px 14px; margin-bottom:10px;">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-<span style="font-size:0.84rem; font-weight:900; color:#0369a1;">🛠️ அட்டவணை நெடுவரிசைகள் தேர்வு (Customize Table Columns):</span>
-<span style="font-size:0.74rem; color:#475569; font-weight:600;">கீழேயுள்ள அட்டவணையில் தேவையான நெடுவரிசைகளைத் தேர்ந்தெடுக்கவும்</span>
+<!-- CUSTOMIZABLE COLUMNS SELECTOR & HEADER CLICK BUILDER FOR EMIS STAFF MASTER + EBS FORM-3 -->
+<div style="background:linear-gradient(90deg, #eff6ff 0%, #f0fdf4 100%); border:1.5px solid #93c5fd; border-radius:10px; padding:10px 14px; margin-bottom:10px; box-shadow:0 2px 6px rgba(3,105,161,0.08);">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span style="font-size:0.86rem; font-weight:900; color:#0f294a;">🛠️ EMIS Staff Master &amp; EBS Form-3 நெடுவரிசை வடிவமைப்பான்:</span>
+      <span id="admStaffActiveColCountBadge" style="background:#0284c7; color:#fff; padding:2px 9px; border-radius:999px; font-size:0.74rem; font-weight:900;">8 நெடுவரிசைகள்</span>
+      <span style="font-size:0.76rem; color:#1e3a8a; font-weight:800; background:#ffffff; padding:2px 8px; border-radius:6px; border:1px solid #bfdbfe;">
+        💡 அட்டவணையின் <strong>Header Row (நெடுவரிசைத் தலைப்பு)</strong> மீது கிளிக் செய்து புலங்களைத் (Fields) தேர்வு செய்யலாம் / மாற்றலாம்!
+      </span>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+      <button type="button" class="btn btn-primary btn-sm" onclick="addNewAdminStaffTableColumn()" style="background:#16a34a; border-color:#15803d; font-size:0.75rem; font-weight:900; padding:4px 10px;">
+        ➕ Add Column (புதிய நெடுவரிசை சேர்)
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="applyAdminStaffColumnPreset('default_unified')" style="background:#fff; color:#0f294a; border-color:#94a3b8; font-size:0.73rem; font-weight:800; padding:4px 9px;">
+        🔄 இயல்புநிலை (EMIS + EBS F3)
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="applyAdminStaffColumnPreset('ebs_f3_full')" style="background:#f5f3ff; color:#5b21b6; border-color:#c4b5fd; font-size:0.73rem; font-weight:800; padding:4px 9px;">
+        📋 EBS Form-3 முழுப் பார்வை
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="applyAdminStaffColumnPreset('single_field_cols')" style="background:#fffbeb; color:#92400e; border-color:#fcd34d; font-size:0.73rem; font-weight:800; padding:4px 9px;">
+        📊 தனித்தனிப் புல நெடுவரிசைகள் (14 Cols)
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="printAdminStaffCustomColumnsReport()" style="background:#ecfeff; color:#0e7490; border-color:#67e8f9; font-size:0.73rem; font-weight:800; padding:4px 9px;">
+        🖨️ தற்போதைய நெடுவரிசை அச்சிடு
+      </button>
+    </div>
+  </div>
 </div>
-<div style="display:flex; gap:6px; flex-wrap:wrap;">
-<button type="button" class="btn btn-outline btn-sm" onclick="setAllAdminStaffColumns(true)" style="font-size:0.73rem; padding:2px 8px;">☑️ அனைத்தும் (Select All)</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStaffColumnsDefault()" style="font-size:0.73rem; padding:2px 8px;">🔄 இயல்பு நிலை (Default)</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="toggleAdminColCustomizer('admStaffColCheckboxesWrap')" style="font-size:0.73rem; padding:2px 8px;">👁️ சுருக்கு / விரி</button>
-</div>
-</div>
-<div id="admStaffColCheckboxesWrap" style="display:flex; flex-wrap:wrap; gap:10px 14px; margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1; font-size:0.79rem;">
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="rank" checked onchange="onAdminStaffColToggle(this)"> மு.எண் / வ.எண்</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="nameId" checked onchange="onAdminStaffColToggle(this)"> ஆசிரியர் பெயர் &amp; Staff ID</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="gender" onchange="onAdminStaffColToggle(this)"> பாலினம் (Gender)</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="desig" checked onchange="onAdminStaffColToggle(this)"> பதவி (Designation)</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="subject" checked onchange="onAdminStaffColToggle(this)"> பாடம் &amp; கல்வித் தகுதி</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="school" checked onchange="onAdminStaffColToggle(this)"> பள்ளி விவரம் (School &amp; UDISE)</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="blockMgmt" checked onchange="onAdminStaffColToggle(this)"> ஒன்றியம் &amp; நிர்வாகம்</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="doj" checked onchange="onAdminStaffColToggle(this)"> பணியில் சேர்ந்த நாள் (DOJ)</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="dob" checked onchange="onAdminStaffColToggle(this)"> பிறந்த தேதி (DOB)</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="natureDuty" onchange="onAdminStaffColToggle(this)"> நியமனத் தன்மை &amp; தேர்வுப் பணி</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="mobile" checked onchange="onAdminStaffColToggle(this)"> கைபேசி எண்</label>
-<label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; font-weight:700; color:#0f294a;"><input type="checkbox" data-staff-col="actions" checked onchange="onAdminStaffColToggle(this)"> செயல்கள்</label>
-</div>
+<!-- MODAL FOR CLICKABLE HEADER COLUMN FIELD BUILDER -->
+<div id="admStaffColPickerModal" class="modal-backdrop" style="display:none; z-index:9999; align-items:center; justify-content:center;">
+  <div class="modal-card" style="max-width:780px; width:96%; max-height:90vh; display:flex; flex-direction:column; border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(15,41,74,0.35); border:2px solid #0284c7;">
+    <div style="background:linear-gradient(135deg, #0f294a 0%, #1e3a8a 100%); color:#fff; padding:12px 18px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+      <div>
+        <div style="font-size:1.02rem; font-weight:900;" id="admColPickerModalTitle">⚙️ நெடுவரிசை #1 புலங்கள் கட்டமைப்பு (Configure Column Fields)</div>
+        <div style="font-size:0.75rem; color:#bae6fd; font-weight:700;">இந்நெடுவரிசையில் இடம்பெற வேண்டிய EMIS Staff Master &amp; EBS Form-3/4 புலங்களைத் தேர்ந்தெடுக்கவும்</div>
+      </div>
+      <button type="button" onclick="closeAdminStaffColumnFieldPicker()" style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:8px; padding:4px 10px; font-weight:900; cursor:pointer;">✖ மூடுக</button>
+    </div>
+    <div style="padding:14px 18px; overflow-y:auto; flex:1; background:#f8fafc;">
+      <!-- Column Header Title, Width, Alignment & Move/Delete Actions -->
+      <div style="display:grid; grid-template-columns:1fr 140px 150px; gap:10px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.74rem; font-weight:900; color:#0f294a; display:block; margin-bottom:3px;">🏷️ நெடுவரிசைத் தலைப்பு (Column Header Title - தானாக அல்லது தனிப்பயன்):</label>
+          <input type="text" id="admColPickerTitleInput" class="form-control" style="font-weight:800; font-size:0.85rem; padding:6px 10px;" placeholder="புலங்களின் அடிப்படையில் தானாக உருவாக்க காலியாக விடவும்" oninput="onAdmColPickerTitleInput(this.value)">
+        </div>
+        <div>
+          <label style="font-size:0.74rem; font-weight:900; color:#0f294a; display:block; margin-bottom:3px;">📐 சீரமைப்பு (Align):</label>
+          <select id="admColPickerAlignSelect" class="form-control" style="font-weight:800; font-size:0.83rem; padding:6px 8px;" onchange="onAdmColPickerMetaChange()">
+            <option value="left">இடது (Left)</option>
+            <option value="center">மையம் (Center)</option>
+            <option value="right">வலது (Right)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.74rem; font-weight:900; color:#0f294a; display:block; margin-bottom:3px;">🏷️ புலப் பெயர் (Label):</label>
+          <select id="admColPickerShowLabelSelect" class="form-control" style="font-weight:800; font-size:0.83rem; padding:6px 8px;" onchange="onAdmColPickerMetaChange()">
+            <option value="auto">தானியங்கி (Auto)</option>
+            <option value="always">பெயருடன் காட்டு</option>
+            <option value="value_only">மதிப்பு மட்டும்</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Selected Fields Order Bar (Drag/Move Up/Down) -->
+      <div style="background:#fffbeb; border:1.5px solid #fcd34d; border-radius:10px; padding:10px 12px; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+          <span style="font-size:0.80rem; font-weight:900; color:#92400e;">✅ இந்நெடுவரிசையில் தேர்ந்தெடுக்கப்பட்டுள்ள புலங்கள் (வரிசைப்படுத்த ◀ ▶ அழுத்தவும்):</span>
+          <button type="button" class="btn btn-outline btn-sm" onclick="clearCurrentColSelectedFields()" style="font-size:0.70rem; padding:2px 8px; color:#dc2626; border-color:#fca5a5; background:#fff;">🧹 அனைத்தும் நீக்கு</button>
+        </div>
+        <div id="admColPickerSelectedChips" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+      </div>
+
+      <!-- Search Filter for Fields -->
+      <div style="margin-bottom:10px; display:flex; gap:8px; align-items:center;">
+        <input type="text" id="admColPickerFieldSearch" class="form-control" placeholder="🔎 புலம் தேடுக (எ.கா: IFHRMS, பிறந்த தேதி, ஓய்வு நாள், WhatsApp, விலக்கு, பாடம், பள்ளி)..." style="font-size:0.83rem; padding:6px 12px; font-weight:700;" oninput="renderAdmColPickerFieldCatalog()">
+      </div>
+
+      <!-- Categorized Field Checkboxes -->
+      <div id="admColPickerCatalogContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+    <div style="background:#f1f5f9; border-top:1.5px solid #cbd5e1; padding:10px 18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="moveCurrentAdminStaffColumn(-1)" style="background:#fff; font-weight:800; font-size:0.76rem;">◀ இடதுபுறம் நகர்த்து</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="moveCurrentAdminStaffColumn(1)" style="background:#fff; font-weight:800; font-size:0.76rem;">வலதுபுறம் நகர்த்து ▶</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="insertAdminStaffColumnAfterCurrent()" style="background:#f0fdf4; color:#15803d; border-color:#86efac; font-weight:800; font-size:0.76rem;">➕ அடுத்து புதிய நெடுவரிசை சேர்</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="deleteCurrentAdminStaffColumn()" style="background:#fef2f2; color:#dc2626; border-color:#fca5a5; font-weight:800; font-size:0.76rem;">🗑️ இந்நெடுவரிசையை நீக்கு</button>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="saveAndCloseAdminStaffColumnFieldPicker()" style="background:#0284c7; font-weight:900; padding:6px 16px; font-size:0.84rem;">✔️ப் பயன்படுத்தி மூடுக (Apply &amp; Close)</button>
+      </div>
+    </div>
+  </div>
 </div>
 <!-- Table Information & Pagination Top Bar -->
 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; font-size:0.84rem;">
@@ -6181,7 +6247,7 @@ let fbLiveActivityLog = [];
 let currentSchoolTabKey = "staffStrength";
 const _firebaseMemoryKvStore = {};
 const _SESSION_ONLY_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ACTIVE_UI_STATE", "CEOSVG_PORTAL_CFG", "CEOSVG_FIREBASE_CFG"]);
-const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG"]);
+const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1"]);
 try {
 if (typeof localStorage !== "undefined") {
 Object.keys(localStorage).forEach(k => {
@@ -16902,111 +16968,259 @@ let selectedDesigs = [];
 let selectedSubjects = [];
 let selectedMgmts = [];
 function getDistrictAllStaffList(forceRefresh) {
-if (districtFlattenedStaffCache && !forceRefresh) {
-return districtFlattenedStaffCache;
-}
-const emis = getEmisStaffData();
-const pool = (emis && emis.pool) ? emis.pool : [];
-const schoolMap = {};
-masterSchools.forEach(s => { schoolMap[String(s.uNo)] = s; });
-const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {});
-const allStaff = [];
-const seenIds = new Set();
-if (emis && emis.byUNo) {
-for (const [uNo, rows] of Object.entries(emis.byUNo)) {
-const sch = schoolMap[String(uNo)] || { nameTa: "பள்ளி " + uNo, nameEn: "School " + uNo, block: "-", mgmt1: "1G", udiseNo: "-", mobile: "" };
-const extra = schoolExtraDataStore[uNo];
-rows.forEach(r => {
-const staffId = String(r[1] || "");
-if (staffId) seenIds.add(staffId);
-const isTeach = r[0] === 1;
-const desig = normalizeCanonicalStaffDesignation(pool[r[3]] || (isTeach ? "BT ASSISTANT" : "OFFICE STAFF"));
-const isHm = desig.toUpperCase().includes("HEAD") || desig.toUpperCase().includes("PRINCIPAL");
-let staffObj = {
-staffId: staffId,
-name: String(r[2] || ""),
-isTeaching: isTeach,
-desig: desig,
-gender: r[4] === "F" ? "Female" : "Male",
-dob: r[5] || "",
-nature: r[6] === "R" ? "Regular" : "Contract",
-subject: pool[r[7]] || "-",
-classTaught: pool[r[8]] || "-",
-qualification: pool[r[9]] || "-",
-dojService: r[10] || "",
-dojPresPost: r[11] || "",
-dojSchool: r[12] || r[10] || "",
-uNo: String(uNo),
-schoolNameTa: sch.nameTa || "",
-schoolNameEn: sch.nameEn || "",
-udiseNo: sch.udiseNo || "",
-block: sch.block || "-",
-mgmt1: sch.mgmt1 || "1G",
-mgmt2: sch.mgmt2 || "1",
-level: sch.level || "HS",
-mobile: isHm ? (sch.mobile || "-") : (sch.mobile ? sch.mobile : "-"),
-examDuty: isHm ? "Chief Superintendent" : ((desig.toUpperCase().includes("PG ") || desig.toUpperCase().includes("P.G")) ? "Hall Superintendent / AE" : "Hall Superintendent"),
-campDuty: isHm ? "Camp Officer / CE" : ((desig.toUpperCase().includes("PG ") || desig.toUpperCase().includes("P.G")) ? "AE / Tabulator" : "Examiner"),
-campOption: sch.block || "01-Sivagangai",
-source: "EMIS"
-};
-if (staffOverrides[staffId]) {
-if (staffOverrides[staffId].deleted) return;
-staffObj = Object.assign(staffObj, staffOverrides[staffId]);
-if (staffObj.desig) staffObj.desig = normalizeCanonicalStaffDesignation(staffObj.desig);
-const assignedSch = schoolMap[String(staffObj.uNo)];
-if (assignedSch) {
-staffObj.schoolNameTa = assignedSch.nameTa;
-staffObj.schoolNameEn = assignedSch.nameEn;
-staffObj.udiseNo = assignedSch.udiseNo;
-staffObj.block = assignedSch.block;
-staffObj.mgmt1 = assignedSch.mgmt1;
-}
-}
-allStaff.push(staffObj);
-});
-if (extra && extra.staff && Array.isArray(extra.staff)) {
-extra.staff.forEach(st => {
-if (st.id && !seenIds.has(String(st.id))) {
-seenIds.add(String(st.id));
-let manualStaff = {
-staffId: String(st.id),
-name: st.name || "",
-isTeaching: st.isTeaching !== false,
-desig: st.desig || "TEACHER",
-gender: st.gender || "Male",
-dob: st.dob || "",
-nature: st.nature || "Regular",
-subject: st.subject || "-",
-qualification: st.qualification || "-",
-dojService: st.dojService || st.dojFirst || "",
-dojPresPost: st.dojPresPost || st.dojPresentPost || "",
-dojSchool: st.dojSchool || st.dojPresSchool || "",
-uNo: String(uNo),
-schoolNameTa: sch.nameTa || "",
-schoolNameEn: sch.nameEn || "",
-udiseNo: sch.udiseNo || "",
-block: sch.block || "-",
-mgmt1: sch.mgmt1 || "1G",
-mgmt2: sch.mgmt2 || "1",
-level: sch.level || "HS",
-mobile: st.mobile || sch.mobile || "-",
-examDuty: st.examDuty || "Invigilator",
-campDuty: st.campDuty || "AE",
-campOption: st.campOption || sch.block || "01-Sivagangai",
-source: "Manual"
-};
-if (staffOverrides[String(st.id)]) {
-manualStaff = Object.assign(manualStaff, staffOverrides[String(st.id)]);
-}
-allStaff.push(manualStaff);
-}
-});
-}
-}
-}
-districtFlattenedStaffCache = allStaff;
-return allStaff;
+  if (districtFlattenedStaffCache && !forceRefresh) {
+    return districtFlattenedStaffCache;
+  }
+  const emis = getEmisStaffData();
+  const pool = (emis && emis.pool) ? emis.pool : [];
+  const schoolMap = {};
+  masterSchools.forEach(s => { if (s && s.uNo) schoolMap[String(s.uNo)] = s; });
+  const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+  const allStaff = [];
+  const seenIds = new Set();
+
+  // Collect all school uNos from masterSchools and EMIS_STAFF_DATA.byUNo
+  const uNoSet = new Set();
+  masterSchools.forEach(s => {
+    if (s && s.uNo && String(s.uNo) !== "999" && Number(s.uNo) < 900) uNoSet.add(String(s.uNo));
+  });
+  if (emis && emis.byUNo && typeof emis.byUNo === "object") {
+    Object.keys(emis.byUNo).forEach(u => { if (u && String(u) !== "999") uNoSet.add(String(u)); });
+  }
+  const sortedUNos = Array.from(uNoSet).sort((a, b) => (Number(a) || 0) - (Number(b) || 0));
+
+  const formatClassesSummaryStr = (classesHandling) => {
+    if (!classesHandling || typeof classesHandling !== "object") return "-";
+    const parts = [];
+    ["6","7","8","9","10","11","12"].forEach(c => {
+      const item = classesHandling[c];
+      if (item && item.sub && item.sub !== "-" && item.sub !== "None") {
+        parts.push(`${c}:${item.sub}${item.med ? "(" + item.med + ")" : ""}`);
+      }
+    });
+    return parts.length > 0 ? parts.join(", ") : "-";
+  };
+
+  sortedUNos.forEach(uNo => {
+    const sch = schoolMap[uNo] || { uNo, nameTa: "பள்ளி " + uNo, nameEn: "School " + uNo, block: "-", mgmt1: "1G", mgmt2: "1", level: "HS", udiseNo: "-", mobile: "" };
+    const extra = (typeof schoolExtraDataStore !== "undefined" && schoolExtraDataStore[uNo]) ? schoolExtraDataStore[uNo] : null;
+    const ebsProfiles = (extra && extra.ebs2026 && extra.ebs2026.staffProfiles) ? extra.ebs2026.staffProfiles : {};
+    const removedSet = new Set(
+      (extra && extra.ebs2026 && Array.isArray(extra.ebs2026.removedStaffIds))
+        ? extra.ebs2026.removedStaffIds.map(x => String(x).trim())
+        : []
+    );
+    (staffDeleteRequests || []).forEach(req => {
+      if (req && req.status === "APPROVED" && String(req.uNo).trim() === uNo) {
+        if (req.emisId) removedSet.add(String(req.emisId).trim());
+        if (req.staffRecordId) removedSet.add(String(req.staffRecordId).trim());
+      }
+    });
+
+    const cleanU = uNo.replace(/^0+/, "");
+    const rows = (emis && emis.byUNo) ? (emis.byUNo[uNo] || emis.byUNo[cleanU] || []) : [];
+    const extraStaffMap = {};
+    if (extra && Array.isArray(extra.staff)) {
+      extra.staff.forEach(st => {
+        const sid = String(st && (st.id || st.staffId) || "").trim();
+        if (sid) extraStaffMap[sid] = st;
+      });
+    }
+    if (extra && extra.ebs2026 && Array.isArray(extra.ebs2026.addedStaff)) {
+      extra.ebs2026.addedStaff.forEach(st => {
+        const sid = String(st && (st.id || st.staffId) || "").trim();
+        if (sid && !extraStaffMap[sid]) extraStaffMap[sid] = st;
+      });
+    }
+
+    const buildUnifiedStaffObj = (sid, r, stManual) => {
+      const ov = staffOverrides[sid] || {};
+      if (ov.deleted || removedSet.has(sid)) return null;
+      if (ov.uNo && String(ov.uNo).trim() !== uNo) return null; // Transferred to another school
+
+      const ebsProf = ebsProfiles[sid] || {};
+      const stLocal = stManual || extraStaffMap[sid] || {};
+
+      const rawIsTeach = r ? (r[0] === 1) : (typeof stLocal.isTeaching === "boolean" ? stLocal.isTeaching : true);
+      const rawDesig = r ? (pool[r[3]] || (rawIsTeach ? "BT ASSISTANT" : "OFFICE STAFF")) : (stLocal.desig || "BT ASSISTANT");
+      const desig = normalizeCanonicalStaffDesignation(ebsProf.desig || ov.desig || stLocal.desig || rawDesig);
+      const isTeach = (typeof ebsProf.isTeaching === "boolean")
+        ? ebsProf.isTeaching
+        : (typeof ov.isTeaching === "boolean"
+          ? ov.isTeaching
+          : (typeof stLocal.isTeaching === "boolean"
+            ? stLocal.isTeaching
+            : (r ? (r[0] === 1) : !/(JUNIOR ASSISTANT|LAB ASSISTANT|RECORD|WATCHMAN|OFFICE ASSISTANT|TYPIST|SCAVENGER|SWEEPER|WATER|GARDENER|LIBRARIAN|COOK)/i.test(desig))));
+
+      const isHm = desig.toUpperCase().includes("HEAD") || desig.toUpperCase().includes("PRINCIPAL");
+      const rawNameEn = r ? String(r[2] || "") : "";
+      const nameEn = ebsProf.name || ov.name || stLocal.name || rawNameEn || "";
+      let nameTa = ebsProf.nameTa || stLocal.nameTa || (r && r[13] ? String(r[13]) : "");
+      if (!nameTa && nameEn && typeof transliterateFullNameTanglishToTamil === "function") {
+        nameTa = transliterateFullNameTanglishToTamil(nameEn);
+      }
+
+      const gender = ebsProf.gender || ov.gender || stLocal.gender || (r ? (r[4] === "F" ? "Female" : "Male") : "Male");
+      const prefix = ebsProf.prefix || stLocal.prefix || (r && r[15] ? String(r[15]) : (gender === "Female" ? "திருமதி." : "திரு."));
+      const dob = ebsProf.dob || ov.dob || stLocal.dob || (r ? (r[5] || "") : "");
+      const ageDor = (typeof computeAgeAndDorFromDob === "function") ? computeAgeAndDorFromDob(dob) : { age26: "", dor: "" };
+      const age = ebsProf.age || stLocal.age || ageDor.age26 || "";
+      const dor = ebsProf.dor || stLocal.dor || ageDor.dor || "";
+
+      const rawNature = r ? (r[6] === "R" ? "Regular" : "Contract") : (stLocal.nature || "Regular");
+      const natureRaw = ebsProf.nature || ov.nature || stLocal.nature || rawNature;
+      const nature = /contract/i.test(natureRaw) ? "Contract" : "Regular";
+      const typeOfContract = ebsProf.typeOfContract || stLocal.typeOfContract || "";
+
+      const subject = isTeach ? (ebsProf.subject || ov.subject || stLocal.subject || (r ? (pool[r[7]] || "-") : "-")) : "-";
+      const classTaught = r ? (pool[r[8]] || "-") : (stLocal.classTaught || "-");
+      const qualification = ebsProf.qualification || ov.qualification || stLocal.qualification || (r ? (pool[r[9]] || "-") : "-");
+
+      const dojService = ebsProf.dojService || ov.dojService || stLocal.dojService || (r ? (r[10] || "") : "");
+      const dojPresPost = ebsProf.dojPresPost || ov.dojPresPost || stLocal.dojPresPost || (r ? (r[11] || "") : "");
+      const dojSchool = ebsProf.dojSchool || ov.dojSchool || stLocal.dojSchool || (r ? (r[12] || r[10] || "") : "");
+      const unitTransferDate = ebsProf.unitTransferDate || stLocal.unitTransferDate || "";
+
+      const ifhrmsId = ebsProf.ifhrmsId || stLocal.ifhrmsId || (r && r[14] ? String(r[14]) : "");
+      const modeFirstApp = ebsProf.modeFirstApp || stLocal.modeFirstApp || (r && r[22] ? String(r[22]) : (isTeach ? "TRB" : "TNPSC"));
+      const firstJoinPost = normalizeCanonicalStaffDesignation(ebsProf.firstJoinPost || stLocal.firstJoinPost || (r && r[23] ? String(r[23]) : desig));
+      const modePresPost = ebsProf.modePresPost || stLocal.modePresPost || (r && r[24] ? String(r[24]) : "NEW APPOINTMENT");
+
+      const rawMob = ebsProf.mobile || ov.mobile || stLocal.mobile || (r && r[17] ? String(r[17]) : "") || (isHm ? (sch.mobile || "") : "");
+      const cleanMob = String(rawMob || "").replace(/\D/g, "").slice(-10);
+      const whatsappVerified = Boolean(
+        (ebsProf.whatsappVerified || stLocal.whatsappVerified) &&
+        cleanMob.length === 10 &&
+        String(ebsProf.verifiedMobile || stLocal.verifiedMobile || cleanMob).replace(/\D/g, "").slice(-10) === cleanMob
+      );
+      const altMobile = ebsProf.altMobile || stLocal.altMobile || (r && r[18] ? String(r[18]) : "");
+      const email = String(ebsProf.email || stLocal.email || (r && r[16] ? String(r[16]) : "")).trim();
+      const emailVerified = Boolean(
+        (ebsProf.emailVerified || stLocal.emailVerified) &&
+        email &&
+        String(ebsProf.verifiedEmail || stLocal.verifiedEmail || email).trim().toLowerCase() === email.toLowerCase()
+      );
+      const resPlace = ebsProf.resPlace || stLocal.resPlace || (r && r[19] ? String(r[19]) : "");
+      const resDistrict = ebsProf.resDistrict || stLocal.resDistrict || (r && r[20] ? String(r[20]) : "Sivagangai");
+      const prefCamp = ebsProf.prefCamp || stLocal.prefCamp || (r && r[21] ? String(r[21]) : (sch.block || "01-Sivagangai"));
+
+      const dutySslcWork = ebsProf.dutySslcWork || (r && r[25] && !/^exemption$/i.test(String(r[25])) ? String(r[25]) : "");
+      const dutySslcCentre = ebsProf.dutySslcCentre || (r && r[26] ? String(r[26]) : "");
+      const dutyHseWork = ebsProf.dutyHseWork || (r && r[27] && !/^exemption$/i.test(String(r[27])) ? String(r[27]) : "");
+      const dutyHseCentre = ebsProf.dutyHseCentre || (r && r[28] ? String(r[28]) : "");
+      const dutyCampWork = ebsProf.dutyCampWork || ov.campDuty || stLocal.campDuty || "";
+      const dutyCampCentre = ebsProf.dutyCampCentre || "";
+      const childCentre1 = ebsProf.childCentre1 || "None";
+      const childCentre2 = ebsProf.childCentre2 || "None";
+      const exemptionGround = (ebsProf.userSavedExemptionV44 || ebsProf.exemptionCertUrl) ? (ebsProf.exemptionGround || "None") : "None";
+      const exemptionOtherSpec = ebsProf.exemptionOtherSpec || "";
+      const exemptionCertUrl = ebsProf.exemptionCertUrl || "";
+      const exemptionCertName = ebsProf.exemptionCertName || "";
+      const classesHandling = ebsProf.classesHandling || null;
+      const classesSummary = isTeach ? formatClassesSummaryStr(classesHandling) : "-";
+      const pracParts = [ebsProf.pracSslc1, ebsProf.pracHsc1, ebsProf.pracHsc2].filter(x => x && x !== "Not Applicable" && x !== "None");
+      const practicalSubjects = pracParts.length > 0 ? pracParts.join(" | ") : "-";
+      const desigCode = (typeof getEbsDesignationCodeNum === "function") ? getEbsDesignationCodeNum(desig, sch.level === "HSS") : "";
+      const ebsComplete = Boolean(cleanMob.length === 10 && whatsappVerified && email && emailVerified && dob && resPlace);
+
+      return {
+        staffId: sid,
+        ifhrmsId: ifhrmsId || "-",
+        prefix: prefix,
+        name: nameEn,
+        nameTa: nameTa || "-",
+        isTeaching: isTeach,
+        category: isTeach ? "Teaching" : "Non-Teaching",
+        desig: desig,
+        desigCode: desigCode,
+        gender: gender,
+        dob: dob,
+        age: age,
+        dor: dor,
+        nature: nature,
+        natureFull: natureRaw,
+        typeOfContract: typeOfContract || "-",
+        subject: subject || "-",
+        classTaught: classTaught || "-",
+        qualification: qualification || "-",
+        modeFirstApp: modeFirstApp || "-",
+        dojService: dojService || "",
+        firstJoinPost: firstJoinPost || "-",
+        modePresPost: modePresPost || "-",
+        dojPresPost: dojPresPost || "",
+        dojSchool: dojSchool || "",
+        unitTransferDate: unitTransferDate || "-",
+        uNo: uNo,
+        schoolNameTa: sch.nameTa || "",
+        schoolNameEn: sch.nameEn || "",
+        udiseNo: sch.udiseNo || "",
+        block: sch.block || "-",
+        mgmt1: sch.mgmt1 || "1G",
+        mgmt2: sch.mgmt2 || "1",
+        level: sch.level || "HS",
+        mobile: cleanMob || "-",
+        whatsappVerified: whatsappVerified,
+        altMobile: altMobile || "-",
+        email: email || "-",
+        emailVerified: emailVerified,
+        resPlace: resPlace || "-",
+        resDistrict: resDistrict || "Sivagangai",
+        prefCamp: prefCamp || "-",
+        classesSummary: classesSummary,
+        practicalSubjects: practicalSubjects,
+        dutySslcWork: dutySslcWork || "-",
+        dutySslcCentre: dutySslcCentre || "-",
+        dutyHseWork: dutyHseWork || "-",
+        dutyHseCentre: dutyHseCentre || "-",
+        dutyCampWork: dutyCampWork || "-",
+        dutyCampCentre: dutyCampCentre || "-",
+        childCentres: (childCentre1 !== "None" || childCentre2 !== "None") ? `10th:${childCentre1} | +2:${childCentre2}` : "None",
+        exemptionGround: exemptionGround || "None",
+        exemptionOtherSpec: exemptionOtherSpec || "",
+        exemptionCertUrl: exemptionCertUrl || "",
+        exemptionCertName: exemptionCertName || "",
+        ebsComplete: ebsComplete,
+        examDuty: dutyHseWork || dutySslcWork || ov.examDuty || (isHm ? "Chief Superintendent" : ((desig.toUpperCase().includes("PG ") || desig.toUpperCase().includes("P.G")) ? "Hall Superintendent / AE" : "Hall Superintendent")),
+        campDuty: dutyCampWork || ov.campDuty || (isHm ? "Camp Officer / CE" : ((desig.toUpperCase().includes("PG ") || desig.toUpperCase().includes("P.G")) ? "AE / Tabulator" : "Examiner")),
+        campOption: prefCamp || ov.campOption || sch.block || "01-Sivagangai",
+        source: r ? "EMIS" : "Manual"
+      };
+    };
+
+    rows.forEach(r => {
+      const sid = String(r[1] || "").trim();
+      if (!sid || seenIds.has(sid)) return;
+      const obj = buildUnifiedStaffObj(sid, r, null);
+      if (obj) {
+        seenIds.add(sid);
+        allStaff.push(obj);
+      }
+    });
+
+    // Also include any staff added manually or transferred into this school via extra.staff / addedStaff / staffOverrides
+    Object.entries(extraStaffMap).forEach(([sid, stManual]) => {
+      if (!sid || seenIds.has(sid)) return;
+      const obj = buildUnifiedStaffObj(sid, null, stManual);
+      if (obj) {
+        seenIds.add(sid);
+        allStaff.push(obj);
+      }
+    });
+
+    Object.entries(staffOverrides).forEach(([sid, ov]) => {
+      if (!sid || seenIds.has(sid) || !ov || ov.deleted) return;
+      if (String(ov.uNo || "").trim() === uNo) {
+        const obj = buildUnifiedStaffObj(sid, null, ov);
+        if (obj) {
+          seenIds.add(sid);
+          allStaff.push(obj);
+        }
+      }
+    });
+  });
+
+  districtFlattenedStaffCache = allStaff;
+  return allStaff;
 }
 function initAdminTeacherMasterFilters() {
 const allStaff = getDistrictAllStaffList();
@@ -17570,298 +17784,774 @@ adminStaffFilteredList.sort((a, b) => compareSeniorityStaff(a, b, cfg));
 renderAdminStaffTablePage();
 }
 const DEFAULT_ADMIN_STAFF_COLS = {
-rank: true,
-nameId: true,
-gender: false,
-desig: true,
-subject: true,
-school: true,
-blockMgmt: true,
-doj: true,
-dob: true,
-natureDuty: false,
-mobile: true,
-actions: true
+  rank: true, nameId: true, gender: false, desig: true, subject: true, school: true,
+  blockMgmt: true, doj: true, dob: true, natureDuty: false, mobile: true, actions: true
 };
 let adminStaffVisibleCols = Object.assign({}, DEFAULT_ADMIN_STAFF_COLS);
 const DEFAULT_ADMIN_STUDENT_COLS = {
-sno: true,
-unoUdise: true,
-schoolBlock: true,
-levelMgmt: true,
-medium: true,
-groups: true,
-gender: true,
-class6to10: false,
-class11to12: false,
-filteredCount: true,
-totalStudents: true,
-actions: true
+  sno: true, unoUdise: true, schoolBlock: true, levelMgmt: true, medium: true, groups: true,
+  gender: true, class6to10: false, class11to12: false, filteredCount: true, totalStudents: true, actions: true
 };
 let adminStudentVisibleCols = Object.assign({}, DEFAULT_ADMIN_STUDENT_COLS);
-function getAdminStaffVisibleCols() {
-return adminStaffVisibleCols;
-}
-function getAdminStudentVisibleCols() {
-return adminStudentVisibleCols;
-}
+function getAdminStaffVisibleCols() { return adminStaffVisibleCols; }
+function getAdminStudentVisibleCols() { return adminStudentVisibleCols; }
 function toggleAdminColCustomizer(wrapId) {
-const el = document.getElementById(wrapId);
-if (!el) return;
-el.style.display = (el.style.display === "none") ? "flex" : "none";
+  const el = document.getElementById(wrapId);
+  if (!el) return;
+  el.style.display = (el.style.display === "none") ? "flex" : "none";
 }
-function onAdminStaffColToggle(cb) {
-if (!cb) return;
-const key = cb.getAttribute("data-staff-col");
-if (!key) return;
-adminStaffVisibleCols[key] = Boolean(cb.checked);
-if (Object.values(adminStaffVisibleCols).filter(Boolean).length === 0) {
-adminStaffVisibleCols[key] = true;
-cb.checked = true;
-showToast("⚠️ குறைந்தபட்சம் ஒரு நெடுவரிசையாவது தேர்ந்தெடுக்கப்பட வேண்டும்.", "#f59e0b");
-return;
-}
-renderAdminStaffTablePage();
-}
-function setAllAdminStaffColumns(val) {
-Object.keys(adminStaffVisibleCols).forEach(k => { adminStaffVisibleCols[k] = Boolean(val); });
-document.querySelectorAll('input[data-staff-col]').forEach(cb => { cb.checked = Boolean(val); });
-renderAdminStaffTablePage();
-showToast("✅ ஆசிரியர் அட்டவணையில் அனைத்து நெடுவரிசைகளும் காண்பிக்கப்படுகின்றன.", "#0284c7");
-}
-function resetAdminStaffColumnsDefault() {
-adminStaffVisibleCols = Object.assign({}, DEFAULT_ADMIN_STAFF_COLS);
-document.querySelectorAll('input[data-staff-col]').forEach(cb => {
-const k = cb.getAttribute("data-staff-col");
-cb.checked = Boolean(adminStaffVisibleCols[k]);
-});
-renderAdminStaffTablePage();
-showToast("🔄 ஆசிரியர் அட்டவணை நெடுவரிசைகள் இயல்பு நிலைக்கு மாற்றப்பட்டன.", "#0284c7");
-}
+function onAdminStaffColToggle(cb) { renderAdminStaffTablePage(); }
+function setAllAdminStaffColumns(val) { applyAdminStaffColumnPreset(val ? "ebs_f3_full" : "default_unified"); }
+function resetAdminStaffColumnsDefault() { applyAdminStaffColumnPreset("default_unified"); }
 function onAdminStudentColToggle(cb) {
-if (!cb) return;
-const key = cb.getAttribute("data-std-col");
-if (!key) return;
-adminStudentVisibleCols[key] = Boolean(cb.checked);
-if (Object.values(adminStudentVisibleCols).filter(Boolean).length === 0) {
-adminStudentVisibleCols[key] = true;
-cb.checked = true;
-showToast("⚠️ குறைந்தபட்சம் ஒரு நெடுவரிசையாவது தேர்ந்தெடுக்கப்பட வேண்டும்.", "#f59e0b");
-return;
-}
-renderAdminStudentsTablePage();
+  if (!cb) return;
+  const key = cb.getAttribute("data-std-col");
+  if (!key) return;
+  adminStudentVisibleCols[key] = Boolean(cb.checked);
+  if (Object.values(adminStudentVisibleCols).filter(Boolean).length === 0) {
+    adminStudentVisibleCols[key] = true;
+    cb.checked = true;
+    showToast("⚠️ குறைந்தபட்சம் ஒரு நெடுவரிசையாவது தேர்ந்தெடுக்கப்பட வேண்டும்.", "#f59e0b");
+    return;
+  }
+  renderAdminStudentsTablePage();
 }
 function setAllAdminStudentColumns(val) {
-Object.keys(adminStudentVisibleCols).forEach(k => { adminStudentVisibleCols[k] = Boolean(val); });
-document.querySelectorAll('input[data-std-col]').forEach(cb => { cb.checked = Boolean(val); });
-renderAdminStudentsTablePage();
-showToast("✅ மாணவர் அட்டவணையில் அனைத்து நெடுவரிசைகளும் காண்பிக்கப்படுகின்றன.", "#16a34a");
+  Object.keys(adminStudentVisibleCols).forEach(k => { adminStudentVisibleCols[k] = Boolean(val); });
+  document.querySelectorAll('input[data-std-col]').forEach(cb => { cb.checked = Boolean(val); });
+  renderAdminStudentsTablePage();
 }
 function resetAdminStudentColumnsDefault() {
-adminStudentVisibleCols = Object.assign({}, DEFAULT_ADMIN_STUDENT_COLS);
-document.querySelectorAll('input[data-std-col]').forEach(cb => {
-const k = cb.getAttribute("data-std-col");
-cb.checked = Boolean(adminStudentVisibleCols[k]);
-});
-renderAdminStudentsTablePage();
-showToast("🔄 மாணவர் அட்டவணை நெடுவரிசைகள் இயல்பு நிலைக்கு மாற்றப்பட்டன.", "#16a34a");
+  adminStudentVisibleCols = Object.assign({}, DEFAULT_ADMIN_STUDENT_COLS);
+  document.querySelectorAll('input[data-std-col]').forEach(cb => {
+    const k = cb.getAttribute("data-std-col");
+    cb.checked = Boolean(adminStudentVisibleCols[k]);
+  });
+  renderAdminStudentsTablePage();
 }
-function renderAdminStaffTablePage() {
-const total = adminStaffFilteredList.length;
-const pageSize = adminStaffPageSize;
-const totalPages = Math.max(1, Math.ceil(total / pageSize));
-if (adminStaffCurrentPage > totalPages) adminStaffCurrentPage = totalPages;
-if (adminStaffCurrentPage < 1) adminStaffCurrentPage = 1;
-const startIndex = (adminStaffCurrentPage - 1) * pageSize;
-const endIndex = Math.min(startIndex + pageSize, total);
-const pageItems = adminStaffFilteredList.slice(startIndex, endIndex);
-const allStaff = getDistrictAllStaffList();
-const elTot = document.getElementById("admTeacherTotalBadge");
-const elTeach = document.getElementById("admTeacherTeachingBadge");
-const elNon = document.getElementById("admTeacherNonTeachBadge");
-const elFilt = document.getElementById("admTeacherFilteredBadge");
-if (elTot) elTot.textContent = allStaff.length.toLocaleString("en-IN");
-if (elTeach) elTeach.textContent = allStaff.filter(s => s.isTeaching).length.toLocaleString("en-IN");
-if (elNon) elNon.textContent = allStaff.filter(s => !s.isTeaching).length.toLocaleString("en-IN");
-if (elFilt) elFilt.textContent = total.toLocaleString("en-IN");
-const rangeText = total > 0 ? `${(startIndex + 1).toLocaleString("en-IN")} - ${endIndex.toLocaleString("en-IN")}` : "0";
-const totalText = total.toLocaleString("en-IN");
-const pageIndText = `பக்கம் ${adminStaffCurrentPage} / ${totalPages}`;
-const rTop = document.getElementById("admStaffPaginationRange");
-if (rTop) rTop.textContent = rangeText;
-const tTop = document.getElementById("admStaffTotalMatching");
-if (tTop) tTop.textContent = totalText;
-const indTop = document.getElementById("admStaffPageIndicator");
-if (indTop) indTop.textContent = pageIndText;
-const indBot = document.getElementById("admStaffPageIndicatorBottom");
-if (indBot) indBot.textContent = pageIndText;
-const rBot = document.getElementById("admStaffPaginationRangeBottom");
-if (rBot) rBot.textContent = `காண்பிக்கப்படுவது ${rangeText} / மொத்தம் ${totalText} பணியாளர்கள்`;
-const thead = document.getElementById("admStaffMasterTableHead");
-const tbody = document.getElementById("admStaffMasterTableBody");
-if (!tbody) return;
-const cols = getAdminStaffVisibleCols();
-if (thead) {
-let thHtml = `<tr style="position:sticky; top:0; z-index:5;">`;
-if (cols.rank) thHtml += `<th style="width:55px; text-align:center;" id="thStaffRank">${isSeniorityMode ? "மு.எண் (Rank)" : "வ.எண்"}</th>`;
-if (cols.nameId) thHtml += `<th style="min-width:180px;">ஆசிரியர் பெயர் &amp; Staff ID</th>`;
-if (cols.gender) thHtml += `<th style="min-width:75px; text-align:center;">பாலினம்</th>`;
-if (cols.desig) thHtml += `<th style="min-width:160px;">பதவி (Designation)</th>`;
-if (cols.subject) thHtml += `<th style="min-width:120px;">பாடம் (Subject)</th>`;
-if (cols.school) thHtml += `<th style="min-width:190px;">பள்ளி விவரம் (School Name)</th>`;
-if (cols.blockMgmt) thHtml += `<th style="min-width:115px;">ஒன்றியம் &amp; நிர்வாகம்</th>`;
-if (cols.doj) thHtml += `<th style="min-width:110px; text-align:center;">பணியில் சேர்ந்த நாள் (DOJ)</th>`;
-if (cols.dob) thHtml += `<th style="min-width:95px; text-align:center;">பிறந்த தேதி (DOB)</th>`;
-if (cols.natureDuty) thHtml += `<th style="min-width:125px; text-align:center;">நியமனம் &amp; பணி</th>`;
-if (cols.mobile) thHtml += `<th style="min-width:95px;">கைபேசி</th>`;
-if (cols.actions) thHtml += `<th style="min-width:110px; text-align:center;">செயல்கள்</th>`;
-thHtml += `</tr>`;
-thead.innerHTML = thHtml;
-}
-const activeColCount = Object.values(cols).filter(Boolean).length || 1;
-if (total === 0) {
-tbody.innerHTML = `<tr><td colspan="${activeColCount}" style="text-align:center; padding:32px; color:#64748b; font-size:0.95rem;">
-        🔍 கொடுக்கப்பட்ட வடிகட்டிகளுக்குப் பொருந்தும் ஆசிரியர்கள் அல்லது பணியாளர்கள் எவரும் இல்லை.<br>
-        <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStaffFilters()" style="margin-top:10px;">வடிகட்டிகளை மீட்டமை (Reset Filters)</button>
-      </td></tr>`;
-return;
-}
-const cfg = seniorityCriteria;
-tbody.innerHTML = pageItems.map((st, idx) => {
-const overallRank = startIndex + idx + 1;
-let rankBadge = "";
-if (isSeniorityMode) {
-if (overallRank === 1) rankBadge = `<span class="seniority-badge-gold">🥇 #1</span>`;
-else if (overallRank === 2) rankBadge = `<span class="seniority-badge-silver">🥈 #2</span>`;
-else if (overallRank === 3) rankBadge = `<span class="seniority-badge-bronze">🥉 #3</span>`;
-else rankBadge = `<span class="seniority-badge-normal">#${overallRank}</span>`;
-} else {
-rankBadge = `<span style="font-weight:700; color:#64748b;">${overallRank}</span>`;
-}
-const catBadge = st.isTeaching
-? `<span style="font-size:0.68rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 6px; border-radius:4px; font-weight:800;">Teaching</span>`
-: `<span style="font-size:0.68rem; background:#fefce8; color:#854d0e; border:1px solid #fde047; padding:1px 6px; border-radius:4px; font-weight:800;">Non-Teaching</span>`;
-let conBadges = "";
-if (st.hasAgePriority) {
-conBadges += `<span style="display:inline-block; font-size:0.68rem; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:1px 5px; border-radius:4px; font-weight:800; margin-left:3px;" title="55 வயது கடந்த ஆசிரியர் சிறப்பு முன்னுரிமை">👴 55+</span>`;
-}
-if (st.hasFemalePriority) {
-conBadges += `<span style="display:inline-block; font-size:0.68rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 5px; border-radius:4px; font-weight:800; margin-left:3px;" title="பெண் ஆசிரியர் முன்னுரிமை">👩 பெண்</span>`;
-}
-let dojCellHtml = "";
-if (isSeniorityMode && cfg.primary === "dojPresPost") {
-dojCellHtml = `
-          <div style="font-size:0.80rem;">
-            <strong style="color:#7c3aed; font-size:0.86rem; background:#f3e8ff; padding:1px 5px; border-radius:4px; border:1px solid #d8b4fe; display:inline-block;" title="முதன்மை காரணி: தற்போதைய பதவியில் சேர்ந்த நாள்">
-              பதவி: ${st.dojPresPost || "-"}
-            </strong>
-            <div style="font-size:0.72rem; color:#475569; margin-top:2px;">பணி: <strong>${st.dojService || "-"}</strong> | பள்ளி: <strong>${st.dojSchool || "-"}</strong></div>
-          </div>
-        `;
-} else if (isSeniorityMode && cfg.primary === "dojSchool") {
-dojCellHtml = `
-          <div style="font-size:0.80rem;">
-            <strong style="color:#15803d; font-size:0.86rem; background:#dcfce7; padding:1px 5px; border-radius:4px; border:1px solid #86efac; display:inline-block;" title="முதன்மை காரணி: இப்பள்ளியில் சேர்ந்த நாள்">
-              பள்ளி: ${st.dojSchool || "-"}
-            </strong>
-            <div style="font-size:0.72rem; color:#475569; margin-top:2px;">பதவி: <strong>${st.dojPresPost || "-"}</strong> | பணி: <strong>${st.dojService || "-"}</strong></div>
-          </div>
-        `;
-} else if (isSeniorityMode && cfg.primary === "dojService") {
-dojCellHtml = `
-          <div style="font-size:0.80rem;">
-            <strong style="color:#1d4ed8; font-size:0.86rem; background:#eff6ff; padding:1px 5px; border-radius:4px; border:1px solid #bfdbfe; display:inline-block;" title="முதன்மை காரணி: அரசுப் பணியில் சேர்ந்த நாள்">
-              பணி: ${st.dojService || "-"}
-            </strong>
-            <div style="font-size:0.72rem; color:#475569; margin-top:2px;">பதவி: <strong>${st.dojPresPost || "-"}</strong> | பள்ளி: <strong>${st.dojSchool || "-"}</strong></div>
-          </div>
-        `;
-} else {
-dojCellHtml = `
-          <div style="font-size:0.80rem;">
-            <strong style="color:#15803d;">${st.dojService || "-"}</strong>
-            ${st.dojPresPost ? `<div style="font-size:0.70rem; color:#7c3aed;">பதவி: ${st.dojPresPost}</div>` : ""}
-            ${st.dojSchool ? `<div style="font-size:0.70rem; color:#64748b;">பள்ளி: ${st.dojSchool}</div>` : ""}
-          </div>
-        `;
-}
-let dobCellHtml = "";
-if (isSeniorityMode && cfg.primary === "dob") {
-dobCellHtml = `
-          <strong style="color:#b45309; font-size:0.86rem; background:#fef3c7; padding:2px 6px; border-radius:4px; border:1px solid #fde047; display:inline-block;" title="முதன்மை காரணி: வயது மூப்பு">
-            ${st.dob || "-"}
-          </strong>
-        `;
-} else {
-dobCellHtml = `<span style="font-size:0.78rem;">${st.dob || "-"}</span>`;
-}
-let rowHtml = `<tr style="border-bottom:1px solid #e2e8f0;">`;
-if (cols.rank) {
-rowHtml += `<td style="text-align:center;">${rankBadge}${conBadges}</td>`;
-}
-if (cols.nameId) {
-rowHtml += `<td>
-          <div style="font-weight:800; color:#0f294a;">${st.name}</div>
-          <div style="font-size:0.74rem; color:#475569; font-weight:600; margin-top:1px;">
-            ID: <strong style="color:#1d4ed8;">${st.staffId}</strong> | ${st.gender}
-          </div>
-        </td>`;
-}
-if (cols.gender) {
-rowHtml += `<td style="text-align:center; font-weight:700; color:${st.gender === 'Female' ? '#be185d' : '#1d4ed8'};">${st.gender === "Female" ? "👧 பெண்" : "👦 ஆண்"}</td>`;
-}
-if (cols.desig) {
-rowHtml += `<td>
-          <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.desig}</div>
-          <div style="margin-top:2px;">${catBadge}</div>
-        </td>`;
-}
-if (cols.subject) {
-rowHtml += `<td>
-          <strong style="color:#1e40af;">${st.subject || "-"}</strong>
-          ${st.qualification && st.qualification !== "-" ? `<div style="font-size:0.72rem; color:#64748b;">${st.qualification}</div>` : ""}
-        </td>`;
-}
-if (cols.school) {
-rowHtml += `<td>
-          <div style="font-weight:800; color:#0f294a; line-height:1.25;">${st.schoolNameTa || st.schoolNameEn}</div>
-          <div style="font-size:0.72rem; color:#64748b;">U.NO: <strong>${st.uNo}</strong> | UDISE: ${st.udiseNo}</div>
-        </td>`;
-}
-if (cols.blockMgmt) {
-rowHtml += `<td>
-          <div style="font-weight:700; color:#1e293b;">${st.block}</div>
-          <div style="font-size:0.74rem; margin-top:1px;">
-            <span class="${getMgmtBadgeClass(st.mgmt1)}" style="padding:1px 6px;">${st.mgmt1}</span>
-          </div>
-        </td>`;
-}
-if (cols.doj) {
-rowHtml += `<td style="text-align:center;">${dojCellHtml}</td>`;
-}
-if (cols.dob) {
-rowHtml += `<td style="text-align:center;">${dobCellHtml}</td>`;
-}
-if (cols.natureDuty) {
-rowHtml += `<td style="text-align:center; font-size:0.76rem;">
-          <span style="font-weight:800; color:#15803d;">${st.nature || "Regular"}</span>
-          <div style="color:#475569;">${st.examDuty || "CS / Hall Supt"}</div>
-        </td>`;
-}
-if (cols.mobile) {
-rowHtml += `<td><strong style="color:#0284c7; font-size:0.80rem;">${st.mobile || "-"}</strong></td>`;
-}
-if (cols.actions) {
-rowHtml += `<td style="text-align:center; white-space:nowrap;">
-          <button type="button" class="btn btn-primary btn-sm" onclick="openAdminEditStaffModal('${st.staffId}')" style="font-size:0.74rem; padding:3px 8px; margin-right:4px;" title="ஆசிரியர் விவரங்களைத் திருத்துக">
-            ✏️ திருத்து
-          </button>
 
-        </td>`;
+// ============================================================================
+// UNIFIED EMIS STAFF MASTER + EBS FORM-3/4 DYNAMIC COLUMN & FIELD ENGINE
+// ============================================================================
+const ADMIN_STAFF_FIELD_CATALOG = [
+  // Category 1: Identity & Personal
+  { key: "rank", label: "மு.எண் / வ.எண் (Rank / S.No)", shortLabel: "மு.எண்", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+  { key: "staffId", label: "EMIS Staff ID (8-இலக்க எண்)", shortLabel: "EMIS ID", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+  { key: "ifhrmsId", label: "IFHRMS ID (களஞ்சியம் எண்)", shortLabel: "IFHRMS ID", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+  { key: "prefix", label: "முன்னொட்டு (திரு. / திருமதி.)", shortLabel: "முன்னொட்டு", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+  { key: "nameTa", label: "பணியாளர் பெயர் - தமிழ் (Name in Tamil - EBS F3)", shortLabel: "பெயர் (தமிழ்)", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+  { key: "name", label: "பணியாளர் பெயர் - ஆங்கிலம் (Name in English)", shortLabel: "பெயர் (English)", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+  { key: "gender", label: "பாலினம் (Gender - ஆண் / பெண்)", shortLabel: "பாலினம்", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+  { key: "dob", label: "பிறந்த தேதி (Date of Birth - DOB)", shortLabel: "பிறந்த தேதி", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+  { key: "age", label: "வயது (Age as on 31.05.2026)", shortLabel: "வயது", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+  { key: "dor", label: "பணி ஓய்வு நாள் (Date of Retirement - DOR)", shortLabel: "ஓய்வு நாள்", cat: "1. அடிப்படை & அடையாள விவரங்கள் (Identity & Personal)" },
+
+  // Category 2: Post, Qualification & Appointment
+  { key: "desig", label: "பதவி (Designation)", shortLabel: "பதவி", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "desigCode", label: "EBS பதவிக் குறியீடு (Desig Code 01-37)", shortLabel: "பதவிக் குறியீடு", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "category", label: "பணி வகை (Teaching / Non-Teaching)", shortLabel: "பணி வகை", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "subject", label: "கற்பிக்கும் பாடம் (Subject)", shortLabel: "பாடம்", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "qualification", label: "கல்வித் தகுதி (Qualification)", shortLabel: "கல்வித் தகுதி", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "nature", label: "நியமனத் தன்மை (Regular / Contract)", shortLabel: "நியமனத் தன்மை", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "typeOfContract", label: "ஒப்பந்த வகை (PTA / Management / Consolidated)", shortLabel: "ஒப்பந்த வகை", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "modeFirstApp", label: "முதல் நியமன முறை (TRB / TNPSC / Emp)", shortLabel: "முதல் நியமன முறை", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "firstJoinPost", label: "முதல் நியமனப் பதவி (First Joined Post)", shortLabel: "முதல் பதவி", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "dojService", label: "அரசுப் பணியில் சேர்ந்த நாள் (DOJ in Service)", shortLabel: "பணியில் சேர்ந்த நாள்", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "modePresPost", label: "தற்போதைய பதவி முறை (Promotion / Direct)", shortLabel: "தற்போதைய பதவி முறை", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "dojPresPost", label: "தற்போதைய பதவியில் சேர்ந்த நாள் (DOJ Present Post)", shortLabel: "பதவியில் சேர்ந்த நாள்", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "dojSchool", label: "இப்பள்ளியில் சேர்ந்த நாள் (DOJ Present School)", shortLabel: "பள்ளியில் சேர்ந்த நாள்", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+  { key: "unitTransferDate", label: "அலகு விட்டு அலகு மாறுதல் நாள் (Unit Transfer Date)", shortLabel: "Unit Transfer நாள்", cat: "2. பதவி, கல்வி & பணி நியமனம் (Post & Appointment)" },
+
+  // Category 3: School & Block
+  { key: "schoolNameTa", label: "பள்ளியின் பெயர் - தமிழ் (School Name Tamil)", shortLabel: "பள்ளி (தமிழ்)", cat: "3. பள்ளி & ஒன்றிய விவரங்கள் (School & Block)" },
+  { key: "schoolNameEn", label: "பள்ளியின் பெயர் - ஆங்கிலம் (School Name English)", shortLabel: "பள்ளி (English)", cat: "3. பள்ளி & ஒன்றிய விவரங்கள் (School & Block)" },
+  { key: "uNo", label: "பள்ளி U.NO (Unique Number)", shortLabel: "U.NO", cat: "3. பள்ளி & ஒன்றிய விவரங்கள் (School & Block)" },
+  { key: "udiseNo", label: "பள்ளி UDISE எண் (11 Digits)", shortLabel: "UDISE", cat: "3. பள்ளி & ஒன்றிய விவரங்கள் (School & Block)" },
+  { key: "block", label: "ஒன்றியம் (Block)", shortLabel: "ஒன்றியம்", cat: "3. பள்ளி & ஒன்றிய விவரங்கள் (School & Block)" },
+  { key: "mgmt1", label: "நிர்வாக வகை (Management - 1G / 2A / 3P)", shortLabel: "நிர்வாகம்", cat: "3. பள்ளி & ஒன்றிய விவரங்கள் (School & Block)" },
+  { key: "level", label: "பள்ளி நிலை (HS / HSS / MS)", shortLabel: "பள்ளி நிலை", cat: "3. பள்ளி & ஒன்றிய விவரங்கள் (School & Block)" },
+
+  // Category 4: Contact & OTP Status (EBS Form-III / IV)
+  { key: "mobile", label: "வாட்ஸ்ஆப் கைபேசி எண் (WhatsApp Mobile)", shortLabel: "WhatsApp எண்", cat: "4. தொடர்பு & OTP சரிபார்ப்பு (EBS Form-3/4 Contact)" },
+  { key: "whatsappVerified", label: "WhatsApp OTP சரிபார்ப்பு நிலை (Verified / Pending)", shortLabel: "WhatsApp OTP நிலை", cat: "4. தொடர்பு & OTP சரிபார்ப்பு (EBS Form-3/4 Contact)" },
+  { key: "altMobile", label: "மாற்று கைபேசி எண் (Alternate Mobile)", shortLabel: "மாற்று எண்", cat: "4. தொடர்பு & OTP சரிபார்ப்பு (EBS Form-3/4 Contact)" },
+  { key: "email", label: "மின்னஞ்சல் முகவரி (Personal Email ID)", shortLabel: "மின்னஞ்சல் (Email)", cat: "4. தொடர்பு & OTP சரிபார்ப்பு (EBS Form-3/4 Contact)" },
+  { key: "emailVerified", label: "Email OTP சரிபார்ப்பு நிலை (Verified / Pending)", shortLabel: "Email OTP நிலை", cat: "4. தொடர்பு & OTP சரிபார்ப்பு (EBS Form-3/4 Contact)" },
+  { key: "resPlace", label: "வசிப்பிடம் (Residential Place - EBS F3)", shortLabel: "வசிப்பிடம்", cat: "4. தொடர்பு & OTP சரிபார்ப்பு (EBS Form-3/4 Contact)" },
+  { key: "resDistrict", label: "சொந்த மாவட்டம் (Native District)", shortLabel: "மாவட்டம்", cat: "4. தொடர்பு & OTP சரிபார்ப்பு (EBS Form-3/4 Contact)" },
+
+  // Category 5: EBS Form-3/4 Duties, Classes & Exemptions
+  { key: "classesSummary", label: "கையாளும் வகுப்புகள் 6–12 & மொழி (Classes Handled)", shortLabel: "கையாளும் வகுப்புகள்", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "practicalSubjects", label: "செய்முறைத் தேர்வுப் பாடங்கள் (Practical Subjects)", shortLabel: "செய்முறைப் பாடம்", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "prefCamp", label: "விருப்ப விடைத்தாள் முகாம் (Preferred Valuation Camp)", shortLabel: "விருப்ப முகாம்", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "dutySslcWork", label: "10th பொதுத்தேர்வுப் பணி (SSLC Exam Duty)", shortLabel: "10th தேர்வுப் பணி", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "dutySslcCentre", label: "10th தேர்வுப் பணி மையம் (SSLC Duty Centre)", shortLabel: "10th பணி மையம்", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "dutyHseWork", label: "+1/+2 பொதுத்தேர்வுப் பணி (HSE Exam Duty)", shortLabel: "+2 தேர்வுப் பணி", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "dutyHseCentre", label: "+1/+2 தேர்வுப் பணி மையம் (HSE Duty Centre)", shortLabel: "+2 பணி மையம்", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "dutyCampWork", label: "விடைத்தாள் திருத்தும் முகாம் பணி (Camp Duty)", shortLabel: "முகாம் பணி", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "dutyCampCentre", label: "முகாம் மையம் (Valuation Camp Centre)", shortLabel: "முகாம் மையம்", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "childCentres", label: "குழந்தைகள் தேர்வு எழுதும் மையம் (Children Exam Centres)", shortLabel: "குழந்தை மையம்", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "exemptionGround", label: "தேர்வுப் பணி விலக்குக் காரணம் (Exemption Ground)", shortLabel: "பணி விலக்கு", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "exemptionCert", label: "விலக்குச் சான்றிதழ் இணைப்பு (Exemption Certificate)", shortLabel: "விலக்குச் சான்று", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "ebsProfileStatus", label: "EBS Form-3/4 பூர்த்தி நிலை (Completed / Pending)", shortLabel: "EBS F3 நிலை", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" },
+  { key: "actions", label: "செயல்கள் (✏️ விரைவுத் திருத்தம் & 📋 EBS Form-3 திருத்து)", shortLabel: "செயல்கள்", cat: "5. EBS Form-3/4 தேர்வுப் பணி, வகுப்புகள் & விலக்கு" }
+];
+
+const ADMIN_STAFF_FIELD_MAP = {};
+ADMIN_STAFF_FIELD_CATALOG.forEach(f => { ADMIN_STAFF_FIELD_MAP[f.key] = f; });
+
+function getAdminStaffColumnPresets() {
+  return {
+    default_unified: [
+      { id: "c1", title: "", align: "center", showLabel: "auto", fields: ["rank"] },
+      { id: "c2", title: "ஆசிரியர் பெயர் & EMIS / IFHRMS", align: "left", showLabel: "auto", fields: ["nameTa", "name", "staffId", "ifhrmsId"] },
+      { id: "c3", title: "பதவி, பாடம் & கல்வித்தகுதி", align: "left", showLabel: "auto", fields: ["desig", "category", "subject", "qualification"] },
+      { id: "c4", title: "பள்ளி & ஒன்றியம்", align: "left", showLabel: "auto", fields: ["schoolNameTa", "uNo", "udiseNo", "block", "mgmt1"] },
+      { id: "c5", title: "பணியில் சேர்ந்த நாள் (DOJ)", align: "center", showLabel: "auto", fields: ["dojService", "dojPresPost", "dojSchool"] },
+      { id: "c6", title: "பிறந்த தேதி, வயது & ஓய்வு", align: "center", showLabel: "auto", fields: ["dob", "age", "dor"] },
+      { id: "c7", title: "தொடர்பு & EBS OTP நிலை", align: "left", showLabel: "auto", fields: ["mobile", "whatsappVerified", "email", "emailVerified"] },
+      { id: "c8", title: "EBS பணி & விலக்கு", align: "left", showLabel: "auto", fields: ["dutyHseWork", "dutySslcWork", "exemptionGround", "ebsProfileStatus"] },
+      { id: "c9", title: "செயல்கள்", align: "center", showLabel: "value_only", fields: ["actions"] }
+    ],
+    ebs_f3_full: [
+      { id: "c1", title: "வ.எண்", align: "center", showLabel: "value_only", fields: ["rank"] },
+      { id: "c2", title: "EMIS ID & IFHRMS", align: "left", showLabel: "always", fields: ["staffId", "ifhrmsId", "nature"] },
+      { id: "c3", title: "பெயர் (தமிழ் & English) & பாலினம்", align: "left", showLabel: "auto", fields: ["prefix", "nameTa", "name", "gender"] },
+      { id: "c4", title: "பிறந்த தேதி, வயது & ஓய்வு நாள்", align: "center", showLabel: "always", fields: ["dob", "age", "dor"] },
+      { id: "c5", title: "பதவி, பாடம் & கல்வித்தகுதி", align: "left", showLabel: "auto", fields: ["desig", "subject", "qualification", "classesSummary"] },
+      { id: "c6", title: "முதல் நியமனம் & பதவியில் சேர்ந்த நாள்", align: "left", showLabel: "always", fields: ["modeFirstApp", "dojService", "dojPresPost", "dojSchool"] },
+      { id: "c7", title: "பள்ளி & ஒன்றியம்", align: "left", showLabel: "auto", fields: ["schoolNameTa", "uNo", "block", "mgmt1"] },
+      { id: "c8", title: "WhatsApp, Email & வசிப்பிடம்", align: "left", showLabel: "auto", fields: ["mobile", "whatsappVerified", "email", "emailVerified", "resPlace"] },
+      { id: "c9", title: "தேர்வுப் பணி (10th/+2), முகாம் & விலக்கு", align: "left", showLabel: "always", fields: ["dutySslcWork", "dutyHseWork", "prefCamp", "exemptionGround", "exemptionCert"] },
+      { id: "c10", title: "செயல்கள்", align: "center", showLabel: "value_only", fields: ["ebsProfileStatus", "actions"] }
+    ],
+    single_field_cols: [
+      { id: "c1", title: "மு.எண்", align: "center", showLabel: "value_only", fields: ["rank"] },
+      { id: "c2", title: "EMIS ID", align: "center", showLabel: "value_only", fields: ["staffId"] },
+      { id: "c3", title: "IFHRMS ID", align: "center", showLabel: "value_only", fields: ["ifhrmsId"] },
+      { id: "c4", title: "பெயர் (தமிழ்)", align: "left", showLabel: "value_only", fields: ["nameTa"] },
+      { id: "c5", title: "Name (English)", align: "left", showLabel: "value_only", fields: ["name"] },
+      { id: "c6", title: "பாலினம்", align: "center", showLabel: "value_only", fields: ["gender"] },
+      { id: "c7", title: "பதவி", align: "left", showLabel: "value_only", fields: ["desig"] },
+      { id: "c8", title: "பாடம்", align: "left", showLabel: "value_only", fields: ["subject"] },
+      { id: "c9", title: "பள்ளி (U.NO)", align: "left", showLabel: "auto", fields: ["uNo", "schoolNameTa"] },
+      { id: "c10", title: "ஒன்றியம்", align: "left", showLabel: "value_only", fields: ["block"] },
+      { id: "c11", title: "பிறந்த தேதி", align: "center", showLabel: "value_only", fields: ["dob"] },
+      { id: "c12", title: "பணியில் சேர்ந்த நாள்", align: "center", showLabel: "value_only", fields: ["dojService"] },
+      { id: "c13", title: "WhatsApp எண்", align: "center", showLabel: "auto", fields: ["mobile", "whatsappVerified"] },
+      { id: "c14", title: "செயல்கள்", align: "center", showLabel: "value_only", fields: ["actions"] }
+    ]
+  };
 }
-rowHtml += `</tr>`;
-return rowHtml;
-}).join("");
+
+let adminStaffCustomColumns = null;
+let _activeEditingStaffColIndex = -1;
+
+function getAdminStaffActiveColumns() {
+  if (Array.isArray(adminStaffCustomColumns) && adminStaffCustomColumns.length > 0) {
+    return adminStaffCustomColumns;
+  }
+  const saved = safeGetStorage("CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", null);
+  if (Array.isArray(saved) && saved.length > 0) {
+    adminStaffCustomColumns = saved.map((c, idx) => ({
+      id: c.id || ("col_" + (idx + 1)),
+      title: String(c.title || ""),
+      align: c.align || "left",
+      showLabel: c.showLabel || "auto",
+      fields: Array.isArray(c.fields) && c.fields.length > 0 ? c.fields.filter(f => ADMIN_STAFF_FIELD_MAP[f]) : ["name"]
+    }));
+    return adminStaffCustomColumns;
+  }
+  adminStaffCustomColumns = JSON.parse(JSON.stringify(getAdminStaffColumnPresets().default_unified));
+  return adminStaffCustomColumns;
+}
+
+function saveAdminStaffActiveColumns() {
+  const cols = getAdminStaffActiveColumns();
+  safeSetStorage("CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", cols);
+}
+
+function computeAdminStaffColumnHeaderTitle(col, colIndex) {
+  if (col.title && col.title.trim()) return col.title.trim();
+  const fList = Array.isArray(col.fields) ? col.fields : [];
+  if (fList.length === 0) return `நெடுவரிசை #${colIndex + 1}`;
+  if (fList.length === 1 && fList[0] === "rank") {
+    return isSeniorityMode ? "மு.எண் (Rank)" : "வ.எண்";
+  }
+  return fList.map(fk => (ADMIN_STAFF_FIELD_MAP[fk] ? ADMIN_STAFF_FIELD_MAP[fk].shortLabel : fk)).join(" + ");
+}
+
+function applyAdminStaffColumnPreset(presetKey) {
+  const presets = getAdminStaffColumnPresets();
+  const chosen = presets[presetKey] || presets.default_unified;
+  adminStaffCustomColumns = JSON.parse(JSON.stringify(chosen));
+  saveAdminStaffActiveColumns();
+  renderAdminStaffTablePage();
+  showToast(`✅ ஆசிரியர் அட்டவணை நெடுவரிசைகள் (${adminStaffCustomColumns.length} நெடுவரிசைகள்) மாற்றியமைக்கப்பட்டன!`, "#0284c7", true);
+}
+
+function addNewAdminStaffTableColumn(event) {
+  if (event) event.stopPropagation();
+  const cols = getAdminStaffActiveColumns();
+  // Insert before the 'actions' column if the last column is 'actions', otherwise append at the end
+  let insertIdx = cols.length;
+  if (cols.length > 0 && cols[cols.length - 1].fields.length === 1 && cols[cols.length - 1].fields[0] === "actions") {
+    insertIdx = cols.length - 1;
+  }
+  const newCol = {
+    id: "col_" + Date.now(),
+    title: "",
+    align: "left",
+    showLabel: "auto",
+    fields: ["ifhrmsId"]
+  };
+  cols.splice(insertIdx, 0, newCol);
+  saveAdminStaffActiveColumns();
+  renderAdminStaffTablePage();
+  openAdminStaffColumnFieldPicker(insertIdx);
+  showToast(`➕ புதிய நெடுவரிசை (#${insertIdx + 1}) சேர்க்கப்பட்டது! அதில் இடம்பெற வேண்டிய புலங்களைத் தேர்ந்தெடுக்கவும்.`, "#16a34a", true);
+}
+
+function openAdminStaffColumnFieldPicker(colIndex, event) {
+  if (event) event.stopPropagation();
+  const cols = getAdminStaffActiveColumns();
+  if (colIndex < 0 || colIndex >= cols.length) return;
+  _activeEditingStaffColIndex = colIndex;
+  const col = cols[colIndex];
+  const modal = document.getElementById("admStaffColPickerModal");
+  if (!modal) return;
+  const titleEl = document.getElementById("admColPickerModalTitle");
+  if (titleEl) {
+    titleEl.textContent = `⚙️ நெடுவரிசை #${colIndex + 1} புலங்கள் கட்டமைப்பு (${computeAdminStaffColumnHeaderTitle(col, colIndex)})`;
+  }
+  const inpTitle = document.getElementById("admColPickerTitleInput");
+  if (inpTitle) inpTitle.value = col.title || "";
+  const selAlign = document.getElementById("admColPickerAlignSelect");
+  if (selAlign) selAlign.value = col.align || "left";
+  const selLbl = document.getElementById("admColPickerShowLabelSelect");
+  if (selLbl) selLbl.value = col.showLabel || "auto";
+  const searchEl = document.getElementById("admColPickerFieldSearch");
+  if (searchEl) searchEl.value = "";
+  renderAdmColPickerSelectedChips();
+  renderAdmColPickerFieldCatalog();
+  modal.style.display = "flex";
+}
+
+function closeAdminStaffColumnFieldPicker() {
+  const modal = document.getElementById("admStaffColPickerModal");
+  if (modal) modal.style.display = "none";
+  _activeEditingStaffColIndex = -1;
+}
+
+function saveAndCloseAdminStaffColumnFieldPicker() {
+  saveAdminStaffActiveColumns();
+  renderAdminStaffTablePage();
+  closeAdminStaffColumnFieldPicker();
+  showToast("✅ நெடுவரிசைப் புலங்கள் புதுப்பிக்கப்பட்டன!", "#16a34a", true);
+}
+
+function onAdmColPickerTitleInput(val) {
+  const cols = getAdminStaffActiveColumns();
+  if (_activeEditingStaffColIndex < 0 || _activeEditingStaffColIndex >= cols.length) return;
+  cols[_activeEditingStaffColIndex].title = String(val || "");
+  saveAdminStaffActiveColumns();
+  renderAdminStaffTablePage();
+}
+
+function onAdmColPickerMetaChange() {
+  const cols = getAdminStaffActiveColumns();
+  if (_activeEditingStaffColIndex < 0 || _activeEditingStaffColIndex >= cols.length) return;
+  const col = cols[_activeEditingStaffColIndex];
+  const selAlign = document.getElementById("admColPickerAlignSelect");
+  const selLbl = document.getElementById("admColPickerShowLabelSelect");
+  if (selAlign) col.align = selAlign.value || "left";
+  if (selLbl) col.showLabel = selLbl.value || "auto";
+  saveAdminStaffActiveColumns();
+  renderAdminStaffTablePage();
+}
+
+function toggleFieldInActiveAdminStaffColumn(fieldKey, isChecked) {
+  const cols = getAdminStaffActiveColumns();
+  if (_activeEditingStaffColIndex < 0 || _activeEditingStaffColIndex >= cols.length) return;
+  const col = cols[_activeEditingStaffColIndex];
+  if (!Array.isArray(col.fields)) col.fields = [];
+  if (isChecked) {
+    if (!col.fields.includes(fieldKey)) col.fields.push(fieldKey);
+  } else {
+    if (col.fields.length <= 1) {
+      showToast("⚠️ ஒரு நெடுவரிசையில் குறைந்தபட்சம் ஒரு புலமாவது இருக்க வேண்டும்!", "#f59e0b", true);
+      renderAdmColPickerFieldCatalog();
+      return;
+    }
+    col.fields = col.fields.filter(k => k !== fieldKey);
+  }
+  saveAdminStaffActiveColumns();
+  renderAdmColPickerSelectedChips();
+  renderAdmColPickerFieldCatalog();
+  renderAdminStaffTablePage();
+}
+
+function moveFieldWithinActiveAdminStaffColumn(fieldIdx, dir) {
+  const cols = getAdminStaffActiveColumns();
+  if (_activeEditingStaffColIndex < 0 || _activeEditingStaffColIndex >= cols.length) return;
+  const col = cols[_activeEditingStaffColIndex];
+  if (!Array.isArray(col.fields)) return;
+  const targetIdx = fieldIdx + dir;
+  if (targetIdx < 0 || targetIdx >= col.fields.length) return;
+  const tmp = col.fields[fieldIdx];
+  col.fields[fieldIdx] = col.fields[targetIdx];
+  col.fields[targetIdx] = tmp;
+  saveAdminStaffActiveColumns();
+  renderAdmColPickerSelectedChips();
+  renderAdminStaffTablePage();
+}
+
+function clearCurrentColSelectedFields() {
+  const cols = getAdminStaffActiveColumns();
+  if (_activeEditingStaffColIndex < 0 || _activeEditingStaffColIndex >= cols.length) return;
+  const col = cols[_activeEditingStaffColIndex];
+  if (Array.isArray(col.fields) && col.fields.length > 1) {
+    col.fields = [col.fields[0]];
+    saveAdminStaffActiveColumns();
+    renderAdmColPickerSelectedChips();
+    renderAdmColPickerFieldCatalog();
+    renderAdminStaffTablePage();
+    showToast("ℹ️ முதல் புலம் தவிர மற்ற புலங்கள் நீக்கப்பட்டன. இப்போது புதிய புலத்தைத் தேர்ந்தெடுக்கலாம்.", "#0284c7", true);
+  }
+}
+
+function moveCurrentAdminStaffColumn(dir) {
+  const cols = getAdminStaffActiveColumns();
+  const idx = _activeEditingStaffColIndex;
+  if (idx < 0 || idx >= cols.length) return;
+  const nextIdx = idx + dir;
+  if (nextIdx < 0 || nextIdx >= cols.length) return;
+  const tmp = cols[idx];
+  cols[idx] = cols[nextIdx];
+  cols[nextIdx] = tmp;
+  _activeEditingStaffColIndex = nextIdx;
+  saveAdminStaffActiveColumns();
+  renderAdminStaffTablePage();
+  openAdminStaffColumnFieldPicker(nextIdx);
+}
+
+function insertAdminStaffColumnAfterCurrent() {
+  const cols = getAdminStaffActiveColumns();
+  const idx = _activeEditingStaffColIndex >= 0 ? (_activeEditingStaffColIndex + 1) : cols.length;
+  cols.splice(idx, 0, {
+    id: "col_" + Date.now(),
+    title: "",
+    align: "left",
+    showLabel: "auto",
+    fields: ["subject"]
+  });
+  saveAdminStaffActiveColumns();
+  renderAdminStaffTablePage();
+  openAdminStaffColumnFieldPicker(idx);
+  showToast(`➕ நெடுவரிசை #${idx + 1} உருவாக்கப்பட்டது!`, "#16a34a", true);
+}
+
+function deleteCurrentAdminStaffColumn() {
+  const cols = getAdminStaffActiveColumns();
+  if (cols.length <= 1) {
+    showToast("⚠️ அட்டவணையில் குறைந்தபட்சம் ஒரு நெடுவரிசையாவது இருக்க வேண்டும்!", "#dc2626", true);
+    return;
+  }
+  const idx = _activeEditingStaffColIndex;
+  if (idx < 0 || idx >= cols.length) return;
+  cols.splice(idx, 1);
+  saveAdminStaffActiveColumns();
+  closeAdminStaffColumnFieldPicker();
+  renderAdminStaffTablePage();
+  showToast("🗑️ நெடுவரிசை நீக்கப்பட்டது!", "#d97706", true);
+}
+
+function renderAdmColPickerSelectedChips() {
+  const wrap = document.getElementById("admColPickerSelectedChips");
+  if (!wrap) return;
+  const cols = getAdminStaffActiveColumns();
+  const col = cols[_activeEditingStaffColIndex];
+  if (!col || !Array.isArray(col.fields)) {
+    wrap.innerHTML = "";
+    return;
+  }
+  wrap.innerHTML = col.fields.map((fk, fIdx) => {
+    const meta = ADMIN_STAFF_FIELD_MAP[fk] || { shortLabel: fk, label: fk };
+    return `
+      <span style="display:inline-flex; align-items:center; gap:5px; background:#ffffff; color:#0f294a; border:1.5px solid #0284c7; border-radius:999px; padding:3px 10px; font-size:0.78rem; font-weight:900; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+        <span style="background:#0284c7; color:#fff; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.68rem;">${fIdx + 1}</span>
+        <span>${meta.shortLabel}</span>
+        ${fIdx > 0 ? `<button type="button" onclick="moveFieldWithinActiveAdminStaffColumn(${fIdx}, -1)" title="மேலே நகர்த்து" style="border:none; background:transparent; cursor:pointer; font-size:0.72rem; padding:0 2px; color:#0369a1;">◀</button>` : ""}
+        ${fIdx < col.fields.length - 1 ? `<button type="button" onclick="moveFieldWithinActiveAdminStaffColumn(${fIdx}, 1)" title="கீழே நகர்த்து" style="border:none; background:transparent; cursor:pointer; font-size:0.72rem; padding:0 2px; color:#0369a1;">▶</button>` : ""}
+        ${col.fields.length > 1 ? `<button type="button" onclick="toggleFieldInActiveAdminStaffColumn('${fk}', false)" title="நீக்கு" style="border:none; background:transparent; cursor:pointer; font-size:0.78rem; font-weight:900; padding:0 2px; color:#dc2626;">✕</button>` : ""}
+      </span>
+    `;
+  }).join("");
+}
+
+function renderAdmColPickerFieldCatalog() {
+  const container = document.getElementById("admColPickerCatalogContainer");
+  if (!container) return;
+  const cols = getAdminStaffActiveColumns();
+  const col = cols[_activeEditingStaffColIndex];
+  const selectedSet = new Set((col && Array.isArray(col.fields)) ? col.fields : []);
+  const q = ((document.getElementById("admColPickerFieldSearch") || {}).value || "").trim().toLowerCase();
+
+  const grouped = {};
+  ADMIN_STAFF_FIELD_CATALOG.forEach(item => {
+    if (q && !(`${item.key} ${item.label} ${item.shortLabel} ${item.cat}`.toLowerCase().includes(q))) return;
+    if (!grouped[item.cat]) grouped[item.cat] = [];
+    grouped[item.cat].push(item);
+  });
+
+  container.innerHTML = Object.entries(grouped).map(([catTitle, items]) => {
+    const itemsHtml = items.map(it => {
+      const isChecked = selectedSet.has(it.key);
+      const bg = isChecked ? "#eff6ff" : "#ffffff";
+      const bd = isChecked ? "#0284c7" : "#cbd5e1";
+      return `
+        <label style="display:flex; align-items:center; gap:7px; padding:6px 10px; border-radius:8px; border:1.5px solid ${bd}; background:${bg}; cursor:pointer; font-size:0.78rem; font-weight:${isChecked ? '900' : '700'}; color:#0f294a;">
+          <input type="checkbox" ${isChecked ? "checked" : ""} onchange="toggleFieldInActiveAdminStaffColumn('${it.key}', this.checked)" style="width:15px; height:15px; accent-color:#0284c7;">
+          <span>${it.label}</span>
+        </label>
+      `;
+    }).join("");
+    return `
+      <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:10px 12px;">
+        <div style="font-size:0.80rem; font-weight:900; color:#1e3a8a; margin-bottom:8px; border-bottom:1px dashed #cbd5e1; padding-bottom:4px;">${catTitle}</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(225px, 1fr)); gap:7px;">
+          ${itemsHtml}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function openAdminEbsStaffProfileEditorFromMaster(uNo, staffId) {
+  uNo = String(uNo || "").trim();
+  staffId = String(staffId || "").trim();
+  if (!uNo || !staffId) return;
+  if (typeof openEbsStaffProfileModal === "function") {
+    openEbsStaffProfileModal(uNo, staffId);
+  }
+}
+
+function formatAdminStaffFieldPlainText(st, fieldKey, overallRank) {
+  if (!st) return "-";
+  switch (fieldKey) {
+    case "rank": return isSeniorityMode ? `#${overallRank}` : String(overallRank);
+    case "staffId": return st.staffId || "-";
+    case "ifhrmsId": return st.ifhrmsId || "-";
+    case "prefix": return st.prefix || "";
+    case "nameTa": return st.nameTa || st.name || "-";
+    case "name": return st.name || "-";
+    case "gender": return st.gender === "Female" ? "பெண் (Female)" : "ஆண் (Male)";
+    case "dob": return st.dob || "-";
+    case "age": return st.age ? `${st.age} வயது` : "-";
+    case "dor": return st.dor || "-";
+    case "desig": return st.desig || "-";
+    case "desigCode": return st.desigCode || "-";
+    case "category": return st.isTeaching ? "Teaching" : "Non-Teaching";
+    case "subject": return st.subject || "-";
+    case "qualification": return st.qualification || "-";
+    case "nature": return st.nature || "Regular";
+    case "typeOfContract": return st.typeOfContract || "-";
+    case "modeFirstApp": return st.modeFirstApp || "-";
+    case "firstJoinPost": return st.firstJoinPost || "-";
+    case "dojService": return st.dojService || "-";
+    case "modePresPost": return st.modePresPost || "-";
+    case "dojPresPost": return st.dojPresPost || "-";
+    case "dojSchool": return st.dojSchool || "-";
+    case "unitTransferDate": return st.unitTransferDate || "-";
+    case "schoolNameTa": return st.schoolNameTa || st.schoolNameEn || "-";
+    case "schoolNameEn": return st.schoolNameEn || "-";
+    case "uNo": return st.uNo || "-";
+    case "udiseNo": return st.udiseNo || "-";
+    case "block": return st.block || "-";
+    case "mgmt1": return st.mgmt1 || "-";
+    case "level": return st.level || "-";
+    case "mobile": return st.mobile || "-";
+    case "whatsappVerified": return st.whatsappVerified ? "WhatsApp OTP Verified" : "WhatsApp OTP Pending";
+    case "altMobile": return st.altMobile || "-";
+    case "email": return st.email || "-";
+    case "emailVerified": return st.emailVerified ? "Email OTP Verified" : "Email OTP Pending";
+    case "resPlace": return st.resPlace || "-";
+    case "resDistrict": return st.resDistrict || "-";
+    case "classesSummary": return st.classesSummary || "-";
+    case "practicalSubjects": return st.practicalSubjects || "-";
+    case "prefCamp": return st.prefCamp || "-";
+    case "dutySslcWork": return st.dutySslcWork || "-";
+    case "dutySslcCentre": return st.dutySslcCentre || "-";
+    case "dutyHseWork": return st.dutyHseWork || "-";
+    case "dutyHseCentre": return st.dutyHseCentre || "-";
+    case "dutyCampWork": return st.dutyCampWork || "-";
+    case "dutyCampCentre": return st.dutyCampCentre || "-";
+    case "childCentres": return st.childCentres || "None";
+    case "exemptionGround": return st.exemptionGround || "None";
+    case "exemptionCert": return st.exemptionCertUrl ? "இணைக்கப்பட்டுள்ளது" : "இல்லை";
+    case "ebsProfileStatus": return st.ebsComplete ? "100% பூர்த்தி" : "நிலுவை (Pending)";
+    default: return String(st[fieldKey] || "-");
+  }
+}
+
+function renderAdminStaffSingleFieldHtml(st, fieldKey, overallRank, showLabelMode, totalFieldsInCol) {
+  const cfg = seniorityCriteria;
+  const meta = ADMIN_STAFF_FIELD_MAP[fieldKey] || { shortLabel: fieldKey };
+  const withLbl = showLabelMode === "always" || (showLabelMode === "auto" && totalFieldsInCol > 1 && !["nameTa", "name", "desig", "schoolNameTa", "schoolNameEn", "rank", "actions", "category", "whatsappVerified", "emailVerified", "ebsProfileStatus"].includes(fieldKey));
+  const lblPrefix = withLbl ? `<span style="color:#64748b; font-size:0.71rem; font-weight:700;">${meta.shortLabel}: </span>` : "";
+
+  switch (fieldKey) {
+    case "rank": {
+      let rankBadge = "";
+      if (isSeniorityMode) {
+        if (overallRank === 1) rankBadge = `<span class="seniority-badge-gold">🥇 #1</span>`;
+        else if (overallRank === 2) rankBadge = `<span class="seniority-badge-silver">🥈 #2</span>`;
+        else if (overallRank === 3) rankBadge = `<span class="seniority-badge-bronze">🥉 #3</span>`;
+        else rankBadge = `<span class="seniority-badge-normal">#${overallRank}</span>`;
+      } else {
+        rankBadge = `<span style="font-weight:800; color:#475569;">${overallRank}</span>`;
+      }
+      let conBadges = "";
+      if (st.hasAgePriority) conBadges += `<div style="font-size:0.65rem; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:1px 4px; border-radius:4px; font-weight:800; margin-top:2px;">👴 55+</div>`;
+      if (st.hasFemalePriority) conBadges += `<div style="font-size:0.65rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 4px; border-radius:4px; font-weight:800; margin-top:2px;">👩 பெண்</div>`;
+      return `<div>${rankBadge}${conBadges}</div>`;
+    }
+    case "nameTa":
+      return st.nameTa && st.nameTa !== "-" ? `<div style="font-weight:900; color:#0f294a; font-size:0.85rem;">${lblPrefix}${st.prefix ? st.prefix + " " : ""}${st.nameTa}</div>` : "";
+    case "name":
+      return `<div style="font-weight:800; color:#1e3a8a; font-size:0.80rem;">${lblPrefix}${st.name || "-"}</div>`;
+    case "staffId":
+      return `<div style="font-size:0.74rem; font-weight:800; color:#0369a1; font-family:monospace;">${lblPrefix || '<span style="color:#64748b;">EMIS: </span>'}<strong>${st.staffId}</strong></div>`;
+    case "ifhrmsId":
+      return st.ifhrmsId && st.ifhrmsId !== "-" ? `<div style="font-size:0.73rem; font-weight:800; color:#0f766e; font-family:monospace;">${lblPrefix || '<span style="color:#64748b;">IFHRMS: </span>'}${st.ifhrmsId}</div>` : (totalFieldsInCol === 1 ? `<span style="color:#94a3b8;">-</span>` : "");
+    case "gender":
+      return `<div style="font-size:0.75rem; font-weight:800; color:${st.gender === 'Female' ? '#be185d' : '#1d4ed8'};">${lblPrefix}${st.gender === "Female" ? "👧 பெண்" : "👦 ஆண்"}</div>`;
+    case "desig":
+      return `<div style="font-weight:900; color:#0f294a; line-height:1.25;">${lblPrefix}${st.desig}</div>`;
+    case "category":
+      return st.isTeaching
+        ? `<span style="display:inline-block; font-size:0.66rem; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:1px 6px; border-radius:4px; font-weight:800;">Teaching</span>`
+        : `<span style="display:inline-block; font-size:0.66rem; background:#fefce8; color:#854d0e; border:1px solid #fde047; padding:1px 6px; border-radius:4px; font-weight:800;">Non-Teaching</span>`;
+    case "subject":
+      return `<div style="font-weight:800; color:#1e40af; font-size:0.79rem;">${lblPrefix}${st.subject || "-"}</div>`;
+    case "qualification":
+      return st.qualification && st.qualification !== "-" ? `<div style="font-size:0.72rem; color:#475569; font-weight:700;">${lblPrefix}${st.qualification}</div>` : (totalFieldsInCol === 1 ? "-" : "");
+    case "schoolNameTa":
+      return `<div style="font-weight:800; color:#0f294a; line-height:1.25;">${lblPrefix}${st.schoolNameTa || st.schoolNameEn}</div>`;
+    case "schoolNameEn":
+      return `<div style="font-size:0.74rem; color:#334155; font-weight:700;">${lblPrefix}${st.schoolNameEn}</div>`;
+    case "uNo":
+      return `<span style="font-size:0.73rem; font-weight:900; color:#c2410c; margin-right:6px;">U.NO: ${st.uNo}</span>`;
+    case "udiseNo":
+      return `<span style="font-size:0.72rem; color:#64748b; font-family:monospace;">UDISE: ${st.udiseNo}</span>`;
+    case "block":
+      return `<div style="font-size:0.76rem; font-weight:800; color:#0f766e;">${lblPrefix}${st.block}</div>`;
+    case "mgmt1":
+      return `<span class="${getMgmtBadgeClass(st.mgmt1)}" style="padding:1px 6px; font-size:0.68rem;">${st.mgmt1}</span>`;
+    case "dojService": {
+      const hi = isSeniorityMode && cfg.primary === "dojService";
+      return `<div style="font-size:0.75rem; ${hi ? 'background:#eff6ff; border:1px solid #93c5fd; padding:1px 5px; border-radius:4px; font-weight:900; color:#1d4ed8;' : 'color:#15803d; font-weight:800;'}">${lblPrefix}${st.dojService || "-"}</div>`;
+    }
+    case "dojPresPost": {
+      const hi = isSeniorityMode && cfg.primary === "dojPresPost";
+      return `<div style="font-size:0.74rem; ${hi ? 'background:#f3e8ff; border:1px solid #d8b4fe; padding:1px 5px; border-radius:4px; font-weight:900; color:#7c3aed;' : 'color:#6d28d9; font-weight:700;'}">${lblPrefix}${st.dojPresPost || "-"}</div>`;
+    }
+    case "dojSchool": {
+      const hi = isSeniorityMode && cfg.primary === "dojSchool";
+      return `<div style="font-size:0.74rem; ${hi ? 'background:#dcfce7; border:1px solid #86efac; padding:1px 5px; border-radius:4px; font-weight:900; color:#15803d;' : 'color:#475569; font-weight:700;'}">${lblPrefix}${st.dojSchool || "-"}</div>`;
+    }
+    case "dob": {
+      const hi = isSeniorityMode && cfg.primary === "dob";
+      return `<div style="font-size:0.76rem; ${hi ? 'background:#fef3c7; border:1px solid #fde047; padding:1px 5px; border-radius:4px; font-weight:900; color:#b45309;' : 'color:#0f294a; font-weight:800;'}">${lblPrefix}${st.dob || "-"}</div>`;
+    }
+    case "age":
+      return st.age ? `<div style="font-size:0.72rem; color:#475569; font-weight:700;">வயது: <strong>${st.age}</strong></div>` : (totalFieldsInCol === 1 ? "-" : "");
+    case "dor":
+      return st.dor ? `<div style="font-size:0.72rem; color:#9d174d; font-weight:800;">ஓய்வு: ${st.dor}</div>` : (totalFieldsInCol === 1 ? "-" : "");
+    case "mobile":
+      return `<div style="font-size:0.78rem; font-weight:900; color:#0284c7;">📱 ${st.mobile || "-"}</div>`;
+    case "whatsappVerified":
+      return st.mobile && st.mobile !== "-"
+        ? (st.whatsappVerified
+            ? `<span style="display:inline-block; font-size:0.66rem; background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:1px 6px; border-radius:999px; font-weight:900;">✓ WA OTP</span>`
+            : `<span style="display:inline-block; font-size:0.66rem; background:#fef3c7; color:#b45309; border:1px solid #fde68a; padding:1px 6px; border-radius:999px; font-weight:800;">⏳ WA நிலுவை</span>`)
+        : "";
+    case "email":
+      return st.email && st.email !== "-" ? `<div style="font-size:0.72rem; color:#334155; word-break:break-all;">✉️ ${st.email}</div>` : (totalFieldsInCol === 1 ? "-" : "");
+    case "emailVerified":
+      return st.email && st.email !== "-"
+        ? (st.emailVerified
+            ? `<span style="display:inline-block; font-size:0.66rem; background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; padding:1px 6px; border-radius:999px; font-weight:900;">✓ Email OTP</span>`
+            : `<span style="display:inline-block; font-size:0.66rem; background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:1px 6px; border-radius:999px; font-weight:800;">⏳ Email நிலுவை</span>`)
+        : "";
+    case "exemptionGround":
+      return st.exemptionGround && st.exemptionGround !== "None"
+        ? `<div style="font-size:0.72rem; background:#fef2f2; color:#dc2626; border:1px solid #fca5a5; padding:1px 5px; border-radius:4px; font-weight:800;">⚠️ விலக்கு: ${st.exemptionGround}</div>`
+        : (totalFieldsInCol === 1 ? `<span style="color:#64748b; font-size:0.73rem;">None</span>` : "");
+    case "exemptionCert":
+      return st.exemptionCertUrl
+        ? `<a href="${st.exemptionCertUrl}" target="_blank" rel="noopener" style="font-size:0.72rem; color:#0284c7; font-weight:900; text-decoration:underline;">📎 சான்றிதழ் ↗</a>`
+        : (totalFieldsInCol === 1 ? "-" : "");
+    case "ebsProfileStatus":
+      return st.ebsComplete
+        ? `<span style="display:inline-block; font-size:0.67rem; background:#dcfce7; color:#166534; border:1px solid #86efac; padding:1px 6px; border-radius:4px; font-weight:900;">✅ EBS F3 பூர்த்தி</span>`
+        : `<span style="display:inline-block; font-size:0.67rem; background:#fffbeb; color:#92400e; border:1px solid #fde68a; padding:1px 6px; border-radius:4px; font-weight:800;">⏳ EBS F3 நிலுவை</span>`;
+    case "actions":
+      return `
+        <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="openAdminEbsStaffProfileEditorFromMaster('${st.uNo}', '${st.staffId}')" style="background:#7c3aed; border-color:#6d28d9; font-size:0.71rem; padding:3px 8px; width:100%; font-weight:900;" title="EBS Form-III / Form-IV முழு விவரங்களையும் திருத்துக">
+            📋 EBS F3 திருத்து
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="openAdminEditStaffModal('${st.staffId}')" style="font-size:0.70rem; padding:2px 7px; width:100%; font-weight:800; background:#fff; color:#0284c7; border-color:#93c5fd;" title="பள்ளி மாறுதல் / அடிப்படை விவரம் திருத்துக">
+            ✏️ விரைவுத் திருத்தம்
+          </button>
+        </div>
+      `;
+    default: {
+      const val = formatAdminStaffFieldPlainText(st, fieldKey, overallRank);
+      if ((!val || val === "-") && totalFieldsInCol > 1) return "";
+      return `<div style="font-size:0.75rem; color:#1e293b;">${lblPrefix}<strong>${val}</strong></div>`;
+    }
+  }
+}
+
+function renderAdminStaffTablePage() {
+  const total = adminStaffFilteredList.length;
+  const pageSize = adminStaffPageSize;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  if (adminStaffCurrentPage > totalPages) adminStaffCurrentPage = totalPages;
+  if (adminStaffCurrentPage < 1) adminStaffCurrentPage = 1;
+  const startIndex = (adminStaffCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, total);
+  const pageItems = adminStaffFilteredList.slice(startIndex, endIndex);
+  const allStaff = getDistrictAllStaffList();
+
+  const elTot = document.getElementById("admTeacherTotalBadge");
+  const elTeach = document.getElementById("admTeacherTeachingBadge");
+  const elNon = document.getElementById("admTeacherNonTeachBadge");
+  const elFilt = document.getElementById("admTeacherFilteredBadge");
+  if (elTot) elTot.textContent = allStaff.length.toLocaleString("en-IN");
+  if (elTeach) elTeach.textContent = allStaff.filter(s => s.isTeaching).length.toLocaleString("en-IN");
+  if (elNon) elNon.textContent = allStaff.filter(s => !s.isTeaching).length.toLocaleString("en-IN");
+  if (elFilt) elFilt.textContent = total.toLocaleString("en-IN");
+
+  const rangeText = total > 0 ? `${(startIndex + 1).toLocaleString("en-IN")} - ${endIndex.toLocaleString("en-IN")}` : "0";
+  const totalText = total.toLocaleString("en-IN");
+  const pageIndText = `பக்கம் ${adminStaffCurrentPage} / ${totalPages}`;
+  const rTop = document.getElementById("admStaffPaginationRange");
+  if (rTop) rTop.textContent = rangeText;
+  const tTop = document.getElementById("admStaffTotalMatching");
+  if (tTop) tTop.textContent = totalText;
+  const indTop = document.getElementById("admStaffPageIndicator");
+  if (indTop) indTop.textContent = pageIndText;
+  const indBot = document.getElementById("admStaffPageIndicatorBottom");
+  if (indBot) indBot.textContent = pageIndText;
+  const rBot = document.getElementById("admStaffPaginationRangeBottom");
+  if (rBot) rBot.textContent = `காண்பிக்கப்படுவது ${rangeText} / மொத்தம் ${totalText} பணியாளர்கள்`;
+
+  const thead = document.getElementById("admStaffMasterTableHead");
+  const tbody = document.getElementById("admStaffMasterTableBody");
+  if (!tbody) return;
+
+  const activeCols = getAdminStaffActiveColumns();
+  const colCountBadge = document.getElementById("admStaffActiveColCountBadge");
+  if (colCountBadge) {
+    colCountBadge.textContent = `${activeCols.length} நெடுவரிசைகள்`;
+  }
+
+  if (thead) {
+    let thHtml = `<tr style="position:sticky; top:0; z-index:5;">`;
+    activeCols.forEach((col, cIdx) => {
+      const colTitle = computeAdminStaffColumnHeaderTitle(col, cIdx);
+      const fCount = Array.isArray(col.fields) ? col.fields.length : 0;
+      const isRankOnly = fCount === 1 && col.fields[0] === "rank";
+      thHtml += `
+        <th ${isRankOnly ? 'id="thStaffRank"' : ""} onclick="openAdminStaffColumnFieldPicker(${cIdx}, event)" title="கிளிக் செய்து இந்நெடுவரிசையின் புலங்களைத் (Fields) தேர்ந்தெடுக்கவும் / மாற்றவும்" style="cursor:pointer; text-align:${col.align || 'left'}; min-width:${isRankOnly ? '62px' : '125px'}; position:relative; user-select:none; transition:background 0.15s;" onmouseover="this.style.background='#1e40af'" onmouseout="this.style.background=''">
+          <div style="display:flex; flex-direction:column; gap:3px; align-items:${col.align === 'center' ? 'center' : (col.align === 'right' ? 'flex-end' : 'flex-start')};">
+            <div style="display:flex; align-items:center; gap:5px; font-weight:900; line-height:1.2;">
+              <span>${colTitle}</span>
+              <span style="font-size:0.68rem; background:rgba(255,255,255,0.22); color:#fef08a; padding:1px 5px; border-radius:4px; font-weight:900;">⚙️▾</span>
+            </div>
+            <div style="font-size:0.63rem; color:#bae6fd; font-weight:700;">
+              #${cIdx + 1} &bull; ${fCount} ${fCount === 1 ? "புலம்" : "புலங்கள்"}
+            </div>
+          </div>
+        </th>
+      `;
+    });
+    // Next to the last column: + Add Column button directly in the header row!
+    thHtml += `
+      <th style="width:95px; min-width:95px; text-align:center; vertical-align:middle; background:#065f46 !important; border-left:2px dashed #6ee7b7;">
+        <button type="button" onclick="addNewAdminStaffTableColumn(event)" title="புதிய நெடுவரிசை சேர்க்க (Add New Column)" style="background:#10b981; color:#ffffff; border:1.5px solid #a7f3d0; border-radius:6px; padding:5px 8px; font-size:0.74rem; font-weight:900; cursor:pointer; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.2);">
+          ➕ Add Column
+        </button>
+      </th>
+    `;
+    thHtml += `</tr>`;
+    thead.innerHTML = thHtml;
+  }
+
+  const totalColSpan = activeCols.length + 1;
+  if (total === 0) {
+    tbody.innerHTML = `<tr><td colspan="${totalColSpan}" style="text-align:center; padding:32px; color:#64748b; font-size:0.95rem;">
+      🔍 கொடுக்கப்பட்ட வடிகட்டிகளுக்குப் பொருந்தும் ஆசிரியர்கள் அல்லது பணியாளர்கள் எவரும் இல்லை.<br>
+      <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminStaffFilters()" style="margin-top:10px;">வடிகட்டிகளை மீட்டமை (Reset Filters)</button>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = pageItems.map((st, idx) => {
+    const overallRank = startIndex + idx + 1;
+    let rowHtml = `<tr style="border-bottom:1px solid #e2e8f0;">`;
+    activeCols.forEach(col => {
+      const fList = Array.isArray(col.fields) ? col.fields : [];
+      const cellParts = fList
+        .map(fk => renderAdminStaffSingleFieldHtml(st, fk, overallRank, col.showLabel || "auto", fList.length))
+        .filter(Boolean);
+      rowHtml += `<td style="text-align:${col.align || 'left'}; vertical-align:middle; padding:7px 8px;">${cellParts.length > 0 ? cellParts.join('<div style="margin-top:2px;"></div>') : '<span style="color:#94a3b8;">-</span>'}</td>`;
+    });
+    // Trailing cell under the + Add Column header
+    rowHtml += `<td style="text-align:center; vertical-align:middle; background:#f8fafc; width:95px;">
+      <button type="button" onclick="openAdminEbsStaffProfileEditorFromMaster('${st.uNo}', '${st.staffId}')" title="EBS Form-3/4 முழுப் படிவம் திறக்க" style="border:1px solid #cbd5e1; background:#fff; color:#475569; border-radius:5px; padding:2px 6px; font-size:0.68rem; font-weight:800; cursor:pointer;">F3 ❯</button>
+    </td>`;
+    rowHtml += `</tr>`;
+    return rowHtml;
+  }).join("");
+}
+
+function printAdminStaffCustomColumnsReport() {
+  const list = adminStaffFilteredList;
+  if (!list || list.length === 0) {
+    showToast("⚠️ அச்சிட ஆசிரியர்கள் எவரும் இல்லை.", "#f59e0b");
+    return;
+  }
+  const area = document.getElementById("printReportArea");
+  if (!area) return;
+  const activeCols = getAdminStaffActiveColumns().filter(c => !(c.fields.length === 1 && c.fields[0] === "actions"));
+  const dateStr = new Date().toLocaleString("en-IN");
+  const ths = activeCols.map((c, i) => `<th style="padding:6px; border:1px solid #334155; background:#e2e8f0; text-align:${c.align || 'left'};">${computeAdminStaffColumnHeaderTitle(c, i)}</th>`).join("");
+  const trs = list.slice(0, 500).map((st, idx) => {
+    const tds = activeCols.map(c => {
+      const vals = (c.fields || []).map(fk => formatAdminStaffFieldPlainText(st, fk, idx + 1)).filter(v => v && v !== "-");
+      return `<td style="padding:5px 6px; border:1px solid #94a3b8; text-align:${c.align || 'left'}; vertical-align:top;">${vals.join(" | ") || "-"}</td>`;
+    }).join("");
+    return `<tr>${tds}</tr>`;
+  }).join("");
+
+  area.innerHTML = `
+    <div style="font-family:'Mukta Malar','Inter',sans-serif; color:#000; padding:10px;">
+      <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:6px; margin-bottom:10px;">
+        <div style="font-size:1.1rem; font-weight:800;">தமிழ்நாடு பள்ளிக் கல்வித்துறை • சிவகங்கை மாவட்டம்</div>
+        <div style="font-size:1.3rem; font-weight:900;">முதன்மைக் கல்வி அலுவலகம், சிவகங்கை — EMIS Staff Master &amp; EBS Form-3 அறிக்கை</div>
+        <div style="font-size:0.8rem;">நாள்: ${dateStr} | மொத்தப் பணியாளர்கள்: ${list.length}</div>
+      </div>
+      <table style="width:100%; border-collapse:collapse; font-size:0.74rem;">
+        <thead><tr>${ths}</tr></thead>
+        <tbody>${trs}</tbody>
+      </table>
+    </div>
+  `;
+  window.print();
 }
 function goToAdminStaffPage(page) {
 const totalPages = Math.max(1, Math.ceil(adminStaffFilteredList.length / adminStaffPageSize));
@@ -17975,6 +18665,26 @@ if (idx >= 0) {
 extra.staff[idx] = Object.assign(extra.staff[idx], updatedData, { id: staffId, staffId: staffId });
 } else {
 extra.staff.push(Object.assign({}, updatedData, { id: staffId, staffId: staffId, isAddedEbs: true }));
+}
+if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+const existingEbsProf = extra.ebs2026.staffProfiles[staffId] || {};
+extra.ebs2026.staffProfiles[staffId] = Object.assign({}, existingEbsProf, {
+  staffId: String(staffId),
+  name: updatedData.name,
+  gender: updatedData.gender,
+  dob: updatedData.dob,
+  desig: updatedData.desig,
+  subject: updatedData.subject,
+  qualification: updatedData.qualification,
+  nature: updatedData.nature,
+  dojService: updatedData.dojService,
+  dojPresPost: updatedData.dojPresPost,
+  dojSchool: updatedData.dojSchool,
+  mobile: String(updatedData.mobile || "").replace(/\D/g, "").slice(-10),
+  isTeaching: Boolean(updatedData.isTeaching)
+});
+if (typeof recalcSchoolEbsF1StaffCountsFromList === "function") {
+  recalcSchoolEbsF1StaffCountsFromList(targetUNo);
 }
 window._activeSyncTargetUNo = String(targetUNo);
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
@@ -18095,87 +18805,47 @@ area.innerHTML = `
 window.print();
 }
 function exportAdminFilteredStaffCsv(asSeniority) {
-const list = adminStaffFilteredList;
-if (!list || list.length === 0) {
-showToast("⚠️ பதிவிறக்கம் செய்ய ஆசிரியர்கள் எவரும் இல்லை.", "#f59e0b");
-return;
-}
-const isSenior = (asSeniority === true) || isSeniorityMode;
-const cfg = seniorityCriteria;
-const purposeTitle = getSeniorityPurposeLabel(cfg.purpose);
-const headers = [
-isSenior ? "முன்னுரிமை எண் (Seniority Rank)" : "வ.எண் (S.No)",
-"முன்னுரிமைக் குறிப்பு / காரணி (Priority Basis / Concession)",
-"Staff ID",
-"பணியாளர் பெயர் (Name)",
-"பாலினம் (Gender)",
-"பிறந்த தேதி (DOB)",
-"பணியில் சேர்ந்த நாள் (DOJ in Service)",
-"தற்போதைய பதவியில் சேர்ந்த நாள் (DOJ in Present Post)",
-"இப்பள்ளியில் சேர்ந்த நாள் (DOJ in School)",
-"பணி வகை (Category)",
-"பதவி (Designation)",
-"கற்பிக்கும் பாடம் (Subject)",
-"கல்வித் தகுதி (Qualification)",
-"பள்ளி U.NO",
-"UDISE எண்",
-"பள்ளியின் பெயர் (தமிழில்)",
-"School Name (English)",
-"ஒன்றியம் (Block)",
-"நிர்வாகம் (Management)",
-"பணி நியமனத் தன்மை (Nature)",
-"கைபேசி எண் (Mobile)"
-];
-const rows = list.map((st, idx) => {
-let note = "";
-if (st.hasAgePriority) note = "55+ வயது முதியோர் முன்னுரிமை";
-else if (st.hasFemalePriority) note = "பெண் ஆசிரியர் முன்னுரிமை";
-else if (cfg.primary === "dojPresPost") note = "பதவி பணி மூப்பு (Present Post Seniority)";
-else if (cfg.primary === "dojSchool") note = "நிலைய பணி மூப்பு (Station Seniority)";
-else if (cfg.primary === "dojService") note = "அரசுப் பணி மூப்பு (Service Seniority)";
-else if (cfg.primary === "dob") note = "வயது மூப்பு (Age Seniority)";
-return [
-isSenior ? `#${idx + 1}` : (idx + 1),
-`"${note}"`,
-`"${st.staffId}"`,
-`"${(st.name || "").replace(/"/g, '""')}"`,
-st.gender,
-st.dob || "",
-st.dojService || "",
-st.dojPresPost || "",
-st.dojSchool || "",
-st.isTeaching ? "Teaching" : "Non-Teaching",
-`"${(st.desig || "").replace(/"/g, '""')}"`,
-`"${(st.subject || "").replace(/"/g, '""')}"`,
-`"${(st.qualification || "").replace(/"/g, '""')}"`,
-st.uNo,
-`"${st.udiseNo}"`,
-`"${(st.schoolNameTa || "").replace(/"/g, '""')}"`,
-`"${(st.schoolNameEn || "").replace(/"/g, '""')}"`,
-`"${(st.block || "").replace(/"/g, '""')}"`,
-st.mgmt1,
-st.nature || "Regular",
-`"${st.mobile || ""}"`
-].join(",");
-});
-const csvContent = "﻿" + headers.join(",") + "\n" + rows.join("\n");
-const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-const url = URL.createObjectURL(blob);
-const a = document.createElement("a");
-a.href = url;
-const cleanPurpose = purposeTitle.replace(/[^a-zA-Z0-9_஀-௿]/g, "_");
-const fileName = isSenior 
-? `Sivagangai_Seniority_${cleanPurpose}_${list.length}_Teachers.csv`
-: `Sivagangai_Teacher_Master_${list.length}_Staff.csv`;
-a.download = fileName;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
-showToast(`📥 ${list.length.toLocaleString("en-IN")} ஆசிரியர்களின் ${isSenior ? purposeTitle : "பட்டியல்"} CSV ஆகப் பதிவிறக்கப்பட்டது!`, "#22c55e");
-}
-const _DUPLICATE_DGE_STAFF_SPLIT_MAP = {"183": {"from": "192", "staffIds": ["10211720", "10211721", "10211719", "10211722", "10211716", "10211714", "11653515", "10575232", "30354426", "10519058"]}, "267": {"from": "291", "staffIds": ["10210081", "10208239", "10208235", "10208238", "10208144", "10208240", "10208237", "10212101", "10243610", "10212332", "10817565", "10208243", "10214746", "10205949", "10208246", "10208242", "10208164", "10762542", "10561538", "10570358", "11090679"]}, "502": {"from": "503", "staffIds": ["30446616", "31097666", "31089991"]}, "507": {"from": "508", "staffIds": ["30736140", "30999101", "21329418", "21329910", "21329904", "21528657", "21530288", "21652765", "21650945", "21650923", "21652759", "21527013", "30840896"]}, "521": {"from": "522", "staffIds": ["30438756", "30439438", "21633756", "30616816", "21197703", "30892101", "30874403", "21197797", "21346655", "21384308", "21384324", "21409093", "21342342", "21639711", "21681462", "21681678", "21681749", "21499065", "21499210", "21686729"]}};
+  const list = adminStaffFilteredList;
+  if (!list || list.length === 0) {
+    showToast("⚠️ பதிவிறக்கம் செய்ய ஆசிரியர்கள் எவரும் இல்லை.", "#f59e0b");
+    return;
+  }
+  const activeCols = getAdminStaffActiveColumns().filter(c => !(c.fields.length === 1 && c.fields[0] === "actions"));
+  // Flatten all unique selected fields in order, or if columns have multiple fields, export one column per configured column + individual fields
+  const headers = [];
+  const colExtractors = [];
+  activeCols.forEach((col, cIdx) => {
+    const fList = (col.fields || []).filter(fk => fk !== "actions");
+    if (fList.length === 0) return;
+    if (fList.length === 1) {
+      const fk = fList[0];
+      headers.push(col.title && col.title.trim() ? col.title.trim() : (ADMIN_STAFF_FIELD_MAP[fk] ? ADMIN_STAFF_FIELD_MAP[fk].label : fk));
+      colExtractors.push((st, idx) => formatAdminStaffFieldPlainText(st, fk, idx + 1));
+    } else {
+      fList.forEach(fk => {
+        headers.push(ADMIN_STAFF_FIELD_MAP[fk] ? ADMIN_STAFF_FIELD_MAP[fk].label : fk);
+        colExtractors.push((st, idx) => formatAdminStaffFieldPlainText(st, fk, idx + 1));
+      });
+    }
+  });
 
+  const escCsv = (v) => `"${String(v !== undefined && v !== null ? v : "").replace(/"/g, '""')}"`;
+  const csvRows = [
+    headers.map(escCsv).join(","),
+    ...list.map((st, idx) => colExtractors.map(fn => escCsv(fn(st, idx))).join(","))
+  ];
+  const csvContent = "\uFEFF" + csvRows.join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `CEO_Sivagangai_EMIS_EBS_Staff_Master_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`📥 ${list.length} பணியாளர்களின் விவரங்கள் (${headers.length} புலங்கள்) CSV/Excel கோப்பாகப் பதிவிறக்கப்பட்டன!`, "#16a34a", true);
+}
 function repairDuplicateDgeSchoolsInFirebaseEmisStaff(emisObj) {
   if (!emisObj || !emisObj.byUNo || typeof emisObj.byUNo !== "object") return false;
   let changed = false;
@@ -27168,11 +27838,16 @@ const addItem = extra.ebs2026.addedStaff.find(x => String(x.id || x.staffId) ===
 syncStaffFields(addItem);
 }
 recalcSchoolEbsF1StaffCountsFromList(uNo);
+districtFlattenedStaffCache = null;
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 closeEbsStaffProfileModal();
+if (document.body.classList.contains("admin-mode")) {
+  if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
+  if (typeof renderAdminEbsMasterUI === "function") renderAdminEbsMasterUI();
+}
 renderSchoolEbsModule();
 saveSchoolEbs2026Data(false);
-showToast(`✅ [${nameEn}] EBS 2026-27 படிவ விவரங்கள் சேமிக்கப்பட்டன!`, "#16a34a");
+showToast(`✅ [${nameEn}] EBS 2026-27 & EMIS Staff Master விவரங்கள் ஒருங்கிணைத்துச் சேமிக்கப்பட்டன!`, "#16a34a");
 }
 async function printCurrentModalEbsStaffForm() {
 if (!_activeEbsEditingStaff) return;
