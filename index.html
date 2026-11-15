@@ -1749,10 +1749,13 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
           <span id="mtSubBtnForm1_1Title">🏫 School Performance</span>
         </button>
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnForm1_2" onclick="switchMarkEntrySubView('FORM1_2')" style="font-weight:900; padding:6px 14px;">
-          <span id="mtSubBtnForm1_2Title">📊 Subject Performance</span>
+          <span id="mtSubBtnForm1_2Title">📊 View Subject Performance</span>
         </button>
         <button type="button" class="btn btn-primary btn-sm" id="schMidTermTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', null, this)" style="background:#dc2626; border-color:#b91c1c; color:#fff; font-weight:900; padding:6px 14px;">
           📥 PDF அறிக்கை பதிவிறக்கு
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnResetMarks" onclick="openMarkResetConfirmModal()" style="background:#fef2f2; color:#dc2626; border:1.5px solid #fca5a5; font-weight:900; padding:6px 12px;">
+          🔄 Mark Reset
         </button>
         <button type="button" class="btn btn-success btn-sm" id="mtSubBtnSaveMarks" onclick="saveSchoolMidTermData(true, false)" style="background:#16a34a; border-color:#15803d; font-weight:900; padding:6px 14px;">
           💾 சேமி (Save)
@@ -1805,6 +1808,35 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
     <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:12px;">
       <button type="button" class="btn btn-outline" onclick="closeMidTermBulkPasteModal()">ரத்து செய்</button>
       <button type="button" class="btn btn-primary" onclick="processMidTermBulkPasteStudents()" style="background:#0f766e; border-color:#0f766e; font-weight:900;">⚡ மாணவர் மதிப்பெண்களைப் பட்டியலில் சேர் &amp; கணக்கிடு</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FOR MARK RESET CONFIRMATION -->
+<div id="raMarkResetConfirmModal" class="modal-backdrop" onclick="if(event.target===this) closeMarkResetConfirmModal()" style="z-index:9999; display:none;">
+  <div class="modal-card" style="max-width:520px; width:95%; border-top:6px solid #dc2626; padding:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div style="font-size:1.05rem; font-weight:900; color:#dc2626; display:flex; align-items:center; gap:8px;">
+        <span>⚠️</span>
+        <span>மதிப்பெண்கள் அழிப்பு உறுதிப்படுத்தல் (Mark Reset)</span>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeMarkResetConfirmModal()">✕</button>
+    </div>
+    <div style="background:#fef2f2; border:2px solid #fca5a5; border-radius:10px; padding:14px 16px; margin-bottom:14px;">
+      <div style="font-size:0.98rem; font-weight:900; color:#991b1b; line-height:1.5; margin-bottom:6px;">
+        ⚠️ இத்தேர்விற்குரிய மாணவர்களின் அனைத்து மதிப்பெண்களும் அழிக்கப்படும்!
+      </div>
+      <div id="raMarkResetModalDetailText" style="font-size:0.84rem; font-weight:800; color:#475569; line-height:1.45;">
+        தற்போது தேர்ந்தெடுக்கப்பட்டுள்ள தேர்விற்குரிய மாணவர்களின் அனைத்து மதிப்பெண்களையும் அழித்து (Reset செய்து) மீண்டும் முதலில் இருந்து உள்ளிட விரும்புகிறீர்களா?
+      </div>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button type="button" class="btn btn-outline" onclick="closeMarkResetConfirmModal()" style="font-weight:800;">
+        ✖ ரத்து செய் (Cancel)
+      </button>
+      <button type="button" class="btn btn-primary" onclick="confirmAndExecuteMarkReset()" style="background:#dc2626; border-color:#b91c1c; color:#ffffff; font-weight:900;">
+        🔄 ஆம், அனைத்து மதிப்பெண்களையும் அழி (Confirm Reset)
+      </button>
     </div>
   </div>
 </div>
@@ -5835,7 +5867,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         🏫 1. F1_School Performance (பள்ளி வாரியான தேர்ச்சி - 281 பள்ளிகள்)
       </button>
       <button type="button" class="btn btn-outline btn-sm" id="admMtTabBtnF2" onclick="switchAdminMidTermView('F2')" style="font-weight:900; color:#1e3a8a; border-color:#93c5fd; background:#fff;">
-        👨‍🏫 2. F2_Subject Performance (பாட ஆசிரியர் வாரியான தேர்ச்சி)
+        👨‍🏫 2. View Subject Performance (F2_Subject Performance)
       </button>
       <button type="button" class="btn btn-outline btn-sm" id="admMtTabBtnRemedial" onclick="switchAdminMidTermView('REMEDIAL')" style="font-weight:900; color:#9a3412; border-color:#fdba74; background:#fff7ed;">
         🎯 3. ஒரு பாடம் தோல்வி &amp; மெல்லக் கற்கும் மாணவர்கள் பெயர்ப் பட்டியல்
@@ -33934,11 +33966,11 @@ function isSplitMarkExamTerm(termKey) {
 
 // 10-ஆம் வகுப்பு பாடங்களுக்கான மதிப்பெண் பிரிப்பு விதிகள் (Other than Mid-Term 1 & 2)
 const SSLC10_SUBJECT_SPLIT_RULES = {
-  "TAMIL":   { mode: "TH_INT",    maxTh: 90, minTh: 25, maxPr: 0,  minPr: 0,  maxInt: 10, defPr: "", defInt: "10", badge: "Th(90) + Int(10)" },
-  "ENGLISH": { mode: "TH_INT",    maxTh: 90, minTh: 25, maxPr: 0,  minPr: 0,  maxInt: 10, defPr: "", defInt: "10", badge: "Th(90) + Int(10)" },
-  "MATHS":   { mode: "TH_INT",    maxTh: 90, minTh: 25, maxPr: 0,  minPr: 0,  maxInt: 10, defPr: "", defInt: "10", badge: "Th(90) + Int(10)" },
-  "SCIENCE": { mode: "TH_PR_INT", maxTh: 75, minTh: 20, maxPr: 25, minPr: 15, maxInt: 10, defPr: "25", defInt: "", badge: "Th(75) + Pr(25)" },
-  "SOCIAL":  { mode: "TH_INT",    maxTh: 90, minTh: 25, maxPr: 0,  minPr: 0,  maxInt: 10, defPr: "", defInt: "10", badge: "Th(90) + Int(10)" }
+  "TAMIL":   { mode: "SINGLE_100", maxTh: 100, minTh: 35, maxPr: 0,  minPr: 0,  maxInt: 0, defPr: "",   defInt: "", badge: "Max: 100" },
+  "ENGLISH": { mode: "SINGLE_100", maxTh: 100, minTh: 35, maxPr: 0,  minPr: 0,  maxInt: 0, defPr: "",   defInt: "", badge: "Max: 100" },
+  "MATHS":   { mode: "SINGLE_100", maxTh: 100, minTh: 35, maxPr: 0,  minPr: 0,  maxInt: 0, defPr: "",   defInt: "", badge: "Max: 100" },
+  "SCIENCE": { mode: "TH_PR_INT",  maxTh: 75,  minTh: 20, maxPr: 25, minPr: 15, maxInt: 0, defPr: "25", defInt: "", badge: "Th(75) + Pr(25)" },
+  "SOCIAL":  { mode: "SINGLE_100", maxTh: 100, minTh: 35, maxPr: 0,  minPr: 0,  maxInt: 0, defPr: "",   defInt: "", badge: "Max: 100" }
 };
 
 // 12-ஆம் வகுப்பு பாடங்களுக்கான Modified_TML.xlsx மதிப்பெண் பிரிப்பு விதிகள்:
@@ -34119,16 +34151,18 @@ function ensureStudentSubjectMarkParts(stu, subKey, std, isSplitExam) {
             if (tot >= 25) { mp.pr = "25"; mp.th = String(tot - 25); mp.in = ""; }
             else { mp.pr = String(tot); mp.th = "0"; mp.in = ""; }
           } else {
-            if (tot >= 10) { mp.in = "10"; mp.th = String(tot - 10); mp.pr = ""; }
-            else { mp.in = String(tot); mp.th = "0"; mp.pr = ""; }
+            mp.th = String(tot); mp.pr = ""; mp.in = "";
           }
         }
       }
     }
   }
 
+  // In 10th Standard, ONLY SCIENCE has Practical (75+25); Tamil, English, Maths, Social have NO Internal mark (direct 100 marks)
+  const effectiveSplit = isSplitExam && !(String(std) === "10" && subKey !== "SCIENCE");
+
   // Evaluate pass/fail & total
-  if (!isSplitExam) {
+  if (!effectiveSplit) {
     if (rawTot === "EX") return { th: mp.th, pr: mp.pr, in: mp.in, totalStr: "EX", isFail: false, failReason: "" };
     if (rawTot === "AB" || rawTot === "") return { th: mp.th, pr: mp.pr, in: mp.in, totalStr: rawTot, isFail: true, failReason: "AB" };
     const n = Math.max(0, Math.min(100, Math.round(Number(rawTot) || 0)));
@@ -34463,7 +34497,7 @@ function getSchool12thExamRecord(uNo, termKey) {
       }
     });
   }
-  if (uNo === "206" && Array.isArray(rec.students) && rec.students.length > 0) {
+  if (uNo === "206" && !rec.marksResetByUser && Array.isArray(rec.students) && rec.students.length > 0) {
     const anyMarked12 = rec.students.some(st => st.marks && Object.values(st.marks).some(v => String(v || "").trim() !== ""));
     if (!anyMarked12) {
       const secMap12 = {};
@@ -35465,6 +35499,9 @@ function renderSchool12thStuMarksPane(calc) {
           <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(1)" style="font-weight:800; font-size:0.76rem;">
             ➕ +1 மாணவர்
           </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="openMarkResetConfirmModal()" style="background:#fef2f2; color:#dc2626; border:1.5px solid #fca5a5; font-weight:900; font-size:0.76rem;">
+            🔄 Mark Reset
+          </button>
         </div>
       </div>
       <div class="table-responsive" style="max-height:580px; overflow:auto; border:1.5px solid #94a3b8; border-radius:8px;">
@@ -35956,6 +35993,60 @@ function build12thForm2_2ExactHtml(calc, forPrint) {
 }
 
 
+
+function openMarkResetConfirmModal() {
+  if (!activeSchoolSession) return;
+  const is12 = (_activeResultAnalysisStd === "12");
+  const termMeta = EXAM_RESULT_TERMS_META[_activeMidTermTermKey] || { shortName: _activeMidTermTermKey };
+  const detailEl = document.getElementById("raMarkResetModalDetailText");
+  if (detailEl) {
+    detailEl.innerHTML = `<strong>வகுப்பு:</strong> ${is12 ? "12-ஆம் வகுப்பு (HSC +2)" : "10-ஆம் வகுப்பு (SSLC)"} &nbsp;|&nbsp; <strong>தேர்வு:</strong> ${escapeHtmlAttr(termMeta.shortName)}<br><span style="color:#7f1d1d;">உறுதிப்படுத்தியவுடன் இத்தேர்விற்குரிய மாணவர்களின் அனைத்து மதிப்பெண்களும் அழிக்கப்படும் (மாணவர்களின் பெயர் மற்றும் பிரிவு விவரங்கள் மாறாது).</span>`;
+  }
+  const modal = document.getElementById("raMarkResetConfirmModal");
+  if (modal) modal.style.display = "flex";
+}
+
+function closeMarkResetConfirmModal() {
+  const modal = document.getElementById("raMarkResetConfirmModal");
+  if (modal) modal.style.display = "none";
+}
+
+function confirmAndExecuteMarkReset() {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const is12 = (_activeResultAnalysisStd === "12");
+  const rec = is12
+    ? getSchool12thExamRecord(uNo, _activeMidTermTermKey)
+    : getSchoolMidTermRecord(uNo, _activeMidTermTermKey, "10");
+
+  rec.marksResetByUser = true;
+  rec.isSubmitted = false;
+  rec.submittedAt = "";
+  rec.updatedAt = new Date().toISOString();
+
+  (rec.students || []).forEach(st => {
+    st.status = "PRESENT";
+    st.marks = is12 ? {} : { TAMIL: "", ENGLISH: "", MATHS: "", SCIENCE: "", SOCIAL: "" };
+    st.markParts = {};
+  });
+
+  saveExamResultAnalysisStore();
+  if (typeof pushCloudUpdate === "function") {
+    pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `School [${uNo}] reset marks for ${_activeResultAnalysisStd}th ${_activeMidTermTermKey}`);
+  }
+  closeMarkResetConfirmModal();
+  renderSchoolMidTermModule();
+  if (typeof showToast === "function") {
+    showToast("🔄 இத்தேர்விற்குரிய மாணவர்களின் அனைத்து மதிப்பெண்களும் வெற்றிகரமாக அழிக்கப்பட்டன (Mark Reset Completed)!", "#dc2626", true);
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.openMarkResetConfirmModal = openMarkResetConfirmModal;
+  window.closeMarkResetConfirmModal = closeMarkResetConfirmModal;
+  window.confirmAndExecuteMarkReset = confirmAndExecuteMarkReset;
+}
+
 function autoFillFullInternalPracticalMarksForSchool() {
   if (!activeSchoolSession) return;
   const uNo = String(activeSchoolSession.uNo);
@@ -35996,20 +36087,13 @@ function autoFillFullInternalPracticalMarksForSchool() {
     (rec10.students || []).forEach(stu => {
       if (stu.status === "LA" || stu.status === "AB" || stu.status === "HB") return;
       if (!stu.markParts) stu.markParts = {};
-      MIDTERM_CORE_SUBJECTS.forEach(s => {
-        const sk = s.key;
-        if (!stu.markParts[sk]) stu.markParts[sk] = { th: "", pr: "", in: "" };
-        if (sk === "SCIENCE") {
-          if (!stu.markParts[sk].pr) stu.markParts[sk].pr = "25";
-        } else {
-          if (!stu.markParts[sk].in) stu.markParts[sk].in = "10";
-        }
-        ensureStudentSubjectMarkParts(stu, sk, "10", true);
-      });
+      if (!stu.markParts.SCIENCE) stu.markParts.SCIENCE = { th: "", pr: "", in: "" };
+      if (!stu.markParts.SCIENCE.pr) stu.markParts.SCIENCE.pr = "25";
+      ensureStudentSubjectMarkParts(stu, "SCIENCE", "10", true);
     });
     saveExamResultAnalysisStore();
     renderSchoolMidTermModule();
-    showToast("⚡ அனைத்து 10-ஆம் வகுப்பு மாணவர்களுக்கும் முழு Internal (10) & Science Practical (25) மதிப்பெண்கள் நிரப்பப்பட்டன!", "#0f766e", true);
+    showToast("⚡ அனைத்து 10-ஆம் வகுப்பு மாணவர்களுக்கும் அறிவியல் செய்முறை (Science Practical: 25) மதிப்பெண் நிரப்பப்பட்டது!", "#0f766e", true);
   }
 }
 
@@ -36333,7 +36417,7 @@ function ensureUlagampatti206PreloadedInMidTermStore(store) {
   ["2026_QUARTERLY", "2026_HALF_YEARLY"].forEach(splitTk => {
     const tk12 = splitTk + "__STD12";
     if (!store[tk12]) store[tk12] = {};
-    if (!store[tk12]["206"] || !Array.isArray(store[tk12]["206"].students) || store[tk12]["206"].students.length === 0) {
+    if (!store[tk12]["206"] || (!store[tk12]["206"].marksResetByUser && (!Array.isArray(store[tk12]["206"].students) || store[tk12]["206"].students.length === 0))) {
       const secs12 = autoBuildDefault12thSectionsForSchool("206");
       const secMap12 = {};
       secs12.forEach(s => { secMap12[s.secId] = s; });
@@ -36375,24 +36459,16 @@ function ensureUlagampatti206PreloadedInMidTermStore(store) {
     }
 
     if (!store[splitTk]) store[splitTk] = {};
-    if (!store[splitTk]["206"] || !Array.isArray(store[splitTk]["206"].students) || store[splitTk]["206"].students.length === 0) {
+    if (!store[splitTk]["206"] || (!store[splitTk]["206"].marksResetByUser && (!Array.isArray(store[splitTk]["206"].students) || store[splitTk]["206"].students.length === 0))) {
       const baseSecs = autoBuildDefaultSectionsForSchool("206");
       const secA = baseSecs[0] || { secId: "A", secName: "Section A", medium: "TM", teachers: {} };
       secA.secId = "A"; secA.secName = "Section A"; secA.medium = "TM";
       const secB = { secId: "B", secName: "Section B", medium: "TM", teachers: JSON.parse(JSON.stringify(secA.teachers || {})) };
       const stu10 = JSON.parse(JSON.stringify(ULAGAMPATTI_206_PRELOADED_STUDENTS)).map(st => {
-        st.markParts = {};
-        MIDTERM_CORE_SUBJECTS.forEach(s => {
-          const sk = s.key;
-          const tot = Number(st.marks && st.marks[sk]) || 65;
-          if (sk === "SCIENCE") {
-            const th = Math.max(0, tot - 25);
-            st.markParts[sk] = { th: String(th), pr: "25", in: "" };
-          } else {
-            const th = Math.max(0, tot - 10);
-            st.markParts[sk] = { th: String(th), pr: "", in: "10" };
-          }
-        });
+        const totSci = Number(st.marks && st.marks.SCIENCE) || 65;
+        st.markParts = {
+          SCIENCE: { th: String(Math.max(0, totSci - 25)), pr: "25", in: "" }
+        };
         return st;
       });
       store[splitTk]["206"] = {
@@ -37215,7 +37291,7 @@ function getSchoolMidTermRecord(uNo, termKey, explicitStd) {
       }
     });
   }
-  if (uNo === "206" && Array.isArray(rec.students) && rec.students.length > 0) {
+  if (uNo === "206" && !rec.marksResetByUser && Array.isArray(rec.students) && rec.students.length > 0) {
     const anyMarked = rec.students.some(st => st.marks && Object.values(st.marks).some(v => String(v || "").trim() !== ""));
     if (!anyMarked) {
       const isSp = isSplitMarkExamTerm(termKey);
@@ -37230,11 +37306,7 @@ function getSchoolMidTermRecord(uNo, termKey, explicitStd) {
         st.marks = { TAMIL: String(mT), ENGLISH: String(mE), MATHS: String(mM), SCIENCE: String(mS), SOCIAL: String(mSS) };
         if (isSp) {
           st.markParts = {
-            TAMIL:   { th: String(mT - 10), pr: "", in: "10" },
-            ENGLISH: { th: String(mE - 10), pr: "", in: "10" },
-            MATHS:   { th: String(mM - 10), pr: "", in: "10" },
-            SCIENCE: { th: String(mS - 25), pr: "25", in: "" },
-            SOCIAL:  { th: String(mSS - 10), pr: "", in: "10" }
+            SCIENCE: { th: String(mS - 25), pr: "25", in: "" }
           };
         }
       });
@@ -37815,9 +37887,12 @@ function renderSchoolMidTermClassStudentsPane(calc) {
         <select id="raCmInlineExamSelect" class="form-control" style="width:auto; min-width:220px; font-size:0.82rem; font-weight:900; padding:4px 10px; border-color:#1d4ed8; background:#fff; color:#1e3a8a;" onchange="onSchoolMidTermExamTermChange(this.value)">
           ${examOptsHtml}
         </select>
-        ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.75rem;">⚡ முழு Internal &amp; Practical நிரப்பு</button>` : ""}
+        ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.75rem;">${is12 ? "⚡ முழு Internal &amp; Practical நிரப்பு" : "⚡ அறிவியல் செய்முறை (25) நிரப்பு"}</button>` : ""}
       </div>
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="openMarkResetConfirmModal()" style="background:#fef2f2; color:#dc2626; border:1.5px solid #fca5a5; font-weight:900; font-size:0.78rem;">
+          🔄 Mark Reset
+        </button>
         <button type="button" class="btn btn-success btn-sm" onclick="saveSchoolMidTermData(true, false)" style="background:#16a34a; border-color:#15803d; font-weight:900; font-size:0.78rem;">
           💾 சேமி (Save)
         </button>
@@ -37990,11 +38065,9 @@ function renderSchoolMidTermModule() {
   const t2B = document.getElementById("mtSubBtnForm1_1Title");
   const t2C = document.getElementById("mtSubBtnForm1_2Title");
   if (t2B) t2B.textContent = "🏫 School Performance";
-  if (t2C) t2C.textContent = "📊 Subject Performance";
+  if (t2C) t2C.textContent = "📊 View Subject Performance";
 
-  if (isMe && _activeMarkEntrySubView !== "STU_MARKS") {
-    _activeMarkEntrySubView = "STU_MARKS";
-  } else if (isRep && _activeMarkEntrySubView === "STU_MARKS") {
+  if (isRep && _activeMarkEntrySubView === "STU_MARKS") {
     _activeMarkEntrySubView = "FORM1_1";
   }
 
@@ -38002,10 +38075,12 @@ function renderSchoolMidTermModule() {
   const bF1El = document.getElementById("mtSubBtnForm1_1");
   const bF2El = document.getElementById("mtSubBtnForm1_2");
   const bSaveEl = document.getElementById("mtSubBtnSaveMarks");
+  const bResetEl = document.getElementById("mtSubBtnResetMarks");
   if (bStuEl) bStuEl.style.display = isMe ? "inline-flex" : "none";
   if (bSaveEl) bSaveEl.style.display = isMe ? "inline-flex" : "none";
-  if (bF1El) bF1El.style.display = isRep ? "inline-flex" : "none";
-  if (bF2El) bF2El.style.display = isRep ? "inline-flex" : "none";
+  if (bResetEl) bResetEl.style.display = isMe ? "inline-flex" : "none";
+  if (bF1El) bF1El.style.display = (isMe || isRep) ? "inline-flex" : "none";
+  if (bF2El) bF2El.style.display = (isMe || isRep) ? "inline-flex" : "none";
 
   const mapMe = {
     STU_MARKS: ["mtSubBtnStuMarks", "mtSubPaneStuMarks"],
@@ -38283,12 +38358,13 @@ function renderSchoolMidTermStuMarksPane(calc) {
 
         const fiveSubCellsHtml = MIDTERM_CORE_SUBJECTS.map(sub => {
           const sk = sub.key;
-          if (!isSplit) {
-            return `<td style="width:92px; padding:5px 6px; text-align:center; vertical-align:middle; border-left:1.5px solid #cbd5e1;">
-              <input type="text" maxlength="3" ${disAttr} class="form-control" style="padding:4px; ${markInputFont} ${cellStyle(m[sk])}" value="${escapeHtmlAttr(isRowDisabled ? "" : (m[sk] !== undefined ? m[sk] : ""))}" placeholder="${isRowDisabled ? rawStu.status : '0-100'}" oninput="onMidTermStudentMarkInput(${origIdx}, '${sk}', this)">
+          // In 10th Standard, ONLY SCIENCE has Practical (75 Theory + 25 Practical = 100). Other 4 subjects have NO Internal mark (direct 0-100)!
+          if (!isSplit || sk !== "SCIENCE") {
+            return `<td style="width:96px; padding:5px 6px; text-align:center; vertical-align:middle; border-left:1.5px solid #cbd5e1;">
+              <input type="text" maxlength="3" ${disAttr} class="form-control" title="${escapeHtmlAttr(sub.labelTa)} (Max 100, Min Pass 35)" style="padding:4px; ${markInputFont} ${cellStyle(m[sk])}" value="${escapeHtmlAttr(isRowDisabled ? "" : (m[sk] !== undefined ? m[sk] : ""))}" placeholder="${isRowDisabled ? rawStu.status : '0-100'}" oninput="onMidTermStudentMarkInput(${origIdx}, '${sk}', this)">
             </td>`;
           }
-          const evalPart = ensureStudentSubjectMarkParts(rawStu, sk, "10", true);
+          const evalPart = ensureStudentSubjectMarkParts(rawStu, "SCIENCE", "10", true);
           const totBadgeBg = isRowDisabled
             ? "background:#e2e8f0; color:#64748b; border:1.5px solid #cbd5e1;"
             : (evalPart.totalStr === "EX"
@@ -38304,24 +38380,12 @@ function renderSchoolMidTermStuMarksPane(calc) {
             ? rawStu.status
             : (evalPart.totalStr === "" ? "-" : (evalPart.failReason && (evalPart.failReason.startsWith("Th <") || evalPart.failReason.startsWith("Pr <")) ? `${evalPart.totalStr}!` : evalPart.totalStr));
 
-          if (sk === "SCIENCE") {
-            return `
-              <td style="min-width:168px; padding:5px 6px; background:${isRowDisabled ? '#f8fafc' : '#f0fdf4'}; border-left:2px solid #86efac; vertical-align:middle;">
-                <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; align-items:center;">
-                  <input type="text" maxlength="3" ${disAttr} class="form-control" title="Science Theory (Max 75, Min 20)" style="padding:3px 2px; ${markInputFont} border:1.5px solid #86efac; color:#0f294a; background:#ffffff; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.th)}" placeholder="${isRowDisabled ? '-' : '/75'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'th', this)">
-                  <input type="text" maxlength="2" ${disAttr} class="form-control" title="Science Practical (Max 25, Min 15)" style="padding:3px 2px; ${markInputFont} background:#f0f9ff; border:1.5px solid #7dd3fc; color:#0369a1; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.pr)}" placeholder="${isRowDisabled ? '-' : '/25'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'pr', this)">
-                  <div id="mt10SubTot_${origIdx}_SCIENCE" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
-                </div>
-              </td>
-            `;
-          }
-
           return `
-            <td style="min-width:156px; padding:5px 6px; background:#f8fafc; border-left:2px solid #cbd5e1; vertical-align:middle;">
+            <td style="min-width:172px; padding:5px 6px; background:${isRowDisabled ? '#f8fafc' : '#f0fdf4'}; border-left:2px solid #86efac; vertical-align:middle;">
               <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; align-items:center;">
-                <input type="text" maxlength="3" ${disAttr} class="form-control" title="Theory Mark (Max 90, Min 25)" style="padding:3px 2px; ${markInputFont} border:1.5px solid #93c5fd; color:#0f294a; background:#ffffff; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.th)}" placeholder="${isRowDisabled ? '-' : '/90'}" oninput="on10thStudentSplitMarkInput(${origIdx}, '${sk}', 'th', this)">
-                <input type="text" maxlength="2" ${disAttr} class="form-control" title="Internal Mark (Max 10)" style="padding:3px 2px; ${markInputFont} background:#f0fdfa; border:1.5px solid #5eead4; color:#0f766e; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.in)}" placeholder="${isRowDisabled ? '-' : '/10'}" oninput="on10thStudentSplitMarkInput(${origIdx}, '${sk}', 'in', this)">
-                <div id="mt10SubTot_${origIdx}_${sk}" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
+                <input type="text" maxlength="3" ${disAttr} class="form-control" title="அறிவியல் கருத்தியல் - Science Theory (Max 75, Min 20)" style="padding:3px 2px; ${markInputFont} border:1.5px solid #86efac; color:#0f294a; background:#ffffff; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.th)}" placeholder="${isRowDisabled ? '-' : '/75'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'th', this)">
+                <input type="text" maxlength="2" ${disAttr} class="form-control" title="அறிவியல் செய்முறை - Science Practical (Max 25, Min 15)" style="padding:3px 2px; ${markInputFont} background:#f0f9ff; border:1.5px solid #7dd3fc; color:#0369a1; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.pr)}" placeholder="${isRowDisabled ? '-' : '/25'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'pr', this)">
+                <div id="mt10SubTot_${origIdx}_SCIENCE" title="அறிவியல் மொத்தம் (Theory 75 + Practical 25 = 100)" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
               </div>
             </td>
           `;
@@ -38384,17 +38448,17 @@ function renderSchoolMidTermStuMarksPane(calc) {
   const subHeaderRowHtml = MIDTERM_CORE_SUBJECTS.map(sub => {
     const isSci = (sub.key === "SCIENCE");
     const bg = isSci ? "#0f766e" : "#1e3a8a";
-    if (!isSplit) {
+    if (!isSplit || !isSci) {
       return `<th style="text-align:center; background:${bg}; padding:7px 6px; border-left:1.5px solid rgba(255,255,255,0.22);">
         <div style="font-size:0.86rem; font-weight:900; color:#ffffff;">${sub.labelTa}</div>
-        <div style="font-size:0.70rem; color:#fde047; font-weight:800; margin-top:2px;">Max: 100</div>
+        <div style="font-size:0.70rem; color:#fde047; font-weight:800; margin-top:2px;">Max: 100 (நேரடி மதிப்பெண்)</div>
       </th>`;
     }
     return `<th style="text-align:center; background:${bg}; padding:6px 6px 4px 6px; border-left:2px solid rgba(255,255,255,0.25);">
       <div style="font-size:0.86rem; font-weight:900; color:#ffffff; margin-bottom:4px;">${sub.labelTa}</div>
       <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; background:rgba(0,0,0,0.24); padding:3px 4px; border-radius:5px; font-size:0.70rem; font-weight:900; color:#fde047;">
-        <span>${isSci ? "Th (75)" : "Th (90)"}</span>
-        <span style="color:#7dd3fc;">${isSci ? "Pr (25)" : "Int (10)"}</span>
+        <span>Th (75)</span>
+        <span style="color:#7dd3fc;">Pr (25)</span>
         <span style="color:#86efac;">Tot</span>
       </div>
     </th>`;
@@ -38408,12 +38472,15 @@ function renderSchoolMidTermStuMarksPane(calc) {
           ${secPills10Html}
         </div>
         <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-          ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">⚡ முழு Internal (10) &amp; Science Practical (25) நிரப்பு</button>` : `<button type="button" class="btn btn-outline btn-sm" onclick="convertAllMidTermMarks50To100()" style="background:#fffbeb; color:#92400e; border-color:#fcd34d; font-weight:800; font-size:0.74rem;">✖️2 (50➔100 மாற்று)</button>`}
+          ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">⚡ அறிவியல் செய்முறை (Science Practical: 25) நிரப்பு</button>` : `<button type="button" class="btn btn-outline btn-sm" onclick="convertAllMidTermMarks50To100()" style="background:#fffbeb; color:#92400e; border-color:#fcd34d; font-weight:800; font-size:0.74rem;">✖️2 (50➔100 மாற்று)</button>`}
           <button type="button" class="btn btn-outline btn-sm" onclick="openMidTermBulkPasteModal()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900; font-size:0.76rem;">
             📋 Excel Copy-Paste
           </button>
           <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(1)" style="font-weight:800; font-size:0.76rem;">
             ➕ +1 மாணவர்
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="openMarkResetConfirmModal()" style="background:#fef2f2; color:#dc2626; border:1.5px solid #fca5a5; font-weight:900; font-size:0.76rem;">
+            🔄 Mark Reset
           </button>
         </div>
       </div>
@@ -39137,7 +39204,7 @@ function renderSchoolMidTermForm1_1Pane(calc) {
           🖨️ A4 அச்சிடு
         </button>
         <button type="button" class="btn btn-success btn-sm" onclick="switchSchoolMidTermSubTab('FORM1_2')" style="font-weight:900;">
-          📊 FORM - I (2) பாட ஆசிரியர் அறிக்கை பார்வை ➔
+          📊 View Subject Performance ➔
         </button>
       </div>
     </div>
@@ -39333,7 +39400,7 @@ function renderSchoolMidTermForm1_2Pane(calc) {
   pane.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
       <div style="font-size:0.92rem; font-weight:900; color:#0f294a;">
-        📊 FORM – I ( 2 ) : SUBJECT PERFORMANCE (பிரிவு வாரியான பாட ஆசிரியர் தேர்ச்சிப் பகுப்பாய்வு)
+        📊 View Subject Performance — FORM – I ( 2 ) / II ( 2 )
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_2', null, this)" style="background:#dc2626; border-color:#b91c1c; font-weight:900;">
@@ -40197,7 +40264,7 @@ function exportDistrictMidTermF2Csv() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast("📥 மாவட்ட F2_Subject Performance பாட ஆசிரியர் அறிக்கை (CSV) பதிவிறக்கம் செய்யப்பட்டது!", "#1d4ed8", true);
+  showToast("📥 மாவட்ட F2_Subject Performance View Subject Performance (CSV) பதிவிறக்கம் செய்யப்பட்டது!", "#1d4ed8", true);
 }
 
 function syncAllMidTermResultsToGoogleSheet() {
