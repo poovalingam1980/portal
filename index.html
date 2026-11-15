@@ -1751,6 +1751,12 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnForm1_2" onclick="switchMarkEntrySubView('FORM1_2')" style="font-weight:900; padding:6px 14px;">
           <span id="mtSubBtnForm1_2Title">📊 View Subject Performance</span>
         </button>
+        <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnReview" onclick="switchMarkEntrySubView('REVIEW_REPORT')" style="font-weight:900; padding:6px 14px; border-color:#d97706; color:#b45309;">
+          📋 Review Report (சுருக்க அறிக்கை)
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" id="schReviewReportTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; padding:6px 12px;">
+          📥 Review Report PDF
+        </button>
         <button type="button" class="btn btn-primary btn-sm" id="schMidTermTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', null, this)" style="background:#dc2626; border-color:#b91c1c; color:#fff; font-weight:900; padding:6px 14px;">
           📥 PDF அறிக்கை பதிவிறக்கு
         </button>
@@ -1774,6 +1780,9 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 
     <!-- Mark Entry Sub-Pane 2C: Auto-Generated FORM - I (2) / II (2) -->
     <div id="mtSubPaneForm1_2" style="display:none;"></div>
+
+    <!-- Mark Entry Sub-Pane 2D: Visual Review Report (10th & 12th Review Report) -->
+    <div id="mtSubPaneReview" style="display:none;"></div>
   </div>
 </div>
 
@@ -34201,19 +34210,38 @@ function ensureStudentSubjectMarkParts(stu, subKey, std, isSplitExam) {
   let failReason = "";
 
   if (rule.mode === "TH_PR_INT") {
-    // Modified_TML.xlsx Formula: =IF(MxxB="AAA",1,IF(MxxA<15,1,IF(MxxA="AAA",1,0))) + Total >= 35
-    if (thStr === "AB" || prStr === "AB") {
-      isFail = true;
-      failReason = thStr === "AB" ? "Th AB" : "Pr AB";
-    } else if (thStr !== "" && thNum < rule.minTh) {
-      isFail = true;
-      failReason = `Th < ${rule.minTh}`;
-    } else if (String(std) === "10" && prStr !== "" && prNum < rule.minPr) {
-      isFail = true;
-      failReason = `Pr < ${rule.minPr}`;
-    } else if (computedTotal < 35) {
-      isFail = true;
-      failReason = "Tot < 35";
+    if (String(std) === "10" && subKey === "SCIENCE") {
+      // 10th Science strict pass rule: Theory >= 20 (out of 75) AND Practical >= 15 (out of 25) AND Total >= 35
+      const thFail = (thStr === "" || thStr === "AB" || thNum < 20);
+      const prFail = (prStr === "" || prStr === "AB" || prNum < 15);
+      if (thStr === "AB" || prStr === "AB") {
+        isFail = true;
+        failReason = (thStr === "AB" && prStr === "AB") ? "AB" : (thStr === "AB" ? "Th AB" : "Pr AB");
+      } else if (thFail && prFail) {
+        isFail = true;
+        failReason = "Th<20 & Pr<15";
+      } else if (thFail) {
+        isFail = true;
+        failReason = "Th < 20";
+      } else if (prFail) {
+        isFail = true;
+        failReason = "Pr < 15";
+      } else if (computedTotal < 35) {
+        isFail = true;
+        failReason = "Tot < 35";
+      }
+    } else {
+      // 12th Practical Subjects: Theory >= 15 (out of 70), Practical != AB, Total >= 35
+      if (thStr === "AB" || prStr === "AB") {
+        isFail = true;
+        failReason = thStr === "AB" ? "Th AB" : "Pr AB";
+      } else if (thStr !== "" && thNum < rule.minTh) {
+        isFail = true;
+        failReason = `Th < ${rule.minTh}`;
+      } else if (computedTotal < 35) {
+        isFail = true;
+        failReason = "Tot < 35";
+      }
     }
   } else if (rule.mode === "PR_INT_VOC") {
     if (prStr === "AB") {
@@ -35395,10 +35423,13 @@ function renderSchool12thStuMarksPane(calc) {
               <input type="text" class="form-control" style="padding:4px 4px; height:34px; font-size:0.92rem; font-weight:900; font-family:'Segoe UI',Arial,sans-serif; text-align:center; color:#0f294a; border:1.5px solid #cbd5e1;" value="${escapeHtmlAttr(rawStu.rollNo || "")}" placeholder="Roll No" oninput="onMidTermStudentCellInput(${origIdx}, 'rollNo', this.value)">
             </td>
             <td style="min-width:215px; max-width:255px; padding:4px 7px;">
-              <!-- Line 1: Tamil Name + Community (இனம்) -->
+              <!-- Line 1: Tamil Name + Gender (பாலினம்) -->
               <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; margin-bottom:2px;">
                 <input type="text" class="form-control" style="padding:1px 5px; height:23px; font-size:0.88rem; font-weight:900; color:#0f294a; border:1px solid transparent; background:transparent; flex:1; min-width:0;" value="${escapeHtmlAttr(rawStu.nameTa || "")}" placeholder="பெயர் (தமிழில்)" onfocus="this.style.borderColor='#c4b5fd';this.style.background='#fff';" onblur="this.style.borderColor='transparent';this.style.background='transparent';" oninput="onMidTermStudentCellInput(${origIdx}, 'nameTa', this.value)">
-                <input type="text" class="form-control" title="இனம் (Community: BC / MBC / DNC / SC / SCA / ST / OC)" style="width:46px; min-width:46px; height:21px; padding:1px 3px; font-size:0.71rem; font-weight:900; text-align:center; color:#7c2d12; background:#ffedd5; border:1px solid #fdba74; border-radius:5px; text-transform:uppercase;" value="${escapeHtmlAttr(commShort)}" placeholder="இனம்" oninput="onMidTermStudentCellInput(${origIdx}, 'community', this.value)">
+                <select class="form-control" title="பாலினம் (Gender: ஆண் / பெண்)" style="width:68px; min-width:68px; height:22px; padding:0px 3px; font-size:0.72rem; font-weight:900; text-align:center; color:${(rawStu.gender === 'Female' || rawStu.gender === 'F') ? '#be185d' : '#1d4ed8'}; background:${(rawStu.gender === 'Female' || rawStu.gender === 'F') ? '#fdf2f8' : '#eff6ff'}; border:1px solid ${(rawStu.gender === 'Female' || rawStu.gender === 'F') ? '#f9a8d4' : '#93c5fd'}; border-radius:5px;" onchange="onMidTermStudentCellInput(${origIdx}, 'gender', this.value, true)">
+                  <option value="Male" ${(!rawStu.gender || rawStu.gender === 'Male' || rawStu.gender === 'M') ? 'selected' : ''}>ஆண் (M)</option>
+                  <option value="Female" ${(rawStu.gender === 'Female' || rawStu.gender === 'F') ? 'selected' : ''}>பெண் (F)</option>
+                </select>
               </div>
               <!-- Line 2: English Name + Short DOB (பிறந்த தேதி) -->
               <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
@@ -35511,7 +35542,7 @@ function renderSchool12thStuMarksPane(calc) {
               <th style="text-align:center; width:34px; min-width:34px; max-width:38px; padding:6px 2px; font-size:0.76rem;">வ.எண்</th>
               <th style="text-align:center; width:76px; min-width:72px; max-width:80px; padding:6px 4px; font-size:0.76rem; line-height:1.2;">Roll No /<br>Reg.No</th>
               <th style="background:#115e59; min-width:215px; max-width:255px; padding:6px 8px; font-size:0.78rem; line-height:1.3;">
-                மாணவர் பெயர் (தமிழ்) • இனம்<br>
+                மாணவர் பெயர் (தமிழ்) • பாலினம் (Gender)<br>
                 <span style="font-size:0.69rem; color:#fde047; font-weight:800;">NAME (ENGLISH) • பிறந்த தேதி (DOB)</span>
               </th>
               <th style="text-align:center; width:58px; min-width:54px; max-width:62px; padding:6px 4px; font-size:0.76rem; background:#0f766e;">பிரிவு<br><span style="font-size:0.66rem; color:#fde047;">(Sec)</span></th>
@@ -37896,8 +37927,11 @@ function renderSchoolMidTermClassStudentsPane(calc) {
         <button type="button" class="btn btn-success btn-sm" onclick="saveSchoolMidTermData(true, false)" style="background:#16a34a; border-color:#15803d; font-weight:900; font-size:0.78rem;">
           💾 சேமி (Save)
         </button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; font-size:0.78rem;">
+          📥 Review Report PDF
+        </button>
         <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', null, this)" style="background:#dc2626; border-color:#b91c1c; color:#fff; font-weight:900; font-size:0.78rem;">
-          📥 PDF அறிக்கை பதிவிறக்கு
+          📥 F1 &amp; F2 PDF பதிவிறக்கு
         </button>
       </div>
     </div>
@@ -38074,6 +38108,7 @@ function renderSchoolMidTermModule() {
   const bStuEl = document.getElementById("mtSubBtnStuMarks");
   const bF1El = document.getElementById("mtSubBtnForm1_1");
   const bF2El = document.getElementById("mtSubBtnForm1_2");
+  const bRevEl = document.getElementById("mtSubBtnReview");
   const bSaveEl = document.getElementById("mtSubBtnSaveMarks");
   const bResetEl = document.getElementById("mtSubBtnResetMarks");
   if (bStuEl) bStuEl.style.display = isMe ? "inline-flex" : "none";
@@ -38081,11 +38116,13 @@ function renderSchoolMidTermModule() {
   if (bResetEl) bResetEl.style.display = isMe ? "inline-flex" : "none";
   if (bF1El) bF1El.style.display = (isMe || isRep) ? "inline-flex" : "none";
   if (bF2El) bF2El.style.display = (isMe || isRep) ? "inline-flex" : "none";
+  if (bRevEl) bRevEl.style.display = (isMe || isRep) ? "inline-flex" : "none";
 
   const mapMe = {
-    STU_MARKS: ["mtSubBtnStuMarks", "mtSubPaneStuMarks"],
-    FORM1_1:   ["mtSubBtnForm1_1",  "mtSubPaneForm1_1"],
-    FORM1_2:   ["mtSubBtnForm1_2",  "mtSubPaneForm1_2"]
+    STU_MARKS:     ["mtSubBtnStuMarks", "mtSubPaneStuMarks"],
+    FORM1_1:       ["mtSubBtnForm1_1",  "mtSubPaneForm1_1"],
+    FORM1_2:       ["mtSubBtnForm1_2",  "mtSubPaneForm1_2"],
+    REVIEW_REPORT: ["mtSubBtnReview",   "mtSubPaneReview"]
   };
   Object.keys(mapMe).forEach(k => {
     const [bId, pId] = mapMe[k];
@@ -38094,9 +38131,15 @@ function renderSchoolMidTermModule() {
     const active = (k === _activeMarkEntrySubView);
     if (bEl) {
       bEl.className = active ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
-      bEl.style.background = active ? (isRep ? "#6d28d9" : "#1d4ed8") : "#ffffff";
-      bEl.style.color = active ? "#ffffff" : (isRep ? "#5b21b6" : "#1e3a8a");
-      bEl.style.borderColor = isRep ? "#6d28d9" : "#1d4ed8";
+      if (k === "REVIEW_REPORT") {
+        bEl.style.background = active ? "#d97706" : "#ffffff";
+        bEl.style.color = active ? "#ffffff" : "#b45309";
+        bEl.style.borderColor = "#d97706";
+      } else {
+        bEl.style.background = active ? (isRep ? "#6d28d9" : "#1d4ed8") : "#ffffff";
+        bEl.style.color = active ? "#ffffff" : (isRep ? "#5b21b6" : "#1e3a8a");
+        bEl.style.borderColor = isRep ? "#6d28d9" : "#1d4ed8";
+      }
     }
     if (pEl) pEl.style.display = active ? "block" : "none";
   });
@@ -38108,6 +38151,8 @@ function renderSchoolMidTermModule() {
     renderSchoolMidTermForm1_1Pane(calc);
   } else if (_activeMarkEntrySubView === "FORM1_2") {
     renderSchoolMidTermForm1_2Pane(calc);
+  } else if (_activeMarkEntrySubView === "REVIEW_REPORT") {
+    renderSchoolReviewReportPane(calc);
   }
 }
 
@@ -38380,12 +38425,21 @@ function renderSchoolMidTermStuMarksPane(calc) {
             ? rawStu.status
             : (evalPart.totalStr === "" ? "-" : (evalPart.failReason && (evalPart.failReason.startsWith("Th <") || evalPart.failReason.startsWith("Pr <")) ? `${evalPart.totalStr}!` : evalPart.totalStr));
 
+          const isThFail10 = !isRowDisabled && evalPart.th !== "" && (evalPart.th === "AB" || Number(evalPart.th) < 20);
+          const isPrFail10 = !isRowDisabled && evalPart.pr !== "" && (evalPart.pr === "AB" || Number(evalPart.pr) < 15);
+          const thBoxStyle10 = isThFail10
+            ? "border:1.5px solid #f87171; color:#991b1b; background:#fee2e2;"
+            : "border:1.5px solid #86efac; color:#0f294a; background:#ffffff;";
+          const prBoxStyle10 = isPrFail10
+            ? "border:1.5px solid #f87171; color:#991b1b; background:#fee2e2;"
+            : "background:#f0f9ff; border:1.5px solid #7dd3fc; color:#0369a1;";
+
           return `
-            <td style="min-width:172px; padding:5px 6px; background:${isRowDisabled ? '#f8fafc' : '#f0fdf4'}; border-left:2px solid #86efac; vertical-align:middle;">
+            <td style="min-width:176px; padding:5px 6px; background:${isRowDisabled ? '#f8fafc' : '#f0fdf4'}; border-left:2px solid #86efac; vertical-align:middle;">
               <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; align-items:center;">
-                <input type="text" maxlength="3" ${disAttr} class="form-control" title="அறிவியல் கருத்தியல் - Science Theory (Max 75, Min 20)" style="padding:3px 2px; ${markInputFont} border:1.5px solid #86efac; color:#0f294a; background:#ffffff; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.th)}" placeholder="${isRowDisabled ? '-' : '/75'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'th', this)">
-                <input type="text" maxlength="2" ${disAttr} class="form-control" title="அறிவியல் செய்முறை - Science Practical (Max 25, Min 15)" style="padding:3px 2px; ${markInputFont} background:#f0f9ff; border:1.5px solid #7dd3fc; color:#0369a1; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.pr)}" placeholder="${isRowDisabled ? '-' : '/25'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'pr', this)">
-                <div id="mt10SubTot_${origIdx}_SCIENCE" title="அறிவியல் மொத்தம் (Theory 75 + Practical 25 = 100)" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
+                <input type="text" maxlength="3" ${disAttr} class="form-control" title="அறிவியல் கருத்தியல் - Science Theory (Max: 75, தேர்ச்சிக்கு குறைந்தபட்சம்: 20)" style="padding:3px 2px; ${markInputFont} ${thBoxStyle10} ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.th)}" placeholder="${isRowDisabled ? '-' : '75(≥20)'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'th', this)">
+                <input type="text" maxlength="2" ${disAttr} class="form-control" title="அறிவியல் செய்முறை - Science Practical (Max: 25, தேர்ச்சிக்கு குறைந்தபட்சம்: 15)" style="padding:3px 2px; ${markInputFont} ${prBoxStyle10} ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.pr)}" placeholder="${isRowDisabled ? '-' : '25(≥15)'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'pr', this)">
+                <div id="mt10SubTot_${origIdx}_SCIENCE" title="அறிவியல் மொத்தம் (கருத்தியல் ≥20/75 + செய்முறை ≥15/25 = மொத்தம் ≥35/100)" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
               </div>
             </td>
           `;
@@ -38404,10 +38458,13 @@ function renderSchoolMidTermStuMarksPane(calc) {
               <input type="text" class="form-control" style="padding:4px 4px; height:34px; font-size:0.92rem; font-weight:900; font-family:'Segoe UI',Arial,sans-serif; text-align:center; color:#0f294a; border:1.5px solid #cbd5e1;" value="${escapeHtmlAttr(rawStu.rollNo || "")}" placeholder="Roll No" oninput="onMidTermStudentCellInput(${origIdx}, 'rollNo', this.value)">
             </td>
             <td style="min-width:215px; max-width:255px; padding:4px 7px;">
-              <!-- Line 1: Tamil Name + Community (இனம்) -->
+              <!-- Line 1: Tamil Name + Gender (பாலினம்) -->
               <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; margin-bottom:2px;">
                 <input type="text" class="form-control" style="padding:1px 5px; height:23px; font-size:0.88rem; font-weight:900; color:#0f294a; border:1px solid transparent; background:transparent; flex:1; min-width:0;" value="${escapeHtmlAttr(rawStu.nameTa || "")}" placeholder="பெயர் (தமிழில்)" onfocus="this.style.borderColor='#93c5fd';this.style.background='#fff';" onblur="this.style.borderColor='transparent';this.style.background='transparent';" oninput="onMidTermStudentCellInput(${origIdx}, 'nameTa', this.value)">
-                <input type="text" class="form-control" title="இனம் (Community: BC / MBC / DNC / SC / SCA / ST / OC)" style="width:46px; min-width:46px; height:21px; padding:1px 3px; font-size:0.71rem; font-weight:900; text-align:center; color:#7c2d12; background:#ffedd5; border:1px solid #fdba74; border-radius:5px; text-transform:uppercase;" value="${escapeHtmlAttr(commShort)}" placeholder="இனம்" oninput="onMidTermStudentCellInput(${origIdx}, 'community', this.value)">
+                <select class="form-control" title="பாலினம் (Gender: ஆண் / பெண்)" style="width:68px; min-width:68px; height:22px; padding:0px 3px; font-size:0.72rem; font-weight:900; text-align:center; color:${(rawStu.gender === 'Female' || rawStu.gender === 'F') ? '#be185d' : '#1d4ed8'}; background:${(rawStu.gender === 'Female' || rawStu.gender === 'F') ? '#fdf2f8' : '#eff6ff'}; border:1px solid ${(rawStu.gender === 'Female' || rawStu.gender === 'F') ? '#f9a8d4' : '#93c5fd'}; border-radius:5px;" onchange="onMidTermStudentCellInput(${origIdx}, 'gender', this.value, true)">
+                  <option value="Male" ${(!rawStu.gender || rawStu.gender === 'Male' || rawStu.gender === 'M') ? 'selected' : ''}>ஆண் (M)</option>
+                  <option value="Female" ${(rawStu.gender === 'Female' || rawStu.gender === 'F') ? 'selected' : ''}>பெண் (F)</option>
+                </select>
               </div>
               <!-- Line 2: English Name + Short DOB (பிறந்த தேதி) -->
               <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
@@ -38456,9 +38513,9 @@ function renderSchoolMidTermStuMarksPane(calc) {
     }
     return `<th style="text-align:center; background:${bg}; padding:6px 6px 4px 6px; border-left:2px solid rgba(255,255,255,0.25);">
       <div style="font-size:0.86rem; font-weight:900; color:#ffffff; margin-bottom:4px;">${sub.labelTa}</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; background:rgba(0,0,0,0.24); padding:3px 4px; border-radius:5px; font-size:0.70rem; font-weight:900; color:#fde047;">
-        <span>Th (75)</span>
-        <span style="color:#7dd3fc;">Pr (25)</span>
+      <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; background:rgba(0,0,0,0.24); padding:3px 4px; border-radius:5px; font-size:0.67rem; font-weight:900; color:#fde047;">
+        <span title="கருத்தியல் 75-க்கு 20 பெற வேண்டும்">Th 75(≥20)</span>
+        <span style="color:#7dd3fc;" title="செய்முறை 25-க்கு 15 பெற வேண்டும்">Pr 25(≥15)</span>
         <span style="color:#86efac;">Tot</span>
       </div>
     </th>`;
@@ -38491,7 +38548,7 @@ function renderSchoolMidTermStuMarksPane(calc) {
               <th style="text-align:center; width:34px; min-width:34px; max-width:38px; padding:6px 2px; font-size:0.76rem;">வ.எண்</th>
               <th style="text-align:center; width:76px; min-width:72px; max-width:80px; padding:6px 4px; font-size:0.76rem; line-height:1.2;">Roll No /<br>Reg.No</th>
               <th style="background:#115e59; min-width:215px; max-width:255px; padding:6px 8px; font-size:0.78rem; line-height:1.3;">
-                மாணவர் பெயர் (தமிழ்) • இனம்<br>
+                மாணவர் பெயர் (தமிழ்) • பாலினம் (Gender)<br>
                 <span style="font-size:0.69rem; color:#fde047; font-weight:800;">NAME (ENGLISH) • பிறந்த தேதி (DOB)</span>
               </th>
               <th style="text-align:center; width:58px; min-width:54px; max-width:62px; padding:6px 4px; font-size:0.76rem; background:#4c1d95;">பிரிவு<br><span style="font-size:0.66rem; color:#fde047;">(Sec)</span></th>
@@ -38531,6 +38588,23 @@ function on10thStudentSplitMarkInput(idx, subKey, partKey, inpEl) {
     }
   }
   stu.markParts[subKey][partKey] = val;
+  if (subKey === "SCIENCE") {
+    const minReq = (partKey === "th") ? 20 : 15;
+    const isPartFail = val !== "" && (val === "AB" || (!isNaN(Number(val)) && Number(val) < minReq));
+    if (isPartFail) {
+      inpEl.style.background = "#fee2e2";
+      inpEl.style.color = "#991b1b";
+      inpEl.style.borderColor = "#f87171";
+    } else if (partKey === "th") {
+      inpEl.style.background = "#ffffff";
+      inpEl.style.color = "#0f294a";
+      inpEl.style.borderColor = "#86efac";
+    } else {
+      inpEl.style.background = "#f0f9ff";
+      inpEl.style.color = "#0369a1";
+      inpEl.style.borderColor = "#7dd3fc";
+    }
+  }
 
   const evalPart = ensureStudentSubjectMarkParts(stu, subKey, "10", true);
   saveExamResultAnalysisStore();
@@ -39449,6 +39523,572 @@ function saveSchoolMidTermData(showMsg, markSubmitted) {
   }
 }
 
+
+// ============================================================================
+// 10TH & 12TH VISUAL REVIEW REPORT BUILDERS (Matches 10_Review_ Report.pdf & 12_Review_HSS Report.pdf)
+// ============================================================================
+function getExamReviewReportMetaLabels(termKey, is12) {
+  const map = {
+    "2026_MIDTERM_1":     { bannerEn: is12 ? "12th First Mid-Term Test - July'2026" : "SSLC – First Mid-Term Test - Jul'2026", colShort: "1st Mid-Term Test", subShort: "1st Mid-Term" },
+    "2026_QUARTERLY":     { bannerEn: is12 ? "12th Quarterly Examination - Sep'2026" : "SSLC – Quarterly Examination - Sep'2026", colShort: "Quarterly Exam", subShort: "Quarterly" },
+    "2026_MIDTERM_2":     { bannerEn: is12 ? "12th Second Mid-Term Test - Nov'2026" : "SSLC – Second Mid-Term Test - Nov'2026", colShort: "2nd Mid-Term Test", subShort: "2nd Mid-Term" },
+    "2026_HALF_YEARLY":   { bannerEn: is12 ? "12th Half-Yearly Examination - Dec'2026" : "SSLC – Half-Yearly Examination - Dec'2026", colShort: "Half-Yearly Exam", subShort: "Half-Yearly" },
+    "2027_REVISION_1":    { bannerEn: is12 ? "12th First Revision Exam - Jan'2027" : "SSLC – First Revision Exam - Jan'2027", colShort: "1st Revision Test", subShort: "1st Revision" },
+    "2027_REVISION_2":    { bannerEn: is12 ? "12th Second Revision Exam - Feb'2027" : "SSLC – Second Revision Exam - Feb'2027", colShort: "2nd Revision Test", subShort: "2nd Revision" },
+    "2027_REVISION_3":    { bannerEn: is12 ? "12th Third Revision Exam - Feb'2027" : "SSLC – Third Revision Exam - Feb'2027", colShort: "3rd Revision Test", subShort: "3rd Revision" },
+    "2027_SPECIAL_MODEL": { bannerEn: is12 ? "12th Special Model Exam - Mar'2027" : "SSLC – Special Model Exam - Mar'2027", colShort: "Special Model Exam", subShort: "Special Model" }
+  };
+  return map[termKey] || map["2026_QUARTERLY"];
+}
+
+function onSchoolReviewPrevPubInput(fieldKey, val) {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const rec = getSchoolMidTermRecord(uNo, _activeMidTermTermKey, _activeResultAnalysisStd);
+  rec[fieldKey] = String(val || "").trim();
+  saveExamResultAnalysisStore();
+  const previewBox = document.getElementById("raReviewReportSheetPreviewBox");
+  if (previewBox) {
+    const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey, _activeResultAnalysisStd);
+    previewBox.innerHTML = (calc.std === "12")
+      ? build12thReviewReportExactHtml(calc, false)
+      : build10thReviewReportExactHtml(calc, false);
+  }
+}
+
+function build10thReviewReportExactHtml(calc, forPrint) {
+  const s = calc.sch || {};
+  const rec = calc.rec || {};
+  const sub = calc.subStats || {};
+  const lbl = getExamReviewReportMetaLabels(_activeMidTermTermKey, false);
+  const blockStr = s.block ? (String(s.block).toLowerCase().includes("block") ? s.block : `${s.block} Block`) : "Sivagangai District";
+  const passPctDisp = calc.appeared && calc.appeared.t > 0 ? `${Math.round(calc.passPctNum)}%` : "0%";
+  const p25 = rec.prevPub25_26 !== undefined && rec.prevPub25_26 !== "" ? rec.prevPub25_26 : "100%";
+  const p24 = rec.prevPub24_25 !== undefined && rec.prevPub24_25 !== "" ? rec.prevPub24_25 : "100%";
+  const p23 = rec.prevPub23_24 !== undefined && rec.prevPub23_24 !== "" ? rec.prevPub23_24 : "100%";
+  const avg100Disp = calc.appeared && calc.appeared.t > 0 ? Math.round(calc.schoolAvgMark100) : 0;
+
+  const numFont = "font-family:'Segoe UI',Arial,sans-serif; font-weight:900; letter-spacing:0px;";
+  const bdr = "border:1.5px solid #334155; text-align:center; vertical-align:middle;";
+
+  const fiveSubjects = [
+    { key: "TAMIL",   label: "TAMIL" },
+    { key: "ENGLISH", label: "ENGLISH" },
+    { key: "MATHS",   label: "MATHS" },
+    { key: "SCIENCE", label: "SCIENCE" },
+    { key: "SOCIAL",  label: "SOCIAL SCIENCE" }
+  ];
+
+  const singleSubRowsHtml = fiveSubjects.map(item => {
+    const st = sub[item.key] || {};
+    const val = st.singleSubFailed > 0 ? st.singleSubFailed : "";
+    return `
+      <tr style="height:40px; background:#e2efda;">
+        <td style="border:1.5px solid #ffffff; padding:6px 10px; text-align:left; font-weight:900; font-size:0.94rem; color:#000000;">${item.label}</td>
+        <td style="border:1.5px solid #ffffff; padding:6px 8px; text-align:center; ${numFont} font-size:1.28rem; color:#000000;">${val}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const rightSubRowsHtml = fiveSubjects.map((item, idx) => {
+    const st = sub[item.key] || {};
+    const rowBg = (idx % 2 === 0) ? "#b4c6e7" : "#d9e1f2";
+    const failVal = st.failed > 0 ? st.failed : "";
+    const r35_45Val = st.r35_45 > 0 ? st.r35_45 : "";
+    const centVal = st.centum > 0 ? st.centum : "";
+    const avgVal = st.appeared > 0 ? Math.round(st.avgMark) : "";
+    const maxVal = st.appeared > 0 ? st.highestMark : "";
+    return `
+      <tr style="height:40px; background:${rowBg};">
+        <td style="border:1.5px solid #ffffff; background:#4472c4; color:#ffffff; padding:6px 10px; text-align:left; font-weight:900; font-size:0.92rem;">${item.label}</td>
+        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-size:1.38rem; color:#dc2626; text-shadow:0 1px 0 #ffffff;">${failVal}</td>
+        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-style:italic; font-size:1.30rem; color:#0f172a;">${r35_45Val}</td>
+        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-size:1.25rem; color:#000000;">${centVal}</td>
+        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-size:1.28rem; color:#000000;">${avgVal}</td>
+        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-size:1.28rem; color:#000000;">${maxVal}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <div class="ra-report-sheet" style="background:#ffffff; color:#000000; padding:${forPrint ? '8px 14px' : '16px 20px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:12px;'}; font-family:'Segoe UI',Arial,sans-serif;">
+      <!-- Top Title Banner & Unique No -->
+      <div style="position:relative; text-align:center; margin-bottom:10px;">
+        <div style="position:absolute; right:8px; top:2px; ${numFont} font-size:1.15rem; color:#000000;">${escapeHtmlAttr(s.uNo || "")}</div>
+        <div style="font-size:1.72rem; font-weight:900; color:#0b2e6b; letter-spacing:0.3px; line-height:1.18;">${escapeHtmlAttr(lbl.bannerEn)}</div>
+        <div style="font-size:1.38rem; font-weight:900; color:#1b5e20; letter-spacing:0.3px; margin-top:2px;">RESULT ANALYSIS REPORT -- ${escapeHtmlAttr(blockStr)}</div>
+      </div>
+
+      <!-- Table 1: School Name, Pass %, Previous Public Exam Result, First Mark & Average Mark -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:14px; table-layout:fixed;">
+        <colgroup>
+          <col style="width:28%;">
+          <col style="width:11%;">
+          <col style="width:11%;">
+          <col style="width:11%;">
+          <col style="width:11%;">
+          <col style="width:13%;">
+          <col style="width:15%;">
+        </colgroup>
+        <tr>
+          <td style="${bdr} padding:6px 8px; font-weight:900; font-size:1.05rem; background:#ffffff;">Name of the School</td>
+          <td colspan="4" style="${bdr} padding:6px 8px; font-weight:900; font-size:1.12rem; background:#d9e1f2;">Pass %</td>
+          <td colspan="2" style="${bdr} padding:6px 8px; font-weight:800; font-size:1.05rem; background:#ffffff;">${escapeHtmlAttr(lbl.colShort)}</td>
+        </tr>
+        <tr>
+          <td rowspan="2" style="${bdr} padding:10px 10px; background:#fce4d6; font-weight:900; font-size:1.12rem; color:#000000; line-height:1.35;">
+            <div>${escapeHtmlAttr(s.nameEn || "")}</div>
+            ${s.nameTa ? `<div style="font-size:0.86rem; color:#1e293b; margin-top:4px; font-weight:700;">${escapeHtmlAttr(s.nameTa)}</div>` : ""}
+          </td>
+          <td rowspan="2" style="${bdr} padding:6px 4px; font-weight:900; font-size:0.96rem; background:#ffffff; line-height:1.25;">${escapeHtmlAttr(lbl.subShort)}</td>
+          <td colspan="3" style="${bdr} padding:5px 6px; font-weight:900; font-size:0.96rem; background:#ffffcc;">Previous Public Exam Result</td>
+          <td rowspan="2" style="${bdr} padding:6px 6px; font-weight:900; font-size:1.00rem; line-height:1.25;">School<br>First Mark</td>
+          <td rowspan="2" style="${bdr} padding:6px 6px; font-weight:900; font-size:1.00rem; line-height:1.25;">School Average<br>Mark</td>
+        </tr>
+        <tr>
+          <td style="${bdr} padding:4px; ${numFont} font-size:0.90rem;">2025-26</td>
+          <td style="${bdr} padding:4px; ${numFont} font-size:0.90rem;">2024-25</td>
+          <td style="${bdr} padding:4px; ${numFont} font-size:0.90rem;">2023-24</td>
+        </tr>
+        <tr style="height:46px;">
+          <td style="${bdr} background:#fce4d6; border-top:none;"></td>
+          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.42rem; color:#0000ff;">${passPctDisp}</td>
+          <td style="${bdr} ${numFont} font-size:1.30rem; color:#7030a0;">${escapeHtmlAttr(p25)}</td>
+          <td style="${bdr} ${numFont} font-size:1.30rem; color:#c00000;">${escapeHtmlAttr(p24)}</td>
+          <td style="${bdr} ${numFont} font-size:1.30rem; color:#000000;">${escapeHtmlAttr(p23)}</td>
+          <td style="${bdr} ${numFont} font-size:1.42rem; color:#000000;">${calc.schoolFirstMark || 0}</td>
+          <td style="${bdr} ${numFont} font-size:1.42rem; color:#000000;">
+            <span style="background:#ffff00; padding:2px 10px; border-radius:2px;">${avg100Disp}</span>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Table 2: Attendance, Appeared, Passed, Failed & Mark Range -->
+      <table style="width:94%; margin:0 auto 14px auto; border-collapse:collapse; table-layout:fixed;">
+        <colgroup>
+          <col style="width:9.5%;">
+          <col style="width:6.5%;">
+          <col style="width:7.5%;">
+          <col style="width:8.5%;">
+          <col style="width:8.5%;">
+          <col style="width:8.0%;">
+          <col style="width:8.0%;">
+          <col style="width:14.5%;">
+          <col style="width:14.5%;">
+          <col style="width:14.5%;">
+        </colgroup>
+        <tr>
+          <td rowspan="2" style="${bdr} padding:6px 4px; font-weight:900; font-size:0.90rem; line-height:1.2;">No.of<br>Students</td>
+          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:800; font-size:0.82rem; line-height:1.2;">Long<br>Absent</td>
+          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:800; font-size:1.00rem; color:#ff0000;">Absent</td>
+          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:800; font-size:0.80rem; line-height:1.18;">Home<br>Based<br>Students</td>
+          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:900; font-size:0.88rem;">Appeared</td>
+          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:900; font-size:0.88rem;">Passed</td>
+          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:900; font-size:0.88rem;">Failed</td>
+          <td colspan="3" style="${bdr} padding:4px 6px; font-weight:900; font-size:0.88rem;">MARK RANGE</td>
+        </tr>
+        <tr style="background:#fce4d6;">
+          <td style="${bdr} padding:4px 4px; font-weight:900; font-size:0.84rem; line-height:1.18;">
+            Below <span style="font-size:1.12rem;">60%</span><br>
+            <span style="color:#c00000; font-size:0.76rem;">( &lt; 300 Marks )</span>
+          </td>
+          <td style="${bdr} padding:4px 4px; font-weight:900; font-size:0.84rem; line-height:1.18;">
+            <span style="font-size:1.05rem;">60% to 80%</span><br>
+            <span style="color:#c00000; font-size:0.76rem;">( 301- 400 Marks )</span>
+          </td>
+          <td style="${bdr} padding:4px 4px; font-weight:900; font-size:0.84rem; line-height:1.18;">
+            Above <span style="font-size:1.05rem;">80%</span><br>
+            <span style="color:#c00000; font-size:0.76rem;">( 401-500 Marks )</span>
+          </td>
+        </tr>
+        <tr style="height:46px;">
+          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.emis.t}</td>
+          <td style="${bdr} ${numFont} font-size:1.30rem;">${calc.la.t > 0 ? calc.la.t : ""}</td>
+          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.35rem; color:#ff0000;">${calc.ab.t > 0 ? calc.ab.t : ""}</td>
+          <td style="${bdr} ${numFont} font-size:1.30rem;">${calc.hb && calc.hb.t > 0 ? calc.hb.t : ""}</td>
+          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.appeared.t}</td>
+          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.passed.t}</td>
+          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.55rem; color:#ff0000;">${calc.failed.t}</td>
+          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.totalMarkRanges.below60}</td>
+          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.totalMarkRanges.r60_80}</td>
+          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.totalMarkRanges.above80}</td>
+        </tr>
+      </table>
+
+      <!-- Bottom Section: 3 Side-by-Side Tables -->
+      <div style="display:flex; align-items:stretch; justify-content:space-between; gap:12px;">
+        <!-- Left Table: No.of Subjects Failed -->
+        <table style="width:22%; border-collapse:collapse; table-layout:fixed;">
+          <colgroup>
+            <col style="width:65%;">
+            <col style="width:35%;">
+          </colgroup>
+          <tr style="background:#e2efda; height:44px;">
+            <td style="${bdr} padding:4px 6px; font-weight:800; font-size:0.86rem; line-height:1.2;">No.of Subjects<br>Failed</td>
+            <td style="${bdr} padding:4px 4px; font-weight:800; font-size:0.80rem; line-height:1.2;">No. of<br>Students</td>
+          </tr>
+          <tr style="height:40px;">
+            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.96rem;">Single Subject</td>
+            <td style="${bdr} ${numFont} font-size:1.55rem; color:#ff0000;">${calc.failedSubCounts.s1 > 0 ? calc.failedSubCounts.s1 : ""}</td>
+          </tr>
+          <tr style="height:40px;">
+            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.94rem;">Two Subjects</td>
+            <td style="${bdr} ${numFont} font-size:1.28rem;">${calc.failedSubCounts.s2 > 0 ? calc.failedSubCounts.s2 : ""}</td>
+          </tr>
+          <tr style="height:40px;">
+            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.94rem;">Three Subjects</td>
+            <td style="${bdr} ${numFont} font-size:1.28rem;">${calc.failedSubCounts.s3 > 0 ? calc.failedSubCounts.s3 : ""}</td>
+          </tr>
+          <tr style="height:40px;">
+            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.94rem;">Four Subjects</td>
+            <td style="${bdr} ${numFont} font-size:1.28rem;">${calc.failedSubCounts.s4 > 0 ? calc.failedSubCounts.s4 : ""}</td>
+          </tr>
+          <tr style="height:40px;">
+            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.94rem;">ALL Subjects</td>
+            <td style="${bdr} ${numFont} font-size:1.28rem;">${calc.failedSubCounts.s5 > 0 ? calc.failedSubCounts.s5 : ""}</td>
+          </tr>
+        </table>
+
+        <!-- Middle Table: Single Subject Failed Breakdown -->
+        <table style="width:22%; border-collapse:collapse; table-layout:fixed; border:1.5px solid #70ad47;">
+          <colgroup>
+            <col style="width:65%;">
+            <col style="width:35%;">
+          </colgroup>
+          <tr style="background:#70ad47; color:#ffffff; height:44px;">
+            <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; font-weight:900; font-size:0.88rem; line-height:1.2;">Single Subject<br>Failed</td>
+            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:900; font-size:0.80rem; line-height:1.2;">No. of<br>Students</td>
+          </tr>
+          ${singleSubRowsHtml}
+        </table>
+
+        <!-- Right Table: 5 Subjects Detailed Performance -->
+        <table style="width:53%; border-collapse:collapse; table-layout:fixed; border:1.5px solid #4472c4;">
+          <colgroup>
+            <col style="width:24%;">
+            <col style="width:15%;">
+            <col style="width:15%;">
+            <col style="width:14%;">
+            <col style="width:16%;">
+            <col style="width:16%;">
+          </colgroup>
+          <tr style="background:#4472c4; color:#ffffff; height:44px;">
+            <td style="border:1.5px solid #ffffff; padding:4px 8px; text-align:center; font-weight:900; font-size:0.98rem;">SUBJECT</td>
+            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem; line-height:1.18;">No. of<br>Fail</td>
+            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem; line-height:1.18;">35-45<br>Marks</td>
+            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem;">Centum</td>
+            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem; line-height:1.18;">Average<br>Mark</td>
+            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem; line-height:1.18;">Highest<br>Mark</td>
+          </tr>
+          ${rightSubRowsHtml}
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function build12thReviewReportExactHtml(calc, forPrint) {
+  const s = calc.sch || {};
+  const rec = calc.rec || {};
+  const sub = calc.subStats || {};
+  const lbl = getExamReviewReportMetaLabels(_activeMidTermTermKey, true);
+  const blockStr = s.block ? (String(s.block).toLowerCase().includes("block") ? s.block : `${s.block} Block`) : "Sivagangai District";
+  const passPctDisp = calc.appeared && calc.appeared.t > 0 ? `${Math.round(calc.passPctNum)}%` : "0%";
+  const p25 = rec.prevPub25_26 !== undefined && rec.prevPub25_26 !== "" ? rec.prevPub25_26 : "90%";
+  const p24 = rec.prevPub24_25 !== undefined && rec.prevPub24_25 !== "" ? rec.prevPub24_25 : "92%";
+  const p23 = rec.prevPub23_24 !== undefined && rec.prevPub23_24 !== "" ? rec.prevPub23_24 : "91%";
+  const avg100Disp = calc.appeared && calc.appeared.t > 0 ? Math.round(calc.schoolAvgMark100) : 0;
+
+  const numFont = "font-family:'Segoe UI',Arial,sans-serif; font-weight:900; letter-spacing:0px;";
+  const bdr = "border:1.2px solid #334155; text-align:center; vertical-align:middle;";
+
+  const left10Subjects = [
+    { key: "LANG", label: "Language" },
+    { key: "ENG",  label: "English" },
+    { key: "MAT",  label: "Maths" },
+    { key: "PHY",  label: "Physics" },
+    { key: "CHE",  label: "Chemistry" },
+    { key: "BIO",  label: "Biology" },
+    { key: "BOT",  label: "Botany" },
+    { key: "ZOO",  label: "Zoology" },
+    { key: "CS",   label: "Com.Sci" },
+    { key: "CA",   label: "Com.App" }
+  ];
+
+  const right11Subjects = [
+    { key: "HIS",  label: "History" },
+    { key: "ECO",  label: "Economics" },
+    { key: "COM",  label: "Commerce" },
+    { key: "ACC",  label: "Accountancy" },
+    { key: "AT",   label: "Advance Tamil" },
+    { key: "ES",   label: "Emp.Skill" },
+    { key: "AGRI", label: "Agri" },
+    { key: "BM",   label: "Bus. Maths" },
+    { key: "BME",  label: "B.M.E" },
+    { key: "OTH1", label: "Others-1" },
+    { key: "OTH2", label: "Others-2" }
+  ];
+
+  const render12SubTableRows = (subList, tintColor) => {
+    return subList.map((item, idx) => {
+      const st = sub[item.key] || {};
+      const hasStu = st.appeared > 0 || st.stuCount > 0;
+      const stuCnt = hasStu ? (st.appeared || st.stuCount) : "";
+      const failVal = (hasStu && st.failed > 0) ? st.failed : "";
+      const s1Val = (hasStu && st.singleSubFailed > 0) ? st.singleSubFailed : "";
+      const r35_60Val = (hasStu && st.r35_60 > 0) ? st.r35_60 : "";
+      const avgVal = (hasStu && st.appeared > 0) ? Math.round(st.avgMark) : "";
+      const firstVal = (hasStu && st.appeared > 0) ? st.highestMark : "";
+      const centVal = (hasStu && st.centum > 0) ? st.centum : "";
+      const cellBg = (idx % 2 === 1) ? tintColor : "#ffffff";
+
+      return `
+        <tr style="height:26px;">
+          <td style="border:none; padding:2px 6px; text-align:right; font-weight:900; font-style:italic; font-size:0.84rem; color:#000000; background:#ffffff;">${item.label}</td>
+          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.98rem; color:#000000;">${stuCnt}</td>
+          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.98rem; color:#ff0000;">${failVal}</td>
+          <td style="border:1px solid #cbd5e1; background:${s1Val !== '' ? '#ffff00' : cellBg}; ${numFont} font-size:0.98rem; color:#0052cc;">${s1Val}</td>
+          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.96rem; color:#15803d;">${r35_60Val}</td>
+          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.96rem; color:#c000c0;">${avgVal}</td>
+          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.98rem; color:#1d4ed8;">${firstVal}</td>
+          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.96rem; color:#0284c7;">${centVal}</td>
+        </tr>
+      `;
+    }).join("");
+  };
+
+  return `
+    <div class="ra-report-sheet" style="background:#ffffff; color:#000000; padding:${forPrint ? '6px 12px' : '14px 18px'}; border:${forPrint ? 'none' : '2px solid #4c1d95; border-radius:12px;'}; font-family:'Segoe UI',Arial,sans-serif;">
+      <!-- Top Title Banner & Unique No -->
+      <div style="position:relative; text-align:center; margin-bottom:8px;">
+        <div style="position:absolute; right:8px; top:2px; ${numFont} font-size:1.05rem; color:#000000;">${escapeHtmlAttr(s.uNo || "")}</div>
+        <div style="font-size:1.56rem; font-weight:900; color:#d97706; text-shadow:1px 1px 0 #78350f; letter-spacing:0.3px; line-height:1.15;">${escapeHtmlAttr(lbl.bannerEn)}</div>
+        <div style="font-size:1.30rem; font-weight:900; color:#c2410c; text-shadow:1px 1px 0 #431407; letter-spacing:0.4px; margin-top:2px;">RESULT ANALYSIS REPORT - ${escapeHtmlAttr(blockStr)}</div>
+      </div>
+
+      <!-- Table 1: School Name, Pass Percentage, Previous Public Exam Result, Stream First Marks & Average Mark -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
+        <colgroup>
+          <col style="width:27%;">
+          <col style="width:13%;">
+          <col style="width:11%;">
+          <col style="width:11%;">
+          <col style="width:11%;">
+          <col style="width:9.5%;">
+          <col style="width:9.5%;">
+          <col style="width:8%;">
+        </colgroup>
+        <tr>
+          <td style="${bdr} padding:4px 6px; font-weight:900; font-size:0.90rem;">Name of the School</td>
+          <td colspan="4" style="${bdr} padding:4px 6px; font-weight:900; font-size:0.96rem;">Pass Percentage</td>
+          <td colspan="3" style="${bdr} padding:4px 6px; font-weight:800; font-size:0.92rem; background:#ffffcc;">${escapeHtmlAttr(lbl.colShort)}</td>
+        </tr>
+        <tr>
+          <td rowspan="3" style="${bdr} padding:8px 8px; font-weight:900; font-size:0.96rem; line-height:1.3;">
+            <div>${escapeHtmlAttr(s.nameEn || "")}</div>
+            ${s.nameTa ? `<div style="font-size:0.78rem; color:#334155; margin-top:3px; font-weight:700;">${escapeHtmlAttr(s.nameTa)}</div>` : ""}
+          </td>
+          <td rowspan="2" style="${bdr} padding:4px; font-weight:800; font-size:0.88rem;">${escapeHtmlAttr(lbl.colShort)}</td>
+          <td colspan="3" style="${bdr} padding:4px; font-weight:900; font-size:0.84rem; background:#ffffcc;">Previous Public Exam Result</td>
+          <td colspan="2" style="${bdr} padding:4px; font-weight:900; font-size:0.86rem;">School First Mark</td>
+          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:0.82rem; line-height:1.15;">School<br>Average<br>Mark</td>
+        </tr>
+        <tr>
+          <td style="${bdr} padding:3px; ${numFont} font-size:0.78rem;">2025-26</td>
+          <td style="${bdr} padding:3px; ${numFont} font-size:0.78rem;">2024-25</td>
+          <td style="${bdr} padding:3px; ${numFont} font-size:0.78rem;">2023-24</td>
+          <td style="${bdr} padding:3px; font-weight:900; font-size:0.76rem; line-height:1.15;">Science<br>Stream</td>
+          <td style="${bdr} padding:3px; font-weight:900; font-size:0.76rem; line-height:1.15; background:#00ffff;">Arts<br>Stream</td>
+        </tr>
+        <tr style="height:36px;">
+          <td style="${bdr} ${numFont} font-size:1.26rem; color:#000000;">${passPctDisp}</td>
+          <td style="${bdr} ${numFont} font-size:1.08rem; color:#0052cc;">${escapeHtmlAttr(p25)}</td>
+          <td style="${bdr} ${numFont} font-size:1.08rem; color:#ff00ff;">${escapeHtmlAttr(p24)}</td>
+          <td style="${bdr} ${numFont} font-size:1.08rem; color:#cc0099;">${escapeHtmlAttr(p23)}</td>
+          <td style="${bdr} ${numFont} font-size:1.22rem; color:#1d4ed8;">${calc.firstMarkScience > 0 ? calc.firstMarkScience : ""}</td>
+          <td style="${bdr} ${numFont} font-size:1.22rem; color:#1d4ed8;">${calc.firstMarkArts > 0 ? calc.firstMarkArts : ""}</td>
+          <td style="${bdr} ${numFont} font-size:1.22rem; color:#000000;">
+            <span style="background:#ffff00; padding:2px 8px;">${avg100Disp}</span>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Table 2: Attendance, Appear, Pass, Fail & Mark Range -->
+      <table style="width:90%; margin:0 auto 10px auto; border-collapse:collapse; table-layout:fixed;">
+        <colgroup>
+          <col style="width:10%;">
+          <col style="width:7%;">
+          <col style="width:7.5%;">
+          <col style="width:9.5%;">
+          <col style="width:8.5%;">
+          <col style="width:7.5%;">
+          <col style="width:16.5%;">
+          <col style="width:16.5%;">
+          <col style="width:17%;">
+        </colgroup>
+        <tr>
+          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:0.84rem; line-height:1.15;">No.of<br>Students</td>
+          <td rowspan="2" style="${bdr} padding:4px; font-weight:800; font-size:0.78rem; line-height:1.15;">Long<br>Absent</td>
+          <td rowspan="2" style="${bdr} padding:4px; font-weight:800; font-size:0.86rem; color:#ff0000;">Absent</td>
+          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:1.00rem;">Appear</td>
+          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:1.00rem;">Pass</td>
+          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:1.00rem;">Fail</td>
+          <td colspan="3" style="${bdr} padding:3px; font-weight:900; font-size:1.02rem;">MARK RANGE</td>
+        </tr>
+        <tr style="background:#fce4d6;">
+          <td style="${bdr} padding:3px; font-weight:900; font-size:0.80rem; line-height:1.15;">
+            Below 60%<br><span style="color:#c00000; font-size:0.70rem;">( &lt;= 360 Marks )</span>
+          </td>
+          <td style="${bdr} padding:3px; font-weight:900; font-size:0.80rem; line-height:1.15;">
+            60% to 80%<br><span style="color:#c00000; font-size:0.70rem;">( 361- 480 Marks )</span>
+          </td>
+          <td style="${bdr} padding:3px; font-weight:900; font-size:0.80rem; line-height:1.15;">
+            Above 80%<br><span style="color:#c00000; font-size:0.70rem;">( 481-600 Marks )</span>
+          </td>
+        </tr>
+        <tr style="height:34px;">
+          <td style="${bdr} ${numFont} font-size:1.22rem;">${calc.emis.t}</td>
+          <td style="${bdr} ${numFont} font-size:1.14rem;">${calc.la.t > 0 ? calc.la.t : ""}</td>
+          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.18rem; color:#ff0000;">${calc.ab.t > 0 ? calc.ab.t : ""}</td>
+          <td style="${bdr} ${numFont} font-size:1.22rem;">${calc.appeared.t}</td>
+          <td style="${bdr} ${numFont} font-size:1.22rem;">${calc.passed.t}</td>
+          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.26rem; color:#000000;">${calc.failed.t}</td>
+          <td style="${bdr} ${numFont} font-size:1.20rem;">${calc.totalMarkRanges.below60}</td>
+          <td style="${bdr} ${numFont} font-size:1.20rem;">${calc.totalMarkRanges.r60_80}</td>
+          <td style="${bdr} ${numFont} font-size:1.20rem;">${calc.totalMarkRanges.above80}</td>
+        </tr>
+      </table>
+
+      <!-- Bottom Section: Left Failed Subjects Box + Center 10 Subjects + Right 11 Subjects -->
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+        <!-- Left Table: No.of Subjects Failed -->
+        <table style="width:13%; border-collapse:collapse; table-layout:fixed;">
+          <colgroup>
+            <col style="width:62%;">
+            <col style="width:38%;">
+          </colgroup>
+          <tr style="background:#b4c6e7; height:38px;">
+            <td style="${bdr} padding:3px; font-weight:800; font-size:0.74rem; line-height:1.15;">No.of<br>Subjects<br>Failed</td>
+            <td style="${bdr} padding:3px; font-weight:800; font-size:0.72rem; line-height:1.15;">No.of<br>Students</td>
+          </tr>
+          <tr style="height:36px;">
+            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">Single</span><br>Subject</td>
+            <td style="${bdr} ${numFont} font-size:1.36rem; color:#ff0000;">${calc.failedSubCounts.s1 > 0 ? calc.failedSubCounts.s1 : ""}</td>
+          </tr>
+          <tr style="height:36px;">
+            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">2</span><br>Subjects</td>
+            <td style="${bdr} ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s2 > 0 ? calc.failedSubCounts.s2 : ""}</td>
+          </tr>
+          <tr style="height:36px;">
+            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">3</span><br>Subjects</td>
+            <td style="${bdr} ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s3 > 0 ? calc.failedSubCounts.s3 : ""}</td>
+          </tr>
+          <tr style="height:36px;">
+            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">4</span><br>Subjects</td>
+            <td style="${bdr} ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s4 > 0 ? calc.failedSubCounts.s4 : ""}</td>
+          </tr>
+          <tr style="height:36px;">
+            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">5</span><br>Subjects</td>
+            <td style="${bdr} ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s5 > 0 ? calc.failedSubCounts.s5 : ""}</td>
+          </tr>
+          <tr style="height:36px;">
+            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">ALL</span><br>Subjects</td>
+            <td style="${bdr} ${numFont} font-size:1.26rem; color:#ff0000;">${calc.failedSubCounts.s6 > 0 ? calc.failedSubCounts.s6 : ""}</td>
+          </tr>
+        </table>
+
+        <!-- Center Table: First 10 Subjects (Language, English, Science/Maths/CS/CA) -->
+        <table style="width:43%; border-collapse:collapse; table-layout:fixed;">
+          <colgroup>
+            <col style="width:20%;">
+            <col style="width:12%;">
+            <col style="width:11%;">
+            <col style="width:12%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:12%;">
+          </colgroup>
+          <tr style="height:36px;">
+            <td style="padding:2px 6px; text-align:right; font-weight:900; font-style:italic; font-size:0.84rem; color:#1d4ed8;">SUBJECT</td>
+            <td style="padding:2px; text-align:center; font-weight:700; font-size:0.72rem; line-height:1.15;">No.of<br>Students</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#ff0000; line-height:1.15;">No.of<br>Fail</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0052cc; line-height:1.15;">Single<br>Sub.Fail</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#334155; line-height:1.15;">35-60<br>Marks</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#15803d; line-height:1.15;">Ave.<br>Mark</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0f172a; line-height:1.15;">First<br>Mark</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0f172a; line-height:1.15;">No.of<br>Centum</td>
+          </tr>
+          ${render12SubTableRows(left10Subjects, "#e2e8f0")}
+        </table>
+
+        <!-- Right Table: Remaining 11 Subjects (Arts / Vocational / Others) -->
+        <table style="width:43%; border-collapse:collapse; table-layout:fixed;">
+          <colgroup>
+            <col style="width:22%;">
+            <col style="width:11.5%;">
+            <col style="width:11%;">
+            <col style="width:11.5%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+          </colgroup>
+          <tr style="height:36px;">
+            <td style="padding:2px 6px; text-align:right; font-weight:900; font-style:italic; font-size:0.84rem; color:#1d4ed8;">SUBJECT</td>
+            <td style="padding:2px; text-align:center; font-weight:700; font-size:0.72rem; line-height:1.15;">No.of<br>Students</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#ff0000; line-height:1.15;">No.of<br>Fail</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0052cc; line-height:1.15;">Single<br>Sub.Fail</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#334155; line-height:1.15;">35-60<br>Marks</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#15803d; line-height:1.15;">Ave.<br>Mark</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0f172a; line-height:1.15;">First<br>Mark</td>
+            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0f172a; line-height:1.15;">No.of<br>Centum</td>
+          </tr>
+          ${render12SubTableRows(right11Subjects, "#d9ead3")}
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderSchoolReviewReportPane(calc) {
+  const pane = document.getElementById("mtSubPaneReview");
+  if (!pane) return;
+  const rec = calc.rec || {};
+  const is12 = (calc.std === "12");
+  const p25 = rec.prevPub25_26 !== undefined && rec.prevPub25_26 !== "" ? rec.prevPub25_26 : (is12 ? "90%" : "100%");
+  const p24 = rec.prevPub24_25 !== undefined && rec.prevPub24_25 !== "" ? rec.prevPub24_25 : (is12 ? "92%" : "100%");
+  const p23 = rec.prevPub23_24 !== undefined && rec.prevPub23_24 !== "" ? rec.prevPub23_24 : (is12 ? "91%" : "100%");
+
+  pane.innerHTML = `
+    <div style="background:#fffbeb; border:1.5px solid #fcd34d; border-radius:10px; padding:10px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <span style="font-size:0.84rem; font-weight:900; color:#92400e;">🏆 முந்தைய 3 ஆண்டுப் பொதுத்தேர்வு தேர்ச்சி % (Previous Public Exam Result):</span>
+        <label style="display:inline-flex; align-items:center; gap:4px; font-size:0.78rem; font-weight:900; color:#1e3a8a;">
+          2025-26:
+          <input type="text" class="form-control" style="width:72px; height:28px; padding:2px 6px; font-weight:900; text-align:center;" value="${escapeHtmlAttr(p25)}" oninput="onSchoolReviewPrevPubInput('prevPub25_26', this.value)">
+        </label>
+        <label style="display:inline-flex; align-items:center; gap:4px; font-size:0.78rem; font-weight:900; color:#9d174d;">
+          2024-25:
+          <input type="text" class="form-control" style="width:72px; height:28px; padding:2px 6px; font-weight:900; text-align:center;" value="${escapeHtmlAttr(p24)}" oninput="onSchoolReviewPrevPubInput('prevPub24_25', this.value)">
+        </label>
+        <label style="display:inline-flex; align-items:center; gap:4px; font-size:0.78rem; font-weight:900; color:#0f766e;">
+          2023-24:
+          <input type="text" class="form-control" style="width:72px; height:28px; padding:2px 6px; font-weight:900; text-align:center;" value="${escapeHtmlAttr(p23)}" oninput="onSchoolReviewPrevPubInput('prevPub23_24', this.value)">
+        </label>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#ffffff; font-weight:900; padding:6px 14px;">
+          📥 ${is12 ? "12th" : "10th"} Review Report PDF (Landscape) பதிவிறக்கு
+        </button>
+      </div>
+    </div>
+    <div id="raReviewReportSheetPreviewBox">
+      ${is12 ? build12thReviewReportExactHtml(calc, false) : build10thReviewReportExactHtml(calc, false)}
+    </div>
+  `;
+}
+
 async function downloadSchoolMidTermFormsPdfLandscape(mode, explicitUNo, btnEl) {
   const uNo = String(explicitUNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
   if (!uNo) return;
@@ -39467,10 +40107,13 @@ async function downloadSchoolMidTermFormsPdfLandscape(mode, explicitUNo, btnEl) 
   const is12 = (calc.std === "12");
   const safeSchoolName = String(calc.sch.nameEn || ("School_" + uNo)).replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 32);
   const fPrefix = is12 ? "FORM_II" : "FORM_I";
-  const modeSuffix = mode === "F1_1" ? `${fPrefix}_1` : (mode === "F1_2" ? `${fPrefix}_2` : `${fPrefix}_1_and_2`);
+  const modeSuffix = mode === "REVIEW" ? "Review_Report" : (mode === "F1_1" ? `${fPrefix}_1` : (mode === "F1_2" ? `${fPrefix}_2` : `${fPrefix}_1_and_2`));
   const pdfFilename = `[${uNo}]_${safeSchoolName}_${is12 ? "12th" : "10th"}_${_activeMidTermTermKey}_${modeSuffix}_Landscape.pdf`;
 
   const pageHtmlBlocks = [];
+  if (mode === "REVIEW") {
+    pageHtmlBlocks.push(is12 ? build12thReviewReportExactHtml(calc, true) : build10thReviewReportExactHtml(calc, true));
+  }
   if (mode === "F1_1" || mode === "BOTH") {
     pageHtmlBlocks.push(buildMidTermForm1_1ExactHtml(calc, true));
   }
