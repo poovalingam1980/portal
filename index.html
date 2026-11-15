@@ -107,16 +107,12 @@
   font-kerning: normal !important;
 }
 .ra-report-sheet table {
-  width: 100% !important;
   border-collapse: collapse !important;
   table-layout: fixed !important;
-  background: #ffffff !important;
 }
 .ra-report-sheet tr,
 .ra-report-sheet thead,
 .ra-report-sheet tbody {
-  background: transparent !important;
-  background-color: transparent !important;
   page-break-inside: avoid !important;
   break-inside: avoid !important;
 }
@@ -36495,10 +36491,17 @@ function ensureUlagampatti206PreloadedInMidTermStore(store) {
       const secA = baseSecs[0] || { secId: "A", secName: "Section A", medium: "TM", teachers: {} };
       secA.secId = "A"; secA.secName = "Section A"; secA.medium = "TM";
       const secB = { secId: "B", secName: "Section B", medium: "TM", teachers: JSON.parse(JSON.stringify(secA.teachers || {})) };
-      const stu10 = JSON.parse(JSON.stringify(ULAGAMPATTI_206_PRELOADED_STUDENTS)).map(st => {
-        const totSci = Number(st.marks && st.marks.SCIENCE) || 65;
+      const stu10 = JSON.parse(JSON.stringify(ULAGAMPATTI_206_PRELOADED_STUDENTS)).map((st, idx) => {
+        const i = idx + 1;
+        const seed = (206 * 17 + i * 31) % 100;
+        const mT = Math.min(98, 52 + (seed % 45));
+        const mE = Math.min(96, 48 + ((seed * 3) % 47));
+        const mM = (i === 1) ? 100 : Math.min(99, 45 + ((seed * 7) % 52));
+        const mS = (i === 1) ? 100 : Math.min(99, 50 + ((seed * 5) % 48));
+        const mSS = Math.min(99, 54 + ((seed * 11) % 44));
+        st.marks = { TAMIL: String(mT), ENGLISH: String(mE), MATHS: String(mM), SCIENCE: String(mS), SOCIAL: String(mSS) };
         st.markParts = {
-          SCIENCE: { th: String(Math.max(0, totSci - 25)), pr: "25", in: "" }
+          SCIENCE: { th: String(Math.max(0, mS - 25)), pr: "25", in: "" }
         };
         return st;
       });
@@ -37323,7 +37326,7 @@ function getSchoolMidTermRecord(uNo, termKey, explicitStd) {
     });
   }
   if (uNo === "206" && !rec.marksResetByUser && Array.isArray(rec.students) && rec.students.length > 0) {
-    const anyMarked = rec.students.some(st => st.marks && Object.values(st.marks).some(v => String(v || "").trim() !== ""));
+    const anyMarked = rec.students.some(st => st.marks && String(st.marks.TAMIL || "").trim() !== "" && String(st.marks.ENGLISH || "").trim() !== "");
     if (!anyMarked) {
       const isSp = isSplitMarkExamTerm(termKey);
       rec.students.forEach((st, idx) => {
@@ -37357,7 +37360,7 @@ function computeSchoolExamResultAnalysis(uNo, termKey, explicitStd) {
   uNo = String(uNo || "").trim();
   termKey = termKey || _activeMidTermTermKey || "2026_MIDTERM_2";
   const sch = (masterSchools || []).find(s => String(s.uNo) === uNo) || { uNo, nameTa: "பள்ளி " + uNo, nameEn: "School " + uNo, block: "-", mgmt1: "1G", udiseNo: "-", hmName: "", hmTa: "", mobile: "" };
-  const rec = getSchoolMidTermRecord(uNo, termKey);
+  const rec = getSchoolMidTermRecord(uNo, termKey, stdToUse);
   const st10Emis = getSchoolTenStdEmisStrength(uNo);
   const students = Array.isArray(rec.students) ? rec.students : [];
   const hasStudentEntries = students.length > 0;
@@ -39568,8 +39571,8 @@ function build10thReviewReportExactHtml(calc, forPrint) {
   const p23 = rec.prevPub23_24 !== undefined && rec.prevPub23_24 !== "" ? rec.prevPub23_24 : "100%";
   const avg100Disp = calc.appeared && calc.appeared.t > 0 ? Math.round(calc.schoolAvgMark100) : 0;
 
-  const numFont = "font-family:'Segoe UI',Arial,sans-serif; font-weight:900; letter-spacing:0px;";
-  const bdr = "border:1.5px solid #334155; text-align:center; vertical-align:middle;";
+  const numFont = "font-family:'Segoe UI',Arial,sans-serif; font-weight:900; letter-spacing:0px; white-space:nowrap;";
+  const bdr = "border:1.5px solid #1e293b; text-align:center; vertical-align:middle;";
 
   const fiveSubjects = [
     { key: "TAMIL",   label: "TAMIL" },
@@ -39579,206 +39582,222 @@ function build10thReviewReportExactHtml(calc, forPrint) {
     { key: "SOCIAL",  label: "SOCIAL SCIENCE" }
   ];
 
-  const singleSubRowsHtml = fiveSubjects.map(item => {
+  const singleSubRowsHtml = fiveSubjects.map((item, idx) => {
     const st = sub[item.key] || {};
     const val = st.singleSubFailed > 0 ? st.singleSubFailed : "";
+    const rowBg = (idx % 2 === 0) ? "#f0fdf4" : "#dcfce7";
     return `
-      <tr style="height:40px; background:#e2efda;">
-        <td style="border:1.5px solid #ffffff; padding:6px 10px; text-align:left; font-weight:900; font-size:0.94rem; color:#000000;">${item.label}</td>
-        <td style="border:1.5px solid #ffffff; padding:6px 8px; text-align:center; ${numFont} font-size:1.28rem; color:#000000;">${val}</td>
+      <tr style="height:38px;">
+        <td style="${bdr} background:${rowBg} !important; padding:5px 10px; text-align:left; font-weight:900; font-size:0.90rem; color:#0f172a; white-space:nowrap;">${item.label}</td>
+        <td style="${bdr} background:${val !== '' ? '#fef08a' : rowBg} !important; padding:5px 8px; ${numFont} font-size:1.22rem; color:#dc2626;">${val}</td>
       </tr>
     `;
   }).join("");
 
   const rightSubRowsHtml = fiveSubjects.map((item, idx) => {
     const st = sub[item.key] || {};
-    const rowBg = (idx % 2 === 0) ? "#b4c6e7" : "#d9e1f2";
+    const rowBg = (idx % 2 === 0) ? "#eff6ff" : "#dbeafe";
+    const appVal = st.appeared > 0 ? st.appeared : "";
     const failVal = st.failed > 0 ? st.failed : "";
+    const passPctSub = st.appeared > 0 ? `${Math.round(((st.appeared - st.failed) / st.appeared) * 100)}%` : "";
     const r35_45Val = st.r35_45 > 0 ? st.r35_45 : "";
     const centVal = st.centum > 0 ? st.centum : "";
     const avgVal = st.appeared > 0 ? Math.round(st.avgMark) : "";
     const maxVal = st.appeared > 0 ? st.highestMark : "";
     return `
-      <tr style="height:40px; background:${rowBg};">
-        <td style="border:1.5px solid #ffffff; background:#4472c4; color:#ffffff; padding:6px 10px; text-align:left; font-weight:900; font-size:0.92rem;">${item.label}</td>
-        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-size:1.38rem; color:#dc2626; text-shadow:0 1px 0 #ffffff;">${failVal}</td>
-        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-style:italic; font-size:1.30rem; color:#0f172a;">${r35_45Val}</td>
-        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-size:1.25rem; color:#000000;">${centVal}</td>
-        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-size:1.28rem; color:#000000;">${avgVal}</td>
-        <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; ${numFont} font-size:1.28rem; color:#000000;">${maxVal}</td>
+      <tr style="height:38px;">
+        <td style="${bdr} background:#1e40af !important; color:#ffffff !important; padding:5px 10px; text-align:left; font-weight:900; font-size:0.88rem; white-space:nowrap;">${item.label}</td>
+        <td style="${bdr} background:${rowBg} !important; padding:4px 6px; ${numFont} font-size:1.14rem; color:#0f172a;">${appVal}</td>
+        <td style="${bdr} background:${failVal !== '' ? '#fef2f2' : rowBg} !important; padding:4px 6px; ${numFont} font-size:1.24rem; color:#dc2626;">${failVal}</td>
+        <td style="${bdr} background:${rowBg} !important; padding:4px 6px; ${numFont} font-size:1.06rem; color:#15803d;">${passPctSub}</td>
+        <td style="${bdr} background:${rowBg} !important; padding:4px 6px; ${numFont} font-size:1.16rem; color:#9a3412;">${r35_45Val}</td>
+        <td style="${bdr} background:${centVal !== '' ? '#fef08a' : rowBg} !important; padding:4px 6px; ${numFont} font-size:1.16rem; color:#0f766e;">${centVal}</td>
+        <td style="${bdr} background:${rowBg} !important; padding:4px 6px; ${numFont} font-size:1.18rem; color:#1e3a8a;">${avgVal}</td>
+        <td style="${bdr} background:${rowBg} !important; padding:4px 6px; ${numFont} font-size:1.18rem; color:#5b21b6;">${maxVal}</td>
       </tr>
     `;
   }).join("");
 
+  const totalCentums10 = fiveSubjects.reduce((acc, it) => acc + Number((sub[it.key] && sub[it.key].centum) || 0), 0);
+  const total35_45_10 = fiveSubjects.reduce((acc, it) => acc + Number((sub[it.key] && sub[it.key].r35_45) || 0), 0);
+
   return `
-    <div class="ra-report-sheet" style="background:#ffffff; color:#000000; padding:${forPrint ? '8px 14px' : '16px 20px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:12px;'}; font-family:'Segoe UI',Arial,sans-serif;">
+    <div class="ra-report-sheet" style="background:#ffffff !important; color:#000000 !important; padding:${forPrint ? '8px 12px' : '14px 18px'}; border:${forPrint ? '2px solid #0f294a' : '2px solid #0f294a'}; border-radius:${forPrint ? '4px' : '12px'}; font-family:'Segoe UI',Arial,sans-serif; box-sizing:border-box;">
       <!-- Top Title Banner & Unique No -->
-      <div style="position:relative; text-align:center; margin-bottom:10px;">
-        <div style="position:absolute; right:8px; top:2px; ${numFont} font-size:1.15rem; color:#000000;">${escapeHtmlAttr(s.uNo || "")}</div>
-        <div style="font-size:1.72rem; font-weight:900; color:#0b2e6b; letter-spacing:0.3px; line-height:1.18;">${escapeHtmlAttr(lbl.bannerEn)}</div>
-        <div style="font-size:1.38rem; font-weight:900; color:#1b5e20; letter-spacing:0.3px; margin-top:2px;">RESULT ANALYSIS REPORT -- ${escapeHtmlAttr(blockStr)}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2.5px solid #0f294a; padding-bottom:8px; margin-bottom:10px;">
+        <div style="background:#0f294a !important; color:#ffffff !important; padding:5px 12px; border-radius:6px; font-weight:900; font-size:0.84rem; letter-spacing:0.4px; white-space:nowrap;">
+          SIVAGANGAI DISTRICT • SSLC (10th)
+        </div>
+        <div style="text-align:center; flex:1; padding:0 10px;">
+          <div style="font-size:1.52rem; font-weight:900; color:#0b2e6b; line-height:1.15;">${escapeHtmlAttr(lbl.bannerEn)}</div>
+          <div style="font-size:1.16rem; font-weight:900; color:#15803d; margin-top:2px;">RESULT ANALYSIS REVIEW REPORT — ${escapeHtmlAttr(blockStr)}</div>
+        </div>
+        <div style="background:#fef3c7 !important; border:2px solid #d97706; color:#92400e !important; padding:4px 12px; border-radius:6px; ${numFont} font-size:1.05rem;">
+          U.NO : <span style="font-size:1.22rem; color:#000000;">${escapeHtmlAttr(s.uNo || "")}</span>
+        </div>
       </div>
 
       <!-- Table 1: School Name, Pass %, Previous Public Exam Result, First Mark & Average Mark -->
-      <table style="width:100%; border-collapse:collapse; margin-bottom:14px; table-layout:fixed;">
+      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
         <colgroup>
-          <col style="width:28%;">
+          <col style="width:30%;">
           <col style="width:11%;">
           <col style="width:11%;">
           <col style="width:11%;">
           <col style="width:11%;">
           <col style="width:13%;">
-          <col style="width:15%;">
+          <col style="width:13%;">
         </colgroup>
         <tr>
-          <td style="${bdr} padding:6px 8px; font-weight:900; font-size:1.05rem; background:#ffffff;">Name of the School</td>
-          <td colspan="4" style="${bdr} padding:6px 8px; font-weight:900; font-size:1.12rem; background:#d9e1f2;">Pass %</td>
-          <td colspan="2" style="${bdr} padding:6px 8px; font-weight:800; font-size:1.05rem; background:#ffffff;">${escapeHtmlAttr(lbl.colShort)}</td>
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:6px 8px; font-weight:900; font-size:0.96rem;">Name of the School</td>
+          <td colspan="4" style="${bdr} background:#1e3a8a !important; color:#ffffff !important; padding:6px 8px; font-weight:900; font-size:1.02rem;">Pass Percentage (தேர்ச்சி %)</td>
+          <td colspan="2" style="${bdr} background:#0f766e !important; color:#ffffff !important; padding:6px 8px; font-weight:900; font-size:0.96rem;">${escapeHtmlAttr(lbl.colShort)}</td>
         </tr>
         <tr>
-          <td rowspan="2" style="${bdr} padding:10px 10px; background:#fce4d6; font-weight:900; font-size:1.12rem; color:#000000; line-height:1.35;">
-            <div>${escapeHtmlAttr(s.nameEn || "")}</div>
-            ${s.nameTa ? `<div style="font-size:0.86rem; color:#1e293b; margin-top:4px; font-weight:700;">${escapeHtmlAttr(s.nameTa)}</div>` : ""}
+          <td rowspan="3" style="${bdr} background:#fff7ed !important; padding:10px 12px; font-weight:900; font-size:1.06rem; color:#0f172a; line-height:1.35;">
+            <div style="font-size:1.08rem; color:#0f294a; font-weight:900;">${escapeHtmlAttr(s.nameEn || "")}</div>
+            ${s.nameTa ? `<div class="ra-ta" style="font-size:0.88rem; color:#334155; margin-top:4px; font-weight:700;">${escapeHtmlAttr(s.nameTa)}</div>` : ""}
           </td>
-          <td rowspan="2" style="${bdr} padding:6px 4px; font-weight:900; font-size:0.96rem; background:#ffffff; line-height:1.25;">${escapeHtmlAttr(lbl.subShort)}</td>
-          <td colspan="3" style="${bdr} padding:5px 6px; font-weight:900; font-size:0.96rem; background:#ffffcc;">Previous Public Exam Result</td>
-          <td rowspan="2" style="${bdr} padding:6px 6px; font-weight:900; font-size:1.00rem; line-height:1.25;">School<br>First Mark</td>
-          <td rowspan="2" style="${bdr} padding:6px 6px; font-weight:900; font-size:1.00rem; line-height:1.25;">School Average<br>Mark</td>
+          <td rowspan="2" style="${bdr} background:#eff6ff !important; padding:5px 4px; font-weight:900; font-size:0.90rem; color:#1e3a8a; line-height:1.2;">${escapeHtmlAttr(lbl.subShort)}</td>
+          <td colspan="3" style="${bdr} background:#fef3c7 !important; padding:5px 6px; font-weight:900; font-size:0.90rem; color:#92400e;">Previous Public Exam Result</td>
+          <td rowspan="2" style="${bdr} background:#f0fdfa !important; padding:5px 6px; font-weight:900; font-size:0.90rem; color:#0f766e; line-height:1.2;">School<br>First Mark<br><span style="font-size:0.74rem; color:#475569;">(Out of 500)</span></td>
+          <td rowspan="2" style="${bdr} background:#f0fdfa !important; padding:5px 6px; font-weight:900; font-size:0.90rem; color:#0f766e; line-height:1.2;">School<br>Average Mark<br><span style="font-size:0.74rem; color:#475569;">(Out of 100)</span></td>
         </tr>
         <tr>
-          <td style="${bdr} padding:4px; ${numFont} font-size:0.90rem;">2025-26</td>
-          <td style="${bdr} padding:4px; ${numFont} font-size:0.90rem;">2024-25</td>
-          <td style="${bdr} padding:4px; ${numFont} font-size:0.90rem;">2023-24</td>
+          <td style="${bdr} background:#fffbeb !important; padding:4px; ${numFont} font-size:0.86rem; color:#0f172a;">2025-26</td>
+          <td style="${bdr} background:#fffbeb !important; padding:4px; ${numFont} font-size:0.86rem; color:#0f172a;">2024-25</td>
+          <td style="${bdr} background:#fffbeb !important; padding:4px; ${numFont} font-size:0.86rem; color:#0f172a;">2023-24</td>
         </tr>
-        <tr style="height:46px;">
-          <td style="${bdr} background:#fce4d6; border-top:none;"></td>
-          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.42rem; color:#0000ff;">${passPctDisp}</td>
-          <td style="${bdr} ${numFont} font-size:1.30rem; color:#7030a0;">${escapeHtmlAttr(p25)}</td>
-          <td style="${bdr} ${numFont} font-size:1.30rem; color:#c00000;">${escapeHtmlAttr(p24)}</td>
-          <td style="${bdr} ${numFont} font-size:1.30rem; color:#000000;">${escapeHtmlAttr(p23)}</td>
-          <td style="${bdr} ${numFont} font-size:1.42rem; color:#000000;">${calc.schoolFirstMark || 0}</td>
-          <td style="${bdr} ${numFont} font-size:1.42rem; color:#000000;">
-            <span style="background:#ffff00; padding:2px 10px; border-radius:2px;">${avg100Disp}</span>
-          </td>
+        <tr style="height:42px;">
+          <td style="${bdr} background:#fef08a !important; ${numFont} font-size:1.34rem; color:#1d4ed8;">${passPctDisp}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.20rem; color:#6d28d9;">${escapeHtmlAttr(p25)}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.20rem; color:#be123c;">${escapeHtmlAttr(p24)}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.20rem; color:#0f766e;">${escapeHtmlAttr(p23)}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.34rem; color:#0f172a;">${calc.schoolFirstMark || 0}</td>
+          <td style="${bdr} background:#fef08a !important; ${numFont} font-size:1.34rem; color:#000000;">${avg100Disp}</td>
         </tr>
       </table>
 
-      <!-- Table 2: Attendance, Appeared, Passed, Failed & Mark Range -->
-      <table style="width:94%; margin:0 auto 14px auto; border-collapse:collapse; table-layout:fixed;">
+      <!-- Table 2: Attendance, Appeared, Passed, Failed & Mark Range (100% Full Width) -->
+      <table style="width:100%; margin:0 auto 10px auto; border-collapse:collapse; table-layout:fixed;">
         <colgroup>
           <col style="width:9.5%;">
-          <col style="width:6.5%;">
+          <col style="width:7.0%;">
           <col style="width:7.5%;">
           <col style="width:8.5%;">
           <col style="width:8.5%;">
           <col style="width:8.0%;">
           <col style="width:8.0%;">
-          <col style="width:14.5%;">
-          <col style="width:14.5%;">
-          <col style="width:14.5%;">
+          <col style="width:14.3%;">
+          <col style="width:14.3%;">
+          <col style="width:14.4%;">
         </colgroup>
         <tr>
-          <td rowspan="2" style="${bdr} padding:6px 4px; font-weight:900; font-size:0.90rem; line-height:1.2;">No.of<br>Students</td>
-          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:800; font-size:0.82rem; line-height:1.2;">Long<br>Absent</td>
-          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:800; font-size:1.00rem; color:#ff0000;">Absent</td>
-          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:800; font-size:0.80rem; line-height:1.18;">Home<br>Based<br>Students</td>
-          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:900; font-size:0.88rem;">Appeared</td>
-          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:900; font-size:0.88rem;">Passed</td>
-          <td rowspan="2" style="${bdr} padding:6px 3px; font-weight:900; font-size:0.88rem;">Failed</td>
-          <td colspan="3" style="${bdr} padding:4px 6px; font-weight:900; font-size:0.88rem;">MARK RANGE</td>
+          <td rowspan="2" style="${bdr} background:#f1f5f9 !important; padding:5px 4px; font-weight:900; font-size:0.86rem; line-height:1.18;">No. of<br>Students</td>
+          <td rowspan="2" style="${bdr} background:#f1f5f9 !important; padding:5px 3px; font-weight:800; font-size:0.80rem; line-height:1.18;">Long<br>Absent</td>
+          <td rowspan="2" style="${bdr} background:#fef2f2 !important; padding:5px 3px; font-weight:900; font-size:0.90rem; color:#dc2626;">Absent</td>
+          <td rowspan="2" style="${bdr} background:#f1f5f9 !important; padding:5px 3px; font-weight:800; font-size:0.78rem; line-height:1.15;">Home<br>Based<br>Students</td>
+          <td rowspan="2" style="${bdr} background:#eff6ff !important; padding:5px 3px; font-weight:900; font-size:0.88rem; color:#1e3a8a;">Appeared</td>
+          <td rowspan="2" style="${bdr} background:#f0fdf4 !important; padding:5px 3px; font-weight:900; font-size:0.88rem; color:#15803d;">Passed</td>
+          <td rowspan="2" style="${bdr} background:#fef2f2 !important; padding:5px 3px; font-weight:900; font-size:0.88rem; color:#dc2626;">Failed</td>
+          <td colspan="3" style="${bdr} background:#1e293b !important; color:#ffffff !important; padding:4px 6px; font-weight:900; font-size:0.88rem; letter-spacing:0.4px;">MARK RANGE (மதிப்பெண் வீச்சு)</td>
         </tr>
-        <tr style="background:#fce4d6;">
-          <td style="${bdr} padding:4px 4px; font-weight:900; font-size:0.84rem; line-height:1.18;">
-            Below <span style="font-size:1.12rem;">60%</span><br>
-            <span style="color:#c00000; font-size:0.76rem;">( &lt; 300 Marks )</span>
+        <tr>
+          <td style="${bdr} background:#ffedd5 !important; padding:4px 4px; font-weight:900; font-size:0.82rem; line-height:1.15;">
+            Below <span style="font-size:1.00rem;">60%</span><br>
+            <span style="color:#c2410c; font-size:0.74rem;">( &lt;= 300 Marks )</span>
           </td>
-          <td style="${bdr} padding:4px 4px; font-weight:900; font-size:0.84rem; line-height:1.18;">
-            <span style="font-size:1.05rem;">60% to 80%</span><br>
-            <span style="color:#c00000; font-size:0.76rem;">( 301- 400 Marks )</span>
+          <td style="${bdr} background:#fef3c7 !important; padding:4px 4px; font-weight:900; font-size:0.82rem; line-height:1.15;">
+            <span style="font-size:1.00rem;">60% to 80%</span><br>
+            <span style="color:#b45309; font-size:0.74rem;">( 301 – 400 Marks )</span>
           </td>
-          <td style="${bdr} padding:4px 4px; font-weight:900; font-size:0.84rem; line-height:1.18;">
-            Above <span style="font-size:1.05rem;">80%</span><br>
-            <span style="color:#c00000; font-size:0.76rem;">( 401-500 Marks )</span>
+          <td style="${bdr} background:#dcfce7 !important; padding:4px 4px; font-weight:900; font-size:0.82rem; line-height:1.15;">
+            Above <span style="font-size:1.00rem;">80%</span><br>
+            <span style="color:#15803d; font-size:0.74rem;">( 401 – 500 Marks )</span>
           </td>
         </tr>
-        <tr style="height:46px;">
-          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.emis.t}</td>
-          <td style="${bdr} ${numFont} font-size:1.30rem;">${calc.la.t > 0 ? calc.la.t : ""}</td>
-          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.35rem; color:#ff0000;">${calc.ab.t > 0 ? calc.ab.t : ""}</td>
-          <td style="${bdr} ${numFont} font-size:1.30rem;">${calc.hb && calc.hb.t > 0 ? calc.hb.t : ""}</td>
-          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.appeared.t}</td>
-          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.passed.t}</td>
-          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.55rem; color:#ff0000;">${calc.failed.t}</td>
-          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.totalMarkRanges.below60}</td>
-          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.totalMarkRanges.r60_80}</td>
-          <td style="${bdr} ${numFont} font-size:1.42rem;">${calc.totalMarkRanges.above80}</td>
+        <tr style="height:40px;">
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.32rem;">${calc.emis.t}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.22rem;">${calc.la.t > 0 ? calc.la.t : ""}</td>
+          <td style="${bdr} background:#fef08a !important; ${numFont} font-size:1.26rem; color:#dc2626;">${calc.ab.t > 0 ? calc.ab.t : ""}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.22rem;">${calc.hb && calc.hb.t > 0 ? calc.hb.t : ""}</td>
+          <td style="${bdr} background:#eff6ff !important; ${numFont} font-size:1.32rem; color:#1e3a8a;">${calc.appeared.t}</td>
+          <td style="${bdr} background:#f0fdf4 !important; ${numFont} font-size:1.32rem; color:#15803d;">${calc.passed.t}</td>
+          <td style="${bdr} background:#fef08a !important; ${numFont} font-size:1.38rem; color:#dc2626;">${calc.failed.t}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.30rem;">${calc.totalMarkRanges.below60}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.30rem;">${calc.totalMarkRanges.r60_80}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.30rem; color:#15803d;">${calc.totalMarkRanges.above80}</td>
         </tr>
       </table>
 
-      <!-- Bottom Section: 3 Side-by-Side Tables -->
-      <div style="display:flex; align-items:stretch; justify-content:space-between; gap:12px;">
-        <!-- Left Table: No.of Subjects Failed -->
-        <table style="width:22%; border-collapse:collapse; table-layout:fixed;">
+      <!-- Bottom Section: 3 Side-by-Side Tables with Explicit Widths & Visible Header Colors -->
+      <div style="display:flex; align-items:stretch; justify-content:space-between; gap:10px; width:100%;">
+        <!-- Left Table: No.of Subjects Failed (6 rows total: 1 header + 5 rows) -->
+        <table style="width:21%; flex:0 0 21%; border-collapse:collapse; table-layout:fixed;">
           <colgroup>
-            <col style="width:65%;">
-            <col style="width:35%;">
+            <col style="width:66%;">
+            <col style="width:34%;">
           </colgroup>
-          <tr style="background:#e2efda; height:44px;">
-            <td style="${bdr} padding:4px 6px; font-weight:800; font-size:0.86rem; line-height:1.2;">No.of Subjects<br>Failed</td>
-            <td style="${bdr} padding:4px 4px; font-weight:800; font-size:0.80rem; line-height:1.2;">No. of<br>Students</td>
+          <tr style="height:42px;">
+            <td style="${bdr} background:#334155 !important; color:#ffffff !important; padding:4px 6px; font-weight:900; font-size:0.82rem; line-height:1.18;">No. of Subjects<br>Failed</td>
+            <td style="${bdr} background:#334155 !important; color:#ffffff !important; padding:4px 4px; font-weight:900; font-size:0.80rem; line-height:1.18;">No. of<br>Students</td>
           </tr>
-          <tr style="height:40px;">
-            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.96rem;">Single Subject</td>
-            <td style="${bdr} ${numFont} font-size:1.55rem; color:#ff0000;">${calc.failedSubCounts.s1 > 0 ? calc.failedSubCounts.s1 : ""}</td>
+          <tr style="height:38px;">
+            <td style="${bdr} background:#fefce8 !important; padding:5px 8px; text-align:left; font-weight:900; font-size:0.90rem; white-space:nowrap;">Single Subject</td>
+            <td style="${bdr} background:${calc.failedSubCounts.s1 > 0 ? '#fef08a' : '#ffffff'} !important; ${numFont} font-size:1.32rem; color:#dc2626;">${calc.failedSubCounts.s1 > 0 ? calc.failedSubCounts.s1 : ""}</td>
           </tr>
-          <tr style="height:40px;">
-            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.94rem;">Two Subjects</td>
-            <td style="${bdr} ${numFont} font-size:1.28rem;">${calc.failedSubCounts.s2 > 0 ? calc.failedSubCounts.s2 : ""}</td>
+          <tr style="height:38px;">
+            <td style="${bdr} background:#f8fafc !important; padding:5px 8px; text-align:left; font-weight:900; font-size:0.88rem; white-space:nowrap;">Two Subjects</td>
+            <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.18rem;">${calc.failedSubCounts.s2 > 0 ? calc.failedSubCounts.s2 : ""}</td>
           </tr>
-          <tr style="height:40px;">
-            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.94rem;">Three Subjects</td>
-            <td style="${bdr} ${numFont} font-size:1.28rem;">${calc.failedSubCounts.s3 > 0 ? calc.failedSubCounts.s3 : ""}</td>
+          <tr style="height:38px;">
+            <td style="${bdr} background:#fefce8 !important; padding:5px 8px; text-align:left; font-weight:900; font-size:0.88rem; white-space:nowrap;">Three Subjects</td>
+            <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.18rem;">${calc.failedSubCounts.s3 > 0 ? calc.failedSubCounts.s3 : ""}</td>
           </tr>
-          <tr style="height:40px;">
-            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.94rem;">Four Subjects</td>
-            <td style="${bdr} ${numFont} font-size:1.28rem;">${calc.failedSubCounts.s4 > 0 ? calc.failedSubCounts.s4 : ""}</td>
+          <tr style="height:38px;">
+            <td style="${bdr} background:#f8fafc !important; padding:5px 8px; text-align:left; font-weight:900; font-size:0.88rem; white-space:nowrap;">Four Subjects</td>
+            <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.18rem;">${calc.failedSubCounts.s4 > 0 ? calc.failedSubCounts.s4 : ""}</td>
           </tr>
-          <tr style="height:40px;">
-            <td style="${bdr} padding:6px 8px; text-align:left; font-weight:900; font-size:0.94rem;">ALL Subjects</td>
-            <td style="${bdr} ${numFont} font-size:1.28rem;">${calc.failedSubCounts.s5 > 0 ? calc.failedSubCounts.s5 : ""}</td>
+          <tr style="height:38px;">
+            <td style="${bdr} background:#fef2f2 !important; padding:5px 8px; text-align:left; font-weight:900; font-size:0.88rem; color:#991b1b; white-space:nowrap;">ALL (5) Subjects</td>
+            <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.22rem; color:#dc2626;">${calc.failedSubCounts.s5 > 0 ? calc.failedSubCounts.s5 : ""}</td>
           </tr>
         </table>
 
-        <!-- Middle Table: Single Subject Failed Breakdown -->
-        <table style="width:22%; border-collapse:collapse; table-layout:fixed; border:1.5px solid #70ad47;">
+        <!-- Middle Table: Single Subject Failed Breakdown (6 rows total: 1 header + 5 subjects) -->
+        <table style="width:22%; flex:0 0 22%; border-collapse:collapse; table-layout:fixed;">
           <colgroup>
-            <col style="width:65%;">
-            <col style="width:35%;">
+            <col style="width:66%;">
+            <col style="width:34%;">
           </colgroup>
-          <tr style="background:#70ad47; color:#ffffff; height:44px;">
-            <td style="border:1.5px solid #ffffff; padding:4px 6px; text-align:center; font-weight:900; font-size:0.88rem; line-height:1.2;">Single Subject<br>Failed</td>
-            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:900; font-size:0.80rem; line-height:1.2;">No. of<br>Students</td>
+          <tr style="height:42px;">
+            <td style="${bdr} background:#15803d !important; color:#ffffff !important; padding:4px 6px; text-align:center; font-weight:900; font-size:0.84rem; line-height:1.18;">Single Subject<br>Failed (பாடம்)</td>
+            <td style="${bdr} background:#15803d !important; color:#ffffff !important; padding:4px 4px; text-align:center; font-weight:900; font-size:0.80rem; line-height:1.18;">No. of<br>Students</td>
           </tr>
           ${singleSubRowsHtml}
         </table>
 
-        <!-- Right Table: 5 Subjects Detailed Performance -->
-        <table style="width:53%; border-collapse:collapse; table-layout:fixed; border:1.5px solid #4472c4;">
+        <!-- Right Table: 5 Subjects Detailed Performance (6 rows total: 1 header + 5 subjects) -->
+        <table style="width:55%; flex:0 0 55%; border-collapse:collapse; table-layout:fixed;">
           <colgroup>
-            <col style="width:24%;">
-            <col style="width:15%;">
-            <col style="width:15%;">
-            <col style="width:14%;">
-            <col style="width:16%;">
-            <col style="width:16%;">
+            <col style="width:23%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
           </colgroup>
-          <tr style="background:#4472c4; color:#ffffff; height:44px;">
-            <td style="border:1.5px solid #ffffff; padding:4px 8px; text-align:center; font-weight:900; font-size:0.98rem;">SUBJECT</td>
-            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem; line-height:1.18;">No. of<br>Fail</td>
-            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem; line-height:1.18;">35-45<br>Marks</td>
-            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem;">Centum</td>
-            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem; line-height:1.18;">Average<br>Mark</td>
-            <td style="border:1.5px solid #ffffff; padding:4px 4px; text-align:center; font-weight:800; font-size:0.88rem; line-height:1.18;">Highest<br>Mark</td>
+          <tr style="height:42px;">
+            <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; padding:4px 8px; text-align:center; font-weight:900; font-size:0.88rem;">SUBJECT</td>
+            <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; padding:4px 3px; text-align:center; font-weight:800; font-size:0.78rem; line-height:1.15;">No. of<br>Appear</td>
+            <td style="${bdr} background:#991b1b !important; color:#ffffff !important; padding:4px 3px; text-align:center; font-weight:900; font-size:0.78rem; line-height:1.15;">No. of<br>Fail</td>
+            <td style="${bdr} background:#15803d !important; color:#ffffff !important; padding:4px 3px; text-align:center; font-weight:900; font-size:0.78rem; line-height:1.15;">Pass<br>%</td>
+            <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; padding:4px 3px; text-align:center; font-weight:800; font-size:0.78rem; line-height:1.15;">35–45<br>Marks</td>
+            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; padding:4px 3px; text-align:center; font-weight:900; font-size:0.78rem; line-height:1.15;">Centum<br>(100)</td>
+            <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; padding:4px 3px; text-align:center; font-weight:800; font-size:0.78rem; line-height:1.15;">Average<br>Mark</td>
+            <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; padding:4px 3px; text-align:center; font-weight:800; font-size:0.78rem; line-height:1.15;">Highest<br>Mark</td>
           </tr>
           ${rightSubRowsHtml}
         </table>
@@ -39799,8 +39818,9 @@ function build12thReviewReportExactHtml(calc, forPrint) {
   const p23 = rec.prevPub23_24 !== undefined && rec.prevPub23_24 !== "" ? rec.prevPub23_24 : "91%";
   const avg100Disp = calc.appeared && calc.appeared.t > 0 ? Math.round(calc.schoolAvgMark100) : 0;
 
-  const numFont = "font-family:'Segoe UI',Arial,sans-serif; font-weight:900; letter-spacing:0px;";
-  const bdr = "border:1.2px solid #334155; text-align:center; vertical-align:middle;";
+  const numFont = "font-family:'Segoe UI',Arial,sans-serif; font-weight:900; letter-spacing:0px; white-space:nowrap;";
+  const bdr = "border:1.4px solid #1e293b; text-align:center; vertical-align:middle;";
+  const subBdr = "border:1.2px solid #334155; text-align:center; vertical-align:middle;";
 
   const left10Subjects = [
     { key: "LANG", label: "Language" },
@@ -39812,7 +39832,8 @@ function build12thReviewReportExactHtml(calc, forPrint) {
     { key: "BOT",  label: "Botany" },
     { key: "ZOO",  label: "Zoology" },
     { key: "CS",   label: "Com.Sci" },
-    { key: "CA",   label: "Com.App" }
+    { key: "CA",   label: "Com.App" },
+    { key: "_PAD", label: "—", isPad: true }
   ];
 
   const right11Subjects = [
@@ -39820,8 +39841,8 @@ function build12thReviewReportExactHtml(calc, forPrint) {
     { key: "ECO",  label: "Economics" },
     { key: "COM",  label: "Commerce" },
     { key: "ACC",  label: "Accountancy" },
-    { key: "AT",   label: "Advance Tamil" },
-    { key: "ES",   label: "Emp.Skill" },
+    { key: "AT",   label: "Adv. Tamil" },
+    { key: "ES",   label: "Emp. Skill" },
     { key: "AGRI", label: "Agri" },
     { key: "BM",   label: "Bus. Maths" },
     { key: "BME",  label: "B.M.E" },
@@ -39829,8 +39850,22 @@ function build12thReviewReportExactHtml(calc, forPrint) {
     { key: "OTH2", label: "Others-2" }
   ];
 
-  const render12SubTableRows = (subList, tintColor) => {
+  const render12SubTableRows = (subList, tintColor, subColBg) => {
     return subList.map((item, idx) => {
+      if (item.isPad) {
+        return `
+          <tr style="height:26px;">
+            <td style="${subBdr} background:#f8fafc !important; padding:2px 6px; text-align:left; font-weight:800; font-size:0.80rem; color:#94a3b8;">&nbsp;</td>
+            <td style="${subBdr} background:#f8fafc !important;"></td>
+            <td style="${subBdr} background:#f8fafc !important;"></td>
+            <td style="${subBdr} background:#f8fafc !important;"></td>
+            <td style="${subBdr} background:#f8fafc !important;"></td>
+            <td style="${subBdr} background:#f8fafc !important;"></td>
+            <td style="${subBdr} background:#f8fafc !important;"></td>
+            <td style="${subBdr} background:#f8fafc !important;"></td>
+          </tr>
+        `;
+      }
       const st = sub[item.key] || {};
       const hasStu = st.appeared > 0 || st.stuCount > 0;
       const stuCnt = hasStu ? (st.appeared || st.stuCount) : "";
@@ -39844,207 +39879,212 @@ function build12thReviewReportExactHtml(calc, forPrint) {
 
       return `
         <tr style="height:26px;">
-          <td style="border:none; padding:2px 6px; text-align:right; font-weight:900; font-style:italic; font-size:0.84rem; color:#000000; background:#ffffff;">${item.label}</td>
-          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.98rem; color:#000000;">${stuCnt}</td>
-          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.98rem; color:#ff0000;">${failVal}</td>
-          <td style="border:1px solid #cbd5e1; background:${s1Val !== '' ? '#ffff00' : cellBg}; ${numFont} font-size:0.98rem; color:#0052cc;">${s1Val}</td>
-          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.96rem; color:#15803d;">${r35_60Val}</td>
-          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.96rem; color:#c000c0;">${avgVal}</td>
-          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.98rem; color:#1d4ed8;">${firstVal}</td>
-          <td style="border:1px solid #cbd5e1; background:${cellBg}; ${numFont} font-size:0.96rem; color:#0284c7;">${centVal}</td>
+          <td style="${subBdr} background:${subColBg} !important; padding:2px 7px; text-align:left; font-weight:900; font-size:0.82rem; color:#0f172a; white-space:nowrap;">${item.label}</td>
+          <td style="${subBdr} background:${cellBg} !important; ${numFont} font-size:0.96rem; color:#000000;">${stuCnt}</td>
+          <td style="${subBdr} background:${failVal !== '' ? '#fef2f2' : cellBg} !important; ${numFont} font-size:0.96rem; color:#dc2626;">${failVal}</td>
+          <td style="${subBdr} background:${s1Val !== '' ? '#fef08a' : cellBg} !important; ${numFont} font-size:0.96rem; color:#1d4ed8;">${s1Val}</td>
+          <td style="${subBdr} background:${cellBg} !important; ${numFont} font-size:0.94rem; color:#15803d;">${r35_60Val}</td>
+          <td style="${subBdr} background:${cellBg} !important; ${numFont} font-size:0.94rem; color:#7e22ce;">${avgVal}</td>
+          <td style="${subBdr} background:${cellBg} !important; ${numFont} font-size:0.96rem; color:#1e3a8a;">${firstVal}</td>
+          <td style="${subBdr} background:${centVal !== '' ? '#fef08a' : cellBg} !important; ${numFont} font-size:0.94rem; color:#0f766e;">${centVal}</td>
         </tr>
       `;
     }).join("");
   };
 
   return `
-    <div class="ra-report-sheet" style="background:#ffffff; color:#000000; padding:${forPrint ? '6px 12px' : '14px 18px'}; border:${forPrint ? 'none' : '2px solid #4c1d95; border-radius:12px;'}; font-family:'Segoe UI',Arial,sans-serif;">
+    <div class="ra-report-sheet" style="background:#ffffff !important; color:#000000 !important; padding:${forPrint ? '6px 10px' : '12px 16px'}; border:${forPrint ? '2px solid #311068' : '2px solid #4c1d95'}; border-radius:${forPrint ? '4px' : '12px'}; font-family:'Segoe UI',Arial,sans-serif; box-sizing:border-box;">
       <!-- Top Title Banner & Unique No -->
-      <div style="position:relative; text-align:center; margin-bottom:8px;">
-        <div style="position:absolute; right:8px; top:2px; ${numFont} font-size:1.05rem; color:#000000;">${escapeHtmlAttr(s.uNo || "")}</div>
-        <div style="font-size:1.56rem; font-weight:900; color:#d97706; text-shadow:1px 1px 0 #78350f; letter-spacing:0.3px; line-height:1.15;">${escapeHtmlAttr(lbl.bannerEn)}</div>
-        <div style="font-size:1.30rem; font-weight:900; color:#c2410c; text-shadow:1px 1px 0 #431407; letter-spacing:0.4px; margin-top:2px;">RESULT ANALYSIS REPORT - ${escapeHtmlAttr(blockStr)}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2.5px solid #4c1d95; padding-bottom:6px; margin-bottom:8px;">
+        <div style="background:#3b0764 !important; color:#ffffff !important; padding:4px 12px; border-radius:6px; font-weight:900; font-size:0.82rem; letter-spacing:0.4px; white-space:nowrap;">
+          SIVAGANGAI DISTRICT • HSC (+2)
+        </div>
+        <div style="text-align:center; flex:1; padding:0 10px;">
+          <div style="font-size:1.44rem; font-weight:900; color:#b45309; line-height:1.15;">${escapeHtmlAttr(lbl.bannerEn)}</div>
+          <div style="font-size:1.12rem; font-weight:900; color:#9a3412; margin-top:2px;">RESULT ANALYSIS REVIEW REPORT — ${escapeHtmlAttr(blockStr)}</div>
+        </div>
+        <div style="background:#fef3c7 !important; border:2px solid #d97706; color:#92400e !important; padding:4px 12px; border-radius:6px; ${numFont} font-size:1.02rem;">
+          U.NO : <span style="font-size:1.18rem; color:#000000;">${escapeHtmlAttr(s.uNo || "")}</span>
+        </div>
       </div>
 
       <!-- Table 1: School Name, Pass Percentage, Previous Public Exam Result, Stream First Marks & Average Mark -->
-      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px; table-layout:fixed;">
         <colgroup>
-          <col style="width:27%;">
-          <col style="width:13%;">
-          <col style="width:11%;">
-          <col style="width:11%;">
-          <col style="width:11%;">
+          <col style="width:28%;">
+          <col style="width:12%;">
+          <col style="width:10.5%;">
+          <col style="width:10.5%;">
+          <col style="width:10.5%;">
           <col style="width:9.5%;">
           <col style="width:9.5%;">
-          <col style="width:8%;">
+          <col style="width:9.5%;">
         </colgroup>
         <tr>
-          <td style="${bdr} padding:4px 6px; font-weight:900; font-size:0.90rem;">Name of the School</td>
-          <td colspan="4" style="${bdr} padding:4px 6px; font-weight:900; font-size:0.96rem;">Pass Percentage</td>
-          <td colspan="3" style="${bdr} padding:4px 6px; font-weight:800; font-size:0.92rem; background:#ffffcc;">${escapeHtmlAttr(lbl.colShort)}</td>
+          <td style="${bdr} background:#1e1b4b !important; color:#ffffff !important; padding:4px 6px; font-weight:900; font-size:0.88rem;">Name of the School</td>
+          <td colspan="4" style="${bdr} background:#3b0764 !important; color:#ffffff !important; padding:4px 6px; font-weight:900; font-size:0.94rem;">Pass Percentage (தேர்ச்சி %)</td>
+          <td colspan="3" style="${bdr} background:#0f766e !important; color:#ffffff !important; padding:4px 6px; font-weight:900; font-size:0.90rem;">${escapeHtmlAttr(lbl.colShort)}</td>
         </tr>
         <tr>
-          <td rowspan="3" style="${bdr} padding:8px 8px; font-weight:900; font-size:0.96rem; line-height:1.3;">
-            <div>${escapeHtmlAttr(s.nameEn || "")}</div>
-            ${s.nameTa ? `<div style="font-size:0.78rem; color:#334155; margin-top:3px; font-weight:700;">${escapeHtmlAttr(s.nameTa)}</div>` : ""}
+          <td rowspan="3" style="${bdr} background:#faf5ff !important; padding:6px 8px; font-weight:900; font-size:0.94rem; line-height:1.28;">
+            <div style="color:#1e1b4b; font-weight:900;">${escapeHtmlAttr(s.nameEn || "")}</div>
+            ${s.nameTa ? `<div class="ra-ta" style="font-size:0.78rem; color:#334155; margin-top:3px; font-weight:700;">${escapeHtmlAttr(s.nameTa)}</div>` : ""}
           </td>
-          <td rowspan="2" style="${bdr} padding:4px; font-weight:800; font-size:0.88rem;">${escapeHtmlAttr(lbl.colShort)}</td>
-          <td colspan="3" style="${bdr} padding:4px; font-weight:900; font-size:0.84rem; background:#ffffcc;">Previous Public Exam Result</td>
-          <td colspan="2" style="${bdr} padding:4px; font-weight:900; font-size:0.86rem;">School First Mark</td>
-          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:0.82rem; line-height:1.15;">School<br>Average<br>Mark</td>
+          <td rowspan="2" style="${bdr} background:#f5f3ff !important; padding:4px; font-weight:900; font-size:0.84rem; color:#4c1d95;">${escapeHtmlAttr(lbl.colShort)}</td>
+          <td colspan="3" style="${bdr} background:#fef3c7 !important; padding:4px; font-weight:900; font-size:0.82rem; color:#92400e;">Previous Public Exam Result</td>
+          <td colspan="2" style="${bdr} background:#f0fdfa !important; padding:4px; font-weight:900; font-size:0.84rem; color:#0f766e;">School First Mark (/600)</td>
+          <td rowspan="2" style="${bdr} background:#f0fdfa !important; padding:4px; font-weight:900; font-size:0.80rem; color:#0f766e; line-height:1.15;">School<br>Average<br>Mark (/100)</td>
         </tr>
         <tr>
-          <td style="${bdr} padding:3px; ${numFont} font-size:0.78rem;">2025-26</td>
-          <td style="${bdr} padding:3px; ${numFont} font-size:0.78rem;">2024-25</td>
-          <td style="${bdr} padding:3px; ${numFont} font-size:0.78rem;">2023-24</td>
-          <td style="${bdr} padding:3px; font-weight:900; font-size:0.76rem; line-height:1.15;">Science<br>Stream</td>
-          <td style="${bdr} padding:3px; font-weight:900; font-size:0.76rem; line-height:1.15; background:#00ffff;">Arts<br>Stream</td>
-        </tr>
-        <tr style="height:36px;">
-          <td style="${bdr} ${numFont} font-size:1.26rem; color:#000000;">${passPctDisp}</td>
-          <td style="${bdr} ${numFont} font-size:1.08rem; color:#0052cc;">${escapeHtmlAttr(p25)}</td>
-          <td style="${bdr} ${numFont} font-size:1.08rem; color:#ff00ff;">${escapeHtmlAttr(p24)}</td>
-          <td style="${bdr} ${numFont} font-size:1.08rem; color:#cc0099;">${escapeHtmlAttr(p23)}</td>
-          <td style="${bdr} ${numFont} font-size:1.22rem; color:#1d4ed8;">${calc.firstMarkScience > 0 ? calc.firstMarkScience : ""}</td>
-          <td style="${bdr} ${numFont} font-size:1.22rem; color:#1d4ed8;">${calc.firstMarkArts > 0 ? calc.firstMarkArts : ""}</td>
-          <td style="${bdr} ${numFont} font-size:1.22rem; color:#000000;">
-            <span style="background:#ffff00; padding:2px 8px;">${avg100Disp}</span>
-          </td>
-        </tr>
-      </table>
-
-      <!-- Table 2: Attendance, Appear, Pass, Fail & Mark Range -->
-      <table style="width:90%; margin:0 auto 10px auto; border-collapse:collapse; table-layout:fixed;">
-        <colgroup>
-          <col style="width:10%;">
-          <col style="width:7%;">
-          <col style="width:7.5%;">
-          <col style="width:9.5%;">
-          <col style="width:8.5%;">
-          <col style="width:7.5%;">
-          <col style="width:16.5%;">
-          <col style="width:16.5%;">
-          <col style="width:17%;">
-        </colgroup>
-        <tr>
-          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:0.84rem; line-height:1.15;">No.of<br>Students</td>
-          <td rowspan="2" style="${bdr} padding:4px; font-weight:800; font-size:0.78rem; line-height:1.15;">Long<br>Absent</td>
-          <td rowspan="2" style="${bdr} padding:4px; font-weight:800; font-size:0.86rem; color:#ff0000;">Absent</td>
-          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:1.00rem;">Appear</td>
-          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:1.00rem;">Pass</td>
-          <td rowspan="2" style="${bdr} padding:4px; font-weight:900; font-size:1.00rem;">Fail</td>
-          <td colspan="3" style="${bdr} padding:3px; font-weight:900; font-size:1.02rem;">MARK RANGE</td>
-        </tr>
-        <tr style="background:#fce4d6;">
-          <td style="${bdr} padding:3px; font-weight:900; font-size:0.80rem; line-height:1.15;">
-            Below 60%<br><span style="color:#c00000; font-size:0.70rem;">( &lt;= 360 Marks )</span>
-          </td>
-          <td style="${bdr} padding:3px; font-weight:900; font-size:0.80rem; line-height:1.15;">
-            60% to 80%<br><span style="color:#c00000; font-size:0.70rem;">( 361- 480 Marks )</span>
-          </td>
-          <td style="${bdr} padding:3px; font-weight:900; font-size:0.80rem; line-height:1.15;">
-            Above 80%<br><span style="color:#c00000; font-size:0.70rem;">( 481-600 Marks )</span>
-          </td>
+          <td style="${bdr} background:#fffbeb !important; padding:3px; ${numFont} font-size:0.78rem;">2025-26</td>
+          <td style="${bdr} background:#fffbeb !important; padding:3px; ${numFont} font-size:0.78rem;">2024-25</td>
+          <td style="${bdr} background:#fffbeb !important; padding:3px; ${numFont} font-size:0.78rem;">2023-24</td>
+          <td style="${bdr} background:#eff6ff !important; padding:3px; font-weight:900; font-size:0.75rem; color:#1e40af; line-height:1.12;">Science<br>Stream</td>
+          <td style="${bdr} background:#ecfeff !important; padding:3px; font-weight:900; font-size:0.75rem; color:#0e7490; line-height:1.12;">Arts<br>Stream</td>
         </tr>
         <tr style="height:34px;">
-          <td style="${bdr} ${numFont} font-size:1.22rem;">${calc.emis.t}</td>
-          <td style="${bdr} ${numFont} font-size:1.14rem;">${calc.la.t > 0 ? calc.la.t : ""}</td>
-          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.18rem; color:#ff0000;">${calc.ab.t > 0 ? calc.ab.t : ""}</td>
-          <td style="${bdr} ${numFont} font-size:1.22rem;">${calc.appeared.t}</td>
-          <td style="${bdr} ${numFont} font-size:1.22rem;">${calc.passed.t}</td>
-          <td style="${bdr} background:#ffff00; ${numFont} font-size:1.26rem; color:#000000;">${calc.failed.t}</td>
-          <td style="${bdr} ${numFont} font-size:1.20rem;">${calc.totalMarkRanges.below60}</td>
-          <td style="${bdr} ${numFont} font-size:1.20rem;">${calc.totalMarkRanges.r60_80}</td>
-          <td style="${bdr} ${numFont} font-size:1.20rem;">${calc.totalMarkRanges.above80}</td>
+          <td style="${bdr} background:#fef08a !important; ${numFont} font-size:1.22rem; color:#1e1b4b;">${passPctDisp}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.06rem; color:#1d4ed8;">${escapeHtmlAttr(p25)}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.06rem; color:#be185d;">${escapeHtmlAttr(p24)}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.06rem; color:#7e22ce;">${escapeHtmlAttr(p23)}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.18rem; color:#1d4ed8;">${calc.firstMarkScience > 0 ? calc.firstMarkScience : ""}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.18rem; color:#0e7490;">${calc.firstMarkArts > 0 ? calc.firstMarkArts : ""}</td>
+          <td style="${bdr} background:#fef08a !important; ${numFont} font-size:1.20rem; color:#000000;">${avg100Disp}</td>
         </tr>
       </table>
 
-      <!-- Bottom Section: Left Failed Subjects Box + Center 10 Subjects + Right 11 Subjects -->
-      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+      <!-- Table 2: Attendance, Appear, Pass, Fail & Mark Range (100% Full Width) -->
+      <table style="width:100%; margin:0 auto 8px auto; border-collapse:collapse; table-layout:fixed;">
+        <colgroup>
+          <col style="width:10%;">
+          <col style="width:7.5%;">
+          <col style="width:8%;">
+          <col style="width:9.5%;">
+          <col style="width:9%;">
+          <col style="width:8%;">
+          <col style="width:16%;">
+          <col style="width:16%;">
+          <col style="width:16%;">
+        </colgroup>
+        <tr>
+          <td rowspan="2" style="${bdr} background:#f1f5f9 !important; padding:4px; font-weight:900; font-size:0.82rem; line-height:1.15;">No. of<br>Students</td>
+          <td rowspan="2" style="${bdr} background:#f1f5f9 !important; padding:4px; font-weight:800; font-size:0.78rem; line-height:1.15;">Long<br>Absent</td>
+          <td rowspan="2" style="${bdr} background:#fef2f2 !important; padding:4px; font-weight:900; font-size:0.86rem; color:#dc2626;">Absent</td>
+          <td rowspan="2" style="${bdr} background:#eff6ff !important; padding:4px; font-weight:900; font-size:0.92rem; color:#1e3a8a;">Appear</td>
+          <td rowspan="2" style="${bdr} background:#f0fdf4 !important; padding:4px; font-weight:900; font-size:0.92rem; color:#15803d;">Pass</td>
+          <td rowspan="2" style="${bdr} background:#fef2f2 !important; padding:4px; font-weight:900; font-size:0.92rem; color:#dc2626;">Fail</td>
+          <td colspan="3" style="${bdr} background:#1e293b !important; color:#ffffff !important; padding:3px; font-weight:900; font-size:0.88rem; letter-spacing:0.4px;">MARK RANGE (மதிப்பெண் வீச்சு)</td>
+        </tr>
+        <tr>
+          <td style="${bdr} background:#ffedd5 !important; padding:3px; font-weight:900; font-size:0.78rem; line-height:1.12;">
+            Below 60% <span style="color:#c2410c; font-size:0.70rem;">( &lt;= 360 Marks )</span>
+          </td>
+          <td style="${bdr} background:#fef3c7 !important; padding:3px; font-weight:900; font-size:0.78rem; line-height:1.12;">
+            60% to 80% <span style="color:#b45309; font-size:0.70rem;">( 361 – 480 Marks )</span>
+          </td>
+          <td style="${bdr} background:#dcfce7 !important; padding:3px; font-weight:900; font-size:0.78rem; line-height:1.12;">
+            Above 80% <span style="color:#15803d; font-size:0.70rem;">( 481 – 600 Marks )</span>
+          </td>
+        </tr>
+        <tr style="height:32px;">
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.18rem;">${calc.emis.t}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.10rem;">${calc.la.t > 0 ? calc.la.t : ""}</td>
+          <td style="${bdr} background:#fef08a !important; ${numFont} font-size:1.14rem; color:#dc2626;">${calc.ab.t > 0 ? calc.ab.t : ""}</td>
+          <td style="${bdr} background:#eff6ff !important; ${numFont} font-size:1.18rem; color:#1e3a8a;">${calc.appeared.t}</td>
+          <td style="${bdr} background:#f0fdf4 !important; ${numFont} font-size:1.18rem; color:#15803d;">${calc.passed.t}</td>
+          <td style="${bdr} background:#fef08a !important; ${numFont} font-size:1.22rem; color:#dc2626;">${calc.failed.t}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.16rem;">${calc.totalMarkRanges.below60}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.16rem;">${calc.totalMarkRanges.r60_80}</td>
+          <td style="${bdr} background:#ffffff !important; ${numFont} font-size:1.16rem; color:#15803d;">${calc.totalMarkRanges.above80}</td>
+        </tr>
+      </table>
+
+      <!-- Bottom Section: Left Failed Subjects Box (15%) + Center 10 Subjects (42%) + Right 11 Subjects (42%) -->
+      <div style="display:flex; align-items:stretch; justify-content:space-between; gap:8px; width:100%;">
         <!-- Left Table: No.of Subjects Failed -->
-        <table style="width:13%; border-collapse:collapse; table-layout:fixed;">
+        <table style="width:15%; flex:0 0 15%; border-collapse:collapse; table-layout:fixed;">
           <colgroup>
             <col style="width:62%;">
             <col style="width:38%;">
           </colgroup>
-          <tr style="background:#b4c6e7; height:38px;">
-            <td style="${bdr} padding:3px; font-weight:800; font-size:0.74rem; line-height:1.15;">No.of<br>Subjects<br>Failed</td>
-            <td style="${bdr} padding:3px; font-weight:800; font-size:0.72rem; line-height:1.15;">No.of<br>Students</td>
-          </tr>
           <tr style="height:36px;">
-            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">Single</span><br>Subject</td>
-            <td style="${bdr} ${numFont} font-size:1.36rem; color:#ff0000;">${calc.failedSubCounts.s1 > 0 ? calc.failedSubCounts.s1 : ""}</td>
+            <td style="${subBdr} background:#334155 !important; color:#ffffff !important; padding:3px; font-weight:900; font-size:0.74rem; line-height:1.12;">No. of<br>Subjects<br>Failed</td>
+            <td style="${subBdr} background:#334155 !important; color:#ffffff !important; padding:3px; font-weight:900; font-size:0.72rem; line-height:1.12;">No. of<br>Students</td>
           </tr>
-          <tr style="height:36px;">
-            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">2</span><br>Subjects</td>
-            <td style="${bdr} ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s2 > 0 ? calc.failedSubCounts.s2 : ""}</td>
+          <tr style="height:44px;">
+            <td style="${subBdr} background:#fefce8 !important; padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#fef08a !important; padding:0 3px;">Single</span><br>Subject</td>
+            <td style="${subBdr} background:${calc.failedSubCounts.s1 > 0 ? '#fef08a' : '#ffffff'} !important; ${numFont} font-size:1.24rem; color:#dc2626;">${calc.failedSubCounts.s1 > 0 ? calc.failedSubCounts.s1 : ""}</td>
           </tr>
-          <tr style="height:36px;">
-            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">3</span><br>Subjects</td>
-            <td style="${bdr} ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s3 > 0 ? calc.failedSubCounts.s3 : ""}</td>
+          <tr style="height:44px;">
+            <td style="${subBdr} background:#f8fafc !important; padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#fef08a !important; padding:0 3px;">2</span><br>Subjects</td>
+            <td style="${subBdr} background:#ffffff !important; ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s2 > 0 ? calc.failedSubCounts.s2 : ""}</td>
           </tr>
-          <tr style="height:36px;">
-            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">4</span><br>Subjects</td>
-            <td style="${bdr} ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s4 > 0 ? calc.failedSubCounts.s4 : ""}</td>
+          <tr style="height:44px;">
+            <td style="${subBdr} background:#fefce8 !important; padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#fef08a !important; padding:0 3px;">3</span><br>Subjects</td>
+            <td style="${subBdr} background:#ffffff !important; ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s3 > 0 ? calc.failedSubCounts.s3 : ""}</td>
           </tr>
-          <tr style="height:36px;">
-            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">5</span><br>Subjects</td>
-            <td style="${bdr} ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s5 > 0 ? calc.failedSubCounts.s5 : ""}</td>
+          <tr style="height:44px;">
+            <td style="${subBdr} background:#f8fafc !important; padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#fef08a !important; padding:0 3px;">4</span><br>Subjects</td>
+            <td style="${subBdr} background:#ffffff !important; ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s4 > 0 ? calc.failedSubCounts.s4 : ""}</td>
           </tr>
-          <tr style="height:36px;">
-            <td style="${bdr} padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#ffff00;">ALL</span><br>Subjects</td>
-            <td style="${bdr} ${numFont} font-size:1.26rem; color:#ff0000;">${calc.failedSubCounts.s6 > 0 ? calc.failedSubCounts.s6 : ""}</td>
+          <tr style="height:44px;">
+            <td style="${subBdr} background:#fefce8 !important; padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; line-height:1.15;"><span style="background:#fef08a !important; padding:0 3px;">5</span><br>Subjects</td>
+            <td style="${subBdr} background:#ffffff !important; ${numFont} font-size:1.05rem;">${calc.failedSubCounts.s5 > 0 ? calc.failedSubCounts.s5 : ""}</td>
+          </tr>
+          <tr style="height:46px;">
+            <td style="${subBdr} background:#fef2f2 !important; padding:3px 5px; text-align:left; font-weight:900; font-size:0.76rem; color:#991b1b; line-height:1.15;"><span style="background:#fef08a !important; padding:0 3px;">ALL (6)</span><br>Subjects</td>
+            <td style="${subBdr} background:#ffffff !important; ${numFont} font-size:1.18rem; color:#dc2626;">${calc.failedSubCounts.s6 > 0 ? calc.failedSubCounts.s6 : ""}</td>
           </tr>
         </table>
 
         <!-- Center Table: First 10 Subjects (Language, English, Science/Maths/CS/CA) -->
-        <table style="width:43%; border-collapse:collapse; table-layout:fixed;">
+        <table style="width:42%; flex:0 0 42%; border-collapse:collapse; table-layout:fixed;">
           <colgroup>
-            <col style="width:20%;">
-            <col style="width:12%;">
-            <col style="width:11%;">
-            <col style="width:12%;">
-            <col style="width:11%;">
+            <col style="width:22%;">
             <col style="width:11%;">
             <col style="width:11%;">
             <col style="width:12%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
           </colgroup>
           <tr style="height:36px;">
-            <td style="padding:2px 6px; text-align:right; font-weight:900; font-style:italic; font-size:0.84rem; color:#1d4ed8;">SUBJECT</td>
-            <td style="padding:2px; text-align:center; font-weight:700; font-size:0.72rem; line-height:1.15;">No.of<br>Students</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#ff0000; line-height:1.15;">No.of<br>Fail</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0052cc; line-height:1.15;">Single<br>Sub.Fail</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#334155; line-height:1.15;">35-60<br>Marks</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#15803d; line-height:1.15;">Ave.<br>Mark</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0f172a; line-height:1.15;">First<br>Mark</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0f172a; line-height:1.15;">No.of<br>Centum</td>
+            <td style="${subBdr} background:#1e3a8a !important; color:#ffffff !important; padding:2px 6px; text-align:left; font-weight:900; font-size:0.78rem; white-space:nowrap;">SUBJECT</td>
+            <td style="${subBdr} background:#1e3a8a !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">No. of<br>Stu.</td>
+            <td style="${subBdr} background:#991b1b !important; color:#ffffff !important; padding:2px; font-weight:900; font-size:0.70rem; line-height:1.12; white-space:nowrap;">No. of<br>Fail</td>
+            <td style="${subBdr} background:#1d4ed8 !important; color:#ffffff !important; padding:2px; font-weight:900; font-size:0.70rem; line-height:1.12; white-space:nowrap;">Single<br>Fail</td>
+            <td style="${subBdr} background:#15803d !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">35–60<br>Marks</td>
+            <td style="${subBdr} background:#6d28d9 !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">Avg.<br>Mark</td>
+            <td style="${subBdr} background:#1e3a8a !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">First<br>Mark</td>
+            <td style="${subBdr} background:#0f766e !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">No. of<br>Centum</td>
           </tr>
-          ${render12SubTableRows(left10Subjects, "#e2e8f0")}
+          ${render12SubTableRows(left10Subjects, "#e2e8f0", "#eff6ff")}
         </table>
 
         <!-- Right Table: Remaining 11 Subjects (Arts / Vocational / Others) -->
-        <table style="width:43%; border-collapse:collapse; table-layout:fixed;">
+        <table style="width:42%; flex:0 0 42%; border-collapse:collapse; table-layout:fixed;">
           <colgroup>
-            <col style="width:22%;">
-            <col style="width:11.5%;">
+            <col style="width:23%;">
             <col style="width:11%;">
-            <col style="width:11.5%;">
+            <col style="width:11%;">
+            <col style="width:11%;">
             <col style="width:11%;">
             <col style="width:11%;">
             <col style="width:11%;">
             <col style="width:11%;">
           </colgroup>
           <tr style="height:36px;">
-            <td style="padding:2px 6px; text-align:right; font-weight:900; font-style:italic; font-size:0.84rem; color:#1d4ed8;">SUBJECT</td>
-            <td style="padding:2px; text-align:center; font-weight:700; font-size:0.72rem; line-height:1.15;">No.of<br>Students</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#ff0000; line-height:1.15;">No.of<br>Fail</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0052cc; line-height:1.15;">Single<br>Sub.Fail</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#334155; line-height:1.15;">35-60<br>Marks</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#15803d; line-height:1.15;">Ave.<br>Mark</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0f172a; line-height:1.15;">First<br>Mark</td>
-            <td style="padding:2px; text-align:center; font-weight:800; font-size:0.72rem; color:#0f172a; line-height:1.15;">No.of<br>Centum</td>
+            <td style="${subBdr} background:#0f766e !important; color:#ffffff !important; padding:2px 6px; text-align:left; font-weight:900; font-size:0.78rem; white-space:nowrap;">SUBJECT</td>
+            <td style="${subBdr} background:#0f766e !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">No. of<br>Stu.</td>
+            <td style="${subBdr} background:#991b1b !important; color:#ffffff !important; padding:2px; font-weight:900; font-size:0.70rem; line-height:1.12; white-space:nowrap;">No. of<br>Fail</td>
+            <td style="${subBdr} background:#1d4ed8 !important; color:#ffffff !important; padding:2px; font-weight:900; font-size:0.70rem; line-height:1.12; white-space:nowrap;">Single<br>Fail</td>
+            <td style="${subBdr} background:#15803d !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">35–60<br>Marks</td>
+            <td style="${subBdr} background:#6d28d9 !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">Avg.<br>Mark</td>
+            <td style="${subBdr} background:#0f766e !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">First<br>Mark</td>
+            <td style="${subBdr} background:#0369a1 !important; color:#ffffff !important; padding:2px; font-weight:800; font-size:0.70rem; line-height:1.12; white-space:nowrap;">No. of<br>Centum</td>
           </tr>
-          ${render12SubTableRows(right11Subjects, "#d9ead3")}
+          ${render12SubTableRows(right11Subjects, "#dcfce7", "#f0fdf4")}
         </table>
       </div>
     </div>
