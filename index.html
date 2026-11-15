@@ -1642,10 +1642,10 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
       <span id="schMidTermStatusBadge" style="display:none;"></span>
     </div>
     <div style="display:inline-flex; background:rgba(255,255,255,0.14); padding:3px; border-radius:9px; border:1px solid rgba(255,255,255,0.28);">
-      <button type="button" id="raTopTabStd10" onclick="onRaSelectStandard('10')" style="cursor:pointer; padding:5px 14px; border-radius:7px; font-size:0.80rem; font-weight:900; border:none; background:#0f766e; color:#ffffff;">
+      <button type="button" id="raTopTabStd10" onclick="onRaSelectStandard('10', true)" style="cursor:pointer; padding:5px 14px; border-radius:7px; font-size:0.80rem; font-weight:900; border:none; background:#0f766e; color:#ffffff;">
         📘 10-ஆம் வகுப்பு
       </button>
-      <button type="button" id="raTopTabStd12" onclick="onRaSelectStandard('12')" style="cursor:pointer; padding:5px 14px; border-radius:7px; font-size:0.80rem; font-weight:900; border:none; background:transparent; color:#e2e8f0;">
+      <button type="button" id="raTopTabStd12" onclick="onRaSelectStandard('12', true)" style="cursor:pointer; padding:5px 14px; border-radius:7px; font-size:0.80rem; font-weight:900; border:none; background:transparent; color:#e2e8f0;">
         📙 12-ஆம் வகுப்பு
       </button>
     </div>
@@ -12684,9 +12684,29 @@ document.body.removeChild(a);
 URL.revokeObjectURL(url);
 showToast("✅ மாணவர் சேர்க்கை & Group-wise விவரங்கள் CSV வடிவில் பதிவிறக்கம் செய்யப்பட்டன!", "#22c55e");
 }
-function isHigherSecondarySchool(s) {
-if (!s) return false;
-return (s.level === "HSS" || (/மேல்நிலை|HSS/i.test(s.nameTa || "") && !/உயர்நிலை/i.test(s.nameTa || "")) || /HSS|HR\.?\s*SEC/i.test(s.nameEn || ""));
+function isHigherSecondarySchool(schOrUNo) {
+  if (!schOrUNo) return false;
+  let sch = null;
+  let uNo = "";
+  if (typeof schOrUNo === "object") {
+    sch = schOrUNo;
+    uNo = String(sch.uNo || "").trim();
+  } else {
+    uNo = String(schOrUNo || "").trim();
+    sch = (typeof masterSchools !== "undefined" && Array.isArray(masterSchools))
+      ? masterSchools.find(s => s && String(s.uNo) === uNo)
+      : null;
+  }
+  if (sch) {
+    if (String(sch.level || "").toUpperCase().trim() === "HSS") return true;
+    if (/மேல்நிலை|HSS/i.test(sch.nameTa || "") && !/உயர்நிலை/i.test(sch.nameTa || "")) return true;
+    if (/\bHSS\b|HR\.?\s*SEC|HIGHER\s*SEC/i.test(sch.nameEn || "")) return true;
+  }
+  const num = Number(uNo);
+  if ((num >= 201 && num <= 299) || (num >= 401 && num <= 499) || (num >= 601 && num <= 699) || (num >= 801 && num <= 899)) {
+    return true;
+  }
+  return false;
 }
 function toggleSchFormHssFields() {
 const lvlEl = document.getElementById("schFormLevel");
@@ -16613,10 +16633,20 @@ if (typeof renderAdminStudentsMasterView === "function") {
 const stuPane = document.getElementById("admPaneStudentsMaster");
 if (stuPane && stuPane.style.display !== "none") renderAdminStudentsMasterView();
 }
+if (typeof renderAdminMidTermDashboard === "function") {
+  const mtAdmPane = document.getElementById("admPaneMidTermMaster");
+  if (mtAdmPane && mtAdmPane.style.display !== "none") renderAdminMidTermDashboard();
+}
 if (activeSchoolSession) {
-const refreshed = masterSchools.find(s => String(s.uNo) === String(activeSchoolSession.uNo));
-if (refreshed) activeSchoolSession = refreshed;
-renderSchoolDashboard();
+  const refreshed = masterSchools.find(s => String(s.uNo) === String(activeSchoolSession.uNo));
+  if (refreshed) activeSchoolSession = refreshed;
+  renderSchoolDashboard();
+  if (currentSchoolTabKey === "ebs" && typeof renderSchoolEbsModule === "function") {
+    renderSchoolEbsModule();
+  }
+  if (currentSchoolTabKey === "midTerm" && typeof renderSchoolMidTermModule === "function") {
+    renderSchoolMidTermModule();
+  }
 }
 } catch (e) {}
 }
@@ -34057,18 +34087,7 @@ function parse12thGroupCodeToSubjects(groupCodeStr) {
   };
 }
 
-function isHigherSecondarySchool(uNo) {
-  uNo = String(uNo || "").trim();
-  const num = Number(uNo);
-  if ((num >= 201 && num <= 299) || (num >= 401 && num <= 499) || (num >= 601 && num <= 699) || (num >= 801 && num <= 899)) {
-    return true;
-  }
-  const sch = (masterSchools || []).find(s => String(s.uNo) === uNo);
-  if (sch && (sch.level === "HSS" || /HSS|மேல்நிலை/i.test((sch.nameEn || "") + " " + (sch.nameTa || "")))) {
-    return true;
-  }
-  return false;
-}
+// isHigherSecondarySchool unified globally to accept school object or uNo
 
 function getHssSchoolsListFor12th() {
   return (masterSchools || []).filter(s => s && s.uNo && String(s.uNo) !== "999" && Number(s.uNo) < 900 && isHigherSecondarySchool(s.uNo));
@@ -37327,12 +37346,33 @@ function onRaOpenSectionMarkEntry(secId) {
   renderSchoolMidTermModule();
 }
 
-function onRaSelectStandard(stdVal) {
+function onRaSelectStandard(stdVal, keepModeIfOpen) {
   _raStepStdChosen = true;
   _activeResultAnalysisStd = (String(stdVal) === "12") ? "12" : "10";
-  _activeMidTermMainSection = "";
-  _raSelectedSecId = "";
+  if (!keepModeIfOpen) {
+    _activeMidTermMainSection = "";
+    _raSelectedSecId = "";
+  } else if (_activeMidTermMainSection === "CLASS_MASTER" && !_raSelectedSecId) {
+    _raSelectedSecId = "A";
+  }
   renderSchoolMidTermModule();
+  if (typeof showToast === "function") {
+    showToast(_activeResultAnalysisStd === "12"
+      ? "📙 12-ஆம் வகுப்பு தேர்ச்சிப் பகுப்பாய்வு முகப்பு திறக்கப்பட்டது!"
+      : "📘 10-ஆம் வகுப்பு தேர்ச்சிப் பகுப்பாய்வு முகப்பு திறக்கப்பட்டது!",
+      _activeResultAnalysisStd === "12" ? "#5b21b6" : "#0f766e");
+  }
+}
+
+
+if (typeof window !== "undefined") {
+  window.onRaSelectStandard = onRaSelectStandard;
+  window.onRaSelectMainMode = onRaSelectMainMode;
+  window.onRaSelectClassMasterSection = onRaSelectClassMasterSection;
+  window.onRaOpenSectionMarkEntry = onRaOpenSectionMarkEntry;
+  window.exitRaStandaloneToSchoolHome = exitRaStandaloneToSchoolHome;
+  window.resetRaStepFlowOnMenuClick = resetRaStepFlowOnMenuClick;
+  window.switchResultAnalysisStd = switchResultAnalysisStd;
 }
 
 function onRaSelectMainMode(modeKey) {
@@ -37470,11 +37510,13 @@ function renderSchoolMidTermClassStudentsPane(calc) {
 }
 
 function renderSchoolMidTermModule() {
-  if (!activeSchoolSession) return;
+  if (!activeSchoolSession) {
+    const sDef = (typeof masterSchools !== "undefined" && Array.isArray(masterSchools) && masterSchools.length > 0) ? masterSchools[0] : null;
+    if (!sDef) return;
+    activeSchoolSession = sDef;
+  }
   const uNo = String(activeSchoolSession.uNo);
   const is12Active = (_activeResultAnalysisStd === "12");
-  const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey, _activeResultAnalysisStd);
-  const rec = calc.rec;
 
   const step1El = document.getElementById("raStep1StdContainer");
   const dedBarEl = document.getElementById("raDedicatedClassHeaderBar");
@@ -37550,6 +37592,15 @@ function renderSchoolMidTermModule() {
     if (secMe) secMe.style.display = "none";
     return;
   }
+
+  let calc;
+  try {
+    calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey, _activeResultAnalysisStd);
+  } catch (err) {
+    console.error("computeSchoolExamResultAnalysis error:", err);
+    return;
+  }
+  const rec = (calc && calc.rec) ? calc.rec : { sections: [{ secId: "A", medium: "TM", teachers: {} }], students: [] };
 
   if (secCm) secCm.style.display = isCm ? "block" : "none";
   if (secMe) secMe.style.display = isMe ? "block" : "none";
