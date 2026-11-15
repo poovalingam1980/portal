@@ -35098,93 +35098,103 @@ function renderSchool12thStuMarksPane(calc) {
   const isSplit = isSplitMarkExamTerm(_activeMidTermTermKey);
   const secMap = {};
   (rec.sections || []).forEach(s => { secMap[s.secId] = s; });
-  const secOpts = (rec.sections || []).map(s => `<option value="${escapeHtmlAttr(s.secId)}">Sec ${escapeHtmlAttr(s.secId)} (${s.groupSubjects ? s.groupSubjects.join("/") : s.medium})</option>`).join("");
+
+  // Ensure valid section filter (default to first section so 12th header always displays exact section subjects!)
+  const validSecIds = (rec.sections || []).map(s => s.secId);
+  if ((!_mtStuFilterSec || _mtStuFilterSec === "ALL" || !validSecIds.includes(_mtStuFilterSec)) && validSecIds.length > 0 && _mtStuFilterSec !== "ALL_EXPLICIT") {
+    if (_mtStuFilterSec !== "ALL") _mtStuFilterSec = validSecIds[0];
+  }
+  const activeSecFilter = (_mtStuFilterSec === "ALL_EXPLICIT" || _mtStuFilterSec === "ALL") ? "ALL" : _mtStuFilterSec;
+
+  // Determine the active section's 6 subjects for the Table Header (<thead>)
+  const headerSecObj = (activeSecFilter !== "ALL" && secMap[activeSecFilter])
+    ? secMap[activeSecFilter]
+    : (rec.sections && rec.sections[0]) || { secId: "A", groupSubjects: ["PHY", "CHE", "BIO", "MAT"] };
+  const header6Subs = get12thSection6Subjects(headerSecObj);
 
   const filteredList = calc.evaluatedStudents.map((st, idx) => ({ st, origIdx: idx })).filter(item => {
-    if (_mtStuFilterSec !== "ALL" && item.st.section !== _mtStuFilterSec) return false;
+    if (activeSecFilter !== "ALL" && item.st.section !== activeSecFilter) return false;
     if (_mtStuFilterRes === "PASS" && item.st.resultType !== "PASS") return false;
     if (_mtStuFilterRes === "FAIL_ALL" && !["FAIL", "FAIL_1S"].includes(item.st.resultType)) return false;
     if (_mtStuFilterRes === "FAIL_1S" && item.st.resultType !== "FAIL_1S") return false;
     return true;
   });
 
+  const markInputFont = "font-family:'Segoe UI',Arial,sans-serif; font-size:1.04rem; font-weight:900; text-align:center; height:36px; border-radius:6px;";
+
   const rowsHtml = filteredList.length === 0
-    ? `<tr><td colspan="16" style="text-align:center; padding:26px; color:#64748b; font-weight:800;">
-        📋 12-ஆம் வகுப்பு மாணவர்கள் பட்டியல் காலியாக உள்ளது. மேலுள்ள <strong>"📤 EMIS Student List (.xlsx)"</strong> அல்லது <strong>"📤 Modified TML (.xlsx)"</strong> அல்லது <strong>"🌱 மாதிரி மதிப்பெண்கள் ஏற்று"</strong> பொத்தானை அழுத்தித் தொடங்கலாம்!
+    ? `<tr><td colspan="13" style="text-align:center; padding:26px; color:#64748b; font-weight:800; font-size:0.92rem;">
+        📋 12-ஆம் வகுப்பு மாணவர்கள் பட்டியல் காலியாக உள்ளது. மேலுள்ள <strong>"🏫 Class Master ➔ 📤 EMIS Student List (.xlsx)"</strong> அல்லது <strong>"📤 TML (.xlsx) பதிவேற்று"</strong> பொத்தானை அழுத்தித் தொடங்கலாம்!
        </td></tr>`
-    : filteredList.map(({ st, origIdx }) => {
+    : filteredList.map(({ st, origIdx }, dispIdx) => {
         const rawStu = rec.students[origIdx] || st;
         normalizeStudentNamesTaEn(rawStu);
-        const secObj = secMap[rawStu.section] || rec.sections[0] || { secId: "A", groupSubjects: ["PHY", "CHE", "BIO", "MAT"] };
+        const secObj = secMap[rawStu.section] || headerSecObj;
         const stu6Subs = get12thSection6Subjects(secObj);
-        const secSelectHtml = (rec.sections || []).map(sec =>
-          `<option value="${escapeHtmlAttr(sec.secId)}" ${rawStu.section === sec.secId ? "selected" : ""}>Sec ${escapeHtmlAttr(sec.secId)}</option>`
-        ).join("");
         const m = rawStu.marks || {};
+        const isRowDisabled = (rawStu.status === "LA" || rawStu.status === "AB");
+        const disAttr = isRowDisabled ? "disabled" : "";
+        const disStyle = isRowDisabled
+          ? "background:#e2e8f0 !important; color:#94a3b8 !important; border-color:#cbd5e1 !important; cursor:not-allowed !important; opacity:0.68;"
+          : "";
 
         const singleCellStyle = (val) => {
+          if (isRowDisabled) return disStyle;
           const v = String(val !== undefined ? val : "").trim().toUpperCase();
-          if (v === "AB") return "background:#fef2f2; color:#dc2626; border-color:#fca5a5;";
-          if (v === "EX") return "background:#eff6ff; color:#1d4ed8; border-color:#93c5fd;";
+          if (v === "AB") return "background:#fef2f2; color:#dc2626; border:1.5px solid #fca5a5;";
+          if (v === "EX") return "background:#eff6ff; color:#1d4ed8; border:1.5px solid #93c5fd;";
           const n = Number(v);
           if (v !== "" && !isNaN(n)) {
-            if (n < 35) return "background:#fee2e2; color:#991b1b; border-color:#f87171; font-weight:900;";
-            if (n === 100) return "background:#dcfce7; color:#166534; border-color:#4ade80; font-weight:900;";
+            if (n < 35) return "background:#fee2e2; color:#991b1b; border:1.5px solid #f87171;";
+            if (n === 100) return "background:#dcfce7; color:#166534; border:1.5px solid #4ade80;";
           }
-          return "background:#fff; color:#0f294a; font-weight:800;";
+          return "background:#ffffff; color:#0f294a; border:1.5px solid #94a3b8;";
         };
 
-        const sixInputsHtml = stu6Subs.map((sk) => {
+        const sixInputsHtml = stu6Subs.map((sk, subPosIdx) => {
           const meta = HSC12_SUBJECT_MAP[sk] || { code: "", shortEn: sk, labelTa: sk };
-          const shortTitle = `${meta.code ? meta.code + " " : ""}${meta.shortEn.replace(/\n/g, " ")}`;
+          const showDiffSubBadge = (activeSecFilter === "ALL" && header6Subs[subPosIdx] !== sk);
+          const diffSubTag = showDiffSubBadge
+            ? `<div style="font-size:0.65rem; font-weight:900; color:#5b21b6; margin-bottom:2px; text-align:center;">${escapeHtmlAttr(meta.code + " " + meta.labelTa)}</div>`
+            : "";
+
           if (!isSplit) {
             return `
-              <td style="width:78px; text-align:center; vertical-align:middle;">
-                <div style="font-size:0.65rem; font-weight:900; color:#5b21b6; margin-bottom:2px;">${escapeHtmlAttr(shortTitle)}</div>
-                <input type="text" maxlength="3" class="form-control" style="padding:4px; text-align:center; font-size:0.84rem; ${singleCellStyle(m[sk])}" value="${escapeHtmlAttr(m[sk] !== undefined ? m[sk] : "")}" placeholder="0-100" oninput="on12thStudentMarkInput(${origIdx}, '${sk}', this)">
+              <td style="width:92px; padding:5px 6px; text-align:center; vertical-align:middle; border-left:1.5px solid #cbd5e1;">
+                ${diffSubTag}
+                <input type="text" maxlength="3" ${disAttr} class="form-control" style="padding:4px; ${markInputFont} ${singleCellStyle(m[sk])}" value="${escapeHtmlAttr(isRowDisabled ? "" : (m[sk] !== undefined ? m[sk] : ""))}" placeholder="${isRowDisabled ? rawStu.status : '0-100'}" oninput="on12thStudentMarkInput(${origIdx}, '${sk}', this)">
               </td>
             `;
           }
 
-          // SPLIT MARK MODE: Theory + Practical + Internal = Total (100)
+          // SPLIT MARK MODE: Theory + Practical + Internal = Total (100) (Labels are in <thead>!)
           const evalPart = ensureStudentSubjectMarkParts(rawStu, sk, "12", true);
           const rule = getSubjectSplitRule("12", sk, rawStu.markParts);
-          const totBadgeBg = evalPart.totalStr === "EX"
-            ? "background:#dbeafe; color:#1d4ed8; border:1px solid #93c5fd;"
-            : (evalPart.totalStr === ""
-                ? "background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1;"
-                : (evalPart.isFail
-                    ? "background:#fee2e2; color:#991b1b; border:1px solid #f87171;"
-                    : (evalPart.totalStr === "100"
-                        ? "background:#dcfce7; color:#166534; border:1px solid #4ade80;"
-                        : "background:#f0fdf4; color:#0f766e; border:1px solid #86efac;")));
+          const totBadgeBg = isRowDisabled
+            ? "background:#e2e8f0; color:#64748b; border:1.5px solid #cbd5e1;"
+            : (evalPart.totalStr === "EX"
+              ? "background:#dbeafe; color:#1d4ed8; border:1.5px solid #93c5fd;"
+              : (evalPart.totalStr === ""
+                  ? "background:#f1f5f9; color:#64748b; border:1.5px solid #cbd5e1;"
+                  : (evalPart.isFail
+                      ? "background:#fee2e2; color:#991b1b; border:1.5px solid #f87171;"
+                      : (evalPart.totalStr === "100"
+                          ? "background:#dcfce7; color:#166534; border:1.5px solid #4ade80;"
+                          : "background:#f0fdf4; color:#0f766e; border:1.5px solid #86efac;"))));
 
-          const totDisp = evalPart.totalStr === "" ? "-" : (evalPart.failReason && evalPart.failReason.startsWith("Th <") ? `${evalPart.totalStr}!` : evalPart.totalStr);
+          const totDisp = isRowDisabled
+            ? rawStu.status
+            : (evalPart.totalStr === "" ? "-" : (evalPart.failReason && evalPart.failReason.startsWith("Th <") ? `${evalPart.totalStr}!` : evalPart.totalStr));
 
           if (rule.mode === "TH_PR_INT") {
             return `
-              <td style="min-width:162px; padding:4px 5px; background:#faf5ff; border-left:1.5px solid #d8b4fe; vertical-align:middle;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                  <span style="font-size:0.66rem; font-weight:900; color:#4c1d95;">${escapeHtmlAttr(shortTitle)}</span>
-                  <span style="font-size:0.59rem; font-weight:800; color:#6d28d9; background:#ede9fe; padding:0 4px; border-radius:4px;">70+20+10</span>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:3px; align-items:center;">
-                  <div>
-                    <div style="font-size:0.58rem; color:#475569; font-weight:800; text-align:center;">Th(70)</div>
-                    <input type="text" maxlength="3" class="form-control" title="Theory Mark (Max 70, Min Pass 15)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:900; border-color:#c4b5fd;" value="${escapeHtmlAttr(evalPart.th)}" placeholder="/70" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'th', this)">
-                  </div>
-                  <div>
-                    <div style="font-size:0.58rem; color:#0369a1; font-weight:800; text-align:center;">Pr(20)</div>
-                    <input type="text" maxlength="3" class="form-control" title="Practical Mark (Max 20)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:800; background:#f0f9ff; border-color:#7dd3fc; color:#0369a1;" value="${escapeHtmlAttr(evalPart.pr)}" placeholder="/20" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'pr', this)">
-                  </div>
-                  <div>
-                    <div style="font-size:0.58rem; color:#0f766e; font-weight:800; text-align:center;">Int(10)</div>
-                    <input type="text" maxlength="2" class="form-control" title="Internal Mark (Max 10)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:800; background:#f0fdfa; border-color:#5eead4; color:#0f766e;" value="${escapeHtmlAttr(evalPart.in)}" placeholder="/10" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'in', this)">
-                  </div>
-                  <div style="text-align:center; min-width:34px;">
-                    <div style="font-size:0.58rem; color:#0f294a; font-weight:900;">Tot</div>
-                    <div id="mt12SubTot_${origIdx}_${sk}" title="${escapeHtmlAttr(evalPart.failReason || 'Total out of 100')}" style="padding:3px 4px; border-radius:5px; font-size:0.80rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
-                  </div>
+              <td style="min-width:176px; padding:5px 6px; background:${isRowDisabled ? '#f8fafc' : '#faf5ff'}; border-left:2px solid #d8b4fe; vertical-align:middle;">
+                ${diffSubTag}
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr 44px; gap:4px; align-items:center;">
+                  <input type="text" maxlength="3" ${disAttr} class="form-control" title="Theory Mark (Max 70, Min Pass 15)" style="padding:3px 2px; ${markInputFont} border:1.5px solid #c4b5fd; color:#0f294a; background:#ffffff; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.th)}" placeholder="${isRowDisabled ? '-' : '/70'}" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'th', this)">
+                  <input type="text" maxlength="3" ${disAttr} class="form-control" title="Practical Mark (Max 20)" style="padding:3px 2px; ${markInputFont} background:#f0f9ff; border:1.5px solid #7dd3fc; color:#0369a1; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.pr)}" placeholder="${isRowDisabled ? '-' : '/20'}" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'pr', this)">
+                  <input type="text" maxlength="2" ${disAttr} class="form-control" title="Internal Mark (Max 10)" style="padding:3px 2px; ${markInputFont} background:#f0fdfa; border:1.5px solid #5eead4; color:#0f766e; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.in)}" placeholder="${isRowDisabled ? '-' : '/10'}" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'in', this)">
+                  <div id="mt12SubTot_${origIdx}_${sk}" title="${escapeHtmlAttr(evalPart.failReason || 'Total out of 100')}" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
                 </div>
               </td>
             `;
@@ -35192,24 +35202,12 @@ function renderSchool12thStuMarksPane(calc) {
 
           if (rule.mode === "PR_INT_VOC") {
             return `
-              <td style="min-width:130px; padding:4px 5px; background:#fffbeb; border-left:1.5px solid #fde68a; vertical-align:middle;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                  <span style="font-size:0.66rem; font-weight:900; color:#92400e;">${escapeHtmlAttr(shortTitle)}</span>
-                  <span style="font-size:0.59rem; font-weight:800; color:#b45309; background:#fef3c7; padding:0 4px; border-radius:4px;">Pr75+Int25</span>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:3px; align-items:center;">
-                  <div>
-                    <div style="font-size:0.58rem; color:#0369a1; font-weight:800; text-align:center;">Pr(75)</div>
-                    <input type="text" maxlength="3" class="form-control" title="Vocational Practical Mark (Max 75)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:900; background:#f0f9ff; border-color:#7dd3fc; color:#0369a1;" value="${escapeHtmlAttr(evalPart.pr)}" placeholder="/75" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'pr', this)">
-                  </div>
-                  <div>
-                    <div style="font-size:0.58rem; color:#0f766e; font-weight:800; text-align:center;">Int(25)</div>
-                    <input type="text" maxlength="2" class="form-control" title="Vocational Internal Mark (Max 25)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:800; background:#f0fdfa; border-color:#5eead4; color:#0f766e;" value="${escapeHtmlAttr(evalPart.in)}" placeholder="/25" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'in', this)">
-                  </div>
-                  <div style="text-align:center; min-width:34px;">
-                    <div style="font-size:0.58rem; color:#0f294a; font-weight:900;">Tot</div>
-                    <div id="mt12SubTot_${origIdx}_${sk}" style="padding:3px 4px; border-radius:5px; font-size:0.80rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
-                  </div>
+              <td style="min-width:146px; padding:5px 6px; background:${isRowDisabled ? '#f8fafc' : '#fffbeb'}; border-left:2px solid #fde68a; vertical-align:middle;">
+                ${diffSubTag}
+                <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; align-items:center;">
+                  <input type="text" maxlength="3" ${disAttr} class="form-control" title="Vocational Practical Mark (Max 75)" style="padding:3px 2px; ${markInputFont} background:#f0f9ff; border:1.5px solid #7dd3fc; color:#0369a1; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.pr)}" placeholder="${isRowDisabled ? '-' : '/75'}" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'pr', this)">
+                  <input type="text" maxlength="2" ${disAttr} class="form-control" title="Vocational Internal Mark (Max 25)" style="padding:3px 2px; ${markInputFont} background:#f0fdfa; border:1.5px solid #5eead4; color:#0f766e; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.in)}" placeholder="${isRowDisabled ? '-' : '/25'}" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'in', this)">
+                  <div id="mt12SubTot_${origIdx}_${sk}" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
                 </div>
               </td>
             `;
@@ -35217,113 +35215,143 @@ function renderSchool12thStuMarksPane(calc) {
 
           // Default TH_INT (Theory 90 + Internal 10 = 100)
           return `
-            <td style="min-width:128px; padding:4px 5px; background:#f8fafc; border-left:1.5px solid #cbd5e1; vertical-align:middle;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                <span style="font-size:0.66rem; font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(shortTitle)}</span>
-                <span style="font-size:0.59rem; font-weight:800; color:#1d4ed8; background:#dbeafe; padding:0 4px; border-radius:4px;">90+10</span>
-              </div>
-              <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:3px; align-items:center;">
-                <div>
-                  <div style="font-size:0.58rem; color:#475569; font-weight:800; text-align:center;">Th(90)</div>
-                  <input type="text" maxlength="3" class="form-control" title="Theory Mark (Max 90, Min Pass 25)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:900; border-color:#93c5fd;" value="${escapeHtmlAttr(evalPart.th)}" placeholder="/90" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'th', this)">
-                </div>
-                <div>
-                  <div style="font-size:0.58rem; color:#0f766e; font-weight:800; text-align:center;">Int(10)</div>
-                  <input type="text" maxlength="2" class="form-control" title="Internal Mark (Max 10)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:800; background:#f0fdfa; border-color:#5eead4; color:#0f766e;" value="${escapeHtmlAttr(evalPart.in)}" placeholder="/10" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'in', this)">
-                </div>
-                <div style="text-align:center; min-width:34px;">
-                  <div style="font-size:0.58rem; color:#0f294a; font-weight:900;">Tot</div>
-                  <div id="mt12SubTot_${origIdx}_${sk}" title="${escapeHtmlAttr(evalPart.failReason || 'Total out of 100')}" style="padding:3px 4px; border-radius:5px; font-size:0.80rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
-                </div>
+            <td style="min-width:146px; padding:5px 6px; background:#f8fafc; border-left:2px solid #cbd5e1; vertical-align:middle;">
+              ${diffSubTag}
+              <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; align-items:center;">
+                <input type="text" maxlength="3" ${disAttr} class="form-control" title="Theory Mark (Max 90, Min Pass 25)" style="padding:3px 2px; ${markInputFont} border:1.5px solid #93c5fd; color:#0f294a; background:#ffffff; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.th)}" placeholder="${isRowDisabled ? '-' : '/90'}" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'th', this)">
+                <input type="text" maxlength="2" ${disAttr} class="form-control" title="Internal Mark (Max 10)" style="padding:3px 2px; ${markInputFont} background:#f0fdfa; border:1.5px solid #5eead4; color:#0f766e; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.in)}" placeholder="${isRowDisabled ? '-' : '/10'}" oninput="on12thStudentSplitMarkInput(${origIdx}, '${sk}', 'in', this)">
+                <div id="mt12SubTot_${origIdx}_${sk}" title="${escapeHtmlAttr(evalPart.failReason || 'Total out of 100')}" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
               </div>
             </td>
           `;
         }).join("");
 
+        const dobStr = rawStu.dob ? formatDateDisplayDMY(rawStu.dob) : "";
+        const emisStr = rawStu.emisId ? String(rawStu.emisId) : "";
+
         return `
-          <tr id="mtStuRow_${origIdx}">
-            <td style="text-align:center; font-weight:900; color:#475569; width:38px;">${origIdx + 1}</td>
-            <td style="width:76px;"><input type="text" class="form-control" style="padding:4px 5px; font-size:0.79rem; font-weight:900; font-family:monospace; text-align:center;" value="${escapeHtmlAttr(rawStu.rollNo || "")}" placeholder="Roll No" oninput="onMidTermStudentCellInput(${origIdx}, 'rollNo', this.value)"></td>
-            <td style="min-width:155px;">
-              <input type="text" class="form-control" style="padding:4px 6px; font-size:0.81rem; font-weight:900; color:#0f294a;" value="${escapeHtmlAttr(rawStu.nameTa || "")}" placeholder="பெயர் (தமிழில்)" oninput="onMidTermStudentCellInput(${origIdx}, 'nameTa', this.value)">
-              ${rawStu.emisId ? `<div style="font-size:0.65rem; color:#0369a1; font-weight:800; margin-top:2px; font-family:monospace;">EMIS: ${escapeHtmlAttr(rawStu.emisId)}</div>` : ""}
+          <tr id="mtStuRow_${origIdx}" style="${isRowDisabled ? 'background:#f8fafc;' : ''}">
+            <td style="text-align:center; font-family:'Segoe UI',Arial,sans-serif; font-weight:900; font-size:0.92rem; color:#334155; width:34px; min-width:34px; max-width:38px; padding:4px 2px;">${dispIdx + 1}</td>
+            <td style="width:80px; min-width:76px; max-width:84px; padding:4px 4px;">
+              <input type="text" class="form-control" style="padding:4px 4px; height:34px; font-size:0.94rem; font-weight:900; font-family:'Segoe UI',Arial,sans-serif; text-align:center; color:#0f294a; border:1.5px solid #cbd5e1;" value="${escapeHtmlAttr(rawStu.rollNo || "")}" placeholder="Roll No" oninput="onMidTermStudentCellInput(${origIdx}, 'rollNo', this.value)">
             </td>
-            <td style="min-width:155px;">
-              <input type="text" class="form-control" style="padding:4px 6px; font-size:0.79rem; font-weight:800; color:#1e3a8a; text-transform:uppercase;" value="${escapeHtmlAttr(rawStu.nameEn || "")}" placeholder="NAME (ENGLISH)" oninput="onMidTermStudentCellInput(${origIdx}, 'nameEn', this.value)">
-              <div style="font-size:0.64rem; color:#5b21b6; font-weight:800; margin-top:2px;">${escapeHtmlAttr(stu6Subs.slice(2).join(" / "))}</div>
+            <td style="min-width:190px; max-width:225px; padding:4px 7px;">
+              <input type="text" class="form-control" style="padding:1px 5px; height:24px; font-size:0.88rem; font-weight:900; color:#0f294a; border:1px solid transparent; background:transparent; margin-bottom:1px;" value="${escapeHtmlAttr(rawStu.nameTa || "")}" placeholder="பெயர் (தமிழில்)" onfocus="this.style.borderColor='#c4b5fd';this.style.background='#fff';" onblur="this.style.borderColor='transparent';this.style.background='transparent';" oninput="onMidTermStudentCellInput(${origIdx}, 'nameTa', this.value)">
+              <input type="text" class="form-control" style="padding:1px 5px; height:21px; font-size:0.79rem; font-weight:800; color:#1d4ed8; text-transform:uppercase; border:1px solid transparent; background:transparent; margin-bottom:2px;" value="${escapeHtmlAttr(rawStu.nameEn || "")}" placeholder="NAME (ENGLISH)" onfocus="this.style.borderColor='#c4b5fd';this.style.background='#fff';" onblur="this.style.borderColor='transparent';this.style.background='transparent';" oninput="onMidTermStudentCellInput(${origIdx}, 'nameEn', this.value)">
+              <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; font-size:0.71rem; font-weight:800; color:#475569; padding-left:4px;">
+                <select style="border:1px solid #cbd5e1; background:#f1f5f9; border-radius:4px; padding:0px 3px; font-size:0.70rem; font-weight:900; color:#0f294a; cursor:pointer;" onchange="onMidTermStudentCellInput(${origIdx}, 'gender', this.value, true)">
+                  <option value="Male" ${rawStu.gender !== "Female" ? "selected" : ""}>👦 ஆண்</option>
+                  <option value="Female" ${rawStu.gender === "Female" ? "selected" : ""}>👧 பெண்</option>
+                </select>
+                ${dobStr ? `<span style="color:#334155; font-family:'Segoe UI',Arial,sans-serif;">• 📅 ${escapeHtmlAttr(dobStr)}</span>` : ""}
+                ${emisStr ? `<span style="color:#0369a1; font-family:'Segoe UI',Arial,sans-serif;">• 🆔 ${escapeHtmlAttr(emisStr)}</span>` : ""}
+              </div>
             </td>
-            <td style="width:82px;">
-              <select class="form-control" style="padding:4px 3px; font-size:0.75rem; font-weight:800;" onchange="onMidTermStudentCellInput(${origIdx}, 'gender', this.value, true)">
-                <option value="Male" ${rawStu.gender !== "Female" ? "selected" : ""}>👦 ஆண்</option>
-                <option value="Female" ${rawStu.gender === "Female" ? "selected" : ""}>👧 பெண்</option>
-              </select>
-            </td>
-            <td style="width:72px;">
-              <select class="form-control" style="padding:4px 3px; font-size:0.75rem; font-weight:900; text-align:center;" onchange="onMidTermStudentCellInput(${origIdx}, 'section', this.value, true)">
-                ${secSelectHtml}
-              </select>
-            </td>
-            <td style="width:104px;">
-              <select class="form-control" style="padding:4px 3px; font-size:0.73rem; font-weight:800;" onchange="onMidTermStudentCellInput(${origIdx}, 'status', this.value, true)">
+            <td style="width:104px; min-width:100px; padding:4px 5px; vertical-align:middle;">
+              <select class="form-control" style="padding:4px 3px; height:34px; font-size:0.77rem; font-weight:900; border-color:${isRowDisabled ? '#f87171' : '#cbd5e1'}; background:${isRowDisabled ? '#fef2f2' : '#ffffff'}; color:${isRowDisabled ? '#b91c1c' : '#0f294a'};" onchange="onMidTermStudentCellInput(${origIdx}, 'status', this.value, true)">
                 <option value="PRESENT" ${(!rawStu.status || rawStu.status === "PRESENT") ? "selected" : ""}>✅ Present</option>
-                <option value="LA" ${rawStu.status === "LA" ? "selected" : ""}>⏳ Long Absent (LA)</option>
-                <option value="AB" ${rawStu.status === "AB" ? "selected" : ""}>⚪ 6-Sub Absent</option>
+                <option value="LA" ${rawStu.status === "LA" ? "selected" : ""}>🚫 Long Absent (LA)</option>
+                <option value="AB" ${rawStu.status === "AB" ? "selected" : ""}>❌ 6-Sub Absent</option>
               </select>
             </td>
             ${sixInputsHtml}
-            <td style="text-align:center; font-weight:900; font-size:0.92rem; color:#4c1d95; width:64px;" id="mtStuTot_${origIdx}">${st.total600}</td>
-            <td style="font-size:0.74rem; font-weight:800; min-width:145px;" id="mtStuRes_${origIdx}">${st.resultBadge}</td>
-            <td style="text-align:center; width:38px;">
-              <button type="button" onclick="deleteMidTermStudentRow(${origIdx})" title="மாணவர் வரிசையை நீக்கு" style="border:none; background:transparent; color:#dc2626; cursor:pointer; font-size:0.85rem;">🗑️</button>
+            <td style="text-align:center; font-family:'Segoe UI',Arial,sans-serif; font-weight:900; font-size:1.10rem; color:#4c1d95; width:64px; vertical-align:middle;" id="mtStuTot_${origIdx}">${st.total600}</td>
+            <td style="font-size:0.79rem; font-weight:900; min-width:135px; vertical-align:middle;" id="mtStuRes_${origIdx}">${st.resultBadge}</td>
+            <td style="text-align:center; width:34px; vertical-align:middle;">
+              <button type="button" onclick="deleteMidTermStudentRow(${origIdx})" title="மாணவர் வரிசையை நீக்கு" style="border:none; background:transparent; color:#dc2626; cursor:pointer; font-size:0.90rem;">🗑️</button>
             </td>
           </tr>
         `;
       }).join("");
 
-  const secPillsHtml = `<button type="button" onclick="_mtStuFilterSec='ALL'; renderSchoolMidTermModule();" style="cursor:pointer; padding:4px 10px; border-radius:7px; font-size:0.76rem; font-weight:900; border:1.5px solid ${_mtStuFilterSec === 'ALL' ? '#5b21b6' : '#cbd5e1'}; background:${_mtStuFilterSec === 'ALL' ? '#5b21b6' : '#fff'}; color:${_mtStuFilterSec === 'ALL' ? '#fff' : '#0f294a'};">அனைத்தும் (${calc.evaluatedStudents.length})</button>` +
-    (rec.sections || []).map(s => {
-      const act = (_mtStuFilterSec === s.secId);
+  const secPillsHtml = (rec.sections || []).map(s => {
+      const act = (activeSecFilter === s.secId);
       const cnt = (rec.students || []).filter(st => st.section === s.secId).length;
-      return `<button type="button" onclick="_mtStuFilterSec='${escapeHtmlAttr(s.secId)}'; renderSchoolMidTermModule();" style="cursor:pointer; padding:4px 10px; border-radius:7px; font-size:0.76rem; font-weight:900; border:1.5px solid ${act ? '#5b21b6' : '#cbd5e1'}; background:${act ? '#5b21b6' : '#fff'}; color:${act ? '#fff' : '#0f294a'};">பிரிவு ${escapeHtmlAttr(s.secId)} (${cnt})</button>`;
-    }).join("");
+      const grpTxt = Array.isArray(s.groupSubjects) ? ` • ${s.groupSubjects.join("/")}` : "";
+      return `<button type="button" onclick="_mtStuFilterSec='${escapeHtmlAttr(s.secId)}'; renderSchoolMidTermModule();" style="cursor:pointer; padding:5px 12px; border-radius:7px; font-size:0.80rem; font-weight:900; border:1.5px solid ${act ? '#5b21b6' : '#cbd5e1'}; background:${act ? '#5b21b6' : '#fff'}; color:${act ? '#fff' : '#0f294a'};">பிரிவு ${escapeHtmlAttr(s.secId)} (${cnt}${escapeHtmlAttr(grpTxt)})</button>`;
+    }).join("") +
+    `<button type="button" onclick="_mtStuFilterSec='ALL_EXPLICIT'; renderSchoolMidTermModule();" style="cursor:pointer; padding:5px 12px; border-radius:7px; font-size:0.78rem; font-weight:900; border:1.5px solid ${activeSecFilter === 'ALL' ? '#5b21b6' : '#cbd5e1'}; background:${activeSecFilter === 'ALL' ? '#5b21b6' : '#fff'}; color:${activeSecFilter === 'ALL' ? '#fff' : '#0f294a'};">அனைத்தும் (${calc.evaluatedStudents.length})</button>`;
+
+  // Build section-aware 6 Subject Header Columns with integrated Th / Pr / Int / Tot bar
+  const subHeader12Html = header6Subs.map((sk, idx) => {
+    const meta = HSC12_SUBJECT_MAP[sk] || { code: "", shortEn: sk, labelTa: sk, labelEn: sk };
+    const rule = getSubjectSplitRule("12", sk);
+    const titleStr = `${meta.code ? meta.code + " " : ""}${meta.labelTa}`;
+    const subEnStr = meta.shortEn ? meta.shortEn.replace(/\n/g, " ") : meta.labelEn;
+    const bg = idx < 2 ? "#4c1d95" : (rule.mode === "TH_PR_INT" ? "#5b21b6" : "#1e3a8a");
+
+    if (!isSplit) {
+      return `<th style="text-align:center; background:${bg}; padding:7px 6px; border-left:1.5px solid rgba(255,255,255,0.22);">
+        <div style="font-size:0.84rem; font-weight:900; color:#ffffff;">${escapeHtmlAttr(titleStr)}</div>
+        <div style="font-size:0.68rem; color:#fde047; font-weight:800; margin-top:2px;">${escapeHtmlAttr(subEnStr)} (100M)</div>
+      </th>`;
+    }
+
+    if (rule.mode === "TH_PR_INT") {
+      return `<th style="text-align:center; background:${bg}; padding:6px 6px 4px 6px; border-left:2px solid rgba(255,255,255,0.25);">
+        <div style="font-size:0.83rem; font-weight:900; color:#ffffff; line-height:1.2; margin-bottom:4px;">${escapeHtmlAttr(titleStr)}</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 44px; gap:4px; background:rgba(0,0,0,0.26); padding:3px 4px; border-radius:5px; font-size:0.69rem; font-weight:900; color:#fde047;">
+          <span>Th(70)</span>
+          <span style="color:#7dd3fc;">Pr(20)</span>
+          <span style="color:#5eead4;">Int(10)</span>
+          <span style="color:#86efac;">Tot</span>
+        </div>
+      </th>`;
+    }
+
+    if (rule.mode === "PR_INT_VOC") {
+      return `<th style="text-align:center; background:#78350f; padding:6px 6px 4px 6px; border-left:2px solid rgba(255,255,255,0.25);">
+        <div style="font-size:0.83rem; font-weight:900; color:#ffffff; line-height:1.2; margin-bottom:4px;">${escapeHtmlAttr(titleStr)}</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; background:rgba(0,0,0,0.26); padding:3px 4px; border-radius:5px; font-size:0.69rem; font-weight:900; color:#fde047;">
+          <span style="color:#7dd3fc;">Pr(75)</span>
+          <span style="color:#5eead4;">Int(25)</span>
+          <span style="color:#86efac;">Tot</span>
+        </div>
+      </th>`;
+    }
+
+    return `<th style="text-align:center; background:${bg}; padding:6px 6px 4px 6px; border-left:2px solid rgba(255,255,255,0.25);">
+      <div style="font-size:0.83rem; font-weight:900; color:#ffffff; line-height:1.2; margin-bottom:4px;">${escapeHtmlAttr(titleStr)}</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; background:rgba(0,0,0,0.26); padding:3px 4px; border-radius:5px; font-size:0.69rem; font-weight:900; color:#fde047;">
+        <span>Th(90)</span>
+        <span style="color:#5eead4;">Int(10)</span>
+        <span style="color:#86efac;">Tot</span>
+      </div>
+    </th>`;
+  }).join("");
 
   pane.innerHTML = `
     <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 12px;">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
         <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-          <span style="font-size:0.78rem; font-weight:900; color:#4c1d95;">🏫 பிரிவு:</span>
+          <span style="font-size:0.82rem; font-weight:900; color:#4c1d95;">🏫 பிரிவு:</span>
           ${secPillsHtml}
         </div>
         <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-          ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.75rem;">⚡ முழு Internal (10) &amp; Practical (20) நிரப்பு</button>` : ""}
-          <button type="button" class="btn btn-outline btn-sm" onclick="triggerModifiedTmlExcelUpload(false)" style="background:#f5f3ff; color:#5b21b6; border-color:#c4b5fd; font-weight:900; font-size:0.75rem;">
+          ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">⚡ முழு Internal (10) &amp; Practical (20) நிரப்பு</button>` : ""}
+          <button type="button" class="btn btn-outline btn-sm" onclick="triggerModifiedTmlExcelUpload(false)" style="background:#f5f3ff; color:#5b21b6; border-color:#c4b5fd; font-weight:900; font-size:0.76rem;">
             📤 TML (.xlsx) பதிவேற்று
           </button>
-          <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(1)" style="font-weight:800; font-size:0.75rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(1)" style="font-weight:800; font-size:0.76rem;">
             ➕ +1 மாணவர்
           </button>
         </div>
       </div>
-      <div class="table-responsive" style="max-height:560px; overflow:auto; border:1px solid #cbd5e1; border-radius:8px;">
-        <table class="data-table" style="margin:0; font-size:0.79rem;">
+      <div class="table-responsive" style="max-height:580px; overflow:auto; border:1.5px solid #94a3b8; border-radius:8px;">
+        <table class="data-table" style="margin:0; font-size:0.84rem; width:100%;">
           <thead style="position:sticky; top:0; z-index:5;">
             <tr style="background:#3b0764; color:#fff;">
-              <th style="text-align:center;">வ.எண்</th>
-              <th style="text-align:center;">Roll No.</th>
-              <th style="background:#115e59;">மாணவர் பெயர் (தமிழில்)</th>
-              <th style="background:#1e3a8a;">மாணவர் பெயர் (English)</th>
-              <th>பாலினம்</th>
-              <th style="text-align:center;">பிரிவு</th>
-              <th>வருகை நிலை</th>
-              <th style="text-align:center; background:#4c1d95;">501 மொழி (Lang)<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th(90) + Int(10) = 100" : "Out of 100"}</span></th>
-              <th style="text-align:center; background:#4c1d95;">503 ஆங்கிலம் (Eng)<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th(90) + Int(10) = 100" : "Out of 100"}</span></th>
-              <th style="text-align:center; background:#5b21b6;">பாடம் 3 (Sub 3)<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th + Pr + Int = 100" : "Out of 100"}</span></th>
-              <th style="text-align:center; background:#5b21b6;">பாடம் 4 (Sub 4)<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th + Pr + Int = 100" : "Out of 100"}</span></th>
-              <th style="text-align:center; background:#5b21b6;">பாடம் 5 (Sub 5)<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th + Pr + Int = 100" : "Out of 100"}</span></th>
-              <th style="text-align:center; background:#5b21b6;">பாடம் 6 (Sub 6)<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th + Pr + Int = 100" : "Out of 100"}</span></th>
-              <th style="text-align:center; background:#0f766e;">மொத்தம் (600)</th>
-              <th style="background:#0f766e;">முடிவு (Result)</th>
-              <th style="text-align:center;">நீக்கு</th>
+              <th style="text-align:center; width:34px; min-width:34px; max-width:38px; padding:6px 2px; font-size:0.76rem;">வ.எண்</th>
+              <th style="text-align:center; width:80px; min-width:76px; max-width:84px; padding:6px 4px; font-size:0.76rem; line-height:1.2;">Roll No /<br>Reg.No</th>
+              <th style="background:#115e59; min-width:190px; max-width:225px; padding:6px 8px; font-size:0.78rem; line-height:1.25;">
+                மாணவர் பெயர் (தமிழ் / English)<br>
+                <span style="font-size:0.68rem; color:#99f6e4; font-weight:800;">பாலினம் • DOB • EMIS ID</span>
+              </th>
+              <th style="width:104px; min-width:100px; text-align:center; padding:6px 4px; font-size:0.78rem;">வருகை நிலை</th>
+              ${subHeader12Html}
+              <th style="text-align:center; background:#0f766e; width:64px; padding:6px 4px; font-size:0.78rem;">மொத்தம்<br><span style="font-size:0.68rem; color:#fde047;">(600)</span></th>
+              <th style="background:#0f766e; min-width:135px; padding:6px 6px; font-size:0.78rem;">முடிவு (Result)</th>
+              <th style="text-align:center; width:34px; padding:6px 2px; font-size:0.74rem;">நீக்கு</th>
             </tr>
           </thead>
           <tbody>${rowsHtml}</tbody>
@@ -35365,6 +35393,7 @@ function on12thStudentMarkInput(idx, subKey, inpEl) {
     inpEl.style.background = "#fff"; inpEl.style.color = "#0f294a";
   }
 }
+
 
 function on12thStudentSplitMarkInput(idx, subKey, partKey, inpEl) {
   if (!activeSchoolSession || !inpEl) return;
@@ -37520,7 +37549,9 @@ function onRaSelectMainMode(modeKey) {
     if (!_raSelectedSecId) _raSelectedSecId = "A";
   } else {
     _activeMarkEntrySubView = "STU_MARKS";
-    _mtStuFilterSec = "ALL";
+    if (!_mtStuFilterSec || _mtStuFilterSec === "ALL") {
+      _mtStuFilterSec = _raSelectedSecId || "A";
+    }
   }
   renderSchoolMidTermModule();
 }
@@ -38015,7 +38046,12 @@ function renderSchoolMidTermStuMarksPane(calc) {
   if (!pane) return;
   const rec = calc.rec;
   const isSplit = isSplitMarkExamTerm(_activeMidTermTermKey);
-  const secOpts = (rec.sections || []).map(s => `<option value="${escapeHtmlAttr(s.secId)}">${escapeHtmlAttr(s.secId)} (${s.medium})</option>`).join("");
+
+  // Ensure valid section filter
+  const validSecIds = (rec.sections || []).map(s => s.secId);
+  if (_mtStuFilterSec !== "ALL" && validSecIds.length > 0 && !validSecIds.includes(_mtStuFilterSec)) {
+    _mtStuFilterSec = validSecIds[0];
+  }
 
   const filteredList = calc.evaluatedStudents.map((st, idx) => ({ st, origIdx: idx })).filter(item => {
     if (_mtStuFilterSec !== "ALL" && item.st.section !== _mtStuFilterSec) return false;
@@ -38025,176 +38061,178 @@ function renderSchoolMidTermStuMarksPane(calc) {
     return true;
   });
 
+  const markInputFont = "font-family:'Segoe UI',Arial,sans-serif; font-size:1.04rem; font-weight:900; text-align:center; height:36px; border-radius:6px;";
+
   const rowsHtml = filteredList.length === 0
-    ? `<tr><td colspan="15" style="text-align:center; padding:26px; color:#64748b; font-weight:800;">
-        📋 மாணவர்கள் பட்டியல் காலியாக உள்ளது. மேலுள்ள <strong>"📤 EMIS Student List (.xlsx) பதிவேற்று"</strong> அல்லது <strong>"🌱 மாதிரி மதிப்பெண்கள் ஏற்று"</strong> அல்லது <strong>"📋 Excel Copy-Paste"</strong> பொத்தானை அழுத்தி உடனடியாகத் தொடங்கலாம்!
+    ? `<tr><td colspan="12" style="text-align:center; padding:26px; color:#64748b; font-weight:800; font-size:0.92rem;">
+        📋 மாணவர்கள் பட்டியல் காலியாக உள்ளது. மேலுள்ள <strong>"🏫 Class Master ➔ 📤 EMIS Student List (.xlsx) பதிவேற்று"</strong> அல்லது <strong>"📋 Excel Copy-Paste"</strong> பொத்தானை அழுத்தி உடனடியாகத் தொடங்கலாம்!
        </td></tr>`
-    : filteredList.map(({ st, origIdx }) => {
+    : filteredList.map(({ st, origIdx }, dispIdx) => {
         const rawStu = rec.students[origIdx] || st;
         normalizeStudentNamesTaEn(rawStu);
-        const secSelectHtml = (rec.sections || []).map(sec =>
-          `<option value="${escapeHtmlAttr(sec.secId)}" ${rawStu.section === sec.secId ? "selected" : ""}>${escapeHtmlAttr(sec.secId)}</option>`
-        ).join("");
         const m = rawStu.marks || {};
+        const isRowDisabled = (rawStu.status === "LA" || rawStu.status === "AB");
+        const disAttr = isRowDisabled ? "disabled" : "";
+        const disStyle = isRowDisabled
+          ? "background:#e2e8f0 !important; color:#94a3b8 !important; border-color:#cbd5e1 !important; cursor:not-allowed !important; opacity:0.68;"
+          : "";
+
         const cellStyle = (val) => {
+          if (isRowDisabled) return disStyle;
           const v = String(val !== undefined ? val : "").trim().toUpperCase();
-          if (v === "AB") return "background:#fef2f2; color:#dc2626; border-color:#fca5a5;";
-          if (v === "EX") return "background:#eff6ff; color:#1d4ed8; border-color:#93c5fd;";
+          if (v === "AB") return "background:#fef2f2; color:#dc2626; border:1.5px solid #fca5a5;";
+          if (v === "EX") return "background:#eff6ff; color:#1d4ed8; border:1.5px solid #93c5fd;";
           const n = Number(v);
           if (v !== "" && !isNaN(n)) {
-            if (n < 35) return "background:#fee2e2; color:#991b1b; border-color:#f87171; font-weight:900;";
-            if (n === 100) return "background:#dcfce7; color:#166534; border-color:#4ade80; font-weight:900;";
+            if (n < 35) return "background:#fee2e2; color:#991b1b; border:1.5px solid #f87171;";
+            if (n === 100) return "background:#dcfce7; color:#166534; border:1.5px solid #4ade80;";
           }
-          return "background:#fff; color:#0f294a; font-weight:800;";
+          return "background:#ffffff; color:#0f294a; border:1.5px solid #94a3b8;";
         };
 
         const fiveSubCellsHtml = MIDTERM_CORE_SUBJECTS.map(sub => {
           const sk = sub.key;
           if (!isSplit) {
-            return `<td style="width:74px;"><input type="text" maxlength="3" class="form-control" style="padding:4px; text-align:center; font-size:0.84rem; ${cellStyle(m[sk])}" value="${escapeHtmlAttr(m[sk] !== undefined ? m[sk] : "")}" placeholder="0-100" oninput="onMidTermStudentMarkInput(${origIdx}, '${sk}', this)"></td>`;
+            return `<td style="width:92px; padding:5px 6px; text-align:center; vertical-align:middle; border-left:1.5px solid #cbd5e1;">
+              <input type="text" maxlength="3" ${disAttr} class="form-control" style="padding:4px; ${markInputFont} ${cellStyle(m[sk])}" value="${escapeHtmlAttr(isRowDisabled ? "" : (m[sk] !== undefined ? m[sk] : ""))}" placeholder="${isRowDisabled ? rawStu.status : '0-100'}" oninput="onMidTermStudentMarkInput(${origIdx}, '${sk}', this)">
+            </td>`;
           }
           const evalPart = ensureStudentSubjectMarkParts(rawStu, sk, "10", true);
-          const rule = getSubjectSplitRule("10", sk);
-          const totBadgeBg = evalPart.totalStr === "EX"
-            ? "background:#dbeafe; color:#1d4ed8; border:1px solid #93c5fd;"
-            : (evalPart.totalStr === ""
-                ? "background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1;"
-                : (evalPart.isFail
-                    ? "background:#fee2e2; color:#991b1b; border:1px solid #f87171;"
-                    : (evalPart.totalStr === "100"
-                        ? "background:#dcfce7; color:#166534; border:1px solid #4ade80;"
-                        : "background:#f0fdf4; color:#0f766e; border:1px solid #86efac;")));
-          const totDisp = evalPart.totalStr === "" ? "-" : (evalPart.failReason && (evalPart.failReason.startsWith("Th <") || evalPart.failReason.startsWith("Pr <")) ? `${evalPart.totalStr}!` : evalPart.totalStr);
+          const totBadgeBg = isRowDisabled
+            ? "background:#e2e8f0; color:#64748b; border:1.5px solid #cbd5e1;"
+            : (evalPart.totalStr === "EX"
+              ? "background:#dbeafe; color:#1d4ed8; border:1.5px solid #93c5fd;"
+              : (evalPart.totalStr === ""
+                  ? "background:#f1f5f9; color:#64748b; border:1.5px solid #cbd5e1;"
+                  : (evalPart.isFail
+                      ? "background:#fee2e2; color:#991b1b; border:1.5px solid #f87171;"
+                      : (evalPart.totalStr === "100"
+                          ? "background:#dcfce7; color:#166534; border:1.5px solid #4ade80;"
+                          : "background:#f0fdf4; color:#0f766e; border:1.5px solid #86efac;"))));
+          const totDisp = isRowDisabled
+            ? rawStu.status
+            : (evalPart.totalStr === "" ? "-" : (evalPart.failReason && (evalPart.failReason.startsWith("Th <") || evalPart.failReason.startsWith("Pr <")) ? `${evalPart.totalStr}!` : evalPart.totalStr));
 
           if (sk === "SCIENCE") {
             return `
-              <td style="min-width:154px; padding:4px 5px; background:#f0fdf4; border-left:1.5px solid #86efac; vertical-align:middle;">
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:3px; align-items:center;">
-                  <div>
-                    <div style="font-size:0.57rem; color:#475569; font-weight:800; text-align:center;">Th(75)</div>
-                    <input type="text" maxlength="3" class="form-control" title="Science Theory (Max 75, Min 20)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:900; border-color:#86efac;" value="${escapeHtmlAttr(evalPart.th)}" placeholder="/75" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'th', this)">
-                  </div>
-                  <div>
-                    <div style="font-size:0.57rem; color:#0369a1; font-weight:800; text-align:center;">Pr(25)</div>
-                    <input type="text" maxlength="2" class="form-control" title="Science Practical (Max 25, Min 15)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:800; background:#f0f9ff; border-color:#7dd3fc; color:#0369a1;" value="${escapeHtmlAttr(evalPart.pr)}" placeholder="/25" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'pr', this)">
-                  </div>
-                  <div>
-                    <div style="font-size:0.57rem; color:#0f766e; font-weight:800; text-align:center;">Int</div>
-                    <input type="text" maxlength="2" class="form-control" title="Optional Internal Mark" style="padding:3px 2px; text-align:center; font-size:0.78rem; font-weight:800; background:#f0fdfa; border-color:#5eead4; color:#0f766e;" value="${escapeHtmlAttr(evalPart.in)}" placeholder="Opt" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'in', this)">
-                  </div>
-                  <div style="text-align:center; min-width:34px;">
-                    <div style="font-size:0.57rem; color:#0f294a; font-weight:900;">Tot</div>
-                    <div id="mt10SubTot_${origIdx}_SCIENCE" style="padding:3px 4px; border-radius:5px; font-size:0.80rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
-                  </div>
+              <td style="min-width:168px; padding:5px 6px; background:${isRowDisabled ? '#f8fafc' : '#f0fdf4'}; border-left:2px solid #86efac; vertical-align:middle;">
+                <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; align-items:center;">
+                  <input type="text" maxlength="3" ${disAttr} class="form-control" title="Science Theory (Max 75, Min 20)" style="padding:3px 2px; ${markInputFont} border:1.5px solid #86efac; color:#0f294a; background:#ffffff; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.th)}" placeholder="${isRowDisabled ? '-' : '/75'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'th', this)">
+                  <input type="text" maxlength="2" ${disAttr} class="form-control" title="Science Practical (Max 25, Min 15)" style="padding:3px 2px; ${markInputFont} background:#f0f9ff; border:1.5px solid #7dd3fc; color:#0369a1; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.pr)}" placeholder="${isRowDisabled ? '-' : '/25'}" oninput="on10thStudentSplitMarkInput(${origIdx}, 'SCIENCE', 'pr', this)">
+                  <div id="mt10SubTot_${origIdx}_SCIENCE" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
                 </div>
               </td>
             `;
           }
 
           return `
-            <td style="min-width:124px; padding:4px 5px; background:#f8fafc; border-left:1.5px solid #cbd5e1; vertical-align:middle;">
-              <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:3px; align-items:center;">
-                <div>
-                  <div style="font-size:0.57rem; color:#475569; font-weight:800; text-align:center;">Th(90)</div>
-                  <input type="text" maxlength="3" class="form-control" title="Theory Mark (Max 90, Min 25)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:900; border-color:#93c5fd;" value="${escapeHtmlAttr(evalPart.th)}" placeholder="/90" oninput="on10thStudentSplitMarkInput(${origIdx}, '${sk}', 'th', this)">
-                </div>
-                <div>
-                  <div style="font-size:0.57rem; color:#0f766e; font-weight:800; text-align:center;">Int(10)</div>
-                  <input type="text" maxlength="2" class="form-control" title="Internal Mark (Max 10)" style="padding:3px 2px; text-align:center; font-size:0.79rem; font-weight:800; background:#f0fdfa; border-color:#5eead4; color:#0f766e;" value="${escapeHtmlAttr(evalPart.in)}" placeholder="/10" oninput="on10thStudentSplitMarkInput(${origIdx}, '${sk}', 'in', this)">
-                </div>
-                <div style="text-align:center; min-width:34px;">
-                  <div style="font-size:0.57rem; color:#0f294a; font-weight:900;">Tot</div>
-                  <div id="mt10SubTot_${origIdx}_${sk}" style="padding:3px 4px; border-radius:5px; font-size:0.80rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
-                </div>
+            <td style="min-width:156px; padding:5px 6px; background:#f8fafc; border-left:2px solid #cbd5e1; vertical-align:middle;">
+              <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; align-items:center;">
+                <input type="text" maxlength="3" ${disAttr} class="form-control" title="Theory Mark (Max 90, Min 25)" style="padding:3px 2px; ${markInputFont} border:1.5px solid #93c5fd; color:#0f294a; background:#ffffff; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.th)}" placeholder="${isRowDisabled ? '-' : '/90'}" oninput="on10thStudentSplitMarkInput(${origIdx}, '${sk}', 'th', this)">
+                <input type="text" maxlength="2" ${disAttr} class="form-control" title="Internal Mark (Max 10)" style="padding:3px 2px; ${markInputFont} background:#f0fdfa; border:1.5px solid #5eead4; color:#0f766e; ${disStyle}" value="${escapeHtmlAttr(isRowDisabled ? "" : evalPart.in)}" placeholder="${isRowDisabled ? '-' : '/10'}" oninput="on10thStudentSplitMarkInput(${origIdx}, '${sk}', 'in', this)">
+                <div id="mt10SubTot_${origIdx}_${sk}" style="height:36px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-family:'Segoe UI',Arial,sans-serif; font-size:1.02rem; font-weight:900; ${totBadgeBg}">${escapeHtmlAttr(totDisp)}</div>
               </div>
             </td>
           `;
         }).join("");
 
+        const dobStr = rawStu.dob ? formatDateDisplayDMY(rawStu.dob) : "";
+        const emisStr = rawStu.emisId ? String(rawStu.emisId) : "";
+
         return `
-          <tr id="mtStuRow_${origIdx}">
-            <td style="text-align:center; font-weight:900; color:#475569; width:40px;">${origIdx + 1}</td>
-            <td style="width:82px;"><input type="text" class="form-control" style="padding:4px 5px; font-size:0.80rem; font-weight:900; font-family:monospace; text-align:center;" value="${escapeHtmlAttr(rawStu.rollNo || "")}" placeholder="Roll No" oninput="onMidTermStudentCellInput(${origIdx}, 'rollNo', this.value)"></td>
-            <td style="min-width:165px;">
-              <input type="text" class="form-control" style="padding:4px 7px; font-size:0.82rem; font-weight:900; color:#0f294a;" value="${escapeHtmlAttr(rawStu.nameTa || "")}" placeholder="பெயர் (தமிழில்)" oninput="onMidTermStudentCellInput(${origIdx}, 'nameTa', this.value)">
-              ${rawStu.emisId ? `<div style="font-size:0.66rem; color:#0369a1; font-weight:800; margin-top:2px; font-family:monospace;">EMIS: ${escapeHtmlAttr(rawStu.emisId)}${rawStu.disability && rawStu.disability !== "None" ? ` | <span style="color:#dc2626;">♿ ${escapeHtmlAttr(rawStu.disability)}</span>` : ""}</div>` : ""}
+          <tr id="mtStuRow_${origIdx}" style="${isRowDisabled ? 'background:#f8fafc;' : ''}">
+            <td style="text-align:center; font-family:'Segoe UI',Arial,sans-serif; font-weight:900; font-size:0.92rem; color:#334155; width:34px; min-width:34px; max-width:38px; padding:4px 2px;">${dispIdx + 1}</td>
+            <td style="width:80px; min-width:76px; max-width:84px; padding:4px 4px;">
+              <input type="text" class="form-control" style="padding:4px 4px; height:34px; font-size:0.94rem; font-weight:900; font-family:'Segoe UI',Arial,sans-serif; text-align:center; color:#0f294a; border:1.5px solid #cbd5e1;" value="${escapeHtmlAttr(rawStu.rollNo || "")}" placeholder="Roll No" oninput="onMidTermStudentCellInput(${origIdx}, 'rollNo', this.value)">
             </td>
-            <td style="min-width:165px;">
-              <input type="text" class="form-control" style="padding:4px 7px; font-size:0.80rem; font-weight:800; color:#1e3a8a; text-transform:uppercase;" value="${escapeHtmlAttr(rawStu.nameEn || "")}" placeholder="NAME (ENGLISH)" oninput="onMidTermStudentCellInput(${origIdx}, 'nameEn', this.value)">
-              ${rawStu.dob ? `<div style="font-size:0.65rem; color:#64748b; font-weight:800; margin-top:2px;">DOB: ${escapeHtmlAttr(formatDateDisplayDMY(rawStu.dob))}${rawStu.admNo ? " | Adm: " + escapeHtmlAttr(rawStu.admNo) : ""}</div>` : ""}
+            <td style="min-width:190px; max-width:225px; padding:4px 7px;">
+              <input type="text" class="form-control" style="padding:1px 5px; height:24px; font-size:0.88rem; font-weight:900; color:#0f294a; border:1px solid transparent; background:transparent; margin-bottom:1px;" value="${escapeHtmlAttr(rawStu.nameTa || "")}" placeholder="பெயர் (தமிழில்)" onfocus="this.style.borderColor='#93c5fd';this.style.background='#fff';" onblur="this.style.borderColor='transparent';this.style.background='transparent';" oninput="onMidTermStudentCellInput(${origIdx}, 'nameTa', this.value)">
+              <input type="text" class="form-control" style="padding:1px 5px; height:21px; font-size:0.79rem; font-weight:800; color:#1d4ed8; text-transform:uppercase; border:1px solid transparent; background:transparent; margin-bottom:2px;" value="${escapeHtmlAttr(rawStu.nameEn || "")}" placeholder="NAME (ENGLISH)" onfocus="this.style.borderColor='#93c5fd';this.style.background='#fff';" onblur="this.style.borderColor='transparent';this.style.background='transparent';" oninput="onMidTermStudentCellInput(${origIdx}, 'nameEn', this.value)">
+              <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; font-size:0.71rem; font-weight:800; color:#475569; padding-left:4px;">
+                <select style="border:1px solid #cbd5e1; background:#f1f5f9; border-radius:4px; padding:0px 3px; font-size:0.70rem; font-weight:900; color:#0f294a; cursor:pointer;" onchange="onMidTermStudentCellInput(${origIdx}, 'gender', this.value, true)">
+                  <option value="Male" ${rawStu.gender !== "Female" ? "selected" : ""}>👦 ஆண்</option>
+                  <option value="Female" ${rawStu.gender === "Female" ? "selected" : ""}>👧 பெண்</option>
+                </select>
+                ${dobStr ? `<span style="color:#334155; font-family:'Segoe UI',Arial,sans-serif;">• 📅 ${escapeHtmlAttr(dobStr)}</span>` : ""}
+                ${emisStr ? `<span style="color:#0369a1; font-family:'Segoe UI',Arial,sans-serif;">• 🆔 ${escapeHtmlAttr(emisStr)}</span>` : ""}
+              </div>
             </td>
-            <td style="width:88px;">
-              <select class="form-control" style="padding:4px 4px; font-size:0.76rem; font-weight:800;" onchange="onMidTermStudentCellInput(${origIdx}, 'gender', this.value, true)">
-                <option value="Male" ${rawStu.gender !== "Female" ? "selected" : ""}>👦 ஆண்</option>
-                <option value="Female" ${rawStu.gender === "Female" ? "selected" : ""}>👧 பெண்</option>
-              </select>
-            </td>
-            <td style="width:66px;">
-              <select class="form-control" style="padding:4px 4px; font-size:0.76rem; font-weight:900; text-align:center;" onchange="onMidTermStudentCellInput(${origIdx}, 'section', this.value, true)">
-                ${secSelectHtml}
-              </select>
-            </td>
-            <td style="width:112px;">
-              <select class="form-control" style="padding:4px 4px; font-size:0.74rem; font-weight:800;" onchange="onMidTermStudentCellInput(${origIdx}, 'status', this.value, true)">
+            <td style="width:104px; min-width:100px; padding:4px 5px; vertical-align:middle;">
+              <select class="form-control" style="padding:4px 4px; height:34px; font-size:0.78rem; font-weight:900; border-color:${isRowDisabled ? '#f87171' : '#cbd5e1'}; background:${isRowDisabled ? '#fef2f2' : '#ffffff'}; color:${isRowDisabled ? '#b91c1c' : '#0f294a'};" onchange="onMidTermStudentCellInput(${origIdx}, 'status', this.value, true)">
                 <option value="PRESENT" ${(!rawStu.status || rawStu.status === "PRESENT") ? "selected" : ""}>✅ Present</option>
-                <option value="LA" ${rawStu.status === "LA" ? "selected" : ""}>⏳ Long Absent (LA)</option>
-                <option value="AB" ${rawStu.status === "AB" ? "selected" : ""}>⚪ 5-Sub Absent</option>
+                <option value="LA" ${rawStu.status === "LA" ? "selected" : ""}>🚫 Long Absent (LA)</option>
+                <option value="AB" ${rawStu.status === "AB" ? "selected" : ""}>❌ 5-Sub Absent</option>
                 <option value="HB" ${rawStu.status === "HB" ? "selected" : ""}>🏠 Home Based (HB)</option>
               </select>
             </td>
             ${fiveSubCellsHtml}
-            <td style="text-align:center; font-weight:900; font-size:0.88rem; color:#0f294a; width:66px;" id="mtStuTot_${origIdx}">${st.total500}</td>
-            <td style="font-size:0.74rem; font-weight:800; width:155px;" id="mtStuRes_${origIdx}">${st.resultBadge}</td>
-            <td style="text-align:center; width:40px;">
-              <button type="button" onclick="deleteMidTermStudentRow(${origIdx})" title="மாணவர் வரிசையை நீக்கு" style="border:none; background:transparent; color:#dc2626; cursor:pointer; font-size:0.85rem; font-weight:900;">🗑️</button>
+            <td style="text-align:center; font-family:'Segoe UI',Arial,sans-serif; font-weight:900; font-size:1.10rem; color:#0f294a; width:64px; vertical-align:middle;" id="mtStuTot_${origIdx}">${st.total500}</td>
+            <td style="font-size:0.80rem; font-weight:900; width:135px; vertical-align:middle;" id="mtStuRes_${origIdx}">${st.resultBadge}</td>
+            <td style="text-align:center; width:34px; vertical-align:middle;">
+              <button type="button" onclick="deleteMidTermStudentRow(${origIdx})" title="மாணவர் வரிசையை நீக்கு" style="border:none; background:transparent; color:#dc2626; cursor:pointer; font-size:0.90rem; font-weight:900;">🗑️</button>
             </td>
           </tr>
         `;
       }).join("");
 
-  const secPills10Html = `<button type="button" onclick="_mtStuFilterSec='ALL'; renderSchoolMidTermModule();" style="cursor:pointer; padding:4px 10px; border-radius:7px; font-size:0.76rem; font-weight:900; border:1.5px solid ${_mtStuFilterSec === 'ALL' ? '#0f766e' : '#cbd5e1'}; background:${_mtStuFilterSec === 'ALL' ? '#0f766e' : '#fff'}; color:${_mtStuFilterSec === 'ALL' ? '#fff' : '#0f294a'};">அனைத்தும் (${calc.evaluatedStudents.length})</button>` +
-    (rec.sections || []).map(s => {
+  const secPills10Html = (rec.sections || []).map(s => {
       const act = (_mtStuFilterSec === s.secId);
       const cnt = (rec.students || []).filter(st => st.section === s.secId).length;
-      return `<button type="button" onclick="_mtStuFilterSec='${escapeHtmlAttr(s.secId)}'; renderSchoolMidTermModule();" style="cursor:pointer; padding:4px 10px; border-radius:7px; font-size:0.76rem; font-weight:900; border:1.5px solid ${act ? '#0f766e' : '#cbd5e1'}; background:${act ? '#0f766e' : '#fff'}; color:${act ? '#fff' : '#0f294a'};">பிரிவு ${escapeHtmlAttr(s.secId)} (${cnt})</button>`;
-    }).join("");
+      return `<button type="button" onclick="_mtStuFilterSec='${escapeHtmlAttr(s.secId)}'; renderSchoolMidTermModule();" style="cursor:pointer; padding:5px 12px; border-radius:7px; font-size:0.80rem; font-weight:900; border:1.5px solid ${act ? '#0f766e' : '#cbd5e1'}; background:${act ? '#0f766e' : '#fff'}; color:${act ? '#fff' : '#0f294a'};">பிரிவு ${escapeHtmlAttr(s.secId)} (${cnt})</button>`;
+    }).join("") +
+    `<button type="button" onclick="_mtStuFilterSec='ALL'; renderSchoolMidTermModule();" style="cursor:pointer; padding:5px 12px; border-radius:7px; font-size:0.78rem; font-weight:900; border:1.5px solid ${_mtStuFilterSec === 'ALL' ? '#0f766e' : '#cbd5e1'}; background:${_mtStuFilterSec === 'ALL' ? '#0f766e' : '#fff'}; color:${_mtStuFilterSec === 'ALL' ? '#fff' : '#0f294a'};">அனைத்தும் (${calc.evaluatedStudents.length})</button>`;
+
+  const subHeaderRowHtml = MIDTERM_CORE_SUBJECTS.map(sub => {
+    const isSci = (sub.key === "SCIENCE");
+    const bg = isSci ? "#0f766e" : "#1e3a8a";
+    if (!isSplit) {
+      return `<th style="text-align:center; background:${bg}; padding:7px 6px; border-left:1.5px solid rgba(255,255,255,0.22);">
+        <div style="font-size:0.86rem; font-weight:900; color:#ffffff;">${sub.labelTa}</div>
+        <div style="font-size:0.70rem; color:#fde047; font-weight:800; margin-top:2px;">Max: 100</div>
+      </th>`;
+    }
+    return `<th style="text-align:center; background:${bg}; padding:6px 6px 4px 6px; border-left:2px solid rgba(255,255,255,0.25);">
+      <div style="font-size:0.86rem; font-weight:900; color:#ffffff; margin-bottom:4px;">${sub.labelTa}</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 44px; gap:4px; background:rgba(0,0,0,0.24); padding:3px 4px; border-radius:5px; font-size:0.70rem; font-weight:900; color:#fde047;">
+        <span>${isSci ? "Th (75)" : "Th (90)"}</span>
+        <span style="color:#7dd3fc;">${isSci ? "Pr (25)" : "Int (10)"}</span>
+        <span style="color:#86efac;">Tot</span>
+      </div>
+    </th>`;
+  }).join("");
 
   pane.innerHTML = `
     <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 12px;">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
         <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-          <span style="font-size:0.78rem; font-weight:900; color:#0f766e;">🏫 பிரிவு:</span>
+          <span style="font-size:0.82rem; font-weight:900; color:#0f766e;">🏫 பிரிவு:</span>
           ${secPills10Html}
         </div>
         <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-          ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.75rem;">⚡ முழு Internal (10) &amp; Science Practical (25) நிரப்பு</button>` : `<button type="button" class="btn btn-outline btn-sm" onclick="convertAllMidTermMarks50To100()" style="background:#fffbeb; color:#92400e; border-color:#fcd34d; font-weight:800; font-size:0.74rem;">✖️2 (50➔100 மாற்று)</button>`}
-          <button type="button" class="btn btn-outline btn-sm" onclick="openMidTermBulkPasteModal()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900; font-size:0.75rem;">
+          ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">⚡ முழு Internal (10) &amp; Science Practical (25) நிரப்பு</button>` : `<button type="button" class="btn btn-outline btn-sm" onclick="convertAllMidTermMarks50To100()" style="background:#fffbeb; color:#92400e; border-color:#fcd34d; font-weight:800; font-size:0.74rem;">✖️2 (50➔100 மாற்று)</button>`}
+          <button type="button" class="btn btn-outline btn-sm" onclick="openMidTermBulkPasteModal()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900; font-size:0.76rem;">
             📋 Excel Copy-Paste
           </button>
-          <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(1)" style="font-weight:800; font-size:0.75rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(1)" style="font-weight:800; font-size:0.76rem;">
             ➕ +1 மாணவர்
           </button>
         </div>
       </div>
-      <div class="table-responsive" style="max-height:540px; overflow:auto; border:1px solid #cbd5e1; border-radius:8px;">
-        <table class="data-table" style="margin:0; font-size:0.80rem;">
+      <div class="table-responsive" style="max-height:580px; overflow:auto; border:1.5px solid #94a3b8; border-radius:8px;">
+        <table class="data-table" style="margin:0; font-size:0.84rem; width:100%;">
           <thead style="position:sticky; top:0; z-index:5;">
             <tr style="background:#0f294a; color:#fff;">
-              <th style="text-align:center;">வ.எண்</th>
-              <th style="text-align:center;">Roll No.</th>
-              <th style="background:#115e59;">மாணவர் பெயர் (தமிழில்)</th>
-              <th style="background:#1e3a8a;">மாணவர் பெயர் (English)</th>
-              <th>பாலினம்</th>
-              <th style="text-align:center;">பிரிவு</th>
-              <th>வருகை நிலை</th>
-              <th style="text-align:center; background:#1e3a8a;">தமிழ்<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th(90)+Int(10)" : "100M"}</span></th>
-              <th style="text-align:center; background:#1e3a8a;">ஆங்கிலம்<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th(90)+Int(10)" : "100M"}</span></th>
-              <th style="text-align:center; background:#1e3a8a;">கணிதம்<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th(90)+Int(10)" : "100M"}</span></th>
-              <th style="text-align:center; background:#0f766e;">அறிவியல்<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th(75)+Pr(25)" : "100M"}</span></th>
-              <th style="text-align:center; background:#1e3a8a;">சமூக அறி.<br><span style="font-size:0.65rem; color:#fde047;">${isSplit ? "Th(90)+Int(10)" : "100M"}</span></th>
-              <th style="text-align:center; background:#0f766e;">மொத்தம் (500)</th>
-              <th style="background:#0f766e;">முடிவு (Result)</th>
-              <th style="text-align:center;">நீக்கு</th>
+              <th style="text-align:center; width:34px; min-width:34px; max-width:38px; padding:6px 2px; font-size:0.76rem;">வ.எண்</th>
+              <th style="text-align:center; width:80px; min-width:76px; max-width:84px; padding:6px 4px; font-size:0.76rem; line-height:1.2;">Roll No /<br>Reg.No</th>
+              <th style="background:#115e59; min-width:190px; max-width:225px; padding:6px 8px; font-size:0.78rem; line-height:1.25;">
+                மாணவர் பெயர் (தமிழ் / English)<br>
+                <span style="font-size:0.68rem; color:#99f6e4; font-weight:800;">பாலினம் • DOB • EMIS ID</span>
+              </th>
+              <th style="width:104px; min-width:100px; text-align:center; padding:6px 4px; font-size:0.78rem;">வருகை நிலை</th>
+              ${subHeaderRowHtml}
+              <th style="text-align:center; background:#0f766e; width:64px; padding:6px 4px; font-size:0.78rem;">மொத்தம்<br><span style="font-size:0.68rem; color:#fde047;">(500)</span></th>
+              <th style="background:#0f766e; width:135px; padding:6px 6px; font-size:0.78rem;">முடிவு (Result)</th>
+              <th style="text-align:center; width:34px; padding:6px 2px; font-size:0.74rem;">நீக்கு</th>
             </tr>
           </thead>
           <tbody>${rowsHtml}</tbody>
