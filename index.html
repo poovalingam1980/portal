@@ -1610,37 +1610,56 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
   <input type="file" id="schMidTermEmisExcelInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleMidTermEmisStudentExcelUpload(this)">
   <input type="file" id="schModifiedTmlExcelInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleModifiedTmlExcelUpload(this, false)">
 
-  <!-- Compact Title Bar -->
-  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:14px; padding-bottom:10px; border-bottom:1.5px solid #e2e8f0;">
-    <div style="font-size:1.12rem; font-weight:900; color:#0f294a;" id="schMidTermMainHeading">📈 தேர்ச்சிப் பகுப்பாய்வு அறிக்கை</div>
-    <span id="schMidTermStatusBadge" style="display:none; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:3px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;"></span>
+  <!-- =================================================================== -->
+  <!-- STEP 1 CHOOSER SCREEN: ONLY 10-ஆம் வகுப்பு AND 12-ஆம் வகுப்பு BUTTONS -->
+  <!-- =================================================================== -->
+  <div id="raStep1StdContainer" style="padding:24px 12px; text-align:center;">
+    <div style="font-size:1.18rem; font-weight:900; color:#0f294a; margin-bottom:18px;">📈 தேர்ச்சிப் பகுப்பாய்வு அறிக்கை</div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; max-width:640px; margin:0 auto;">
+      <button type="button" id="schRaStdBtn10" onclick="onRaSelectStandard('10')" style="cursor:pointer; padding:22px 20px; border-radius:14px; font-size:1.14rem; font-weight:900; border:2.5px solid #0f766e; background:linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%); color:#0f766e; box-shadow:0 4px 14px rgba(15,118,110,0.14); display:flex; align-items:center; justify-content:center; gap:12px; transition:all 0.15s;">
+        <span style="font-size:1.8rem;">📘</span>
+        <span>10-ஆம் வகுப்பு</span>
+      </button>
+      <button type="button" id="schRaStdBtn12" onclick="onRaSelectStandard('12')" style="cursor:pointer; padding:22px 20px; border-radius:14px; font-size:1.14rem; font-weight:900; border:2.5px solid #5b21b6; background:linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%); color:#5b21b6; box-shadow:0 4px 14px rgba(91,33,182,0.14); display:flex; align-items:center; justify-content:center; gap:12px; transition:all 0.15s;">
+        <span style="font-size:1.8rem;">📙</span>
+        <span>12-ஆம் வகுப்பு</span>
+      </button>
+    </div>
   </div>
 
   <!-- =================================================================== -->
-  <!-- STEP 1: ONLY 10-ஆம் வகுப்பு AND 12-ஆம் வகுப்பு BUTTONS              -->
+  <!-- DEDICATED CLASS STANDALONE HEADER & STEP 2 (OPENED WHEN 10/12 CLICKED) -->
   <!-- =================================================================== -->
-  <div id="raStep1StdContainer" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; max-width:680px; margin:0 auto 16px auto;">
-    <button type="button" id="schRaStdBtn10" onclick="onRaSelectStandard('10')" style="cursor:pointer; padding:18px 20px; border-radius:14px; font-size:1.08rem; font-weight:900; border:2.5px solid #0f766e; background:#ffffff; color:#0f294a; box-shadow:0 4px 12px rgba(15,118,110,0.12); display:flex; align-items:center; justify-content:center; gap:12px; transition:all 0.15s;">
-      <span style="font-size:1.6rem;">📘</span>
-      <span>10-ஆம் வகுப்பு</span>
-    </button>
-    <button type="button" id="schRaStdBtn12" onclick="onRaSelectStandard('12')" style="cursor:pointer; padding:18px 20px; border-radius:14px; font-size:1.08rem; font-weight:900; border:2.5px solid #5b21b6; background:#ffffff; color:#0f294a; box-shadow:0 4px 12px rgba(91,33,182,0.12); display:flex; align-items:center; justify-content:center; gap:12px; transition:all 0.15s;">
-      <span style="font-size:1.6rem;">📙</span>
-      <span>12-ஆம் வகுப்பு</span>
-    </button>
+  <div id="raDedicatedClassHeaderBar" style="display:none; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:linear-gradient(135deg, #0f294a 0%, #1e3a8a 100%); color:#ffffff; padding:12px 16px; border-radius:12px; margin-bottom:14px; box-shadow:0 4px 12px rgba(15,41,74,0.18);">
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <button type="button" onclick="resetRaStepFlowOnMenuClick(); renderSchoolMidTermModule();" style="cursor:pointer; background:rgba(255,255,255,0.16); color:#ffffff; border:1.5px solid rgba(255,255,255,0.35); padding:6px 12px; border-radius:8px; font-size:0.80rem; font-weight:900;">
+        ⬅️ வகுப்பு மாற்று
+      </button>
+      <button type="button" onclick="exitRaStandaloneToSchoolHome()" style="cursor:pointer; background:#fef08a; color:#0f294a; border:none; padding:6px 12px; border-radius:8px; font-size:0.80rem; font-weight:900;">
+        🏠 பள்ளி முகப்பு
+      </button>
+      <div style="font-size:1.05rem; font-weight:900; color:#ffffff;" id="schMidTermMainHeading">📈 10-ஆம் வகுப்பு — தேர்ச்சிப் பகுப்பாய்வு அறிக்கை</div>
+      <span id="schMidTermStatusBadge" style="display:none;"></span>
+    </div>
+    <div style="display:inline-flex; background:rgba(255,255,255,0.14); padding:3px; border-radius:9px; border:1px solid rgba(255,255,255,0.28);">
+      <button type="button" id="raTopTabStd10" onclick="onRaSelectStandard('10')" style="cursor:pointer; padding:5px 14px; border-radius:7px; font-size:0.80rem; font-weight:900; border:none; background:#0f766e; color:#ffffff;">
+        📘 10-ஆம் வகுப்பு
+      </button>
+      <button type="button" id="raTopTabStd12" onclick="onRaSelectStandard('12')" style="cursor:pointer; padding:5px 14px; border-radius:7px; font-size:0.80rem; font-weight:900; border:none; background:transparent; color:#e2e8f0;">
+        📙 12-ஆம் வகுப்பு
+      </button>
+    </div>
   </div>
 
-  <!-- =================================================================== -->
-  <!-- STEP 2: ONLY CLASS MASTER AND MARK ENTRY BUTTONS (Hidden Initially) -->
-  <!-- =================================================================== -->
-  <div id="raStep2ModeContainer" style="display:none; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; max-width:680px; margin:0 auto 18px auto;">
-    <button type="button" id="mtMainCardClassMaster" onclick="onRaSelectMainMode('CLASS_MASTER')" style="cursor:pointer; padding:16px 20px; border-radius:12px; font-size:1.02rem; font-weight:900; border:2.5px solid #0f766e; background:#ffffff; color:#0f294a; box-shadow:0 3px 10px rgba(15,41,74,0.08); display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.15s;">
+  <!-- STEP 2: ONLY CLASS MASTER AND MARK ENTRY BUTTONS -->
+  <div id="raStep2ModeContainer" style="display:none; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; max-width:680px; margin:0 auto 16px auto;">
+    <button type="button" id="mtMainCardClassMaster" onclick="onRaSelectMainMode('CLASS_MASTER')" style="cursor:pointer; padding:16px 20px; border-radius:12px; font-size:1.04rem; font-weight:900; border:2.5px solid #0f766e; background:#ffffff; color:#0f294a; box-shadow:0 3px 10px rgba(15,41,74,0.08); display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.15s;">
       <span style="font-size:1.4rem;">🏫</span>
       <span>Class Master</span>
     </button>
-    <button type="button" id="mtMainCardMarkEntry" onclick="onRaSelectMainMode('MARK_ENTRY')" style="cursor:pointer; padding:16px 20px; border-radius:12px; font-size:1.02rem; font-weight:900; border:2.5px solid #1d4ed8; background:#ffffff; color:#0f294a; box-shadow:0 3px 10px rgba(15,41,74,0.08); display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.15s;">
+    <button type="button" id="mtMainCardMarkEntry" onclick="onRaSelectMainMode('MARK_ENTRY')" style="cursor:pointer; padding:16px 20px; border-radius:12px; font-size:1.04rem; font-weight:900; border:2.5px solid #1d4ed8; background:#ffffff; color:#0f294a; box-shadow:0 3px 10px rgba(15,41,74,0.08); display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.15s;">
       <span style="font-size:1.4rem;">📝</span>
-      <span>Mark Entry</span>
+      <span>Mark Entry (மதிப்பெண் பதிவு செய்)</span>
     </button>
   </div>
 
@@ -33817,6 +33836,29 @@ const ULAGAMPATTI_206_PRELOADED_12TH_TEACHERS = {
 
 
 // Get split rule for a subject in 12th or 10th Standard
+function normalizeStudentNamesTaEn(st) {
+  if (!st || typeof st !== "object") return { nameTa: "", nameEn: "", name: "" };
+  let ta = String(st.nameTa !== undefined ? st.nameTa : "").trim();
+  let en = String(st.nameEn !== undefined ? st.nameEn : "").trim();
+  const rawName = String(st.name !== undefined ? st.name : "").trim();
+
+  if ((!ta || !en) && rawName) {
+    const m = rawName.match(/^(.+?)\\s*\\(([A-Za-z0-9\\s.\\-]+)\\)$/);
+    if (m) {
+      if (!ta) ta = m[1].trim();
+      if (!en) en = m[2].trim();
+    } else if (/[\\u0B80-\\u0BFF]/.test(rawName)) {
+      if (!ta) ta = rawName;
+    } else {
+      if (!en) en = rawName;
+    }
+  }
+  st.nameTa = ta;
+  st.nameEn = en;
+  st.name = (ta && en) ? `${ta} (${en})` : (ta || en || "");
+  return st;
+}
+
 function getSubjectSplitRule(std, subKey, stuMarkParts) {
   if (String(std) === "12") {
     const meta = HSC12_SUBJECT_MAP[subKey] || { splitMode: "TH_INT", maxTh: 90, minTh: 25, maxPr: 0, minPr: 0, maxInt: 10 };
@@ -34803,7 +34845,12 @@ function renderSchool12thSecTeachersPane(calc) {
               ${presetOptsHtml}
             </select>
           </div>
-          ${rec.sections.length > 1 ? `<button type="button" class="btn btn-outline btn-sm" onclick="remove12thSection('${escapeHtmlAttr(sec.secId)}')" style="color:#dc2626; border-color:#fca5a5; font-size:0.74rem; font-weight:800;">🗑️ பிரிவு நீக்கு</button>` : ""}
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-success btn-sm" onclick="onRaOpenSectionMarkEntry('${escapeHtmlAttr(sec.secId)}')" style="background:linear-gradient(135deg,#1d4ed8,#1e40af); color:#ffffff; border:none; font-weight:900; font-size:0.76rem; padding:5px 12px; border-radius:7px; box-shadow:0 2px 6px rgba(29,78,216,0.25);">
+              📝 மதிப்பெண் பதிவு செய் (பிரிவு ${escapeHtmlAttr(sec.secId)}) ➔
+            </button>
+            ${rec.sections.length > 1 ? `<button type="button" class="btn btn-outline btn-sm" onclick="remove12thSection('${escapeHtmlAttr(sec.secId)}')" style="color:#dc2626; border-color:#fca5a5; font-size:0.74rem; font-weight:800;">🗑️ பிரிவு நீக்கு</button>` : ""}
+          </div>
         </div>
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:#f5f3ff; border:1px solid #ddd6fe; border-radius:8px; padding:6px 10px; margin-bottom:8px;">
           <span style="font-size:0.75rem; font-weight:900; color:#5b21b6;">📚 4 முதன்மைப் பாடங்கள்:</span>
@@ -37257,6 +37304,27 @@ function resetRaStepFlowOnMenuClick() {
   _raStepStdChosen = false;
   _activeMidTermMainSection = "";
   _raSelectedSecId = "";
+  if (document.body && currentSchoolTabKey === "midTerm") {
+    document.body.classList.remove("ebs-standalone-mode");
+  }
+}
+
+function exitRaStandaloneToSchoolHome() {
+  _raStepStdChosen = false;
+  _activeMidTermMainSection = "";
+  _raSelectedSecId = "";
+  if (document.body) {
+    document.body.classList.remove("ebs-standalone-mode");
+  }
+  switchSchoolTab("staffStrength");
+}
+
+function onRaOpenSectionMarkEntry(secId) {
+  _raStepStdChosen = true;
+  _activeMidTermMainSection = "MARK_ENTRY";
+  _activeMarkEntrySubView = "STU_MARKS";
+  _mtStuFilterSec = String(secId || "ALL");
+  renderSchoolMidTermModule();
 }
 
 function onRaSelectStandard(stdVal) {
@@ -37408,41 +37476,53 @@ function renderSchoolMidTermModule() {
   const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey, _activeResultAnalysisStd);
   const rec = calc.rec;
 
+  const step1El = document.getElementById("raStep1StdContainer");
+  const dedBarEl = document.getElementById("raDedicatedClassHeaderBar");
   const headingEl = document.getElementById("schMidTermMainHeading");
-  if (headingEl) {
-    headingEl.textContent = !_raStepStdChosen
-      ? "📈 தேர்ச்சிப் பகுப்பாய்வு அறிக்கை"
-      : `📈 தேர்ச்சிப் பகுப்பாய்வு அறிக்கை — ${is12Active ? "12-ஆம் வகுப்பு" : "10-ஆம் வகுப்பு"}`;
-  }
-
-  // Step 1 Buttons: 10-ஆம் வகுப்பு | 12-ஆம் வகுப்பு
-  const b10El = document.getElementById("schRaStdBtn10");
-  const b12El = document.getElementById("schRaStdBtn12");
-  if (b10El) {
-    const sel10 = _raStepStdChosen && !is12Active;
-    b10El.style.background = sel10 ? "linear-gradient(135deg, #0f766e 0%, #115e59 100%)" : "#ffffff";
-    b10El.style.color = sel10 ? "#ffffff" : "#0f294a";
-    b10El.style.borderColor = "#0f766e";
-    b10El.style.boxShadow = sel10 ? "0 6px 16px rgba(15,118,110,0.28)" : "0 2px 8px rgba(15,41,74,0.06)";
-  }
-  if (b12El) {
-    const sel12 = _raStepStdChosen && is12Active;
-    b12El.style.background = sel12 ? "linear-gradient(135deg, #5b21b6 0%, #4c1d95 100%)" : "#ffffff";
-    b12El.style.color = sel12 ? "#ffffff" : "#0f294a";
-    b12El.style.borderColor = "#5b21b6";
-    b12El.style.boxShadow = sel12 ? "0 6px 16px rgba(91,33,182,0.28)" : "0 2px 8px rgba(15,41,74,0.06)";
-  }
-
-  // Step 2 Container: Class Master | Mark Entry
   const step2El = document.getElementById("raStep2ModeContainer");
   const secCm = document.getElementById("mtMainSectionClassMaster");
   const secMe = document.getElementById("mtMainSectionMarkEntry");
 
   if (!_raStepStdChosen) {
+    if (document.body && currentSchoolTabKey === "midTerm") {
+      document.body.classList.remove("ebs-standalone-mode");
+    }
+    if (step1El) step1El.style.display = "block";
+    if (dedBarEl) dedBarEl.style.display = "none";
     if (step2El) step2El.style.display = "none";
     if (secCm) secCm.style.display = "none";
     if (secMe) secMe.style.display = "none";
     return;
+  }
+
+  // Dedicated standalone class view (தனித்தாவலில் / முகப்பில்) when 10th or 12th is selected!
+  if (document.body && currentSchoolTabKey === "midTerm") {
+    document.body.classList.add("ebs-standalone-mode");
+  }
+  if (step1El) step1El.style.display = "none";
+  if (dedBarEl) {
+    dedBarEl.style.display = "flex";
+    dedBarEl.style.background = is12Active
+      ? "linear-gradient(135deg, #2e1065 0%, #5b21b6 100%)"
+      : "linear-gradient(135deg, #0b223e 0%, #0f766e 100%)";
+  }
+  if (headingEl) {
+    const schLabel = activeSchoolSession.nameTa || activeSchoolSession.nameEn || ("U.No: " + uNo);
+    headingEl.textContent = `${is12Active ? "📙 12-ஆம் வகுப்பு (HSC +2)" : "📘 10-ஆம் வகுப்பு (SSLC)"} — தேர்ச்சிப் பகுப்பாய்வு முகப்பு (${schLabel})`;
+  }
+
+  // Quick-switch class tabs inside dedicated header bar
+  const t10El = document.getElementById("raTopTabStd10");
+  const t12El = document.getElementById("raTopTabStd12");
+  if (t10El) {
+    t10El.style.background = !is12Active ? "#ffffff" : "transparent";
+    t10El.style.color = !is12Active ? "#0f766e" : "rgba(255,255,255,0.85)";
+    t10El.style.boxShadow = !is12Active ? "0 2px 6px rgba(0,0,0,0.2)" : "none";
+  }
+  if (t12El) {
+    t12El.style.background = is12Active ? "#ffffff" : "transparent";
+    t12El.style.color = is12Active ? "#5b21b6" : "rgba(255,255,255,0.85)";
+    t12El.style.boxShadow = is12Active ? "0 2px 6px rgba(0,0,0,0.2)" : "none";
   }
 
   if (step2El) step2El.style.display = "grid";
@@ -37504,7 +37584,9 @@ function renderSchoolMidTermModule() {
     return;
   }
 
-  // Step 3B: Mark Entry
+  // Step 3B: Mark Entry — clear Class Master student pane first to avoid duplicate DOM IDs
+  const cmStuPane = document.getElementById("mtSubPaneClassStudents");
+  if (cmStuPane) cmStuPane.innerHTML = "";
   const sel = document.getElementById("schMidTermExamSelect");
   if (sel) sel.value = _activeMidTermTermKey;
   const t2B = document.getElementById("mtSubBtnForm1_1Title");
@@ -37593,7 +37675,10 @@ function renderSchoolMidTermSecTeachersPane(calc) {
               <option value="EM" ${sec.medium === "EM" ? "selected" : ""}>ஆங்கில வழி (EM)</option>
             </select>
           </div>
-          <div style="display:flex; gap:6px; align-items:center;">
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-success btn-sm" onclick="onRaOpenSectionMarkEntry('${escapeHtmlAttr(sec.secId)}')" style="background:linear-gradient(135deg,#1d4ed8,#1e40af); color:#ffffff; border:none; font-weight:900; font-size:0.76rem; padding:5px 12px; border-radius:7px; box-shadow:0 2px 6px rgba(29,78,216,0.25);">
+              📝 மதிப்பெண் பதிவு செய் (பிரிவு ${escapeHtmlAttr(sec.secId)}) ➔
+            </button>
             <button type="button" class="btn btn-outline btn-sm" onclick="autoReMapSchoolMidTermTeachers()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900; font-size:0.74rem;">
               ⚡ ஆசிரியர்களைத் தானாக இணை
             </button>
@@ -39254,7 +39339,12 @@ function openAdminSchoolMidTermDirect(uNo) {
   const backBtn = document.getElementById("schBackToAdminBtn");
   if (backBtn) backBtn.style.display = "inline-flex";
   switchSchoolTab("midTerm");
+  _raStepStdChosen = true;
+  _activeMidTermMainSection = "MARK_ENTRY";
+  _activeMarkEntrySubView = "STU_MARKS";
+  renderSchoolMidTermModule();
   window.scrollTo({ top: 0, behavior: "smooth" });
+  showToast(`📊 ${sch.nameTa || sch.nameEn} — மதிப்பெண் பதிவுத் திரை திறக்கப்பட்டது!`, "#0d9488");
 }
 
 function renderAdminMidTermDashboard() {
