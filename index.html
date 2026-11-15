@@ -97,59 +97,81 @@
   color: #000000 !important;
   font-family: 'Mukta Malar', 'Noto Sans Tamil', 'Segoe UI', 'Calibri', 'Arial', sans-serif;
   box-sizing: border-box;
+  width: 100%;
+}
+.ra-report-sheet table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+  background: #ffffff !important;
+}
+.ra-report-sheet tr,
+.ra-report-sheet thead,
+.ra-report-sheet tbody {
+  background: transparent !important;
+  background-color: transparent !important;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+.ra-report-sheet th,
+.ra-report-sheet td {
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
 }
 .ra-num {
   font-family: 'Segoe UI', 'Calibri', 'Arial', sans-serif !important;
   font-variant-numeric: tabular-nums !important;
   font-feature-settings: "tnum" 1 !important;
   font-weight: 900 !important;
-  font-size: 1.14rem !important;
-  line-height: 1.18 !important;
-  letter-spacing: 0.2px !important;
+  font-size: 1.05rem !important;
+  line-height: 1.12 !important;
 }
 .ra-num-lg {
   font-family: 'Arial Black', 'Segoe UI', 'Calibri', 'Arial', sans-serif !important;
   font-variant-numeric: tabular-nums !important;
   font-feature-settings: "tnum" 1 !important;
   font-weight: 900 !important;
-  font-size: 1.24rem !important;
-  line-height: 1.15 !important;
-  letter-spacing: 0.25px !important;
+  font-size: 1.14rem !important;
+  line-height: 1.12 !important;
 }
 .ra-num-xl {
   font-family: 'Arial Black', 'Segoe UI', 'Calibri', 'Arial', sans-serif !important;
   font-variant-numeric: tabular-nums !important;
   font-feature-settings: "tnum" 1 !important;
   font-weight: 900 !important;
-  font-size: 1.34rem !important;
-  line-height: 1.15 !important;
+  font-size: 1.22rem !important;
+  line-height: 1.12 !important;
 }
 .ra-f2-num {
   font-family: 'Segoe UI', 'Calibri', 'Arial', sans-serif !important;
   font-variant-numeric: tabular-nums !important;
   font-feature-settings: "tnum" 1 !important;
   font-weight: 900 !important;
-  font-size: 1.04rem !important;
-  line-height: 1.15 !important;
+  font-size: 0.96rem !important;
+  line-height: 1.12 !important;
 }
 .ra-f2-num-lg {
   font-family: 'Arial Black', 'Segoe UI', 'Calibri', 'Arial', sans-serif !important;
   font-variant-numeric: tabular-nums !important;
   font-feature-settings: "tnum" 1 !important;
   font-weight: 900 !important;
-  font-size: 1.10rem !important;
-  line-height: 1.15 !important;
+  font-size: 1.02rem !important;
+  line-height: 1.12 !important;
 }
 .ra-pdf-landscape-page {
-  width: 285mm;
-  max-width: 285mm;
+  width: 287mm;
+  max-width: 287mm;
   margin: 0 auto;
-  padding: 4mm 5mm;
+  padding: 2mm 3mm;
   background: #ffffff !important;
   color: #000000 !important;
   box-sizing: border-box;
   page-break-after: always;
   break-after: page;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 .ra-pdf-landscape-page:last-child {
   page-break-after: auto;
@@ -34226,6 +34248,21 @@ function computeSchool12thResultAnalysis(uNo, termKey) {
       return;
     }
 
+    // Check if student has at least one mark entered in this exam
+    const hasAnyMark = stu6Subs.some(sk => String(marksObj[sk] !== undefined ? marksObj[sk] : "").trim() !== "");
+    if (!hasAnyMark) {
+      evaluatedStudents.push(Object.assign({}, stu, {
+        stu6Subs,
+        total500: "-",
+        total600: "-",
+        avgPct: "-",
+        resultType: "PENDING",
+        resultBadge: "⏳ மதிப்பெண் பதிவு நிலுவை",
+        failedSubs: []
+      }));
+      return;
+    }
+
     // Student Appeared!
     if (isFem) appF++; else appM++;
 
@@ -34403,8 +34440,10 @@ function computeSchool12thResultAnalysis(uNo, termKey) {
     f2Rows.push(c);
   });
 
-  const emisM = hasStudentEntries ? (appM + laM + abM) : st12Emis.boys;
-  const emisF = hasStudentEntries ? (appF + laF + abF) : st12Emis.girls;
+  const rosterM = students.filter(s => s.gender !== "Female" && s.gender !== "F").length;
+  const rosterF = students.filter(s => s.gender === "Female" || s.gender === "F").length;
+  const emisM = hasStudentEntries ? rosterM : st12Emis.boys;
+  const emisF = hasStudentEntries ? rosterF : st12Emis.girls;
   const emisT = emisM + emisF;
 
   const laT = laM + laF;
@@ -34992,27 +35031,26 @@ function on12thStudentMarkInput(idx, subKey, inpEl) {
 
 // ============================================================================
 // 12TH STANDARD OFFICIAL FORM - II ( 1 ) & FORM - II ( 2 ) HTML BUILDERS
-// (Matching 12_th_Quarterly Exam Result Analysis Report Form.xlsx verbatim)
+// (Single-Page School Performance + Paginated Subject Performance with Repeated Header)
 // ============================================================================
 function build12thForm2_1ExactHtml(calc, forPrint) {
   const s = calc.sch;
   const sub = calc.subStats;
-  const bdr = "border:1.8px solid #0f294a; padding:5px 4px; text-align:center; vertical-align:middle;";
-  const hdrBg = "background:#e2e8f0; color:#0f294a; font-weight:900;";
-  const numCell = `class="ra-num" style="${bdr} color:#000000;"`;
-  const numLgCell = `class="ra-num-lg" style="${bdr} color:#000000;"`;
-  const subNumCell = `class="ra-f2-num" style="${bdr} color:#000000;"`;
-  const subNumLg = `class="ra-f2-num-lg" style="${bdr} color:#000000;"`;
+  const bdr = "border:1.5px solid #0f294a; padding:3.5px 3px; text-align:center; vertical-align:middle;";
+  const hdrCell = `${bdr} background:#e2e8f0; color:#0f294a; font-weight:900;`;
+  const subHdrCell = `${bdr} background:#f1f5f9; color:#0f294a; font-weight:900; font-size:0.74rem;`;
+  const numCell = `class="ra-num" style="${bdr} background:#ffffff; color:#000000;"`;
+  const numLgCell = `class="ra-num-lg" style="${bdr} background:#ffffff; color:#000000;"`;
 
   const remedialHtml = (!forPrint && calc.singleSubFailedStudents.length > 0) ? `
-    <div style="margin-top:16px; background:#fff7ed; border:1.5px solid #fdba74; border-left:5px solid #ea580c; border-radius:10px; padding:12px 14px;">
-      <div style="font-size:0.92rem; font-weight:900; color:#9a3412; margin-bottom:6px;">
-        🎯 ஒரு பாடத்தில் மட்டும் தோல்வியடைந்த 12-ஆம் வகுப்பு மாணவர்கள் (Single Subject Failed Students: <span class="ra-num" style="font-size:1.05rem !important;">${calc.singleSubFailedStudents.length}</span> மாணவர்கள்)
+    <div style="margin-top:14px; background:#fff7ed; border:1.5px solid #fdba74; border-left:5px solid #ea580c; border-radius:10px; padding:10px 14px;">
+      <div style="font-size:0.90rem; font-weight:900; color:#9a3412; margin-bottom:6px;">
+        🎯 ஒரு பாடத்தில் மட்டும் தோல்வியடைந்த 12-ஆம் வகுப்பு மாணவர்கள் (Single Subject Failed Students: <span class="ra-num">${calc.singleSubFailedStudents.length}</span> மாணவர்கள்)
       </div>
       <div style="display:flex; flex-wrap:wrap; gap:8px;">
         ${calc.singleSubFailedStudents.map((st, i) => `
-          <span style="background:#fff; border:1px solid #fb923c; border-radius:6px; padding:4px 10px; font-size:0.80rem; font-weight:800; color:#7c2d12;">
-            <strong class="ra-num">${i + 1}.</strong> <strong>${escapeHtmlAttr(st.name)}</strong> (Roll: <strong class="ra-num">${escapeHtmlAttr(st.rollNo)}</strong>, Sec: <strong>${escapeHtmlAttr(st.section)}</strong>) — <span style="color:#dc2626;">${escapeHtmlAttr(st.failedSubLabel)}: <strong class="ra-num">${escapeHtmlAttr(st.failedMark)}</strong></span> (மொத்தம்: <strong class="ra-num">${st.total600}/600</strong>)
+          <span style="background:#fff; border:1px solid #fb923c; border-radius:6px; padding:4px 10px; font-size:0.78rem; font-weight:800; color:#7c2d12;">
+            <strong>${i + 1}.</strong> <strong>${escapeHtmlAttr(st.name)}</strong> (Roll: <strong>${escapeHtmlAttr(st.rollNo)}</strong>, Sec: <strong>${escapeHtmlAttr(st.section)}</strong>) — <span style="color:#dc2626;">${escapeHtmlAttr(st.failedSubLabel)}: <strong>${escapeHtmlAttr(st.failedMark)}</strong></span> (மொத்தம்: <strong>${st.total600}/600</strong>)
           </span>
         `).join("")}
       </div>
@@ -35020,170 +35058,172 @@ function build12thForm2_1ExactHtml(calc, forPrint) {
   ` : "";
 
   const subHeadersHtml = HSC12_SUBJECTS_CATALOG.map(sc =>
-    `<th style="${bdr} font-size:0.73rem; line-height:1.15; padding:4px 2px;">${escapeHtmlAttr(sc.shortEn).replace(/\n/g, "<br>")}</th>`
+    `<th style="${hdrCell} font-size:0.68rem; line-height:1.1; padding:3px 1px; width:3.9%;">${escapeHtmlAttr(sc.shortEn).replace(/\n/g, "<br>")}</th>`
   ).join("");
 
-  const build21Row = (prop, cellStyleOverride) => HSC12_SUBJECTS_CATALOG.map(sc => {
+  const build21Row = (prop, bgHex, colorHex) => HSC12_SUBJECTS_CATALOG.map(sc => {
     const g = sub[sc.key];
     const val = g.stuCount > 0 ? g[prop] : "";
-    return `<td class="ra-f2-num-lg" style="${bdr} ${cellStyleOverride || 'color:#000;'}">${val !== "" && val !== null && val !== undefined ? val : ""}</td>`;
+    return `<td class="ra-f2-num-lg" style="${bdr} background:${bgHex}; color:${colorHex}; padding:2.5px 1px;">${val !== "" && val !== null && val !== undefined ? val : ""}</td>`;
   }).join("");
 
   return `
-    <div class="ra-report-sheet" style="background:#ffffff; color:#000; padding:${forPrint ? '2px' : '14px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'};">
-      <!-- Official FORM - II ( 1 ) Header -->
-      <table style="width:100%; border-collapse:collapse; margin-bottom:7px; font-size:0.90rem;">
+    <div class="ra-report-sheet" style="background:#ffffff; color:#000; padding:${forPrint ? '0' : '12px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'};">
+      <!-- Official FORM - II ( 1 ) Header Banner -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:5px; table-layout:fixed;">
         <tr>
-          <td style="${bdr} font-weight:900; width:20%; background:#f8fafc; font-size:0.96rem;">SIVAGANGAI DISTRICT</td>
-          <td style="${bdr} font-weight:900; font-size:1.06rem; background:#f5f3ff; color:#4c1d95;" colspan="2">
+          <td style="${bdr} width:18%; background:#f8fafc; font-weight:900; font-size:0.88rem; color:#0f294a;">SIVAGANGAI DISTRICT</td>
+          <td style="${bdr} width:64%; background:#f5f3ff; font-weight:900; font-size:0.98rem; color:#4c1d95; line-height:1.22;">
             ${escapeHtmlAttr(calc.termMeta.reportHeaderEn)}<br>
-            <span style="font-size:0.90rem; color:#0f294a;">SCHOOL PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})</span>
+            <span style="font-size:0.84rem; color:#0f294a;">SCHOOL PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})</span>
           </td>
-          <td style="${bdr} font-weight:900; width:19%; background:#fef3c7; color:#92400e; font-size:1.02rem;">
+          <td style="${bdr} width:18%; background:#fef3c7; font-weight:900; font-size:0.92rem; color:#92400e; line-height:1.2;">
             FORM - II ( 1 )<br>
-            <span style="font-size:0.88rem; color:#0f294a;">UNIQUE NO : <strong class="ra-num-lg" style="color:#000;">${escapeHtmlAttr(s.uNo)}</strong></span>
+            <span style="font-size:0.82rem; color:#0f294a;">UNIQUE NO : <strong style="font-family:'Segoe UI',Arial,sans-serif; font-size:0.98rem; color:#000;">${escapeHtmlAttr(s.uNo)}</strong></span>
           </td>
         </tr>
         <tr>
-          <td style="${bdr} font-weight:900; text-align:left; font-size:0.90rem; padding:5px 10px;" colspan="3">
-            NAME OF THE SCHOOL : <strong style="color:#4c1d95; font-size:0.96rem;">[<span class="ra-num" style="font-size:0.96rem !important;">${escapeHtmlAttr(s.uNo)}</span>] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</strong> &nbsp;|&nbsp; UDISE: <strong class="ra-num" style="font-size:0.94rem !important;">${escapeHtmlAttr(s.udiseNo || "-")}</strong>
+          <td colspan="2" style="${bdr} background:#ffffff; font-weight:900; text-align:left; font-size:0.86rem; padding:4px 8px; color:#0f294a;">
+            NAME OF THE SCHOOL : <span style="color:#4c1d95; font-weight:900;">[${escapeHtmlAttr(s.uNo)}] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</span> &nbsp;|&nbsp; UDISE : <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900; color:#000;">${escapeHtmlAttr(s.udiseNo || "-")}</span>
           </td>
-          <td style="${bdr} font-weight:900; background:#f8fafc; font-size:0.96rem;">STD : <strong class="ra-num-lg" style="color:#5b21b6;">12th</strong></td>
+          <td style="${bdr} background:#f8fafc; font-weight:900; font-size:0.88rem; color:#0f294a;">
+            STD : <strong style="font-family:'Segoe UI',Arial,sans-serif; font-size:1.0rem; color:#5b21b6;">12th</strong>
+          </td>
         </tr>
       </table>
 
       <!-- PART 1: ATTENDANCE & OVERALL PASS/FAIL -->
-      <table style="width:100%; border-collapse:collapse; margin-bottom:8px; font-size:0.82rem;">
+      <table style="width:100%; border-collapse:collapse; margin-bottom:5px; table-layout:fixed;">
         <thead>
-          <tr style="${hdrBg}">
-            <th colspan="3" style="${bdr} font-size:0.84rem;">No.of Students as per NR</th>
-            <th colspan="3" style="${bdr} font-size:0.84rem;">Long Absent</th>
-            <th colspan="3" style="${bdr} font-size:0.84rem;">Absent<br><span style="font-size:0.68rem; font-weight:800;">(6 பாடத் தேர்வுகளுக்கும் வருகைதராதவர்கள் இருந்தால் மட்டும்)</span></th>
-            <th colspan="3" style="${bdr} background:#dbeafe; font-size:0.84rem;">No.of Students Appeared</th>
-            <th colspan="3" style="${bdr} background:#dcfce7; font-size:0.84rem;">No.of Students Passed</th>
-            <th rowspan="2" style="${bdr} background:#fef3c7; width:82px; font-size:0.90rem;">Pass<br>%</th>
-            <th colspan="3" style="${bdr} background:#fee2e2; font-size:0.84rem;">No.of Failed Student</th>
+          <tr>
+            <th colspan="3" style="${hdrCell} font-size:0.78rem;">No.of Students as per NR</th>
+            <th colspan="3" style="${hdrCell} font-size:0.78rem;">Long Absent</th>
+            <th colspan="3" style="${hdrCell} font-size:0.76rem; line-height:1.12;">Absent<br><span style="font-size:0.63rem; font-weight:800;">(6 பாடத் தேர்வுகளுக்கும் வருகைதராதவர்கள்)</span></th>
+            <th colspan="3" style="${bdr} background:#dbeafe; color:#0f294a; font-weight:900; font-size:0.78rem;">No.of Students Appeared</th>
+            <th colspan="3" style="${bdr} background:#dcfce7; color:#0f294a; font-weight:900; font-size:0.78rem;">No.of Students Passed</th>
+            <th rowspan="2" style="${bdr} background:#fef3c7; color:#78350f; font-weight:900; width:7.5%; font-size:0.82rem;">Pass<br>%</th>
+            <th colspan="3" style="${bdr} background:#fee2e2; color:#0f294a; font-weight:900; font-size:0.78rem;">No.of Failed Student</th>
           </tr>
-          <tr style="background:#f1f5f9; font-weight:900; font-size:0.78rem;">
-            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
-            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
-            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
-            <th style="${bdr} background:#eff6ff;">Male</th><th style="${bdr} background:#eff6ff;">Female</th><th style="${bdr} background:#dbeafe;">Total</th>
-            <th style="${bdr} background:#f0fdf4;">Male</th><th style="${bdr} background:#f0fdf4;">Female</th><th style="${bdr} background:#dcfce7;">Total</th>
-            <th style="${bdr} background:#fef2f2;">Male</th><th style="${bdr} background:#fef2f2;">Female</th><th style="${bdr} background:#fee2e2;">Total</th>
+          <tr>
+            <th style="${subHdrCell}">Male</th><th style="${subHdrCell}">Female</th><th style="${subHdrCell}">Total</th>
+            <th style="${subHdrCell}">Male</th><th style="${subHdrCell}">Female</th><th style="${subHdrCell}">Total</th>
+            <th style="${subHdrCell}">Male</th><th style="${subHdrCell}">Female</th><th style="${subHdrCell}">Total</th>
+            <th style="${subHdrCell} background:#eff6ff;">Male</th><th style="${subHdrCell} background:#eff6ff;">Female</th><th style="${subHdrCell} background:#dbeafe;">Total</th>
+            <th style="${subHdrCell} background:#f0fdf4;">Male</th><th style="${subHdrCell} background:#f0fdf4;">Female</th><th style="${subHdrCell} background:#dcfce7;">Total</th>
+            <th style="${subHdrCell} background:#fef2f2;">Male</th><th style="${subHdrCell} background:#fef2f2;">Female</th><th style="${subHdrCell} background:#fee2e2;">Total</th>
           </tr>
         </thead>
         <tbody>
-          <tr style="height:34px;">
+          <tr style="height:28px;">
             <td ${numCell}>${calc.emis.m}</td><td ${numCell}>${calc.emis.f}</td><td ${numLgCell} style="${bdr} background:#f8fafc; color:#000;">${calc.emis.t}</td>
             <td ${numCell}>${calc.la.m}</td><td ${numCell}>${calc.la.f}</td><td ${numLgCell} style="${bdr} background:#f8fafc; color:#000;">${calc.la.t}</td>
             <td ${numCell}>${calc.ab.m}</td><td ${numCell}>${calc.ab.f}</td><td ${numLgCell} style="${bdr} background:#f8fafc; color:#000;">${calc.ab.t}</td>
             <td ${numCell} style="${bdr} background:#eff6ff; color:#0f172a;">${calc.appeared.m}</td><td ${numCell} style="${bdr} background:#eff6ff; color:#0f172a;">${calc.appeared.f}</td><td ${numLgCell} style="${bdr} background:#dbeafe; color:#1e3a8a;">${calc.appeared.t}</td>
             <td ${numCell} style="${bdr} background:#f0fdf4; color:#0f172a;">${calc.passed.m}</td><td ${numCell} style="${bdr} background:#f0fdf4; color:#0f172a;">${calc.passed.f}</td><td ${numLgCell} style="${bdr} background:#dcfce7; color:#14532d;">${calc.passed.t}</td>
-            <td class="ra-num-xl" style="${bdr} background:#fef3c7; color:#78350f;">${calc.passPctStr}</td>
+            <td class="ra-num-lg" style="${bdr} background:#fef3c7; color:#78350f;">${calc.passPctStr}</td>
             <td ${numCell} style="${bdr} background:#fef2f2; color:#7f1d1d;">${calc.failed.m}</td><td ${numCell} style="${bdr} background:#fef2f2; color:#7f1d1d;">${calc.failed.f}</td><td ${numLgCell} style="${bdr} background:#fee2e2; color:#991b1b;">${calc.failed.t}</td>
           </tr>
         </tbody>
       </table>
 
-      <!-- PART 2: COUNT OF FAILED SUBJECTS (1-6), SCIENCE/ARTS FIRST MARK, AVG MARK & MARK RANGE (OUT OF 600) -->
-      <table style="width:100%; border-collapse:collapse; margin-bottom:8px; font-size:0.82rem;">
+      <!-- PART 2: COUNT OF FAILED SUBJECTS (1-6), SCIENCE/ARTS FIRST MARK (OUT OF 600), SCHOOL AVG MARK (OUT OF 100) & MARK RANGE -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:5px; table-layout:fixed;">
         <thead>
-          <tr style="${hdrBg}">
-            <th colspan="6" style="${bdr} font-size:0.86rem;">Count of Failed Subjects</th>
-            <th colspan="2" style="${bdr} background:#f5f3ff; font-size:0.86rem;">School First Mark (Out of 600)</th>
-            <th rowspan="2" style="${bdr} background:#f5f3ff; font-size:0.86rem;">School Average Mark<br>(All Subjects)</th>
-            <th colspan="4" style="${bdr} background:#ecfeff; font-size:0.86rem;">No.of Students - MARK RANGE ( Total Marks )</th>
+          <tr>
+            <th colspan="6" style="${hdrCell} font-size:0.78rem;">Count of Failed Subjects</th>
+            <th colspan="2" style="${bdr} background:#ede9fe; color:#4c1d95; font-weight:900; font-size:0.78rem;">School First Mark (Out of 600)</th>
+            <th rowspan="2" style="${bdr} background:#f5f3ff; color:#4c1d95; font-weight:900; width:11%; font-size:0.76rem; line-height:1.15;">School Average Mark<br><span style="font-size:0.68rem; color:#0f294a;">(Out of 100)</span></th>
+            <th colspan="4" style="${bdr} background:#ecfeff; color:#0f294a; font-weight:900; font-size:0.78rem;">No.of Students - MARK RANGE ( Total Marks )</th>
           </tr>
-          <tr style="background:#f1f5f9; font-weight:900; font-size:0.78rem;">
-            <th style="${bdr}">Single<br>Subject</th>
-            <th style="${bdr}">Two<br>Subjects</th>
-            <th style="${bdr}">Three<br>Subjects</th>
-            <th style="${bdr}">Four<br>Subjects</th>
-            <th style="${bdr}">Five<br>Subjects</th>
-            <th style="${bdr}">All<br>Subjects</th>
-            <th style="${bdr} background:#ede9fe; color:#4c1d95;">Science<br>Stream</th>
-            <th style="${bdr} background:#fae8ff; color:#701a75;">Arts<br>Stream</th>
-            <th style="${bdr}">Below 60%<br>( &lt;=360 Marks )</th>
-            <th style="${bdr}">60% to 80%<br>( 361 - 480 Marks )</th>
-            <th style="${bdr}">Above 80%<br>( 481 - 600 Marks )</th>
-            <th style="${bdr} background:#cffafe;">Total</th>
+          <tr>
+            <th style="${subHdrCell} line-height:1.1;">Single<br>Subject</th>
+            <th style="${subHdrCell} line-height:1.1;">Two<br>Subjects</th>
+            <th style="${subHdrCell} line-height:1.1;">Three<br>Subjects</th>
+            <th style="${subHdrCell} line-height:1.1;">Four<br>Subjects</th>
+            <th style="${subHdrCell} line-height:1.1;">Five<br>Subjects</th>
+            <th style="${subHdrCell} line-height:1.1;">All<br>Subjects</th>
+            <th style="${subHdrCell} background:#ede9fe; color:#4c1d95; line-height:1.1;">Science<br>Stream</th>
+            <th style="${subHdrCell} background:#fae8ff; color:#701a75; line-height:1.1;">Arts<br>Stream</th>
+            <th style="${subHdrCell} line-height:1.1;">Below 60%<br>(&lt;=360 Marks)</th>
+            <th style="${subHdrCell} line-height:1.1;">60% to 80%<br>(361-480 Marks)</th>
+            <th style="${subHdrCell} line-height:1.1;">Above 80%<br>(481-600 Marks)</th>
+            <th style="${subHdrCell} background:#cffafe; color:#0e7490;">Total</th>
           </tr>
         </thead>
         <tbody>
-          <tr style="height:36px;">
-            <td ${numLgCell} style="${bdr} color:#b45309; background:#fffbeb;">${calc.failedSubCounts.s1}</td>
+          <tr style="height:28px;">
+            <td ${numLgCell} style="${bdr} background:#fffbeb; color:#b45309;">${calc.failedSubCounts.s1}</td>
             <td ${numLgCell}>${calc.failedSubCounts.s2}</td>
             <td ${numLgCell}>${calc.failedSubCounts.s3}</td>
             <td ${numLgCell}>${calc.failedSubCounts.s4}</td>
             <td ${numLgCell}>${calc.failedSubCounts.s5}</td>
-            <td ${numLgCell} style="${bdr} color:#991b1b;">${calc.failedSubCounts.s6}</td>
-            <td class="ra-num-xl" style="${bdr} background:#ede9fe; color:#4c1d95;">${calc.firstMarkScience || "-"}</td>
-            <td class="ra-num-xl" style="${bdr} background:#fae8ff; color:#701a75;">${calc.firstMarkArts || "-"}</td>
-            <td class="ra-num-xl" style="${bdr} background:#f5f3ff; color:#4c1d95;">${calc.schoolAvgMark100} <span style="font-size:0.78rem; font-weight:800; color:#475569;">(${calc.schoolAvgMark600}/600)</span></td>
+            <td ${numLgCell} style="${bdr} background:#ffffff; color:#991b1b;">${calc.failedSubCounts.s6}</td>
+            <td class="ra-num-lg" style="${bdr} background:#ede9fe; color:#4c1d95;">${calc.firstMarkScience || "-"}</td>
+            <td class="ra-num-lg" style="${bdr} background:#fae8ff; color:#701a75;">${calc.firstMarkArts || "-"}</td>
+            <td class="ra-num-xl" style="${bdr} background:#f5f3ff; color:#4c1d95;">${calc.schoolAvgMark100}</td>
             <td ${numLgCell}>${calc.totalMarkRanges.below60}</td>
             <td ${numLgCell}>${calc.totalMarkRanges.r60_80}</td>
             <td ${numLgCell}>${calc.totalMarkRanges.above80}</td>
-            <td class="ra-num-xl" style="${bdr} background:#cffafe; color:#0e7490;">${calc.totalMarkRanges.total}</td>
+            <td class="ra-num-lg" style="${bdr} background:#cffafe; color:#0e7490;">${calc.totalMarkRanges.total}</td>
           </tr>
         </tbody>
       </table>
 
       <!-- PART 3: 21-SUBJECT PERFORMANCE MATRIX -->
-      <table style="width:100%; border-collapse:collapse; font-size:0.78rem;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.74rem; table-layout:fixed;">
         <thead>
-          <tr style="${hdrBg}">
-            <th colspan="2" style="${bdr} text-align:left; font-size:0.84rem; padding-left:6px; min-width:155px;">SUBJECTS &rArr;</th>
+          <tr>
+            <th colspan="2" style="${hdrCell} text-align:left; font-size:0.78rem; padding-left:6px; width:18%;">SUBJECTS &rArr;</th>
             ${subHeadersHtml}
           </tr>
         </thead>
         <tbody>
-          <tr style="height:26px; background:#f8fafc;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; padding-left:6px;">No.of Students</td>
-            ${build21Row("appeared", "color:#0f172a; background:#f8fafc;")}
+          <tr style="height:22px;">
+            <td colspan="2" style="${bdr} background:#f8fafc; text-align:left; font-weight:900; padding-left:6px;">No.of Students</td>
+            ${build21Row("stuCount", "#f8fafc", "#0f172a")}
           </tr>
-          <tr style="height:26px;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; padding-left:6px;">Exemption</td>
-            ${build21Row("exemption", "color:#334155;")}
+          <tr style="height:22px;">
+            <td colspan="2" style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:6px;">Exemption</td>
+            ${build21Row("exemption", "#ffffff", "#334155")}
           </tr>
-          <tr style="height:26px; background:#fef2f2;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; color:#991b1b; padding-left:6px;">Failed</td>
-            ${build21Row("failed", "color:#dc2626; background:#fef2f2;")}
+          <tr style="height:22px;">
+            <td colspan="2" style="${bdr} background:#fef2f2; text-align:left; font-weight:900; color:#991b1b; padding-left:6px;">Failed</td>
+            ${build21Row("failed", "#fef2f2", "#dc2626")}
           </tr>
-          <tr style="height:26px; background:#eff6ff;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; color:#1e3a8a; padding-left:6px;">SUBJECT AVERAGE MARK</td>
-            ${build21Row("avgMark", "color:#1e3a8a; background:#eff6ff;")}
+          <tr style="height:22px;">
+            <td colspan="2" style="${bdr} background:#eff6ff; text-align:left; font-weight:900; color:#1e3a8a; padding-left:6px;">SUBJECT AVERAGE MARK</td>
+            ${build21Row("avgMark", "#eff6ff", "#1e3a8a")}
           </tr>
-          <tr style="height:26px;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; padding-left:6px;">HIGHEST MARK</td>
-            ${build21Row("highestMark", "color:#000000;")}
+          <tr style="height:22px;">
+            <td colspan="2" style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:6px;">HIGHEST MARK</td>
+            ${build21Row("highestMark", "#ffffff", "#000000")}
           </tr>
-          <tr style="height:26px;">
-            <td rowspan="4" style="${bdr} font-weight:900; width:92px; background:#f8fafc; font-size:0.76rem;">MARK RANGE<br>(SUBJECT WISE)</td>
-            <td style="${bdr} text-align:left; font-weight:900; padding-left:6px; width:95px;">35 - 60 Marks</td>
-            ${build21Row("r35_60", "color:#000000;")}
+          <tr style="height:22px;">
+            <td rowspan="4" style="${bdr} background:#f8fafc; font-weight:900; width:9%; font-size:0.70rem; line-height:1.15;">MARK RANGE<br>(SUBJECT WISE)</td>
+            <td style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:5px; width:9%;">35 - 60 Marks</td>
+            ${build21Row("r35_60", "#ffffff", "#000000")}
           </tr>
-          <tr style="height:26px;">
-            <td style="${bdr} text-align:left; font-weight:900; padding-left:6px;">61 - 80 Marks</td>
-            ${build21Row("r61_80", "color:#000000;")}
+          <tr style="height:22px;">
+            <td style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:5px;">61 - 80 Marks</td>
+            ${build21Row("r61_80", "#ffffff", "#000000")}
           </tr>
-          <tr style="height:26px;">
-            <td style="${bdr} text-align:left; font-weight:900; padding-left:6px;">81 - 99 Marks</td>
-            ${build21Row("r81_99", "color:#000000;")}
+          <tr style="height:22px;">
+            <td style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:5px;">81 - 99 Marks</td>
+            ${build21Row("r81_99", "#ffffff", "#000000")}
           </tr>
-          <tr style="height:26px; background:#f0fdf4;">
-            <td style="${bdr} text-align:left; font-weight:900; color:#14532d; padding-left:6px;">No.of Centum</td>
-            ${build21Row("centum", "color:#15803d; background:#f0fdf4;")}
+          <tr style="height:22px;">
+            <td style="${bdr} background:#f0fdf4; text-align:left; font-weight:900; color:#14532d; padding-left:5px;">No.of Centum</td>
+            ${build21Row("centum", "#f0fdf4", "#15803d")}
           </tr>
-          <tr style="height:26px; background:#fffbeb;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; color:#92400e; padding-left:6px;">Single Subject Failed (Sub.Wise)</td>
-            ${build21Row("singleSubFailed", "color:#b45309; background:#fffbeb;")}
+          <tr style="height:22px;">
+            <td colspan="2" style="${bdr} background:#fffbeb; text-align:left; font-weight:900; color:#92400e; padding-left:6px;">Single Subject Failed (Sub.Wise)</td>
+            ${build21Row("singleSubFailed", "#fffbeb", "#b45309")}
           </tr>
         </tbody>
       </table>
 
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:18px; padding:0 12px; font-size:0.88rem; font-weight:900;">
-        <div>நாள் (Date): <span class="ra-num" style="font-size:0.94rem !important;">${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding:2px 10px 0 10px; font-size:0.84rem; font-weight:900; color:#000;">
+        <div>நாள் (Date): <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900;">${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span></div>
         <div>தலைமையாசிரியர் கையொப்பம் (Signature of the Headmaster)</div>
       </div>
     </div>
@@ -35191,42 +35231,38 @@ function build12thForm2_1ExactHtml(calc, forPrint) {
   `;
 }
 
-function build12thForm2_2ExactHtml(calc, forPrint) {
+function build12thForm2_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPages, forPrint) {
   const s = calc.sch;
-  const bdr = "border:1.8px solid #0f294a; padding:5px 4px; text-align:center; vertical-align:middle;";
-  const hdrBg = "background:#e2e8f0; color:#0f294a; font-weight:900;";
-  const f2Num = `class="ra-f2-num" style="${bdr} color:#000000;"`;
-  const f2NumLg = `class="ra-f2-num-lg" style="${bdr} color:#000000;"`;
+  const bdr = "border:1.5px solid #0f294a; padding:3.5px 2.5px; text-align:center; vertical-align:middle;";
+  const hdrCell = `${bdr} background:#e2e8f0; color:#0f294a; font-weight:900; font-size:0.73rem; line-height:1.12;`;
+  const subHdrCell = `${bdr} background:#f1f5f9; color:#0f294a; font-weight:900; font-size:0.69rem; line-height:1.1;`;
+  const f2Num = `class="ra-f2-num" style="${bdr} background:#ffffff; color:#000000;"`;
+  const f2NumLg = `class="ra-f2-num-lg" style="${bdr} background:#ffffff; color:#000000;"`;
 
-  const rowsList = calc.f2Rows.slice();
-  if (forPrint) {
-    while (rowsList.length < 12) {
-      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
-    }
-  }
-
-  const tbodyHtml = rowsList.map(r => {
+  const tbodyHtml = pageRows.map(r => {
     if (r.isBlank) {
-      return `<tr style="height:27px;">
+      return `<tr style="height:25px;">
         <td ${f2Num}>${r.sno}</td>
-        <td style="${bdr}"></td><td style="${bdr}"></td><td ${f2Num}></td><td ${f2Num}></td>
-        <td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}>0</td><td ${f2Num}></td>
-        <td ${f2Num}>0</td><td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td>
+        <td style="${bdr} background:#fff;"></td><td style="${bdr} background:#fff;"></td>
+        <td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td>
+        <td ${f2Num}>0</td><td ${f2Num}></td><td ${f2Num}>0</td><td ${f2Num}></td>
         <td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td>
         <td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td>
-        <td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td>
+        <td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td>
       </tr>`;
     }
     const t = r.teacher || {};
     const tNameDisp = t.nameTa || t.nameEn || "(பிரிவு 1A-ல் முதுகலை ஆசிரியரைத் தேர்ந்தெடுக்கவும்)";
     return `
-      <tr style="font-weight:800; height:31px;">
+      <tr style="height:27px;">
         <td ${f2NumLg}>${r.sno}</td>
-        <td style="${bdr} text-align:left; min-width:165px; padding:4px 6px;">
-          <div style="font-weight:900; color:#0f294a; font-size:0.86rem; line-height:1.2;">${escapeHtmlAttr(tNameDisp)}</div>
-          ${(t.nameEn || t.staffId) ? `<div style="font-size:0.72rem; color:#334155; font-weight:800;">${t.nameEn ? escapeHtmlAttr(t.nameEn) + " | " : ""}EMIS: <span class="ra-f2-num" style="font-size:0.76rem !important;">${escapeHtmlAttr(t.staffId || "-")}</span></div>` : ""}
+        <td style="${bdr} background:#ffffff; text-align:left; padding:3px 5px;">
+          <div style="font-weight:900; color:#0f294a; font-size:0.78rem; line-height:1.15;">${escapeHtmlAttr(tNameDisp)}</div>
+          ${(t.nameEn || t.staffId) ? `<div style="font-size:0.66rem; color:#334155; font-weight:800; line-height:1.1;">${t.nameEn ? escapeHtmlAttr(t.nameEn) + " | " : ""}EMIS: <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900;">${escapeHtmlAttr(t.staffId || "-")}</span></div>` : ""}
         </td>
-        <td style="${bdr} font-weight:900; color:#4c1d95; font-size:0.82rem; line-height:1.15;">${escapeHtmlAttr(r.subLabelEn)}<br><span style="font-size:0.72rem; color:#0f766e; font-weight:900;">(Sec ${escapeHtmlAttr(r.secId)} - ${escapeHtmlAttr(r.medium)})</span></td>
+        <td style="${bdr} background:#ffffff; font-weight:900; color:#4c1d95; font-size:0.74rem; line-height:1.12;">
+          ${escapeHtmlAttr(r.subLabelEn)}<br><span style="font-size:0.65rem; color:#0f766e; font-weight:900;">(Sec ${escapeHtmlAttr(r.secId)}-${escapeHtmlAttr(r.medium)})</span>
+        </td>
         <td ${f2NumLg}>${r.stuCount}</td>
         <td ${f2Num}>${r.la}</td>
         <td ${f2Num}>${r.ab}</td>
@@ -35234,8 +35270,8 @@ function build12thForm2_2ExactHtml(calc, forPrint) {
         <td ${f2NumLg} style="${bdr} background:#eff6ff; color:#1e3a8a;">${r.appear}</td>
         <td ${f2NumLg} style="${bdr} background:#f0fdf4; color:#14532d;">${r.pass}</td>
         <td ${f2NumLg} style="${bdr} background:#fef2f2; color:#991b1b;">${r.fail}</td>
-        <td ${f2NumLg} style="${bdr} background:#fef3c7; color:#78350f;">${r.passPct}</td>
-        <td ${f2NumLg} style="${bdr} color:#1e3a8a;">${r.avgMark}</td>
+        <td ${f2NumLg} style="${bdr} background:#fef3c7; color:#78350f; font-size:0.86rem !important;">${r.passPct}</td>
+        <td ${f2NumLg} style="${bdr} background:#ffffff; color:#1e3a8a;">${r.avgMark}</td>
         <td ${f2Num}>${r.maxMark}</td>
         <td ${f2Num}>${r.minMark}</td>
         <td ${f2Num}>${r.r35_60}</td>
@@ -35245,79 +35281,128 @@ function build12thForm2_2ExactHtml(calc, forPrint) {
         <td ${f2NumLg} style="${bdr} background:#fffbeb; color:#b45309;">${r.failThisSubOnly}</td>
         <td ${f2Num}>${escapeHtmlAttr(t.pubAppear || "-")}</td>
         <td ${f2Num}>${escapeHtmlAttr(t.pubPass || "-")}</td>
-        <td ${f2Num}>${escapeHtmlAttr(r.pubPassPct || "-")}</td>
+        <td ${f2Num} style="${bdr} background:#ffffff; color:#000; font-size:0.82rem !important;">${escapeHtmlAttr(r.pubPassPct || "-")}</td>
         <td ${f2Num}>${escapeHtmlAttr(t.pubAvg || "-")}</td>
         <td ${f2Num}>${escapeHtmlAttr(t.pubCentum || "-")}</td>
       </tr>
     `;
   }).join("");
 
+  const pageBadge = totalPages > 1 ? ` <span style="font-size:0.76rem; color:#4c1d95;">(Page ${pageIdx + 1} of ${totalPages})</span>` : "";
+
   return `
-    <div class="ra-report-sheet" style="background:#ffffff; color:#000; padding:${forPrint ? '2px' : '14px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'};">
-      <table style="width:100%; border-collapse:collapse; margin-bottom:8px; font-size:0.90rem;">
+    <div class="ra-report-sheet" style="background:#ffffff; color:#000; padding:${forPrint ? '0' : '12px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'};">
+      <table style="width:100%; border-collapse:collapse; margin-bottom:5px; table-layout:fixed;">
         <tr>
-          <td style="${bdr} font-weight:900; width:20%; background:#f8fafc; font-size:0.96rem;">SIVAGANGAI DISTRICT</td>
-          <td style="${bdr} font-weight:900; font-size:1.06rem; background:#f5f3ff; color:#4c1d95;" colspan="2">
+          <td style="${bdr} width:18%; background:#f8fafc; font-weight:900; font-size:0.88rem; color:#0f294a;">SIVAGANGAI DISTRICT</td>
+          <td style="${bdr} width:64%; background:#f5f3ff; font-weight:900; font-size:0.98rem; color:#4c1d95; line-height:1.22;">
             ${escapeHtmlAttr(calc.termMeta.reportHeaderEn)}<br>
-            <span style="font-size:0.90rem; color:#0f294a;">SUBJECT PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})</span>
+            <span style="font-size:0.84rem; color:#0f294a;">SUBJECT PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})${pageBadge}</span>
           </td>
-          <td style="${bdr} font-weight:900; width:19%; background:#fef3c7; color:#92400e; font-size:1.02rem;">
+          <td style="${bdr} width:18%; background:#fef3c7; font-weight:900; font-size:0.92rem; color:#92400e; line-height:1.2;">
             FORM - II ( 2 )<br>
-            <span style="font-size:0.88rem; color:#0f294a;">UNIQUE NO : <strong class="ra-num-lg" style="color:#000;">${escapeHtmlAttr(s.uNo)}</strong></span>
+            <span style="font-size:0.82rem; color:#0f294a;">UNIQUE NO : <strong style="font-family:'Segoe UI',Arial,sans-serif; font-size:0.98rem; color:#000;">${escapeHtmlAttr(s.uNo)}</strong></span>
           </td>
         </tr>
         <tr>
-          <td style="${bdr} font-weight:900; text-align:left; font-size:0.90rem; padding:5px 10px;" colspan="3">
-            NAME OF THE SCHOOL : <strong style="color:#4c1d95; font-size:0.96rem;">[<span class="ra-num" style="font-size:0.96rem !important;">${escapeHtmlAttr(s.uNo)}</span>] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</strong>
+          <td colspan="2" style="${bdr} background:#ffffff; font-weight:900; text-align:left; font-size:0.86rem; padding:4px 8px; color:#0f294a;">
+            NAME OF THE SCHOOL : <span style="color:#4c1d95; font-weight:900;">[${escapeHtmlAttr(s.uNo)}] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</span>
           </td>
-          <td style="${bdr} font-weight:900; background:#f8fafc; font-size:0.96rem;">STD : <strong class="ra-num-lg" style="color:#5b21b6;">12th</strong></td>
+          <td style="${bdr} background:#f8fafc; font-weight:900; font-size:0.88rem; color:#0f294a;">
+            STD : <strong style="font-family:'Segoe UI',Arial,sans-serif; font-size:1.0rem; color:#5b21b6;">12th</strong>
+          </td>
         </tr>
       </table>
 
-      <div style="overflow-x:auto;">
-        <table style="width:100%; border-collapse:collapse; font-size:0.80rem;">
-          <thead>
-            <tr style="${hdrBg}">
-              <th rowspan="2" style="${bdr} width:32px;">S.<br>No</th>
-              <th rowspan="2" style="${bdr}">Name of the Teacher</th>
-              <th rowspan="2" style="${bdr} width:105px;">Subject</th>
-              <th rowspan="2" style="${bdr} width:42px;">No.of<br>Stu.</th>
-              <th rowspan="2" style="${bdr} width:32px;">LA</th>
-              <th rowspan="2" style="${bdr} width:32px;">AB</th>
-              <th rowspan="2" style="${bdr} width:32px;">Ex.</th>
-              <th rowspan="2" style="${bdr} background:#dbeafe; width:46px;">Appear</th>
-              <th rowspan="2" style="${bdr} background:#dcfce7; width:44px;">Pass</th>
-              <th rowspan="2" style="${bdr} background:#fee2e2; width:40px;">Fail</th>
-              <th rowspan="2" style="${bdr} background:#fef3c7; width:64px;">Pass<br>%</th>
-              <th rowspan="2" style="${bdr} width:48px;">Average<br>Mark</th>
-              <th rowspan="2" style="${bdr} width:42px;">Max.<br>Mark</th>
-              <th rowspan="2" style="${bdr} width:42px;">Min.<br>Mark</th>
-              <th colspan="4" style="${bdr} background:#ecfeff;">Mark Range (No.of Passed Stu.)</th>
-              <th rowspan="2" style="${bdr} background:#fffbeb; width:44px;">Fail<br>this<br>Sub.<br>only</th>
-              <th colspan="5" style="${bdr} background:#f5f3ff;">Mar/Apr' 2026 PUBLIC EXAM</th>
-            </tr>
-            <tr style="background:#f1f5f9; font-weight:900; font-size:0.76rem;">
-              <th style="${bdr} width:42px;">35-60</th>
-              <th style="${bdr} width:42px;">61-80</th>
-              <th style="${bdr} width:42px;">81-99</th>
-              <th style="${bdr} width:42px;">Cen<br>-tum</th>
-              <th style="${bdr} width:42px;">Appear</th>
-              <th style="${bdr} width:38px;">Pass</th>
-              <th style="${bdr} width:48px;">Pass<br>%</th>
-              <th style="${bdr} width:46px;">Average<br>Mark</th>
-              <th style="${bdr} width:38px;">Cen<br>-tum</th>
-            </tr>
-          </thead>
-          <tbody>${tbodyHtml}</tbody>
-        </table>
-      </div>
+      <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+        <colgroup>
+          <col style="width:2.6%;">
+          <col style="width:16.4%;">
+          <col style="width:9.5%;">
+          <col style="width:3.4%;">
+          <col style="width:2.5%;">
+          <col style="width:2.5%;">
+          <col style="width:2.5%;">
+          <col style="width:3.6%;">
+          <col style="width:3.4%;">
+          <col style="width:3.1%;">
+          <col style="width:5.4%;">
+          <col style="width:3.8%;">
+          <col style="width:3.3%;">
+          <col style="width:3.3%;">
+          <col style="width:3.3%;">
+          <col style="width:3.3%;">
+          <col style="width:3.3%;">
+          <col style="width:3.4%;">
+          <col style="width:3.4%;">
+          <col style="width:3.5%;">
+          <col style="width:3.3%;">
+          <col style="width:5.2%;">
+          <col style="width:3.6%;">
+          <col style="width:3.0%;">
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2" style="${hdrCell}">S.<br>No</th>
+            <th rowspan="2" style="${hdrCell}">Name of the Teacher</th>
+            <th rowspan="2" style="${hdrCell}">Subject</th>
+            <th rowspan="2" style="${hdrCell}">No.of<br>Stu.</th>
+            <th rowspan="2" style="${hdrCell}">LA</th>
+            <th rowspan="2" style="${hdrCell}">AB</th>
+            <th rowspan="2" style="${hdrCell}">Ex.</th>
+            <th rowspan="2" style="${hdrCell} background:#dbeafe;">Appear</th>
+            <th rowspan="2" style="${hdrCell} background:#dcfce7;">Pass</th>
+            <th rowspan="2" style="${hdrCell} background:#fee2e2;">Fail</th>
+            <th rowspan="2" style="${hdrCell} background:#fef3c7;">Pass<br>%</th>
+            <th rowspan="2" style="${hdrCell}">Avg.<br>Mark</th>
+            <th rowspan="2" style="${hdrCell}">Max.<br>Mark</th>
+            <th rowspan="2" style="${hdrCell}">Min.<br>Mark</th>
+            <th colspan="4" style="${hdrCell} background:#ecfeff;">Mark Range (Passed Stu.)</th>
+            <th rowspan="2" style="${hdrCell} background:#fffbeb;">Fail<br>Sub.<br>only</th>
+            <th colspan="5" style="${hdrCell} background:#f5f3ff;">Mar/Apr' 2026 PUBLIC EXAM</th>
+          </tr>
+          <tr>
+            <th style="${subHdrCell}">35-60</th>
+            <th style="${subHdrCell}">61-80</th>
+            <th style="${subHdrCell}">81-99</th>
+            <th style="${subHdrCell}">100</th>
+            <th style="${subHdrCell}">Appear</th>
+            <th style="${subHdrCell}">Pass</th>
+            <th style="${subHdrCell}">Pass %</th>
+            <th style="${subHdrCell}">Avg</th>
+            <th style="${subHdrCell}">100</th>
+          </tr>
+        </thead>
+        <tbody>${tbodyHtml}</tbody>
+      </table>
 
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px; padding:0 12px; font-size:0.88rem; font-weight:900;">
-        <div>நாள் (Date): <span class="ra-num" style="font-size:0.94rem !important;">${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding:2px 10px 0 10px; font-size:0.84rem; font-weight:900; color:#000;">
+        <div>நாள் (Date): <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900;">${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span></div>
         <div>தலைமையாசிரியர் கையொப்பம் (Signature of the Headmaster)</div>
       </div>
     </div>
   `;
+}
+
+function build12thForm2_2ExactHtml(calc, forPrint) {
+  const rowsList = calc.f2Rows.slice();
+  if (forPrint) {
+    while (rowsList.length < 12) {
+      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
+    }
+  }
+  if (!forPrint || rowsList.length <= 12) {
+    return build12thForm2_2SinglePageTableHtml(calc, rowsList, 0, 1, forPrint);
+  }
+  // If more than 12 rows in Print/PDF mode, paginate into chunks of 10 rows per page and repeat the full table header on each page!
+  const chunkSize = 10;
+  const pages = [];
+  for (let i = 0; i < rowsList.length; i += chunkSize) {
+    pages.push(rowsList.slice(i, i + chunkSize));
+  }
+  return pages.map((chunk, idx) =>
+    `<div class="${idx < pages.length - 1 ? 'ra-pdf-subpage-break' : ''}" style="${idx > 0 ? 'page-break-before:always; break-before:page; margin-top:4mm;' : ''}">${build12thForm2_2SinglePageTableHtml(calc, chunk, idx, pages.length, true)}</div>`
+  ).join("");
 }
 
 function ensureUlagampatti206PreloadedInMidTermStore(store) {
@@ -36146,6 +36231,12 @@ function computeSchoolExamResultAnalysis(uNo, termKey, explicitStd) {
       return;
     }
 
+    const hasAny10thMark = MIDTERM_CORE_SUBJECTS.some(s => String(marksObj[s.key] !== undefined ? marksObj[s.key] : "").trim() !== "");
+    if (!hasAny10thMark) {
+      evaluatedStudents.push(Object.assign({}, stu, { total500: "-", avgPct: "-", resultType: "PENDING", resultBadge: "⏳ மதிப்பெண் பதிவு நிலுவை", failedSubs: [] }));
+      return;
+    }
+
     // Student Appeared!
     if (isFem) appF++; else appM++;
 
@@ -36316,8 +36407,10 @@ function computeSchoolExamResultAnalysis(uNo, termKey, explicitStd) {
     });
   });
 
-  const emisM = hasStudentEntries ? (appM + laM + abM + hbM) : st10Emis.boys;
-  const emisF = hasStudentEntries ? (appF + laF + abF + hbF) : st10Emis.girls;
+  const roster10M = students.filter(s => s.gender !== "Female" && s.gender !== "F").length;
+  const roster10F = students.filter(s => s.gender === "Female" || s.gender === "F").length;
+  const emisM = hasStudentEntries ? roster10M : st10Emis.boys;
+  const emisF = hasStudentEntries ? roster10F : st10Emis.girls;
   const emisT = emisM + emisF;
 
   const laT = laM + laF;
@@ -37514,20 +37607,21 @@ function buildMidTermForm1_1ExactHtml(calc, forPrint) {
   const s = calc.sch;
   const sub = calc.subStats;
   const rec = calc.rec;
-  const bdr = "border:1.8px solid #0f294a; padding:6px 6px; text-align:center; vertical-align:middle;";
-  const hdrBg = "background:#e2e8f0; color:#0f294a; font-weight:900;";
-  const numCell = `class="ra-num" style="${bdr} color:#000000;"`;
-  const numLgCell = `class="ra-num-lg" style="${bdr} color:#000000;"`;
+  const bdr = "border:1.5px solid #0f294a; padding:3.5px 4px; text-align:center; vertical-align:middle;";
+  const hdrCell = `${bdr} background:#e2e8f0; color:#0f294a; font-weight:900;`;
+  const subHdrCell = `${bdr} background:#f1f5f9; color:#0f294a; font-weight:900; font-size:0.74rem;`;
+  const numCell = `class="ra-num" style="${bdr} background:#ffffff; color:#000000;"`;
+  const numLgCell = `class="ra-num-lg" style="${bdr} background:#ffffff; color:#000000;"`;
 
   const remedialHtml = (!forPrint && calc.singleSubFailedStudents.length > 0) ? `
-    <div style="margin-top:16px; background:#fff7ed; border:1.5px solid #fdba74; border-left:5px solid #ea580c; border-radius:10px; padding:12px 14px;">
-      <div style="font-size:0.92rem; font-weight:900; color:#9a3412; margin-bottom:6px;">
-        🎯 ஒரு பாடத்தில் மட்டும் தோல்வியடைந்த மாணவர்கள் பெயர்ப் பட்டியல் (Single Subject Failed Students — சிறப்புப் பயிற்சிக்காக: <span class="ra-num" style="font-size:1.05rem !important;">${calc.singleSubFailedStudents.length}</span> மாணவர்கள்)
+    <div style="margin-top:14px; background:#fff7ed; border:1.5px solid #fdba74; border-left:5px solid #ea580c; border-radius:10px; padding:10px 14px;">
+      <div style="font-size:0.90rem; font-weight:900; color:#9a3412; margin-bottom:6px;">
+        🎯 ஒரு பாடத்தில் மட்டும் தோல்வியடைந்த மாணவர்கள் பெயர்ப் பட்டியல் (Single Subject Failed Students: <span class="ra-num">${calc.singleSubFailedStudents.length}</span> மாணவர்கள்)
       </div>
       <div style="display:flex; flex-wrap:wrap; gap:8px;">
         ${calc.singleSubFailedStudents.map((st, i) => `
-          <span style="background:#fff; border:1px solid #fb923c; border-radius:6px; padding:4px 10px; font-size:0.80rem; font-weight:800; color:#7c2d12;">
-            <strong class="ra-num" style="font-size:0.88rem !important;">${i + 1}.</strong> <strong>${escapeHtmlAttr(st.name)}</strong> (Roll: <strong class="ra-num" style="font-size:0.86rem !important;">${escapeHtmlAttr(st.rollNo)}</strong>, Sec: <strong>${escapeHtmlAttr(st.section)}</strong>) — <span style="color:#dc2626;">${escapeHtmlAttr(st.failedSubLabel)}: <strong class="ra-num" style="font-size:0.92rem !important;">${escapeHtmlAttr(st.failedMark)}</strong></span> (மொத்தம்: <strong class="ra-num" style="font-size:0.88rem !important;">${st.total500}/500</strong>)
+          <span style="background:#fff; border:1px solid #fb923c; border-radius:6px; padding:4px 10px; font-size:0.78rem; font-weight:800; color:#7c2d12;">
+            <strong>${i + 1}.</strong> <strong>${escapeHtmlAttr(st.name)}</strong> (Roll: <strong>${escapeHtmlAttr(st.rollNo)}</strong>, Sec: <strong>${escapeHtmlAttr(st.section)}</strong>) — <span style="color:#dc2626;">${escapeHtmlAttr(st.failedSubLabel)}: <strong>${escapeHtmlAttr(st.failedMark)}</strong></span> (மொத்தம்: <strong>${st.total500}/500</strong>)
           </span>
         `).join("")}
       </div>
@@ -37535,93 +37629,95 @@ function buildMidTermForm1_1ExactHtml(calc, forPrint) {
   ` : "";
 
   return `
-    <div class="ra-report-sheet" style="background:#ffffff; color:#000; padding:${forPrint ? '2px' : '14px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'};">
+    <div class="ra-report-sheet" style="background:#ffffff; color:#000; padding:${forPrint ? '0' : '12px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'};">
       <!-- Official Form-I(1) Header -->
-      <table style="width:100%; border-collapse:collapse; margin-bottom:8px; font-size:0.90rem;">
+      <table style="width:100%; border-collapse:collapse; margin-bottom:5px; table-layout:fixed;">
         <tr>
-          <td style="${bdr} font-weight:900; width:20%; background:#f8fafc; font-size:0.96rem;">SIVAGANGAI DISTRICT</td>
-          <td style="${bdr} font-weight:900; font-size:1.08rem; background:#eff6ff; color:#1e3a8a;" colspan="2">
+          <td style="${bdr} width:18%; background:#f8fafc; font-weight:900; font-size:0.88rem; color:#0f294a;">SIVAGANGAI DISTRICT</td>
+          <td style="${bdr} width:64%; background:#eff6ff; font-weight:900; font-size:0.98rem; color:#1e3a8a; line-height:1.22;">
             ${escapeHtmlAttr(calc.termMeta.reportHeaderEn)}<br>
-            <span style="font-size:0.92rem; color:#0f294a;">SCHOOL PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})</span>
+            <span style="font-size:0.84rem; color:#0f294a;">SCHOOL PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})</span>
           </td>
-          <td style="${bdr} font-weight:900; width:19%; background:#fef3c7; color:#92400e; font-size:1.02rem;">
+          <td style="${bdr} width:18%; background:#fef3c7; font-weight:900; font-size:0.92rem; color:#92400e; line-height:1.2;">
             FORM - I ( 1 )<br>
-            <span style="font-size:0.90rem; color:#0f294a;">UNIQUE NO : <strong class="ra-num-lg" style="color:#000;">${escapeHtmlAttr(s.uNo)}</strong></span>
+            <span style="font-size:0.82rem; color:#0f294a;">UNIQUE NO : <strong style="font-family:'Segoe UI',Arial,sans-serif; font-size:0.98rem; color:#000;">${escapeHtmlAttr(s.uNo)}</strong></span>
           </td>
         </tr>
         <tr>
-          <td style="${bdr} font-weight:900; text-align:left; font-size:0.92rem; padding:6px 10px;" colspan="3">
-            NAME OF THE SCHOOL : <strong style="color:#1e3a8a; font-size:0.98rem;">[<span class="ra-num" style="font-size:0.98rem !important;">${escapeHtmlAttr(s.uNo)}</span>] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</strong> &nbsp;|&nbsp; UDISE: <strong class="ra-num" style="font-size:0.96rem !important;">${escapeHtmlAttr(s.udiseNo || "-")}</strong>
+          <td colspan="2" style="${bdr} background:#ffffff; font-weight:900; text-align:left; font-size:0.86rem; padding:4px 8px; color:#0f294a;">
+            NAME OF THE SCHOOL : <span style="color:#1e3a8a; font-weight:900;">[${escapeHtmlAttr(s.uNo)}] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</span> &nbsp;|&nbsp; UDISE : <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900; color:#000;">${escapeHtmlAttr(s.udiseNo || "-")}</span>
           </td>
-          <td style="${bdr} font-weight:900; background:#f8fafc; font-size:0.96rem;">STD : <strong class="ra-num-lg" style="color:#dc2626;">10th</strong></td>
+          <td style="${bdr} background:#f8fafc; font-weight:900; font-size:0.88rem; color:#0f294a;">
+            STD : <strong style="font-family:'Segoe UI',Arial,sans-serif; font-size:1.0rem; color:#dc2626;">10th</strong>
+          </td>
         </tr>
       </table>
 
       <!-- PART 1: ATTENDANCE & OVERALL PASS/FAIL -->
-      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:0.82rem;">
+      <table style="width:100%; border-collapse:collapse; margin-bottom:5px; table-layout:fixed;">
         <thead>
-          <tr style="${hdrBg}">
-            <th colspan="3" style="${bdr} font-size:0.84rem;">No.of Students as per EMIS</th>
-            <th colspan="3" style="${bdr} font-size:0.84rem;">Long Absent</th>
-            <th colspan="3" style="${bdr} font-size:0.84rem;">Absent<br><span style="font-size:0.70rem; font-weight:800;">(5 பாடத் தேர்வுகளுக்கும் வருகைதராதவர்கள்)</span></th>
-            <th colspan="3" style="${bdr} font-size:0.84rem;">Home Based Students<br><span style="font-size:0.70rem; font-weight:800;">(பொதுத்தேர்விற்கு வருகை தர இயலாதவர்கள்)</span></th>
-            <th colspan="3" style="${bdr} background:#dbeafe; font-size:0.84rem;">No.of Students Appeared</th>
-            <th colspan="3" style="${bdr} background:#dcfce7; font-size:0.84rem;">No.of Students Passed</th>
-            <th rowspan="2" style="${bdr} background:#fef3c7; width:82px; font-size:0.90rem;">Pass<br>%</th>
-            <th colspan="3" style="${bdr} background:#fee2e2; font-size:0.84rem;">No.of Students Failed</th>
+          <tr>
+            <th colspan="3" style="${hdrCell} font-size:0.76rem;">No.of Students as per EMIS</th>
+            <th colspan="3" style="${hdrCell} font-size:0.76rem;">Long Absent</th>
+            <th colspan="3" style="${hdrCell} font-size:0.74rem; line-height:1.1;">Absent<br><span style="font-size:0.62rem; font-weight:800;">(5 பாடத் தேர்வுகளுக்கும் வருகைதராதவர்கள்)</span></th>
+            <th colspan="3" style="${hdrCell} font-size:0.74rem; line-height:1.1;">Home Based Students<br><span style="font-size:0.62rem; font-weight:800;">(பொதுத்தேர்விற்கு வருகை தர இயலாதவர்கள்)</span></th>
+            <th colspan="3" style="${bdr} background:#dbeafe; color:#0f294a; font-weight:900; font-size:0.76rem;">No.of Students Appeared</th>
+            <th colspan="3" style="${bdr} background:#dcfce7; color:#0f294a; font-weight:900; font-size:0.76rem;">No.of Students Passed</th>
+            <th rowspan="2" style="${bdr} background:#fef3c7; color:#78350f; font-weight:900; width:7%; font-size:0.80rem;">Pass<br>%</th>
+            <th colspan="3" style="${bdr} background:#fee2e2; color:#0f294a; font-weight:900; font-size:0.76rem;">No.of Students Failed</th>
           </tr>
-          <tr style="background:#f1f5f9; font-weight:900; font-size:0.78rem;">
-            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
-            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
-            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
-            <th style="${bdr}">Male</th><th style="${bdr}">Female</th><th style="${bdr}">Total</th>
-            <th style="${bdr} background:#eff6ff;">Male</th><th style="${bdr} background:#eff6ff;">Female</th><th style="${bdr} background:#dbeafe;">Total</th>
-            <th style="${bdr} background:#f0fdf4;">Male</th><th style="${bdr} background:#f0fdf4;">Female</th><th style="${bdr} background:#dcfce7;">Total</th>
-            <th style="${bdr} background:#fef2f2;">Male</th><th style="${bdr} background:#fef2f2;">Female</th><th style="${bdr} background:#fee2e2;">Total</th>
+          <tr>
+            <th style="${subHdrCell}">Male</th><th style="${subHdrCell}">Female</th><th style="${subHdrCell}">Total</th>
+            <th style="${subHdrCell}">Male</th><th style="${subHdrCell}">Female</th><th style="${subHdrCell}">Total</th>
+            <th style="${subHdrCell}">Male</th><th style="${subHdrCell}">Female</th><th style="${subHdrCell}">Total</th>
+            <th style="${subHdrCell}">Male</th><th style="${subHdrCell}">Female</th><th style="${subHdrCell}">Total</th>
+            <th style="${subHdrCell} background:#eff6ff;">Male</th><th style="${subHdrCell} background:#eff6ff;">Female</th><th style="${subHdrCell} background:#dbeafe;">Total</th>
+            <th style="${subHdrCell} background:#f0fdf4;">Male</th><th style="${subHdrCell} background:#f0fdf4;">Female</th><th style="${subHdrCell} background:#dcfce7;">Total</th>
+            <th style="${subHdrCell} background:#fef2f2;">Male</th><th style="${subHdrCell} background:#fef2f2;">Female</th><th style="${subHdrCell} background:#fee2e2;">Total</th>
           </tr>
         </thead>
         <tbody>
-          <tr style="height:36px;">
+          <tr style="height:28px;">
             <td ${numCell}>${calc.emis.m}</td><td ${numCell}>${calc.emis.f}</td><td ${numLgCell} style="${bdr} background:#f8fafc; color:#000;">${calc.emis.t}</td>
             <td ${numCell}>${calc.la.m}</td><td ${numCell}>${calc.la.f}</td><td ${numLgCell} style="${bdr} background:#f8fafc; color:#000;">${calc.la.t}</td>
             <td ${numCell}>${calc.ab.m}</td><td ${numCell}>${calc.ab.f}</td><td ${numLgCell} style="${bdr} background:#f8fafc; color:#000;">${calc.ab.t}</td>
             <td ${numCell}>${calc.hb.m}</td><td ${numCell}>${calc.hb.f}</td><td ${numLgCell} style="${bdr} background:#f8fafc; color:#000;">${calc.hb.t}</td>
             <td ${numCell} style="${bdr} background:#eff6ff; color:#0f172a;">${calc.appeared.m}</td><td ${numCell} style="${bdr} background:#eff6ff; color:#0f172a;">${calc.appeared.f}</td><td ${numLgCell} style="${bdr} background:#dbeafe; color:#1e3a8a;">${calc.appeared.t}</td>
             <td ${numCell} style="${bdr} background:#f0fdf4; color:#0f172a;">${calc.passed.m}</td><td ${numCell} style="${bdr} background:#f0fdf4; color:#0f172a;">${calc.passed.f}</td><td ${numLgCell} style="${bdr} background:#dcfce7; color:#14532d;">${calc.passed.t}</td>
-            <td class="ra-num-xl" style="${bdr} background:#fef3c7; color:#78350f;">${calc.passPctStr}</td>
+            <td class="ra-num-lg" style="${bdr} background:#fef3c7; color:#78350f;">${calc.passPctStr}</td>
             <td ${numCell} style="${bdr} background:#fef2f2; color:#7f1d1d;">${calc.failed.m}</td><td ${numCell} style="${bdr} background:#fef2f2; color:#7f1d1d;">${calc.failed.f}</td><td ${numLgCell} style="${bdr} background:#fee2e2; color:#991b1b;">${calc.failed.t}</td>
           </tr>
         </tbody>
       </table>
 
       <!-- PART 2: COUNT OF FAILED SUBJECTS, FIRST MARK, AVG MARK & TOTAL MARK RANGE -->
-      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:0.84rem;">
+      <table style="width:100%; border-collapse:collapse; margin-bottom:5px; table-layout:fixed;">
         <thead>
-          <tr style="${hdrBg}">
-            <th colspan="5" style="${bdr} font-size:0.88rem;">Count of Failed Subjects</th>
-            <th rowspan="2" style="${bdr} background:#f5f3ff; font-size:0.88rem;">School<br>First Mark<br><span style="font-size:0.74rem;">(Out of 500)</span></th>
-            <th rowspan="2" style="${bdr} background:#f5f3ff; font-size:0.88rem;">*School Average Mark<br>(All Subjects)</th>
-            <th colspan="4" style="${bdr} background:#ecfeff; font-size:0.88rem;">No.of Students - MARK RANGE ( Total Marks )</th>
+          <tr>
+            <th colspan="5" style="${hdrCell} font-size:0.78rem;">Count of Failed Subjects</th>
+            <th rowspan="2" style="${bdr} background:#f5f3ff; color:#4c1d95; font-weight:900; font-size:0.78rem;">School First Mark<br><span style="font-size:0.68rem;">(Out of 500)</span></th>
+            <th rowspan="2" style="${bdr} background:#f5f3ff; color:#4c1d95; font-weight:900; font-size:0.78rem;">*School Average Mark<br><span style="font-size:0.68rem;">(Out of 100)</span></th>
+            <th colspan="4" style="${bdr} background:#ecfeff; color:#0f294a; font-weight:900; font-size:0.78rem;">No.of Students - MARK RANGE ( Total Marks )</th>
           </tr>
-          <tr style="background:#f1f5f9; font-weight:900; font-size:0.80rem;">
-            <th style="${bdr}">Single<br>Subject</th>
-            <th style="${bdr}">Two<br>Subjects</th>
-            <th style="${bdr}">Three<br>Subjects</th>
-            <th style="${bdr}">Four<br>Subjects</th>
-            <th style="${bdr}">All<br>Subjects</th>
-            <th style="${bdr}">Below 60%<br>(&lt;= 300 Marks)</th>
-            <th style="${bdr}">60% to 80%<br>(301 - 400 Marks)</th>
-            <th style="${bdr}">Above 80%<br>(401 - 500 Marks)</th>
-            <th style="${bdr} background:#cffafe;">TOTAL</th>
+          <tr>
+            <th style="${subHdrCell}">Single<br>Subject</th>
+            <th style="${subHdrCell}">Two<br>Subjects</th>
+            <th style="${subHdrCell}">Three<br>Subjects</th>
+            <th style="${subHdrCell}">Four<br>Subjects</th>
+            <th style="${subHdrCell}">All<br>Subjects</th>
+            <th style="${subHdrCell}">Below 60%<br>(&lt;= 300 Marks)</th>
+            <th style="${subHdrCell}">60% to 80%<br>(301 - 400 Marks)</th>
+            <th style="${subHdrCell}">Above 80%<br>(401 - 500 Marks)</th>
+            <th style="${subHdrCell} background:#cffafe;">TOTAL</th>
           </tr>
         </thead>
         <tbody>
-          <tr style="height:38px;">
-            <td ${numLgCell} style="${bdr} color:#b45309; background:#fffbeb;">${calc.failedSubCounts.s1}</td>
+          <tr style="height:28px;">
+            <td ${numLgCell} style="${bdr} background:#fffbeb; color:#b45309;">${calc.failedSubCounts.s1}</td>
             <td ${numLgCell}>${calc.failedSubCounts.s2}</td>
             <td ${numLgCell}>${calc.failedSubCounts.s3}</td>
             <td ${numLgCell}>${calc.failedSubCounts.s4}</td>
-            <td ${numLgCell} style="${bdr} color:#991b1b;">${calc.failedSubCounts.s5}</td>
+            <td ${numLgCell} style="${bdr} background:#ffffff; color:#991b1b;">${calc.failedSubCounts.s5}</td>
             <td class="ra-num-xl" style="${bdr} background:#f5f3ff; color:#4c1d95;">${calc.schoolFirstMark}</td>
             <td class="ra-num-xl" style="${bdr} background:#f5f3ff; color:#4c1d95;">${calc.schoolAvgMark100}</td>
             <td ${numLgCell}>${calc.totalMarkRanges.below60}</td>
@@ -37633,21 +37729,21 @@ function buildMidTermForm1_1ExactHtml(calc, forPrint) {
       </table>
 
       <!-- PART 3: SUBJECT-WISE PERFORMANCE MATRIX -->
-      <table style="width:100%; border-collapse:collapse; font-size:0.86rem;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.78rem; table-layout:fixed;">
         <thead>
-          <tr style="${hdrBg}">
-            <th colspan="2" style="${bdr} text-align:left; font-size:0.92rem; padding-left:10px;">SUBJECTS &rArr;</th>
-            <th style="${bdr} width:13%; font-size:0.90rem;">LANGUAGE<br><span style="font-size:0.78rem;">(தமிழ்)</span></th>
-            <th style="${bdr} width:13%; font-size:0.90rem;">ENGLISH<br><span style="font-size:0.78rem;">(ஆங்கிலம்)</span></th>
-            <th style="${bdr} width:13%; font-size:0.90rem;">MATHS<br><span style="font-size:0.78rem;">(கணிதம்)</span></th>
-            <th style="${bdr} width:13%; font-size:0.90rem;">SCIENCE<br><span style="font-size:0.78rem;">(அறிவியல்)</span></th>
-            <th style="${bdr} width:13%; font-size:0.90rem;">SOCIAL SCIENCE<br><span style="font-size:0.78rem;">(சமூக அறிவியல்)</span></th>
-            <th style="${bdr} width:13%; font-size:0.86rem;">Part-IV Optional Language</th>
+          <tr>
+            <th colspan="2" style="${hdrCell} text-align:left; font-size:0.82rem; padding-left:8px; width:22%;">SUBJECTS &rArr;</th>
+            <th style="${hdrCell} width:13%;">LANGUAGE<br><span style="font-size:0.70rem;">(தமிழ்)</span></th>
+            <th style="${hdrCell} width:13%;">ENGLISH<br><span style="font-size:0.70rem;">(ஆங்கிலம்)</span></th>
+            <th style="${hdrCell} width:13%;">MATHS<br><span style="font-size:0.70rem;">(கணிதம்)</span></th>
+            <th style="${hdrCell} width:13%;">SCIENCE<br><span style="font-size:0.70rem;">(அறிவியல்)</span></th>
+            <th style="${hdrCell} width:13%;">SOCIAL SCIENCE<br><span style="font-size:0.70rem;">(சமூக அறிவியல்)</span></th>
+            <th style="${hdrCell} width:13%;">Part-IV Optional Language</th>
           </tr>
         </thead>
         <tbody>
-          <tr style="height:30px;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; padding-left:10px;">Exemption</td>
+          <tr style="height:22px;">
+            <td colspan="2" style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:8px;">Exemption</td>
             <td ${numCell}>${sub.TAMIL.exemption}</td>
             <td ${numCell}>${sub.ENGLISH.exemption}</td>
             <td ${numCell}>${sub.MATHS.exemption}</td>
@@ -37655,26 +37751,26 @@ function buildMidTermForm1_1ExactHtml(calc, forPrint) {
             <td ${numCell}>${sub.SOCIAL.exemption}</td>
             <td ${numCell}>${rec.optLangExemption || 0}</td>
           </tr>
-          <tr style="background:#fef2f2; height:32px;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; color:#991b1b; padding-left:10px;">No.of Students - Failed</td>
-            <td ${numLgCell} style="${bdr} color:#dc2626;">${sub.TAMIL.failed}</td>
-            <td ${numLgCell} style="${bdr} color:#dc2626;">${sub.ENGLISH.failed}</td>
-            <td ${numLgCell} style="${bdr} color:#dc2626;">${sub.MATHS.failed}</td>
-            <td ${numLgCell} style="${bdr} color:#dc2626;">${sub.SCIENCE.failed}</td>
-            <td ${numLgCell} style="${bdr} color:#dc2626;">${sub.SOCIAL.failed}</td>
-            <td ${numLgCell}>${rec.optLangFailed || 0}</td>
+          <tr style="height:23px;">
+            <td colspan="2" style="${bdr} background:#fef2f2; text-align:left; font-weight:900; color:#991b1b; padding-left:8px;">No.of Students - Failed</td>
+            <td ${numLgCell} style="${bdr} background:#fef2f2; color:#dc2626;">${sub.TAMIL.failed}</td>
+            <td ${numLgCell} style="${bdr} background:#fef2f2; color:#dc2626;">${sub.ENGLISH.failed}</td>
+            <td ${numLgCell} style="${bdr} background:#fef2f2; color:#dc2626;">${sub.MATHS.failed}</td>
+            <td ${numLgCell} style="${bdr} background:#fef2f2; color:#dc2626;">${sub.SCIENCE.failed}</td>
+            <td ${numLgCell} style="${bdr} background:#fef2f2; color:#dc2626;">${sub.SOCIAL.failed}</td>
+            <td ${numLgCell} style="${bdr} background:#fef2f2; color:#000;">${rec.optLangFailed || 0}</td>
           </tr>
-          <tr style="background:#eff6ff; height:32px;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; color:#1e3a8a; padding-left:10px;">SUBJECT AVERAGE MARK</td>
-            <td ${numLgCell} style="${bdr} color:#1e3a8a;">${sub.TAMIL.avgMark}</td>
-            <td ${numLgCell} style="${bdr} color:#1e3a8a;">${sub.ENGLISH.avgMark}</td>
-            <td ${numLgCell} style="${bdr} color:#1e3a8a;">${sub.MATHS.avgMark}</td>
-            <td ${numLgCell} style="${bdr} color:#1e3a8a;">${sub.SCIENCE.avgMark}</td>
-            <td ${numLgCell} style="${bdr} color:#1e3a8a;">${sub.SOCIAL.avgMark}</td>
-            <td ${numLgCell}>${rec.optLangAvg || "-"}</td>
+          <tr style="height:23px;">
+            <td colspan="2" style="${bdr} background:#eff6ff; text-align:left; font-weight:900; color:#1e3a8a; padding-left:8px;">SUBJECT AVERAGE MARK</td>
+            <td ${numLgCell} style="${bdr} background:#eff6ff; color:#1e3a8a;">${sub.TAMIL.avgMark}</td>
+            <td ${numLgCell} style="${bdr} background:#eff6ff; color:#1e3a8a;">${sub.ENGLISH.avgMark}</td>
+            <td ${numLgCell} style="${bdr} background:#eff6ff; color:#1e3a8a;">${sub.MATHS.avgMark}</td>
+            <td ${numLgCell} style="${bdr} background:#eff6ff; color:#1e3a8a;">${sub.SCIENCE.avgMark}</td>
+            <td ${numLgCell} style="${bdr} background:#eff6ff; color:#1e3a8a;">${sub.SOCIAL.avgMark}</td>
+            <td ${numLgCell} style="${bdr} background:#eff6ff; color:#000;">${rec.optLangAvg || "-"}</td>
           </tr>
-          <tr style="height:32px;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; padding-left:10px;">HIGHEST MARK</td>
+          <tr style="height:23px;">
+            <td colspan="2" style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:8px;">HIGHEST MARK</td>
             <td ${numLgCell}>${sub.TAMIL.highestMark}</td>
             <td ${numLgCell}>${sub.ENGLISH.highestMark}</td>
             <td ${numLgCell}>${sub.MATHS.highestMark}</td>
@@ -37682,9 +37778,9 @@ function buildMidTermForm1_1ExactHtml(calc, forPrint) {
             <td ${numLgCell}>${sub.SOCIAL.highestMark}</td>
             <td ${numLgCell}>${rec.optLangHighest || "-"}</td>
           </tr>
-          <tr style="height:30px;">
-            <td rowspan="5" style="${bdr} font-weight:900; width:12%; background:#f8fafc; font-size:0.84rem;">MARK RANGE<br>(SUBJECT WISE)<br><span style="font-size:0.74rem; color:#334155;">(Passed Stu.)</span></td>
-            <td style="${bdr} text-align:left; font-weight:900; padding-left:8px;">35 - 45 Marks</td>
+          <tr style="height:22px;">
+            <td rowspan="5" style="${bdr} background:#f8fafc; font-weight:900; width:11%; font-size:0.74rem; line-height:1.15;">MARK RANGE<br>(SUBJECT WISE)<br><span style="font-size:0.66rem; color:#334155;">(Passed Stu.)</span></td>
+            <td style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:6px; width:11%;">35 - 45 Marks</td>
             <td ${numCell}>${sub.TAMIL.r35_45}</td>
             <td ${numCell}>${sub.ENGLISH.r35_45}</td>
             <td ${numCell}>${sub.MATHS.r35_45}</td>
@@ -37692,8 +37788,8 @@ function buildMidTermForm1_1ExactHtml(calc, forPrint) {
             <td ${numCell}>${sub.SOCIAL.r35_45}</td>
             <td ${numCell}>${rec.optLang35_45 || 0}</td>
           </tr>
-          <tr style="height:30px;">
-            <td style="${bdr} text-align:left; font-weight:900; padding-left:8px;">46 - 60 Marks</td>
+          <tr style="height:22px;">
+            <td style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:6px;">46 - 60 Marks</td>
             <td ${numCell}>${sub.TAMIL.r46_60}</td>
             <td ${numCell}>${sub.ENGLISH.r46_60}</td>
             <td ${numCell}>${sub.MATHS.r46_60}</td>
@@ -37701,8 +37797,8 @@ function buildMidTermForm1_1ExactHtml(calc, forPrint) {
             <td ${numCell}>${sub.SOCIAL.r46_60}</td>
             <td ${numCell}>${rec.optLang46_60 || 0}</td>
           </tr>
-          <tr style="height:30px;">
-            <td style="${bdr} text-align:left; font-weight:900; padding-left:8px;">61 - 80 Marks</td>
+          <tr style="height:22px;">
+            <td style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:6px;">61 - 80 Marks</td>
             <td ${numCell}>${sub.TAMIL.r61_80}</td>
             <td ${numCell}>${sub.ENGLISH.r61_80}</td>
             <td ${numCell}>${sub.MATHS.r61_80}</td>
@@ -37710,8 +37806,8 @@ function buildMidTermForm1_1ExactHtml(calc, forPrint) {
             <td ${numCell}>${sub.SOCIAL.r61_80}</td>
             <td ${numCell}>${rec.optLang61_80 || 0}</td>
           </tr>
-          <tr style="height:30px;">
-            <td style="${bdr} text-align:left; font-weight:900; padding-left:8px;">81 - 99 Marks</td>
+          <tr style="height:22px;">
+            <td style="${bdr} background:#ffffff; text-align:left; font-weight:900; padding-left:6px;">81 - 99 Marks</td>
             <td ${numCell}>${sub.TAMIL.r81_99}</td>
             <td ${numCell}>${sub.ENGLISH.r81_99}</td>
             <td ${numCell}>${sub.MATHS.r81_99}</td>
@@ -37719,29 +37815,29 @@ function buildMidTermForm1_1ExactHtml(calc, forPrint) {
             <td ${numCell}>${sub.SOCIAL.r81_99}</td>
             <td ${numCell}>${rec.optLang81_99 || 0}</td>
           </tr>
-          <tr style="background:#f0fdf4; height:32px;">
-            <td style="${bdr} text-align:left; font-weight:900; color:#14532d; padding-left:8px;">No.of Centum (100)</td>
-            <td ${numLgCell} style="${bdr} color:#15803d;">${sub.TAMIL.centum}</td>
-            <td ${numLgCell} style="${bdr} color:#15803d;">${sub.ENGLISH.centum}</td>
-            <td ${numLgCell} style="${bdr} color:#15803d;">${sub.MATHS.centum}</td>
-            <td ${numLgCell} style="${bdr} color:#15803d;">${sub.SCIENCE.centum}</td>
-            <td ${numLgCell} style="${bdr} color:#15803d;">${sub.SOCIAL.centum}</td>
-            <td ${numLgCell}>${rec.optLangCentum || 0}</td>
+          <tr style="height:22px;">
+            <td style="${bdr} background:#f0fdf4; text-align:left; font-weight:900; color:#14532d; padding-left:6px;">No.of Centum (100)</td>
+            <td ${numLgCell} style="${bdr} background:#f0fdf4; color:#15803d;">${sub.TAMIL.centum}</td>
+            <td ${numLgCell} style="${bdr} background:#f0fdf4; color:#15803d;">${sub.ENGLISH.centum}</td>
+            <td ${numLgCell} style="${bdr} background:#f0fdf4; color:#15803d;">${sub.MATHS.centum}</td>
+            <td ${numLgCell} style="${bdr} background:#f0fdf4; color:#15803d;">${sub.SCIENCE.centum}</td>
+            <td ${numLgCell} style="${bdr} background:#f0fdf4; color:#15803d;">${sub.SOCIAL.centum}</td>
+            <td ${numLgCell} style="${bdr} background:#f0fdf4; color:#000;">${rec.optLangCentum || 0}</td>
           </tr>
-          <tr style="background:#fffbeb; height:32px;">
-            <td colspan="2" style="${bdr} text-align:left; font-weight:900; color:#92400e; padding-left:10px;">Single Subject Failed Sub.Wise</td>
-            <td ${numLgCell} style="${bdr} color:#b45309;">${sub.TAMIL.singleSubFailed}</td>
-            <td ${numLgCell} style="${bdr} color:#b45309;">${sub.ENGLISH.singleSubFailed}</td>
-            <td ${numLgCell} style="${bdr} color:#b45309;">${sub.MATHS.singleSubFailed}</td>
-            <td ${numLgCell} style="${bdr} color:#b45309;">${sub.SCIENCE.singleSubFailed}</td>
-            <td ${numLgCell} style="${bdr} color:#b45309;">${sub.SOCIAL.singleSubFailed}</td>
-            <td ${numLgCell}>0</td>
+          <tr style="height:22px;">
+            <td colspan="2" style="${bdr} background:#fffbeb; text-align:left; font-weight:900; color:#92400e; padding-left:8px;">Single Subject Failed Sub.Wise</td>
+            <td ${numLgCell} style="${bdr} background:#fffbeb; color:#b45309;">${sub.TAMIL.singleSubFailed}</td>
+            <td ${numLgCell} style="${bdr} background:#fffbeb; color:#b45309;">${sub.ENGLISH.singleSubFailed}</td>
+            <td ${numLgCell} style="${bdr} background:#fffbeb; color:#b45309;">${sub.MATHS.singleSubFailed}</td>
+            <td ${numLgCell} style="${bdr} background:#fffbeb; color:#b45309;">${sub.SCIENCE.singleSubFailed}</td>
+            <td ${numLgCell} style="${bdr} background:#fffbeb; color:#b45309;">${sub.SOCIAL.singleSubFailed}</td>
+            <td ${numLgCell} style="${bdr} background:#fffbeb; color:#000;">0</td>
           </tr>
         </tbody>
       </table>
 
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:22px; padding:0 12px; font-size:0.90rem; font-weight:900;">
-        <div>நாள் (Date): <span class="ra-num" style="font-size:0.96rem !important;">${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding:2px 10px 0 10px; font-size:0.84rem; font-weight:900; color:#000;">
+        <div>நாள் (Date): <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900;">${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span></div>
         <div>தலைமையாசிரியர் கையொப்பம் (Signature of the Headmaster)</div>
       </div>
     </div>
@@ -37780,27 +37876,19 @@ function renderSchoolMidTermForm1_1Pane(calc) {
 // SUB-PANE 4: FORM - I ( 2 ) EXACT REPLICA OF OFFICIAL EXCEL FORM
 // WITH HIGH-LEGIBILITY LARGE NUMERIC TYPOGRAPHY & LANDSCAPE PDF EXPORT
 // ============================================================================
-function buildMidTermForm1_2ExactHtml(calc, forPrint) {
-  if (calc && calc.std === '12') return build12thForm2_2ExactHtml(calc, forPrint);
+function buildMidTermForm1_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPages, forPrint) {
   const s = calc.sch;
-  const bdr = "border:1.8px solid #0f294a; padding:5px 4px; text-align:center; vertical-align:middle;";
-  const hdrBg = "background:#e2e8f0; color:#0f294a; font-weight:900;";
-  const f2Num = `class="ra-f2-num" style="${bdr} color:#000000;"`;
-  const f2NumLg = `class="ra-f2-num-lg" style="${bdr} color:#000000;"`;
+  const bdr = "border:1.5px solid #0f294a; padding:3.5px 2px; text-align:center; vertical-align:middle;";
+  const hdrCell = `${bdr} background:#e2e8f0; color:#0f294a; font-weight:900; font-size:0.72rem; line-height:1.12;`;
+  const subHdrCell = `${bdr} background:#f1f5f9; color:#0f294a; font-weight:900; font-size:0.68rem; line-height:1.1;`;
+  const f2Num = `class="ra-f2-num" style="${bdr} background:#ffffff; color:#000000;"`;
+  const f2NumLg = `class="ra-f2-num-lg" style="${bdr} background:#ffffff; color:#000000;"`;
 
-  // Ensure at least 12 rows in print mode just like the official Excel form F1_2
-  const rowsList = calc.f2Rows.slice();
-  if (forPrint) {
-    while (rowsList.length < 12) {
-      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
-    }
-  }
-
-  const tbodyHtml = rowsList.map(r => {
+  const tbodyHtml = pageRows.map(r => {
     if (r.isBlank) {
-      return `<tr style="height:28px;">
+      return `<tr style="height:25px;">
         <td ${f2Num}>${r.sno}</td>
-        <td style="${bdr}"></td><td style="${bdr}"></td><td ${f2Num}></td><td ${f2Num}></td>
+        <td style="${bdr} background:#fff;"></td><td style="${bdr} background:#fff;"></td><td ${f2Num}></td><td ${f2Num}></td>
         <td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}>0</td>
         <td ${f2Num}></td><td ${f2Num}>0</td><td ${f2Num}></td><td ${f2Num}></td>
         <td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td><td ${f2Num}></td>
@@ -37811,13 +37899,13 @@ function buildMidTermForm1_2ExactHtml(calc, forPrint) {
     const t = r.teacher || {};
     const tNameDisp = t.nameTa || t.nameEn || "(பிரிவு 1-ல் ஆசிரியரைத் தேர்ந்தெடுக்கவும்)";
     return `
-      <tr style="font-weight:800; height:32px;">
+      <tr style="height:27px;">
         <td ${f2NumLg}>${r.sno}</td>
-        <td style="${bdr} text-align:left; min-width:155px; padding:4px 6px;">
-          <div style="font-weight:900; color:#0f294a; font-size:0.86rem; line-height:1.2;">${escapeHtmlAttr(tNameDisp)}</div>
-          ${t.staffId ? `<div style="font-size:0.72rem; color:#334155; font-weight:800;">EMIS: <span class="ra-f2-num" style="font-size:0.76rem !important;">${escapeHtmlAttr(t.staffId)}</span> | ${escapeHtmlAttr(t.desig || "")}</div>` : ""}
+        <td style="${bdr} background:#ffffff; text-align:left; padding:3px 5px;">
+          <div style="font-weight:900; color:#0f294a; font-size:0.78rem; line-height:1.15;">${escapeHtmlAttr(tNameDisp)}</div>
+          ${t.staffId ? `<div style="font-size:0.65rem; color:#334155; font-weight:800; line-height:1.1;">EMIS: <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900;">${escapeHtmlAttr(t.staffId)}</span> | ${escapeHtmlAttr(t.desig || "")}</div>` : ""}
         </td>
-        <td style="${bdr} font-weight:900; color:#1e3a8a; font-size:0.82rem; line-height:1.15;">${escapeHtmlAttr(r.subLabelEn)}<br><span style="font-size:0.74rem; color:#0f766e; font-weight:900;">(Sec ${escapeHtmlAttr(r.secId)} - ${escapeHtmlAttr(r.medium)})</span></td>
+        <td style="${bdr} background:#ffffff; font-weight:900; color:#1e3a8a; font-size:0.74rem; line-height:1.12;">${escapeHtmlAttr(r.subLabelEn)}<br><span style="font-size:0.65rem; color:#0f766e; font-weight:900;">(Sec ${escapeHtmlAttr(r.secId)}-${escapeHtmlAttr(r.medium)})</span></td>
         <td ${f2NumLg}>${r.stuCount}</td>
         <td ${f2Num}>${r.la}</td>
         <td ${f2Num}>${r.ab}</td>
@@ -37826,8 +37914,8 @@ function buildMidTermForm1_2ExactHtml(calc, forPrint) {
         <td ${f2NumLg} style="${bdr} background:#eff6ff; color:#1e3a8a;">${r.appear}</td>
         <td ${f2NumLg} style="${bdr} background:#f0fdf4; color:#14532d;">${r.pass}</td>
         <td ${f2NumLg} style="${bdr} background:#fef2f2; color:#991b1b;">${r.fail}</td>
-        <td ${f2NumLg} style="${bdr} background:#fef3c7; color:#78350f;">${r.passPct}</td>
-        <td ${f2NumLg} style="${bdr} color:#1e3a8a;">${r.avgMark}</td>
+        <td ${f2NumLg} style="${bdr} background:#fef3c7; color:#78350f; font-size:0.84rem !important;">${r.passPct}</td>
+        <td ${f2NumLg} style="${bdr} background:#ffffff; color:#1e3a8a;">${r.avgMark}</td>
         <td ${f2Num}>${r.maxMark}</td>
         <td ${f2Num}>${r.minMark}</td>
         <td ${f2Num}>${r.r35_45}</td>
@@ -37838,81 +37926,132 @@ function buildMidTermForm1_2ExactHtml(calc, forPrint) {
         <td ${f2NumLg} style="${bdr} background:#fffbeb; color:#b45309;">${r.failThisSubOnly}</td>
         <td ${f2Num}>${escapeHtmlAttr(t.pubAppear || "-")}</td>
         <td ${f2Num}>${escapeHtmlAttr(t.pubPass || "-")}</td>
-        <td ${f2Num}>${escapeHtmlAttr(r.pubPassPct || "-")}</td>
+        <td ${f2Num} style="${bdr} background:#ffffff; color:#000; font-size:0.80rem !important;">${escapeHtmlAttr(r.pubPassPct || "-")}</td>
         <td ${f2Num}>${escapeHtmlAttr(t.pubAvg || "-")}</td>
         <td ${f2Num}>${escapeHtmlAttr(t.pubCentum || "-")}</td>
       </tr>
     `;
   }).join("");
 
+  const pageBadge = totalPages > 1 ? ` <span style="font-size:0.76rem; color:#1e3a8a;">(Page ${pageIdx + 1} of ${totalPages})</span>` : "";
+
   return `
-    <div class="ra-report-sheet" style="background:#ffffff; color:#000; padding:${forPrint ? '2px' : '14px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'};">
-      <table style="width:100%; border-collapse:collapse; margin-bottom:8px; font-size:0.90rem;">
+    <div class="ra-report-sheet" style="background:#ffffff; color:#000; padding:${forPrint ? '0' : '12px'}; border:${forPrint ? 'none' : '2px solid #0f294a; border-radius:10px;'};">
+      <table style="width:100%; border-collapse:collapse; margin-bottom:5px; table-layout:fixed;">
         <tr>
-          <td style="${bdr} font-weight:900; width:20%; background:#f8fafc; font-size:0.96rem;">SIVAGANGAI DISTRICT</td>
-          <td style="${bdr} font-weight:900; font-size:1.08rem; background:#eff6ff; color:#1e3a8a;" colspan="2">
+          <td style="${bdr} width:18%; background:#f8fafc; font-weight:900; font-size:0.88rem; color:#0f294a;">SIVAGANGAI DISTRICT</td>
+          <td style="${bdr} width:64%; background:#eff6ff; font-weight:900; font-size:0.98rem; color:#1e3a8a; line-height:1.22;">
             ${escapeHtmlAttr(calc.termMeta.reportHeaderEn)}<br>
-            <span style="font-size:0.92rem; color:#0f294a;">SUBJECT PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})</span>
+            <span style="font-size:0.84rem; color:#0f294a;">SUBJECT PERFORMANCE (${escapeHtmlAttr(calc.termMeta.reportHeaderTa)})${pageBadge}</span>
           </td>
-          <td style="${bdr} font-weight:900; width:19%; background:#fef3c7; color:#92400e; font-size:1.02rem;">
+          <td style="${bdr} width:18%; background:#fef3c7; font-weight:900; font-size:0.92rem; color:#92400e; line-height:1.2;">
             FORM - I ( 2 )<br>
-            <span style="font-size:0.90rem; color:#0f294a;">UNIQUE NO : <strong class="ra-num-lg" style="color:#000;">${escapeHtmlAttr(s.uNo)}</strong></span>
+            <span style="font-size:0.82rem; color:#0f294a;">UNIQUE NO : <strong style="font-family:'Segoe UI',Arial,sans-serif; font-size:0.98rem; color:#000;">${escapeHtmlAttr(s.uNo)}</strong></span>
           </td>
         </tr>
         <tr>
-          <td style="${bdr} font-weight:900; text-align:left; font-size:0.92rem; padding:6px 10px;" colspan="3">
-            NAME OF THE SCHOOL : <strong style="color:#1e3a8a; font-size:0.98rem;">[<span class="ra-num" style="font-size:0.98rem !important;">${escapeHtmlAttr(s.uNo)}</span>] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</strong>
+          <td colspan="2" style="${bdr} background:#ffffff; font-weight:900; text-align:left; font-size:0.86rem; padding:4px 8px; color:#0f294a;">
+            NAME OF THE SCHOOL : <span style="color:#1e3a8a; font-weight:900;">[${escapeHtmlAttr(s.uNo)}] ${escapeHtmlAttr(s.nameEn)} (${escapeHtmlAttr(s.nameTa)})</span>
           </td>
-          <td style="${bdr} font-weight:900; background:#f8fafc; font-size:0.96rem;">STD : <strong class="ra-num-lg" style="color:#dc2626;">10th</strong></td>
+          <td style="${bdr} background:#f8fafc; font-weight:900; font-size:0.88rem; color:#0f294a;">
+            STD : <strong style="font-family:'Segoe UI',Arial,sans-serif; font-size:1.0rem; color:#dc2626;">10th</strong>
+          </td>
         </tr>
       </table>
 
-      <div style="overflow-x:auto;">
-        <table style="width:100%; border-collapse:collapse; font-size:0.80rem;">
-          <thead>
-            <tr style="${hdrBg}">
-              <th rowspan="2" style="${bdr} width:32px;">S.<br>No</th>
-              <th rowspan="2" style="${bdr}">Name of the Teacher</th>
-              <th rowspan="2" style="${bdr} width:92px;">Subject</th>
-              <th rowspan="2" style="${bdr} width:42px;">No.of<br>Stu.</th>
-              <th rowspan="2" style="${bdr} width:32px;">LA</th>
-              <th rowspan="2" style="${bdr} width:32px;">AB</th>
-              <th rowspan="2" style="${bdr} width:32px;">HB</th>
-              <th rowspan="2" style="${bdr} width:32px;">Ex.</th>
-              <th rowspan="2" style="${bdr} background:#dbeafe; width:46px;">Appear</th>
-              <th rowspan="2" style="${bdr} background:#dcfce7; width:44px;">Pass</th>
-              <th rowspan="2" style="${bdr} background:#fee2e2; width:40px;">Fail</th>
-              <th rowspan="2" style="${bdr} background:#fef3c7; width:64px;">Pass<br>%</th>
-              <th rowspan="2" style="${bdr} width:48px;">Average<br>Mark</th>
-              <th rowspan="2" style="${bdr} width:42px;">Max.<br>Mark</th>
-              <th rowspan="2" style="${bdr} width:42px;">Min.<br>Mark</th>
-              <th colspan="5" style="${bdr} background:#ecfeff;">Mark Range (No.of Passed Stu.)</th>
-              <th rowspan="2" style="${bdr} background:#fffbeb; width:44px;">Fail<br>this<br>Sub.<br>only</th>
-              <th colspan="5" style="${bdr} background:#f5f3ff;">Mar/Apr' 2026 PUBLIC EXAM</th>
-            </tr>
-            <tr style="background:#f1f5f9; font-weight:900; font-size:0.76rem;">
-              <th style="${bdr} width:38px;">35-45</th>
-              <th style="${bdr} width:38px;">46-60</th>
-              <th style="${bdr} width:38px;">61-80</th>
-              <th style="${bdr} width:38px;">81-99</th>
-              <th style="${bdr} width:40px;">Cen<br>tum</th>
-              <th style="${bdr} width:42px;">Appear</th>
-              <th style="${bdr} width:38px;">Pass</th>
-              <th style="${bdr} width:48px;">Pass<br>%</th>
-              <th style="${bdr} width:46px;">Average<br>Mark</th>
-              <th style="${bdr} width:38px;">Cen<br>-tum</th>
-            </tr>
-          </thead>
-          <tbody>${tbodyHtml}</tbody>
-        </table>
-      </div>
+      <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+        <colgroup>
+          <col style="width:2.5%;">
+          <col style="width:15.5%;">
+          <col style="width:8.5%;">
+          <col style="width:3.2%;">
+          <col style="width:2.3%;">
+          <col style="width:2.3%;">
+          <col style="width:2.3%;">
+          <col style="width:2.3%;">
+          <col style="width:3.5%;">
+          <col style="width:3.2%;">
+          <col style="width:3.0%;">
+          <col style="width:5.2%;">
+          <col style="width:3.6%;">
+          <col style="width:3.1%;">
+          <col style="width:3.1%;">
+          <col style="width:3.0%;">
+          <col style="width:3.0%;">
+          <col style="width:3.0%;">
+          <col style="width:3.0%;">
+          <col style="width:3.1%;">
+          <col style="width:3.3%;">
+          <col style="width:3.4%;">
+          <col style="width:3.1%;">
+          <col style="width:5.0%;">
+          <col style="width:3.5%;">
+          <col style="width:2.9%;">
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2" style="${hdrCell}">S.<br>No</th>
+            <th rowspan="2" style="${hdrCell}">Name of the Teacher</th>
+            <th rowspan="2" style="${hdrCell}">Subject</th>
+            <th rowspan="2" style="${hdrCell}">No.of<br>Stu.</th>
+            <th rowspan="2" style="${hdrCell}">LA</th>
+            <th rowspan="2" style="${hdrCell}">AB</th>
+            <th rowspan="2" style="${hdrCell}">HB</th>
+            <th rowspan="2" style="${hdrCell}">Ex.</th>
+            <th rowspan="2" style="${hdrCell} background:#dbeafe;">Appear</th>
+            <th rowspan="2" style="${hdrCell} background:#dcfce7;">Pass</th>
+            <th rowspan="2" style="${hdrCell} background:#fee2e2;">Fail</th>
+            <th rowspan="2" style="${hdrCell} background:#fef3c7;">Pass<br>%</th>
+            <th rowspan="2" style="${hdrCell}">Avg.<br>Mark</th>
+            <th rowspan="2" style="${hdrCell}">Max.<br>Mark</th>
+            <th rowspan="2" style="${hdrCell}">Min.<br>Mark</th>
+            <th colspan="5" style="${hdrCell} background:#ecfeff;">Mark Range (No.of Passed Stu.)</th>
+            <th rowspan="2" style="${hdrCell} background:#fffbeb;">Fail<br>Sub.<br>only</th>
+            <th colspan="5" style="${hdrCell} background:#f5f3ff;">Mar/Apr' 2026 PUBLIC EXAM</th>
+          </tr>
+          <tr>
+            <th style="${subHdrCell}">35-45</th>
+            <th style="${subHdrCell}">46-60</th>
+            <th style="${subHdrCell}">61-80</th>
+            <th style="${subHdrCell}">81-99</th>
+            <th style="${subHdrCell}">100</th>
+            <th style="${subHdrCell}">Appear</th>
+            <th style="${subHdrCell}">Pass</th>
+            <th style="${subHdrCell}">Pass %</th>
+            <th style="${subHdrCell}">Avg</th>
+            <th style="${subHdrCell}">100</th>
+          </tr>
+        </thead>
+        <tbody>${tbodyHtml}</tbody>
+      </table>
 
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:22px; padding:0 12px; font-size:0.90rem; font-weight:900;">
-        <div>நாள் (Date): <span class="ra-num" style="font-size:0.96rem !important;">${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding:2px 10px 0 10px; font-size:0.84rem; font-weight:900; color:#000;">
+        <div>நாள் (Date): <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900;">${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span></div>
         <div>தலைமையாசிரியர் கையொப்பம் (Signature of the Headmaster)</div>
       </div>
     </div>
   `;
+}
+
+function buildMidTermForm1_2ExactHtml(calc, forPrint) {
+  if (calc && calc.std === '12') return build12thForm2_2ExactHtml(calc, forPrint);
+  const rowsList = calc.f2Rows.slice();
+  if (forPrint) {
+    while (rowsList.length < 12) {
+      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
+    }
+  }
+  if (!forPrint || rowsList.length <= 12) {
+    return buildMidTermForm1_2SinglePageTableHtml(calc, rowsList, 0, 1, forPrint);
+  }
+  const chunkSize = 10;
+  const pages = [];
+  for (let i = 0; i < rowsList.length; i += chunkSize) {
+    pages.push(rowsList.slice(i, i + chunkSize));
+  }
+  return pages.map((chunk, idx) =>
+    `<div class="${idx < pages.length - 1 ? 'ra-pdf-subpage-break' : ''}" style="${idx > 0 ? 'page-break-before:always; break-before:page; margin-top:4mm;' : ''}">${buildMidTermForm1_2SinglePageTableHtml(calc, chunk, idx, pages.length, true)}</div>`
+  ).join("");
 }
 
 function renderSchoolMidTermForm1_2Pane(calc) {
@@ -37985,50 +38124,105 @@ async function downloadSchoolMidTermFormsPdfLandscape(mode, explicitUNo, btnEl) 
     btnEl.innerHTML = "⏳ Landscape PDF தயாராகிறது...";
   }
 
+  const is12 = (calc.std === "12");
   const safeSchoolName = String(calc.sch.nameEn || ("School_" + uNo)).replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 32);
-  const modeSuffix = mode === "F1_1" ? "FORM_I_1" : (mode === "F1_2" ? "FORM_I_2" : "FORM_I_1_and_I_2");
-  const pdfFilename = `[${uNo}]_${safeSchoolName}_${_activeMidTermTermKey}_${modeSuffix}_Landscape.pdf`;
+  const fPrefix = is12 ? "FORM_II" : "FORM_I";
+  const modeSuffix = mode === "F1_1" ? `${fPrefix}_1` : (mode === "F1_2" ? `${fPrefix}_2` : `${fPrefix}_1_and_2`);
+  const pdfFilename = `[${uNo}]_${safeSchoolName}_${is12 ? "12th" : "10th"}_${_activeMidTermTermKey}_${modeSuffix}_Landscape.pdf`;
 
-  let pagesInnerHtml = "";
-  if (mode === "F1_1") {
-    pagesInnerHtml = `<div class="ra-pdf-landscape-page">${buildMidTermForm1_1ExactHtml(calc, true)}</div>`;
-  } else if (mode === "F1_2") {
-    pagesInnerHtml = `<div class="ra-pdf-landscape-page">${buildMidTermForm1_2ExactHtml(calc, true)}</div>`;
-  } else {
-    pagesInnerHtml = `
-      <div class="ra-pdf-landscape-page">${buildMidTermForm1_1ExactHtml(calc, true)}</div>
-      <div class="ra-pdf-landscape-page">${buildMidTermForm1_2ExactHtml(calc, true)}</div>
-    `;
+  // Build discrete single-page HTML blocks so each block maps 1-to-1 to one A4 Landscape PDF page!
+  const pageHtmlBlocks = [];
+  if (mode === "F1_1" || mode === "BOTH") {
+    pageHtmlBlocks.push(buildMidTermForm1_1ExactHtml(calc, true));
+  }
+  if (mode === "F1_2" || mode === "BOTH") {
+    const rowsList = calc.f2Rows.slice();
+    while (rowsList.length < 12) {
+      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
+    }
+    if (rowsList.length <= 12) {
+      pageHtmlBlocks.push(
+        is12
+          ? build12thForm2_2SinglePageTableHtml(calc, rowsList, 0, 1, true)
+          : buildMidTermForm1_2SinglePageTableHtml(calc, rowsList, 0, 1, true)
+      );
+    } else {
+      const chunkSize = 10;
+      const chunks = [];
+      for (let i = 0; i < rowsList.length; i += chunkSize) {
+        chunks.push(rowsList.slice(i, i + chunkSize));
+      }
+      chunks.forEach((chunk, idx) => {
+        pageHtmlBlocks.push(
+          is12
+            ? build12thForm2_2SinglePageTableHtml(calc, chunk, idx, chunks.length, true)
+            : buildMidTermForm1_2SinglePageTableHtml(calc, chunk, idx, chunks.length, true)
+        );
+      });
+    }
   }
 
   const tempContainer = document.createElement("div");
-  tempContainer.style.cssText = "position:fixed; left:-9999px; top:0; width:285mm; background:#ffffff !important; z-index:-1;";
-  tempContainer.innerHTML = `
-    <div class="ra-pdf-export-root" style="width:285mm; background:#ffffff !important; color:#000000 !important; margin:0; padding:0;">
-      ${pagesInnerHtml}
-    </div>
-  `;
+  tempContainer.style.cssText = "position:fixed; left:-9999px; top:0; width:1120px; background:#ffffff !important; z-index:-1;";
   document.body.appendChild(tempContainer);
-  const exportTarget = tempContainer.querySelector(".ra-pdf-export-root");
 
   try {
-    const opt = {
-      margin: [4, 5, 4, 5],
+    // Render each discrete page block to a high-res canvas and place it onto an A4 Landscape PDF page (297mm x 210mm)
+    // so NO page ever overflows by a few pixels onto a blank extra page and NO row is ever sliced in half!
+    const worker = html2pdf().set({
+      margin: 0,
       filename: pdfFilename,
       image: { type: "jpeg", quality: 0.99 },
-      html2canvas: {
-        scale: 2.5,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-        scrollX: 0,
-        scrollY: 0
-      },
-      jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
-      pagebreak: { mode: ["css", "legacy"] }
-    };
-    await html2pdf().set(opt).from(exportTarget).save();
-    showToast(`📥 [${pdfFilename}] தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (Landscape PDF) பதிவிறக்கப்பட்டது!`, "#16a34a", true);
+      html2canvas: { scale: 2.4, useCORS: true, backgroundColor: "#ffffff", logging: false, scrollX: 0, scrollY: 0 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
+    });
+
+    // Obtain jsPDF instance via html2pdf worker on first page, then add subsequent pages
+    tempContainer.innerHTML = `<div style="width:1100px; padding:10px 14px; background:#ffffff; box-sizing:border-box;">${pageHtmlBlocks[0]}</div>`;
+    const firstEl = tempContainer.firstElementChild;
+    const pdfInstance = await worker.from(firstEl).toContainer().toCanvas().toPdf().get("pdf");
+
+    // Re-render each page block cleanly scaled to fit within 287mm x 200mm (with 5mm margins on 297mm x 210mm A4 Landscape)
+    const totalPages = pageHtmlBlocks.length;
+    // Clear the default auto-sliced pages from pdfInstance and draw our exact 1-to-1 pages
+    const initialPageCount = pdfInstance.internal.getNumberOfPages();
+    for (let p = initialPageCount; p >= 2; p--) {
+      pdfInstance.deletePage(p);
+    }
+
+    for (let idx = 0; idx < totalPages; idx++) {
+      if (idx > 0) {
+        pdfInstance.addPage("a4", "landscape");
+      }
+      pdfInstance.setPage(idx + 1);
+      // Clear page 1 if idx === 0 by covering with white rect
+      if (idx === 0) {
+        pdfInstance.setFillColor(255, 255, 255);
+        pdfInstance.rect(0, 0, 297, 210, "F");
+      }
+      tempContainer.innerHTML = `<div style="width:1100px; padding:6px 10px; background:#ffffff; box-sizing:border-box;">${pageHtmlBlocks[idx]}</div>`;
+      const pageEl = tempContainer.firstElementChild;
+      const singleWorker = html2pdf().set({
+        html2canvas: { scale: 2.4, useCORS: true, backgroundColor: "#ffffff", logging: false, scrollX: 0, scrollY: 0 }
+      }).from(pageEl);
+      const canvas = await singleWorker.toContainer().toCanvas().get("canvas");
+      const imgData = canvas.toDataURL("image/jpeg", 0.98);
+      const maxW = 287; // mm
+      const maxH = 200; // mm
+      const ratio = canvas.width / canvas.height;
+      let drawW = maxW;
+      let drawH = drawW / ratio;
+      if (drawH > maxH) {
+        drawH = maxH;
+        drawW = drawH * ratio;
+      }
+      const xOffset = (297 - drawW) / 2;
+      const yOffset = 5;
+      pdfInstance.addImage(imgData, "JPEG", xOffset, yOffset, drawW, drawH);
+    }
+
+    pdfInstance.save(pdfFilename);
+    showToast(`📥 [${pdfFilename}] தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (${totalPages} பக்கம் - Landscape PDF) பதிவிறக்கப்பட்டது!`, "#16a34a", true);
   } catch (err) {
     console.error("Landscape PDF generation error:", err);
     printSchoolMidTermFormsA4(mode, uNo);
