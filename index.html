@@ -7198,7 +7198,7 @@ let fbLiveActivityLog = [];
 let currentSchoolTabKey = "staffStrength";
 const _firebaseMemoryKvStore = {};
 const _SESSION_ONLY_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ACTIVE_UI_STATE", "CEOSVG_PORTAL_CFG", "CEOSVG_FIREBASE_CFG"]);
-const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1", "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", "CEOSVG_SCHOOL_EXTRA_V6", "CEOSVG_MASTER_SCHOOLS", "CEOSVG_SCHOOL_AUTH", "CEOSVG_DELETE_REQUESTS", "CEOSVG_DELETED_STAFF_ARCHIVE", "CEOSVG_CIRCULARS", "CEOSVG_STAFF_OVERRIDES", "CEOSVG_AUTO_BACKUP_CFG_V1", "CEOSVG_AUTO_BACKUP_HISTORY_V1"]);
+const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1", "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", "CEOSVG_SCHOOL_EXTRA_V6", "CEOSVG_VERIFIED_OTP_VAULT_V1", "CEOSVG_MASTER_SCHOOLS", "CEOSVG_SCHOOL_AUTH", "CEOSVG_DELETE_REQUESTS", "CEOSVG_DELETED_STAFF_ARCHIVE", "CEOSVG_CIRCULARS", "CEOSVG_STAFF_OVERRIDES", "CEOSVG_AUTO_BACKUP_CFG_V1", "CEOSVG_AUTO_BACKUP_HISTORY_V1"]);
 try {
 if (typeof localStorage !== "undefined") {
 Object.keys(localStorage).forEach(k => {
@@ -7289,6 +7289,428 @@ if (isPortalInitializing) return;
 const cur = safeGetStorage("CEOSVG_ACTIVE_UI_STATE", {}) || {};
 const next = Object.assign({}, cur, patch, { updatedAt: Date.now() });
 safeSetStorage("CEOSVG_ACTIVE_UI_STATE", next, true);
+}
+
+let _verifiedOtpVaultMemoryCache = null;
+function getVerifiedOtpVault() {
+  if (_verifiedOtpVaultMemoryCache && typeof _verifiedOtpVaultMemoryCache === "object") {
+    return _verifiedOtpVaultMemoryCache;
+  }
+  let v = null;
+  try {
+    if (typeof localStorage !== "undefined") {
+      const raw = localStorage.getItem("CEOSVG_VERIFIED_OTP_VAULT_V1");
+      if (raw) v = JSON.parse(raw);
+    }
+  } catch (e) {}
+  if (!v || typeof v !== "object") {
+    v = { byStaffId: {}, verifiedMobiles: {}, verifiedEmails: {}, updatedAt: 0 };
+  }
+  if (!v.byStaffId || typeof v.byStaffId !== "object") v.byStaffId = {};
+  if (!v.verifiedMobiles || typeof v.verifiedMobiles !== "object") v.verifiedMobiles = {};
+  if (!v.verifiedEmails || typeof v.verifiedEmails !== "object") v.verifiedEmails = {};
+  _verifiedOtpVaultMemoryCache = v;
+  return v;
+}
+
+function saveVerifiedOtpVault(vault, pushToCloud) {
+  if (!vault || typeof vault !== "object") return;
+  vault.updatedAt = Date.now();
+  _verifiedOtpVaultMemoryCache = vault;
+  try {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("CEOSVG_VERIFIED_OTP_VAULT_V1", JSON.stringify(vault));
+    }
+  } catch (e) {}
+  if (pushToCloud && typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl)) {
+    fetch(buildFirebaseEndpoint("ceosvg_live/verified_otp_vault"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(vault)
+    }).catch(() => {});
+  }
+}
+
+function recordVerifiedStaffOtpInVault(uNo, staffId, kind, rawValue, skipCloudPush) {
+  const vault = getVerifiedOtpVault();
+  const sid = String(staffId || "").trim();
+  const uStr = String(uNo || "").trim();
+  if (sid && !vault.byStaffId[sid]) {
+    vault.byStaffId[sid] = { uNo: uStr };
+  }
+  if (kind === "mobile") {
+    const cleanMob = String(rawValue || "").replace(/\D/g, "").slice(-10);
+    if (cleanMob.length === 10 && /^[6-9]\d{9}$/.test(cleanMob)) {
+      vault.verifiedMobiles[cleanMob] = true;
+      if (sid) {
+        vault.byStaffId[sid].uNo = uStr || vault.byStaffId[sid].uNo || "";
+        vault.byStaffId[sid].mobile = cleanMob;
+        vault.byStaffId[sid].verifiedMobile = cleanMob;
+        vault.byStaffId[sid].whatsappVerified = true;
+      }
+    }
+  } else if (kind === "email") {
+    const cleanEm = String(rawValue || "").trim().toLowerCase();
+    if (cleanEm && cleanEm.includes("@")) {
+      vault.verifiedEmails[cleanEm] = true;
+      if (sid) {
+        vault.byStaffId[sid].uNo = uStr || vault.byStaffId[sid].uNo || "";
+        vault.byStaffId[sid].email = cleanEm;
+        vault.byStaffId[sid].verifiedEmail = cleanEm;
+        vault.byStaffId[sid].emailVerified = true;
+      }
+    }
+  }
+  saveVerifiedOtpVault(vault, !skipCloudPush);
+}
+
+function getVerifiedOtpVaultStaffEntry(staffId) {
+  const sid = String(staffId || "").trim();
+  if (!sid) return null;
+  const vault = getVerifiedOtpVault();
+  return (vault.byStaffId && vault.byStaffId[sid]) ? vault.byStaffId[sid] : null;
+}
+
+function isMobileInVerifiedOtpVault(rawMob, staffId) {
+  const cleanMob = String(rawMob || "").replace(/\D/g, "").slice(-10);
+  if (cleanMob.length !== 10 || !/^[6-9]\d{9}$/.test(cleanMob)) return false;
+  const vault = getVerifiedOtpVault();
+  if (vault.verifiedMobiles && vault.verifiedMobiles[cleanMob]) return true;
+  const sid = String(staffId || "").trim();
+  if (sid && vault.byStaffId && vault.byStaffId[sid]) {
+    const entry = vault.byStaffId[sid];
+    if (entry.whatsappVerified && (!entry.verifiedMobile || entry.verifiedMobile === cleanMob)) return true;
+  }
+  if (typeof schoolAuthStore === "object" && schoolAuthStore) {
+    for (const k of Object.keys(schoolAuthStore)) {
+      const a = schoolAuthStore[k];
+      if (a && a.otpVerified && String(a.phone || "").replace(/\D/g, "").slice(-10) === cleanMob) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function isEmailInVerifiedOtpVault(rawEm, staffId) {
+  const cleanEm = String(rawEm || "").trim().toLowerCase();
+  if (!cleanEm || !cleanEm.includes("@")) return false;
+  const vault = getVerifiedOtpVault();
+  if (vault.verifiedEmails && vault.verifiedEmails[cleanEm]) return true;
+  const sid = String(staffId || "").trim();
+  if (sid && vault.byStaffId && vault.byStaffId[sid]) {
+    const entry = vault.byStaffId[sid];
+    if (entry.emailVerified && (!entry.verifiedEmail || String(entry.verifiedEmail).toLowerCase() === cleanEm)) return true;
+  }
+  if (typeof schoolAuthStore === "object" && schoolAuthStore) {
+    for (const k of Object.keys(schoolAuthStore)) {
+      const a = schoolAuthStore[k];
+      if (a && a.otpVerified && String(a.email || "").trim().toLowerCase() === cleanEm) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function deepMergeStaffProfilePreserveOtp(oldProf, newProf, sid, uNo) {
+  const pOld = (oldProf && typeof oldProf === "object") ? oldProf : {};
+  const pNew = (newProf && typeof newProf === "object") ? newProf : {};
+  const merged = Object.assign({}, pOld, pNew);
+  const vEntry = getVerifiedOtpVaultStaffEntry(sid);
+
+  const oldMob = String(pOld.verifiedMobile || pOld.mobile || "").replace(/\D/g, "").slice(-10);
+  const newMob = String(pNew.verifiedMobile || pNew.mobile || "").replace(/\D/g, "").slice(-10);
+  const vaultMob = vEntry ? String(vEntry.verifiedMobile || vEntry.mobile || "").replace(/\D/g, "").slice(-10) : "";
+
+  if (pNew.whatsappVerified && newMob.length === 10) {
+    merged.mobile = newMob;
+    merged.verifiedMobile = newMob;
+    merged.whatsappVerified = true;
+    recordVerifiedStaffOtpInVault(uNo, sid, "mobile", newMob, true);
+  } else if (pOld.whatsappVerified && oldMob.length === 10) {
+    if (!newMob || newMob === oldMob || !pNew.userExplicitlyChangedMobile) {
+      merged.mobile = oldMob;
+      merged.verifiedMobile = oldMob;
+      merged.whatsappVerified = true;
+    }
+    recordVerifiedStaffOtpInVault(uNo, sid, "mobile", oldMob, true);
+  } else if (vaultMob.length === 10 && (!newMob || newMob === vaultMob)) {
+    merged.mobile = vaultMob;
+    merged.verifiedMobile = vaultMob;
+    merged.whatsappVerified = true;
+  } else {
+    const effMob = String(merged.mobile || "").replace(/\D/g, "").slice(-10);
+    if (effMob.length === 10 && isMobileInVerifiedOtpVault(effMob, sid)) {
+      merged.mobile = effMob;
+      merged.verifiedMobile = effMob;
+      merged.whatsappVerified = true;
+    }
+  }
+
+  const oldEm = String(pOld.verifiedEmail || pOld.email || "").trim().toLowerCase();
+  const newEm = String(pNew.verifiedEmail || pNew.email || "").trim().toLowerCase();
+  const vaultEm = vEntry ? String(vEntry.verifiedEmail || vEntry.email || "").trim().toLowerCase() : "";
+
+  if (pNew.emailVerified && newEm.includes("@")) {
+    merged.email = pNew.email || newEm;
+    merged.verifiedEmail = newEm;
+    merged.emailVerified = true;
+    recordVerifiedStaffOtpInVault(uNo, sid, "email", newEm, true);
+  } else if (pOld.emailVerified && oldEm.includes("@")) {
+    if (!newEm || newEm === oldEm || !pNew.userExplicitlyChangedEmail) {
+      merged.email = pOld.email || oldEm;
+      merged.verifiedEmail = oldEm;
+      merged.emailVerified = true;
+    }
+    recordVerifiedStaffOtpInVault(uNo, sid, "email", oldEm, true);
+  } else if (vaultEm.includes("@") && (!newEm || newEm === vaultEm)) {
+    merged.email = merged.email || vaultEm;
+    merged.verifiedEmail = vaultEm;
+    merged.emailVerified = true;
+  } else {
+    const effEm = String(merged.email || "").trim().toLowerCase();
+    if (effEm.includes("@") && isEmailInVerifiedOtpVault(effEm, sid)) {
+      merged.verifiedEmail = effEm;
+      merged.emailVerified = true;
+    }
+  }
+  return merged;
+}
+
+function deepMergeSchoolExtraPreserveOtp(existingExt, incomingExt, uNo) {
+  const ex = (existingExt && typeof existingExt === "object") ? existingExt : {};
+  const inc = (incomingExt && typeof incomingExt === "object") ? incomingExt : {};
+  const merged = Object.assign({}, ex, inc);
+
+  if (ex.ebs2026 || inc.ebs2026) {
+    const exEbs = (ex.ebs2026 && typeof ex.ebs2026 === "object") ? ex.ebs2026 : {};
+    const incEbs = (inc.ebs2026 && typeof inc.ebs2026 === "object") ? inc.ebs2026 : {};
+    merged.ebs2026 = Object.assign({}, exEbs, incEbs);
+    if (exEbs.f1 || incEbs.f1) {
+      merged.ebs2026.f1 = Object.assign({}, exEbs.f1 || {}, incEbs.f1 || {});
+    }
+    if (exEbs.hmFinalLock && exEbs.hmFinalLock.locked && (!incEbs.hmFinalLock || !incEbs.hmFinalLock.unlockedAt)) {
+      merged.ebs2026.hmFinalLock = exEbs.hmFinalLock;
+    }
+    const exProfiles = (exEbs.staffProfiles && typeof exEbs.staffProfiles === "object") ? exEbs.staffProfiles : {};
+    const incProfiles = (incEbs.staffProfiles && typeof incEbs.staffProfiles === "object") ? incEbs.staffProfiles : {};
+    const allSids = new Set([...Object.keys(exProfiles), ...Object.keys(incProfiles)]);
+    const mergedProfiles = {};
+    allSids.forEach(sid => {
+      mergedProfiles[sid] = deepMergeStaffProfilePreserveOtp(exProfiles[sid], incProfiles[sid], sid, uNo);
+    });
+    merged.ebs2026.staffProfiles = mergedProfiles;
+  }
+
+  if (Array.isArray(ex.staff) || Array.isArray(inc.staff)) {
+    const exStaffMap = {};
+    if (Array.isArray(ex.staff)) {
+      ex.staff.forEach(st => {
+        const sid = String(st && (st.id || st.staffId) || "").trim();
+        if (sid) exStaffMap[sid] = st;
+      });
+    }
+    const baseStaffList = Array.isArray(inc.staff) && inc.staff.length > 0 ? inc.staff : (Array.isArray(ex.staff) ? ex.staff : []);
+    merged.staff = baseStaffList.map(st => {
+      if (!st || typeof st !== "object") return st;
+      const sid = String(st.id || st.staffId || "").trim();
+      const oldSt = exStaffMap[sid] || {};
+      const ebsProf = (merged.ebs2026 && merged.ebs2026.staffProfiles && merged.ebs2026.staffProfiles[sid]) ? merged.ebs2026.staffProfiles[sid] : {};
+      return deepMergeStaffProfilePreserveOtp(Object.assign({}, oldSt, st), ebsProf, sid, uNo);
+    });
+  }
+  return merged;
+}
+
+function harvestAndRestoreAllVerifiedOtps(optionalEbs2026NodeMap, optionalRemoteVault) {
+  const vault = getVerifiedOtpVault();
+  if (optionalRemoteVault && typeof optionalRemoteVault === "object") {
+    if (optionalRemoteVault.verifiedMobiles && typeof optionalRemoteVault.verifiedMobiles === "object") {
+      Object.assign(vault.verifiedMobiles, optionalRemoteVault.verifiedMobiles);
+    }
+    if (optionalRemoteVault.verifiedEmails && typeof optionalRemoteVault.verifiedEmails === "object") {
+      Object.assign(vault.verifiedEmails, optionalRemoteVault.verifiedEmails);
+    }
+    if (optionalRemoteVault.byStaffId && typeof optionalRemoteVault.byStaffId === "object") {
+      Object.entries(optionalRemoteVault.byStaffId).forEach(([sid, rec]) => {
+        if (rec && typeof rec === "object") {
+          vault.byStaffId[sid] = Object.assign({}, vault.byStaffId[sid] || {}, rec);
+        }
+      });
+    }
+  }
+
+  // 1) Harvest from schoolAuthStore
+  if (typeof schoolAuthStore === "object" && schoolAuthStore) {
+    Object.entries(schoolAuthStore).forEach(([uNo, auth]) => {
+      if (auth && auth.otpVerified) {
+        const cleanMob = String(auth.phone || "").replace(/\D/g, "").slice(-10);
+        if (cleanMob.length === 10 && /^[6-9]\d{9}$/.test(cleanMob)) vault.verifiedMobiles[cleanMob] = true;
+        const cleanEm = String(auth.email || "").trim().toLowerCase();
+        if (cleanEm.includes("@")) vault.verifiedEmails[cleanEm] = true;
+      }
+    });
+  }
+
+  // 2) Harvest from localStorage backup snapshots (CEOSVG_AUTO_BACKUP_HISTORY_V1)
+  try {
+    const bkpList = safeGetStorage("CEOSVG_AUTO_BACKUP_HISTORY_V1", []);
+    if (Array.isArray(bkpList)) {
+      bkpList.forEach(snap => {
+        const extStore = snap && snap.stores && snap.stores.CEOSVG_SCHOOL_EXTRA_V6;
+        if (extStore && typeof extStore === "object") {
+          Object.entries(extStore).forEach(([uNo, ext]) => {
+            if (!ext || typeof ext !== "object") return;
+            schoolExtraDataStore[uNo] = deepMergeSchoolExtraPreserveOtp(ext, schoolExtraDataStore[uNo] || {}, uNo);
+          });
+        }
+      });
+    }
+  } catch (e) {}
+
+  // 3) Harvest from Firebase ceosvg_live/ebs_2026_27 node if provided
+  if (optionalEbs2026NodeMap && typeof optionalEbs2026NodeMap === "object") {
+    Object.entries(optionalEbs2026NodeMap).forEach(([uNo, pkt]) => {
+      if (!pkt || typeof pkt !== "object") return;
+      if (pkt.ebs2026 && typeof pkt.ebs2026 === "object") {
+        const isLockedSchool = Boolean(pkt.ebs2026.hmFinalLock && pkt.ebs2026.hmFinalLock.locked);
+        if (pkt.ebs2026.staffProfiles && typeof pkt.ebs2026.staffProfiles === "object") {
+          Object.entries(pkt.ebs2026.staffProfiles).forEach(([sid, prof]) => {
+            if (!prof || typeof prof !== "object") return;
+            const cleanMob = String(prof.verifiedMobile || prof.mobile || "").replace(/\D/g, "").slice(-10);
+            const cleanEm = String(prof.verifiedEmail || prof.email || "").trim().toLowerCase();
+            if (cleanMob.length === 10 && /^[6-9]\d{9}$/.test(cleanMob) && (prof.whatsappVerified || isLockedSchool || prof.userSavedExemptionV44)) {
+              prof.whatsappVerified = true;
+              prof.verifiedMobile = cleanMob;
+              recordVerifiedStaffOtpInVault(uNo, sid, "mobile", cleanMob, true);
+            }
+            if (cleanEm.includes("@") && (prof.emailVerified || isLockedSchool || prof.userSavedExemptionV44)) {
+              prof.emailVerified = true;
+              prof.verifiedEmail = cleanEm;
+              recordVerifiedStaffOtpInVault(uNo, sid, "email", cleanEm, true);
+            }
+          });
+        }
+        schoolExtraDataStore[uNo] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uNo] || {}, { ebs2026: pkt.ebs2026 }, uNo);
+      }
+      if (pkt.sheetRows && typeof pkt.sheetRows === "object") {
+        const extra = schoolExtraDataStore[uNo] || (schoolExtraDataStore[uNo] = {});
+        if (!extra.ebs2026) extra.ebs2026 = {};
+        if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+        const f3Rows = Array.isArray(pkt.sheetRows.f3Rows) ? pkt.sheetRows.f3Rows : [];
+        f3Rows.forEach(r => {
+          if (!Array.isArray(r)) return;
+          const sid = String(r[6] || "").trim();
+          const mob = String(r[18] || "").replace(/\D/g, "").slice(-10);
+          const em = String(r[20] || "").trim().toLowerCase();
+          if (!sid) return;
+          const p = extra.ebs2026.staffProfiles[sid] || (extra.ebs2026.staffProfiles[sid] = { staffId: sid });
+          if (mob.length === 10 && /^[6-9]\d{9}$/.test(mob) && !p.mobile) p.mobile = mob;
+          if (em.includes("@") && !p.email) p.email = em;
+        });
+        const f4Rows = Array.isArray(pkt.sheetRows.f4Rows) ? pkt.sheetRows.f4Rows : [];
+        f4Rows.forEach(r => {
+          if (!Array.isArray(r)) return;
+          const sid = String(r[6] || "").trim();
+          const mob = String(r[27] || "").replace(/\D/g, "").slice(-10);
+          const em = String(r[29] || "").trim().toLowerCase();
+          if (!sid) return;
+          const p = extra.ebs2026.staffProfiles[sid] || (extra.ebs2026.staffProfiles[sid] = { staffId: sid });
+          if (mob.length === 10 && /^[6-9]\d{9}$/.test(mob) && !p.mobile) p.mobile = mob;
+          if (em.includes("@") && !p.email) p.email = em;
+        });
+      }
+    });
+  }
+
+  // 4) Harvest from schoolExtraDataStore
+  if (typeof schoolExtraDataStore === "object" && schoolExtraDataStore) {
+    Object.entries(schoolExtraDataStore).forEach(([uNo, ext]) => {
+      if (!ext || typeof ext !== "object") return;
+      const isLockedSchool = Boolean(ext.ebs2026 && ext.ebs2026.hmFinalLock && ext.ebs2026.hmFinalLock.locked);
+      if (ext.ebs2026 && ext.ebs2026.staffProfiles && typeof ext.ebs2026.staffProfiles === "object") {
+        Object.entries(ext.ebs2026.staffProfiles).forEach(([sid, prof]) => {
+          if (!prof || typeof prof !== "object") return;
+          const cleanMob = String(prof.verifiedMobile || prof.mobile || "").replace(/\D/g, "").slice(-10);
+          const cleanEm = String(prof.verifiedEmail || prof.email || "").trim().toLowerCase();
+          if (cleanMob.length === 10 && /^[6-9]\d{9}$/.test(cleanMob) && (prof.whatsappVerified || isLockedSchool || prof.userSavedExemptionV44 || isMobileInVerifiedOtpVault(cleanMob, sid))) {
+            prof.whatsappVerified = true;
+            prof.verifiedMobile = cleanMob;
+            recordVerifiedStaffOtpInVault(uNo, sid, "mobile", cleanMob, true);
+          }
+          if (cleanEm.includes("@") && (prof.emailVerified || isLockedSchool || prof.userSavedExemptionV44 || isEmailInVerifiedOtpVault(cleanEm, sid))) {
+            prof.emailVerified = true;
+            prof.verifiedEmail = cleanEm;
+            recordVerifiedStaffOtpInVault(uNo, sid, "email", cleanEm, true);
+          }
+        });
+      }
+      if (Array.isArray(ext.staff)) {
+        ext.staff.forEach(st => {
+          if (!st || typeof st !== "object") return;
+          const sid = String(st.id || st.staffId || "").trim();
+          const cleanMob = String(st.verifiedMobile || st.mobile || "").replace(/\D/g, "").slice(-10);
+          const cleanEm = String(st.verifiedEmail || st.email || "").trim().toLowerCase();
+          if (cleanMob.length === 10 && /^[6-9]\d{9}$/.test(cleanMob) && (st.whatsappVerified || isLockedSchool || isMobileInVerifiedOtpVault(cleanMob, sid))) {
+            st.whatsappVerified = true;
+            st.verifiedMobile = cleanMob;
+            recordVerifiedStaffOtpInVault(uNo, sid, "mobile", cleanMob, true);
+          }
+          if (cleanEm.includes("@") && (st.emailVerified || isLockedSchool || isEmailInVerifiedOtpVault(cleanEm, sid))) {
+            st.emailVerified = true;
+            st.verifiedEmail = cleanEm;
+            recordVerifiedStaffOtpInVault(uNo, sid, "email", cleanEm, true);
+          }
+        });
+      }
+    });
+  }
+
+  saveVerifiedOtpVault(vault, false);
+}
+
+function isUserActivelyEnteringOtpOrEditing() {
+  try {
+    if (typeof document === "undefined") return false;
+    const now = Date.now();
+    if (typeof _inlineRowWaOtpSessions === "object" && _inlineRowWaOtpSessions) {
+      for (const sid of Object.keys(_inlineRowWaOtpSessions)) {
+        const s = _inlineRowWaOtpSessions[sid];
+        if (s && s.expiresAt > now) return true;
+      }
+    }
+    if (typeof _inlineRowEmOtpSessions === "object" && _inlineRowEmOtpSessions) {
+      for (const sid of Object.keys(_inlineRowEmOtpSessions)) {
+        const s = _inlineRowEmOtpSessions[sid];
+        if (s && s.expiresAt > now) return true;
+      }
+    }
+    if (typeof _activeEbsStaffWhatsappOtpSession === "object" && _activeEbsStaffWhatsappOtpSession && _activeEbsStaffWhatsappOtpSession.expiresAt > now) {
+      return true;
+    }
+    if (typeof _activeEbsStaffEmailOtpSession === "object" && _activeEbsStaffEmailOtpSession && _activeEbsStaffEmailOtpSession.expiresAt > now) {
+      return true;
+    }
+    const ebsModal = document.getElementById("ebsStaffProfileModal");
+    if (ebsModal && ebsModal.classList.contains("active")) return true;
+    const schOtpBox = document.getElementById("schProfileContactOtpBox");
+    if (schOtpBox && schOtpBox.style.display && schOtpBox.style.display !== "none") return true;
+    const regOtpWrap = document.getElementById("regOtpVerifyInputWrap");
+    if (regOtpWrap && regOtpWrap.style.display && regOtpWrap.style.display !== "none") return true;
+    const fpOtpSec = document.getElementById("resetOtpSectionWrap");
+    if (fpOtpSec && fpOtpSec.style.display && fpOtpSec.style.display !== "none") return true;
+    const openInlineBoxes = document.querySelectorAll('[id^="inlineWaOtpBox_"], [id^="inlineEmOtpBox_"]');
+    for (let i = 0; i < openInlineBoxes.length; i++) {
+      if (openInlineBoxes[i].style.display === "block") return true;
+    }
+    const ae = document.activeElement;
+    if (ae && (ae.tagName === "INPUT" || ae.tagName === "SELECT" || ae.tagName === "TEXTAREA")) {
+      const viewSch = document.getElementById("viewSchool");
+      if (viewSch && viewSch.classList.contains("active") && viewSch.contains(ae)) return true;
+    }
+  } catch (e) {}
+  return false;
 }
 let _lastToastMsgText = "";
 let _lastToastMsgTime = 0;
@@ -8064,9 +8486,12 @@ renderPublicQuickFinder();
 renderStaffFormDropdowns();
 renderSchoolDignitaries();
 isPortalInitializing = false;
+harvestAndRestoreAllVerifiedOtps(null, null);
 initRealtimeCloudEngine();
-syncMasterFromGoogleSheet(false);
-syncSchoolAuthFromAppsScript();
+if (!normalizeFirebaseDbUrl(firebaseDbUrl)) {
+  syncMasterFromGoogleSheet(false);
+  syncSchoolAuthFromAppsScript();
+}
 const urlParams = new URLSearchParams(window.location.search || "");
 const isRegModeTab = Boolean(
 window.__STANDALONE_REG_TAB__ ||
@@ -8130,7 +8555,7 @@ if (!remoteRec) return;
 if (remoteRec.password && remoteRec.otpVerified) {
 schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, remoteRec);
 updatedCount++;
-} else if (remoteRec.password === "" && !remoteRec.otpVerified && schoolAuthStore[uNo] && schoolAuthStore[uNo].password) {
+} else if (remoteRec.explicitAdminReset && remoteRec.password === "" && !remoteRec.otpVerified && schoolAuthStore[uNo] && schoolAuthStore[uNo].password) {
 schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, remoteRec, { password: "", pin: "", otpVerified: false, registeredAt: "" });
 updatedCount++;
 }
@@ -13058,8 +13483,11 @@ document.getElementById("schFormMgmt2").value = s.mgmt2 || "1";
 document.getElementById("schFormMgmt3").value = s.mgmt3 || "";
 document.getElementById("schFormHmEn").value = s.hmName || auth.hmName || "";
 document.getElementById("schFormHmTa").value = s.hmTa || "";
-document.getElementById("schFormMobile").value = s.mobile || auth.phone || "";
-document.getElementById("schFormEmail").value = auth.email || "";
+const schOtpBoxActive = document.getElementById("schProfileContactOtpBox");
+if (!schOtpBoxActive || schOtpBoxActive.style.display === "none" || !schOtpBoxActive.style.display) {
+  document.getElementById("schFormMobile").value = s.mobile || auth.phone || "";
+  document.getElementById("schFormEmail").value = auth.email || "";
+}
 document.getElementById("schFormPincode").value = extra.pincode || "630561";
 toggleSchFormHssFields();
 toggleSchFormExamCentreInputs();
@@ -16554,7 +16982,12 @@ const ignoredKeys = [
 "CEOSVG_DUAL_SYNC_QUEUE",
 "CEOSVG_PENDING_REG_UNO",
 "CEOSVG_AUTH_RESET_V37_DONE",
-"CEOSVG_CIRCULARS_PURGED_V32"
+"CEOSVG_CIRCULARS_PURGED_V32",
+"CEOSVG_EBS_DROPDOWN_LIVE_V5",
+"CEOSVG_HSS_GROUP_MASTER",
+"CEOSVG_VERIFIED_OTP_VAULT_V1",
+"CEOSVG_AUTO_BACKUP_CFG_V1",
+"CEOSVG_AUTO_BACKUP_HISTORY_V1"
 ];
 if (ignoredKeys.includes(key)) return;
 const explicitTargetUNo = window._activeSyncTargetUNo ? String(window._activeSyncTargetUNo).trim() : "";
@@ -16681,6 +17114,27 @@ await Promise.all([
     body: JSON.stringify(val)
   })
 ]);
+} else if (key === "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1" && targetUNo !== "ADMIN" && val && typeof val === "object") {
+  const uEnc = encodeURIComponent(targetUNo);
+  const putTasks = [];
+  if (val._classMasterByUNo && val._classMasterByUNo[targetUNo]) {
+    putTasks.push(fetch(buildFirebaseEndpoint(`ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1/_classMasterByUNo/${uEnc}`), {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(val._classMasterByUNo[targetUNo])
+    }));
+  }
+  if (val._classMaster12ByUNo && val._classMaster12ByUNo[targetUNo]) {
+    putTasks.push(fetch(buildFirebaseEndpoint(`ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1/_classMaster12ByUNo/${uEnc}`), {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(val._classMaster12ByUNo[targetUNo])
+    }));
+  }
+  Object.keys(val).forEach(tk => {
+    if (!tk.startsWith("_") && val[tk] && val[tk][targetUNo]) {
+      putTasks.push(fetch(buildFirebaseEndpoint(`ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1/${encodeURIComponent(tk)}/${uEnc}`), {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(val[tk][targetUNo])
+      }));
+    }
+  });
+  await Promise.all(putTasks);
 } else {
 await fetch(buildFirebaseEndpoint(`ceosvg_live/stores/${encodeURIComponent(key)}`), {
 method: "PUT",
@@ -16711,7 +17165,7 @@ const uNo = evt.uNo;
 const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
 if (optionalGranular) {
 if (optionalGranular.type === "school_extra" && optionalGranular.uNo) {
-schoolExtraDataStore[optionalGranular.uNo] = optionalGranular.data;
+schoolExtraDataStore[optionalGranular.uNo] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[optionalGranular.uNo], optionalGranular.data, optionalGranular.uNo);
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
 } else if (optionalGranular.type === "master_school_single" && optionalGranular.uNo) {
 const idx = masterSchools.findIndex(s => String(s.uNo) === String(optionalGranular.uNo));
@@ -16719,7 +17173,7 @@ if (idx >= 0) masterSchools[idx] = Object.assign({}, masterSchools[idx], optiona
 else masterSchools.push(optionalGranular.data);
 safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
 } else if (optionalGranular.type === "school_auth_single" && optionalGranular.uNo) {
-schoolAuthStore[optionalGranular.uNo] = optionalGranular.data;
+schoolAuthStore[optionalGranular.uNo] = Object.assign({}, schoolAuthStore[optionalGranular.uNo] || {}, optionalGranular.data);
 safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
 }
 } else if (cleanUrl) {
@@ -16728,7 +17182,7 @@ const r = await fetch(buildFirebaseEndpoint(`ceosvg_live/school_extra/${encodeUR
 if (r.ok) {
 const d = await r.json();
 if (d) {
-schoolExtraDataStore[uNo] = d;
+schoolExtraDataStore[uNo] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uNo], d, uNo);
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
 }
 }
@@ -16741,6 +17195,16 @@ const idx = masterSchools.findIndex(s => String(s.uNo) === String(d.uNo));
 if (idx >= 0) masterSchools[idx] = Object.assign({}, masterSchools[idx], d);
 else masterSchools.push(d);
 safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+}
+}
+} else if (key === "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1" && uNo && uNo !== "ADMIN") {
+const r = await fetch(buildFirebaseEndpoint(`ceosvg_live/exam_result_analysis_by_uno/${encodeURIComponent(uNo)}`));
+if (r.ok) {
+const pkt = await r.json();
+if (pkt && typeof pkt === "object") {
+const curRa = _examResultAnalysisStoreCache || safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {}) || {};
+_examResultAnalysisStoreCache = deepMergeExamResultAnalysisStore(curRa, null, { [uNo]: pkt });
+safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", _examResultAnalysisStoreCache, true);
 }
 }
 } else if (key === "CEOSVG_SCHOOL_AUTH" && uNo && uNo !== "ADMIN") {
@@ -16768,7 +17232,13 @@ if (localVal !== null) {
 reloadInMemoryStoreFromKey(key, localVal);
 }
 }
-refreshAllActivePortalViews();
+const isSchoolViewOnly = Boolean(activeSchoolSession && document.getElementById("viewSchool")?.classList.contains("active"));
+const isOtherSchoolEvent = Boolean(isSchoolViewOnly && uNo && uNo !== "ADMIN" && String(uNo) !== String(activeSchoolSession.uNo));
+if (!isOtherSchoolEvent && !isUserActivelyEnteringOtpOrEditing()) {
+  refreshAllActivePortalViews();
+} else {
+  updateAllSummaryCounters();
+}
 appendFirebaseActivityLog(`⚡ நேரடி வரவு (Live Sync): ${evt.summary}`, "#38bdf8");
 } catch (e) {
 } finally {
@@ -16778,8 +17248,10 @@ isApplyingRemoteRealtimeUpdate = false;
 function reloadInMemoryStoreFromKey(key, val) {
 if (!val) return;
 if (key === "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1" && typeof val === "object") {
-  _examResultAnalysisStoreCache = sanitizeExamResultAnalysisStoreInPlace(val);
+  const curLocal = _examResultAnalysisStoreCache || safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {}) || {};
+  _examResultAnalysisStoreCache = deepMergeExamResultAnalysisStore(curLocal, val, null);
   ensureUlagampatti206PreloadedInMidTermStore(_examResultAnalysisStoreCache);
+  safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", _examResultAnalysisStoreCache, true);
   return;
 }
 if (key === "CEOSVG_MASTER_SCHOOLS" && Array.isArray(val)) {
@@ -16795,11 +17267,17 @@ if (extObj.ebs2026) delete extObj.ebs2026.f2;
 if (!extObj.userEditedStudentsV40 && !extObj.userEditedHssGroupsV39) {
 delete extObj.students;
 }
+schoolExtraDataStore[uKey] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uKey], extObj, uKey);
 }
 });
-schoolExtraDataStore = val;
 } else if (key === "CEOSVG_SCHOOL_AUTH" && typeof val === "object") {
-schoolAuthStore = val;
+Object.keys(val).forEach(uKey => {
+  const rec = val[uKey];
+  if (!rec) return;
+  const cur = schoolAuthStore[uKey];
+  if (cur && cur.otpVerified && cur.password && !rec.password && !rec.explicitAdminReset) return;
+  schoolAuthStore[uKey] = Object.assign({}, cur || {}, rec);
+});
 } else if (key === "CEOSVG_DELETE_REQUESTS" && Array.isArray(val)) {
 staffDeleteRequests = val;
 } else if (key === "CEOSVG_DELETED_STAFF_ARCHIVE" && Array.isArray(val)) {
@@ -16903,12 +17381,14 @@ if (typeof renderAdminMidTermDashboard === "function") {
 if (activeSchoolSession) {
   const refreshed = masterSchools.find(s => String(s.uNo) === String(activeSchoolSession.uNo));
   if (refreshed) activeSchoolSession = refreshed;
-  renderSchoolDashboard();
-  if (currentSchoolTabKey === "ebs" && typeof renderSchoolEbsModule === "function") {
-    renderSchoolEbsModule();
-  }
-  if (currentSchoolTabKey === "midTerm" && typeof renderSchoolMidTermModule === "function") {
-    renderSchoolMidTermModule();
+  if (!(isApplyingRemoteRealtimeUpdate && isUserActivelyEnteringOtpOrEditing())) {
+    renderSchoolDashboard();
+    if (currentSchoolTabKey === "ebs" && typeof renderSchoolEbsModule === "function") {
+      renderSchoolEbsModule();
+    }
+    if (currentSchoolTabKey === "midTerm" && typeof renderSchoolMidTermModule === "function") {
+      renderSchoolMidTermModule();
+    }
   }
 }
 } catch (e) {}
@@ -16945,9 +17425,7 @@ if (navigator.onLine !== false) flushDualSyncRetryQueue();
 updateFirebaseStatusIndicators();
 if (normalizeFirebaseDbUrl(firebaseDbUrl)) {
 startFirebaseRealtimeListener();
-setTimeout(() => pullAllPortalDataFromFirebase(false), 500);
-}
-if (appsScriptUrl && appsScriptUrl.startsWith("http")) {
+} else if (appsScriptUrl && appsScriptUrl.startsWith("http")) {
 setTimeout(() => pullAllPortalDataFromGoogleSheet(false), 1100);
 }
 }
@@ -17157,6 +17635,9 @@ if (rootData.master_schools_by_uno && typeof rootData.master_schools_by_uno === 
 mergeSchoolsIntoMasterList(Object.values(rootData.master_schools_by_uno), true);
 safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
 }
+if (rootData.stores && rootData.stores.CEOSVG_SCHOOL_EXTRA_V6 && typeof rootData.stores.CEOSVG_SCHOOL_EXTRA_V6 === "object") {
+  reloadInMemoryStoreFromKey("CEOSVG_SCHOOL_EXTRA_V6", rootData.stores.CEOSVG_SCHOOL_EXTRA_V6);
+}
 if (rootData.school_extra && typeof rootData.school_extra === "object") {
 Object.keys(rootData.school_extra).forEach(uKey => {
 const extObj = rootData.school_extra[uKey];
@@ -17168,29 +17649,37 @@ if (extObj.ebs2026) delete extObj.ebs2026.f2;
 if (!extObj.userEditedStudentsV40 && !extObj.userEditedHssGroupsV39) {
 delete extObj.students;
 }
-}
-if (extObj && typeof extObj === "object") {
-schoolExtraDataStore[uKey] = Object.assign({}, schoolExtraDataStore[uKey] || {}, extObj);
+schoolExtraDataStore[uKey] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uKey], extObj, uKey);
 }
 });
-safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+}
+if (rootData.stores && rootData.stores.CEOSVG_SCHOOL_AUTH && typeof rootData.stores.CEOSVG_SCHOOL_AUTH === "object") {
+  reloadInMemoryStoreFromKey("CEOSVG_SCHOOL_AUTH", rootData.stores.CEOSVG_SCHOOL_AUTH);
 }
 if (rootData.school_auth && typeof rootData.school_auth === "object") {
-schoolAuthStore = Object.assign({}, schoolAuthStore, rootData.school_auth);
-safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+  reloadInMemoryStoreFromKey("CEOSVG_SCHOOL_AUTH", rootData.school_auth);
+  safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
 }
+harvestAndRestoreAllVerifiedOtps(rootData.ebs_2026_27 || null, rootData.verified_otp_vault || null);
+safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
 if (rootData.stores && typeof rootData.stores === "object") {
 if (rootData.stores.CEOSVG_DIGNITARIES_PHOTO_VAULT) {
   reloadInMemoryStoreFromKey("CEOSVG_DIGNITARIES_PHOTO_VAULT", rootData.stores.CEOSVG_DIGNITARIES_PHOTO_VAULT);
 }
 for (const [k, v] of Object.entries(rootData.stores)) {
-if (k === "CEOSVG_ACTIVE_SESSION" || k === "CEOSVG_ACTIVE_UI_STATE" || k === "CEOSVG_AUTH_RESET_V37_DONE" || k === "CEOSVG_EMIS_STUDENT_DATA" || k === "CEOSVG_WA_CLOUD_CFG" || k === "CEOSVG_WA_OTP_CONFIG_V1") continue;
+if (k === "CEOSVG_ACTIVE_SESSION" || k === "CEOSVG_ACTIVE_UI_STATE" || k === "CEOSVG_AUTH_RESET_V37_DONE" || k === "CEOSVG_EMIS_STUDENT_DATA" || k === "CEOSVG_WA_CLOUD_CFG" || k === "CEOSVG_WA_OTP_CONFIG_V1" || k === "CEOSVG_SCHOOL_EXTRA_V6" || k === "CEOSVG_SCHOOL_AUTH") continue;
 if ((k === "CEOSVG_DIGNITARIES_V1" || k === "CEOSVG_DIGNITARIES_DATA_V2" || k === "CEOSVG_DIGNITARIES_DATA_V1") && rootData.stores.CEOSVG_DIGNITARIES_DATA_V3) continue;
 if (v !== null && v !== undefined) {
 safeSetStorage(k, v, true);
 reloadInMemoryStoreFromKey(k, v);
 }
 }
+}
+if (rootData.exam_result_analysis_by_uno && typeof rootData.exam_result_analysis_by_uno === "object") {
+  const curRa = _examResultAnalysisStoreCache || safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {}) || {};
+  _examResultAnalysisStoreCache = deepMergeExamResultAnalysisStore(curRa, null, rootData.exam_result_analysis_by_uno);
+  ensureUlagampatti206PreloadedInMidTermStore(_examResultAnalysisStoreCache);
+  safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", _examResultAnalysisStoreCache, true);
 }
 if (rootData.last_event && rootData.last_event.eventId) {
 lastProcessedRealtimeEventId = rootData.last_event.eventId;
@@ -17241,7 +17730,7 @@ if (!rec) return;
 if (rec.password) {
 schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, rec);
 changed = true;
-} else if (rec.password === "" && !rec.otpVerified && schoolAuthStore[uNo] && schoolAuthStore[uNo].password) {
+} else if (rec.explicitAdminReset && rec.password === "" && !rec.otpVerified && schoolAuthStore[uNo] && schoolAuthStore[uNo].password) {
 schoolAuthStore[uNo] = Object.assign({}, schoolAuthStore[uNo] || {}, rec, { password: "", pin: "", otpVerified: false, registeredAt: "" });
 changed = true;
 }
@@ -17272,7 +17761,7 @@ if (extObj.ebs2026) delete extObj.ebs2026.f2;
 if (!extObj.userEditedStudentsV40 && !extObj.userEditedHssGroupsV39) {
 delete extObj.students;
 }
-schoolExtraDataStore[uNo] = Object.assign({}, schoolExtraDataStore[uNo] || {}, extObj);
+schoolExtraDataStore[uNo] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uNo], extObj, uNo);
 changed = true;
 }
 });
@@ -18126,19 +18615,29 @@ function getDistrictAllStaffList(forceRefresh) {
       const firstJoinPost = normalizeCanonicalStaffDesignation(ebsProf.firstJoinPost || stLocal.firstJoinPost || (r && r[23] ? String(r[23]) : desig));
       const modePresPost = ebsProf.modePresPost || stLocal.modePresPost || (r && r[24] ? String(r[24]) : "NEW APPOINTMENT");
 
-      const rawMob = ebsProf.mobile || ov.mobile || stLocal.mobile || (r && r[17] ? String(r[17]) : "") || (isHm ? (sch.mobile || "") : "");
+      const vEnt = getVerifiedOtpVaultStaffEntry(sid);
+      const isSchoolLocked = Boolean(extra && extra.ebs2026 && extra.ebs2026.hmFinalLock && extra.ebs2026.hmFinalLock.locked);
+      const rawMob = ebsProf.mobile || (vEnt && vEnt.mobile) || stLocal.mobile || ov.mobile || (r && r[17] ? String(r[17]) : "") || (isHm ? (sch.mobile || "") : "");
       const cleanMob = String(rawMob || "").replace(/\D/g, "").slice(-10);
       const whatsappVerified = Boolean(
-        (ebsProf.whatsappVerified || stLocal.whatsappVerified) &&
         cleanMob.length === 10 &&
-        String(ebsProf.verifiedMobile || stLocal.verifiedMobile || cleanMob).replace(/\D/g, "").slice(-10) === cleanMob
+        (
+          isMobileInVerifiedOtpVault(cleanMob, sid) ||
+          isSchoolLocked ||
+          ((ebsProf.whatsappVerified || stLocal.whatsappVerified) &&
+           String(ebsProf.verifiedMobile || stLocal.verifiedMobile || cleanMob).replace(/\D/g, "").slice(-10) === cleanMob)
+        )
       );
       const altMobile = ebsProf.altMobile || stLocal.altMobile || (r && r[18] ? String(r[18]) : "");
-      const email = String(ebsProf.email || stLocal.email || (r && r[16] ? String(r[16]) : "")).trim();
+      const email = String(ebsProf.email || (vEnt && vEnt.email) || stLocal.email || ov.email || (r && r[16] ? String(r[16]) : "")).trim();
       const emailVerified = Boolean(
-        (ebsProf.emailVerified || stLocal.emailVerified) &&
         email &&
-        String(ebsProf.verifiedEmail || stLocal.verifiedEmail || email).trim().toLowerCase() === email.toLowerCase()
+        (
+          isEmailInVerifiedOtpVault(email, sid) ||
+          isSchoolLocked ||
+          ((ebsProf.emailVerified || stLocal.emailVerified) &&
+           String(ebsProf.verifiedEmail || stLocal.verifiedEmail || email).trim().toLowerCase() === email.toLowerCase())
+        )
       );
       const resPlace = ebsProf.resPlace || stLocal.resPlace || (r && r[19] ? String(r[19]) : "");
       const resDistrict = ebsProf.resDistrict || stLocal.resDistrict || (r && r[20] ? String(r[20]) : "Sivagangai");
@@ -20923,34 +21422,16 @@ async function _safeBootPortalOnce() {
 if (window._ceosvgPortalBooted) return;
 window._ceosvgPortalBooted = true;
 initPortal();
+harvestAndRestoreAllVerifiedOtps(null, null);
 loadStaticMasterDatasetsFromFirebaseIfNeeded().then(() => {
   try {
-    if (typeof refreshAllActivePortalViews === "function") refreshAllActivePortalViews();
+    if (!isUserActivelyEnteringOtpOrEditing() && typeof refreshAllActivePortalViews === "function") {
+      refreshAllActivePortalViews();
+    }
   } catch (e) {}
 }).catch(() => {});
 if (normalizeFirebaseDbUrl(firebaseDbUrl)) {
 pullAllPortalDataFromFirebase(false);
-setTimeout(async () => {
-try {
-const r = await fetch(buildFirebaseEndpoint("ceosvg_live/static_master/seeded_v41_full_emis"));
-if (r.ok) {
-const val = await r.json();
-if (!val) {
-  await pushStaticMasterDatasetsToFirebase(false);
-  await fetch(buildFirebaseEndpoint("ceosvg_live/static_master/seeded_v41_full_emis"), {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(new Date().toISOString())
-  });
-  await fetch(buildFirebaseEndpoint("ceosvg_live/school_extra"), {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(schoolExtraDataStore || {})
-  });
-}
-}
-} catch (e) {}
-}, 2500);
 }
 }
 if (document.readyState === "loading") {
@@ -24359,7 +24840,7 @@ if (Array.isArray(data.ebsDropDowns[k]) && data.ebsDropDowns[k].length > 0) {
 EBS_DROPDOWN_DATA[k] = data.ebsDropDowns[k];
 }
 });
-safeSetStorage("CEOSVG_EBS_DROPDOWN_LIVE_V5", EBS_DROPDOWN_DATA);
+safeSetStorage("CEOSVG_EBS_DROPDOWN_LIVE_V5", EBS_DROPDOWN_DATA, true);
 }
 if (Array.isArray(data.examCentres10) && data.examCentres10.length > 0 && typeof INITIAL_EXAM_CENTRES_10 !== "undefined") {
 INITIAL_EXAM_CENTRES_10.length = 0;
@@ -24384,10 +24865,7 @@ sn: c.sn, uNo: c.uNo, centreNo: cNoVal, cNo: cNoVal, block: c.block, centreName:
 if (Array.isArray(data.hssGroups) && data.hssGroups.length > 0 && typeof DEFAULT_HSS_GROUP_TEMPLATES !== "undefined") {
 DEFAULT_HSS_GROUP_TEMPLATES.length = 0;
 data.hssGroups.forEach(g => DEFAULT_HSS_GROUP_TEMPLATES.push(g));
-safeSetStorage("CEOSVG_HSS_GROUP_MASTER", data.hssGroups);
-}
-if (_activeEbsEditingStaff && document.getElementById("ebsStaffProfileModal")?.classList.contains("active")) {
-openEbsStaffProfileModal(_activeEbsEditingStaff.uNo, _activeEbsEditingStaff.staffId);
+safeSetStorage("CEOSVG_HSS_GROUP_MASTER", data.hssGroups, true);
 }
 if (showToastMsg) {
 showToast("✅ CEO_Sivagangai_EBS_2026_27_DB கூகுள் ஷீட்டிலிருந்து Drop_Down, Group Codes & தேர்வு மையங்கள் புதுப்பிக்கப்பட்டன!", "#16a34a");
@@ -24829,23 +25307,55 @@ dojService: isContractPost ? "" : (ebsProf.dojService || ov.dojService || st.doj
 dojPresPost: ebsProf.dojPresPost || ov.dojPresPost || st.dojPresPost || raw.dojPresPost || "",
 dojSchool: ebsProf.dojSchool || ov.dojSchool || st.dojSchool || raw.dojSchool || "",
 unitTransferDate: isContractPost ? "" : (ebsProf.unitTransferDate || ov.unitTransferDate || st.unitTransferDate || ""),
-mobile: ebsProf.mobile || ov.mobile || raw.mobile || personalStMob || stMobClean || "",
-whatsappVerified: Boolean(
-(ebsProf.whatsappVerified || st.whatsappVerified) &&
-(ebsProf.mobile || ov.mobile || raw.mobile || personalStMob || stMobClean) &&
-String(ebsProf.verifiedMobile || st.verifiedMobile || ebsProf.mobile || st.mobile || "").replace(/\D/g, "").slice(-10) ===
-String(ebsProf.mobile || ov.mobile || raw.mobile || personalStMob || stMobClean || "").replace(/\D/g, "").slice(-10)
-),
-verifiedMobile: String(ebsProf.verifiedMobile || st.verifiedMobile || (ebsProf.whatsappVerified ? (ebsProf.mobile || "") : "")).replace(/\D/g, "").slice(-10),
+mobile: (() => {
+  const vEnt = getVerifiedOtpVaultStaffEntry(sid);
+  return ebsProf.mobile || (vEnt && vEnt.mobile) || personalStMob || ov.mobile || raw.mobile || stMobClean || "";
+})(),
+whatsappVerified: (() => {
+  const vEnt = getVerifiedOtpVaultStaffEntry(sid);
+  const effMob = String(ebsProf.mobile || (vEnt && vEnt.mobile) || personalStMob || ov.mobile || raw.mobile || stMobClean || "").replace(/\D/g, "").slice(-10);
+  if (effMob.length !== 10) return false;
+  if (isMobileInVerifiedOtpVault(effMob, sid)) return true;
+  if (extra.ebs2026 && extra.ebs2026.hmFinalLock && extra.ebs2026.hmFinalLock.locked) return true;
+  if (ebsProf.whatsappVerified || st.whatsappVerified) {
+    const verMob = String(ebsProf.verifiedMobile || st.verifiedMobile || ebsProf.mobile || st.mobile || effMob).replace(/\D/g, "").slice(-10);
+    return !verMob || verMob === effMob;
+  }
+  return false;
+})(),
+verifiedMobile: (() => {
+  const vEnt = getVerifiedOtpVaultStaffEntry(sid);
+  const effMob = String(ebsProf.mobile || (vEnt && vEnt.mobile) || personalStMob || ov.mobile || raw.mobile || stMobClean || "").replace(/\D/g, "").slice(-10);
+  if (effMob.length === 10 && (isMobileInVerifiedOtpVault(effMob, sid) || ebsProf.whatsappVerified || st.whatsappVerified || (extra.ebs2026 && extra.ebs2026.hmFinalLock && extra.ebs2026.hmFinalLock.locked))) {
+    return effMob;
+  }
+  return String(ebsProf.verifiedMobile || st.verifiedMobile || "").replace(/\D/g, "").slice(-10);
+})(),
 altMobile: ebsProf.altMobile || st.altMobile || raw.altMobile || "",
-email: ebsProf.email || ov.email || st.email || raw.email || "",
-emailVerified: Boolean(
-(ebsProf.emailVerified || st.emailVerified) &&
-(ebsProf.email || ov.email || st.email || raw.email) &&
-String(ebsProf.verifiedEmail || st.verifiedEmail || ebsProf.email || st.email || "").trim().toLowerCase() ===
-String(ebsProf.email || ov.email || st.email || raw.email || "").trim().toLowerCase()
-),
-verifiedEmail: String(ebsProf.verifiedEmail || st.verifiedEmail || (ebsProf.emailVerified ? (ebsProf.email || "") : "")).trim().toLowerCase(),
+email: (() => {
+  const vEnt = getVerifiedOtpVaultStaffEntry(sid);
+  return ebsProf.email || (vEnt && vEnt.email) || ov.email || st.email || raw.email || "";
+})(),
+emailVerified: (() => {
+  const vEnt = getVerifiedOtpVaultStaffEntry(sid);
+  const effEm = String(ebsProf.email || (vEnt && vEnt.email) || ov.email || st.email || raw.email || "").trim().toLowerCase();
+  if (!effEm || !effEm.includes("@")) return false;
+  if (isEmailInVerifiedOtpVault(effEm, sid)) return true;
+  if (extra.ebs2026 && extra.ebs2026.hmFinalLock && extra.ebs2026.hmFinalLock.locked) return true;
+  if (ebsProf.emailVerified || st.emailVerified) {
+    const verEm = String(ebsProf.verifiedEmail || st.verifiedEmail || ebsProf.email || st.email || effEm).trim().toLowerCase();
+    return !verEm || verEm === effEm;
+  }
+  return false;
+})(),
+verifiedEmail: (() => {
+  const vEnt = getVerifiedOtpVaultStaffEntry(sid);
+  const effEm = String(ebsProf.email || (vEnt && vEnt.email) || ov.email || st.email || raw.email || "").trim().toLowerCase();
+  if (effEm && effEm.includes("@") && (isEmailInVerifiedOtpVault(effEm, sid) || ebsProf.emailVerified || st.emailVerified || (extra.ebs2026 && extra.ebs2026.hmFinalLock && extra.ebs2026.hmFinalLock.locked))) {
+    return effEm;
+  }
+  return String(ebsProf.verifiedEmail || st.verifiedEmail || "").trim().toLowerCase();
+})(),
 resPlace: ebsProf.resPlace || st.resPlace || raw.resPlace || "",
 resDistrict: ebsProf.resDistrict || st.resDistrict || raw.resDistrict || "Sivagangai",
 prefCamp: ebsProf.prefCamp || st.prefCamp || raw.prefCamp || (/(KARAIKUDI|DEVAKOTTAI|SAKKOTTAI|KANNANGUDI|KALLAL|THIRUPPATHUR|SINGAMPUNARI|S\.PUDUR)/i.test(sch.block || "") ? "02-Karaikudi/Devakottai" : "01-Sivagangai"),
@@ -26129,6 +26639,9 @@ async function sendInlineRowWhatsappOtp(uNo, staffId) {
     staffId,
     mobile: cleanMob,
     otp: otpCode,
+    draftCode: "",
+    statusText: `📲 +91 ${cleanMob} எண்ணிற்கு OTP அனுப்பப்படுகிறது...`,
+    statusColor: "#166534",
     expiresAt: Date.now() + 10 * 60 * 1000
   };
   const btnEl = document.getElementById("inlineWaBtn_" + staffId);
@@ -26152,10 +26665,20 @@ async function sendInlineRowWhatsappOtp(uNo, staffId) {
     );
     sentOk = Boolean(res && res.apiDispatched);
   } catch (e) {}
-  if (btnEl) { btnEl.disabled = false; btnEl.textContent = "🔄 மறு-OTP"; }
-  if (hintEl) {
-    hintEl.style.color = sentOk ? "#15803d" : "#dc2626";
-    hintEl.textContent = sentOk
+  if (_inlineRowWaOtpSessions[staffId]) {
+    _inlineRowWaOtpSessions[staffId].statusColor = sentOk ? "#15803d" : "#dc2626";
+    _inlineRowWaOtpSessions[staffId].statusText = sentOk
+      ? `✅ +91 ${cleanMob}-க்கு OTP அனுப்பப்பட்டது! கீழே உள்ளிடவும்.`
+      : `⚠️ OTP அனுப்புவதில் தாமதம். மீண்டும் முயற்சிக்கவும்.`;
+  }
+  const latestBtnEl = document.getElementById("inlineWaBtn_" + staffId) || btnEl;
+  const latestBoxEl = document.getElementById("inlineWaOtpBox_" + staffId) || boxEl;
+  const latestHintEl = document.getElementById("inlineWaOtpHint_" + staffId) || hintEl;
+  if (latestBoxEl) latestBoxEl.style.display = "block";
+  if (latestBtnEl) { latestBtnEl.disabled = false; latestBtnEl.textContent = "🔄 மறு-OTP"; }
+  if (latestHintEl) {
+    latestHintEl.style.color = sentOk ? "#15803d" : "#dc2626";
+    latestHintEl.textContent = sentOk
       ? `✅ +91 ${cleanMob}-க்கு OTP அனுப்பப்பட்டது! கீழே உள்ளிடவும்.`
       : `⚠️ OTP அனுப்புவதில் தாமதம். மீண்டும் முயற்சிக்கவும்.`;
   }
@@ -26191,6 +26714,8 @@ function verifyInlineRowWhatsappOtp(uNo, staffId) {
   const extra = getSchoolExtra(uNo);
   if (!extra.ebs2026) extra.ebs2026 = {};
   if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+  delete _inlineRowWaOtpSessions[staffId];
+  recordVerifiedStaffOtpInVault(uNo, staffId, "mobile", sess.mobile, false);
   const prof = extra.ebs2026.staffProfiles[staffId] || {};
   prof.mobile = sess.mobile;
   prof.whatsappVerified = true;
@@ -26205,7 +26730,7 @@ function verifyInlineRowWhatsappOtp(uNo, staffId) {
     }
   }
   window._activeSyncTargetUNo = uNo;
-  safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+  safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
   renderSchoolEbsModule();
   saveSchoolEbs2026Data(false, uNo);
   showToast(`✅ +91 ${sess.mobile} வாட்ஸ்ஆப் எண் OTP மூலம் உறுதி செய்யப்பட்டது!`, "#16a34a", true);
@@ -26246,6 +26771,9 @@ async function sendInlineRowEmailOtp(uNo, staffId) {
     staffId,
     email: cleanEmail.toLowerCase(),
     otp: otpCode,
+    draftCode: "",
+    statusText: `📨 ${cleanEmail} முகவரிக்கு OTP அனுப்பப்படுகிறது...`,
+    statusColor: "#1e40af",
     expiresAt: Date.now() + 10 * 60 * 1000
   };
   const btnEl = document.getElementById("inlineEmBtn_" + staffId);
@@ -26269,10 +26797,20 @@ async function sendInlineRowEmailOtp(uNo, staffId) {
     );
     sentOk = Boolean(res && res.ok);
   } catch (e) {}
-  if (btnEl) { btnEl.disabled = false; btnEl.textContent = "🔄 மறு-OTP"; }
-  if (hintEl) {
-    hintEl.style.color = sentOk ? "#15803d" : "#dc2626";
-    hintEl.textContent = sentOk
+  if (_inlineRowEmOtpSessions[staffId]) {
+    _inlineRowEmOtpSessions[staffId].statusColor = sentOk ? "#15803d" : "#dc2626";
+    _inlineRowEmOtpSessions[staffId].statusText = sentOk
+      ? `✅ ${cleanEmail}-க்கு OTP அனுப்பப்பட்டது! கீழே உள்ளிடவும்.`
+      : `⚠️ OTP அனுப்புவதில் தாமதம். மீண்டும் முயற்சிக்கவும்.`;
+  }
+  const latestBtnEl = document.getElementById("inlineEmBtn_" + staffId) || btnEl;
+  const latestBoxEl = document.getElementById("inlineEmOtpBox_" + staffId) || boxEl;
+  const latestHintEl = document.getElementById("inlineEmOtpHint_" + staffId) || hintEl;
+  if (latestBoxEl) latestBoxEl.style.display = "block";
+  if (latestBtnEl) { latestBtnEl.disabled = false; latestBtnEl.textContent = "🔄 மறு-OTP"; }
+  if (latestHintEl) {
+    latestHintEl.style.color = sentOk ? "#15803d" : "#dc2626";
+    latestHintEl.textContent = sentOk
       ? `✅ ${cleanEmail}-க்கு OTP அனுப்பப்பட்டது! கீழே உள்ளிடவும்.`
       : `⚠️ OTP அனுப்புவதில் தாமதம். மீண்டும் முயற்சிக்கவும்.`;
   }
@@ -26306,6 +26844,8 @@ function verifyInlineRowEmailOtp(uNo, staffId) {
   const extra = getSchoolExtra(uNo);
   if (!extra.ebs2026) extra.ebs2026 = {};
   if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+  delete _inlineRowEmOtpSessions[staffId];
+  recordVerifiedStaffOtpInVault(uNo, staffId, "email", sess.email, false);
   const prof = extra.ebs2026.staffProfiles[staffId] || {};
   prof.email = sess.email;
   prof.emailVerified = true;
@@ -26320,41 +26860,46 @@ function verifyInlineRowEmailOtp(uNo, staffId) {
     }
   }
   window._activeSyncTargetUNo = uNo;
-  safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+  safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
   renderSchoolEbsModule();
   saveSchoolEbs2026Data(false, uNo);
   showToast(`✅ ${sess.email} மின்னஞ்சல் முகவரி OTP மூலம் உறுதி செய்யப்பட்டது!`, "#16a34a", true);
 }
 
 function renderEbsStaffRowCol4OtpCellHtml(uNo, st) {
-  const sid = escapeHtmlAttr(st.staffId || "");
+  const rawSid = String(st.staffId || "").trim();
+  const sid = escapeHtmlAttr(rawSid);
   const uNoEsc = escapeHtmlAttr(uNo || "");
   const cleanMob = String(st.mobile || "").replace(/\D/g, "").slice(-10);
   const cleanEm = String(st.email || "").trim();
-  const waVerified = Boolean(st.whatsappVerified && cleanMob.length === 10);
-  const emVerified = Boolean(st.emailVerified && cleanEm);
+  const waVerified = Boolean((st.whatsappVerified || isMobileInVerifiedOtpVault(cleanMob, rawSid)) && cleanMob.length === 10);
+  const emVerified = Boolean((st.emailVerified || isEmailInVerifiedOtpVault(cleanEm, rawSid)) && cleanEm);
+  const activeWaSess = (_inlineRowWaOtpSessions && _inlineRowWaOtpSessions[rawSid] && _inlineRowWaOtpSessions[rawSid].expiresAt > Date.now()) ? _inlineRowWaOtpSessions[rawSid] : null;
+  const activeEmSess = (_inlineRowEmOtpSessions && _inlineRowEmOtpSessions[rawSid] && _inlineRowEmOtpSessions[rawSid].expiresAt > Date.now()) ? _inlineRowEmOtpSessions[rawSid] : null;
+  const dispMob = activeWaSess ? activeWaSess.mobile : cleanMob;
+  const dispEm = activeEmSess ? activeEmSess.email : cleanEm;
   return `
     <div style="display:flex; flex-direction:column; gap:6px; align-items:stretch; max-width:350px; width:100%; margin:0 auto; text-align:left;">
       <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:7px; padding:5px 7px;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; flex-wrap:wrap;">
           <div style="display:flex; align-items:center; gap:4px; flex:1; min-width:130px;">
             <span style="font-size:0.82rem;">📱</span>
-            <input type="text" id="inlineWaMobEdit_${sid}" maxlength="10" inputmode="numeric" value="${escapeHtmlAttr(cleanMob)}" placeholder="WhatsApp எண்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" style="width:112px; font-family:'Inter','Segoe UI',sans-serif; font-size:0.86rem; font-weight:900; color:#14532d; background:#fff; border:1px solid #86efac; border-radius:5px; padding:2px 6px; letter-spacing:0.6px;">
+            <input type="text" id="inlineWaMobEdit_${sid}" maxlength="10" inputmode="numeric" value="${escapeHtmlAttr(dispMob)}" placeholder="WhatsApp எண்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" style="width:112px; font-family:'Inter','Segoe UI',sans-serif; font-size:0.86rem; font-weight:900; color:#14532d; background:#fff; border:1px solid #86efac; border-radius:5px; padding:2px 6px; letter-spacing:0.6px;">
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
             ${waVerified
               ? `<span style="background:#dcfce7; color:#15803d; border:1px solid #22c55e; border-radius:999px; padding:1px 7px; font-size:0.68rem; font-weight:900;" title="WhatsApp OTP Verified">✓ OTP</span>
                  <button type="button" id="inlineWaBtn_${sid}" onclick="sendInlineRowWhatsappOtp('${uNoEsc}', '${sid}')" title="மீண்டும் WhatsApp OTP அனுப்பு" style="background:#fff; color:#15803d; border:1px solid #86efac; border-radius:5px; padding:1px 5px; font-size:0.66rem; font-weight:900; cursor:pointer;">🔄</button>`
-              : `<button type="button" id="inlineWaBtn_${sid}" onclick="sendInlineRowWhatsappOtp('${uNoEsc}', '${sid}')" style="background:#16a34a; color:#fff; border:none; border-radius:5px; padding:2px 8px; font-size:0.69rem; font-weight:900; cursor:pointer; white-space:nowrap;">📲 OTP</button>`
+              : `<button type="button" id="inlineWaBtn_${sid}" onclick="sendInlineRowWhatsappOtp('${uNoEsc}', '${sid}')" style="background:#16a34a; color:#fff; border:none; border-radius:5px; padding:2px 8px; font-size:0.69rem; font-weight:900; cursor:pointer; white-space:nowrap;">${activeWaSess ? "🔄 மறு-OTP" : "📲 OTP"}</button>`
             }
           </div>
         </div>
-        <div id="inlineWaOtpBox_${sid}" style="display:none; margin-top:5px; padding-top:4px; border-top:1px dashed #86efac;">
+        <div id="inlineWaOtpBox_${sid}" style="display:${activeWaSess ? "block" : "none"}; margin-top:5px; padding-top:4px; border-top:1px dashed #86efac;">
           <div style="display:flex; gap:4px; align-items:center;">
-            <input type="text" id="inlineWaOtpInp_${sid}" maxlength="6" inputmode="numeric" placeholder="6-இலக்க OTP" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" onkeydown="if(event.key==='Enter'){event.preventDefault();verifyInlineRowWhatsappOtp('${uNoEsc}','${sid}');}" style="width:105px; font-size:0.78rem; font-weight:900; text-align:center; letter-spacing:1.5px; padding:2px 5px; border:1px solid #16a34a; border-radius:4px; background:#fff;">
+            <input type="text" id="inlineWaOtpInp_${sid}" maxlength="6" inputmode="numeric" value="${escapeHtmlAttr(activeWaSess ? (activeWaSess.draftCode || "") : "")}" placeholder="6-இலக்க OTP" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); if(_inlineRowWaOtpSessions && _inlineRowWaOtpSessions['${sid}']) _inlineRowWaOtpSessions['${sid}'].draftCode=this.value;" onkeydown="if(event.key==='Enter'){event.preventDefault();verifyInlineRowWhatsappOtp('${uNoEsc}','${sid}');}" style="width:105px; font-size:0.78rem; font-weight:900; text-align:center; letter-spacing:1.5px; padding:2px 5px; border:1px solid #16a34a; border-radius:4px; background:#fff;">
             <button type="button" onclick="verifyInlineRowWhatsappOtp('${uNoEsc}', '${sid}')" style="background:#15803d; color:#fff; border:none; border-radius:4px; padding:3px 8px; font-size:0.70rem; font-weight:900; cursor:pointer;">✔️ உறுதி</button>
           </div>
-          <div id="inlineWaOtpHint_${sid}" style="font-size:0.66rem; font-weight:800; margin-top:3px;"></div>
+          <div id="inlineWaOtpHint_${sid}" style="font-size:0.66rem; font-weight:800; margin-top:3px; color:${activeWaSess ? (activeWaSess.statusColor || "#15803d") : "#15803d"};">${escapeHtmlAttr(activeWaSess ? (activeWaSess.statusText || "") : "")}</div>
         </div>
       </div>
 
@@ -26362,22 +26907,22 @@ function renderEbsStaffRowCol4OtpCellHtml(uNo, st) {
         <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; flex-wrap:wrap;">
           <div style="display:flex; align-items:center; gap:4px; flex:1; min-width:140px;">
             <span style="font-size:0.78rem;">✉️</span>
-            <input type="email" id="inlineEmAddrEdit_${sid}" value="${escapeHtmlAttr(cleanEm)}" placeholder="staff@gmail.com" onblur="if(typeof normalizeAndRepairSchoolEmail==='function')this.value=normalizeAndRepairSchoolEmail(this.value)" style="width:100%; min-width:125px; font-size:0.74rem; font-weight:800; color:#1e3a8a; background:#fff; border:1px solid #93c5fd; border-radius:5px; padding:2px 6px;">
+            <input type="email" id="inlineEmAddrEdit_${sid}" value="${escapeHtmlAttr(dispEm)}" placeholder="staff@gmail.com" onblur="if(typeof normalizeAndRepairSchoolEmail==='function')this.value=normalizeAndRepairSchoolEmail(this.value)" style="width:100%; min-width:125px; font-size:0.74rem; font-weight:800; color:#1e3a8a; background:#fff; border:1px solid #93c5fd; border-radius:5px; padding:2px 6px;">
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
             ${emVerified
               ? `<span style="background:#dcfce7; color:#15803d; border:1px solid #22c55e; border-radius:999px; padding:1px 7px; font-size:0.68rem; font-weight:900;" title="Email OTP Verified">✓ OTP</span>
                  <button type="button" id="inlineEmBtn_${sid}" onclick="sendInlineRowEmailOtp('${uNoEsc}', '${sid}')" title="மீண்டும் Email OTP அனுப்பு" style="background:#fff; color:#1d4ed8; border:1px solid #93c5fd; border-radius:5px; padding:1px 5px; font-size:0.66rem; font-weight:900; cursor:pointer;">🔄</button>`
-              : `<button type="button" id="inlineEmBtn_${sid}" onclick="sendInlineRowEmailOtp('${uNoEsc}', '${sid}')" style="background:#2563eb; color:#fff; border:none; border-radius:5px; padding:2px 8px; font-size:0.69rem; font-weight:900; cursor:pointer; white-space:nowrap;">📧 OTP</button>`
+              : `<button type="button" id="inlineEmBtn_${sid}" onclick="sendInlineRowEmailOtp('${uNoEsc}', '${sid}')" style="background:#2563eb; color:#fff; border:none; border-radius:5px; padding:2px 8px; font-size:0.69rem; font-weight:900; cursor:pointer; white-space:nowrap;">${activeEmSess ? "🔄 மறு-OTP" : "📧 OTP"}</button>`
             }
           </div>
         </div>
-        <div id="inlineEmOtpBox_${sid}" style="display:none; margin-top:5px; padding-top:4px; border-top:1px dashed #93c5fd;">
+        <div id="inlineEmOtpBox_${sid}" style="display:${activeEmSess ? "block" : "none"}; margin-top:5px; padding-top:4px; border-top:1px dashed #93c5fd;">
           <div style="display:flex; gap:4px; align-items:center;">
-            <input type="text" id="inlineEmOtpInp_${sid}" maxlength="6" inputmode="numeric" placeholder="6-இலக்க OTP" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" onkeydown="if(event.key==='Enter'){event.preventDefault();verifyInlineRowEmailOtp('${uNoEsc}','${sid}');}" style="width:105px; font-size:0.78rem; font-weight:900; text-align:center; letter-spacing:1.5px; padding:2px 5px; border:1px solid #2563eb; border-radius:4px; background:#fff;">
+            <input type="text" id="inlineEmOtpInp_${sid}" maxlength="6" inputmode="numeric" value="${escapeHtmlAttr(activeEmSess ? (activeEmSess.draftCode || "") : "")}" placeholder="6-இலக்க OTP" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); if(_inlineRowEmOtpSessions && _inlineRowEmOtpSessions['${sid}']) _inlineRowEmOtpSessions['${sid}'].draftCode=this.value;" onkeydown="if(event.key==='Enter'){event.preventDefault();verifyInlineRowEmailOtp('${uNoEsc}','${sid}');}" style="width:105px; font-size:0.78rem; font-weight:900; text-align:center; letter-spacing:1.5px; padding:2px 5px; border:1px solid #2563eb; border-radius:4px; background:#fff;">
             <button type="button" onclick="verifyInlineRowEmailOtp('${uNoEsc}', '${sid}')" style="background:#16a34a; color:#fff; border:none; border-radius:4px; padding:3px 8px; font-size:0.70rem; font-weight:900; cursor:pointer;">✔️ உறுதி</button>
           </div>
-          <div id="inlineEmOtpHint_${sid}" style="font-size:0.66rem; font-weight:800; margin-top:3px;"></div>
+          <div id="inlineEmOtpHint_${sid}" style="font-size:0.66rem; font-weight:800; margin-top:3px; color:${activeEmSess ? (activeEmSess.statusColor || "#1e40af") : "#1e40af"};">${escapeHtmlAttr(activeEmSess ? (activeEmSess.statusText || "") : "")}</div>
         </div>
       </div>
     </div>
@@ -28874,7 +29419,9 @@ const btnEl = document.getElementById("ebsStfSendOtpBtn");
 if (!emailEl || !verEl || !verAddrEl) return;
 const curEmail = String(emailEl.value || "").trim().toLowerCase();
 const prevVerifiedAddr = String(verAddrEl.value || "").trim().toLowerCase();
-const isStillVerified = Boolean(curEmail && prevVerifiedAddr && curEmail === prevVerifiedAddr);
+const sidForEm = (_activeEbsEditingStaff && _activeEbsEditingStaff.staffId) || (document.getElementById("ebsStfEmisId")?.value || "");
+const isStillVerified = Boolean(curEmail && ((prevVerifiedAddr && curEmail === prevVerifiedAddr) || isEmailInVerifiedOtpVault(curEmail, sidForEm)));
+if (isStillVerified && !prevVerifiedAddr) verAddrEl.value = curEmail;
 verEl.value = isStillVerified ? "true" : "false";
 if (badgeEl) {
 badgeEl.style.background = isStillVerified ? "#dcfce7" : "#fef3c7";
@@ -28991,8 +29538,12 @@ showToast("❌ தவறான OTP குறியீடு! மீண்டு�
 inpEl.focus();
 return;
 }
+_activeEbsStaffEmailOtpSession = null;
 verEl.value = "true";
 verAddrEl.value = curEmail;
+if (_activeEbsEditingStaff) {
+  recordVerifiedStaffOtpInVault(_activeEbsEditingStaff.uNo, _activeEbsEditingStaff.staffId, "email", curEmail, false);
+}
 if (boxEl) boxEl.style.display = "none";
 if (badgeEl) {
 badgeEl.style.background = "#dcfce7";
@@ -29041,7 +29592,9 @@ const btnEl = document.getElementById("ebsStfSendWaOtpBtn");
 if (!mobEl || !verEl || !verNoEl) return;
 const curMob = String(mobEl.value || "").replace(/\D/g, "").slice(0, 10);
 const prevVerifiedMob = String(verNoEl.value || "").replace(/\D/g, "").slice(0, 10);
-const isStillVerified = Boolean(curMob.length === 10 && prevVerifiedMob.length === 10 && curMob === prevVerifiedMob);
+const sidForMob = (_activeEbsEditingStaff && _activeEbsEditingStaff.staffId) || (document.getElementById("ebsStfEmisId")?.value || "");
+const isStillVerified = Boolean(curMob.length === 10 && ((prevVerifiedMob.length === 10 && curMob === prevVerifiedMob) || isMobileInVerifiedOtpVault(curMob, sidForMob)));
+if (isStillVerified && !prevVerifiedMob) verNoEl.value = curMob;
 verEl.value = isStillVerified ? "true" : "false";
 if (badgeEl) {
 badgeEl.style.background = isStillVerified ? "#dcfce7" : "#fef3c7";
@@ -29163,8 +29716,12 @@ showToast("❌ தவறான வாட்ஸ்ஆப் OTP குறிய�
 inpEl.focus();
 return;
 }
+_activeEbsStaffWhatsappOtpSession = null;
 verEl.value = "true";
 verNoEl.value = curMob;
+if (_activeEbsEditingStaff) {
+  recordVerifiedStaffOtpInVault(_activeEbsEditingStaff.uNo, _activeEbsEditingStaff.staffId, "mobile", curMob, false);
+}
 if (boxEl) boxEl.style.display = "none";
 if (badgeEl) {
 badgeEl.style.background = "#dcfce7";
@@ -30743,7 +31300,7 @@ const uNo = resolvedUNo;
 const schObj = (masterSchools || []).find(s => String(s.uNo) === uNo) || activeSchoolSession || { uNo, sn: 1 };
 const extra = getSchoolExtra(uNo);
 window._activeSyncTargetUNo = uNo;
-safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
 const packet = buildSchoolEbsSheetPacket(uNo, schObj.sn || 1);
 const ebsSheetId = getDedicatedEbsSheetId();
 if (typeof pushCloudUpdate === "function") {
@@ -37158,6 +37715,100 @@ function sanitizeExamResultAnalysisStoreInPlace(store) {
     }
   });
   return store;
+}
+
+function _countNonEmptyMarksInRec(rec) {
+  if (!rec || !Array.isArray(rec.students)) return 0;
+  let cnt = 0;
+  rec.students.forEach(st => {
+    if (st && st.marks && typeof st.marks === "object") {
+      Object.values(st.marks).forEach(v => {
+        if (String(v || "").trim() !== "") cnt++;
+      });
+    }
+  });
+  return cnt;
+}
+
+function _pickRicherClassMaster(curCm, incCm) {
+  if (!curCm) return incCm;
+  if (!incCm) return curCm;
+  const curLen = Array.isArray(curCm.roster) ? curCm.roster.length : 0;
+  const incLen = Array.isArray(incCm.roster) ? incCm.roster.length : 0;
+  if (incLen > 0 && curLen === 0) return incCm;
+  if (curLen > 0 && incLen === 0) return curCm;
+  return incCm;
+}
+
+function _pickRicherTermRecord(curRec, incRec) {
+  if (!curRec) return incRec;
+  if (!incRec) return curRec;
+  const curMarks = _countNonEmptyMarksInRec(curRec);
+  const incMarks = _countNonEmptyMarksInRec(incRec);
+  if (incMarks > 0 && curMarks === 0) return incRec;
+  if (curMarks > 0 && incMarks === 0) return curRec;
+  const curStu = Array.isArray(curRec.students) ? curRec.students.length : 0;
+  const incStu = Array.isArray(incRec.students) ? incRec.students.length : 0;
+  if (incStu > 0 && curStu === 0) return incRec;
+  if (curStu > 0 && incStu === 0) return curRec;
+  const curTs = curRec.updatedAt ? Date.parse(curRec.updatedAt) || 0 : 0;
+  const incTs = incRec.updatedAt ? Date.parse(incRec.updatedAt) || 0 : 0;
+  if (curTs > incTs) return curRec;
+  return incRec;
+}
+
+function deepMergeExamResultAnalysisStore(baseStore, incomingStore, byUNoPackets) {
+  const base = sanitizeExamResultAnalysisStoreInPlace(baseStore || {});
+  const inc = sanitizeExamResultAnalysisStoreInPlace(incomingStore || {});
+  if (!base._classMasterByUNo) base._classMasterByUNo = {};
+  if (!base._classMaster12ByUNo) base._classMaster12ByUNo = {};
+
+  if (inc._classMasterByUNo) {
+    Object.keys(inc._classMasterByUNo).forEach(uKey => {
+      base._classMasterByUNo[uKey] = _pickRicherClassMaster(base._classMasterByUNo[uKey], inc._classMasterByUNo[uKey]);
+    });
+  }
+  if (inc._classMaster12ByUNo) {
+    Object.keys(inc._classMaster12ByUNo).forEach(uKey => {
+      base._classMaster12ByUNo[uKey] = _pickRicherClassMaster(base._classMaster12ByUNo[uKey], inc._classMaster12ByUNo[uKey]);
+    });
+  }
+  Object.keys(inc).forEach(tk => {
+    if (tk.startsWith("_")) return;
+    if (!base[tk]) base[tk] = {};
+    Object.keys(inc[tk] || {}).forEach(uKey => {
+      base[tk][uKey] = _pickRicherTermRecord(base[tk][uKey], inc[tk][uKey]);
+    });
+  });
+
+  if (byUNoPackets && typeof byUNoPackets === "object") {
+    const normByUNo = normalizeFirebaseNumericMapToObj(byUNoPackets);
+    Object.keys(normByUNo).forEach(uKey => {
+      const pkt = normByUNo[uKey];
+      if (!pkt || typeof pkt !== "object") return;
+      if (pkt.cm10) {
+        if (!Array.isArray(pkt.cm10.sections)) pkt.cm10.sections = Object.values(pkt.cm10.sections || {}).filter(Boolean);
+        if (!Array.isArray(pkt.cm10.roster)) pkt.cm10.roster = Object.values(pkt.cm10.roster || {}).filter(Boolean);
+        base._classMasterByUNo[uKey] = _pickRicherClassMaster(base._classMasterByUNo[uKey], pkt.cm10);
+      }
+      if (pkt.cm12) {
+        if (!Array.isArray(pkt.cm12.sections)) pkt.cm12.sections = Object.values(pkt.cm12.sections || {}).filter(Boolean);
+        if (!Array.isArray(pkt.cm12.roster)) pkt.cm12.roster = Object.values(pkt.cm12.roster || {}).filter(Boolean);
+        base._classMaster12ByUNo[uKey] = _pickRicherClassMaster(base._classMaster12ByUNo[uKey], pkt.cm12);
+      }
+      if (pkt.terms && typeof pkt.terms === "object") {
+        Object.keys(pkt.terms).forEach(tk => {
+          const r = pkt.terms[tk];
+          if (!r || typeof r !== "object") return;
+          if (!Array.isArray(r.sections)) r.sections = Object.values(r.sections || {}).filter(Boolean);
+          if (!Array.isArray(r.students)) r.students = Object.values(r.students || {}).filter(Boolean);
+          if (!base[tk]) base[tk] = {};
+          base[tk][uKey] = _pickRicherTermRecord(base[tk][uKey], r);
+        });
+      }
+    });
+  }
+  return sanitizeExamResultAnalysisStoreInPlace(base);
 }
 
 function getExamResultAnalysisStore() {
