@@ -1,0 +1,155 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "ceosvg_live": {
+      ".read": false,
+      ".write": false,
+      "static_master": {
+        ".read": true,
+        ".write": "auth != null && auth.token.role === 'admin'"
+      },
+      "master_schools_by_uno": {
+        ".read": true,
+        ".write": "auth != null && auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": true,
+          ".write": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/) && newData.hasChildren(['uNo'])"
+        }
+      },
+      "exam_centres_10": {
+        ".read": true,
+        ".write": "auth != null && auth.token.role === 'admin'"
+      },
+      "exam_centres_12": {
+        ".read": true,
+        ".write": "auth != null && auth.token.role === 'admin'"
+      },
+      "school_extra": {
+        ".read": "auth != null && auth.token.role === 'admin'",
+        ".write": "auth != null && auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".write": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/) && newData.hasChildren()"
+        }
+      },
+      "ebs_2026_27": {
+        ".read": "auth != null && auth.token.role === 'admin'",
+        ".write": "auth != null && auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".write": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/)"
+        }
+      },
+      "exam_result_analysis_by_uno": {
+        ".read": "auth != null && auth.token.role === 'admin'",
+        ".write": "auth != null && auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".write": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/)"
+        }
+      },
+      "school_auth": {
+        ".read": "auth != null && auth.token.role === 'admin'",
+        ".write": "auth != null && auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".write": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/) && newData.hasChildren(['uNo'])"
+        }
+      },
+      "stores": {
+        ".read": "auth != null && auth.token.role === 'admin'",
+        ".write": "auth != null && auth.token.role === 'admin'",
+        "CEOSVG_MASTER_SCHOOLS": {
+          ".read": true,
+          ".write": "auth != null && auth.token.role === 'admin'"
+        },
+        "CEOSVG_DIGNITARIES_DATA_V3": {
+          ".read": true,
+          ".write": "auth != null && auth.token.role === 'admin'"
+        },
+        "CEOSVG_DIGNITARIES_PHOTO_VAULT": {
+          ".read": true,
+          ".write": "auth != null && auth.token.role === 'admin'"
+        },
+        "CEOSVG_CIRCULARS": {
+          ".read": true,
+          ".write": "auth != null && auth.token.role === 'admin'"
+        },
+        "CEOSVG_DIVISIONS": {
+          ".read": true,
+          ".write": "auth != null && auth.token.role === 'admin'"
+        },
+        "CEOSVG_HSS_GROUP_MASTER_V1": {
+          ".read": true,
+          ".write": "auth != null && auth.token.role === 'admin'"
+        },
+        "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1": {
+          ".read": "auth != null && auth.token.role === 'admin'",
+          ".write": "auth != null && auth.token.role === 'admin'",
+          "_classMasterByUNo": {
+            "$uNo": {
+              ".read": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+              ".write": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)"
+            }
+          },
+          "_classMaster12ByUNo": {
+            "$uNo": {
+              ".read": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+              ".write": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)"
+            }
+          },
+          "$termKey": {
+            "$uNo": {
+              ".read": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+              ".write": "auth != null && (auth.token.role === 'admin' || auth.token.uNo === $uNo)"
+            }
+          }
+        },
+        "CEOSVG_ADMIN_AUDIT_LOGS_V1": {
+          ".read": "auth != null && auth.token.role === 'admin'",
+          ".write": "auth != null && auth.token.role === 'admin'"
+        },
+        "CEOSVG_WA_CLOUD_CFG": {
+          ".read": "auth != null && auth.token.role === 'admin'",
+          ".write": "auth != null && auth.token.role === 'admin'"
+        }
+      },
+      "admin_security": {
+        ".read": "auth != null && auth.token.role === 'admin'",
+        ".write": "auth != null && auth.token.role === 'admin'"
+      },
+      "verified_otp_vault": {
+        ".read": "auth != null && auth.token.role === 'admin'",
+        ".write": "auth != null && auth.token.role === 'admin'"
+      },
+      "backups_latest_meta": {
+        ".read": "auth != null && auth.token.role === 'admin'",
+        ".write": "auth != null && auth.token.role === 'admin'"
+      },
+      "teachers_sheet_meta": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.role === 'admin'"
+      },
+      "live_presence": {
+        ".read": "auth != null",
+        "$sessionId": {
+          ".write": "auth != null"
+        }
+      },
+      "last_event": {
+        ".read": "auth != null",
+        ".write": "auth != null && (auth.token.role === 'admin' || auth.token.uNo != null)"
+      },
+      "connection_test": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.role === 'admin'"
+      }
+    }
+  }
+}

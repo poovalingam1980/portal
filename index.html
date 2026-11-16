@@ -17689,13 +17689,18 @@ await Promise.all([
       method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(val._classMaster12ByUNo[targetUNo])
     }));
   }
+  const dirtySet = (typeof _dirtyRaTermKeysByUNo === "object" && _dirtyRaTermKeysByUNo[targetUNo] && _dirtyRaTermKeysByUNo[targetUNo].size > 0)
+    ? _dirtyRaTermKeysByUNo[targetUNo]
+    : null;
   Object.keys(val).forEach(tk => {
     if (!tk.startsWith("_") && val[tk] && val[tk][targetUNo]) {
+      if (dirtySet && !dirtySet.has(tk)) return;
       putTasks.push(fetch(buildFirebaseEndpoint(`ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1/${encodeURIComponent(tk)}/${uEnc}`), {
         method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(val[tk][targetUNo])
       }));
     }
   });
+  if (dirtySet) dirtySet.clear();
   await Promise.all(putTasks);
 } else {
 await fetch(buildFirebaseEndpoint(`ceosvg_live/stores/${encodeURIComponent(key)}`), {
@@ -37048,7 +37053,7 @@ function on12thStudentMarkInput(idx, subKey, inpEl) {
   if (!rec.students[idx].marks) rec.students[idx].marks = {};
   const val = String(inpEl.value || "").trim().toUpperCase();
   rec.students[idx].marks[subKey] = val;
-  saveExamResultAnalysisStore();
+  saveExamResultAnalysisStore(true);
 
   const calc = computeSchool12thResultAnalysis(uNo, _activeMidTermTermKey);
   renderSchoolMidTermLiveKpiStrip(calc);
@@ -37097,7 +37102,7 @@ function on12thStudentSplitMarkInput(idx, subKey, partKey, inpEl) {
   stu.markParts[subKey][partKey] = val;
 
   const evalPart = ensureStudentSubjectMarkParts(stu, subKey, "12", true);
-  saveExamResultAnalysisStore();
+  saveExamResultAnalysisStore(true);
 
   const subTotEl = document.getElementById(`mt12SubTot_${idx}_${subKey}`);
   if (subTotEl) {
@@ -38626,11 +38631,23 @@ function getExamResultAnalysisStore() {
   return _examResultAnalysisStoreCache;
 }
 
-function saveExamResultAnalysisStore() {
+const _dirtyRaTermKeysByUNo = {};
+function markRaTermDirtyForUNo(uNo, termKey) {
+  const u = String(uNo || "").trim();
+  if (!u || !termKey) return;
+  if (!_dirtyRaTermKeysByUNo[u]) _dirtyRaTermKeysByUNo[u] = new Set();
+  _dirtyRaTermKeysByUNo[u].add(String(termKey));
+}
+
+function saveExamResultAnalysisStore(skipRosterPropagation) {
   const store = getExamResultAnalysisStore();
   if (activeSchoolSession && activeSchoolSession.uNo) {
     const uNo = String(activeSchoolSession.uNo);
-    if (_activeResultAnalysisStd === "12") {
+    const activeTermStoreKey = (_activeResultAnalysisStd === "12")
+      ? get12thTermStoreKey(_activeMidTermTermKey)
+      : (_activeMidTermTermKey || "2026_MIDTERM_2");
+    markRaTermDirtyForUNo(uNo, activeTermStoreKey);
+    if (!skipRosterPropagation && _activeResultAnalysisStd === "12") {
       const tk12 = get12thTermStoreKey(_activeMidTermTermKey);
       const curRec12 = store[tk12] && store[tk12][uNo];
       if (curRec12) {
@@ -38655,7 +38672,7 @@ function saveExamResultAnalysisStore() {
         });
       }
     }
-    const curRec = store[_activeMidTermTermKey] && store[_activeMidTermTermKey][uNo];
+    const curRec = !skipRosterPropagation && store[_activeMidTermTermKey] && store[_activeMidTermTermKey][uNo];
     if (curRec) {
       syncSchoolClassMasterFromRecord(uNo, curRec);
       // Also propagate updated roster demographics to any other initialized exam terms for this school
@@ -38683,10 +38700,10 @@ function saveExamResultAnalysisStore() {
   if (typeof updateAdminMidTermChooserBadge === "function") {
     updateAdminMidTermChooserBadge();
   }
-  // 2) Debounced live Firebase sync (600ms) + visual Auto-Save badge update
+  // 2) Debounced live Firebase sync (1000ms) + visual Auto-Save badge update
   if (typeof scheduleDebouncedPartialEntryCloudSync === "function") {
     const uNoSync = (activeSchoolSession && activeSchoolSession.uNo) ? String(activeSchoolSession.uNo) : "";
-    scheduleDebouncedPartialEntryCloudSync("examResultAnalysis2026", uNoSync);
+    scheduleDebouncedPartialEntryCloudSync("examResultAnalysis2026", uNoSync, 1000);
   }
 }
 
@@ -40241,7 +40258,7 @@ function on10thStudentSplitMarkInput(idx, subKey, partKey, inpEl) {
   }
 
   const evalPart = ensureStudentSubjectMarkParts(stu, subKey, "10", true);
-  saveExamResultAnalysisStore();
+  saveExamResultAnalysisStore(true);
 
   const subTotEl = document.getElementById(`mt10SubTot_${idx}_${subKey}`);
   if (subTotEl) {
@@ -40299,7 +40316,7 @@ function onMidTermStudentMarkInput(idx, subKey, inpEl) {
   if (!rec.students[idx].marks) rec.students[idx].marks = {};
   const val = String(inpEl.value || "").trim().toUpperCase();
   rec.students[idx].marks[subKey] = val;
-  saveExamResultAnalysisStore();
+  saveExamResultAnalysisStore(true);
 
   // Live update this row's Total & Result badge + Top KPI strip without losing input focus!
   const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey);
@@ -41141,9 +41158,18 @@ function saveSchoolMidTermData(showMsg, markSubmitted) {
     rec.submittedAt = formatDateDisplayDMY(new Date().toISOString().slice(0, 10));
   }
   rec.updatedAt = new Date().toISOString();
+  if (typeof cancelPendingDebouncedCloudSync === "function") {
+    cancelPendingDebouncedCloudSync("examResultAnalysis2026", uNo);
+  }
   saveExamResultAnalysisStore();
+  if (typeof cancelPendingDebouncedCloudSync === "function") {
+    cancelPendingDebouncedCloudSync("examResultAnalysis2026", uNo);
+  }
   if (typeof pushCloudUpdate === "function") {
-    pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `School [${uNo}] saved ${_activeMidTermTermKey} Result Analysis`);
+    pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `School [${uNo}] saved ${_activeMidTermTermKey} Result Analysis`, uNo);
+  }
+  if (typeof updateLiveAutoSaveBadges === "function") {
+    updateLiveAutoSaveBadges("SAVED");
   }
   renderSchoolMidTermModule();
   if (showMsg) {
@@ -43838,6 +43864,8 @@ async function downloadStudentProgressReportPdf(targetModeOrStuId, btnEl) {
 // ============================================================================
 let _partialAutoSaveTimers = {};
 
+const _partialAutoSaveMeta = {};
+
 function updateLiveAutoSaveBadges(state, detailText) {
   const timeStr = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const b1 = document.getElementById("raLiveAutoSaveBadge");
@@ -43845,37 +43873,73 @@ function updateLiveAutoSaveBadges(state, detailText) {
     if (state === "SAVING") {
       b1.style.background = "rgba(245,158,11,0.32)";
       b1.style.borderColor = "#fbbf24";
-      b1.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:#fde047; display:inline-block;"></span><span>⏳ தானியங்கியாகச் சேமிக்கப்படுகிறது... (${detailText || "Auto-Saving..."})</span>`;
+      b1.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:#fde047; display:inline-block;"></span><span>⏳ தட்டச்சு முடிந்ததும் ஒத்திசைக்கப்படும்... (${detailText || "1s Debounce"})</span>`;
     } else {
       b1.style.background = "rgba(22,163,74,0.32)";
       b1.style.borderColor = "#4ade80";
-      b1.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:#4ade80; display:inline-block;"></span><span>✅ தானியங்கியாகச் சேமிக்கப்பட்டது • ${timeStr} (Live Synced)</span>`;
+      b1.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:#4ade80; display:inline-block;"></span><span>✅ தானியங்கியாகச் சேமிக்கப்பட்டது • ${timeStr} (Debounced Sync)</span>`;
     }
   }
 }
 
-function scheduleDebouncedPartialEntryCloudSync(storeType, targetUNo) {
+function cancelPendingDebouncedCloudSync(storeType, targetUNo) {
   const key = (storeType || "schoolExtra") + "__" + (targetUNo || "");
-  updateLiveAutoSaveBadges("SAVING", targetUNo ? ("U.No: " + targetUNo) : "Saving");
+  if (_partialAutoSaveTimers[key]) {
+    clearTimeout(_partialAutoSaveTimers[key]);
+    delete _partialAutoSaveTimers[key];
+  }
+  delete _partialAutoSaveMeta[key];
+}
+
+function executeDebouncedPartialCloudSyncNow(storeType, targetUNo) {
+  const key = (storeType || "schoolExtra") + "__" + (targetUNo || "");
+  if (_partialAutoSaveTimers[key]) {
+    clearTimeout(_partialAutoSaveTimers[key]);
+    delete _partialAutoSaveTimers[key];
+  }
+  delete _partialAutoSaveMeta[key];
+  try {
+    if (storeType === "examResultAnalysis2026") {
+      if (typeof pushCloudUpdate === "function") {
+        pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `Auto-Saved Result Analysis [${targetUNo || "ALL"}]`, targetUNo);
+      }
+    } else {
+      if (typeof pushCloudUpdate === "function") {
+        pushCloudUpdate("schoolExtra", schoolExtraDataStore, `Auto-Saved School Data [${targetUNo || "ALL"}]`, targetUNo);
+      }
+    }
+    updateLiveAutoSaveBadges("SAVED");
+  } catch (e) {
+    console.error("Partial auto-save sync error:", e);
+  }
+}
+
+function flushAllPendingDebouncedCloudSyncs() {
+  Object.keys(_partialAutoSaveMeta).forEach(key => {
+    const meta = _partialAutoSaveMeta[key];
+    if (meta) {
+      executeDebouncedPartialCloudSyncNow(meta.storeType, meta.targetUNo);
+    }
+  });
+}
+
+function scheduleDebouncedPartialEntryCloudSync(storeType, targetUNo, customDelayMs) {
+  const key = (storeType || "schoolExtra") + "__" + (targetUNo || "");
+  const delayMs = (typeof customDelayMs === "number" && customDelayMs >= 600)
+    ? customDelayMs
+    : (storeType === "examResultAnalysis2026" ? 1000 : 800);
+  updateLiveAutoSaveBadges("SAVING", targetUNo ? `U.No: ${targetUNo} • ${delayMs}ms` : `${delayMs}ms`);
   if (_partialAutoSaveTimers[key]) {
     clearTimeout(_partialAutoSaveTimers[key]);
   }
+  _partialAutoSaveMeta[key] = { storeType: storeType || "schoolExtra", targetUNo: targetUNo || "" };
   _partialAutoSaveTimers[key] = setTimeout(() => {
-    try {
-      if (storeType === "examResultAnalysis2026") {
-        if (typeof pushCloudUpdate === "function") {
-          pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `Auto-Saved Result Analysis [${targetUNo || "ALL"}]`, targetUNo);
-        }
-      } else {
-        if (typeof pushCloudUpdate === "function") {
-          pushCloudUpdate("schoolExtra", schoolExtraDataStore, `Auto-Saved School Data [${targetUNo || "ALL"}]`, targetUNo);
-        }
-      }
-      updateLiveAutoSaveBadges("SAVED");
-    } catch (e) {
-      console.error("Partial auto-save sync error:", e);
-    }
-  }, 650);
+    executeDebouncedPartialCloudSyncNow(storeType, targetUNo);
+  }, delayMs);
+}
+
+if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+  window.addEventListener("pagehide", flushAllPendingDebouncedCloudSyncs);
 }
 
 // Attach global delegated input/change listener on #viewSchool and #ebsStaffProfileModal
