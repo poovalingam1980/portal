@@ -6873,9 +6873,12 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </select>
 </div>
 </div>
-<div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px; border-top:1px solid #e2e8f0; padding-top:14px;">
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:14px; border-top:1px solid #e2e8f0; padding-top:14px;">
+<button type="button" class="btn btn-outline" onclick="adminDirectDeleteStaffFromEditModal()" style="border-color:#fca5a5; background:#fef2f2; color:#dc2626; font-weight:900; padding:9px 14px;">🗑️ இப்பணியாளரை உடனடியாக நீக்கு (Delete Staff)</button>
+<div style="display:flex; gap:10px; align-items:center;">
 <button type="button" class="btn btn-outline" onclick="closeAdminEditStaffModal()">❌ ரத்து செய் (Cancel)</button>
 <button type="submit" class="btn btn-success" style="font-weight:800; padding:10px 20px;">💾 மாற்றங்களைச் சேமி (Update Staff Details)</button>
+</div>
 </div>
 </form>
 </div>
@@ -7452,8 +7455,8 @@ let isPortalInitializing = true;
 let fbLiveActivityLog = [];
 let currentSchoolTabKey = "staffStrength";
 const _firebaseMemoryKvStore = {};
-const _SESSION_ONLY_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ACTIVE_UI_STATE"]);
-const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1", "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", "CEOSVG_SCHOOL_EXTRA_V6", "CEOSVG_VERIFIED_OTP_VAULT_V1", "CEOSVG_MASTER_SCHOOLS", "CEOSVG_SCHOOL_AUTH", "CEOSVG_DELETE_REQUESTS", "CEOSVG_DELETED_STAFF_ARCHIVE", "CEOSVG_CIRCULARS", "CEOSVG_STAFF_OVERRIDES", "CEOSVG_AUTO_BACKUP_CFG_V1", "CEOSVG_AUTO_BACKUP_HISTORY_V1"]);
+const _SESSION_ONLY_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ACTIVE_UI_STATE", "CEOSVG_ACTIVE_OFFICER_USER"]);
+const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_OFFICE_USERS_RBAC_V1", "CEOSVG_OFFICE_USERS_INIT_V1", "CEOSVG_DELETED_SCHOOL_UNOS_V1", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1", "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", "CEOSVG_SCHOOL_EXTRA_V6", "CEOSVG_VERIFIED_OTP_VAULT_V1", "CEOSVG_MASTER_SCHOOLS", "CEOSVG_SCHOOL_AUTH", "CEOSVG_DELETE_REQUESTS", "CEOSVG_DELETED_STAFF_ARCHIVE", "CEOSVG_CIRCULARS", "CEOSVG_STAFF_OVERRIDES", "CEOSVG_AUTO_BACKUP_CFG_V1", "CEOSVG_AUTO_BACKUP_HISTORY_V1"]);
 try {
 if (typeof localStorage !== "undefined") {
 Object.keys(localStorage).forEach(k => {
@@ -7750,6 +7753,12 @@ function deepMergeSchoolExtraPreserveOtp(existingExt, incomingExt, uNo) {
     }
     const exProfiles = (exEbs.staffProfiles && typeof exEbs.staffProfiles === "object") ? exEbs.staffProfiles : {};
     const incProfiles = (incEbs.staffProfiles && typeof incEbs.staffProfiles === "object") ? incEbs.staffProfiles : {};
+    const remUnion = Array.from(new Set([
+      ...(Array.isArray(exEbs.removedStaffIds) ? exEbs.removedStaffIds.map(x => String(x).trim()) : []),
+      ...(Array.isArray(incEbs.removedStaffIds) ? incEbs.removedStaffIds.map(x => String(x).trim()) : [])
+    ])).filter(Boolean);
+    merged.ebs2026.removedStaffIds = remUnion;
+
     const allSids = new Set([...Object.keys(exProfiles), ...Object.keys(incProfiles)]);
     const mergedProfiles = {};
     allSids.forEach(sid => {
@@ -7759,20 +7768,62 @@ function deepMergeSchoolExtraPreserveOtp(existingExt, incomingExt, uNo) {
   }
 
   if (Array.isArray(ex.staff) || Array.isArray(inc.staff)) {
+    const remSet = new Set(
+      (merged.ebs2026 && Array.isArray(merged.ebs2026.removedStaffIds))
+        ? merged.ebs2026.removedStaffIds.map(x => String(x).trim())
+        : []
+    );
+    const ovMap = (typeof safeGetStorage === "function" ? safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) : {}) || {};
+    Object.keys(ovMap).forEach(k => {
+      const ov = ovMap[k];
+      if (ov && (ov.deleted || (uNo && ov.uNo && String(ov.uNo).trim() !== String(uNo).trim()))) {
+        remSet.add(String(k).trim());
+      }
+    });
     const exStaffMap = {};
     if (Array.isArray(ex.staff)) {
       ex.staff.forEach(st => {
         const sid = String(st && (st.id || st.staffId) || "").trim();
-        if (sid) exStaffMap[sid] = st;
+        if (sid && !remSet.has(sid)) exStaffMap[sid] = st;
       });
     }
-    const baseStaffList = Array.isArray(inc.staff) && inc.staff.length > 0 ? inc.staff : (Array.isArray(ex.staff) ? ex.staff : []);
-    merged.staff = baseStaffList.map(st => {
-      if (!st || typeof st !== "object") return st;
+    const baseStaffList = Array.isArray(ex.staff) && ex.staff.length > 0 ? ex.staff : (Array.isArray(inc.staff) ? inc.staff : []);
+    const seenSids = new Set();
+    const combinedList = [];
+    baseStaffList.forEach(st => {
+      if (!st || typeof st !== "object") return;
+      const sid = String(st.id || st.staffId || "").trim();
+      if (!sid || remSet.has(sid) || seenSids.has(sid)) return;
+      seenSids.add(sid);
+      combinedList.push(st);
+    });
+    if (Array.isArray(inc.staff)) {
+      inc.staff.forEach(st => {
+        if (!st || typeof st !== "object") return;
+        const sid = String(st.id || st.staffId || "").trim();
+        if (!sid || remSet.has(sid) || seenSids.has(sid)) return;
+        seenSids.add(sid);
+        combinedList.push(st);
+      });
+    }
+    merged.staff = combinedList.map(st => {
       const sid = String(st.id || st.staffId || "").trim();
       const oldSt = exStaffMap[sid] || {};
+      const ov = ovMap[sid] || {};
       const ebsProf = (merged.ebs2026 && merged.ebs2026.staffProfiles && merged.ebs2026.staffProfiles[sid]) ? merged.ebs2026.staffProfiles[sid] : {};
-      return deepMergeStaffProfilePreserveOtp(Object.assign({}, oldSt, st), ebsProf, sid, uNo);
+      const mergedSt = deepMergeStaffProfilePreserveOtp(Object.assign({}, st, oldSt), ebsProf, sid, uNo);
+      if (ov && !ov.deleted) {
+        if (ov.name) mergedSt.name = ov.name;
+        if (ov.nameTa) mergedSt.nameTa = ov.nameTa;
+        if (ov.desig) mergedSt.desig = ov.desig;
+        if (ov.gender) mergedSt.gender = ov.gender;
+        if (ov.dob) mergedSt.dob = ov.dob;
+        if (ov.subject) mergedSt.subject = ov.subject;
+        if (ov.qualification) mergedSt.qualification = ov.qualification;
+        if (ov.nature) mergedSt.nature = ov.nature;
+        if (ov.mobile) mergedSt.mobile = ov.mobile;
+      }
+      return mergedSt;
     });
   }
   return merged;
@@ -8401,6 +8452,9 @@ function sanitizeAllPortalStores() {
 if (!Array.isArray(masterSchools)) {
 masterSchools = Object.values(masterSchools || {});
 }
+const deletedSchoolUNos = new Set(
+  (safeGetStorage("CEOSVG_DELETED_SCHOOL_UNOS_V1", []) || []).map(x => String(x).trim()).filter(Boolean)
+);
 const validInitUNos = new Set(
 (typeof INITIAL_MASTER_SCHOOLS !== "undefined" && Array.isArray(INITIAL_MASTER_SCHOOLS))
 ? INITIAL_MASTER_SCHOOLS.map(s => String(s && s.uNo || "").trim()).filter(Boolean)
@@ -8410,7 +8464,8 @@ const seenUNos = new Set();
 masterSchools = masterSchools.filter(s => {
 if (!s || typeof s !== "object" || !s.uNo || String(s.uNo) === "undefined") return false;
 const u = String(s.uNo).trim();
-if (validInitUNos.size > 0 && !validInitUNos.has(u)) return false;
+if (deletedSchoolUNos.has(u)) return false;
+if (validInitUNos.size > 0 && !validInitUNos.has(u) && !s.adminEditedV1) return false;
 if (seenUNos.has(u)) return false;
 seenUNos.add(u);
 return true;
@@ -8418,7 +8473,8 @@ return true;
 if (typeof INITIAL_MASTER_SCHOOLS !== "undefined" && Array.isArray(INITIAL_MASTER_SCHOOLS)) {
 const existingUNos = new Set(masterSchools.map(s => String(s.uNo).trim()));
 INITIAL_MASTER_SCHOOLS.forEach(initSch => {
-if (initSch && initSch.uNo && !existingUNos.has(String(initSch.uNo).trim())) {
+const initU = initSch && initSch.uNo ? String(initSch.uNo).trim() : "";
+if (initU && !existingUNos.has(initU) && !deletedSchoolUNos.has(initU)) {
 masterSchools.push(JSON.parse(JSON.stringify(initSch)));
 }
 });
@@ -8441,7 +8497,7 @@ if (uKey === "952") sch.mgmt1 = "6CB";
 if ((uKey === "901" || uKey === "902" || uKey === "903") && sch.mgmt1 !== "4CG") sch.mgmt1 = "4CG";
 if ((uKey === "911" || uKey === "912") && sch.mgmt1 !== "5IC") sch.mgmt1 = "5IC";
 if (Number(uKey) >= 951 && Number(uKey) <= 971 && sch.mgmt1 !== "6CB") sch.mgmt1 = "6CB";
-if (typeof DUPLICATE_DGE_SCHOOL_MASTER_FIXES === "object" && DUPLICATE_DGE_SCHOOL_MASTER_FIXES[uKey]) {
+if (!sch.adminEditedV1 && typeof DUPLICATE_DGE_SCHOOL_MASTER_FIXES === "object" && DUPLICATE_DGE_SCHOOL_MASTER_FIXES[uKey]) {
 const fx = DUPLICATE_DGE_SCHOOL_MASTER_FIXES[uKey];
 if (fx.dgeNo) sch.dgeNo = fx.dgeNo;
 if (fx.block) sch.block = fx.block;
@@ -11103,6 +11159,33 @@ if (!sid || existingIds.has(sid) || remSet.has(sid)) return;
 extra.staff.push(buildPortalStaffRecordFromEmisRow(r, pool, s));
 existingIds.add(sid);
 });
+}
+// Always purge any removed/deleted/transferred staff from extra.staff and apply overrides!
+if (Array.isArray(extra.staff)) {
+  extra.staff = extra.staff.filter(st => {
+    if (!st) return false;
+    const sid = String(st.id || st.staffId || "").trim();
+    if (!sid) return false;
+    if (remSet.has(sid)) return false;
+    const ov = ovMap[sid];
+    if (ov && (ov.deleted || (ov.uNo && String(ov.uNo).trim() !== uNo))) return false;
+    if (ov) {
+      if (ov.name) st.name = ov.name;
+      if (ov.nameTa) st.nameTa = ov.nameTa;
+      if (ov.desig) st.desig = normalizeCanonicalStaffDesignation(ov.desig);
+      if (ov.gender) st.gender = ov.gender;
+      if (ov.dob) st.dob = ov.dob;
+      if (ov.subject) st.subject = ov.subject;
+      if (ov.qualification) st.qualification = ov.qualification;
+      if (ov.nature) st.nature = ov.nature;
+      if (ov.dojService) st.dojService = ov.dojService;
+      if (ov.dojPresPost) st.dojPresPost = ov.dojPresPost;
+      if (ov.dojSchool) st.dojSchool = ov.dojSchool;
+      if (ov.unitTransferDate !== undefined) st.unitTransferDate = ov.unitTransferDate;
+      if (ov.mobile) st.mobile = ov.mobile;
+    }
+    return true;
+  });
 }
 }
 }
@@ -14055,10 +14138,14 @@ showToast("✅ மாணவர் எண்ணிக்கை விவரங்
 function addStaffMemberToSchool(event) {
 event.preventDefault();
 if (!activeSchoolSession) return;
-const extra = getSchoolExtra(activeSchoolSession.uNo);
-const editId = (document.getElementById("stfEditId") || {}).value || "";
+const uNo = String(activeSchoolSession.uNo || "").trim();
+const extra = getSchoolExtra(uNo);
+initSchoolStaffFromEmis(activeSchoolSession, extra);
+const editId = String((document.getElementById("stfEditId") || {}).value || "").trim();
+const newId = editId || ("STF-" + Date.now());
 const stf = {
-id: editId || ("STF-" + Date.now()),
+id: newId,
+staffId: newId,
 prefix: document.getElementById("stfPrefix").value,
 name: document.getElementById("stfName").value.trim(),
 gender: document.getElementById("stfGender").value,
@@ -14071,16 +14158,51 @@ campDuty: document.getElementById("stfCampDuty").value,
 campOption: document.getElementById("stfCampOption").value,
 mobile: document.getElementById("stfMobile").value.trim()
 };
+if (!extra.ebs2026) extra.ebs2026 = {};
+if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+extra.ebs2026.staffProfiles[newId] = Object.assign({}, extra.ebs2026.staffProfiles[newId] || {}, {
+  staffId: newId,
+  prefix: stf.prefix,
+  name: stf.name,
+  gender: stf.gender,
+  desig: stf.desig,
+  subject: stf.subject,
+  nature: stf.nature,
+  mobile: stf.mobile
+});
+const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+staffOverrides[newId] = Object.assign({}, staffOverrides[newId] || {}, {
+  staffId: newId,
+  uNo: uNo,
+  name: stf.name,
+  gender: stf.gender,
+  desig: stf.desig,
+  subject: stf.subject,
+  nature: stf.nature,
+  mobile: stf.mobile,
+  updatedAt: new Date().toISOString()
+});
+window._activeSyncTargetUNo = uNo;
+safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
 if (editId) {
-const idx = extra.staff.findIndex(item => item.id === editId);
+const idx = extra.staff.findIndex(item => String(item.id || item.staffId) === editId);
 if (idx >= 0) {
 extra.staff[idx] = Object.assign({}, extra.staff[idx], stf);
 }
+if (Array.isArray(extra.ebs2026.addedStaff)) {
+  const aIdx = extra.ebs2026.addedStaff.findIndex(item => String(item.id || item.staffId) === editId);
+  if (aIdx >= 0) extra.ebs2026.addedStaff[aIdx] = Object.assign({}, extra.ebs2026.addedStaff[aIdx], stf);
+}
 showToast(`✅ ஆசிரியர் / பணியாளர் (${stf.name}) விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!`, "#22c55e");
 } else {
+stf.isAddedEbs = true;
 extra.staff.push(stf);
+if (!Array.isArray(extra.ebs2026.addedStaff)) extra.ebs2026.addedStaff = [];
+extra.ebs2026.addedStaff.push(Object.assign({}, stf));
 showToast(`✅ புதிய ஆசிரியர் / பணியாளர் (${stf.name}) விவரம் சேர்க்கப்பட்டது!`, "#22c55e");
 }
+districtFlattenedStaffCache = null;
+window._activeSyncTargetUNo = uNo;
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 cancelEditStaffMember();
 renderSchoolStaffTable(extra);
@@ -14089,7 +14211,8 @@ if (activeSchoolSession) renderSchoolStaffStrengthUI(activeSchoolSession);
 function editStaffMember(staffId) {
 if (!activeSchoolSession) return;
 const extra = getSchoolExtra(activeSchoolSession.uNo);
-const st = extra.staff.find(item => item.id === staffId);
+initSchoolStaffFromEmis(activeSchoolSession, extra);
+const st = (extra.staff || []).find(item => String(item.id || item.staffId) === String(staffId));
 if (!st) return;
 document.getElementById("stfEditId").value = st.id;
 document.getElementById("stfPrefix").value = st.prefix || "திரு.";
@@ -14681,7 +14804,10 @@ tbody.innerHTML = list.map((s, idx) => `
           <div style="color:#0284c7; font-weight:700;">${s.mobile || "-"}</div>
         </td>
         <td style="white-space:nowrap;">
-          <button type="button" class="btn btn-primary btn-sm" onclick="adminEditSchool('${s.uNo}')">✏️ திருத்து</button>
+          <div style="display:flex; gap:5px; align-items:center;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="adminEditSchool('${s.uNo}')">✏️ திருத்து</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="adminDeleteSchoolFromMaster('${s.uNo}')" style="border-color:#fca5a5; background:#fef2f2; color:#dc2626; font-weight:800;" title="இப்பள்ளியைப் பட்டியலிலிருந்து நீக்குக">🗑️</button>
+          </div>
         </td>
       </tr>
     `).join("");
@@ -14740,6 +14866,22 @@ return;
 s.isAdminInspection = true;
 loginAsSchool(s);
 }
+function adminDeleteSchoolFromMaster(uNo) {
+  uNo = String(uNo || "").trim();
+  if (!uNo) return;
+  const idx = masterSchools.findIndex(s => String(s.uNo) === uNo);
+  if (idx === -1) return;
+  const removed = masterSchools.splice(idx, 1)[0];
+  const delList = Array.from(new Set([...(safeGetStorage("CEOSVG_DELETED_SCHOOL_UNOS_V1", []) || []).map(String), uNo]));
+  safeSetStorage("CEOSVG_DELETED_SCHOOL_UNOS_V1", delList);
+  window._activeSyncTargetUNo = uNo;
+  safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
+  populateAllDynamicDropdowns();
+  updateAllSummaryCounters();
+  renderAdminDirectoryTable();
+  renderPublicQuickFinder();
+  showToast(`🗑️ [${uNo}] ${removed.nameTa || removed.nameEn} பள்ளி பட்டியலிலிருந்து நீக்கப்பட்டது!`, "#dc2626");
+}
 function adminEditSchool(uNo) {
 const s = findSchoolByUNoOrUdise(uNo);
 if (!s) return;
@@ -14797,8 +14939,12 @@ mgmt2: document.getElementById("admAddMgmt2").value,
 mgmt3: document.getElementById("admAddMgmt3").value,
 hmName: document.getElementById("admAddHmEn").value.trim(),
 hmTa: document.getElementById("admAddHmTa").value.trim(),
-mobile: document.getElementById("admAddMobile").value.trim()
+mobile: document.getElementById("admAddMobile").value.trim(),
+adminEditedV1: true,
+updatedAt: Date.now()
 };
+const delList = (safeGetStorage("CEOSVG_DELETED_SCHOOL_UNOS_V1", []) || []).filter(x => String(x) !== String(uNo));
+safeSetStorage("CEOSVG_DELETED_SCHOOL_UNOS_V1", delList);
 const existingIdx = masterSchools.findIndex(s => String(s.uNo) === uNo || String(s.udiseNo) === udise);
 if (existingIdx >= 0) {
 newSchool.sn = masterSchools[existingIdx].sn;
@@ -14992,6 +15138,8 @@ email: existing.email || s.email || "",
 phone: existing.phone || s.mobile || "",
 hmName: existing.hmName || s.hmName || "",
 otpVerified: true,
+explicitAdminReset: false,
+updatedAt: Date.now(),
 registeredAt: new Date().toLocaleString("en-IN")
 };
 window._activeSyncTargetUNo = String(s.uNo);
@@ -15030,6 +15178,8 @@ email: existing.email || s.email || "",
 phone: existing.phone || s.mobile || "",
 hmName: existing.hmName || s.hmName || "",
 otpVerified: false,
+explicitAdminReset: true,
+updatedAt: Date.now(),
 registeredAt: ""
 };
 if (activeSchoolSession && String(activeSchoolSession.uNo) === String(s.uNo)) {
@@ -17682,16 +17832,39 @@ delete extObj.students;
 schoolExtraDataStore[uKey] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uKey], extObj, uKey);
 }
 });
+} else if (key === "CEOSVG_OFFICE_USERS_RBAC_V1") {
+  const incomingList = Array.isArray(val) ? val : (val && typeof val === "object" ? Object.values(val).filter(Boolean) : null);
+  if (incomingList) {
+    _officeUsersStoreCache = incomingList;
+    safeSetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", _officeUsersStoreCache, true);
+    safeSetStorage("CEOSVG_OFFICE_USERS_INIT_V1", true, true);
+    if (typeof renderAdminOfficeUsersDashboard === "function") renderAdminOfficeUsersDashboard();
+  }
+} else if (key === "CEOSVG_DELETED_SCHOOL_UNOS_V1" && Array.isArray(val)) {
+  safeSetStorage("CEOSVG_DELETED_SCHOOL_UNOS_V1", val, true);
 } else if (key === "CEOSVG_SCHOOL_AUTH" && typeof val === "object") {
 Object.keys(val).forEach(uKey => {
   const rec = val[uKey];
   if (!rec) return;
   const cur = schoolAuthStore[uKey];
+  if (cur && Number(cur.updatedAt || 0) > Number(rec.updatedAt || 0)) return;
+  if (cur && cur.explicitAdminReset && !rec.explicitAdminReset && Number(cur.updatedAt || 0) >= Number(rec.updatedAt || 0)) return;
   if (cur && cur.otpVerified && cur.password && !rec.password && !rec.explicitAdminReset) return;
   schoolAuthStore[uKey] = Object.assign({}, cur || {}, rec);
 });
 } else if (key === "CEOSVG_DELETE_REQUESTS" && Array.isArray(val)) {
-staffDeleteRequests = val;
+  const curReqs = Array.isArray(staffDeleteRequests) ? staffDeleteRequests : [];
+  const byReqId = {};
+  val.forEach(r => { if (r && r.reqId) byReqId[r.reqId] = r; });
+  curReqs.forEach(r => {
+    if (!r || !r.reqId) return;
+    const rem = byReqId[r.reqId];
+    if (!rem || (r.status !== "PENDING" && rem.status === "PENDING")) {
+      byReqId[r.reqId] = r;
+    }
+  });
+  staffDeleteRequests = Object.values(byReqId);
+  safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests, true);
 } else if (key === "CEOSVG_DELETED_STAFF_ARCHIVE" && Array.isArray(val)) {
 deletedStaffArchiveStore = val;
 } else if (key === "CEOSVG_CIRCULARS" && Array.isArray(val)) {
@@ -17753,6 +17926,18 @@ if (typeof updateDignitaryStorageStatusBadge === "function") updateDignitaryStor
 otherExamsConfigStore = val;
 if (typeof renderAdminExamCentresTable === "function") renderAdminExamCentresTable();
 } else if (key === "CEOSVG_STAFF_OVERRIDES" && val && typeof val === "object") {
+const curOv = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+const mergedOv = Object.assign({}, val);
+Object.keys(curOv).forEach(sid => {
+  const loc = curOv[sid];
+  const rem = mergedOv[sid];
+  if (!rem) {
+    mergedOv[sid] = loc;
+  } else if (loc && (loc.deleted || String(loc.updatedAt || "") >= String(rem.updatedAt || ""))) {
+    mergedOv[sid] = Object.assign({}, rem, loc);
+  }
+});
+safeSetStorage("CEOSVG_STAFF_OVERRIDES", mergedOv, true);
 districtFlattenedStaffCache = null;
 } else if (key === "CEOSVG_EMIS_STUDENT_DATA" && typeof val === "object" && typeof EMIS_STUDENT_DATA !== "undefined") {
 if (val.schoolEnrollments && String(val.version) === "3.8") {
@@ -18047,7 +18232,13 @@ if (rootData.master_schools_by_uno && typeof rootData.master_schools_by_uno === 
 mergeSchoolsIntoMasterList(Object.values(rootData.master_schools_by_uno), true);
 safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
 }
-if (rootData.stores && rootData.stores.CEOSVG_SCHOOL_EXTRA_V6 && typeof rootData.stores.CEOSVG_SCHOOL_EXTRA_V6 === "object") {
+if (rootData.stores && rootData.stores.CEOSVG_STAFF_OVERRIDES && typeof rootData.stores.CEOSVG_STAFF_OVERRIDES === "object") {
+  reloadInMemoryStoreFromKey("CEOSVG_STAFF_OVERRIDES", rootData.stores.CEOSVG_STAFF_OVERRIDES);
+}
+if (rootData.stores && rootData.stores.CEOSVG_DELETE_REQUESTS && Array.isArray(rootData.stores.CEOSVG_DELETE_REQUESTS)) {
+  reloadInMemoryStoreFromKey("CEOSVG_DELETE_REQUESTS", rootData.stores.CEOSVG_DELETE_REQUESTS);
+}
+if (!rootData.school_extra && rootData.stores && rootData.stores.CEOSVG_SCHOOL_EXTRA_V6 && typeof rootData.stores.CEOSVG_SCHOOL_EXTRA_V6 === "object") {
   reloadInMemoryStoreFromKey("CEOSVG_SCHOOL_EXTRA_V6", rootData.stores.CEOSVG_SCHOOL_EXTRA_V6);
 }
 if (rootData.school_extra && typeof rootData.school_extra === "object") {
@@ -18065,11 +18256,11 @@ schoolExtraDataStore[uKey] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStor
 }
 });
 }
-if (rootData.stores && rootData.stores.CEOSVG_SCHOOL_AUTH && typeof rootData.stores.CEOSVG_SCHOOL_AUTH === "object") {
-  reloadInMemoryStoreFromKey("CEOSVG_SCHOOL_AUTH", rootData.stores.CEOSVG_SCHOOL_AUTH);
-}
 if (rootData.school_auth && typeof rootData.school_auth === "object") {
   reloadInMemoryStoreFromKey("CEOSVG_SCHOOL_AUTH", rootData.school_auth);
+  safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+} else if (rootData.stores && rootData.stores.CEOSVG_SCHOOL_AUTH && typeof rootData.stores.CEOSVG_SCHOOL_AUTH === "object") {
+  reloadInMemoryStoreFromKey("CEOSVG_SCHOOL_AUTH", rootData.stores.CEOSVG_SCHOOL_AUTH);
   safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
 }
 harvestAndRestoreAllVerifiedOtps(rootData.ebs_2026_27 || null, rootData.verified_otp_vault || null);
@@ -20904,9 +21095,14 @@ function renderAdminStaffSingleFieldHtml(st, fieldKey, overallRank, showLabelMod
           <button type="button" class="btn btn-primary btn-sm" onclick="openAdminEbsStaffProfileEditorFromMaster('${st.uNo}', '${st.staffId}')" style="background:#7c3aed; border-color:#6d28d9; font-size:0.85em; padding:3px 8px; width:100%; font-weight:900;" title="EBS Form-III / Form-IV முழு விவரங்களையும் திருத்துக">
             📋 EBS F3 திருத்து
           </button>
-          <button type="button" class="btn btn-outline btn-sm" onclick="openAdminEditStaffModal('${st.staffId}')" style="font-size:0.84em; padding:2px 7px; width:100%; font-weight:800; background:#fff; color:#0284c7; border-color:#93c5fd;" title="பள்ளி மாறுதல் / அலகு மாறுதல் / அடிப்படை விவரம் திருத்துக">
-            ✏️ விரைவுத் திருத்தம்
-          </button>
+          <div style="display:flex; gap:4px; width:100%;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="openAdminEditStaffModal('${st.staffId}')" style="font-size:0.82em; padding:2px 6px; flex:1; font-weight:800; background:#fff; color:#0284c7; border-color:#93c5fd;" title="பள்ளி மாறுதல் / அலகு மாறுதல் / அடிப்படை விவரம் திருத்துக">
+              ✏️ திருத்து
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="adminDirectDeleteStaff('${st.uNo}', '${st.staffId}')" style="font-size:0.82em; padding:2px 6px; font-weight:900; background:#fef2f2; color:#dc2626; border-color:#fca5a5;" title="இப்பணியாளரை உடனடியாக நீக்குக">
+              🗑️
+            </button>
+          </div>
         </div>
       `;
     default: {
@@ -21214,6 +21410,7 @@ window._activeSyncTargetUNo = String(targetUNo);
 safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
 const extra = getSchoolExtra(targetUNo);
 if (extra) {
+if (targetSch) initSchoolStaffFromEmis(targetSch, extra);
 if (!Array.isArray(extra.staff)) extra.staff = [];
 if (!extra.ebs2026) extra.ebs2026 = {};
 if (Array.isArray(extra.ebs2026.removedStaffIds)) {
@@ -21253,7 +21450,83 @@ safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 getDistrictAllStaffList(true);
 closeAdminEditStaffModal();
 applyAdminStaffFiltersAndRender();
+if (typeof renderSchoolEbsModule === "function") renderSchoolEbsModule();
+if (typeof renderAdminEbsMasterUI === "function") renderAdminEbsMasterUI();
 showToast(`✅ ஆசிரியர் "${updatedData.name}" (Staff ID: ${staffId}) விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!`, "#22c55e");
+}
+
+function adminDirectDeleteStaff(passedUNo, passedStaffId, reasonText) {
+  const sid = String(passedStaffId || "").trim();
+  if (!sid) return;
+  const allList = getDistrictAllStaffList();
+  const stMatch = allList.find(x => String(x.staffId) === sid);
+  const fromUNo = String(passedUNo || (stMatch && stMatch.uNo) || "").trim();
+  const staffName = (stMatch && (stMatch.nameTa || stMatch.name)) || sid;
+  const extraFrom = fromUNo ? getSchoolExtra(fromUNo) : null;
+  if (extraFrom && fromUNo) {
+    const schObj = (masterSchools || []).find(s => String(s.uNo) === fromUNo);
+    if (schObj) initSchoolStaffFromEmis(schObj, extraFrom);
+    const existingProf = (extraFrom.ebs2026 && extraFrom.ebs2026.staffProfiles && extraFrom.ebs2026.staffProfiles[sid])
+      ? Object.assign({}, extraFrom.ebs2026.staffProfiles[sid])
+      : {};
+    const existingSt = (Array.isArray(extraFrom.staff) && extraFrom.staff.find(x => String(x.id || x.staffId) === sid)) || stMatch || {};
+    if (typeof archiveDeletedStaffRecord === "function") {
+      archiveDeletedStaffRecord(fromUNo, sid, existingSt, existingProf, {
+        reasonCategory: "நிர்வாகி நேரடி நீக்கம் (Admin Direct Delete)",
+        reasonDetail: reasonText || "மாவட்ட நிர்வாகியால் நேரடியாகப் பட்டியலிலிருந்து நீக்கப்பட்டது",
+        reason: reasonText || "மாவட்ட நிர்வாகியால் நேரடியாகப் பட்டியலிலிருந்து நீக்கப்பட்டது",
+        toUNo: "",
+        toSchoolName: "",
+        reqId: "ADM-DEL-" + Date.now().toString().slice(-5),
+        formType: (existingSt.isTeaching === false) ? "F4" : "F3",
+        deletedBy: "CEO_ADMIN"
+      });
+    }
+    if (!extraFrom.ebs2026) extraFrom.ebs2026 = {};
+    if (!Array.isArray(extraFrom.ebs2026.removedStaffIds)) extraFrom.ebs2026.removedStaffIds = [];
+    if (!extraFrom.ebs2026.removedStaffIds.includes(sid)) {
+      extraFrom.ebs2026.removedStaffIds.push(sid);
+    }
+    if (Array.isArray(extraFrom.staff)) {
+      extraFrom.staff = extraFrom.staff.filter(x => String(x.id || x.staffId) !== sid);
+    }
+    if (Array.isArray(extraFrom.ebs2026.addedStaff)) {
+      extraFrom.ebs2026.addedStaff = extraFrom.ebs2026.addedStaff.filter(x => String(x.id || x.staffId) !== sid);
+    }
+    if (typeof recalcSchoolEbsF1StaffCountsFromList === "function") {
+      recalcSchoolEbsF1StaffCountsFromList(fromUNo);
+    }
+  }
+  const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+  staffOverrides[sid] = Object.assign({}, staffOverrides[sid] || {}, {
+    staffId: sid,
+    uNo: fromUNo,
+    deleted: true,
+    deletedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+  if (fromUNo) window._activeSyncTargetUNo = fromUNo;
+  safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
+  if (fromUNo) window._activeSyncTargetUNo = fromUNo;
+  safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+
+  districtFlattenedStaffCache = null;
+  getDistrictAllStaffList(true);
+  updateAllSummaryCounters();
+  if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
+  if (typeof renderSchoolEbsModule === "function") renderSchoolEbsModule();
+  if (typeof renderAdminEbsMasterUI === "function") renderAdminEbsMasterUI();
+  if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+  if (extraFrom && typeof renderSchoolStaffTable === "function") renderSchoolStaffTable(extraFrom);
+  showToast(`🗑️ பணியாளர் "${staffName}" (ID: ${sid}) பட்டியலிலிருந்து நிரந்தரமாக நீக்கப்பட்டார்!`, "#dc2626");
+}
+
+function adminDirectDeleteStaffFromEditModal() {
+  const sid = (document.getElementById("admEditStaffId")?.value || "").trim();
+  const uNo = (document.getElementById("admEditStaffSchool")?.value || "").trim();
+  if (!sid) return;
+  closeAdminEditStaffModal();
+  adminDirectDeleteStaff(uNo, sid, "நிர்வாகி திருத்தப் படிவத்திலிருந்து நேரடியாக நீக்கப்பட்டது");
 }
 function printSeniorityPanelReport() {
 const list = adminStaffFilteredList;
@@ -24137,6 +24410,15 @@ resolvedAt: ""
 };
 staffDeleteRequests.unshift(newReq);
 safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
+const isAdminActorNow = Boolean(
+  (document.body && document.body.classList.contains("admin-mode")) ||
+  (activeSchoolSession && (activeSchoolSession.isAdminInspection || activeSchoolSession._fromAdminEbs))
+);
+if (isAdminActorNow && typeof resolveAdminDeleteRequest === "function") {
+  closeDeleteRequestModal();
+  resolveAdminDeleteRequest(newReq.reqId, "APPROVED");
+  return;
+}
 updateAllSummaryCounters();
 renderSchoolStaffTable(extra);
 if (typeof renderSchoolEbsModule === "function") renderSchoolEbsModule();
@@ -25446,6 +25728,12 @@ if (storeType === "examResultAnalysis2026" || storeType === "CEOSVG_EXAM_RESULT_
   return;
 }
 
+if (storeType && storeType.startsWith("CEOSVG_") && storeType !== "CEOSVG_SCHOOL_EXTRA_V6") {
+  if (typeof triggerRealtimeSyncForStorageKey === "function") {
+    triggerRealtimeSyncForStorageKey(storeType, dataObj);
+  }
+  return;
+}
 if (typeof triggerRealtimeSyncForStorageKey === "function") {
   triggerRealtimeSyncForStorageKey("CEOSVG_SCHOOL_EXTRA_V6", dataObj || schoolExtraDataStore);
 }
@@ -25681,16 +25969,33 @@ dojSchool: r[12] || r[10] || ""
 });
 }
 if (!Array.isArray(extra.staff)) extra.staff = [];
-if (extra.ebs2026 && Array.isArray(extra.ebs2026.removedStaffIds) && extra.ebs2026.removedStaffIds.length > 0) {
-const remSet = new Set(extra.ebs2026.removedStaffIds.map(x => String(x).trim()));
-extra.staff = extra.staff.filter(x => !remSet.has(String(x && (x.id || x.staffId) || "").trim()));
+const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+const globalRemSet = new Set(
+  (extra.ebs2026 && Array.isArray(extra.ebs2026.removedStaffIds))
+    ? extra.ebs2026.removedStaffIds.map(x => String(x).trim())
+    : []
+);
+(staffDeleteRequests || []).forEach(req => {
+  if (req && req.status === "APPROVED" && String(req.uNo).trim() === uNo) {
+    if (req.emisId) globalRemSet.add(String(req.emisId).trim());
+    if (req.staffRecordId) globalRemSet.add(String(req.staffRecordId).trim());
+  }
+});
+Object.keys(staffOverrides).forEach(k => {
+  const ov = staffOverrides[k];
+  if (ov && (ov.deleted || (ov.uNo && String(ov.uNo).trim() !== uNo))) {
+    globalRemSet.add(String(k).trim());
+  }
+});
+if (globalRemSet.size > 0) {
+  extra.staff = extra.staff.filter(x => !globalRemSet.has(String(x && (x.id || x.staffId) || "").trim()));
 }
 if (extra.ebs2026 && Array.isArray(extra.ebs2026.addedStaff) && extra.ebs2026.addedStaff.length > 0) {
 const existingStaffIds = new Set(extra.staff.map(x => String(x && (x.id || x.staffId) || "").trim()).filter(Boolean));
 extra.ebs2026.addedStaff.forEach(addSt => {
 if (!addSt) return;
 const aid = String(addSt.id || addSt.staffId || "").trim();
-if (!aid) return;
+if (!aid || globalRemSet.has(aid)) return;
 if (!existingStaffIds.has(aid)) {
 extra.staff.push(Object.assign({}, addSt, { id: aid, staffId: aid }));
 existingStaffIds.add(aid);
@@ -25706,7 +26011,6 @@ if (addSt.isTempId) exItem.isTempId = true;
 }
 const uPrefix3 = String(uNo || "101").replace(/\D/g, "").padStart(3, "0").slice(0, 3);
 const tempIdRegex = new RegExp("^" + uPrefix3 + "00\\d{3}$");
-const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
 const isPrivSch = String(sch.mgmt1 || "").toUpperCase().trim() === "3P";
 const isAidedSch = String(sch.mgmt1 || "").toUpperCase().trim().startsWith("2");
 const list = (extra.staff || []).map(st => {
@@ -25715,10 +26019,14 @@ st.nature = normalizeStaffNatureBySchoolMgmt(st.nature, sch.mgmt1);
 const raw = rawMap[sid] || {};
 const ov = staffOverrides[sid] || {};
 const ebsProf = (extra.ebs2026 && extra.ebs2026.staffProfiles && extra.ebs2026.staffProfiles[sid]) ? extra.ebs2026.staffProfiles[sid] : {};
-const desigStr = normalizeCanonicalStaffDesignation(ov.desig || st.desig || raw.desig || "");
-const isTeach = (typeof st.isTeaching === "boolean")
-? st.isTeaching
-: (typeof raw.isTeaching === "boolean" ? raw.isTeaching : !/(JUNIOR ASSISTANT|LAB ASSISTANT|RECORD|WATCHMAN|OFFICE ASSISTANT|TYPIST|SCAVENGER|SWEEPER|WATER|GARDENER|LIBRARIAN|COOK)/i.test(desigStr));
+const desigStr = normalizeCanonicalStaffDesignation(ebsProf.desig || ov.desig || st.desig || raw.desig || "");
+const isTeach = (typeof ebsProf.isTeaching === "boolean")
+? ebsProf.isTeaching
+: (typeof ov.isTeaching === "boolean"
+  ? ov.isTeaching
+  : (typeof st.isTeaching === "boolean"
+    ? st.isTeaching
+    : (typeof raw.isTeaching === "boolean" ? raw.isTeaching : !/(JUNIOR ASSISTANT|LAB ASSISTANT|RECORD|WATCHMAN|OFFICE ASSISTANT|TYPIST|SCAVENGER|SWEEPER|WATER|GARDENER|LIBRARIAN|COOK)/i.test(desigStr))));
 const schMobClean = String(sch.mobile || "").replace(/\D/g, "").slice(-10);
 const stMobClean = String(st.mobile || "").replace(/\D/g, "").slice(-10);
 const personalStMob = (stMobClean && stMobClean !== schMobClean) ? stMobClean : "";
@@ -25727,29 +26035,29 @@ const isContractPost = /contract/i.test(resolvedNature);
 const resolvedTypeOfContract = isContractPost
 ? (ebsProf.typeOfContract || st.typeOfContract || (isPrivSch ? "Management / Self-Finance (நிர்வாகம் / சுயநிதி)" : "PTA (பெற்றோர் ஆசிரியர் கழகம்)"))
 : "";
-const resolvedNameEn = ov.name || st.name || raw.name || "";
-let resolvedNameTa = ebsProf.nameTa || raw.nameTa || st.nameTa || "";
+const resolvedNameEn = ebsProf.name || ov.name || st.name || raw.name || "";
+let resolvedNameTa = ebsProf.nameTa || ov.nameTa || st.nameTa || raw.nameTa || "";
 if (!resolvedNameTa && resolvedNameEn && typeof transliterateFullNameTanglishToTamil === "function") {
 resolvedNameTa = transliterateFullNameTanglishToTamil(resolvedNameEn);
 }
-const resolvedDob = ov.dob || st.dob || raw.dob || "";
+const resolvedDob = ebsProf.dob || ov.dob || st.dob || raw.dob || "";
 const ageDor = computeAgeAndDorFromDob(resolvedDob);
 const defaultFirstAppMode = isTeach
 ? (isAidedSch ? "Management" : "TRB")
 : (isAidedSch ? "Management" : (/(JUNIOR ASSISTANT|TYPIST|ASSISTANT|SUPERINTENDENT)/i.test(desigStr) ? "TNPSC" : "Employment Seniority"));
 return {
 staffId: sid,
-ifhrmsId: isContractPost ? "" : (ebsProf.ifhrmsId || raw.ifhrmsId || st.ifhrmsId || ""),
-prefix: ebsProf.prefix || raw.prefix || st.prefix || ((ov.gender || st.gender || raw.gender) === "Female" ? "திருமதி." : "திரு."),
+ifhrmsId: isContractPost ? "" : (ebsProf.ifhrmsId || ov.ifhrmsId || st.ifhrmsId || raw.ifhrmsId || ""),
+prefix: ebsProf.prefix || ov.prefix || st.prefix || raw.prefix || ((ebsProf.gender || ov.gender || st.gender || raw.gender) === "Female" ? "திருமதி." : "திரு."),
 name: resolvedNameEn,
 nameTa: resolvedNameTa,
-gender: ov.gender || st.gender || raw.gender || "Male",
+gender: ebsProf.gender || ov.gender || st.gender || raw.gender || "Male",
 dob: resolvedDob,
 age: ebsProf.age || st.age || ageDor.age26 || "",
 dor: ebsProf.dor || st.dor || ageDor.dor || "",
 desig: desigStr,
 qualification: ebsProf.qualification || ov.qualification || st.qualification || raw.qualification || "",
-subject: isTeach ? (ov.subject || st.subject || raw.subject || "-") : "-",
+subject: isTeach ? (ebsProf.subject || ov.subject || st.subject || raw.subject || "-") : "-",
 classTaught: st.classTaught || raw.classTaught || "-",
 nature: resolvedNature,
 typeOfContract: resolvedTypeOfContract,
@@ -30664,16 +30972,43 @@ targetObj.resPlace = prof.resPlace;
 targetObj.resDistrict = prof.resDistrict;
 targetObj.prefCamp = prof.prefCamp;
 };
+const schObjForInit = (masterSchools || []).find(m => String(m.uNo) === String(uNo)) || { uNo: String(uNo), mgmt1: "1G" };
+initSchoolStaffFromEmis(schObjForInit, extra);
 if (Array.isArray(extra.staff)) {
 const stItem = extra.staff.find(x => String(x.id || x.staffId) === String(staffId));
-syncStaffFields(stItem);
+if (stItem) syncStaffFields(stItem);
 }
 if (extra.ebs2026 && Array.isArray(extra.ebs2026.addedStaff)) {
 const addItem = extra.ebs2026.addedStaff.find(x => String(x.id || x.staffId) === String(staffId));
-syncStaffFields(addItem);
+if (addItem) syncStaffFields(addItem);
 }
+const staffOverrides = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+staffOverrides[String(staffId)] = Object.assign({}, staffOverrides[String(staffId)] || {}, {
+  staffId: String(staffId),
+  uNo: String(uNo),
+  name: nameEn || (staffOverrides[String(staffId)] && staffOverrides[String(staffId)].name) || "",
+  nameTa: prof.nameTa || (staffOverrides[String(staffId)] && staffOverrides[String(staffId)].nameTa) || "",
+  prefix: prof.prefix || "",
+  ifhrmsId: prof.ifhrmsId || "",
+  gender: gender,
+  dob: dob,
+  desig: desig ? normalizeCanonicalStaffDesignation(desig) : "",
+  qualification: qual,
+  subject: isTeaching ? subject : "-",
+  isTeaching: Boolean(isTeaching),
+  nature: prof.nature,
+  dojService: prof.dojService,
+  dojPresPost: prof.dojPresPost,
+  dojSchool: prof.dojSchool,
+  unitTransferDate: prof.unitTransferDate,
+  mobile: prof.mobile,
+  updatedAt: new Date().toISOString()
+});
+window._activeSyncTargetUNo = String(uNo);
+safeSetStorage("CEOSVG_STAFF_OVERRIDES", staffOverrides);
 recalcSchoolEbsF1StaffCountsFromList(uNo);
 districtFlattenedStaffCache = null;
+window._activeSyncTargetUNo = String(uNo);
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 closeEbsStaffProfileModal();
 if (document.body.classList.contains("admin-mode")) {
@@ -44249,29 +44584,30 @@ const DEFAULT_OFFICE_USERS_SEED = [
 ];
 
 function getOfficeUsersStore() {
-  if (Array.isArray(_officeUsersStoreCache) && _officeUsersStoreCache.length > 0) {
+  if (Array.isArray(_officeUsersStoreCache)) {
     return _officeUsersStoreCache;
   }
   const saved = safeGetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", null);
-  if (Array.isArray(saved) && saved.length > 0) {
-    _officeUsersStoreCache = saved;
+  const alreadyInit = safeGetStorage("CEOSVG_OFFICE_USERS_INIT_V1", false);
+  if (Array.isArray(saved) && (saved.length > 0 || alreadyInit)) {
+    _officeUsersStoreCache = saved.filter(Boolean);
   } else if (saved && typeof saved === "object" && Object.keys(saved).length > 0) {
     _officeUsersStoreCache = Object.values(saved).filter(Boolean);
   } else {
     _officeUsersStoreCache = JSON.parse(JSON.stringify(DEFAULT_OFFICE_USERS_SEED));
+    safeSetStorage("CEOSVG_OFFICE_USERS_INIT_V1", true, true);
     safeSetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", _officeUsersStoreCache, true);
   }
   return _officeUsersStoreCache;
 }
 
-function saveOfficeUsersStore() {
-  const list = getOfficeUsersStore();
-  safeSetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", list, true);
-  if (typeof pushCloudUpdate === "function") {
-    try {
-      pushCloudUpdate("CEOSVG_OFFICE_USERS_RBAC_V1", list, "Updated CEO Office Staff & DEO RBAC Accounts");
-    } catch (e) {}
+function saveOfficeUsersStore(optionalNewList) {
+  if (Array.isArray(optionalNewList)) {
+    _officeUsersStoreCache = optionalNewList.filter(Boolean);
   }
+  const list = getOfficeUsersStore();
+  safeSetStorage("CEOSVG_OFFICE_USERS_INIT_V1", true, true);
+  safeSetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", list);
   const badge = document.getElementById("admChooserOfficeUsersCountBadge");
   if (badge) {
     const activeCnt = list.filter(u => u && u.status !== "SUSPENDED").length;
@@ -44410,7 +44746,13 @@ function hasAdminModulePermission(modKey) {
 
 function hasAdminActionPermission(actionKey) {
   if (!activeAdminOfficerSession) return true; // CEO Super Admin has all action permissions
+  if (activeAdminOfficerSession._isSuperAdminPreview) return true; // Super Admin testing an officer session retains full override capability
+  if (activeAdminOfficerSession.rolePreset === "CEO_SUPER" || activeAdminOfficerSession.roleGroup === "CEO") return true;
   const act = activeAdminOfficerSession.actions || {};
+  if (actionKey === "canManageUsers") {
+    const allowedMods = Array.isArray(activeAdminOfficerSession.allowedModules) ? activeAdminOfficerSession.allowedModules : [];
+    if (allowedMods.includes("officeUsers")) return true;
+  }
   return Boolean(act[actionKey]);
 }
 
@@ -44598,6 +44940,8 @@ function resetOfficeUserFormForNew() {
   if (idInp) idInp.value = "";
   const titleEl = document.getElementById("admOfficeUserFormTitle");
   if (titleEl) titleEl.textContent = "புதிய அலுவலர் / அலுவலகப் பணியாளர் உள்நுழைவு & அதிகாரங்கள் உருவாக்கம்";
+  const card = document.getElementById("admOfficeUserFormCard");
+  if (card) card.style.borderColor = "#c084fc";
   ["ouNameTaInput", "ouNameEnInput", "ouMobileInput", "ouEmailInput", "ouUsernameInput", "ouPasswordInput", "ouPinInput"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = "";
@@ -44614,7 +44958,7 @@ function saveOfficeUserAccountFromForm() {
     showToast("⚠️ பயனர் கணக்குகள் மற்றும் அதிகாரங்களை மாற்றியமைக்க உங்களுக்கு அனுமதி இல்லை!", "#dc2626");
     return;
   }
-  const editId = (document.getElementById("ouEditUserIdInput")?.value || "").trim();
+  const editId = String(document.getElementById("ouEditUserIdInput")?.value || "").trim();
   const presetKey = document.getElementById("ouRolePresetSelect")?.value || "DEO_SECONDARY";
   const presetMeta = OFFICE_ROLE_PRESETS[presetKey] || OFFICE_ROLE_PRESETS["DEO_SECONDARY"];
   const nameTa = (document.getElementById("ouNameTaInput")?.value || "").trim();
@@ -44644,7 +44988,7 @@ function saveOfficeUserAccountFromForm() {
   }
 
   const list = getOfficeUsersStore();
-  const duplicate = list.find(u => u && String(u.username || "").toLowerCase() === username && u.id !== editId);
+  const duplicate = list.find(u => u && String(u.username || "").toLowerCase() === username && String(u.id) !== editId);
   if (duplicate) {
     showToast(`⚠️ "${username}" என்ற Username ஏற்கனவே மற்றொரு அலுவலருக்கு (${duplicate.nameTa || duplicate.nameEn}) வழங்கப்பட்டுள்ளது!`, "#dc2626");
     return;
@@ -44683,30 +45027,45 @@ function saveOfficeUserAccountFromForm() {
     status,
     allowedModules,
     actions,
-    updatedAt: nowStr
+    updatedAt: nowStr,
+    updatedTs: Date.now()
   };
 
   if (editId) {
-    const idx = list.findIndex(u => u && u.id === editId);
+    const idx = list.findIndex(u => u && String(u.id) === editId);
     if (idx !== -1) list[idx] = rec;
     else list.unshift(rec);
   } else {
     list.unshift(rec);
   }
 
-  saveOfficeUsersStore();
+  // If the edited user is currently active in officer session, update their live session immediately!
+  if (activeAdminOfficerSession && String(activeAdminOfficerSession.id) === String(rec.id)) {
+    const wasPreview = Boolean(activeAdminOfficerSession._isSuperAdminPreview);
+    activeAdminOfficerSession = Object.assign({}, rec, { _isSuperAdminPreview: wasPreview });
+    safeSetStorage("CEOSVG_ACTIVE_OFFICER_USER", activeAdminOfficerSession, true);
+    if (typeof applyActiveOfficerPermissionsToAdminUi === "function") applyActiveOfficerPermissionsToAdminUi();
+  }
+
+  saveOfficeUsersStore(list);
   renderAdminOfficeUsersDashboard();
   resetOfficeUserFormForNew();
-  showToast(`✅ [${rec.username}] ${rec.nameTa} — கடவுச்சொல் மற்றும் அதிகாரங்கள் வெற்றிகரமாகச் சேமிக்கப்பட்டன!`, "#16a34a");
+  showToast(editId ? `✅ [${rec.username}] ${rec.nameTa} — திருத்தங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டு சேமிக்கப்பட்டன!` : `✅ [${rec.username}] ${rec.nameTa} — புதிய பயனர் கணக்கு உருவாக்கப்பட்டது!`, "#16a34a");
 }
 
 function editOfficeUserAccount(userId) {
   const list = getOfficeUsersStore();
-  const u = list.find(x => x && x.id === userId);
-  if (!u) return;
+  const u = list.find(x => x && String(x.id) === String(userId));
+  if (!u) {
+    showToast("⚠️ பயனர் கணக்கு விவரம் காணப்படவில்லை!", "#dc2626");
+    return;
+  }
 
   const titleEl = document.getElementById("admOfficeUserFormTitle");
   if (titleEl) titleEl.textContent = `✏️ அலுவலர் / பணியாளர் கணக்கு & அதிகாரங்கள் திருத்தம்: ${u.nameTa || u.nameEn} (${u.username})`;
+
+  const card = document.getElementById("admOfficeUserFormCard");
+  if (card) card.style.borderColor = "#f59e0b";
 
   const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v !== undefined && v !== null ? v : ""; };
   setVal("ouEditUserIdInput", u.id);
@@ -44725,10 +45084,14 @@ function editOfficeUserAccount(userId) {
   setVal("ouStatusSelect", u.status || "ACTIVE");
 
   renderOfficeUserFormCheckboxes(u.allowedModules || [], u.actions || {});
-  const card = document.getElementById("admOfficeUserFormCard");
   if (card && typeof card.scrollIntoView === "function") {
     card.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+  const nameInp = document.getElementById("ouNameTaInput");
+  if (nameInp && typeof nameInp.focus === "function") {
+    setTimeout(() => nameInp.focus(), 120);
+  }
+  showToast(`✏️ [${u.username}] திருத்தப் படிவம் தயார் நிலையில் உள்ளது. மாற்றங்களைச் செய்து 'சேமி' பொத்தானை அழுத்தவும்.`, "#0284c7");
 }
 
 function toggleOfficeUserStatus(userId) {
@@ -44737,10 +45100,12 @@ function toggleOfficeUserStatus(userId) {
     return;
   }
   const list = getOfficeUsersStore();
-  const u = list.find(x => x && x.id === userId);
+  const u = list.find(x => x && String(x.id) === String(userId));
   if (!u) return;
   u.status = (u.status === "SUSPENDED") ? "ACTIVE" : "SUSPENDED";
-  saveOfficeUsersStore();
+  u.updatedAt = new Date().toLocaleDateString("en-IN");
+  u.updatedTs = Date.now();
+  saveOfficeUsersStore(list);
   renderAdminOfficeUsersDashboard();
   showToast(u.status === "ACTIVE" ? `🟢 [${u.username}] கணக்கு செயல்பாட்டிற்குக் கொண்டுவரப்பட்டது!` : `🔴 [${u.username}] கணக்கு தற்காலிகமாக நிறுத்தப்பட்டது!`, u.status === "ACTIVE" ? "#16a34a" : "#ea580c");
 }
@@ -44751,12 +45116,21 @@ function deleteOfficeUserAccount(userId) {
     return;
   }
   const list = getOfficeUsersStore();
-  const idx = list.findIndex(x => x && x.id === userId);
+  const idx = list.findIndex(x => x && String(x.id) === String(userId));
   if (idx === -1) return;
   const removed = list.splice(idx, 1)[0];
-  saveOfficeUsersStore();
+  if (activeAdminOfficerSession && String(activeAdminOfficerSession.id) === String(userId)) {
+    activeAdminOfficerSession = null;
+    safeSetStorage("CEOSVG_ACTIVE_OFFICER_USER", null, true);
+    if (typeof applyActiveOfficerPermissionsToAdminUi === "function") applyActiveOfficerPermissionsToAdminUi();
+  }
+  const editInp = document.getElementById("ouEditUserIdInput");
+  if (editInp && String(editInp.value) === String(userId)) {
+    resetOfficeUserFormForNew();
+  }
+  saveOfficeUsersStore(list);
   renderAdminOfficeUsersDashboard();
-  showToast(`🗑️ [${removed.username}] ${removed.nameTa || removed.nameEn} கணக்கு நீக்கப்பட்டது!`, "#dc2626");
+  showToast(`🗑️ [${removed.username}] ${removed.nameTa || removed.nameEn} கணக்கு நிரந்தரமாக நீக்கப்பட்டது!`, "#dc2626");
 }
 
 function toggleOfficeUserPassVisibility(userId) {
