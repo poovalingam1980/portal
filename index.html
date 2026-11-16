@@ -13607,24 +13607,7 @@ const newMobile = (document.getElementById("schFormMobile")?.value || "").trim()
 const newEmail = (document.getElementById("schFormEmail")?.value || "").trim().toLowerCase();
 const prevMobile = String(authRec.phone || s.mobile || "").trim();
 const prevEmail = String(authRec.email || s.email || "").trim().toLowerCase();
-const mobileChanged = newMobile !== prevMobile;
-const emailChanged = newEmail !== prevEmail;
-if ((mobileChanged || emailChanged) && !s.isAdminInspection) {
-const isAlreadyVerifiedForThese =
-_profileContactOtpSession.verified &&
-_profileContactOtpSession.uNo === s.uNo &&
-_profileContactOtpSession.newMobile === newMobile &&
-_profileContactOtpSession.newEmail === newEmail;
-if (!isAlreadyVerifiedForThese) {
-const otpBox = document.getElementById("schProfileContactOtpBox");
-if (otpBox) {
-otpBox.style.display = "block";
-otpBox.scrollIntoView({ behavior: "smooth", block: "center" });
-}
-showToast("🔐 கைபேசி எண் / Email மாற்றப்பட்டுள்ளது. OTP அனுப்பி உறுதிப்படுத்தவும்!", "#f59e0b");
-return;
-}
-}
+// Mobile & Email OTP verification is optional (கட்டாயமல்ல) — allow direct profile save
 s.dgeNo = document.getElementById("schFormDge").value.trim();
 s.estDate = (document.getElementById("schFormEstDate") ? document.getElementById("schFormEstDate").value.trim() : "");
 s.hssUpgradedDate = (document.getElementById("schFormHssUpgradedDate") ? document.getElementById("schFormHssUpgradedDate").value.trim() : "");
@@ -18798,7 +18781,7 @@ function getDistrictAllStaffList(forceRefresh) {
       const pracParts = [ebsProf.pracSslc1, ebsProf.pracHsc1, ebsProf.pracHsc2].filter(x => x && x !== "Not Applicable" && x !== "None");
       const practicalSubjects = pracParts.length > 0 ? pracParts.join(" | ") : "-";
       const desigCode = (typeof getEbsDesignationCodeNum === "function") ? getEbsDesignationCodeNum(desig, sch.level === "HSS") : "";
-      const ebsComplete = Boolean(cleanMob.length === 10 && whatsappVerified && email && emailVerified && dob && resPlace);
+      const ebsComplete = Boolean(cleanMob.length === 10 && email && dob && resPlace);
 
       return {
         staffId: sid,
@@ -26742,6 +26725,37 @@ renderSchoolEbsModule();
 scheduleAutoSaveSchoolEbs2026();
 if (showMsg) showToast("✅ இப்பள்ளியின் +2 Group மாணவர் எண்ணிக்கையிலிருந்து பாடங்கள் கணக்கிடப்பட்டன!", "#0f766e");
 }
+function saveInlineRowContactDirect(uNo, staffId) {
+  uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+  staffId = String(staffId || "").trim();
+  if (!uNo || !staffId) return;
+  const mobInp = document.getElementById("inlineWaMobEdit_" + staffId);
+  const emInp = document.getElementById("inlineEmAddrEdit_" + staffId);
+  const cleanMob = mobInp ? String(mobInp.value || "").replace(/\D/g, "").slice(0, 10) : "";
+  const cleanEm = emInp ? String(emInp.value || "").trim().toLowerCase() : "";
+  const extra = getSchoolExtra(uNo);
+  if (!extra.ebs2026) extra.ebs2026 = {};
+  if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+  const prof = extra.ebs2026.staffProfiles[staffId] || {};
+  if (mobInp && cleanMob.length === 10) {
+    prof.mobile = cleanMob;
+  }
+  if (emInp && cleanEm.includes("@")) {
+    prof.email = cleanEm;
+  }
+  extra.ebs2026.staffProfiles[staffId] = prof;
+  if (Array.isArray(extra.staff)) {
+    const stItem = extra.staff.find(x => String(x.id || x.staffId) === staffId);
+    if (stItem) {
+      if (mobInp && cleanMob.length === 10) stItem.mobile = cleanMob;
+      if (emInp && cleanEm.includes("@")) stItem.email = cleanEm;
+    }
+  }
+  window._activeSyncTargetUNo = uNo;
+  safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+  saveSchoolEbs2026Data(false, uNo);
+}
+
 let _inlineRowWaOtpSessions = {};
 let _inlineRowEmOtpSessions = {};
 
@@ -27022,7 +27036,7 @@ function renderEbsStaffRowCol4OtpCellHtml(uNo, st) {
         <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; flex-wrap:wrap;">
           <div style="display:flex; align-items:center; gap:4px; flex:1; min-width:130px;">
             <span style="font-size:0.82rem;">📱</span>
-            <input type="text" id="inlineWaMobEdit_${sid}" maxlength="10" inputmode="numeric" value="${escapeHtmlAttr(dispMob)}" placeholder="WhatsApp எண்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" style="width:112px; font-family:'Inter','Segoe UI',sans-serif; font-size:0.86rem; font-weight:900; color:#14532d; background:#fff; border:1px solid #86efac; border-radius:5px; padding:2px 6px; letter-spacing:0.6px;">
+            <input type="text" id="inlineWaMobEdit_${sid}" maxlength="10" inputmode="numeric" value="${escapeHtmlAttr(dispMob)}" placeholder="WhatsApp எண்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" onchange="saveInlineRowContactDirect('${uNoEsc}', '${sid}')" style="width:112px; font-family:'Inter','Segoe UI',sans-serif; font-size:0.86rem; font-weight:900; color:#14532d; background:#fff; border:1px solid #86efac; border-radius:5px; padding:2px 6px; letter-spacing:0.6px;">
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
             ${waVerified
@@ -27045,7 +27059,7 @@ function renderEbsStaffRowCol4OtpCellHtml(uNo, st) {
         <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; flex-wrap:wrap;">
           <div style="display:flex; align-items:center; gap:4px; flex:1; min-width:140px;">
             <span style="font-size:0.78rem;">✉️</span>
-            <input type="email" id="inlineEmAddrEdit_${sid}" value="${escapeHtmlAttr(dispEm)}" placeholder="staff@gmail.com" onblur="if(typeof normalizeAndRepairSchoolEmail==='function')this.value=normalizeAndRepairSchoolEmail(this.value)" style="width:100%; min-width:125px; font-size:0.74rem; font-weight:800; color:#1e3a8a; background:#fff; border:1px solid #93c5fd; border-radius:5px; padding:2px 6px;">
+            <input type="email" id="inlineEmAddrEdit_${sid}" value="${escapeHtmlAttr(dispEm)}" placeholder="staff@gmail.com" onblur="if(typeof normalizeAndRepairSchoolEmail==='function')this.value=normalizeAndRepairSchoolEmail(this.value); saveInlineRowContactDirect('${uNoEsc}', '${sid}');" style="width:100%; min-width:125px; font-size:0.74rem; font-weight:800; color:#1e3a8a; background:#fff; border:1px solid #93c5fd; border-radius:5px; padding:2px 6px;">
           </div>
           <div style="display:flex; align-items:center; gap:4px;">
             ${emVerified
@@ -28719,7 +28733,7 @@ ${mainSubOpts}
 
         <div class="grid-3" style="margin-bottom:12px;">
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#15803d;">Mobile Number (WhatsApp - OTP சரிபார்ப்பு)</label>
+            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#15803d;">Mobile Number (WhatsApp) <span style="font-weight:700; color:#64748b; font-size:0.70rem;">(OTP கட்டாயமல்ல)</span></label>
             <div style="display:flex; gap:5px; align-items:center;">
               <input type="text" id="ebsStfMobile" maxlength="10" inputmode="numeric" class="form-control" value="${escapeHtmlAttr(cleanInitStaffMob)}" placeholder="10-Digit WhatsApp" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10); onEbsStfMobileInput();" style="flex:1; font-weight:900; border-color:${isWhatsappOtpVerifiedInitial ? "#16a34a" : "#15803d"};">
               <button type="button" id="ebsStfSendWaOtpBtn" onclick="sendEbsStaffWhatsappOtp()" class="btn btn-primary btn-sm" style="background:${isWhatsappOtpVerifiedInitial ? "#15803d" : "#16a34a"}; border-color:#15803d; white-space:nowrap; font-weight:900; font-size:0.72rem; padding:7px 10px;">
@@ -28728,7 +28742,7 @@ ${mainSubOpts}
             </div>
             <div style="margin-top:5px; display:flex; align-items:center; justify-content:flex-start;">
               <span id="ebsStfWaOtpBadge" style="display:inline-flex; align-items:center; gap:4px; font-size:0.70rem; font-weight:900; padding:2px 9px; border-radius:999px; background:${isWhatsappOtpVerifiedInitial ? "#dcfce7" : "#fef3c7"}; color:${isWhatsappOtpVerifiedInitial ? "#166534" : "#92400e"}; border:1px solid ${isWhatsappOtpVerifiedInitial ? "#86efac" : "#fde68a"};">
-                ${isWhatsappOtpVerifiedInitial ? "✅ OTPக்கப்பட்டது" : "⚠️ OTP சரிபார்க்கவும்"}
+                ${isWhatsappOtpVerifiedInitial ? "✅ OTPக்கப்பட்டது" : "ℹ️ OTP கட்டாயமல்ல (விருப்பத்தேர்வு)"}
               </span>
             </div>
             <input type="hidden" id="ebsStfWhatsappVerified" value="${isWhatsappOtpVerifiedInitial ? "true" : "false"}">
@@ -28748,7 +28762,7 @@ ${mainSubOpts}
             <input type="text" id="ebsStfAltMobile" maxlength="10" class="form-control" value="${escapeHtmlAttr(String(st.altMobile || "").replace(/\D/g, "").slice(-10))}" placeholder="10-Digit Alternate">
           </div>
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e40af;">Personal E-mail Address (OTP சரிபார்ப்பு)</label>
+            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e40af;">Personal E-mail Address <span style="font-weight:700; color:#64748b; font-size:0.70rem;">(OTP கட்டாயமல்ல)</span></label>
             <div style="display:flex; gap:5px; align-items:center;">
               <input type="email" id="ebsStfEmail" class="form-control" value="${escapeHtmlAttr(st.email || "")}" placeholder="staff@gmail.com" oninput="onEbsStfEmailInput()" onblur="this.value=normalizeAndRepairSchoolEmail(this.value); onEbsStfEmailInput();" style="flex:1; font-weight:800; border-color:${isEmailOtpVerifiedInitial ? "#16a34a" : "#2563eb"};">
               <button type="button" id="ebsStfSendOtpBtn" onclick="sendEbsStaffEmailOtp()" class="btn btn-primary btn-sm" style="background:${isEmailOtpVerifiedInitial ? "#15803d" : "#2563eb"}; border-color:${isEmailOtpVerifiedInitial ? "#166534" : "#1d4ed8"}; white-space:nowrap; font-weight:900; font-size:0.72rem; padding:7px 10px;">
@@ -28757,7 +28771,7 @@ ${mainSubOpts}
             </div>
             <div style="margin-top:5px; display:flex; align-items:center; justify-content:flex-start;">
               <span id="ebsStfEmailOtpBadge" style="display:inline-flex; align-items:center; gap:4px; font-size:0.70rem; font-weight:900; padding:2px 9px; border-radius:999px; background:${isEmailOtpVerifiedInitial ? "#dcfce7" : "#fef3c7"}; color:${isEmailOtpVerifiedInitial ? "#166534" : "#92400e"}; border:1px solid ${isEmailOtpVerifiedInitial ? "#86efac" : "#fde68a"};">
-                ${isEmailOtpVerifiedInitial ? "✅ OTPக்கப்பட்டது" : "⚠️ OTP சரிபார்க்கவும்"}
+                ${isEmailOtpVerifiedInitial ? "✅ OTPக்கப்பட்டது" : "ℹ️ OTP கட்டாயமல்ல (விருப்பத்தேர்வு)"}
               </span>
             </div>
             <input type="hidden" id="ebsStfEmailVerified" value="${isEmailOtpVerifiedInitial ? "true" : "false"}">
@@ -29565,7 +29579,7 @@ if (badgeEl) {
 badgeEl.style.background = isStillVerified ? "#dcfce7" : "#fef3c7";
 badgeEl.style.color = isStillVerified ? "#166534" : "#92400e";
 badgeEl.style.borderColor = isStillVerified ? "#86efac" : "#fde68a";
-badgeEl.textContent = isStillVerified ? "✅ OTPக்கப்பட்டது" : "⚠️ OTP சரிபார்க்கவும்";
+badgeEl.textContent = isStillVerified ? "✅ OTPக்கப்பட்டது" : "ℹ️ OTP கட்டாயமல்ல (விருப்பத்தேர்வு)";
 }
 if (emailEl) {
 emailEl.style.borderColor = isStillVerified ? "#16a34a" : "#2563eb";
@@ -29738,7 +29752,7 @@ if (badgeEl) {
 badgeEl.style.background = isStillVerified ? "#dcfce7" : "#fef3c7";
 badgeEl.style.color = isStillVerified ? "#166534" : "#92400e";
 badgeEl.style.borderColor = isStillVerified ? "#86efac" : "#fde68a";
-badgeEl.textContent = isStillVerified ? "✅ OTPக்கப்பட்டது" : "⚠️ OTP சரிபார்க்கவும்";
+badgeEl.textContent = isStillVerified ? "✅ OTPக்கப்பட்டது" : "ℹ️ OTP கட்டாயமல்ல (விருப்பத்தேர்வு)";
 }
 if (mobEl) {
 mobEl.style.borderColor = isStillVerified ? "#16a34a" : "#15803d";
@@ -29945,18 +29959,12 @@ hasClassHandled = true;
 if (!hasClassHandled) missing.push("Handling Classes (குறைந்தது 1 வகுப்பு)");
 }
 const mob = getVal("ebsStfMobile").replace(/\D/g, "");
-const waVer = getVal("ebsStfWhatsappVerified") === "true" && getVal("ebsStfVerifiedMobileNo").replace(/\D/g, "") === mob;
 if (mob.length !== 10) {
 missing.push("Mobile Number (10 Digits)");
-} else if (!waVer) {
-missing.push("WhatsApp OTP சரிபார்ப்பு (Verify WhatsApp OTP)");
 }
 const email = getVal("ebsStfEmail").toLowerCase();
-const emailVer = getVal("ebsStfEmailVerified") === "true" && getVal("ebsStfVerifiedEmailAddr").toLowerCase() === email;
 if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
 missing.push("Personal E-mail Address");
-} else if (!emailVer) {
-missing.push("E-mail OTP சரிபார்ப்பு (Verify Email OTP)");
 }
 if (!getVal("ebsStfResPlace")) missing.push("Present Residential Place");
 if (!getVal("ebsStfResDistrict")) missing.push("Residential District");
@@ -30029,14 +30037,10 @@ if (!hasCls) missing.push("Handling Classes");
 }
 if (str(st.mobile).replace(/\D/g, "").length !== 10) {
 missing.push("Mobile Number");
-} else if (!st.whatsappVerified) {
-missing.push("WhatsApp OTP சரிபார்ப்பு");
 }
 const email = str(st.email).toLowerCase();
 if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
 missing.push("Personal E-mail Address");
-} else if (!st.emailVerified) {
-missing.push("E-mail OTP சரிபார்ப்பு");
 }
 if (!str(st.resPlace)) missing.push("Residential Place");
 if (!str(st.resDistrict)) missing.push("Residential District");
@@ -32925,7 +32929,7 @@ function evaluateSchoolEbsOverallReadiness(uNo) {
   const doneUnits = (f1Ok ? 1 : 0) + (isHSS ? (f2Ok ? 1 : 0) : 0) + totalComplete;
   const overallPct = totalUnits > 0 ? Math.round((doneUnits / totalUnits) * 100) : 0;
 
-  const is100PercentReady = Boolean(f1Ok && f2Ok && totalStaff > 0 && totalComplete === totalStaff && totalWaOk === totalStaff && totalEmailOk === totalStaff);
+  const is100PercentReady = Boolean(f1Ok && f2Ok && totalStaff > 0 && totalComplete === totalStaff);
   const finalLock = (ebs.finalLock && typeof ebs.finalLock === "object") ? ebs.finalLock : { locked: false };
 
   return {
@@ -33012,7 +33016,7 @@ function renderSchoolEbsFinalDeclarationBox(uNo) {
         <div>
           <div style="font-size:0.95rem; font-weight:900; color:#14532d;">🎉 100% பூர்த்தியானது! தலைமை ஆசிரியர் இறுதி உறுதிமொழிப் பூட்டுக்குத் தயார்</div>
           <div style="font-size:0.78rem; color:#1e3a8a; font-weight:700; margin-top:2px;">
-            Form I${r.isHSS ? ", II" : ""}, III (${r.teachComplete}/${r.teachTotal}) &amp; IV (${r.ntComplete}/${r.ntTotal}) மற்றும் அனைத்து WhatsApp / Email OTP சரிபார்ப்புகளும் முடிந்துவிட்டன.
+            Form I${r.isHSS ? ", II" : ""}, III (${r.teachComplete}/${r.teachTotal}) &amp; IV (${r.ntComplete}/${r.ntTotal}) விவரங்கள் அனைத்தும் பூர்த்தி செய்யப்பட்டுள்ளன (WhatsApp / Email OTP கட்டாயமல்ல).
           </div>
         </div>
         <button type="button" class="btn btn-primary" onclick="openEbsHmFinalLockModal('${r.uNo}')" style="background:#15803d; border-color:#166534; font-weight:900;">
@@ -33047,7 +33051,7 @@ let _activeHmLockTargetUNo = "";
 function openEbsHmFinalLockModal(uNo) {
   const r = evaluateSchoolEbsOverallReadiness(uNo);
   if (!r.is100PercentReady) {
-    showToast("⚠️ அனைத்துப் படிவங்களும் (F1–F4) மற்றும் OTP சரிபார்ப்புகளும் 100% நிறைவடைந்த பின்னரே இறுதி உறுதிமொழி அளிக்க முடியும்!", "#d97706", true);
+    showToast("⚠️ அனைத்துப் படிவங்களும் (F1–F4) 100% நிறைவடைந்த பின்னரே இறுதி உறுதிமொழி அளிக்க முடியும்!", "#d97706", true);
     return;
   }
   _activeHmLockTargetUNo = r.uNo;
@@ -42866,7 +42870,7 @@ async function downloadStudentProgressReportPdf(targetModeOrStuId, btnEl) {
       <div id="ebsHmLockSummaryBox" style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:10px; padding:12px; margin-bottom:14px; font-size:0.82rem; color:#14532d; font-weight:700;"></div>
       <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:10px; padding:12px; margin-bottom:14px; font-size:0.82rem; color:#78350f; line-height:1.55;">
         <strong>உறுதிமொழி (Declaration):</strong><br>
-        "எங்கள் பள்ளியின் 2026–2027 ஆம் கல்வி ஆண்டிற்கான <strong>EBS Form – I, II, III மற்றும் IV</strong> விவரங்கள் அனைத்தும் 100% சரிபார்க்கப்பட்டு, அனைத்து ஆசிரியர்கள் மற்றும் பணியாளர்களின் WhatsApp மற்றும் Email OTP சரிபார்ப்புகளும் முழுமையாக நிறைவு செய்யப்பட்டுள்ளன என உறுதியளிக்கிறேன். இறுதிப் பூட்டு (Final Lock) செய்த பின்னரே <strong>FINAL VERIFIED COPY</strong> முத்திரையுடன் A4 கையேடு அச்சிடப்படும் என்பதை அறிவேன்."
+        "எங்கள் பள்ளியின் 2026–2027 ஆம் கல்வி ஆண்டிற்கான <strong>EBS Form – I, II, III மற்றும் IV</strong> விவரங்கள் அனைத்தும் 100% சரிபார்க்கப்பட்டு முழுமையாக நிறைவு செய்யப்பட்டுள்ளன என உறுதியளிக்கிறேன். இறுதிப் பூட்டு (Final Lock) செய்த பின்னரே <strong>FINAL VERIFIED COPY</strong> முத்திரையுடன் A4 கையேடு அச்சிடப்படும் என்பதை அறிவேன்."
       </div>
       <div class="form-group" style="margin-bottom:12px;">
         <label class="form-label" style="font-weight:900; font-size:0.80rem;">தலைமை ஆசிரியர் / முதல்வர் பெயர் (HM / Principal Name)</label>
