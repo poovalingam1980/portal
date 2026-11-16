@@ -673,6 +673,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <select id="schAdminQuickSwitchSelect" onchange="if(this.value) adminInspectSchoolPortal(this.value)" style="font-size:0.76rem; font-weight:800; color:#0f294a; background:#fff; border:1px solid #cbd5e1; border-radius:4px; padding:2px 6px; max-width:240px;"></select>
 </div>
 <button type="button" class="btn btn-outline btn-sm" id="schBackToAdminBtn" onclick="returnToAdminFromSchool()" style="display:none; background:#fef3c7; color:#92400e; border-color:#f59e0b; padding:4px 10px; font-size:0.78rem; font-weight:800;">🛡️⬅️ நிர்வாகி முகப்பிற்குத் திரும்பு (Back to Admin)</button>
+<button type="button" class="btn btn-primary btn-sm" onclick="openSchoolProgressReportDirect()" style="background:linear-gradient(135deg,#d97706,#b45309); border-color:#f59e0b; color:#fff; font-weight:900; padding:4px 11px; font-size:0.78rem;">🎓 மாணவர் Progress Report</button>
 <button type="button" class="btn btn-secondary btn-sm" onclick="printSchoolProfileReport()" style="padding:4px 10px; font-size:0.78rem;">🖨️ அச்சிடுக (Print)</button>
 <button type="button" class="btn btn-danger btn-sm" onclick="logoutSchool()" style="padding:4px 10px; font-size:0.78rem;">🚪 வெளியேறு</button>
 </div>
@@ -1687,6 +1688,10 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
       <span style="font-size:1.4rem;">📊</span>
       <span>Reports</span>
     </button>
+    <button type="button" id="mtMainCardProgress" onclick="onRaSelectMainMode('PROGRESS_REPORT')" style="cursor:pointer; padding:15px 18px; border-radius:12px; font-size:1.02rem; font-weight:900; border:2.5px solid #ea580c; background:#ffffff; color:#0f294a; box-shadow:0 3px 10px rgba(15,41,74,0.08); display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.15s;">
+      <span style="font-size:1.4rem;">🎓</span>
+      <span>Progress Report</span>
+    </button>
   </div>
 
   <!-- =================================================================== -->
@@ -1750,6 +1755,9 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnReview" onclick="switchMarkEntrySubView('REVIEW_REPORT')" style="font-weight:900; padding:6px 14px; border-color:#d97706; color:#b45309;">
           📋 Review Report (சுருக்க அறிக்கை)
         </button>
+        <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnProgress" onclick="switchMarkEntrySubView('PROGRESS_REPORT')" style="font-weight:900; padding:6px 14px; border-color:#ea580c; color:#c2410c;">
+          🎓 Progress Report (மாணவர் முன்னேற்ற அறிக்கை)
+        </button>
         <button type="button" class="btn btn-primary btn-sm" id="schReviewReportTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; padding:6px 12px;">
           📥 Review Report PDF
         </button>
@@ -1779,6 +1787,9 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 
     <!-- Mark Entry Sub-Pane 2D: Visual Review Report (10th & 12th Review Report) -->
     <div id="mtSubPaneReview" style="display:none;"></div>
+
+    <!-- Mark Entry Sub-Pane 2E: Student Progress Report Generator (10th & 12th) -->
+    <div id="mtSubPaneProgress" style="display:none;"></div>
   </div>
 </div>
 
@@ -1967,8 +1978,37 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminSecurityVaultModal()" style="background:#f0fdf4; color:#14532d; border-color:#4ade80; font-weight:900; font-size:0.84rem;">🔐 பாதுகாப்பு &amp; SHA-256 Vault</button>
 <button type="button" class="btn btn-secondary btn-sm" onclick="syncMasterFromGoogleSheet(true)">🔄 Google Sheet ஒத்திசைவு</button>
 <button type="button" class="btn btn-success btn-sm" onclick="exportFilteredSchoolsCsv()">📥 பள்ளிகள் பட்டியல் CSV பதிவிறக்கம்</button>
+<button type="button" class="btn btn-outline btn-sm" id="admHeaderLiveUsersBtn" onclick="openAdminLiveUsersModal()" style="background:#064e3b; color:#ecfdf5; border:1.5px solid #34d399; font-weight:900; font-size:0.84rem; display:inline-flex; align-items:center; gap:6px; box-shadow:0 0 12px rgba(16,185,129,0.35);">
+  <span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#4ade80; box-shadow:0 0 8px #4ade80;"></span>
+  <span>நேரலைப் பயனர்கள் (Live): <strong id="admHeaderLiveUsersCount" style="color:#fde047; font-size:0.95rem;">1</strong></span>
+</button>
 <button type="button" class="btn btn-danger btn-sm" onclick="logoutAdmin()">🚪 வெளியேறு (Admin Logout)</button>
 </div>
+</div>
+
+<!-- LIVE ACTIVE USERS REAL-TIME MONITOR STRIP IN ADMIN DASHBOARD -->
+<div id="admLivePresenceStrip" style="background:linear-gradient(90deg, #064e3b 0%, #0f766e 55%, #1e3a8a 100%); color:#ffffff; border:2px solid #34d399; border-radius:12px; padding:10px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:0 4px 14px rgba(15,118,110,0.22);">
+  <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+    <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(0,0,0,0.28); padding:5px 12px; border-radius:999px; border:1px solid rgba(52,211,153,0.5);">
+      <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#4ade80; box-shadow:0 0 10px #4ade80;"></span>
+      <span style="font-size:0.84rem; font-weight:900; color:#ecfdf5;">LIVE ஆன்லைன் பயனர்கள்:</span>
+      <span id="admLiveStripTotalCount" style="font-size:1.18rem; font-weight:900; color:#fde047; font-family:'Segoe UI',Arial,sans-serif;">1</span>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:0.80rem; font-weight:800;">
+      <span style="background:rgba(255,255,255,0.14); padding:4px 10px; border-radius:8px;">🏫 பள்ளிகள்: <strong id="admLiveStripSchoolCount" style="color:#fde047;">0</strong></span>
+      <span style="background:rgba(255,255,255,0.14); padding:4px 10px; border-radius:8px;">🛡️ நிர்வாகிகள்: <strong id="admLiveStripAdminCount" style="color:#fde047;">1</strong></span>
+      <span style="background:rgba(255,255,255,0.14); padding:4px 10px; border-radius:8px;">🌐 பொதுப் பார்வையாளர்கள்: <strong id="admLiveStripPublicCount" style="color:#fde047;">0</strong></span>
+    </div>
+    <div id="admLivePresenceSchoolsChips" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"></div>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <button type="button" class="btn btn-outline btn-sm" onclick="refreshLivePresenceFromCloud(true)" style="background:rgba(255,255,255,0.15); color:#ffffff; border-color:rgba(255,255,255,0.4); font-weight:900; font-size:0.78rem; padding:5px 10px;">
+      🔄 புதுப்பி
+    </button>
+    <button type="button" class="btn btn-primary btn-sm" onclick="openAdminLiveUsersModal()" style="background:#fde047; color:#0f294a; border:none; font-weight:900; font-size:0.80rem; padding:6px 14px; border-radius:8px;">
+      👁️ யார் ஆன்லைனில் உள்ளனர்? (Live விவரம்)
+    </button>
+  </div>
 </div>
 <!-- ========================================================================= -->
 <!-- 1. ADMIN MAIN DASHBOARD: INITIAL 2 MODULE CHOOSER CARDS (ONLY 2 BOXES)    -->
@@ -8269,6 +8309,7 @@ el.textContent = `[${c.category} - ${c.headline}] ${c.desc}`;
 }
 }
 function switchMainView(viewName) {
+  setTimeout(() => { if (typeof sendLiveUserHeartbeat === "function") sendLiveUserHeartbeat(); }, 50);
 ["viewAuth", "viewSchool", "viewAdmin"].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.classList.remove("active");
@@ -9858,6 +9899,7 @@ document.getElementById("schoolLoginIdInput").value = s.uNo;
 onSchoolLoginIdType(s.uNo);
 }
 function switchSchoolTab(tabKey) {
+  setTimeout(() => { if (typeof sendLiveUserHeartbeat === "function") sendLiveUserHeartbeat(); }, 50);
 currentSchoolTabKey = tabKey;
 if (activeSchoolSession) {
 saveActivePortalUiState({
@@ -13587,6 +13629,7 @@ if (sSch) sSch.style.display = "block";
 }
 }
 function switchAdminTab(tabKey) {
+  setTimeout(() => { if (typeof sendLiveUserHeartbeat === "function") sendLiveUserHeartbeat(); }, 50);
 currentAdminTabKey = tabKey;
 saveActivePortalUiState({ role: "admin", view: "viewAdmin", adminMode: "tab", adminTab: tabKey, isAdminInspection: false });
 const chooser = document.getElementById("admMainPortalChooser");
@@ -37806,9 +37849,12 @@ if (typeof window !== "undefined") {
 
 function onRaSelectMainMode(modeKey) {
   _raStepStdChosen = true;
-  if (modeKey === "REPORTS") {
+  if (modeKey === "PROGRESS_REPORT") {
+    _activeMidTermMainSection = "PROGRESS_REPORT";
+    _activeMarkEntrySubView = "PROGRESS_REPORT";
+  } else if (modeKey === "REPORTS") {
     _activeMidTermMainSection = "REPORTS";
-    if (_activeMarkEntrySubView !== "FORM1_1" && _activeMarkEntrySubView !== "FORM1_2") {
+    if (_activeMarkEntrySubView !== "FORM1_1" && _activeMarkEntrySubView !== "FORM1_2" && _activeMarkEntrySubView !== "REVIEW_REPORT") {
       _activeMarkEntrySubView = "FORM1_1";
     }
   } else if (modeKey === "MARK_ENTRY") {
@@ -37820,6 +37866,20 @@ function onRaSelectMainMode(modeKey) {
     if (!_raSelectedSecId) _raSelectedSecId = "A";
   }
   renderSchoolMidTermModule();
+}
+
+function openSchoolProgressReportDirect() {
+  switchSchoolTab("midTerm");
+  _raStepStdChosen = true;
+  if (activeSchoolSession && !isHigherSecondarySchool(activeSchoolSession)) {
+    _activeResultAnalysisStd = "10";
+  } else if (!_activeResultAnalysisStd) {
+    _activeResultAnalysisStd = "10";
+  }
+  _activeMidTermMainSection = "PROGRESS_REPORT";
+  _activeMarkEntrySubView = "PROGRESS_REPORT";
+  renderSchoolMidTermModule();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function onRaSelectClassMasterSection(secId) {
@@ -37851,7 +37911,9 @@ function switchClassMasterSubView(subView) {
 
 function switchMarkEntrySubView(subView) {
   _activeMarkEntrySubView = subView || "STU_MARKS";
-  if (_activeMarkEntrySubView === "FORM1_1" || _activeMarkEntrySubView === "FORM1_2") {
+  if (_activeMarkEntrySubView === "PROGRESS_REPORT") {
+    _activeMidTermMainSection = "PROGRESS_REPORT";
+  } else if (_activeMarkEntrySubView === "FORM1_1" || _activeMarkEntrySubView === "FORM1_2" || _activeMarkEntrySubView === "REVIEW_REPORT") {
     _activeMidTermMainSection = "REPORTS";
   } else {
     _activeMidTermMainSection = "MARK_ENTRY";
@@ -38029,9 +38091,11 @@ function renderSchoolMidTermModule() {
   const cardCm = document.getElementById("mtMainCardClassMaster");
   const cardMe = document.getElementById("mtMainCardMarkEntry");
   const cardRep = document.getElementById("mtMainCardReports");
+  const cardProg = document.getElementById("mtMainCardProgress");
   const isCm = (_activeMidTermMainSection === "CLASS_MASTER");
   const isMe = (_activeMidTermMainSection === "MARK_ENTRY");
   const isRep = (_activeMidTermMainSection === "REPORTS");
+  const isProg = (_activeMidTermMainSection === "PROGRESS_REPORT");
 
   if (cardCm) {
     cardCm.style.background = isCm ? "linear-gradient(135deg, #0f766e 0%, #115e59 100%)" : "#ffffff";
@@ -38051,15 +38115,21 @@ function renderSchoolMidTermModule() {
     cardRep.style.borderColor = "#7c3aed";
     cardRep.style.boxShadow = isRep ? "0 5px 14px rgba(109,40,217,0.25)" : "0 2px 6px rgba(15,41,74,0.06)";
   }
+  if (cardProg) {
+    cardProg.style.background = isProg ? "linear-gradient(135deg, #ea580c 0%, #c2410c 100%)" : "#ffffff";
+    cardProg.style.color = isProg ? "#ffffff" : "#0f294a";
+    cardProg.style.borderColor = "#ea580c";
+    cardProg.style.boxShadow = isProg ? "0 5px 14px rgba(234,88,12,0.25)" : "0 2px 6px rgba(15,41,74,0.06)";
+  }
 
-  if (!isCm && !isMe && !isRep) {
+  if (!isCm && !isMe && !isRep && !isProg) {
     if (secCm) secCm.style.display = "none";
     if (secMe) secMe.style.display = "none";
     return;
   }
 
   if (secCm) secCm.style.display = isCm ? "block" : "none";
-  if (secMe) secMe.style.display = (isMe || isRep) ? "block" : "none";
+  if (secMe) secMe.style.display = (isMe || isRep || isProg) ? "block" : "none";
 
   let calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey, _activeResultAnalysisStd);
   const rec = (calc && calc.rec) ? calc.rec : { sections: [{ secId: "A", medium: "TM", teachers: {} }], students: [] };
@@ -38122,10 +38192,11 @@ function renderSchoolMidTermModule() {
   if (bRevEl) bRevEl.style.display = (isMe || isRep) ? "inline-flex" : "none";
 
   const mapMe = {
-    STU_MARKS:     ["mtSubBtnStuMarks", "mtSubPaneStuMarks"],
-    FORM1_1:       ["mtSubBtnForm1_1",  "mtSubPaneForm1_1"],
-    FORM1_2:       ["mtSubBtnForm1_2",  "mtSubPaneForm1_2"],
-    REVIEW_REPORT: ["mtSubBtnReview",   "mtSubPaneReview"]
+    STU_MARKS:       ["mtSubBtnStuMarks", "mtSubPaneStuMarks"],
+    FORM1_1:         ["mtSubBtnForm1_1",  "mtSubPaneForm1_1"],
+    FORM1_2:         ["mtSubBtnForm1_2",  "mtSubPaneForm1_2"],
+    REVIEW_REPORT:   ["mtSubBtnReview",   "mtSubPaneReview"],
+    PROGRESS_REPORT: ["mtSubBtnProgress", "mtSubPaneProgress"]
   };
   Object.keys(mapMe).forEach(k => {
     const [bId, pId] = mapMe[k];
@@ -38156,6 +38227,8 @@ function renderSchoolMidTermModule() {
     renderSchoolMidTermForm1_2Pane(calc);
   } else if (_activeMarkEntrySubView === "REVIEW_REPORT") {
     renderSchoolReviewReportPane(calc);
+  } else if (_activeMarkEntrySubView === "PROGRESS_REPORT") {
+    renderSchoolProgressReportPane(calc);
   }
 }
 
@@ -40964,6 +41037,940 @@ function syncAllMidTermResultsToGoogleSheet() {
   showToast("☁️ இரண்டாம் இடைப்பருவத் தேர்வு தேர்ச்சிப் பகுப்பாய்வு விவரங்கள் Firebase மற்றும் Google Sheet உடன் ஒத்திசைக்கப்பட்டன!", "#16a34a", true);
 }
 
+
+// ============================================================================
+// REAL-TIME LIVE ACTIVE USERS PRESENCE TRACKER (ADMIN DASHBOARD)
+// ============================================================================
+let _portalLiveSessionId = "";
+let _livePresenceMapCache = {};
+let _livePresenceIntervalId = null;
+
+function getOrCreatePortalLiveSessionId() {
+  if (_portalLiveSessionId) return _portalLiveSessionId;
+  try {
+    const existing = sessionStorage.getItem("CEOSVG_LIVE_SESSION_ID");
+    if (existing) {
+      _portalLiveSessionId = existing;
+      return existing;
+    }
+  } catch (e) {}
+  _portalLiveSessionId = "SES_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8).toUpperCase();
+  try {
+    sessionStorage.setItem("CEOSVG_LIVE_SESSION_ID", _portalLiveSessionId);
+  } catch (e) {}
+  return _portalLiveSessionId;
+}
+
+function getCurrentUserLivePresencePayload() {
+  const sid = getOrCreatePortalLiveSessionId();
+  const isMob = /Android|iPhone|iPad|iPod|Mobile/i.test((typeof navigator !== "undefined" && navigator.userAgent) || "");
+  let role = "public";
+  let uNo = "";
+  let schoolNameTa = "பொதுப் பார்வையாளர்";
+  let schoolNameEn = "Public Visitor";
+  let block = "-";
+  let activeModule = "🌐 முதன்மை முகப்பு (Public Home)";
+
+  const viewAdm = document.getElementById("viewAdmin");
+  const viewSch = document.getElementById("viewSchool");
+  const isAdmActive = Boolean(viewAdm && viewAdm.classList.contains("active"));
+  const isSchActive = Boolean(viewSch && viewSch.classList.contains("active"));
+
+  if (isAdmActive) {
+    role = "admin";
+    uNo = "ADMIN";
+    schoolNameTa = "மாவட்ட முதன்மைக் கல்வி அலுவலகம் (CEO Admin)";
+    schoolNameEn = "CEO Sivagangai Admin";
+    block = "Sivagangai HQ";
+    const admTabLabels = {
+      directory: "🏫 பள்ளிகள் அடைவு (Directory)",
+      credentials: "🔑 கடவுச்சொல் மேலாண்மை",
+      circulars: "📢 சுற்றறிக்கைகள்",
+      teacherMaster: "👨‍🏫 ஆசிரியர்கள் மாஸ்டர்",
+      studentsMaster: "👩‍🎓 மாணவர்கள் மாஸ்டர்",
+      ebsMaster: "📋 EBS 2026-27 (F1-F4)",
+      examDutyAllotment: "🎯 தேர்வுப் பணி நியமனம்",
+      midTermMaster: "📈 தேர்ச்சிப் பகுப்பாய்வு அறிக்கை",
+      infraNeeds: "🏗️ அடிப்படைத் தேவைகள்",
+      auditTrail: "📜 தணிக்கைப் பதிவேடு"
+    };
+    activeModule = admTabLabels[typeof currentAdminTabKey !== "undefined" ? currentAdminTabKey : "directory"] || "🛡️ நிர்வாகி கட்டுப்பாட்டகம்";
+  } else if (isSchActive && activeSchoolSession) {
+    role = activeSchoolSession.isAdminInspection ? "admin" : "school";
+    uNo = String(activeSchoolSession.uNo || "");
+    schoolNameTa = activeSchoolSession.nameTa || activeSchoolSession.nameEn || ("பள்ளி " + uNo);
+    schoolNameEn = activeSchoolSession.nameEn || "";
+    block = activeSchoolSession.block || "-";
+    const schTabLabels = {
+      staffStrength: "🏫 பள்ளி முகப்பு (மாணவர் & ஆசிரியர் விவரம்)",
+      profile: "📝 பள்ளி சுயவிவரம் (Profile)",
+      students: "👩‍🎓 மாணவர் எண்ணிக்கை",
+      staff: "👨‍🏫 ஆசிரியர்கள் பட்டியல்",
+      needs: "🏗️ அடிப்படைத் தேவைகள்",
+      ebs: "📋 EBS 2026-27 (Form I-IV)",
+      midTerm: `📈 தேர்ச்சிப் பகுப்பாய்வு (${_activeResultAnalysisStd === "12" ? "12th" : "10th"} ${_activeMidTermMainSection || ""})`,
+      security: "🔑 கடவுச்சொல் & PIN"
+    };
+    activeModule = schTabLabels[typeof currentSchoolTabKey !== "undefined" ? currentSchoolTabKey : "staffStrength"] || "🏫 பள்ளி முகப்பு";
+  }
+
+  let startedAt = Date.now();
+  try {
+    const sTime = sessionStorage.getItem("CEOSVG_LIVE_SESSION_START");
+    if (sTime) startedAt = Number(sTime) || Date.now();
+    else sessionStorage.setItem("CEOSVG_LIVE_SESSION_START", String(startedAt));
+  } catch (e) {}
+
+  return {
+    sessionId: sid,
+    role,
+    uNo,
+    schoolNameTa,
+    schoolNameEn,
+    block,
+    activeModule,
+    device: isMob ? "📱 கைபேசி (Mobile)" : "💻 கணினி (Desktop)",
+    startedAt,
+    lastSeen: Date.now()
+  };
+}
+
+function pruneStaleLivePresenceSessions(mapObj) {
+  if (!mapObj || typeof mapObj !== "object") return {};
+  const now = Date.now();
+  const STALE_MS = 120000; // 2 minutes
+  const out = {};
+  Object.entries(mapObj).forEach(([k, v]) => {
+    if (v && typeof v === "object" && v.sessionId && (now - Number(v.lastSeen || 0) <= STALE_MS)) {
+      out[v.sessionId] = v;
+    }
+  });
+  return out;
+}
+
+async function sendLiveUserHeartbeat() {
+  try {
+    const payload = getCurrentUserLivePresencePayload();
+    // 1. Update local storage & memory map
+    let localMap = {};
+    try {
+      const raw = localStorage.getItem("CEOSVG_LIVE_PRESENCE_MAP_V1");
+      if (raw) localMap = JSON.parse(raw) || {};
+    } catch (e) {}
+    localMap[payload.sessionId] = payload;
+    localMap = pruneStaleLivePresenceSessions(localMap);
+    _livePresenceMapCache = Object.assign({}, _livePresenceMapCache, localMap);
+    _livePresenceMapCache = pruneStaleLivePresenceSessions(_livePresenceMapCache);
+    try {
+      localStorage.setItem("CEOSVG_LIVE_PRESENCE_MAP_V1", JSON.stringify(_livePresenceMapCache));
+    } catch (e) {}
+
+    // 2. Broadcast across local browser tabs
+    if (typeof realtimeBroadcastChannel !== "undefined" && realtimeBroadcastChannel) {
+      try {
+        realtimeBroadcastChannel.postMessage({ type: "LIVE_PRESENCE_HEARTBEAT", payload });
+      } catch (e) {}
+    }
+
+    renderAdminLivePresenceUI();
+
+    // 3. Push to Firebase ceosvg_live/live_presence/<sessionId>
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanUrl) {
+      await fetch(buildFirebaseEndpoint("ceosvg_live/live_presence/" + encodeURIComponent(payload.sessionId)), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    }
+  } catch (e) {}
+}
+
+async function refreshLivePresenceFromCloud(showNotice) {
+  await sendLiveUserHeartbeat();
+  const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+  if (cleanUrl) {
+    try {
+      const res = await fetch(buildFirebaseEndpoint("ceosvg_live/live_presence"));
+      if (res && res.ok) {
+        const remoteMap = await res.json();
+        if (remoteMap && typeof remoteMap === "object") {
+          const now = Date.now();
+          Object.entries(remoteMap).forEach(([sid, rec]) => {
+            if (!rec || typeof rec !== "object") return;
+            if (now - Number(rec.lastSeen || 0) <= 120000) {
+              _livePresenceMapCache[sid] = rec;
+            } else {
+              delete _livePresenceMapCache[sid];
+              // Opportunistically delete expired session from Firebase
+              fetch(buildFirebaseEndpoint("ceosvg_live/live_presence/" + encodeURIComponent(sid)), { method: "DELETE" }).catch(() => {});
+            }
+          });
+        }
+      }
+    } catch (e) {}
+  }
+  _livePresenceMapCache = pruneStaleLivePresenceSessions(_livePresenceMapCache);
+  renderAdminLivePresenceUI();
+  if (showNotice && typeof showToast === "function") {
+    const cnt = Object.keys(_livePresenceMapCache).length || 1;
+    showToast(`🟢 தற்போது ${cnt} பயனர்கள் நேரலையில் (Live Online) உள்ளனர்!`, "#059669");
+  }
+}
+
+function renderAdminLivePresenceUI() {
+  const selfPayload = getCurrentUserLivePresencePayload();
+  _livePresenceMapCache[selfPayload.sessionId] = selfPayload;
+  _livePresenceMapCache = pruneStaleLivePresenceSessions(_livePresenceMapCache);
+
+  const list = Object.values(_livePresenceMapCache).sort((a, b) => Number(b.lastSeen || 0) - Number(a.lastSeen || 0));
+  const totalCount = list.length || 1;
+  const schoolSessions = list.filter(x => x.role === "school");
+  const adminSessions = list.filter(x => x.role === "admin");
+  const publicSessions = list.filter(x => x.role === "public");
+
+  const hdrCnt = document.getElementById("admHeaderLiveUsersCount");
+  if (hdrCnt) hdrCnt.textContent = String(totalCount);
+  const stripTot = document.getElementById("admLiveStripTotalCount");
+  if (stripTot) stripTot.textContent = String(totalCount);
+  const stripSch = document.getElementById("admLiveStripSchoolCount");
+  if (stripSch) stripSch.textContent = String(schoolSessions.length);
+  const stripAdm = document.getElementById("admLiveStripAdminCount");
+  if (stripAdm) stripAdm.textContent = String(adminSessions.length);
+  const stripPub = document.getElementById("admLiveStripPublicCount");
+  if (stripPub) stripPub.textContent = String(publicSessions.length);
+
+  const chipsBox = document.getElementById("admLivePresenceSchoolsChips");
+  if (chipsBox) {
+    const activeSchPreview = list.filter(x => x.uNo && x.uNo !== "ADMIN").slice(0, 4);
+    chipsBox.innerHTML = activeSchPreview.map(x => `
+      <span style="background:rgba(254,240,138,0.18); border:1px solid rgba(254,240,138,0.5); color:#fef08a; padding:2px 8px; border-radius:999px; font-size:0.74rem; font-weight:800;">
+        🟢 [${escapeHtmlAttr(x.uNo)}] ${escapeHtmlAttr((x.schoolNameTa || x.schoolNameEn || "").slice(0, 26))}
+      </span>
+    `).join("");
+  }
+
+  // Also update modal table if open
+  const modalEl = document.getElementById("admLiveUsersModal");
+  if (modalEl && modalEl.style.display === "flex") {
+    renderAdminLiveUsersModalTable(list);
+  }
+}
+
+function renderAdminLiveUsersModalTable(list) {
+  if (!Array.isArray(list)) {
+    list = Object.values(pruneStaleLivePresenceSessions(_livePresenceMapCache)).sort((a, b) => Number(b.lastSeen || 0) - Number(a.lastSeen || 0));
+  }
+  const mTot = document.getElementById("admLiveModalTotalKpi");
+  const mSch = document.getElementById("admLiveModalSchoolKpi");
+  const mAdm = document.getElementById("admLiveModalAdminKpi");
+  const mPub = document.getElementById("admLiveModalPublicKpi");
+  if (mTot) mTot.textContent = String(list.length);
+  if (mSch) mSch.textContent = String(list.filter(x => x.role === "school").length);
+  if (mAdm) mAdm.textContent = String(list.filter(x => x.role === "admin").length);
+  if (mPub) mPub.textContent = String(list.filter(x => x.role === "public").length);
+
+  const tbody = document.getElementById("admLiveUsersTableBody");
+  if (!tbody) return;
+  const now = Date.now();
+  tbody.innerHTML = list.map((item, idx) => {
+    const secAgo = Math.max(0, Math.round((now - Number(item.lastSeen || now)) / 1000));
+    const agoText = secAgo <= 5 ? "இப்போது (Just now)" : `${secAgo} வினாடிகளுக்கு முன்`;
+    const durMin = Math.max(1, Math.round((now - Number(item.startedAt || now)) / 60000));
+    const roleBadge = item.role === "admin"
+      ? `<span style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">🛡️ நிர்வாகி (Admin)</span>`
+      : (item.role === "school"
+        ? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">🏫 பள்ளி (School)</span>`
+        : `<span style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">🌐 பொது (Public)</span>`);
+    const isSelf = (item.sessionId === getOrCreatePortalLiveSessionId());
+
+    return `
+      <tr style="background:${isSelf ? '#f0fdf4' : '#ffffff'};">
+        <td style="text-align:center; font-weight:900;">${idx + 1}</td>
+        <td>${roleBadge} ${isSelf ? `<span style="font-size:0.68rem; font-weight:900; color:#059669;">(நீங்கள்)</span>` : ""}</td>
+        <td>
+          <div style="font-weight:900; color:#0f294a;">${item.uNo && item.uNo !== "ADMIN" ? `[U.No: ${escapeHtmlAttr(item.uNo)}] ` : ""}${escapeHtmlAttr(item.schoolNameTa || item.schoolNameEn || "-")}</div>
+          <div style="font-size:0.72rem; color:#64748b;">${escapeHtmlAttr(item.schoolNameEn || "")} ${item.block && item.block !== "-" ? `• ஒன்றியம்: ${escapeHtmlAttr(item.block)}` : ""}</div>
+        </td>
+        <td style="font-weight:800; color:#1e3a8a;">${escapeHtmlAttr(item.activeModule || "-")}</td>
+        <td style="text-align:center; font-weight:800; font-size:0.78rem;">${escapeHtmlAttr(item.device || "💻 கணினி")}</td>
+        <td style="text-align:center;">
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">
+            <span style="width:7px; height:7px; border-radius:50%; background:#16a34a;"></span>
+            <span>ஆன்லைனில் (${agoText})</span>
+          </span>
+          <div style="font-size:0.68rem; color:#64748b; margin-top:2px;">பயன்பாட்டு நேரம்: ~${durMin} நிமிடம்</div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function openAdminLiveUsersModal() {
+  const modal = document.getElementById("admLiveUsersModal");
+  if (modal) {
+    modal.style.display = "flex";
+    refreshLivePresenceFromCloud(false);
+  }
+}
+
+function closeAdminLiveUsersModal() {
+  const modal = document.getElementById("admLiveUsersModal");
+  if (modal) modal.style.display = "none";
+}
+
+function initPortalLivePresenceEngine() {
+  sendLiveUserHeartbeat();
+  refreshLivePresenceFromCloud(false);
+  if (_livePresenceIntervalId) clearInterval(_livePresenceIntervalId);
+  _livePresenceIntervalId = setInterval(() => {
+    refreshLivePresenceFromCloud(false);
+  }, 20000);
+
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("beforeunload", () => {
+      try {
+        const sid = getOrCreatePortalLiveSessionId();
+        delete _livePresenceMapCache[sid];
+        localStorage.setItem("CEOSVG_LIVE_PRESENCE_MAP_V1", JSON.stringify(_livePresenceMapCache));
+        const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+        if (cleanUrl) {
+          fetch(buildFirebaseEndpoint("ceosvg_live/live_presence/" + encodeURIComponent(sid)), {
+            method: "DELETE",
+            keepalive: true
+          }).catch(() => {});
+        }
+      } catch (e) {}
+    });
+  }
+}
+setTimeout(initPortalLivePresenceEngine, 400);
+
+
+// ============================================================================
+// 10TH & 12TH STANDARD STUDENT PROGRESS REPORT GENERATOR & PDF DOWNLOADER
+// ============================================================================
+let _activeProgressReportFormat = "SINGLE_EXAM"; // "SINGLE_EXAM" | "ALL_EXAMS"
+let _progReportSecFilter = "ALL";
+let _progReportSelectedStuId = "ALL";
+let _progReportSearchQuery = "";
+
+function computeGradeFromMark100(markNum, isPass) {
+  if (!isPass) return "E (தோல்வி)";
+  const m = Number(markNum || 0);
+  if (m >= 91) return "A1";
+  if (m >= 81) return "A2";
+  if (m >= 71) return "B1";
+  if (m >= 61) return "B2";
+  if (m >= 51) return "C1";
+  if (m >= 41) return "C2";
+  if (m >= 35) return "D";
+  return "E";
+}
+
+function buildClassRankMapForEvaluatedStudents(evaluatedStudents, is12) {
+  const passedScores = [];
+  (evaluatedStudents || []).forEach(st => {
+    if (st && st.resultType === "PASS") {
+      const tot = Number(is12 ? st.total600 : st.total500) || 0;
+      if (tot > 0 && !passedScores.includes(tot)) passedScores.push(tot);
+    }
+  });
+  passedScores.sort((a, b) => b - a);
+  const rankByScore = {};
+  passedScores.forEach((sc, i) => { rankByScore[sc] = i + 1; });
+  return rankByScore;
+}
+
+function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, forPrint) {
+  const s = calc.sch || {};
+  const rec = calc.rec || {};
+  const is12 = (calc.std === "12");
+  const maxTotal = is12 ? 600 : 500;
+  const isSplit = isSplitMarkExamTerm(_activeMidTermTermKey);
+  const secMap = {};
+  (rec.sections || []).forEach(sec => { secMap[sec.secId] = sec; });
+  const secObj = secMap[stu.section] || (rec.sections && rec.sections[0]) || { secId: stu.section || "A", medium: stu.medium || "TM", teachers: {} };
+  const medLabel = (secObj.medium === "EM" || stu.medium === "EM") ? "ஆங்கில வழி (English Medium)" : "தமிழ் வழி (Tamil Medium)";
+
+  normalizeStudentNamesTaEn(stu);
+  const nameTaDisp = stu.nameTa || stu.name || "-";
+  const nameEnDisp = stu.nameEn || stu.name || "-";
+  const totScore = Number(is12 ? stu.total600 : stu.total500) || 0;
+  const pctStr = (stu.resultType === "PASS" || stu.resultType === "FAIL")
+    ? ((totScore / maxTotal) * 100).toFixed(2) + "%"
+    : "-";
+  const rankVal = (stu.resultType === "PASS" && rankByScore[totScore]) ? `#${rankByScore[totScore]}` : "-";
+  const isPassOverall = (stu.resultType === "PASS");
+
+  const numFont = "font-family:'Segoe UI',Arial,sans-serif; font-weight:900; letter-spacing:0px;";
+  const bdr = "border:1.5px solid #1e293b; vertical-align:middle;";
+
+  const subjectsList = is12
+    ? get12thSection6Subjects(secObj).map(sk => HSC12_SUBJECT_MAP[sk] || { key: sk, code: "", labelTa: sk, labelEn: sk })
+    : MIDTERM_CORE_SUBJECTS;
+
+  let marksTableHtml = "";
+
+  if (formatMode === "ALL_EXAMS") {
+    // Multi-Exam Cumulative Progress Table across all 8 exams
+    const uNo = String(s.uNo || "");
+    const termCalcs = {};
+    ORDERED_EXAM_TERM_KEYS.forEach(tk => {
+      const tRec = getSchoolMidTermRecord(uNo, tk, is12 ? "12" : "10");
+      const stuMatch = (tRec.students || []).find(x =>
+        (stu.emisId && x.emisId === stu.emisId) ||
+        (String(x.rollNo) === String(stu.rollNo) && String(x.nameEn || x.name) === String(stu.nameEn || stu.name))
+      );
+      termCalcs[tk] = stuMatch || null;
+    });
+
+    const subRowsHtml = subjectsList.map((subMeta, sIdx) => {
+      const sk = subMeta.key;
+      let sumMarks = 0, cntMarks = 0;
+      const cellsHtml = ORDERED_EXAM_TERM_KEYS.map(tk => {
+        const stMatch = termCalcs[tk];
+        const raw = stMatch && stMatch.marks && stMatch.marks[sk] !== undefined ? String(stMatch.marks[sk]).trim() : "";
+        if (!raw) return `<td style="${bdr} padding:5px 3px; text-align:center; color:#94a3b8;">-</td>`;
+        if (raw.toUpperCase() === "AB" || raw.toUpperCase() === "EX") {
+          return `<td style="${bdr} background:#fef2f2 !important; padding:5px 3px; text-align:center; ${numFont} color:#dc2626;">${raw.toUpperCase()}</td>`;
+        }
+        const mNum = Number(raw);
+        if (!isNaN(mNum)) {
+          sumMarks += mNum;
+          cntMarks++;
+        }
+        const isSubFail = !isNaN(mNum) && mNum < 35;
+        return `<td style="${bdr} background:${isSubFail ? '#fef2f2' : '#ffffff'} !important; padding:5px 3px; text-align:center; ${numFont} font-size:0.95rem; color:${isSubFail ? '#dc2626' : '#0f172a'};">${raw}</td>`;
+      }).join("");
+
+      const avgSub = cntMarks > 0 ? Math.round(sumMarks / cntMarks) : "-";
+      return `
+        <tr style="height:32px;">
+          <td style="${bdr} background:#f8fafc !important; padding:5px 6px; text-align:center; ${numFont} font-size:0.86rem;">${sIdx + 1}</td>
+          <td style="${bdr} background:#f8fafc !important; padding:5px 8px; text-align:left; font-weight:900; font-size:0.86rem; color:#0f294a;">
+            <span class="ra-ta">${escapeHtmlAttr(subMeta.labelTa)}</span>
+            <span style="font-size:0.74rem; color:#475569; display:block;">${escapeHtmlAttr(subMeta.labelEn)}</span>
+          </td>
+          ${cellsHtml}
+          <td style="${bdr} background:#eff6ff !important; padding:5px 4px; text-align:center; ${numFont} font-size:0.96rem; color:#1e3a8a;">${avgSub}</td>
+        </tr>
+      `;
+    }).join("");
+
+    const totalCellsHtml = ORDERED_EXAM_TERM_KEYS.map(tk => {
+      const stMatch = termCalcs[tk];
+      if (!stMatch || !stMatch.marks) return `<td style="${bdr} background:#f1f5f9 !important; text-align:center; color:#94a3b8;">-</td>`;
+      let tSum = 0, anyM = false, anyFail = false;
+      subjectsList.forEach(sm => {
+        const v = String(stMatch.marks[sm.key] !== undefined ? stMatch.marks[sm.key] : "").trim();
+        if (v !== "") {
+          anyM = true;
+          if (v.toUpperCase() === "AB" || Number(v) < 35) anyFail = true;
+          if (!isNaN(Number(v))) tSum += Number(v);
+        }
+      });
+      if (!anyM) return `<td style="${bdr} background:#f1f5f9 !important; text-align:center; color:#94a3b8;">-</td>`;
+      return `<td style="${bdr} background:${anyFail ? '#fef2f2' : '#fef08a'} !important; padding:5px 3px; text-align:center; ${numFont} font-size:0.96rem; color:${anyFail ? '#dc2626' : '#0f294a'};">${tSum}<div style="font-size:0.66rem; font-weight:800;">${anyFail ? 'FAIL' : 'PASS'}</div></td>`;
+    }).join("");
+
+    marksTableHtml = `
+      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
+        <colgroup>
+          <col style="width:5%;">
+          <col style="width:21%;">
+          <col style="width:8.2%;">
+          <col style="width:8.2%;">
+          <col style="width:8.2%;">
+          <col style="width:8.2%;">
+          <col style="width:8.2%;">
+          <col style="width:8.2%;">
+          <col style="width:8.2%;">
+          <col style="width:8.2%;">
+          <col style="width:8.4%;">
+        </colgroup>
+        <tr style="height:36px;">
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">வ.எண்</td>
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:4px 8px; text-align:left; font-weight:900; font-size:0.82rem;">பாடம் (Subject)</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">1. முதல்<br>பருவம்</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">2. காலாண்டுத்<br>தேர்வு</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">3. இரண்டாம்<br>பருவம்</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">4. அரையாண்டுத்<br>தேர்வு</td>
+          <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">5. திருப்புதல்<br>தேர்வு 1</td>
+          <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">6. திருப்புதல்<br>தேர்வு 2</td>
+          <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">7. திருப்புதல்<br>தேர்வு 3</td>
+          <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">8. சிறப்பு<br>மாதிரி</td>
+          <td style="${bdr} background:#0f294a !important; color:#fde047 !important; text-align:center; font-weight:900; font-size:0.74rem; line-height:1.12;">சராசரி<br>(Avg)</td>
+        </tr>
+        ${subRowsHtml}
+        <tr style="height:36px;">
+          <td colspan="2" style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:5px 8px; text-align:right; font-weight:900; font-size:0.84rem;">மொத்த மதிப்பெண் (Total / ${maxTotal})</td>
+          ${totalCellsHtml}
+          <td style="${bdr} background:#0f294a !important; color:#fde047 !important; text-align:center; ${numFont} font-size:0.96rem;">${totScore || "-"}</td>
+        </tr>
+      </table>
+    `;
+  } else {
+    // Single Exam Detailed Progress Report Table (with Theory / Practical / Internal split if applicable)
+    const subRowsHtml = subjectsList.map((subMeta, sIdx) => {
+      const sk = subMeta.key;
+      const evalPart = ensureStudentSubjectMarkParts(stu, sk, is12 ? "12" : "10", isSplit);
+      const rawTot = evalPart.totalStr;
+      const isNum = rawTot !== "" && rawTot !== "AB" && rawTot !== "EX" && !isNaN(Number(rawTot));
+      const mNum = isNum ? Number(rawTot) : 0;
+      const isSubPass = (rawTot === "EX") || (isNum && !evalPart.partFailed && mNum >= 35);
+      const gradeStr = rawTot === "EX" ? "EX" : (rawTot === "" ? "-" : computeGradeFromMark100(mNum, isSubPass));
+      const tObj = (secObj.teachers && secObj.teachers[sk]) ? secObj.teachers[sk] : {};
+      const teacherName = tObj.nameTa || tObj.nameEn || "-";
+      const pctWidth = isNum ? Math.min(100, Math.max(0, mNum)) : 0;
+      const barColor = !isSubPass ? "#dc2626" : (mNum >= 80 ? "#16a34a" : (mNum >= 60 ? "#2563eb" : "#d97706"));
+
+      const splitColsHtml = isSplit ? `
+        <td style="${bdr} background:#ffffff !important; text-align:center; ${numFont} font-size:0.94rem; color:#1e293b;">${evalPart.th !== "" ? evalPart.th : "-"}</td>
+        <td style="${bdr} background:#ffffff !important; text-align:center; ${numFont} font-size:0.94rem; color:#0f766e;">${evalPart.pr !== "" ? evalPart.pr : "-"}</td>
+        <td style="${bdr} background:#ffffff !important; text-align:center; ${numFont} font-size:0.94rem; color:#4c1d95;">${evalPart.in !== "" ? evalPart.in : "-"}</td>
+      ` : "";
+
+      return `
+        <tr style="height:34px;">
+          <td style="${bdr} background:#f8fafc !important; text-align:center; ${numFont} font-size:0.88rem;">${sIdx + 1}</td>
+          <td style="${bdr} background:#f8fafc !important; padding:4px 8px; text-align:left; font-weight:900; font-size:0.88rem; color:#0f294a;">
+            <span class="ra-ta">${escapeHtmlAttr(subMeta.labelTa)}</span>
+            <span style="font-size:0.75rem; color:#475569; margin-left:4px;">(${escapeHtmlAttr(subMeta.labelEn)})</span>
+          </td>
+          <td style="${bdr} background:#f8fafc !important; text-align:center; ${numFont} font-size:0.86rem; color:#475569;">100</td>
+          <td style="${bdr} background:#f8fafc !important; text-align:center; ${numFont} font-size:0.86rem; color:#475569;">35</td>
+          ${splitColsHtml}
+          <td style="${bdr} background:${!isSubPass && rawTot !== '' ? '#fef2f2' : '#fefce8'} !important; text-align:center; ${numFont} font-size:1.10rem; color:${!isSubPass && rawTot !== '' ? '#dc2626' : '#0f172a'};">${rawTot || "-"}</td>
+          <td style="${bdr} background:#ffffff !important; padding:4px 6px; text-align:center;">
+            <span style="display:inline-block; padding:2px 8px; border-radius:999px; font-size:0.74rem; font-weight:900; background:${rawTot === '' ? '#f1f5f9' : (isSubPass ? '#dcfce7' : '#fee2e2')} !important; color:${rawTot === '' ? '#64748b' : (isSubPass ? '#166534' : '#991b1b')} !important;">
+              ${rawTot === "" ? "நிலுவை" : (isSubPass ? "✅ தேர்ச்சி (PASS)" : "❌ தோல்வி (FAIL)")}
+            </span>
+          </td>
+          <td style="${bdr} background:#ffffff !important; text-align:center; ${numFont} font-size:0.88rem; color:#1e3a8a;">${gradeStr}</td>
+          <td style="${bdr} background:#ffffff !important; padding:4px 6px; text-align:left;">
+            <div style="width:100%; height:8px; background:#e2e8f0 !important; border-radius:999px; overflow:hidden; margin-bottom:2px;">
+              <div style="width:${pctWidth}%; height:100%; background:${barColor} !important;"></div>
+            </div>
+            <div class="ra-ta" style="font-size:0.68rem; color:#475569; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">👨‍🏫 ${escapeHtmlAttr(teacherName)}</div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    marksTableHtml = `
+      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
+        <colgroup>
+          <col style="width:5%;">
+          <col style="width:24%;">
+          <col style="width:6%;">
+          <col style="width:6%;">
+          ${isSplit ? '<col style="width:7%;"><col style="width:7%;"><col style="width:7%;">' : ''}
+          <col style="width:9%;">
+          <col style="width:11%;">
+          <col style="width:7%;">
+          <col style="width:${isSplit ? '11%' : '32%'};">
+        </colgroup>
+        <tr style="height:36px;">
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">வ.எண்</td>
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:4px 8px; text-align:left; font-weight:900; font-size:0.82rem;">பாடம் (Subject)</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">Max<br>100</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">Min<br>35</td>
+          ${isSplit ? `
+            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">கருத்தியல்<br>(Theory)</td>
+            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">செய்முறை<br>(Practical)</td>
+            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">அகமதிப்பீடு<br>(Internal)</td>
+          ` : ''}
+          <td style="${bdr} background:#1e3a8a !important; color:#fde047 !important; text-align:center; font-weight:900; font-size:0.78rem;">பெற்ற<br>மதிப்பெண்</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">தேர்ச்சி நிலை<br>(Result)</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">தரம்<br>(Grade)</td>
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:4px 6px; text-align:left; font-weight:900; font-size:0.74rem;">முன்னேற்றம் &amp; பாட ஆசிரியர்</td>
+        </tr>
+        ${subRowsHtml}
+        <tr style="height:36px;">
+          <td colspan="2" style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:5px 10px; text-align:right; font-weight:900; font-size:0.88rem;">மொத்த மதிப்பெண் (GRAND TOTAL)</td>
+          <td style="${bdr} background:#f1f5f9 !important; text-align:center; ${numFont} font-size:0.92rem;">${maxTotal}</td>
+          <td style="${bdr} background:#f1f5f9 !important; text-align:center; ${numFont} font-size:0.92rem;">${is12 ? 210 : 175}</td>
+          ${isSplit ? `<td colspan="3" style="${bdr} background:#f1f5f9 !important; text-align:center; font-size:0.76rem; font-weight:800; color:#475569;">சராசரி (Average): <strong>${pctStr}</strong></td>` : ''}
+          <td style="${bdr} background:#fef08a !important; text-align:center; ${numFont} font-size:1.18rem; color:#0f294a;">${totScore || "-"}</td>
+          <td style="${bdr} background:${isPassOverall ? '#dcfce7' : '#fee2e2'} !important; text-align:center; font-weight:900; font-size:0.82rem; color:${isPassOverall ? '#166534' : '#991b1b'};">
+            ${isPassOverall ? "🏆 தேர்ச்சி (PASSED)" : (stu.resultType === "FAIL" ? "❌ தோல்வி (FAILED)" : stu.resultType)}
+          </td>
+          <td colspan="2" style="${bdr} background:#eff6ff !important; padding:4px 8px; text-align:center; font-weight:900; font-size:0.84rem; color:#1e3a8a;">
+            வகுப்புத் தரவரிசை (Rank): <strong style="font-size:1.02rem; color:#6d28d9;">${rankVal}</strong> &nbsp;|&nbsp; சதவீதம்: <strong>${pctStr}</strong>
+          </td>
+        </tr>
+      </table>
+    `;
+  }
+
+  const remarkText = isPassOverall
+    ? (totScore / maxTotal >= 0.85
+      ? "🌟 மிகச்சிறப்பான தேர்ச்சி! தொடர்ந்து இதே ஆர்வத்துடன் பயின்று அரசுப் பொதுத்தேர்வில் மாநில / மாவட்ட அளவில் சாதனை படைக்க வாழ்த்துகள்! (Outstanding Academic Performance!)"
+      : "✅ அனைத்துப் பாடங்களிலும் தேர்ச்சி! இன்னும் கூடுதல் மதிப்பெண்கள் பெறத் தொடர்ந்து முயற்சி செய்யவும். (Good Progress — Keep Aiming Higher!)")
+    : "💡 தோல்வியடைந்த பாடங்களில் சிறப்புக் கவனம் செலுத்தி, தினசரி திருப்புதல் பயிற்சிகள் மூலம் வரும் தேர்வில் 100% தேர்ச்சி பெற வாழ்த்துகள்! (Needs Focused Remedial Support)";
+
+  return `
+    <div class="ra-report-sheet" style="background:#ffffff !important; color:#000000 !important; border:2.5px solid #0f294a; border-radius:12px; padding:14px 18px; margin-bottom:16px; font-family:'Segoe UI',Arial,sans-serif; box-sizing:border-box; page-break-inside:avoid;">
+      <!-- Official School Header Banner -->
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2.5px solid #0f294a; padding-bottom:8px; margin-bottom:10px;">
+        <div style="background:#0f294a !important; color:#ffffff !important; padding:6px 12px; border-radius:8px; font-weight:900; font-size:0.78rem; line-height:1.25;">
+          <div>பள்ளிக் கல்வித்துறை – சிவகங்கை மாவட்டம்</div>
+          <div style="color:#fde047; font-size:0.70rem;">SCHOOL EDUCATION DEPT • U.NO: ${escapeHtmlAttr(s.uNo || "")}</div>
+        </div>
+        <div style="text-align:center; flex:1; padding:0 10px;">
+          <div class="ra-ta" style="font-size:1.18rem; font-weight:900; color:#0f294a;">${escapeHtmlAttr(s.nameTa || s.nameEn || "")}</div>
+          <div style="font-size:0.86rem; font-weight:900; color:#334155;">${escapeHtmlAttr(s.nameEn || "")} ${s.udiseNo ? `• UDISE: ${escapeHtmlAttr(s.udiseNo)}` : ""}</div>
+          <div style="display:inline-block; background:#fef3c7 !important; border:1.5px solid #d97706; color:#92400e !important; padding:2px 14px; border-radius:999px; font-size:0.80rem; font-weight:900; margin-top:3px;">
+            🎓 மாணவர் தேர்ச்சி முன்னேற்ற அறிக்கை (STUDENT PROGRESS REPORT CARD • 2026–2027)
+          </div>
+        </div>
+        <div style="text-align:right; background:#f0fdfa !important; border:1.5px solid #0f766e; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.80rem; color:#0f766e;">
+          <div>${is12 ? "📙 12-ஆம் வகுப்பு (HSC +2)" : "📘 10-ஆம் வகுப்பு (SSLC)"}</div>
+          <div style="font-size:0.74rem; color:#0f294a; margin-top:2px;">${escapeHtmlAttr(calc.termMeta ? calc.termMeta.shortName : "")}</div>
+        </div>
+      </div>
+
+      <!-- Student Demographic Profile Table -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
+        <tr>
+          <td style="${bdr} background:#f8fafc !important; padding:6px 10px; width:34%; text-align:left;">
+            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">மாணவர் பெயர் (தமிழில் / English):</div>
+            <div class="ra-ta" style="font-size:0.98rem; font-weight:900; color:#0f294a;">${escapeHtmlAttr(nameTaDisp)}</div>
+            <div style="font-size:0.84rem; font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(nameEnDisp)}</div>
+          </td>
+          <td style="${bdr} background:#f8fafc !important; padding:6px 10px; width:22%; text-align:left;">
+            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">EMIS எண் &amp; வரிசை எண்:</div>
+            <div style="${numFont} font-size:0.92rem; color:#0f294a;">EMIS: ${escapeHtmlAttr(stu.emisId || "-")}</div>
+            <div style="font-size:0.78rem; font-weight:800; color:#475569;">Roll No: <strong>${escapeHtmlAttr(stu.rollNo || "-")}</strong> | பிறந்த தேதி: ${escapeHtmlAttr(stu.dob || "-")}</div>
+          </td>
+          <td style="${bdr} background:#f8fafc !important; padding:6px 10px; width:24%; text-align:left;">
+            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">வகுப்பு, பிரிவு &amp; பயிற்று மொழி:</div>
+            <div style="font-size:0.88rem; font-weight:900; color:#0f766e;">${is12 ? "12-ஆம் வகுப்பு" : "10-ஆம் வகுப்பு"} — பிரிவு ${escapeHtmlAttr(stu.section || "A")}</div>
+            <div style="font-size:0.76rem; font-weight:800; color:#334155;">${medLabel}</div>
+          </td>
+          <td style="${bdr} background:${isPassOverall ? '#f0fdf4' : '#fef2f2'} !important; padding:6px 10px; width:20%; text-align:center;">
+            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">மொத்த மதிப்பெண் &amp; தரம்:</div>
+            <div style="${numFont} font-size:1.22rem; color:${isPassOverall ? '#15803d' : '#dc2626'};">${totScore || 0} / ${maxTotal} (${pctStr})</div>
+            <div style="font-size:0.76rem; font-weight:900; color:#1e3a8a;">தரவரிசை (Rank): ${rankVal}</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Marks Table -->
+      ${marksTableHtml}
+
+      <!-- Teacher Remarks & 3 Official Signatures Footer -->
+      <div style="background:#fffbeb !important; border:1.5px solid #fcd34d; border-radius:8px; padding:7px 12px; margin-bottom:12px; font-size:0.80rem; font-weight:800; color:#78350f;">
+        <strong>📝 வகுப்பு ஆசிரியர் / தலைமை ஆசிரியர் குறிப்பு (Remarks):</strong> <span class="ra-ta">${remarkText}</span>
+      </div>
+
+      <table style="width:100%; border-collapse:collapse; table-layout:fixed; margin-top:16px;">
+        <tr>
+          <td style="border:none; text-align:center; padding-top:22px; font-weight:900; font-size:0.82rem; color:#0f294a;">
+            <div style="border-top:1.5px dashed #475569; width:75%; margin:0 auto; padding-top:4px;">👨‍🏫 வகுப்பு ஆசிரியர் கையொப்பம்<br><span style="font-size:0.72rem; color:#64748b;">(Class Teacher's Signature)</span></div>
+          </td>
+          <td style="border:none; text-align:center; padding-top:22px; font-weight:900; font-size:0.82rem; color:#0f294a;">
+            <div style="border-top:1.5px dashed #475569; width:75%; margin:0 auto; padding-top:4px;">👨‍👩‍👧 பெற்றோர் / பாதுகாவலர் கையொப்பம்<br><span style="font-size:0.72rem; color:#64748b;">(Parent / Guardian's Signature)</span></div>
+          </td>
+          <td style="border:none; text-align:center; padding-top:22px; font-weight:900; font-size:0.82rem; color:#0f294a;">
+            <div style="border-top:1.5px dashed #475569; width:75%; margin:0 auto; padding-top:4px;">🏫 தலைமை ஆசிரியர் / முதல்வர் கையொப்பம் &amp; முத்திரை<br><span style="font-size:0.72rem; color:#64748b;">(${escapeHtmlAttr(s.hmTa || s.hmName || "Headmaster / Principal")})</span></div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
+}
+
+function renderSchoolProgressReportPane(calc) {
+  const pane = document.getElementById("mtSubPaneProgress");
+  if (!pane) return;
+  const is12 = (calc.std === "12");
+  const maxTotal = is12 ? 600 : 500;
+  const sections = (calc.rec && Array.isArray(calc.rec.sections)) ? calc.rec.sections : [{ secId: "A", medium: "TM" }];
+  const allStudents = Array.isArray(calc.evaluatedStudents) ? calc.evaluatedStudents : [];
+  const rankByScore = buildClassRankMapForEvaluatedStudents(allStudents, is12);
+
+  const secFiltered = allStudents.filter(st => _progReportSecFilter === "ALL" || st.section === _progReportSecFilter);
+  const q = (_progReportSearchQuery || "").trim().toLowerCase();
+  const matchingStudents = secFiltered.filter(st => {
+    if (!q) return true;
+    const hay = `${st.rollNo || ""} ${st.emisId || ""} ${st.nameTa || ""} ${st.nameEn || ""} ${st.name || ""}`.toLowerCase();
+    return hay.includes(q);
+  });
+
+  // If selected student is not in secFiltered, fallback to first student for preview
+  let previewStudent = matchingStudents[0] || allStudents[0] || null;
+  if (_progReportSelectedStuId !== "ALL") {
+    const found = allStudents.find(st => String(st.id || st.rollNo) === String(_progReportSelectedStuId));
+    if (found) previewStudent = found;
+  }
+
+  const secOptsHtml = `<option value="ALL" ${_progReportSecFilter === "ALL" ? "selected" : ""}>அனைத்துப் பிரிவுகள் (${allStudents.length} மாணவர்கள்)</option>` +
+    sections.map(sec => {
+      const cnt = allStudents.filter(x => x.section === sec.secId).length;
+      return `<option value="${escapeHtmlAttr(sec.secId)}" ${_progReportSecFilter === sec.secId ? "selected" : ""}>பிரிவு ${escapeHtmlAttr(sec.secId)} (${cnt} மாணவர்கள்)</option>`;
+    }).join("");
+
+  const stuOptsHtml = `<option value="ALL" ${_progReportSelectedStuId === "ALL" ? "selected" : ""}>-- அனைத்து மாணவர்கள் (${matchingStudents.length} பேர்) --</option>` +
+    secFiltered.map(st => {
+      const sid = String(st.id || st.rollNo);
+      const sel = (sid === String(_progReportSelectedStuId)) ? "selected" : "";
+      return `<option value="${escapeHtmlAttr(sid)}" ${sel}>${escapeHtmlAttr(st.rollNo || "")} - ${escapeHtmlAttr(st.nameTa || st.nameEn || st.name)}</option>`;
+    }).join("");
+
+  const rosterRowsHtml = matchingStudents.map((st, idx) => {
+    const sid = String(st.id || st.rollNo);
+    const tot = Number(is12 ? st.total600 : st.total500) || 0;
+    const pct = (st.resultType === "PASS" || st.resultType === "FAIL") ? ((tot / maxTotal) * 100).toFixed(1) + "%" : "-";
+    const rnk = (st.resultType === "PASS" && rankByScore[tot]) ? `#${rankByScore[tot]}` : "-";
+    const isSel = previewStudent && String(previewStudent.id || previewStudent.rollNo) === sid;
+    return `
+      <tr style="background:${isSel ? '#eff6ff' : '#ffffff'};">
+        <td style="text-align:center; font-weight:900;">${idx + 1}</td>
+        <td style="text-align:center; font-family:monospace; font-weight:900;">${escapeHtmlAttr(st.rollNo || "-")}</td>
+        <td style="text-align:center; font-family:monospace; font-size:0.78rem; font-weight:800;">${escapeHtmlAttr(st.emisId || "-")}</td>
+        <td>
+          <div class="ra-ta" style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(st.nameTa || st.name || "-")}</div>
+          <div style="font-size:0.74rem; color:#475569; font-weight:800;">${escapeHtmlAttr(st.nameEn || "")}</div>
+        </td>
+        <td style="text-align:center; font-weight:900;">${escapeHtmlAttr(st.section || "A")}</td>
+        <td style="text-align:center; font-weight:900; font-size:0.95rem; color:#1e3a8a;">${tot > 0 ? `${tot} / ${maxTotal}` : "-"}</td>
+        <td style="text-align:center; font-weight:800;">${pct}</td>
+        <td style="text-align:center;">${st.resultBadge || "-"}</td>
+        <td style="text-align:center; font-weight:900; color:#6d28d9;">${rnk}</td>
+        <td style="text-align:center; white-space:nowrap;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="onSelectStudentForProgressReport('${escapeHtmlAttr(sid)}')" style="padding:3px 8px; font-size:0.74rem; font-weight:900; border-color:#2563eb; color:#1d4ed8;">
+            👁️ அட்டை பார்வை
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="downloadStudentProgressReportPdf('${escapeHtmlAttr(sid)}', this)" style="padding:3px 9px; font-size:0.74rem; font-weight:900; background:#dc2626; border-color:#b91c1c; margin-left:4px;">
+            📥 PDF பதிவிறக்கு
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  pane.innerHTML = `
+    <!-- Progress Report Controls & Bulk Download Bar -->
+    <div style="background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border:2px solid #fb923c; border-left:6px solid #ea580c; border-radius:12px; padding:12px 16px; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+        <div>
+          <div style="font-size:1.02rem; font-weight:900; color:#9a3412;">
+            🎓 ${is12 ? "12-ஆம் வகுப்பு (HSC +2)" : "10-ஆம் வகுப்பு (SSLC)"} — மாணவர் தேர்ச்சி முன்னேற்ற அறிக்கை (Student Progress Report Card)
+          </div>
+          <div style="font-size:0.78rem; color:#7c2d12; font-weight:700;">
+            தனிப்பட்ட மாணவருக்கோ அல்லது வகுப்பு/பிரிவு முழுமைக்குமோ அரசின் அதிகாரப்பூர்வ வடிவமைப்பில் (வகுப்பு ஆசிரியர், பெற்றோர் &amp; தலைமை ஆசிரியர் கையொப்பப் பகுதியுடன்) PDF பதிவிறக்கம் செய்யலாம்.
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="downloadStudentProgressReportPdf('CURRENT_PREVIEW', this)" style="background:#1d4ed8; border-color:#1e40af; color:#ffffff; font-weight:900; padding:7px 14px;">
+            📥 இம்மாணவரின் Progress Report PDF பதிவிறக்கு
+          </button>
+          <button type="button" class="btn btn-success btn-sm" onclick="downloadStudentProgressReportPdf('BULK_FILTERED', this)" style="background:#15803d; border-color:#166534; color:#ffffff; font-weight:900; padding:7px 14px;">
+            📥 பிரிவு முழுமைக்கும் (${matchingStudents.length} மாணவர்கள்) PDF பதிவிறக்கு
+          </button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#ffffff; padding:10px 12px; border-radius:10px; border:1px solid #fed7aa;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-size:0.78rem; font-weight:900; color:#9a3412;">📋 அறிக்கை வகை:</span>
+          <select class="form-control" style="width:auto; font-size:0.80rem; font-weight:900; padding:4px 8px; border-color:#ea580c;" onchange="_activeProgressReportFormat=this.value; renderSchoolMidTermModule();">
+            <option value="SINGLE_EXAM" ${_activeProgressReportFormat === "SINGLE_EXAM" ? "selected" : ""}>📄 தற்போதைய தேர்வு Progress Report (Theory/Practical/Internal + Grade)</option>
+            <option value="ALL_EXAMS" ${_activeProgressReportFormat === "ALL_EXAMS" ? "selected" : ""}>📈 அனைத்து 8 தேர்வுகளின் ஒப்பீட்டு Progress Report (All Exams Cumulative)</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-size:0.78rem; font-weight:900; color:#0f294a;">🏫 பிரிவு:</span>
+          <select class="form-control" style="width:auto; font-size:0.80rem; font-weight:900; padding:4px 8px;" onchange="_progReportSecFilter=this.value; _progReportSelectedStuId='ALL'; renderSchoolMidTermModule();">
+            ${secOptsHtml}
+          </select>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-size:0.78rem; font-weight:900; color:#0f294a;">👩‍🎓 மாணவர்:</span>
+          <select class="form-control" style="width:auto; max-width:250px; font-size:0.80rem; font-weight:900; padding:4px 8px;" onchange="onSelectStudentForProgressReport(this.value)">
+            ${stuOptsHtml}
+          </select>
+        </div>
+        <input type="text" class="form-control" style="width:190px; font-size:0.80rem; padding:4px 8px; font-weight:800;" placeholder="🔍 பெயர் / EMIS / Roll No தேடு..." value="${escapeHtmlAttr(_progReportSearchQuery)}" oninput="_progReportSearchQuery=this.value; renderSchoolMidTermModule();">
+      </div>
+    </div>
+
+    <!-- Student Roster Quick Selection & Individual PDF Table -->
+    <div class="table-responsive" style="max-height:250px; overflow-y:auto; border:1.5px solid #cbd5e1; border-radius:10px; margin-bottom:16px;">
+      <table class="data-table" style="margin:0; font-size:0.80rem;">
+        <thead style="position:sticky; top:0; z-index:4;">
+          <tr style="background:#0f294a; color:#ffffff;">
+            <th style="width:44px; text-align:center;">வ.எண்</th>
+            <th style="width:75px; text-align:center;">Roll No</th>
+            <th style="width:110px; text-align:center;">EMIS ID</th>
+            <th>மாணவர் பெயர் (தமிழில் &amp; English)</th>
+            <th style="width:65px; text-align:center;">பிரிவு</th>
+            <th style="width:95px; text-align:center;">மொத்தம்</th>
+            <th style="width:75px; text-align:center;">சதவீதம்</th>
+            <th style="width:120px; text-align:center;">தேர்ச்சி நிலை</th>
+            <th style="width:65px; text-align:center;">Rank</th>
+            <th style="width:210px; text-align:center;">Progress Report பதிவிறக்கம்</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rosterRowsHtml || `<tr><td colspan="10" style="text-align:center; padding:20px; font-weight:800; color:#64748b;">மாணவர்கள் விவரம் இல்லை. Class Master பகுதியில் EMIS Student List (.xlsx) பதிவேற்றவும்.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Live Preview of Selected Student's Progress Report Card -->
+    <div style="font-size:0.88rem; font-weight:900; color:#0f294a; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+      <span>👁️ மாணவர் முன்னேற்ற அறிக்கை நேரடி மாதிரிப் பார்வை (Live Progress Report Card Preview):</span>
+      ${previewStudent ? `<span style="font-size:0.78rem; color:#1d4ed8;">தேர்ந்தெடுக்கப்பட்டுள்ள மாணவர்: <strong>${escapeHtmlAttr(previewStudent.nameTa || previewStudent.nameEn || previewStudent.name)} (Roll No: ${escapeHtmlAttr(previewStudent.rollNo || "-")})</strong></span>` : ""}
+    </div>
+    <div id="raStudentProgressCardPreviewBox">
+      ${previewStudent ? buildSingleStudentProgressCardHtml(previewStudent, calc, rankByScore, _activeProgressReportFormat, false) : ""}
+    </div>
+  `;
+}
+
+function onSelectStudentForProgressReport(stuId) {
+  _progReportSelectedStuId = String(stuId || "ALL");
+  renderSchoolMidTermModule();
+  const box = document.getElementById("raStudentProgressCardPreviewBox");
+  if (box && typeof box.scrollIntoView === "function") {
+    box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+async function downloadStudentProgressReportPdf(targetModeOrStuId, btnEl) {
+  if (!activeSchoolSession) return;
+  const uNo = String(activeSchoolSession.uNo);
+  const calc = computeSchoolExamResultAnalysis(uNo, _activeMidTermTermKey, _activeResultAnalysisStd);
+  const is12 = (calc.std === "12");
+  const allStudents = Array.isArray(calc.evaluatedStudents) ? calc.evaluatedStudents : [];
+  if (allStudents.length === 0) {
+    showToast("⚠️ மாணவர்கள் விவரம் இல்லை!", "#f59e0b");
+    return;
+  }
+  const rankByScore = buildClassRankMapForEvaluatedStudents(allStudents, is12);
+
+  let targetStudents = [];
+  if (targetModeOrStuId === "BULK_FILTERED") {
+    targetStudents = allStudents.filter(st => _progReportSecFilter === "ALL" || st.section === _progReportSecFilter);
+  } else if (targetModeOrStuId === "CURRENT_PREVIEW") {
+    if (_progReportSelectedStuId !== "ALL") {
+      const f = allStudents.find(st => String(st.id || st.rollNo) === String(_progReportSelectedStuId));
+      if (f) targetStudents = [f];
+    }
+    if (targetStudents.length === 0) {
+      const secList = allStudents.filter(st => _progReportSecFilter === "ALL" || st.section === _progReportSecFilter);
+      if (secList[0]) targetStudents = [secList[0]];
+    }
+  } else {
+    const f = allStudents.find(st => String(st.id || st.rollNo) === String(targetModeOrStuId));
+    if (f) targetStudents = [f];
+  }
+
+  if (targetStudents.length === 0) {
+    showToast("⚠️ பதிவிறக்க மாணவர் தேர்ந்தெடுக்கப்படவில்லை!", "#f59e0b");
+    return;
+  }
+
+  // Update preview box to show the selected student
+  if (targetStudents.length === 1) {
+    _progReportSelectedStuId = String(targetStudents[0].id || targetStudents[0].rollNo);
+    const previewBox = document.getElementById("raStudentProgressCardPreviewBox");
+    if (previewBox) {
+      previewBox.innerHTML = buildSingleStudentProgressCardHtml(targetStudents[0], calc, rankByScore, _activeProgressReportFormat, false);
+    }
+  }
+
+  const origHtml = btnEl ? btnEl.innerHTML : "";
+  if (btnEl) {
+    btnEl.disabled = true;
+    btnEl.innerHTML = `⏳ PDF (${targetStudents.length}) தயாராகிறது...`;
+  }
+
+  const RENDER_WIDTH_PX = 1080;
+  const tempContainer = document.createElement("div");
+  tempContainer.style.cssText = `position:fixed; left:0; top:0; width:${RENDER_WIDTH_PX}px; min-width:${RENDER_WIDTH_PX}px; background:#ffffff !important; z-index:-9999; opacity:0; pointer-events:none; overflow:visible !important;`;
+  document.body.appendChild(tempContainer);
+
+  try {
+    const pdfDoc = new window.jspdf.jsPDF({ orientation: "landscape", unit: "mm", format: "a4", compress: true });
+
+    for (let i = 0; i < targetStudents.length; i++) {
+      if (i > 0) pdfDoc.addPage("a4", "landscape");
+      pdfDoc.setPage(i + 1);
+      pdfDoc.setFillColor(255, 255, 255);
+      pdfDoc.rect(0, 0, 297, 210, "F");
+
+      const cardHtml = buildSingleStudentProgressCardHtml(targetStudents[i], calc, rankByScore, _activeProgressReportFormat, true);
+      tempContainer.innerHTML = `<div style="width:${RENDER_WIDTH_PX}px; padding:8px 10px; background:#ffffff; box-sizing:border-box;">${cardHtml}</div>`;
+      const pageEl = tempContainer.firstElementChild;
+
+      pageEl.querySelectorAll("td, th, div, span, strong").forEach(el => {
+        el.style.letterSpacing = "0px";
+        if (/[஀-௿]/.test(el.textContent || "")) {
+          el.style.fontFamily = "'Nirmala UI', 'Latha', 'Noto Sans Tamil', 'Segoe UI', Arial, sans-serif";
+          el.style.fontWeight = "700";
+        }
+      });
+
+      await new Promise(r => setTimeout(r, 25));
+      const fullW = Math.max(RENDER_WIDTH_PX, pageEl.scrollWidth || RENDER_WIDTH_PX);
+      const fullH = Math.max(100, pageEl.scrollHeight || pageEl.offsetHeight || 680);
+
+      const canvas = await window.html2canvas(pageEl, {
+        scale: 2.2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        width: fullW,
+        height: fullH,
+        windowWidth: fullW + 40,
+        windowHeight: fullH + 40,
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0
+      });
+
+      const imgData = canvas.toDataURL("image/jpeg", 0.96);
+      const maxW = 287;
+      const maxH = 200;
+      const ratio = canvas.width / canvas.height;
+      let drawW = maxW;
+      let drawH = drawW / ratio;
+      if (drawH > maxH) {
+        drawH = maxH;
+        drawW = drawH * ratio;
+      }
+      const xOffset = (297 - drawW) / 2;
+      const yOffset = (210 - drawH) / 2;
+      pdfDoc.addImage(imgData, "JPEG", xOffset, yOffset, drawW, drawH);
+    }
+
+    const safeSch = String(calc.sch.nameEn || ("School_" + uNo)).replace(/[^A-Za-z0-9]+/g, "_").slice(0, 24);
+    const stdLbl = is12 ? "12th" : "10th";
+    const fileName = targetStudents.length === 1
+      ? `[${uNo}]_${stdLbl}_${String(targetStudents[0].rollNo || "Stu")}_${String(targetStudents[0].nameEn || "Student").replace(/[^A-Za-z0-9]+/g, "_")}_Progress_Report.pdf`
+      : `[${uNo}]_${safeSch}_${stdLbl}_Sec_${_progReportSecFilter}_Progress_Reports_${targetStudents.length}_Students.pdf`;
+
+    pdfDoc.save(fileName);
+    showToast(`🎓 [${fileName}] மாணவர் Progress Report PDF வெற்றிகரமாகப் பதிவிறக்கப்பட்டது!`, "#16a34a", true);
+  } catch (err) {
+    console.error("Progress Report PDF error:", err);
+    showToast("⚠️ PDF உருவாக்குவதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.", "#dc2626");
+  } finally {
+    if (tempContainer && tempContainer.parentNode) {
+      tempContainer.parentNode.removeChild(tempContainer);
+    }
+    if (btnEl) {
+      btnEl.disabled = false;
+      btnEl.innerHTML = origHtml;
+    }
+  }
+}
+
 </script>
 
 <!-- HM FINAL DECLARATION LOCK MODAL -->
@@ -41166,6 +42173,72 @@ function syncAllMidTermResultsToGoogleSheet() {
     <div class="modal-footer" style="padding:12px 18px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; gap:8px;">
       <span style="font-size:0.75rem; color:#64748b; font-weight:700;">💡 சாளரத்திற்கு வெளியே கிளிக் செய்தாலோ அல்லது Esc அழுத்தினாலோ மூடிக்கொள்ளும்</span>
       <button type="button" class="btn btn-danger btn-sm" onclick="closePwaInstallGuideModal()" style="font-weight:900; padding:7px 16px;">✕ மூடுக (Close)</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========================================================================= -->
+<!-- ADMIN LIVE ACTIVE USERS MODAL (#admLiveUsersModal)                        -->
+<!-- ========================================================================= -->
+<div id="admLiveUsersModal" class="modal-backdrop" onclick="if(event.target===this) closeAdminLiveUsersModal()" style="display:none; z-index:10060;">
+  <div class="modal-card" style="max-width:940px; width:96%; border-top:6px solid #10b981; padding:0; overflow:hidden;">
+    <div class="modal-header" style="background:linear-gradient(135deg, #064e3b 0%, #0f766e 60%, #1e3a8a 100%); color:#ffffff; padding:14px 20px; margin:0; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-size:0.74rem; font-weight:900; color:#fde047; letter-spacing:0.8px; text-transform:uppercase;">
+          🟢 REAL-TIME PORTAL PRESENCE MONITOR • PORTAL.CEOSVG.IN
+        </div>
+        <h3 style="margin:3px 0 0 0; font-size:1.15rem; font-weight:900; color:#ffffff;">
+          👥 தற்போது இணையதளத்தைப் பயன்படுத்திக் கொண்டிருக்கும் நேரலைப் பயனர்கள் (Live Active Users)
+        </h3>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="refreshLivePresenceFromCloud(true)" style="background:rgba(255,255,255,0.18); color:#ffffff; border-color:rgba(255,255,255,0.4); font-weight:900;">
+          🔄 இப்போதே புதுப்பி (Refresh)
+        </button>
+        <button type="button" class="btn btn-danger btn-sm" onclick="closeAdminLiveUsersModal()" style="font-weight:900;">✕ மூடுக</button>
+      </div>
+    </div>
+
+    <div class="modal-body" style="padding:16px 20px; max-height:78vh; overflow-y:auto;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:14px;">
+        <div style="background:#ecfdf5; border:1.5px solid #6ee7b7; border-left:5px solid #059669; border-radius:10px; padding:10px 14px;">
+          <div style="font-size:0.75rem; font-weight:900; color:#065f46;">🟢 மொத்த நேரலைப் பயனர்கள்</div>
+          <div id="admLiveModalTotalKpi" style="font-size:1.65rem; font-weight:900; color:#047857;">1</div>
+          <div style="font-size:0.70rem; color:#059669; font-weight:700;">தற்போது ஆன்லைனில் உள்ளவர்கள்</div>
+        </div>
+        <div style="background:#f0fdf4; border:1.5px solid #86efac; border-left:5px solid #16a34a; border-radius:10px; padding:10px 14px;">
+          <div style="font-size:0.75rem; font-weight:900; color:#166534;">🏫 உள்நுழைந்துள்ள பள்ளிகள்</div>
+          <div id="admLiveModalSchoolKpi" style="font-size:1.65rem; font-weight:900; color:#15803d;">0</div>
+          <div style="font-size:0.70rem; color:#16a34a; font-weight:700;">பள்ளி முகப்பில் செயல்படுபவை</div>
+        </div>
+        <div style="background:#fffbeb; border:1.5px solid #fcd34d; border-left:5px solid #d97706; border-radius:10px; padding:10px 14px;">
+          <div style="font-size:0.75rem; font-weight:900; color:#92400e;">🛡️ நிர்வாகிகள் (Admins)</div>
+          <div id="admLiveModalAdminKpi" style="font-size:1.65rem; font-weight:900; color:#b45309;">1</div>
+          <div style="font-size:0.70rem; color:#d97706; font-weight:700;">மாவட்ட நிர்வாகக் கட்டுப்பாட்டகம்</div>
+        </div>
+        <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-left:5px solid #2563eb; border-radius:10px; padding:10px 14px;">
+          <div style="font-size:0.75rem; font-weight:900; color:#1e40af;">🌐 பொதுப் பார்வையாளர்கள்</div>
+          <div id="admLiveModalPublicKpi" style="font-size:1.65rem; font-weight:900; color:#1d4ed8;">0</div>
+          <div style="font-size:0.70rem; color:#2563eb; font-weight:700;">முகப்புப் பக்கம் / சுற்றறிக்கைகள்</div>
+        </div>
+      </div>
+
+      <div class="table-responsive" style="max-height:420px; overflow-y:auto; border:1.5px solid #cbd5e1; border-radius:10px;">
+        <table class="data-table" style="margin:0; font-size:0.80rem;">
+          <thead style="position:sticky; top:0; z-index:4;">
+            <tr style="background:#0f294a; color:#ffffff;">
+              <th style="width:45px; text-align:center;">வ.எண்</th>
+              <th style="width:140px;">பயனர் வகை</th>
+              <th>பள்ளி U.No &amp; பெயர் / ஒன்றியம்</th>
+              <th>தற்போது பயன்படுத்தும் பகுதி (Active Module)</th>
+              <th style="width:130px; text-align:center;">சாதனம்</th>
+              <th style="width:190px; text-align:center;">நேரலை நிலை (Live Status)</th>
+            </tr>
+          </thead>
+          <tbody id="admLiveUsersTableBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
