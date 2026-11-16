@@ -91,6 +91,24 @@
 }
 
 
+
+/* === OFFICER / SECTION USER MODE (SCHOOL-STYLE TOP MENU & PERMITTED MODULES ONLY) === */
+body.officer-user-mode .top-system-bar,
+body.officer-user-mode #admSuperAdminMasterHeaderBox,
+body.officer-user-mode #admLivePresenceStrip,
+body.officer-user-mode #admAutoBackupControlStrip,
+body.officer-user-mode #admActiveOfficerRoleBanner,
+body.officer-user-mode #admMainPortalChooser,
+body.officer-user-mode #admModuleBreadcrumbBar,
+body.officer-user-mode #admBottomReturnBar,
+body.officer-user-mode #admEbsGoogleSheetCfgBox,
+body.officer-user-mode .adm-super-only-ctrl {
+  display: none !important;
+}
+body.officer-user-mode #admOfficerPortalHeaderWrap {
+  display: block !important;
+}
+
 /* === RESULT ANALYSIS REPORT: HIGH-LEGIBILITY NUMBERS & LANDSCAPE PDF === */
 .ra-report-sheet {
   background: #ffffff !important;
@@ -1969,8 +1987,16 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <!-- VIEW 3: DISTRICT ADMIN PORTAL DASHBOARD (#viewAdmin)                  -->
 <!-- ===================================================================== -->
 <div id="viewAdmin" class="view-section">
-<!-- Admin Header Banner -->
-<div style="background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #312e81 100%); color:#fff; border-radius:12px; padding:18px 22px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; border:2px solid #f59e0b;">
+<!-- OFFICER / DEO USER SCHOOL-STYLE TOP QUICK BAR & PERMITTED MODULES MENU BAR -->
+<div id="admOfficerPortalHeaderWrap" style="display:none; margin-bottom:14px;">
+  <div id="admOfficerTopQuickBar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:#0f294a; color:#ffffff; padding:8px 14px; border-radius:8px; margin-bottom:8px; border-left:5px solid #f59e0b; box-shadow:0 3px 10px rgba(15,41,74,0.16);"></div>
+  <nav class="school-topmenu-container" aria-label="Officer Permitted Modules Navigation" style="margin-bottom:0;">
+    <div class="school-topmenu-bar" id="admOfficerTopMenuBar"></div>
+  </nav>
+</div>
+
+<!-- Admin Header Banner (Super Admin Only) -->
+<div id="admSuperAdminMasterHeaderBox" style="background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #312e81 100%); color:#fff; border-radius:12px; padding:18px 22px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; border:2px solid #f59e0b;">
 <div>
 <div style="font-size:0.8rem; font-weight:800; color:#fde047; letter-spacing:1px; text-transform:uppercase;">CHIEF EDUCATIONAL OFFICE, SIVAGANGAI – MASTER CONTROL PANEL</div>
 <h2 style="font-size:1.35rem; font-weight:900; margin-top:2px;">🛡️ மாவட்ட நிர்வாகி கட்டுப்பாட்டு முகப்பு (portal.ceosvg.in Admin)</h2>
@@ -5277,10 +5303,10 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 </div>
 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-<button type="button" class="btn btn-outline btn-sm" onclick="refreshEbsDropDownsFromGoogleSheet(true)" style="background:#f5f3ff; color:#4c1d95; border-color:#a78bfa; font-weight:900;">
+<button type="button" class="btn btn-outline btn-sm adm-super-only-ctrl" onclick="refreshEbsDropDownsFromGoogleSheet(true)" style="background:#f5f3ff; color:#4c1d95; border-color:#a78bfa; font-weight:900;">
 🔄 Google Sheet Drop_Down &amp; மையங்கள் புதுப்பி
 </button>
-<button type="button" class="btn btn-primary btn-sm" onclick="syncAllDistrictEbsToGoogleSheet()" style="background:#16a34a; border-color:#15803d; font-weight:900;">
+<button type="button" class="btn btn-primary btn-sm adm-super-only-ctrl" onclick="syncAllDistrictEbsToGoogleSheet()" style="background:#16a34a; border-color:#15803d; font-weight:900;">
 ☁️ அனைத்து 282 பள்ளிகளின் EBS (F1–F4) தனி Google Sheet-இல் ஒத்திசை
 </button>
 <button type="button" class="btn btn-primary btn-sm" onclick="switchAdminTab('examDutyAllotment')" style="background:#0f766e; border-color:#0d9488; font-weight:900;">
@@ -5292,7 +5318,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 </div>
 <!-- Dedicated EBS 2026-27 Google Sheet Box -->
-<div style="background:linear-gradient(135deg,#f5f3ff 0%,#eff6ff 100%); border:1.5px solid #c4b5fd; border-left:5px solid #7c3aed; border-radius:12px; padding:14px 16px; margin-bottom:16px;">
+<div id="admEbsGoogleSheetCfgBox" class="adm-super-only-ctrl" style="background:linear-gradient(135deg,#f5f3ff 0%,#eff6ff 100%); border:1.5px solid #c4b5fd; border-left:5px solid #7c3aed; border-radius:12px; padding:14px 16px; margin-bottom:16px;">
 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
 <div>
 <div style="font-weight:900; color:#4c1d95; font-size:0.95rem;">
@@ -6172,7 +6198,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
       <button type="button" class="btn btn-primary btn-sm" onclick="exportDistrictMidTermF2Csv()" style="background:#1d4ed8; border-color:#1e40af; font-weight:900;">
         📥 F2_Subject Performance (49 Cols CSV) பதிவிறக்கு
       </button>
-      <button type="button" class="btn btn-primary btn-sm" onclick="syncAllMidTermResultsToGoogleSheet()" style="background:#7c3aed; border-color:#6d28d9; font-weight:900;">
+      <button type="button" class="btn btn-primary btn-sm adm-super-only-ctrl" onclick="syncAllMidTermResultsToGoogleSheet()" style="background:#7c3aed; border-color:#6d28d9; font-weight:900;">
         ☁️ Google Sheet உடன் ஒத்திசை
       </button>
     </div>
@@ -6228,7 +6254,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 
 <!-- Bottom Return Button -->
-<div style="text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid #cbd5e1;">
+<div id="admBottomReturnBar" style="text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid #cbd5e1;">
 <button type="button" class="btn btn-outline" onclick="returnToAdminDashboard()" style="font-weight:800; background:#fff;">
 ⬅️ முதன்மை கட்டுப்பாட்டகத்திற்குத் திரும்பு (Back to Main Dashboard)
 </button>
@@ -9023,9 +9049,11 @@ document.body.classList.remove("ebs-standalone-mode");
 }
 document.body.classList.toggle("school-mode", viewName === "viewSchool");
 document.body.classList.toggle("admin-mode", viewName === "viewAdmin");
+const isOfficerMode = Boolean(viewName === "viewAdmin" && typeof activeAdminOfficerSession !== "undefined" && activeAdminOfficerSession);
+document.body.classList.toggle("officer-user-mode", isOfficerMode);
 const topSysBar = document.querySelector(".top-system-bar");
 if (topSysBar) {
-topSysBar.style.display = (viewName === "viewAdmin") ? "flex" : "none";
+topSysBar.style.display = (viewName === "viewAdmin" && !isOfficerMode) ? "flex" : "none";
 }
 if (viewName !== "viewAuth") {
 document.body.classList.remove("auth-mode");
@@ -14385,6 +14413,16 @@ switchAuthTab("schoolLogin");
 showToast("நிர்வாகி முகப்பிலிருந்து வெளியேறியுள்ளீர்கள்.", "#38bdf8");
 }
 function returnToAdminDashboard(skipUiStateSave) {
+if (typeof activeAdminOfficerSession !== "undefined" && activeAdminOfficerSession) {
+  const allowed = Array.isArray(activeAdminOfficerSession.allowedModules) && activeAdminOfficerSession.allowedModules.length > 0
+    ? activeAdminOfficerSession.allowedModules
+    : ["schoolMaster"];
+  const targetMod = (window._activeOfficerSelectedModKey && allowed.includes(window._activeOfficerSelectedModKey))
+    ? window._activeOfficerSelectedModKey
+    : allowed[0];
+  openOfficerAllowedModule(targetMod, skipUiStateSave);
+  return;
+}
 const chooser = document.getElementById("admMainPortalChooser");
 const secSch = document.getElementById("admSectionSchoolMaster");
 if (chooser) chooser.style.display = "block";
@@ -24304,7 +24342,7 @@ function renderAdminEbsDeleteReqsBox() {
       `;
     }).join("");
   box.innerHTML = `
-      <div style="background:linear-gradient(135deg,#eef2ff 0%,#f0fdf4 100%); border:1.5px solid #a5b4fc; border-left:5px solid #4f46e5; border-radius:12px; padding:12px 16px; margin-bottom:12px;">
+      <div class="adm-super-only-ctrl" style="background:linear-gradient(135deg,#eef2ff 0%,#f0fdf4 100%); border:1.5px solid #a5b4fc; border-left:5px solid #4f46e5; border-radius:12px; padding:12px 16px; margin-bottom:12px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
             <div style="font-size:0.92rem; font-weight:900; color:#1e1b4b;">✨ புதிய EBS 2026-27 மேம்பாடுகள் &amp; நேரடி அணுகல் பட்டை (New Features Quick Access)</div>
@@ -43873,18 +43911,18 @@ let _officeUsersStoreCache = null;
 let _visiblePasswordRowsSet = new Set();
 
 const PORTAL_ADMIN_MODULES_CATALOG = [
-  { key: "schoolMaster",      cardId: "admModuleCardSchoolMaster",     num: 1,  icon: "🏫", labelTa: "1. பள்ளி முதன்மைப் பதிவேடு (School Master)" },
-  { key: "emisStaff",         cardId: "admModuleCardEmisStaff",        num: 2,  icon: "👨‍🏫", labelTa: "2. ஆசிரியர்கள் & பணியாளர்கள் (EMIS Staff)" },
-  { key: "studentsMaster",    cardId: "admModuleCardStudentsMaster",   num: 3,  icon: "👨‍🎓", labelTa: "3. மாணவர்கள் சேர்க்கை (Students Master)" },
-  { key: "dignitaries",       cardId: "admModuleCardDignitaries",      num: 4,  icon: "🏛️", labelTa: "4. முக்கியப் பிரமுகர்கள் (Dignitaries)" },
-  { key: "circulars",         cardId: "admModuleCardCirculars",        num: 5,  icon: "📢", labelTa: "5. சுற்றறிக்கை அனுப்புதல் (Circulars)" },
-  { key: "hssGroups",         cardId: "admModuleCardHssGroups",        num: 6,  icon: "📚", labelTa: "6. மேல்நிலை பாடப்பிரிவுகள் (HSS Groups)" },
-  { key: "infraNeeds",        cardId: "admModuleCardInfraNeeds",       num: 7,  icon: "🏗️", labelTa: "7. அடிப்படைத் தேவைகள் (Infra Needs)" },
-  { key: "ebsMaster",         cardId: "admModuleCardEbsMaster",        num: 8,  icon: "📋", labelTa: "8. EBS 2026-27 (படிவங்கள் F1–F4)" },
-  { key: "examDutyAllotment", cardId: "admModuleCardExamDuty",         num: 9,  icon: "🎯", labelTa: "9. தேர்வுப் பணி நியமனம் (Exam Duty)" },
-  { key: "auditTrail",        cardId: "admModuleCardAuditTrail",       num: 10, icon: "📜", labelTa: "10. தணிக்கைப் பதிவேடு (Audit Trail)" },
-  { key: "midTermMaster",     cardId: "admModuleCardMidTermMaster",    num: 11, icon: "📈", labelTa: "11. தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (Result Analysis)" },
-  { key: "officeUsers",       cardId: "admModuleCardOfficeUsers",      num: 12, icon: "👥", labelTa: "12. அலுவலகப் பணியாளர்கள் & DEO அதிகாரங்கள்" }
+  { key: "schoolMaster",      cardId: "admModuleCardSchoolMaster",     num: 1,  icon: "🏫", shortTa: "பள்ளி முதன்மைப் பதிவேடு",       shortEn: "School Master",       labelTa: "1. பள்ளி முதன்மைப் பதிவேடு (School Master)" },
+  { key: "emisStaff",         cardId: "admModuleCardEmisStaff",        num: 2,  icon: "👨‍🏫", shortTa: "ஆசிரியர்கள் & பணியாளர்கள்",    shortEn: "EMIS Staff Roster",   labelTa: "2. ஆசிரியர்கள் & பணியாளர்கள் (EMIS Staff)" },
+  { key: "studentsMaster",    cardId: "admModuleCardStudentsMaster",   num: 3,  icon: "👨‍🎓", shortTa: "மாணவர்கள் சேர்க்கை",            shortEn: "Students Master",     labelTa: "3. மாணவர்கள் சேர்க்கை (Students Master)" },
+  { key: "dignitaries",       cardId: "admModuleCardDignitaries",      num: 4,  icon: "🏛️", shortTa: "முக்கியப் பிரமுகர்கள்",         shortEn: "Dignitaries",         labelTa: "4. முக்கியப் பிரமுகர்கள் (Dignitaries)" },
+  { key: "circulars",         cardId: "admModuleCardCirculars",        num: 5,  icon: "📢", shortTa: "சுற்றறிக்கை அனுப்புதல்",         shortEn: "Circulars",           labelTa: "5. சுற்றறிக்கை அனுப்புதல் (Circulars)" },
+  { key: "hssGroups",         cardId: "admModuleCardHssGroups",        num: 6,  icon: "📚", shortTa: "மேல்நிலை பாடப்பிரிவுகள்",        shortEn: "HSS Groups",          labelTa: "6. மேல்நிலை பாடப்பிரிவுகள் (HSS Groups)" },
+  { key: "infraNeeds",        cardId: "admModuleCardInfraNeeds",       num: 7,  icon: "🏗️", shortTa: "அடிப்படைத் தேவைகள்",            shortEn: "Infra Needs",         labelTa: "7. அடிப்படைத் தேவைகள் (Infra Needs)" },
+  { key: "ebsMaster",         cardId: "admModuleCardEbsMaster",        num: 8,  icon: "📋", shortTa: "EBS 2026-27 (படிவங்கள் F1–F4)", shortEn: "EBS 2026-27 Master",  labelTa: "8. EBS 2026-27 (படிவங்கள் F1–F4)" },
+  { key: "examDutyAllotment", cardId: "admModuleCardExamDuty",         num: 9,  icon: "🎯", shortTa: "தேர்வுப் பணி நியமனம்",          shortEn: "Exam Duty Allotment", labelTa: "9. தேர்வுப் பணி நியமனம் (Exam Duty)" },
+  { key: "auditTrail",        cardId: "admModuleCardAuditTrail",       num: 10, icon: "📜", shortTa: "தணிக்கைப் பதிவேடு",             shortEn: "Audit Trail",         labelTa: "10. தணிக்கைப் பதிவேடு (Audit Trail)" },
+  { key: "midTermMaster",     cardId: "admModuleCardMidTermMaster",    num: 11, icon: "📈", shortTa: "தேர்ச்சிப் பகுப்பாய்வு அறிக்கை", shortEn: "Result Analysis",     labelTa: "11. தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (Result Analysis)" },
+  { key: "officeUsers",       cardId: "admModuleCardOfficeUsers",      num: 12, icon: "👥", shortTa: "அலுவலகப் பயனர்கள் & DEO",       shortEn: "Office Users RBAC",   labelTa: "12. அலுவலகப் பணியாளர்கள் & DEO அதிகாரங்கள்" }
 ];
 
 const PORTAL_ACTION_RIGHTS_CATALOG = [
@@ -43921,34 +43959,34 @@ const OFFICE_ROLE_PRESETS = {
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "HS",
-    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "infraNeeds"],
-    actions: { canView: true, canEdit: true, canApprove: true, canDelete: false, canSendCircular: true, canManageUsers: false }
+    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "infraNeeds", "midTermMaster"],
+    actions: { canView: true, canEdit: false, canApprove: false, canDelete: false, canSendCircular: true, canManageUsers: false }
   },
   "PA_CEO_HSS": {
     roleGroup: "PA",
-    sectionTitle: "நேர்முக உதவியாளர் (மேல்நிலை) - PA to CEO (HSS)",
+    sectionTitle: "முதன்மைக் கல்வி அலுவலரின் நேர்முக உதவியாளர் (மேல்நிலை) - PA to CEO (HSS)",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "HSS",
     allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "hssGroups", "infraNeeds", "ebsMaster", "examDutyAllotment", "auditTrail", "midTermMaster"],
-    actions: { canView: true, canEdit: true, canApprove: true, canDelete: true, canSendCircular: true, canManageUsers: false }
+    actions: { canView: true, canEdit: true, canApprove: true, canDelete: false, canSendCircular: true, canManageUsers: false }
   },
   "PA_CEO_HS": {
     roleGroup: "PA",
-    sectionTitle: "நேர்முக உதவியாளர் (உயர்நிலை) - PA to CEO (HS)",
+    sectionTitle: "முதன்மைக் கல்வி அலுவலரின் நேர்முக உதவியாளர் (உயர்நிலை) - PA to CEO (HS)",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "HS",
     allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "infraNeeds", "ebsMaster", "examDutyAllotment", "auditTrail", "midTermMaster"],
-    actions: { canView: true, canEdit: true, canApprove: true, canDelete: true, canSendCircular: true, canManageUsers: false }
+    actions: { canView: true, canEdit: true, canApprove: true, canDelete: false, canSendCircular: true, canManageUsers: false }
   },
   "APO": {
     roleGroup: "APO_DI",
-    sectionTitle: "உதவித் திட்ட அலுவலர் (APO - ஒருங்கிணைந்த பள்ளிக்கல்வி)",
+    sectionTitle: "உதவித் திட்ட அலுவலர் (APO - சமக்ர சிக்ஷா / திட்டங்கள்)",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
-    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "infraNeeds", "midTermMaster"],
+    allowedModules: ["schoolMaster", "studentsMaster", "hssGroups", "infraNeeds", "circulars", "midTermMaster"],
     actions: { canView: true, canEdit: true, canApprove: false, canDelete: false, canSendCircular: true, canManageUsers: false }
   },
   "DI": {
@@ -43962,7 +44000,7 @@ const OFFICE_ROLE_PRESETS = {
   },
   "SUPERINTENDENT": {
     roleGroup: "SUPDT_CLERK",
-    sectionTitle: "அலுவலகக் கண்காணிப்பாளர் (Office Superintendent - அ1/ஆ1/இ1)",
+    sectionTitle: "கண்காணிப்பாளர் (Superintendent - A1 / B1 / C1 பிரிவு)",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
@@ -43971,7 +44009,7 @@ const OFFICE_ROLE_PRESETS = {
   },
   "CLERK_EXAM": {
     roleGroup: "SUPDT_CLERK",
-    sectionTitle: "பிரிவு எழுத்தர் - தேர்வுப் பிரிவு (Exam & EBS Section Assistant)",
+    sectionTitle: "பிரிவு எழுத்தர் (தேர்வுப் பிரிவு & EBS / தேர்ச்சிப் பகுப்பாய்வு)",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
@@ -43980,16 +44018,16 @@ const OFFICE_ROLE_PRESETS = {
   },
   "CLERK_EST": {
     roleGroup: "SUPDT_CLERK",
-    sectionTitle: "பிரிவு எழுத்தர் - பணியமைப்புப் பிரிவு (Establishment A1/A2/B1 Clerk)",
+    sectionTitle: "பிரிவு எழுத்தர் (பணியமைப்பு & ஆசிரியர் பதிவேடு - Establishment)",
     scopeBlock: "ALL",
-    scopeMgmt: "1G_2A",
+    scopeMgmt: "ALL",
     scopeLevel: "ALL",
-    allowedModules: ["schoolMaster", "emisStaff", "ebsMaster", "circulars"],
+    allowedModules: ["schoolMaster", "emisStaff", "circulars"],
     actions: { canView: true, canEdit: true, canApprove: false, canDelete: false, canSendCircular: false, canManageUsers: false }
   },
   "EMIS_COORD": {
     roleGroup: "EMIS",
-    sectionTitle: "மாவட்ட EMIS ஒருங்கிணைப்பாளர் / கணினி இயக்குபவர்",
+    sectionTitle: "மாவட்ட EMIS ஒருங்கிணைப்பாளர் (District EMIS Coordinator)",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
@@ -43997,50 +44035,30 @@ const OFFICE_ROLE_PRESETS = {
     actions: { canView: true, canEdit: true, canApprove: false, canDelete: false, canSendCircular: false, canManageUsers: false }
   },
   "CEO_SUPER": {
-    roleGroup: "DEO",
-    sectionTitle: "முதன்மைக் கல்வி அலுவலர் (CEO - Super Admin)",
+    roleGroup: "CEO",
+    sectionTitle: "முதன்மைக் கல்வி அலுவலர் (CEO Super Admin - அனைத்து அதிகாரங்கள்)",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
-    allowedModules: PORTAL_ADMIN_MODULES_CATALOG.map(m => m.key),
+    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "dignitaries", "circulars", "hssGroups", "infraNeeds", "ebsMaster", "examDutyAllotment", "auditTrail", "midTermMaster", "officeUsers"],
     actions: { canView: true, canEdit: true, canApprove: true, canDelete: true, canSendCircular: true, canManageUsers: true }
   }
 };
 
 const DEFAULT_OFFICE_USERS_SEED = [
   {
-    id: "OU_DEO_SVG",
+    id: "OU_DEO_SEC",
     rolePreset: "DEO_SECONDARY",
     roleGroup: "DEO",
-    nameTa: "மாவட்டக் கல்வி அலுவலர் (இடைநிலை), சிவகங்கை",
-    nameEn: "DEO (SECONDARY), SIVAGANGAI",
-    sectionTitle: "DEO (இடைநிலை) - சிவகங்கை கல்வி மாவட்டம்",
+    nameTa: "மாவட்டக் கல்வி அலுவலர் (இடைநிலை)",
+    nameEn: "DISTRICT EDUCATIONAL OFFICER (SECONDARY)",
+    sectionTitle: "மாவட்டக் கல்வி அலுவலர் (இடைநிலை) - சிவகங்கை",
     mobile: "04575240408",
-    email: "deosivagangai@tnschools.gov.in",
-    username: "deo_svg",
-    password: "DeoSvg@2026",
+    email: "deosec.svg@tnschools.gov.in",
+    username: "deo_sec",
+    password: "DeoSec@2026",
     pin: "202601",
-    scopeBlock: "EDU_SVG",
-    scopeMgmt: "1G_2A",
-    scopeLevel: "ALL",
-    status: "ACTIVE",
-    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "hssGroups", "infraNeeds", "ebsMaster", "examDutyAllotment", "auditTrail", "midTermMaster"],
-    actions: { canView: true, canEdit: true, canApprove: true, canDelete: false, canSendCircular: true, canManageUsers: false },
-    updatedAt: "16/11/2026"
-  },
-  {
-    id: "OU_DEO_DVK",
-    rolePreset: "DEO_SECONDARY",
-    roleGroup: "DEO",
-    nameTa: "மாவட்டக் கல்வி அலுவலர் (இடைநிலை), தேவகோட்டை",
-    nameEn: "DEO (SECONDARY), DEVAKOTTAI",
-    sectionTitle: "DEO (இடைநிலை) - தேவகோட்டை கல்வி மாவட்டம்",
-    mobile: "04561272234",
-    email: "deodevakottai@tnschools.gov.in",
-    username: "deo_dvk",
-    password: "DeoDvk@2026",
-    pin: "202602",
-    scopeBlock: "EDU_DVK",
+    scopeBlock: "ALL",
     scopeMgmt: "1G_2A",
     scopeLevel: "ALL",
     status: "ACTIVE",
@@ -44052,14 +44070,14 @@ const DEFAULT_OFFICE_USERS_SEED = [
     id: "OU_DEO_PVT",
     rolePreset: "DEO_PRIVATE",
     roleGroup: "DEO",
-    nameTa: "மாவட்டக் கல்வி அலுவலர் (தனியார் பள்ளிகள்), சிவகங்கை",
-    nameEn: "DEO (PRIVATE SCHOOLS), SIVAGANGAI",
-    sectionTitle: "DEO (தனியார் பள்ளிகள்) - சிவகங்கை மாவட்டம்",
-    mobile: "04575240409",
-    email: "deopvtsvg@tnschools.gov.in",
+    nameTa: "மாவட்டக் கல்வி அலுவலர் (தனியார் பள்ளிகள்)",
+    nameEn: "DISTRICT EDUCATIONAL OFFICER (PRIVATE SCHOOLS)",
+    sectionTitle: "மாவட்டக் கல்வி அலுவலர் (தனியார் பள்ளிகள்) - சிவகங்கை",
+    mobile: "04575240408",
+    email: "deopvt.svg@tnschools.gov.in",
     username: "deo_pvt",
     password: "DeoPvt@2026",
-    pin: "202603",
+    pin: "202602",
     scopeBlock: "ALL",
     scopeMgmt: "3P",
     scopeLevel: "ALL",
@@ -44069,12 +44087,32 @@ const DEFAULT_OFFICE_USERS_SEED = [
     updatedAt: "16/11/2026"
   },
   {
+    id: "OU_DEO_ELEM",
+    rolePreset: "DEO_ELEMENTARY",
+    roleGroup: "DEO",
+    nameTa: "மாவட்டக் கல்வி அலுவலர் (தொடக்கக்கல்வி)",
+    nameEn: "DISTRICT EDUCATIONAL OFFICER (ELEMENTARY)",
+    sectionTitle: "மாவட்டக் கல்வி அலுவலர் (தொடக்கக்கல்வி) - சிவகங்கை",
+    mobile: "04575240408",
+    email: "deoelem.svg@tnschools.gov.in",
+    username: "deo_elem",
+    password: "DeoElem@2026",
+    pin: "202603",
+    scopeBlock: "ALL",
+    scopeMgmt: "ALL",
+    scopeLevel: "HS",
+    status: "ACTIVE",
+    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "infraNeeds", "midTermMaster"],
+    actions: { canView: true, canEdit: false, canApprove: false, canDelete: false, canSendCircular: true, canManageUsers: false },
+    updatedAt: "16/11/2026"
+  },
+  {
     id: "OU_PA_HSS",
     rolePreset: "PA_CEO_HSS",
     roleGroup: "PA",
-    nameTa: "நேர்முக உதவியாளர் (மேல்நிலைப்பள்ளிகள்)",
+    nameTa: "நேர்முக உதவியாளர் (மேல்நிலைக் கல்வி)",
     nameEn: "PA TO CEO (HIGHER SECONDARY)",
-    sectionTitle: "முதன்மைக் கல்வி அலுவலரின் நேர்முக உதவியாளர் (HSS)",
+    sectionTitle: "முதன்மைக் கல்வி அலுவலரின் நேர்முக உதவியாளர் (மேல்நிலை)",
     mobile: "04575240408",
     email: "pahss.ceosvg@tnschools.gov.in",
     username: "pa_hss",
@@ -44085,16 +44123,16 @@ const DEFAULT_OFFICE_USERS_SEED = [
     scopeLevel: "HSS",
     status: "ACTIVE",
     allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "hssGroups", "infraNeeds", "ebsMaster", "examDutyAllotment", "auditTrail", "midTermMaster"],
-    actions: { canView: true, canEdit: true, canApprove: true, canDelete: true, canSendCircular: true, canManageUsers: false },
+    actions: { canView: true, canEdit: true, canApprove: true, canDelete: false, canSendCircular: true, canManageUsers: false },
     updatedAt: "16/11/2026"
   },
   {
     id: "OU_PA_HS",
     rolePreset: "PA_CEO_HS",
     roleGroup: "PA",
-    nameTa: "நேர்முக உதவியாளர் (உயர்நிலைப்பள்ளிகள்)",
+    nameTa: "நேர்முக உதவியாளர் (உயர்நிலைக் கல்வி)",
     nameEn: "PA TO CEO (HIGH SCHOOLS)",
-    sectionTitle: "முதன்மைக் கல்வி அலுவலரின் நேர்முக உதவியாளர் (HS)",
+    sectionTitle: "முதன்மைக் கல்வி அலுவலரின் நேர்முக உதவியாளர் (உயர்நிலை)",
     mobile: "04575240408",
     email: "pahs.ceosvg@tnschools.gov.in",
     username: "pa_hs",
@@ -44105,18 +44143,18 @@ const DEFAULT_OFFICE_USERS_SEED = [
     scopeLevel: "HS",
     status: "ACTIVE",
     allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "infraNeeds", "ebsMaster", "examDutyAllotment", "auditTrail", "midTermMaster"],
-    actions: { canView: true, canEdit: true, canApprove: true, canDelete: true, canSendCircular: true, canManageUsers: false },
+    actions: { canView: true, canEdit: true, canApprove: true, canDelete: false, canSendCircular: true, canManageUsers: false },
     updatedAt: "16/11/2026"
   },
   {
     id: "OU_DI_SVG",
     rolePreset: "DI",
     roleGroup: "APO_DI",
-    nameTa: "திரு. கூ. பூவலிங்கம்",
-    nameEn: "POOVALINGAM K",
-    sectionTitle: "பள்ளித் துணை ஆய்வாளர் (Deputy Inspector of Schools - DI)",
+    nameTa: "கூ. பூவலிங்கம் (பள்ளித் துணை ஆய்வாளர்)",
+    nameEn: "POOVALINGAM K (DEPUTY INSPECTOR OF SCHOOLS)",
+    sectionTitle: "பள்ளித் துணை ஆய்வாளர் - முதன்மைக்கல்வி அலுவலகம்",
     mobile: "9626471035",
-    email: "di.ceosvg@tnschools.gov.in",
+    email: "ceosvgweb@gmail.com",
     username: "di_svg",
     password: "DiSvg@2026",
     pin: "202606",
@@ -44124,7 +44162,7 @@ const DEFAULT_OFFICE_USERS_SEED = [
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
     status: "ACTIVE",
-    allowedModules: PORTAL_ADMIN_MODULES_CATALOG.map(m => m.key),
+    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "hssGroups", "infraNeeds", "ebsMaster", "examDutyAllotment", "auditTrail", "midTermMaster"],
     actions: { canView: true, canEdit: true, canApprove: true, canDelete: true, canSendCircular: true, canManageUsers: true },
     updatedAt: "16/11/2026"
   },
@@ -44133,8 +44171,8 @@ const DEFAULT_OFFICE_USERS_SEED = [
     rolePreset: "APO",
     roleGroup: "APO_DI",
     nameTa: "உதவித் திட்ட அலுவலர் (APO)",
-    nameEn: "ASSISTANT PROJECT OFFICER (SS)",
-    sectionTitle: "உதவித் திட்ட அலுவலர் (Samagra Shiksha)",
+    nameEn: "ASSISTANT PROJECT OFFICER (APO)",
+    sectionTitle: "உதவித் திட்ட அலுவலர் - சமக்ர சிக்ஷா, சிவகங்கை",
     mobile: "04575240408",
     email: "apo.ceosvg@tnschools.gov.in",
     username: "apo_svg",
@@ -44144,7 +44182,7 @@ const DEFAULT_OFFICE_USERS_SEED = [
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
     status: "ACTIVE",
-    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "infraNeeds", "midTermMaster"],
+    allowedModules: ["schoolMaster", "studentsMaster", "hssGroups", "infraNeeds", "circulars", "midTermMaster"],
     actions: { canView: true, canEdit: true, canApprove: false, canDelete: false, canSendCircular: true, canManageUsers: false },
     updatedAt: "16/11/2026"
   },
@@ -44152,8 +44190,8 @@ const DEFAULT_OFFICE_USERS_SEED = [
     id: "OU_SUPDT_A1",
     rolePreset: "SUPERINTENDENT",
     roleGroup: "SUPDT_CLERK",
-    nameTa: "அலுவலகக் கண்காணிப்பாளர் (அ1 / ஆ1 பிரிவு)",
-    nameEn: "OFFICE SUPERINTENDENT (A1/B1)",
+    nameTa: "கண்காணிப்பாளர் (அலுவலக நிர்வாகம்)",
+    nameEn: "SUPERINTENDENT (CEO OFFICE)",
     sectionTitle: "கண்காணிப்பாளர் - முதன்மைக்கல்வி அலுவலகம்",
     mobile: "04575240408",
     email: "supdt.ceosvg@tnschools.gov.in",
@@ -44172,9 +44210,9 @@ const DEFAULT_OFFICE_USERS_SEED = [
     id: "OU_CLERK_EXAM",
     rolePreset: "CLERK_EXAM",
     roleGroup: "SUPDT_CLERK",
-    nameTa: "பிரிவு எழுத்தர் (தேர்வுப் பிரிவு & EBS)",
-    nameEn: "SECTION ASSISTANT (EXAM & EBS SECTION)",
-    sectionTitle: "பிரிவு எழுத்தர் - தேர்வுப் பிரிவு (Exam Section)",
+    nameTa: "திரு.ச.கார்த்தி (ஆ3 தேர்வுகள் பிரிவு)",
+    nameEn: "KARTHI S (A3 EXAM SECTION)",
+    sectionTitle: "ஆ3 தேர்வுகள் பிரிவு (Exam Section)",
     mobile: "04575240408",
     email: "examsec.ceosvg@tnschools.gov.in",
     username: "clerk_exam",
@@ -44294,20 +44332,72 @@ function formatOfficeUserScopeLabel(u) {
   return `${blkMap[u.scopeBlock] || u.scopeBlock || "12 ஒன்றியங்கள்"} | ${mgmtMap[u.scopeMgmt] || u.scopeMgmt || "அனைத்தும்"} | ${lvlMap[u.scopeLevel] || u.scopeLevel || "HS & HSS"}`;
 }
 
-function loginAsOfficeStaffOrDeo(userObj) {
+window._activeOfficerSelectedModKey = "";
+
+function openOfficerAllowedModule(modKey, skipUiStateSave) {
+  if (!activeAdminOfficerSession) {
+    openAdminModule(modKey);
+    return;
+  }
+  const allowed = Array.isArray(activeAdminOfficerSession.allowedModules) && activeAdminOfficerSession.allowedModules.length > 0
+    ? activeAdminOfficerSession.allowedModules
+    : ["schoolMaster"];
+  const validModKey = allowed.includes(modKey) ? modKey : allowed[0];
+  window._activeOfficerSelectedModKey = validModKey;
+
+  // Update active highlight on the School-style Officer Top Menu Bar (#admOfficerTopMenuBar)
+  const menuBar = document.getElementById("admOfficerTopMenuBar");
+  if (menuBar) {
+    menuBar.querySelectorAll(".school-topmenu-item").forEach(btn => {
+      const bMod = btn.getAttribute("data-officer-mod");
+      btn.classList.toggle("active", bMod === validModKey);
+    });
+  }
+
+  openAdminModule(validModKey);
+
+  // For single-screen modules in Officer mode, hide the redundant sub-nav pill bar so only the School-style Top Menu Bar and the module content are shown!
+  const navBar = document.getElementById("admContextualSubNavBar");
+  if (navBar) {
+    const multiTabModules = new Set(["schoolMaster", "emisStaff"]);
+    if (!multiTabModules.has(validModKey)) {
+      navBar.style.display = "none";
+    } else {
+      navBar.style.display = "flex";
+      // Hide cross-module shortcut pills inside schoolMaster / emisStaff if not permitted or redundant
+      const hideIds = ["admTabBtnInfraNeedsSub", "admTabBtnExamDutySchoolSub", "admTabBtnStaffExcel", "admTabBtnStudentExcel"];
+      hideIds.forEach(hid => {
+        const el = document.getElementById(hid);
+        if (el) el.style.display = "none";
+      });
+      if (!hasAdminActionPermission("canEdit")) {
+        const addBtn = document.getElementById("admTabBtnAddSchool");
+        if (addBtn) addBtn.style.display = "none";
+      }
+    }
+  }
+}
+
+function loginAsOfficeStaffOrDeo(userObj, isSuperAdminPreview) {
   if (!userObj) return;
-  activeAdminOfficerSession = JSON.parse(JSON.stringify(userObj));
+  const copy = JSON.parse(JSON.stringify(userObj));
+  copy._isSuperAdminPreview = Boolean(isSuperAdminPreview);
+  activeAdminOfficerSession = copy;
+  const allowed = Array.isArray(copy.allowedModules) && copy.allowedModules.length > 0 ? copy.allowedModules : ["schoolMaster"];
+  window._activeOfficerSelectedModKey = allowed[0];
   safeSetStorage("CEOSVG_ACTIVE_OFFICER_USER", activeAdminOfficerSession, true);
   if (typeof recordAdminAuditLog === "function") {
     recordAdminAuditLog("USER_LOGIN", "CEO_OFFICE_RBAC", `அலுவலர் / பணியாளர் உள்நுழைவு: ${userObj.nameTa || userObj.nameEn} (${userObj.sectionTitle} - ID: ${userObj.username})`);
   }
   openAdminPortal(false);
-  showToast(`🎖️ நல்வரவு! ${userObj.nameTa || userObj.nameEn} (${userObj.sectionTitle}) முகப்பு திறக்கப்பட்டது!`, "#7e22ce");
+  showToast(`🎖️ நல்வரவு! ${userObj.nameTa || userObj.nameEn} (${userObj.sectionTitle}) முகப்பு திறக்கப்பட்டது!`, "#0f766e");
 }
 
 function switchBackToSuperAdminMode() {
   activeAdminOfficerSession = null;
+  window._activeOfficerSelectedModKey = "";
   safeSetStorage("CEOSVG_ACTIVE_OFFICER_USER", null, true);
+  if (document.body) document.body.classList.remove("officer-user-mode");
   openAdminPortal(false);
   showToast("🛡️ முதன்மைக் கல்வி அலுவலர் (CEO Super Admin) முழு அதிகார நிலைக்குத் திரும்பியுள்ளீர்கள்!", "#16a34a");
 }
@@ -44326,9 +44416,21 @@ function hasAdminActionPermission(actionKey) {
 
 function applyActiveOfficerPermissionsToAdminUi() {
   const banner = document.getElementById("admActiveOfficerRoleBanner");
+  const officerWrap = document.getElementById("admOfficerPortalHeaderWrap");
+  const quickBar = document.getElementById("admOfficerTopQuickBar");
+  const topMenuBar = document.getElementById("admOfficerTopMenuBar");
+  const topSysBar = document.querySelector(".top-system-bar");
   const u = activeAdminOfficerSession;
 
-  // Show or hide module cards in #admMainPortalChooser based on allowedModules
+  if (document.body) {
+    document.body.classList.toggle("officer-user-mode", Boolean(u));
+  }
+  if (topSysBar) {
+    const isAdminView = Boolean(document.getElementById("viewAdmin")?.classList.contains("active"));
+    topSysBar.style.display = (isAdminView && !u) ? "flex" : "none";
+  }
+
+  // Show or hide module cards in #admMainPortalChooser based on allowedModules (for Super Admin chooser)
   PORTAL_ADMIN_MODULES_CATALOG.forEach(m => {
     const cardEl = document.getElementById(m.cardId);
     if (!cardEl) return;
@@ -44336,51 +44438,72 @@ function applyActiveOfficerPermissionsToAdminUi() {
     cardEl.style.display = allowed ? "flex" : "none";
   });
 
-  if (!banner) return;
-  banner.style.display = "flex";
-
   if (!u) {
-    banner.style.borderColor = "#10b981";
-    banner.style.borderLeftColor = "#059669";
-    banner.innerHTML = `
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <span style="background:#059669; color:#ffffff; font-weight:900; font-size:0.78rem; padding:4px 12px; border-radius:999px;">🛡️ CEO SUPER ADMIN</span>
-        <span style="font-size:0.88rem; font-weight:900; color:#0f294a;">முதன்மைக் கல்வி அலுவலர் கட்டுப்பாட்டகம் — அனைத்து 12 தொகுதிகள் &amp; முழு அதிகாரம் (Full District Access)</span>
-      </div>
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <button type="button" class="btn btn-primary btn-sm" onclick="openAdminModule('officeUsers')" style="background:#7e22ce; border-color:#6b21a8; color:#ffffff; font-weight:900; font-size:0.78rem;">
-          👥 அலுவலகப் பணியாளர்கள் &amp; DEO கணக்குகள் / அதிகாரங்கள் உருவாக்கு ➔
-        </button>
-      </div>
-    `;
+    if (officerWrap) officerWrap.style.display = "none";
+    const navBar = document.getElementById("admContextualSubNavBar");
+    if (navBar) navBar.style.display = "flex";
+    if (banner) {
+      banner.style.display = "flex";
+      banner.style.borderColor = "#10b981";
+      banner.style.borderLeftColor = "#059669";
+      banner.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="background:#059669; color:#ffffff; font-weight:900; font-size:0.78rem; padding:4px 12px; border-radius:999px;">🛡️ CEO SUPER ADMIN</span>
+          <span style="font-size:0.88rem; font-weight:900; color:#0f294a;">முதன்மைக் கல்வி அலுவலர் கட்டுப்பாட்டகம் — அனைத்து 12 தொகுதிகள் &amp; முழு அதிகாரம் (Full District Access)</span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="openAdminModule('officeUsers')" style="background:#7e22ce; border-color:#6b21a8; color:#ffffff; font-weight:900; font-size:0.78rem;">
+            👥 அலுவலகப் பணியாளர்கள் &amp; DEO கணக்குகள் / அதிகாரங்கள் உருவாக்கு ➔
+          </button>
+        </div>
+      `;
+    }
     return;
   }
 
-  const actBadges = PORTAL_ACTION_RIGHTS_CATALOG.map(a => {
-    const ok = Boolean(u.actions && u.actions[a.key]);
-    return `<span style="padding:2px 8px; border-radius:6px; font-size:0.72rem; font-weight:900; background:${ok ? '#dcfce7' : '#f1f5f9'}; color:${ok ? '#166534' : '#94a3b8'}; border:1px solid ${ok ? '#86efac' : '#cbd5e1'};">${ok ? '✅' : '🔒'} ${a.icon} ${a.key.replace('can','')}</span>`;
-  }).join(" ");
+  // OFFICER / DEO USER MODE: Show ONLY Header Banner + School-style Top Quick Bar & Permitted Modules Menu Bar!
+  if (banner) banner.style.display = "none";
+  if (officerWrap) officerWrap.style.display = "block";
 
-  banner.style.borderColor = "#a855f7";
-  banner.style.borderLeftColor = "#7e22ce";
-  banner.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:4px;">
-      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <span style="background:#7e22ce; color:#ffffff; font-weight:900; font-size:0.78rem; padding:3px 10px; border-radius:999px;">🎖️ ${escapeHtmlAttr(u.username)}</span>
-        <span style="font-size:0.94rem; font-weight:900; color:#4a044e;">${escapeHtmlAttr(u.nameTa || u.nameEn)} — ${escapeHtmlAttr(u.sectionTitle)}</span>
-        <span style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:2px 9px; border-radius:6px; font-size:0.75rem; font-weight:800;">🗺️ வரம்பு: ${escapeHtmlAttr(formatOfficeUserScopeLabel(u))}</span>
+  const allowedKeys = Array.isArray(u.allowedModules) && u.allowedModules.length > 0 ? u.allowedModules : ["schoolMaster"];
+  const allowedMods = PORTAL_ADMIN_MODULES_CATALOG.filter(m => allowedKeys.includes(m.key));
+  if (!window._activeOfficerSelectedModKey || !allowedKeys.includes(window._activeOfficerSelectedModKey)) {
+    window._activeOfficerSelectedModKey = allowedMods[0] ? allowedMods[0].key : "schoolMaster";
+  }
+
+  if (quickBar) {
+    quickBar.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <span style="font-size:0.86rem; font-weight:900; color:#fde047;">🎖️ ${escapeHtmlAttr(u.sectionTitle)}</span>
+        <span style="font-size:0.84rem; font-weight:800; color:#ffffff;">| 👤 ${escapeHtmlAttr(u.nameTa || u.nameEn)}</span>
+        <span style="background:rgba(255,255,255,0.14); color:#e2e8f0; border:1px solid rgba(255,255,255,0.28); padding:2px 9px; border-radius:6px; font-size:0.74rem; font-weight:800;">
+          🗺️ ${escapeHtmlAttr(formatOfficeUserScopeLabel(u))}
+        </span>
       </div>
-      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:2px;">
-        <span style="font-size:0.74rem; font-weight:900; color:#475569;">அதிகாரங்கள்:</span>
-        ${actBadges}
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        ${u._isSuperAdminPreview ? `
+        <button type="button" class="btn btn-outline btn-sm" onclick="switchBackToSuperAdminMode()" style="background:#fef3c7; color:#92400e; border-color:#f59e0b; font-weight:900; padding:4px 10px; font-size:0.76rem;">
+          🛡️⬅️ CEO Super Admin நிலைக்குத் திரும்பு
+        </button>` : ""}
+        <button type="button" class="btn btn-danger btn-sm" onclick="logoutAdmin()" style="padding:4px 12px; font-size:0.78rem; font-weight:900;">
+          🚪 வெளியேறு (Logout)
+        </button>
       </div>
-    </div>
-    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-      <button type="button" class="btn btn-outline btn-sm" onclick="switchBackToSuperAdminMode()" style="background:#fef3c7; color:#92400e; border-color:#f59e0b; font-weight:900; font-size:0.76rem;">
-        🛡️ CEO Super Admin நிலைக்குத் திரும்பு
-      </button>
-    </div>
-  `;
+    `;
+  }
+
+  if (topMenuBar) {
+    topMenuBar.innerHTML = allowedMods.map((m, idx) => {
+      const isAct = (m.key === window._activeOfficerSelectedModKey);
+      return `
+        <button type="button" class="school-topmenu-item ${isAct ? 'active' : ''}" data-officer-mod="${escapeHtmlAttr(m.key)}" onclick="openOfficerAllowedModule('${escapeHtmlAttr(m.key)}')">
+          <span class="topmenu-icon">${m.icon}</span>
+          <span class="topmenu-label"><span class="topmenu-num">${idx + 1}.</span> <span class="topmenu-title">${escapeHtmlAttr(m.shortTa || m.labelTa)}</span></span>
+          <span class="topmenu-en">(${escapeHtmlAttr(m.shortEn || m.key)})</span>
+        </button>
+      `;
+    }).join("");
+  }
 }
 
 function renderOfficeUserFormCheckboxes(selectedModules, selectedActions) {
@@ -44766,7 +44889,7 @@ function renderAdminOfficeUsersDashboard() {
         <td style="text-align:center;">${statusBtn}</td>
         <td style="text-align:center; white-space:nowrap;">
           <div style="display:flex; flex-direction:column; gap:5px; align-items:stretch;">
-            <button type="button" class="btn btn-primary btn-sm" onclick="loginAsOfficeStaffOrDeo(getOfficeUsersStore().find(x=>x.id==='${escapeHtmlAttr(u.id)}'))" style="background:#7e22ce; border-color:#6b21a8; font-size:0.72rem; font-weight:900; padding:4px 8px;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="loginAsOfficeStaffOrDeo(getOfficeUsersStore().find(x=>x.id==='${escapeHtmlAttr(u.id)}'), true)" style="background:#7e22ce; border-color:#6b21a8; font-size:0.72rem; font-weight:900; padding:4px 8px;">
               🚀 இப்பயனராக நுழை (Test Login)
             </button>
             <div style="display:flex; gap:4px; justify-content:center;">
@@ -44905,6 +45028,7 @@ if (typeof window !== "undefined") {
   window.toggleOfficeUserPassVisibility = toggleOfficeUserPassVisibility;
   window.copyOfficeUserCredentials = copyOfficeUserCredentials;
   window.loginAsOfficeStaffOrDeo = loginAsOfficeStaffOrDeo;
+  window.openOfficerAllowedModule = openOfficerAllowedModule;
   window.switchBackToSuperAdminMode = switchBackToSuperAdminMode;
   window.renderAdminOfficeUsersDashboard = renderAdminOfficeUsersDashboard;
   window.exportOfficeUsersRbacCsv = exportOfficeUsersRbacCsv;
