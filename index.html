@@ -1663,6 +1663,10 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
       </button>
       <div style="font-size:1.05rem; font-weight:900; color:#ffffff;" id="schMidTermMainHeading">📈 10-ஆம் வகுப்பு — தேர்ச்சிப் பகுப்பாய்வு அறிக்கை</div>
       <span id="schMidTermStatusBadge" style="display:none;"></span>
+      <span id="raLiveAutoSaveBadge" style="display:inline-flex; align-items:center; gap:5px; background:rgba(22,163,74,0.28); border:1.5px solid #4ade80; color:#ecfdf5; padding:4px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">
+        <span style="width:7px; height:7px; border-radius:50%; background:#4ade80; display:inline-block;"></span>
+        <span>தானியங்கி சேமிப்பு தயார் (Auto-Save Active)</span>
+      </span>
     </div>
     <div style="display:inline-flex; background:rgba(255,255,255,0.14); padding:3px; border-radius:9px; border:1px solid rgba(255,255,255,0.28);">
       <button type="button" id="raTopTabStd10" onclick="onRaSelectStandard('10', true)" style="cursor:pointer; padding:5px 14px; border-radius:7px; font-size:0.80rem; font-weight:900; border:none; background:#0f766e; color:#ffffff;">
@@ -1686,10 +1690,10 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
     </button>
     <button type="button" id="mtMainCardReports" onclick="onRaSelectMainMode('REPORTS')" style="cursor:pointer; padding:15px 18px; border-radius:12px; font-size:1.02rem; font-weight:900; border:2.5px solid #7c3aed; background:#ffffff; color:#0f294a; box-shadow:0 3px 10px rgba(15,41,74,0.08); display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.15s;">
       <span style="font-size:1.4rem;">📊</span>
-      <span>Reports</span>
+      <span>Reports (அனைத்து அறிக்கைகள் &amp; Progress Report)</span>
     </button>
-    <button type="button" id="mtMainCardProgress" onclick="onRaSelectMainMode('PROGRESS_REPORT')" style="cursor:pointer; padding:15px 18px; border-radius:12px; font-size:1.02rem; font-weight:900; border:2.5px solid #ea580c; background:#ffffff; color:#0f294a; box-shadow:0 3px 10px rgba(15,41,74,0.08); display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.15s;">
-      <span style="font-size:1.4rem;">🎓</span>
+    <button type="button" id="mtMainCardProgress" onclick="onRaSelectMainMode('PROGRESS_REPORT')" style="display:none !important;">
+      <span>🎓</span>
       <span>Progress Report</span>
     </button>
   </div>
@@ -1762,7 +1766,10 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
           📥 Review Report PDF
         </button>
         <button type="button" class="btn btn-primary btn-sm" id="schMidTermTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', null, this)" style="background:#dc2626; border-color:#b91c1c; color:#fff; font-weight:900; padding:6px 14px;">
-          📥 PDF அறிக்கை பதிவிறக்கு
+          📥 F1 &amp; F2 PDF பதிவிறக்கு
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" id="schMidTermTopCsvBtn" onclick="exportSingleSchoolMidTermExcelCsv()" style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; font-weight:900; padding:6px 12px;">
+          📊 F1 &amp; F2 Excel (.csv)
         </button>
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnResetMarks" onclick="openMarkResetConfirmModal()" style="background:#fef2f2; color:#dc2626; border:1.5px solid #fca5a5; font-weight:900; padding:6px 12px;">
           🔄 Mark Reset
@@ -2007,6 +2014,46 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
     </button>
     <button type="button" class="btn btn-primary btn-sm" onclick="openAdminLiveUsersModal()" style="background:#fde047; color:#0f294a; border:none; font-weight:900; font-size:0.80rem; padding:6px 14px; border-radius:8px;">
       👁️ யார் ஆன்லைனில் உள்ளனர்? (Live விவரம்)
+    </button>
+  </div>
+</div>
+
+<!-- PERIODIC AUTOMATED & MANUAL BACKUP CONTROL STRIP IN ADMIN DASHBOARD -->
+<div id="admAutoBackupControlStrip" style="background:linear-gradient(90deg, #1e1b4b 0%, #312e81 55%, #0f294a 100%); color:#ffffff; border:2px solid #a78bfa; border-radius:12px; padding:10px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:0 4px 14px rgba(49,46,129,0.22);">
+  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+    <div style="display:inline-flex; align-items:center; gap:7px; background:rgba(255,255,255,0.14); padding:5px 12px; border-radius:999px; border:1px solid rgba(167,139,250,0.5);">
+      <span style="font-size:1.0rem;">💾</span>
+      <span style="font-size:0.82rem; font-weight:900; color:#e0e7ff;">தானியங்கி காப்புப்பிரதி (Periodic Auto-Backup):</span>
+      <span id="admBackupStatusPill" style="background:#22c55e; color:#052e16; padding:1px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">ACTIVE</span>
+    </div>
+    <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:800; color:#cbd5e1;">
+      <span>கால இடைவெளி:</span>
+      <select id="admAutoBackupIntervalSelect" class="form-control" style="width:auto; padding:4px 8px; height:30px; font-size:0.78rem; font-weight:900; background:#0f172a; color:#fde047; border:1.5px solid #818cf8; border-radius:7px;" onchange="onAdminAutoBackupIntervalChange(this.value)">
+        <option value="15">⏱️ 15 நிமிடங்களுக்கு ஒருமுறை</option>
+        <option value="30" selected>⏱️ 30 நிமிடங்களுக்கு ஒருமுறை</option>
+        <option value="60">⏱️ 1 மணி நேரத்திற்கு ஒருமுறை</option>
+        <option value="360">⏱️ 6 மணி நேரத்திற்கு ஒருமுறை</option>
+        <option value="1440">⏱️ தினசரி (24 மணி நேரம்)</option>
+        <option value="0">⏸️ தானியங்கி Backup நிறுத்து (Off)</option>
+      </select>
+    </label>
+    <label style="display:inline-flex; align-items:center; gap:5px; font-size:0.76rem; font-weight:800; color:#e0e7ff; cursor:pointer; background:rgba(255,255,255,0.08); padding:4px 9px; border-radius:7px;">
+      <input type="checkbox" id="admAutoBackupDownloadFileChk" onchange="onAdminAutoBackupDownloadToggle(this.checked)" style="width:14px; height:14px;">
+      <span>📥 கோப்பாகவும் தானாகப் பதிவிறக்கு (.json)</span>
+    </label>
+    <span style="font-size:0.76rem; color:#fde047; font-weight:800;" id="admAutoBackupNextCountdownLabel">⏳ அடுத்த Backup: 30:00</span>
+    <span style="font-size:0.75rem; color:#a5f3fc; font-weight:800;" id="admAutoBackupLastTimeLabel">✅ கடைசி Backup: தயார்</span>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+    <input type="file" id="admRestoreBackupFileInput" accept=".json" style="display:none;" onchange="handleAdminRestoreBackupFileUpload(this)">
+    <button type="button" class="btn btn-success btn-sm" onclick="triggerManualFullPortalBackup(true)" style="background:#16a34a; border-color:#22c55e; color:#ffffff; font-weight:900; font-size:0.78rem; padding:6px 12px; border-radius:8px;">
+      📥 இப்போதே முழு Backup (.json) எடு
+    </button>
+    <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('admRestoreBackupFileInput').click()" style="background:rgba(255,255,255,0.14); color:#ffffff; border-color:#a5b4fc; font-weight:900; font-size:0.78rem; padding:5px 10px; border-radius:8px;">
+      📤 Backup மீட்டமை (Restore)
+    </button>
+    <button type="button" class="btn btn-primary btn-sm" onclick="openAdminBackupCenterModal()" style="background:#f59e0b; color:#0f172a; border:none; font-weight:900; font-size:0.78rem; padding:6px 12px; border-radius:8px;">
+      🗂️ Backup வரலாறு (<span id="admBackupHistoryCountBadge">0</span>)
     </button>
   </div>
 </div>
@@ -7151,7 +7198,7 @@ let fbLiveActivityLog = [];
 let currentSchoolTabKey = "staffStrength";
 const _firebaseMemoryKvStore = {};
 const _SESSION_ONLY_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ACTIVE_UI_STATE", "CEOSVG_PORTAL_CFG", "CEOSVG_FIREBASE_CFG"]);
-const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1", "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1"]);
+const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1", "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", "CEOSVG_SCHOOL_EXTRA_V6", "CEOSVG_MASTER_SCHOOLS", "CEOSVG_SCHOOL_AUTH", "CEOSVG_DELETE_REQUESTS", "CEOSVG_DELETED_STAFF_ARCHIVE", "CEOSVG_CIRCULARS", "CEOSVG_STAFF_OVERRIDES", "CEOSVG_AUTO_BACKUP_CFG_V1", "CEOSVG_AUTO_BACKUP_HISTORY_V1"]);
 try {
 if (typeof localStorage !== "undefined") {
 Object.keys(localStorage).forEach(k => {
@@ -13204,6 +13251,10 @@ if (item && typeof item === "object") total += Number(item.boys || 0) + Number(i
 });
 const badge = document.getElementById("schTotalStudentsBadge");
 if (badge) badge.textContent = total;
+safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+if (typeof scheduleDebouncedPartialEntryCloudSync === "function") {
+  scheduleDebouncedPartialEntryCloudSync("schoolExtra", String(activeSchoolSession.uNo));
+}
 if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStudentDashboardTables(activeSchoolSession);
 }
 function saveSchoolStudentsData(event) {
@@ -24438,23 +24489,52 @@ function pushCloudUpdate(storeType, dataObj, description, optionalUNo, optionalE
 try {
 const targetUNo = String(optionalUNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
 if (targetUNo) window._activeSyncTargetUNo = targetUNo;
+
+// Route Result Analysis updates to CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1 + granular per-school endpoint!
+if (storeType === "examResultAnalysis2026" || storeType === "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1") {
+  const raStore = dataObj || (typeof getExamResultAnalysisStore === "function" ? getExamResultAnalysisStore() : {});
+  if (typeof triggerRealtimeSyncForStorageKey === "function") {
+    triggerRealtimeSyncForStorageKey("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", raStore);
+  }
+  if (typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl) && targetUNo) {
+    const schoolRaPacket = {
+      uNo: targetUNo,
+      updatedAt: new Date().toISOString(),
+      cm10: (raStore._classMasterByUNo && raStore._classMasterByUNo[targetUNo]) ? raStore._classMasterByUNo[targetUNo] : null,
+      cm12: (raStore._classMaster12ByUNo && raStore._classMaster12ByUNo[targetUNo]) ? raStore._classMaster12ByUNo[targetUNo] : null,
+      terms: {}
+    };
+    Object.keys(raStore).forEach(tk => {
+      if (!tk.startsWith("_") && raStore[tk] && raStore[tk][targetUNo]) {
+        schoolRaPacket.terms[tk] = raStore[tk][targetUNo];
+      }
+    });
+    fetch(buildFirebaseEndpoint("ceosvg_live/exam_result_analysis_by_uno/" + encodeURIComponent(targetUNo)), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(schoolRaPacket)
+    }).catch(() => {});
+  }
+  return;
+}
+
 if (typeof triggerRealtimeSyncForStorageKey === "function") {
-triggerRealtimeSyncForStorageKey("CEOSVG_SCHOOL_EXTRA_V6", dataObj || schoolExtraDataStore);
+  triggerRealtimeSyncForStorageKey("CEOSVG_SCHOOL_EXTRA_V6", dataObj || schoolExtraDataStore);
 }
 if (typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl) && targetUNo) {
-const ext = (dataObj || schoolExtraDataStore || {})[targetUNo] || {};
-const pkt = optionalEbsPacket || (typeof buildSchoolEbsSheetPacket === "function" ? buildSchoolEbsSheetPacket(targetUNo, 1) : null);
-const ebsFirebasePayload = {
-uNo: targetUNo,
-ebs2026: ext.ebs2026 || {},
-sheetRows: pkt || {},
-updatedAt: new Date().toISOString()
-};
-fetch(buildFirebaseEndpoint("ceosvg_live/ebs_2026_27/" + encodeURIComponent(targetUNo)), {
-method: "PUT",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify(ebsFirebasePayload)
-}).catch(() => {});
+  const ext = (dataObj || schoolExtraDataStore || {})[targetUNo] || {};
+  const pkt = optionalEbsPacket || (typeof buildSchoolEbsSheetPacket === "function" ? buildSchoolEbsSheetPacket(targetUNo, 1) : null);
+  const ebsFirebasePayload = {
+    uNo: targetUNo,
+    ebs2026: ext.ebs2026 || {},
+    sheetRows: pkt || {},
+    updatedAt: new Date().toISOString()
+  };
+  fetch(buildFirebaseEndpoint("ceosvg_live/ebs_2026_27/" + encodeURIComponent(targetUNo)), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(ebsFirebasePayload)
+  }).catch(() => {});
 }
 } catch (e) {}
 }
@@ -37143,9 +37223,15 @@ function saveExamResultAnalysisStore() {
       });
     }
   }
-  safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", store);
+  // 1) Instant local persistence (0ms) so even a single partial mark/teacher edit is never lost
+  safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", store, true);
   if (typeof updateAdminMidTermChooserBadge === "function") {
     updateAdminMidTermChooserBadge();
+  }
+  // 2) Debounced live Firebase sync (600ms) + visual Auto-Save badge update
+  if (typeof scheduleDebouncedPartialEntryCloudSync === "function") {
+    const uNoSync = (activeSchoolSession && activeSchoolSession.uNo) ? String(activeSchoolSession.uNo) : "";
+    scheduleDebouncedPartialEntryCloudSync("examResultAnalysis2026", uNoSync);
   }
 }
 
@@ -37850,11 +37936,12 @@ if (typeof window !== "undefined") {
 function onRaSelectMainMode(modeKey) {
   _raStepStdChosen = true;
   if (modeKey === "PROGRESS_REPORT") {
-    _activeMidTermMainSection = "PROGRESS_REPORT";
+    // Progress Report is now consolidated inside the Reports area!
+    _activeMidTermMainSection = "REPORTS";
     _activeMarkEntrySubView = "PROGRESS_REPORT";
   } else if (modeKey === "REPORTS") {
     _activeMidTermMainSection = "REPORTS";
-    if (_activeMarkEntrySubView !== "FORM1_1" && _activeMarkEntrySubView !== "FORM1_2" && _activeMarkEntrySubView !== "REVIEW_REPORT") {
+    if (_activeMarkEntrySubView !== "FORM1_1" && _activeMarkEntrySubView !== "FORM1_2" && _activeMarkEntrySubView !== "REVIEW_REPORT" && _activeMarkEntrySubView !== "PROGRESS_REPORT") {
       _activeMarkEntrySubView = "FORM1_1";
     }
   } else if (modeKey === "MARK_ENTRY") {
@@ -37876,7 +37963,7 @@ function openSchoolProgressReportDirect() {
   } else if (!_activeResultAnalysisStd) {
     _activeResultAnalysisStd = "10";
   }
-  _activeMidTermMainSection = "PROGRESS_REPORT";
+  _activeMidTermMainSection = "REPORTS";
   _activeMarkEntrySubView = "PROGRESS_REPORT";
   renderSchoolMidTermModule();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -37911,9 +37998,7 @@ function switchClassMasterSubView(subView) {
 
 function switchMarkEntrySubView(subView) {
   _activeMarkEntrySubView = subView || "STU_MARKS";
-  if (_activeMarkEntrySubView === "PROGRESS_REPORT") {
-    _activeMidTermMainSection = "PROGRESS_REPORT";
-  } else if (_activeMarkEntrySubView === "FORM1_1" || _activeMarkEntrySubView === "FORM1_2" || _activeMarkEntrySubView === "REVIEW_REPORT") {
+  if (_activeMarkEntrySubView === "FORM1_1" || _activeMarkEntrySubView === "FORM1_2" || _activeMarkEntrySubView === "REVIEW_REPORT" || _activeMarkEntrySubView === "PROGRESS_REPORT") {
     _activeMidTermMainSection = "REPORTS";
   } else {
     _activeMidTermMainSection = "MARK_ENTRY";
@@ -38174,22 +38259,36 @@ function renderSchoolMidTermModule() {
   if (t2B) t2B.textContent = "🏫 School Performance";
   if (t2C) t2C.textContent = "📊 View Subject Performance";
 
-  if (isRep && _activeMarkEntrySubView === "STU_MARKS") {
-    _activeMarkEntrySubView = "FORM1_1";
+  if ((isRep || isProg) && _activeMarkEntrySubView === "STU_MARKS") {
+    _activeMarkEntrySubView = isProg ? "PROGRESS_REPORT" : "FORM1_1";
   }
+  const showReportsHub = Boolean(isRep || isProg);
+  if (cardProg) cardProg.style.display = "none";
 
   const bStuEl = document.getElementById("mtSubBtnStuMarks");
   const bF1El = document.getElementById("mtSubBtnForm1_1");
   const bF2El = document.getElementById("mtSubBtnForm1_2");
   const bRevEl = document.getElementById("mtSubBtnReview");
+  const bProgEl = document.getElementById("mtSubBtnProgress");
+  const bRevPdfEl = document.getElementById("schReviewReportTopPdfBtn");
+  const bTopPdfEl = document.getElementById("schMidTermTopPdfBtn");
+  const bTopCsvEl = document.getElementById("schMidTermTopCsvBtn");
   const bSaveEl = document.getElementById("mtSubBtnSaveMarks");
   const bResetEl = document.getElementById("mtSubBtnResetMarks");
+
+  // In Mark Entry mode: show ONLY Mark Entry, Mark Reset, and Save!
+  // In Reports mode: consolidate ALL 4 Reports (School Performance, Subject Performance, Review Report, Progress Report) + PDF/CSV exports!
   if (bStuEl) bStuEl.style.display = isMe ? "inline-flex" : "none";
   if (bSaveEl) bSaveEl.style.display = isMe ? "inline-flex" : "none";
   if (bResetEl) bResetEl.style.display = isMe ? "inline-flex" : "none";
-  if (bF1El) bF1El.style.display = (isMe || isRep) ? "inline-flex" : "none";
-  if (bF2El) bF2El.style.display = (isMe || isRep) ? "inline-flex" : "none";
-  if (bRevEl) bRevEl.style.display = (isMe || isRep) ? "inline-flex" : "none";
+
+  if (bF1El) bF1El.style.display = showReportsHub ? "inline-flex" : "none";
+  if (bF2El) bF2El.style.display = showReportsHub ? "inline-flex" : "none";
+  if (bRevEl) bRevEl.style.display = showReportsHub ? "inline-flex" : "none";
+  if (bProgEl) bProgEl.style.display = showReportsHub ? "inline-flex" : "none";
+  if (bRevPdfEl) bRevPdfEl.style.display = showReportsHub ? "inline-flex" : "none";
+  if (bTopPdfEl) bTopPdfEl.style.display = showReportsHub ? "inline-flex" : "none";
+  if (bTopCsvEl) bTopCsvEl.style.display = showReportsHub ? "inline-flex" : "none";
 
   const mapMe = {
     STU_MARKS:       ["mtSubBtnStuMarks", "mtSubPaneStuMarks"],
@@ -38209,10 +38308,14 @@ function renderSchoolMidTermModule() {
         bEl.style.background = active ? "#d97706" : "#ffffff";
         bEl.style.color = active ? "#ffffff" : "#b45309";
         bEl.style.borderColor = "#d97706";
+      } else if (k === "PROGRESS_REPORT") {
+        bEl.style.background = active ? "#ea580c" : "#ffffff";
+        bEl.style.color = active ? "#ffffff" : "#c2410c";
+        bEl.style.borderColor = "#ea580c";
       } else {
-        bEl.style.background = active ? (isRep ? "#6d28d9" : "#1d4ed8") : "#ffffff";
-        bEl.style.color = active ? "#ffffff" : (isRep ? "#5b21b6" : "#1e3a8a");
-        bEl.style.borderColor = isRep ? "#6d28d9" : "#1d4ed8";
+        bEl.style.background = active ? (showReportsHub ? "#6d28d9" : "#1d4ed8") : "#ffffff";
+        bEl.style.color = active ? "#ffffff" : (showReportsHub ? "#5b21b6" : "#1e3a8a");
+        bEl.style.borderColor = showReportsHub ? "#6d28d9" : "#1d4ed8";
       }
     }
     if (pEl) pEl.style.display = active ? "block" : "none";
@@ -42243,5 +42346,453 @@ async function downloadStudentProgressReportPdf(targetModeOrStuId, btnEl) {
   </div>
 </div>
 
+
+<!-- ADMIN PERIODIC BACKUP & RESTORE CENTER MODAL -->
+<div id="admBackupCenterModal" class="modal-backdrop" onclick="if(event.target===this) closeAdminBackupCenterModal()" style="display:none; z-index:10020;">
+  <div class="modal-card" style="max-width:920px; width:96%; border-top:5px solid #4f46e5;">
+    <div class="modal-header" style="background:linear-gradient(135deg,#1e1b4b,#312e81); color:#ffffff;">
+      <div>
+        <h3 style="margin:0; font-size:1.10rem; font-weight:900;">💾 மாவட்ட நிர்வாகி – தானியங்கி &amp; உடனடி காப்புப்பிரதி மையம் (Periodic Auto-Backup &amp; Restore Center)</h3>
+        <div style="font-size:0.78rem; color:#c7d2fe; margin-top:2px;">282 பள்ளிகளின் அடிப்படை விவரங்கள், EBS 2026-27 (F1–F4), தேர்ச்சிப் பகுப்பாய்வு (10th &amp; 12th - 8 தேர்வுகள்), ஆசிரியர்கள் &amp; மாணவர் தரவுகள்</div>
+      </div>
+      <button type="button" onclick="closeAdminBackupCenterModal()" style="background:#dc2626; border:none; color:#fff; padding:5px 12px; border-radius:7px; font-weight:900; cursor:pointer;">✕ மூடுக</button>
+    </div>
+    <div class="modal-body" style="padding:16px; max-height:78vh; overflow-y:auto;">
+      <div style="background:#eef2ff; border:1.5px solid #a5b4fc; border-radius:10px; padding:12px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="font-size:0.82rem; color:#1e1b4b; font-weight:800; line-height:1.5;">
+          <div>🛡️ <strong>தானியங்கி காப்புப்பிரதி (Auto-Backup):</strong> தேர்ந்தெடுக்கப்பட்ட கால இடைவெளியில் அனைத்துப் பள்ளிகளின் தரவுகளும் தானாகவே உலாவியின் காப்புப்பிரதிப் பட்டியலிலும் Firebase மேகக்கணியிலும் (`ceosvg_live/backups_latest`) சேமிக்கப்படும்.</div>
+          <div style="color:#4338ca; margin-top:3px;">💡 எந்த நேரத்திலும் கீழேயுள்ள பட்டியலிலிருந்து பழைய நிலைக்கு 1-கிளிக்கில் மீட்டமைக்கலாம் (Restore) அல்லது `.json` கோப்பாகப் பதிவிறக்கலாம்.</div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-success btn-sm" onclick="triggerManualFullPortalBackup(true)" style="background:#16a34a; border-color:#15803d; font-weight:900;">
+            📥 புதிய முழு Backup (.json) உருவாக்கு &amp; பதிவிறக்கு
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('admRestoreBackupFileInput').click()" style="background:#4f46e5; border-color:#4338ca; font-weight:900;">
+            📤 கணினியிலிருந்து Backup (.json) பதிவேற்றி மீட்டமை
+          </button>
+        </div>
+      </div>
+      <div id="admBackupHistoryTableContainer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================================
+// PARTIAL-ENTRY INSTANT AUTO-SAVE & REALTIME SYNC ENGINE + PERIODIC BACKUP
+// ============================================================================
+let _partialAutoSaveTimers = {};
+
+function updateLiveAutoSaveBadges(state, detailText) {
+  const timeStr = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const b1 = document.getElementById("raLiveAutoSaveBadge");
+  if (b1) {
+    if (state === "SAVING") {
+      b1.style.background = "rgba(245,158,11,0.32)";
+      b1.style.borderColor = "#fbbf24";
+      b1.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:#fde047; display:inline-block;"></span><span>⏳ தானியங்கியாகச் சேமிக்கப்படுகிறது... (${detailText || "Auto-Saving..."})</span>`;
+    } else {
+      b1.style.background = "rgba(22,163,74,0.32)";
+      b1.style.borderColor = "#4ade80";
+      b1.innerHTML = `<span style="width:7px; height:7px; border-radius:50%; background:#4ade80; display:inline-block;"></span><span>✅ தானியங்கியாகச் சேமிக்கப்பட்டது • ${timeStr} (Live Synced)</span>`;
+    }
+  }
+}
+
+function scheduleDebouncedPartialEntryCloudSync(storeType, targetUNo) {
+  const key = (storeType || "schoolExtra") + "__" + (targetUNo || "");
+  updateLiveAutoSaveBadges("SAVING", targetUNo ? ("U.No: " + targetUNo) : "Saving");
+  if (_partialAutoSaveTimers[key]) {
+    clearTimeout(_partialAutoSaveTimers[key]);
+  }
+  _partialAutoSaveTimers[key] = setTimeout(() => {
+    try {
+      if (storeType === "examResultAnalysis2026") {
+        if (typeof pushCloudUpdate === "function") {
+          pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `Auto-Saved Result Analysis [${targetUNo || "ALL"}]`, targetUNo);
+        }
+      } else {
+        if (typeof pushCloudUpdate === "function") {
+          pushCloudUpdate("schoolExtra", schoolExtraDataStore, `Auto-Saved School Data [${targetUNo || "ALL"}]`, targetUNo);
+        }
+      }
+      updateLiveAutoSaveBadges("SAVED");
+    } catch (e) {
+      console.error("Partial auto-save sync error:", e);
+    }
+  }, 650);
+}
+
+// Attach global delegated input/change listener on #viewSchool and #ebsStaffProfileModal
+// so ANY partial form edit in School Profile, Needs, Student Strength, EBS, or Result Analysis auto-saves immediately!
+(function initGlobalSchoolPartialAutoSaveListener() {
+  if (typeof document === "undefined" || !document.addEventListener) return;
+  document.addEventListener("input", function(ev) {
+    const t = ev && ev.target;
+    if (!t || !activeSchoolSession || !activeSchoolSession.uNo) return;
+    const id = String(t.id || "");
+    const uNo = String(activeSchoolSession.uNo);
+    // Auto-save Infrastructure Needs fields immediately on partial input
+    if (id.startsWith("need")) {
+      const extra = getSchoolExtra(uNo);
+      extra.needs = {
+        classrooms: Number(document.getElementById("needClassrooms")?.value || 0),
+        sciLab: Number(document.getElementById("needSciLab")?.value || 0),
+        boysToilet: Number(document.getElementById("needBoysToilet")?.value || 0),
+        girlsToilet: Number(document.getElementById("needGirlsToilet")?.value || 0),
+        drinkingWater: document.getElementById("needDrinkingWater")?.value || "இல்லை (Sufficient)",
+        compoundWall: Number(document.getElementById("needCompoundWall")?.value || 0),
+        desks: Number(document.getElementById("needDesks")?.value || 0),
+        teachers: Number(document.getElementById("needTeachers")?.value || 0),
+        remarks: (document.getElementById("needRemarks")?.value || "").trim(),
+        updatedAt: new Date().toLocaleString("en-IN")
+      };
+      safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+      scheduleDebouncedPartialEntryCloudSync("schoolExtra", uNo);
+    }
+    // Auto-save School Profile non-OTP fields immediately on partial input
+    if (id.startsWith("schForm") && id !== "schFormMobile" && id !== "schFormEmail") {
+      const s = activeSchoolSession;
+      const extra = getSchoolExtra(uNo);
+      if (id === "schFormDge") s.dgeNo = t.value.trim();
+      if (id === "schFormEstDate") { s.estDate = t.value.trim(); extra.estDate = s.estDate; }
+      if (id === "schFormHssUpgradedDate") { s.hssUpgradedDate = t.value.trim(); extra.hssUpgradedDate = s.hssUpgradedDate; }
+      if (id === "schFormHssGoDetails") { s.hssGoDetails = t.value.trim(); extra.hssGoDetails = s.hssGoDetails; }
+      if (id === "schFormCentre10") { s.centre10 = t.value.trim(); extra.centre10 = s.centre10; }
+      if (id === "schFormCentre12") { s.centre12 = t.value.trim(); extra.centre12 = s.centre12; }
+      if (id === "schFormHmEn") s.hmName = t.value.trim();
+      if (id === "schFormHmTa") s.hmTa = t.value.trim();
+      if (id === "schFormPincode") extra.pincode = t.value.trim();
+      safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+      safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+      scheduleDebouncedPartialEntryCloudSync("schoolExtra", uNo);
+    }
+  }, true);
+})();
+
+// ============================================================================
+// ADMIN PERIODIC AUTO-BACKUP & RESTORE ENGINE
+// ============================================================================
+let _adminAutoBackupTimer = null;
+let _adminAutoBackupCountdownTimer = null;
+let _adminNextBackupTimestamp = 0;
+
+function getAdminAutoBackupConfig() {
+  const def = { intervalMinutes: 30, autoDownloadFile: false, lastBackupAt: "" };
+  const saved = safeGetStorage("CEOSVG_AUTO_BACKUP_CFG_V1", null);
+  return (saved && typeof saved === "object") ? Object.assign({}, def, saved) : def;
+}
+
+function saveAdminAutoBackupConfig(cfg) {
+  safeSetStorage("CEOSVG_AUTO_BACKUP_CFG_V1", cfg, true);
+}
+
+function getAdminBackupHistoryList() {
+  const list = safeGetStorage("CEOSVG_AUTO_BACKUP_HISTORY_V1", []);
+  return Array.isArray(list) ? list : [];
+}
+
+function buildFullPortalBackupPayload(triggerType) {
+  const now = new Date();
+  const raStore = typeof getExamResultAnalysisStore === "function" ? getExamResultAnalysisStore() : {};
+  const schoolsCount = Array.isArray(masterSchools) ? masterSchools.length : 0;
+  const extraCount = schoolExtraDataStore ? Object.keys(schoolExtraDataStore).length : 0;
+  return {
+    backupVersion: "CEOSVG_BACKUP_V1",
+    triggerType: triggerType || "MANUAL",
+    createdAtIso: now.toISOString(),
+    createdAtDisplay: now.toLocaleString("en-IN"),
+    stats: {
+      schoolsCount: schoolsCount,
+      extraRecordsCount: extraCount,
+      deleteRequestsCount: Array.isArray(staffDeleteRequests) ? staffDeleteRequests.length : 0
+    },
+    stores: {
+      CEOSVG_MASTER_SCHOOLS: masterSchools || [],
+      CEOSVG_SCHOOL_EXTRA_V6: schoolExtraDataStore || {},
+      CEOSVG_SCHOOL_AUTH: schoolAuthStore || {},
+      CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1: raStore,
+      CEOSVG_DELETE_REQUESTS: staffDeleteRequests || [],
+      CEOSVG_DELETED_STAFF_ARCHIVE: typeof deletedStaffArchiveStore !== "undefined" ? deletedStaffArchiveStore : [],
+      CEOSVG_CIRCULARS: typeof districtCirculars !== "undefined" ? districtCirculars : [],
+      CEOSVG_DIVISIONS: typeof divisionsRegistry !== "undefined" ? divisionsRegistry : {},
+      CEOSVG_STAFF_OVERRIDES: safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {},
+      CEOSVG_ADMIN_AUDIT_LOGS_V1: safeGetStorage("CEOSVG_ADMIN_AUDIT_LOGS_V1", []) || []
+    }
+  };
+}
+
+function downloadBackupPayloadAsJsonFile(payload) {
+  const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const filename = `CEOSVG_Full_Portal_Backup_${ts}.json`;
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  return filename;
+}
+
+function executePortalBackupSnapshot(isManual, forceDownloadFile) {
+  const payload = buildFullPortalBackupPayload(isManual ? "MANUAL" : "AUTO_PERIODIC");
+  const cfg = getAdminAutoBackupConfig();
+  cfg.lastBackupAt = payload.createdAtDisplay;
+  saveAdminAutoBackupConfig(cfg);
+
+  // Store lightweight snapshot metadata + restorable stores in rolling history (max 8 snapshots in localStorage)
+  const history = getAdminBackupHistoryList();
+  const snapEntry = {
+    id: "BKP_" + Date.now(),
+    triggerType: payload.triggerType,
+    createdAtDisplay: payload.createdAtDisplay,
+    createdAtIso: payload.createdAtIso,
+    stats: payload.stats,
+    stores: payload.stores
+  };
+  history.unshift(snapEntry);
+  while (history.length > 5) history.pop();
+  try {
+    safeSetStorage("CEOSVG_AUTO_BACKUP_HISTORY_V1", history, true);
+  } catch (e) {
+    // If localStorage quota is tight, keep latest 2 full snapshots
+    while (history.length > 2) history.pop();
+    try { safeSetStorage("CEOSVG_AUTO_BACKUP_HISTORY_V1", history, true); } catch (e2) {}
+  }
+
+  // Also push latest backup metadata & snapshot to Firebase
+  const cleanUrl = typeof normalizeFirebaseDbUrl === "function" ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+  if (cleanUrl) {
+    fetch(buildFirebaseEndpoint("ceosvg_live/backups_latest_meta"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: snapEntry.id,
+        triggerType: snapEntry.triggerType,
+        createdAtDisplay: snapEntry.createdAtDisplay,
+        stats: snapEntry.stats
+      })
+    }).catch(() => {});
+  }
+
+  if (forceDownloadFile || (!isManual && cfg.autoDownloadFile)) {
+    const fn = downloadBackupPayloadAsJsonFile(payload);
+    if (isManual) {
+      showToast(`💾 முழு இணையதள Backup (${fn}) வெற்றிகரமாகப் பதிவிறக்கப்பட்டது!`, "#16a34a", true);
+    }
+  } else if (isManual) {
+    showToast(`💾 காப்புப்பிரதி (${snapEntry.createdAtDisplay}) வெற்றிகரமாகச் சேமிக்கப்பட்டது!`, "#16a34a", true);
+  }
+
+  updateAdminAutoBackupUiStrip();
+  renderAdminBackupHistoryTable();
+}
+
+function triggerManualFullPortalBackup(downloadFile) {
+  executePortalBackupSnapshot(true, Boolean(downloadFile));
+}
+
+function updateAdminAutoBackupUiStrip() {
+  const cfg = getAdminAutoBackupConfig();
+  const sel = document.getElementById("admAutoBackupIntervalSelect");
+  if (sel) sel.value = String(cfg.intervalMinutes);
+  const chk = document.getElementById("admAutoBackupDownloadFileChk");
+  if (chk) chk.checked = Boolean(cfg.autoDownloadFile);
+  const pill = document.getElementById("admBackupStatusPill");
+  if (pill) {
+    const on = Number(cfg.intervalMinutes) > 0;
+    pill.textContent = on ? `ACTIVE (${cfg.intervalMinutes}m)` : "PAUSED";
+    pill.style.background = on ? "#22c55e" : "#f59e0b";
+  }
+  const lastLbl = document.getElementById("admAutoBackupLastTimeLabel");
+  if (lastLbl) {
+    lastLbl.textContent = cfg.lastBackupAt ? `✅ கடைசி Backup: ${cfg.lastBackupAt}` : "✅ கடைசி Backup: தயார்";
+  }
+  const cntBadge = document.getElementById("admBackupHistoryCountBadge");
+  if (cntBadge) {
+    cntBadge.textContent = String(getAdminBackupHistoryList().length);
+  }
+}
+
+function startOrRestartAdminAutoBackupScheduler() {
+  if (_adminAutoBackupTimer) clearInterval(_adminAutoBackupTimer);
+  if (_adminAutoBackupCountdownTimer) clearInterval(_adminAutoBackupCountdownTimer);
+  const cfg = getAdminAutoBackupConfig();
+  const mins = Number(cfg.intervalMinutes || 0);
+  updateAdminAutoBackupUiStrip();
+  const nextLbl = document.getElementById("admAutoBackupNextCountdownLabel");
+  if (mins <= 0) {
+    if (nextLbl) nextLbl.textContent = "⏸️ தானியங்கி Backup நிறுத்தப்பட்டுள்ளது";
+    return;
+  }
+  const intervalMs = mins * 60 * 1000;
+  _adminNextBackupTimestamp = Date.now() + intervalMs;
+  _adminAutoBackupTimer = setInterval(() => {
+    _adminNextBackupTimestamp = Date.now() + intervalMs;
+    executePortalBackupSnapshot(false, false);
+  }, intervalMs);
+
+  _adminAutoBackupCountdownTimer = setInterval(() => {
+    const remSec = Math.max(0, Math.floor((_adminNextBackupTimestamp - Date.now()) / 1000));
+    const m = String(Math.floor(remSec / 60)).padStart(2, "0");
+    const s = String(remSec % 60).padStart(2, "0");
+    const el = document.getElementById("admAutoBackupNextCountdownLabel");
+    if (el) el.textContent = `⏳ அடுத்த Backup: ${m}:${s}`;
+  }, 1000);
+}
+
+function onAdminAutoBackupIntervalChange(val) {
+  const cfg = getAdminAutoBackupConfig();
+  cfg.intervalMinutes = Math.max(0, Number(val || 0));
+  saveAdminAutoBackupConfig(cfg);
+  startOrRestartAdminAutoBackupScheduler();
+  showToast(
+    cfg.intervalMinutes > 0
+      ? `⏱️ தானியங்கி காப்புப்பிரதி ஒவ்வொரு ${cfg.intervalMinutes} நிமிடங்களுக்கும் இயங்கும் வகையில் அமைக்கப்பட்டது!`
+      : "⏸️ தானியங்கி காப்புப்பிரதி தற்காலிகமாக நிறுத்தப்பட்டது.",
+    "#4f46e5",
+    true
+  );
+}
+
+function onAdminAutoBackupDownloadToggle(checked) {
+  const cfg = getAdminAutoBackupConfig();
+  cfg.autoDownloadFile = Boolean(checked);
+  saveAdminAutoBackupConfig(cfg);
+  showToast(
+    cfg.autoDownloadFile
+      ? "📥 ஒவ்வொரு தானியங்கி Backup-இன் போதும் .json கோப்பு தானாகப் பதிவிறக்கப்படும்!"
+      : "☁️ தானியங்கி Backup உலாவி & மேகக்கணியில் மட்டும் சேமிக்கப்படும்.",
+    "#4f46e5",
+    true
+  );
+}
+
+function applyRestoredBackupStores(storesObj, sourceLabel) {
+  if (!storesObj || typeof storesObj !== "object") return;
+  if (Array.isArray(storesObj.CEOSVG_MASTER_SCHOOLS) && storesObj.CEOSVG_MASTER_SCHOOLS.length > 0) {
+    masterSchools = storesObj.CEOSVG_MASTER_SCHOOLS;
+    safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools);
+  }
+  if (storesObj.CEOSVG_SCHOOL_EXTRA_V6 && typeof storesObj.CEOSVG_SCHOOL_EXTRA_V6 === "object") {
+    schoolExtraDataStore = storesObj.CEOSVG_SCHOOL_EXTRA_V6;
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+  }
+  if (storesObj.CEOSVG_SCHOOL_AUTH && typeof storesObj.CEOSVG_SCHOOL_AUTH === "object") {
+    schoolAuthStore = storesObj.CEOSVG_SCHOOL_AUTH;
+    safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore);
+  }
+  if (storesObj.CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1 && typeof storesObj.CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1 === "object") {
+    _examResultAnalysisStoreCache = sanitizeExamResultAnalysisStoreInPlace(storesObj.CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1);
+    safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", _examResultAnalysisStoreCache);
+  }
+  if (Array.isArray(storesObj.CEOSVG_DELETE_REQUESTS)) {
+    staffDeleteRequests = storesObj.CEOSVG_DELETE_REQUESTS;
+    safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
+  }
+  if (typeof sanitizeAllPortalStores === "function") sanitizeAllPortalStores();
+  if (typeof refreshAllActivePortalViews === "function") refreshAllActivePortalViews();
+  showToast(`♻️ [${sourceLabel}] காப்புப்பிரதி வெற்றிகரமாக மீட்டமைக்கப்பட்டு நேரலையில் ஒத்திசைக்கப்பட்டது!`, "#16a34a", true);
+}
+
+function handleAdminRestoreBackupFileUpload(inputEl) {
+  const file = inputEl && inputEl.files && inputEl.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const parsed = JSON.parse(String(ev.target.result || "{}"));
+      const stores = parsed.stores || parsed;
+      applyRestoredBackupStores(stores, file.name);
+    } catch (err) {
+      showToast("❌ Backup (.json) கோப்பினைப் படிப்பதில் பிழை: " + err.message, "#dc2626", true);
+    } finally {
+      inputEl.value = "";
+    }
+  };
+  reader.readAsText(file);
+}
+
+function restoreAdminBackupFromHistoryById(snapId) {
+  const list = getAdminBackupHistoryList();
+  const found = list.find(x => x && x.id === snapId);
+  if (!found || !found.stores) return;
+  applyRestoredBackupStores(found.stores, found.createdAtDisplay);
+  closeAdminBackupCenterModal();
+}
+
+function downloadAdminBackupFromHistoryById(snapId) {
+  const list = getAdminBackupHistoryList();
+  const found = list.find(x => x && x.id === snapId);
+  if (!found) return;
+  downloadBackupPayloadAsJsonFile(found);
+}
+
+function renderAdminBackupHistoryTable() {
+  const box = document.getElementById("admBackupHistoryTableContainer");
+  if (!box) return;
+  const list = getAdminBackupHistoryList();
+  if (list.length === 0) {
+    box.innerHTML = `<div style="text-align:center; padding:24px; color:#64748b; font-weight:800; background:#f8fafc; border:1.5px dashed #cbd5e1; border-radius:10px;">இதுவரை காப்புப்பிரதிகள் எதுவும் சேமிக்கப்படவில்லை. மேலேயுள்ள <strong>"📥 புதிய முழு Backup (.json) உருவாக்கு"</strong> பொத்தானை அழுத்தவும்.</div>`;
+    return;
+  }
+  const rows = list.map((item, idx) => `
+    <tr>
+      <td style="text-align:center; font-weight:900;">${idx + 1}</td>
+      <td style="font-weight:900; color:#1e1b4b;">${escapeHtmlAttr(item.createdAtDisplay || "-")}</td>
+      <td style="text-align:center;">
+        <span style="background:${item.triggerType === 'MANUAL' ? '#dbeafe' : '#dcfce7'}; color:${item.triggerType === 'MANUAL' ? '#1e40af' : '#166534'}; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">
+          ${item.triggerType === "MANUAL" ? "👤 Manual Backup" : "⏱️ Auto Periodic"}
+        </span>
+      </td>
+      <td style="text-align:center; font-weight:800;">${(item.stats && item.stats.schoolsCount) || 282} பள்ளிகள்</td>
+      <td style="text-align:center; display:flex; gap:6px; justify-content:center;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="downloadAdminBackupFromHistoryById('${escapeHtmlAttr(item.id)}')" style="background:#0284c7; border-color:#0369a1; font-weight:900; font-size:0.74rem;">📥 .json பதிவிறக்கு</button>
+        <button type="button" class="btn btn-success btn-sm" onclick="restoreAdminBackupFromHistoryById('${escapeHtmlAttr(item.id)}')" style="background:#16a34a; border-color:#15803d; font-weight:900; font-size:0.74rem;">♻️ மீட்டமை (Restore)</button>
+      </td>
+    </tr>
+  `).join("");
+  box.innerHTML = `
+    <div class="table-responsive" style="border:1.5px solid #cbd5e1; border-radius:10px; overflow:hidden;">
+      <table class="data-table" style="margin:0; font-size:0.82rem;">
+        <thead>
+          <tr style="background:#1e1b4b; color:#ffffff;">
+            <th style="width:50px; text-align:center;">#</th>
+            <th>Backup எடுக்கப்பட்ட நேரம் (Timestamp)</th>
+            <th style="text-align:center;">வகை (Type)</th>
+            <th style="text-align:center;">பள்ளிகள் விவரம்</th>
+            <th style="text-align:center;">செயல்பாடுகள் (Download / Restore)</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function openAdminBackupCenterModal() {
+  renderAdminBackupHistoryTable();
+  const m = document.getElementById("admBackupCenterModal");
+  if (m) m.style.display = "flex";
+}
+
+function closeAdminBackupCenterModal() {
+  const m = document.getElementById("admBackupCenterModal");
+  if (m) m.style.display = "none";
+}
+
+// Start the periodic auto-backup scheduler automatically when the portal loads
+setTimeout(() => {
+  try {
+    startOrRestartAdminAutoBackupScheduler();
+    if (getAdminBackupHistoryList().length === 0) {
+      executePortalBackupSnapshot(false, false);
+    }
+  } catch (e) {}
+}, 1200);
+</script>
 </body>
 </html>
