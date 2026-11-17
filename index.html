@@ -17298,13 +17298,8 @@ function buildFirebaseEndpoint(pathStr) {
 const base = normalizeFirebaseDbUrl(firebaseDbUrl);
 if (!base) return "";
 const cleanPath = String(pathStr || "").replace(/^\/+/, "");
-<<<<<<< Updated upstream
-const effectiveAuth = firebaseSessionIdToken || firebaseApiKey || "";
-const authParam = effectiveAuth ? `?auth=${encodeURIComponent(effectiveAuth)}` : "";
-=======
 const rawAuth = String(firebaseSessionIdToken || "").trim();
 const authParam = (rawAuth && !rawAuth.startsWith("AIza")) ? `?auth=${encodeURIComponent(rawAuth)}` : "";
->>>>>>> Stashed changes
 return `${base}/${cleanPath}.json${authParam}`;
 }
 function appendFirebaseActivityLog(msg, colorHex) {
@@ -28010,11 +28005,7 @@ function renderEbsStaffRowCol4OtpCellHtml(uNo, st) {
       <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:7px; padding:5px 7px;">
         <div style="display:flex; align-items:center; gap:4px; width:100%;">
           <span style="font-size:0.78rem;">✉️</span>
-<<<<<<< Updated upstream
-          <input type="email" id="inlineEmAddrEdit_${sid}" value="${escapeHtmlAttr(dispEm)}" placeholder="staff@gmail.com" onblur="if(typeof normalizeAndRepairSchoolEmail==='function')this.value=normalizeAndRepairSchoolEmail(this.value); saveInlineRowContactDirect('${uNoEsc}', '${sid}');" style="width:100%; min-width:125px; font-size:0.74rem; font-weight:800; color:#1e3a8a; background:#fff; border:1px solid #93c5fd; border-radius:5px; padding:2px 6px;">
-=======
           <input type="email" id="inlineEmAddrEdit_${sid}" value="${escapeHtmlAttr(dispEm)}" placeholder="staff@gmail.com" oninput="saveInlineRowContactDirect('${uNoEsc}', '${sid}');" onchange="saveInlineRowContactDirect('${uNoEsc}', '${sid}');" onblur="if(typeof normalizeAndRepairSchoolEmail==='function')this.value=normalizeAndRepairSchoolEmail(this.value); saveInlineRowContactDirect('${uNoEsc}', '${sid}');" style="width:100%; min-width:125px; font-size:0.74rem; font-weight:800; color:#1e3a8a; background:#fff; border:1px solid #93c5fd; border-radius:5px; padding:2px 6px;">
->>>>>>> Stashed changes
         </div>
       </div>
     </div>
