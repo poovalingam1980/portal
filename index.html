@@ -4,31 +4,41 @@
 <script>
 (function() {
   try {
-    if (typeof window !== "undefined" && typeof window.name === "string" && window.name.length > 20000) {
+    if (typeof window !== "undefined" && typeof window.name === "string" && window.name.length > 10000) {
       window.name = "";
     }
     if (typeof localStorage !== "undefined") {
-      ["CEOSVG_AUTO_BACKUP_HISTORY_V1", "CEOSVG_EMIS_STUDENT_DATA", "CEOSVG_DIGNITARIES_V1", "CEOSVG_DIGNITARIES_DATA_V1", "CEOSVG_DIGNITARIES_DATA_V2"].forEach(function(k) {
-        try { localStorage.removeItem(k); } catch (e) {}
-      });
+      // Always remove heavy backup/student blobs that cause Out of Memory
+      var dropKeys = [
+        "CEOSVG_AUTO_BACKUP_HISTORY_V1",
+        "CEOSVG_EMIS_STUDENT_DATA",
+        "CEOSVG_DIGNITARIES_V1",
+        "CEOSVG_DIGNITARIES_DATA_V1",
+        "CEOSVG_DIGNITARIES_DATA_V2"
+      ];
+      for (var i = 0; i < dropKeys.length; i++) {
+        try { localStorage.removeItem(dropKeys[i]); } catch (e) {}
+      }
+      // If CEOSVG_SCHOOL_EXTRA_V6 is bloated (> 1.2 MB) from old full-staff clones, slim it once safely
       var rawEx = localStorage.getItem("CEOSVG_SCHOOL_EXTRA_V6");
-      if (rawEx && rawEx.length > 1000) {
+      if (rawEx && rawEx.length > 1200000) {
         try {
           var parsed = JSON.parse(rawEx);
+          var slim = {};
           if (parsed && typeof parsed === "object") {
-            Object.keys(parsed).forEach(function(u) {
-              var item = parsed[u];
-              if (item && typeof item === "object") {
-                if (Array.isArray(item.staff)) {
-                  item.staff = item.staff.filter(function(st) { return st && (st.isAddedEbs || st.isTempId || st.source === "EMIS_TRANSFER"); });
-                  if (item.staff.length === 0) delete item.staff;
-                }
-                if (!item.userEditedStudentsV40) delete item.students;
-                if (!item.userEditedHssGroupsV39) delete item.hssGroups;
+            var uKeys = Object.keys(parsed);
+            for (var j = 0; j < uKeys.length; j++) {
+              var u = uKeys[j];
+              var it = parsed[u];
+              if (it && typeof it === "object") {
+                delete it.staff;
+                if (!it.userEditedStudentsV40) delete it.students;
+                if (!it.userEditedHssGroupsV39) delete it.hssGroups;
+                slim[u] = it;
               }
-            });
-            localStorage.setItem("CEOSVG_SCHOOL_EXTRA_V6", JSON.stringify(parsed));
+            }
           }
+          localStorage.setItem("CEOSVG_SCHOOL_EXTRA_V6", JSON.stringify(slim));
         } catch (e) {
           try { localStorage.removeItem("CEOSVG_SCHOOL_EXTRA_V6"); } catch (e2) {}
         }
@@ -36,12 +46,16 @@
     }
     if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(regs) {
-        regs.forEach(function(r) { try { r.unregister(); } catch (e) {} });
+        for (var k = 0; k < regs.length; k++) {
+          try { regs[k].unregister(); } catch (e) {}
+        }
       }).catch(function() {});
     }
     if (typeof window !== "undefined" && "caches" in window) {
       caches.keys().then(function(keys) {
-        keys.forEach(function(k) { try { caches.delete(k); } catch (e) {} });
+        for (var m = 0; m < keys.length; m++) {
+          try { caches.delete(keys[m]); } catch (e) {}
+        }
       }).catch(function() {});
     }
   } catch (err) {}
@@ -7673,15 +7687,7 @@ try {
         try { localStorage.removeItem(k); } catch (e) {}
       }
     });
-    // Immediately compact CEOSVG_SCHOOL_EXTRA_V6 in localStorage before initPortal() parses it!
-    const rawExtraStr = localStorage.getItem("CEOSVG_SCHOOL_EXTRA_V6");
-    if (rawExtraStr && rawExtraStr.length > 500000) {
-      try {
-        const parsedExtra = JSON.parse(rawExtraStr);
-        const slimExtra = compactSchoolExtraForLocalStorage(parsedExtra);
-        localStorage.setItem("CEOSVG_SCHOOL_EXTRA_V6", JSON.stringify(slimExtra));
-      } catch (e) {}
-    }
+    // Compaction already handled in head Script #1
   }
   // Clear stale PWA Service Worker caches so GitHub Pages always loads the fresh index.html
   if (typeof window !== "undefined" && "caches" in window) {
@@ -8953,7 +8959,6 @@ renderPublicQuickFinder();
 renderStaffFormDropdowns();
 renderSchoolDignitaries();
 isPortalInitializing = false;
-harvestAndRestoreAllVerifiedOtps(null, null);
 initRealtimeCloudEngine();
 if (!normalizeFirebaseDbUrl(firebaseDbUrl)) {
   syncMasterFromGoogleSheet(false);
@@ -18194,49 +18199,30 @@ firebasePollTimer = null;
 }
 }
 function startFirebaseRealtimeListener() {
-stopFirebaseRealtimeListener();
-const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
-if (!cleanUrl) return;
-const eventEndpoint = buildFirebaseEndpoint("ceosvg_live/last_event");
-if (typeof EventSource !== "undefined") {
-try {
-firebaseSseSource = new EventSource(eventEndpoint);
-firebaseSseSource.addEventListener("put", function(e) {
-try {
-const packet = JSON.parse(e.data);
-const evt = packet && packet.data ? packet.data : null;
-if (evt && evt.eventId) {
-if (!lastProcessedRealtimeEventId) {
-lastProcessedRealtimeEventId = evt.eventId;
-_recentLocalRealtimeEventIds.add(evt.eventId);
-} else if (evt.eventId !== lastProcessedRealtimeEventId) {
-applyIncomingRealtimeEvent(evt, null);
-}
-}
-} catch (err) {}
-});
-firebaseSseSource.onopen = function() {
-updateFirebaseStatusIndicators(true);
-appendFirebaseActivityLog("🟢 Firebase நேரடி SSE அலைவரிசை (Real-Time Stream) இணைக்கப்பட்டது!", "#4ade80");
-};
-} catch (e) {}
-}
-firebasePollTimer = setInterval(async () => {
-if (!normalizeFirebaseDbUrl(firebaseDbUrl) || !firebaseAutoSyncEnabled) return;
-try {
-const res = await fetch(buildFirebaseEndpoint("ceosvg_live/last_event"));
-if (!res.ok) return;
-const evt = await res.json();
-if (evt && evt.eventId) {
-if (!lastProcessedRealtimeEventId) {
-lastProcessedRealtimeEventId = evt.eventId;
-_recentLocalRealtimeEventIds.add(evt.eventId);
-} else if (evt.eventId !== lastProcessedRealtimeEventId) {
-applyIncomingRealtimeEvent(evt, null);
-}
-}
-} catch (e) {}
-}, 5000);
+  stopFirebaseRealtimeListener();
+  const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
+  if (!cleanUrl) return;
+  updateFirebaseStatusIndicators(true);
+  // Quota-Safe Mode: No persistent EventSource (prevents 100/100 connection exhaustion).
+  // Poll lightweight last_event (~200 bytes) ONLY every 45s when tab is visible & user is logged in as Admin!
+  firebasePollTimer = setInterval(async () => {
+    if (document.hidden || !normalizeFirebaseDbUrl(firebaseDbUrl) || !firebaseAutoSyncEnabled) return;
+    const isAdminActive = Boolean(document.getElementById("viewAdmin")?.classList.contains("active"));
+    if (!isAdminActive) return;
+    try {
+      const res = await fetch(buildFirebaseEndpoint("ceosvg_live/last_event"));
+      if (!res.ok) return;
+      const evt = await res.json();
+      if (evt && evt.eventId) {
+        if (!lastProcessedRealtimeEventId) {
+          lastProcessedRealtimeEventId = evt.eventId;
+          _recentLocalRealtimeEventIds.add(evt.eventId);
+        } else if (evt.eventId !== lastProcessedRealtimeEventId) {
+          applyIncomingRealtimeEvent(evt, null);
+        }
+      }
+    } catch (e) {}
+  }, 45000);
 }
 async function testFirebaseConnection() {
 const fbUrlEl = document.getElementById("cfgFirebaseDbUrl");
@@ -46734,30 +46720,205 @@ evaluateSchoolEbsOverallReadiness = function(uNo) {
   return res;
 };
 
-// --- 4. LIGHTWEIGHT, OOM-SAFE FIREBASE & SHEET CLOUD RECOVERY ---
+// --- 4. QUOTA-SAFE, SCOPED FIREBASE & GOOGLE SHEET CLOUD RECOVERY (99.5% LESS BANDWIDTH) ---
 let _isPullingFromFirebaseLock = false;
+let _lastFullAdminFirebasePullTs = 0;
+
+function mergeSingleSchoolEbs27PacketIntoLocal(uNo, pkt) {
+  if (!uNo || !pkt || typeof pkt !== "object") return;
+  const pktTs = parseAnyTimestampMs(pkt.updatedAt);
+  if (pkt.ebs2026 && typeof pkt.ebs2026 === "object") {
+    if (pktTs > 0 && !pkt.ebs2026.updatedAt) pkt.ebs2026.updatedAt = pktTs;
+    const lck = (pkt.ebs2026.finalLock && pkt.ebs2026.finalLock.locked)
+      ? pkt.ebs2026.finalLock
+      : ((pkt.ebs2026.hmFinalLock && pkt.ebs2026.hmFinalLock.locked) ? pkt.ebs2026.hmFinalLock : null);
+    if (lck) {
+      pkt.ebs2026.finalLock = lck;
+      pkt.ebs2026.hmFinalLock = lck;
+    }
+    schoolExtraDataStore[uNo] = deepMergeSchoolExtraPreserveOtp(
+      schoolExtraDataStore[uNo] || {},
+      { ebs2026: pkt.ebs2026, updatedAt: pktTs },
+      uNo
+    );
+  }
+  if (pkt.sheetRows && typeof pkt.sheetRows === "object") {
+    const extra = schoolExtraDataStore[uNo] || (schoolExtraDataStore[uNo] = {});
+    if (!extra.ebs2026) extra.ebs2026 = {};
+    if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+    const remSet = new Set(Array.isArray(extra.ebs2026.removedStaffIds) ? extra.ebs2026.removedStaffIds.map(x => String(x).trim()) : []);
+    const f1r = pkt.sheetRows.f1Row;
+    if (Array.isArray(f1r) && f1r.length >= 22) {
+      if (!extra.ebs2026.f1) extra.ebs2026.f1 = {};
+      const f1 = extra.ebs2026.f1;
+      if (f1r[12] && !f1.hmName) f1.hmName = String(f1r[12]).trim();
+      if (f1r[13] && !f1.hmMobile) f1.hmMobile = String(f1r[13]).replace(/\D/g, "").slice(-10);
+      if (f1r[14] && !f1.ahmName) f1.ahmName = String(f1r[14]).trim();
+      if (f1r[15] && !f1.ahmMobile) f1.ahmMobile = String(f1r[15]).replace(/\D/g, "").slice(-10);
+      if (f1r[16] && !f1.gmail) f1.gmail = String(f1r[16]).trim();
+      if (f1r[18] && !f1.landline) f1.landline = String(f1r[18]).trim();
+      if (Number(f1r[19] || 0) > 0) f1.totalClassrooms = Number(f1r[19]);
+      if (Number(f1r[20] || 0) > 0) f1.eligibleExamRooms = Number(f1r[20]);
+      if (Number(f1r[21] || 0) > 0) f1.benchDeskPairs = Number(f1r[21]);
+    }
+    const f3Rows = Array.isArray(pkt.sheetRows.f3Rows) ? pkt.sheetRows.f3Rows : [];
+    f3Rows.forEach(r => {
+      if (!Array.isArray(r) || r.length < 20) return;
+      const sid = String(r[6] || "").trim();
+      if (!sid || remSet.has(sid)) return;
+      const p = extra.ebs2026.staffProfiles[sid] || (extra.ebs2026.staffProfiles[sid] = { staffId: sid, isTeaching: true });
+      const setIfEmpty = (k, val) => { const v = String(val || "").trim(); if (v && v !== "-" && (!p[k] || p[k] === "-")) p[k] = v; };
+      setIfEmpty("ifhrmsId", r[7]); setIfEmpty("name", r[8]); setIfEmpty("prefix", r[9]); setIfEmpty("nameTa", r[10]);
+      setIfEmpty("gender", r[11]); setIfEmpty("dob", parseDmyToIsoDate(r[12])); setIfEmpty("age", r[13]); setIfEmpty("dor", r[14]);
+      setIfEmpty("desig", r[15]); setIfEmpty("qualification", r[16]); setIfEmpty("subject", r[17]);
+      const mob = String(r[18] || "").replace(/\D/g, "").slice(-10);
+      if (mob.length === 10 && !p.mobile) p.mobile = mob;
+      setIfEmpty("altMobile", String(r[19] || "").replace(/\D/g, "").slice(-10));
+      const em = String(r[20] || "").trim().toLowerCase();
+      if (em.includes("@") && !p.email) p.email = em;
+      setIfEmpty("resPlace", r[21]); setIfEmpty("resDistrict", r[22]); setIfEmpty("prefCamp", r[23]);
+      if (!p.classesHandling) p.classesHandling = {};
+      [["6", 24], ["7", 26], ["8", 28], ["9", 30], ["10", 32], ["11", 34], ["12", 36]].forEach(([cKey, cIdx]) => {
+        if ((r[cIdx] || r[cIdx + 1]) && (!p.classesHandling[cKey] || !p.classesHandling[cKey].sub)) {
+          p.classesHandling[cKey] = { sub: String(r[cIdx] || ""), med: String(r[cIdx + 1] || "") };
+        }
+      });
+      setIfEmpty("modeFirstApp", r[38]); setIfEmpty("dojService", parseDmyToIsoDate(r[39]));
+      setIfEmpty("firstJoinPost", r[40]); setIfEmpty("modePresPost", r[41]);
+      setIfEmpty("nature", r[42]); setIfEmpty("typeOfContract", r[43]);
+      setIfEmpty("dojPresPost", parseDmyToIsoDate(r[44])); setIfEmpty("unitTransferDate", parseDmyToIsoDate(r[46]));
+      setIfEmpty("dojSchool", parseDmyToIsoDate(r[47]));
+      setIfEmpty("pracSslc1", r[48]); setIfEmpty("pracHsc1", r[49]); setIfEmpty("pracHsc2", r[50]);
+      if (r[51]) { p.dutySslcWork = p.dutySslcWork || String(r[51]); p.userSavedSslcDutyV46 = true; }
+      setIfEmpty("dutySslcCentre", r[52]);
+      if (r[53]) { p.dutyHseWork = p.dutyHseWork || String(r[53]); p.userSavedExemptionV44 = true; }
+      setIfEmpty("dutyHseCentre", r[54]); setIfEmpty("dutyCampWork", r[55]); setIfEmpty("dutyCampCentre", r[56]);
+      setIfEmpty("childCentre1", r[57]); setIfEmpty("childCentre2", r[58]);
+      if (r[59]) { p.exemptionGround = p.exemptionGround || String(r[59]); p.userSavedExemptionV44 = true; }
+      setIfEmpty("exemptionOtherSpec", r[60]); setIfEmpty("exemptionCertUrl", r[61]);
+    });
+    const f4Rows = Array.isArray(pkt.sheetRows.f4Rows) ? pkt.sheetRows.f4Rows : [];
+    f4Rows.forEach(r => {
+      if (!Array.isArray(r) || r.length < 28) return;
+      const sid = String(r[6] || "").trim();
+      if (!sid || remSet.has(sid)) return;
+      const p = extra.ebs2026.staffProfiles[sid] || (extra.ebs2026.staffProfiles[sid] = { staffId: sid, isTeaching: false });
+      const setIfEmpty = (k, val) => { const v = String(val || "").trim(); if (v && v !== "-" && (!p[k] || p[k] === "-")) p[k] = v; };
+      setIfEmpty("ifhrmsId", r[7]); setIfEmpty("name", r[8]); setIfEmpty("prefix", r[9]); setIfEmpty("nameTa", r[10]);
+      setIfEmpty("desig", r[11]); setIfEmpty("qualification", r[12]); setIfEmpty("gender", r[13]);
+      setIfEmpty("dob", parseDmyToIsoDate(r[14])); setIfEmpty("age", r[15]); setIfEmpty("dor", r[16]);
+      setIfEmpty("modeFirstApp", r[17]); setIfEmpty("dojService", parseDmyToIsoDate(r[18]));
+      setIfEmpty("firstJoinPost", r[19]); setIfEmpty("modePresPost", r[20]);
+      setIfEmpty("nature", r[21]); setIfEmpty("typeOfContract", r[22]);
+      setIfEmpty("dojPresPost", parseDmyToIsoDate(r[23])); setIfEmpty("unitTransferDate", parseDmyToIsoDate(r[25]));
+      setIfEmpty("dojSchool", parseDmyToIsoDate(r[26]));
+      const mob = String(r[27] || "").replace(/\D/g, "").slice(-10);
+      if (mob.length === 10 && !p.mobile) p.mobile = mob;
+      setIfEmpty("altMobile", String(r[28] || "").replace(/\D/g, "").slice(-10));
+      const em = String(r[29] || "").trim().toLowerCase();
+      if (em.includes("@") && !p.email) p.email = em;
+      setIfEmpty("resPlace", r[30]); setIfEmpty("resDistrict", r[31]); setIfEmpty("prefCamp", r[32]);
+      if (r[33]) { p.dutySslcWork = p.dutySslcWork || String(r[33]); p.userSavedSslcDutyV46 = true; }
+      setIfEmpty("dutySslcCentre", r[34]);
+      if (r[35]) { p.dutyHseWork = p.dutyHseWork || String(r[35]); p.userSavedExemptionV44 = true; }
+      setIfEmpty("dutyHseCentre", r[36]); setIfEmpty("dutyCampWork", r[37]); setIfEmpty("dutyCampCentre", r[38]);
+      setIfEmpty("childCentre1", r[39]); setIfEmpty("childCentre2", r[40]);
+      if (r[41]) { p.exemptionGround = p.exemptionGround || String(r[41]); p.userSavedExemptionV44 = true; }
+      setIfEmpty("exemptionOtherSpec", r[42]); setIfEmpty("exemptionCertUrl", r[43]);
+    });
+  }
+}
+
+// Single-school targeted fetch (~15 KB instead of 16.34 MB!) when a School logs in
+async function pullSingleSchoolDataFromFirebase(uNo) {
+  uNo = String(uNo || "").trim();
+  const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
+  if (!uNo || !cleanUrl) return;
+  try {
+    const uEnc = encodeURIComponent(uNo);
+    const [rSch, rExt, rEbs, rRa] = await Promise.all([
+      fetch(buildFirebaseEndpoint("ceosvg_live/master_schools_by_uno/" + uEnc)).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/school_extra/" + uEnc)).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/ebs_2026_27/" + uEnc)).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/exam_result_analysis_by_uno/" + uEnc)).then(r => r.ok ? r.json() : null).catch(() => null)
+    ]);
+    isApplyingRemoteRealtimeUpdate = true;
+    if (rSch && rSch.uNo) {
+      mergeSchoolsIntoMasterList([rSch], true);
+      safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+    }
+    if (rExt && typeof rExt === "object") {
+      schoolExtraDataStore[uNo] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uNo], rExt, uNo);
+    }
+    if (rEbs && typeof rEbs === "object") {
+      mergeSingleSchoolEbs27PacketIntoLocal(uNo, rEbs);
+    }
+    if (rRa && typeof rRa === "object") {
+      const curRa = _examResultAnalysisStoreCache || safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {}) || {};
+      _examResultAnalysisStoreCache = deepMergeExamResultAnalysisStore(curRa, null, { [uNo]: rRa });
+      safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", _examResultAnalysisStoreCache, true);
+    }
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+    isApplyingRemoteRealtimeUpdate = false;
+    refreshAllActivePortalViews();
+  } catch (e) {
+    isApplyingRemoteRealtimeUpdate = false;
+  }
+}
+
 pullAllPortalDataFromFirebase = async function(showNotification) {
   const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
   if (!cleanUrl || _isPullingFromFirebaseLock) return;
+
+  // QUOTA-SAFE ROUTING:
+  // 1) If a single school is logged in (not Admin), ONLY pull that single school's 15 KB data!
+  const isAdminView = Boolean(document.body && document.body.classList.contains("admin-mode")) ||
+    Boolean(document.getElementById("viewAdmin")?.classList.contains("active")) ||
+    Boolean(activeSchoolSession && activeSchoolSession.isAdminInspection);
+
+  if (!isAdminView && activeSchoolSession && activeSchoolSession.uNo && !showNotification) {
+    return await pullSingleSchoolDataFromFirebase(activeSchoolSession.uNo);
+  }
+  // 2) If on the public Login screen (#viewAuth) and not explicitly clicked by user, do NOT download 282 schools!
+  if (!isAdminView && !activeSchoolSession && !showNotification) {
+    return;
+  }
+  // Throttle automatic admin full-pulls to at most once every 45 seconds unless manually clicked
+  if (!showNotification && (Date.now() - _lastFullAdminFirebasePullTs < 45000)) {
+    return;
+  }
+
   _isPullingFromFirebaseLock = true;
+  _lastFullAdminFirebasePullTs = Date.now();
   try {
-    const fetchJsonSafe = async (path) => {
-      try {
-        const r = await fetch(buildFirebaseEndpoint(path));
-        return r && r.ok ? await r.json() : null;
-      } catch (e) { return null; }
-    };
-    const [rSchools, rAuth, rVault, rOverrides, rDelReqs, rDelMap] = await Promise.all([
-      fetchJsonSafe("ceosvg_live/master_schools_by_uno"),
-      fetchJsonSafe("ceosvg_live/school_auth"),
-      fetchJsonSafe("ceosvg_live/verified_otp_vault"),
-      fetchJsonSafe("ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES"),
-      fetchJsonSafe("ceosvg_live/stores/CEOSVG_DELETE_REQUESTS"),
-      fetchJsonSafe("ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1")
+    const [
+      rSchools,
+      rExtra,
+      rEbs27,
+      rAuth,
+      rVault,
+      rOverrides,
+      rDelReqs,
+      rDelMap
+    ] = await Promise.all([
+      fetch(buildFirebaseEndpoint("ceosvg_live/master_schools_by_uno")).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/school_extra")).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/ebs_2026_27")).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/school_auth")).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/verified_otp_vault")).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES")).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_DELETE_REQUESTS")).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1")).then(r => r.ok ? r.json() : null).catch(() => null)
     ]);
-    const rExtra = await fetchJsonSafe("ceosvg_live/school_extra");
-    const rEbs27 = await fetchJsonSafe("ceosvg_live/ebs_2026_27");
-    const rRa = null;
+
+    const gotAnyFirebaseData = Boolean(rSchools || rExtra || rEbs27 || rAuth);
+    if (!gotAnyFirebaseData) {
+      // Firebase may be temporarily throttled due to Spark 10GB bandwidth limit — automatically fall back to Google Sheet!
+      if (typeof pullAllPortalDataFromGoogleSheet === "function") {
+        await pullAllPortalDataFromGoogleSheet(showNotification);
+      }
+      return;
+    }
 
     isApplyingRemoteRealtimeUpdate = true;
 
@@ -46784,127 +46945,17 @@ pullAllPortalDataFromFirebase = async function(showNotification) {
       Object.keys(rExtra).forEach(uKey => {
         const extObj = rExtra[uKey];
         if (extObj && typeof extObj === "object") {
-          if (Array.isArray(extObj.staff)) {
-            extObj.staff = extObj.staff.filter(st => st && (st.isAddedEbs || st.isTempId || st.source === "EMIS_TRANSFER"));
-          }
           schoolExtraDataStore[uKey] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uKey], extObj, uKey);
         }
       });
     }
     if (rEbs27 && typeof rEbs27 === "object") {
       Object.entries(rEbs27).forEach(([uNo, pkt]) => {
-        if (!pkt || typeof pkt !== "object") return;
-        const pktTs = parseAnyTimestampMs(pkt.updatedAt);
-        if (pkt.ebs2026 && typeof pkt.ebs2026 === "object") {
-          if (pktTs > 0 && !pkt.ebs2026.updatedAt) pkt.ebs2026.updatedAt = pktTs;
-          const lck = (pkt.ebs2026.finalLock && pkt.ebs2026.finalLock.locked)
-            ? pkt.ebs2026.finalLock
-            : ((pkt.ebs2026.hmFinalLock && pkt.ebs2026.hmFinalLock.locked) ? pkt.ebs2026.hmFinalLock : null);
-          if (lck) {
-            pkt.ebs2026.finalLock = lck;
-            pkt.ebs2026.hmFinalLock = lck;
-          }
-          schoolExtraDataStore[uNo] = deepMergeSchoolExtraPreserveOtp(
-            schoolExtraDataStore[uNo] || {},
-            { ebs2026: pkt.ebs2026, updatedAt: pktTs },
-            uNo
-          );
-        }
-        // Reconstruct any missing fields from pkt.sheetRows
-        if (pkt.sheetRows && typeof pkt.sheetRows === "object") {
-          const extra = schoolExtraDataStore[uNo] || (schoolExtraDataStore[uNo] = {});
-          if (!extra.ebs2026) extra.ebs2026 = {};
-          if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
-          const remSet = new Set(Array.isArray(extra.ebs2026.removedStaffIds) ? extra.ebs2026.removedStaffIds.map(x => String(x).trim()) : []);
-          const f1r = pkt.sheetRows.f1Row;
-          if (Array.isArray(f1r) && f1r.length >= 22) {
-            if (!extra.ebs2026.f1) extra.ebs2026.f1 = {};
-            const f1 = extra.ebs2026.f1;
-            if (f1r[12] && !f1.hmName) f1.hmName = String(f1r[12]).trim();
-            if (f1r[13] && !f1.hmMobile) f1.hmMobile = String(f1r[13]).replace(/\D/g, "").slice(-10);
-            if (f1r[14] && !f1.ahmName) f1.ahmName = String(f1r[14]).trim();
-            if (f1r[15] && !f1.ahmMobile) f1.ahmMobile = String(f1r[15]).replace(/\D/g, "").slice(-10);
-            if (f1r[16] && !f1.gmail) f1.gmail = String(f1r[16]).trim();
-            if (f1r[18] && !f1.landline) f1.landline = String(f1r[18]).trim();
-            if (Number(f1r[19] || 0) > 0) f1.totalClassrooms = Number(f1r[19]);
-            if (Number(f1r[20] || 0) > 0) f1.eligibleExamRooms = Number(f1r[20]);
-            if (Number(f1r[21] || 0) > 0) f1.benchDeskPairs = Number(f1r[21]);
-          }
-          const f3Rows = Array.isArray(pkt.sheetRows.f3Rows) ? pkt.sheetRows.f3Rows : [];
-          f3Rows.forEach(r => {
-            if (!Array.isArray(r) || r.length < 20) return;
-            const sid = String(r[6] || "").trim();
-            if (!sid || remSet.has(sid)) return;
-            const p = extra.ebs2026.staffProfiles[sid] || (extra.ebs2026.staffProfiles[sid] = { staffId: sid, isTeaching: true });
-            const setIfEmpty = (k, val) => { const v = String(val || "").trim(); if (v && v !== "-" && (!p[k] || p[k] === "-")) p[k] = v; };
-            setIfEmpty("ifhrmsId", r[7]); setIfEmpty("name", r[8]); setIfEmpty("prefix", r[9]); setIfEmpty("nameTa", r[10]);
-            setIfEmpty("gender", r[11]); setIfEmpty("dob", parseDmyToIsoDate(r[12])); setIfEmpty("age", r[13]); setIfEmpty("dor", r[14]);
-            setIfEmpty("desig", r[15]); setIfEmpty("qualification", r[16]); setIfEmpty("subject", r[17]);
-            const mob = String(r[18] || "").replace(/\D/g, "").slice(-10);
-            if (mob.length === 10 && !p.mobile) p.mobile = mob;
-            setIfEmpty("altMobile", String(r[19] || "").replace(/\D/g, "").slice(-10));
-            const em = String(r[20] || "").trim().toLowerCase();
-            if (em.includes("@") && !p.email) p.email = em;
-            setIfEmpty("resPlace", r[21]); setIfEmpty("resDistrict", r[22]); setIfEmpty("prefCamp", r[23]);
-            if (!p.classesHandling) p.classesHandling = {};
-            [["6", 24], ["7", 26], ["8", 28], ["9", 30], ["10", 32], ["11", 34], ["12", 36]].forEach(([cKey, cIdx]) => {
-              if ((r[cIdx] || r[cIdx + 1]) && (!p.classesHandling[cKey] || !p.classesHandling[cKey].sub)) {
-                p.classesHandling[cKey] = { sub: String(r[cIdx] || ""), med: String(r[cIdx + 1] || "") };
-              }
-            });
-            setIfEmpty("modeFirstApp", r[38]); setIfEmpty("dojService", parseDmyToIsoDate(r[39]));
-            setIfEmpty("firstJoinPost", r[40]); setIfEmpty("modePresPost", r[41]);
-            setIfEmpty("nature", r[42]); setIfEmpty("typeOfContract", r[43]);
-            setIfEmpty("dojPresPost", parseDmyToIsoDate(r[44])); setIfEmpty("unitTransferDate", parseDmyToIsoDate(r[46]));
-            setIfEmpty("dojSchool", parseDmyToIsoDate(r[47]));
-            setIfEmpty("pracSslc1", r[48]); setIfEmpty("pracHsc1", r[49]); setIfEmpty("pracHsc2", r[50]);
-            if (r[51]) { p.dutySslcWork = p.dutySslcWork || String(r[51]); p.userSavedSslcDutyV46 = true; }
-            setIfEmpty("dutySslcCentre", r[52]);
-            if (r[53]) { p.dutyHseWork = p.dutyHseWork || String(r[53]); p.userSavedExemptionV44 = true; }
-            setIfEmpty("dutyHseCentre", r[54]); setIfEmpty("dutyCampWork", r[55]); setIfEmpty("dutyCampCentre", r[56]);
-            setIfEmpty("childCentre1", r[57]); setIfEmpty("childCentre2", r[58]);
-            if (r[59]) { p.exemptionGround = p.exemptionGround || String(r[59]); p.userSavedExemptionV44 = true; }
-            setIfEmpty("exemptionOtherSpec", r[60]); setIfEmpty("exemptionCertUrl", r[61]);
-          });
-          const f4Rows = Array.isArray(pkt.sheetRows.f4Rows) ? pkt.sheetRows.f4Rows : [];
-          f4Rows.forEach(r => {
-            if (!Array.isArray(r) || r.length < 28) return;
-            const sid = String(r[6] || "").trim();
-            if (!sid || remSet.has(sid)) return;
-            const p = extra.ebs2026.staffProfiles[sid] || (extra.ebs2026.staffProfiles[sid] = { staffId: sid, isTeaching: false });
-            const setIfEmpty = (k, val) => { const v = String(val || "").trim(); if (v && v !== "-" && (!p[k] || p[k] === "-")) p[k] = v; };
-            setIfEmpty("ifhrmsId", r[7]); setIfEmpty("name", r[8]); setIfEmpty("prefix", r[9]); setIfEmpty("nameTa", r[10]);
-            setIfEmpty("desig", r[11]); setIfEmpty("qualification", r[12]); setIfEmpty("gender", r[13]);
-            setIfEmpty("dob", parseDmyToIsoDate(r[14])); setIfEmpty("age", r[15]); setIfEmpty("dor", r[16]);
-            setIfEmpty("modeFirstApp", r[17]); setIfEmpty("dojService", parseDmyToIsoDate(r[18]));
-            setIfEmpty("firstJoinPost", r[19]); setIfEmpty("modePresPost", r[20]);
-            setIfEmpty("nature", r[21]); setIfEmpty("typeOfContract", r[22]);
-            setIfEmpty("dojPresPost", parseDmyToIsoDate(r[23])); setIfEmpty("unitTransferDate", parseDmyToIsoDate(r[25]));
-            setIfEmpty("dojSchool", parseDmyToIsoDate(r[26]));
-            const mob = String(r[27] || "").replace(/\D/g, "").slice(-10);
-            if (mob.length === 10 && !p.mobile) p.mobile = mob;
-            setIfEmpty("altMobile", String(r[28] || "").replace(/\D/g, "").slice(-10));
-            const em = String(r[29] || "").trim().toLowerCase();
-            if (em.includes("@") && !p.email) p.email = em;
-            setIfEmpty("resPlace", r[30]); setIfEmpty("resDistrict", r[31]); setIfEmpty("prefCamp", r[32]);
-            if (r[33]) { p.dutySslcWork = p.dutySslcWork || String(r[33]); p.userSavedSslcDutyV46 = true; }
-            setIfEmpty("dutySslcCentre", r[34]);
-            if (r[35]) { p.dutyHseWork = p.dutyHseWork || String(r[35]); p.userSavedExemptionV44 = true; }
-            setIfEmpty("dutyHseCentre", r[36]); setIfEmpty("dutyCampWork", r[37]); setIfEmpty("dutyCampCentre", r[38]);
-            setIfEmpty("childCentre1", r[39]); setIfEmpty("childCentre2", r[40]);
-            if (r[41]) { p.exemptionGround = p.exemptionGround || String(r[41]); p.userSavedExemptionV44 = true; }
-            setIfEmpty("exemptionOtherSpec", r[42]); setIfEmpty("exemptionCertUrl", r[43]);
-          });
-        }
+        mergeSingleSchoolEbs27PacketIntoLocal(uNo, pkt);
       });
     }
     if (rVault && typeof rVault === "object") {
       harvestAndRestoreAllVerifiedOtps(null, rVault);
-    }
-    if (rRa && typeof rRa === "object") {
-      const curRa = _examResultAnalysisStoreCache || safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {}) || {};
-      _examResultAnalysisStoreCache = deepMergeExamResultAnalysisStore(curRa, null, rRa);
-      safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", _examResultAnalysisStoreCache, true);
     }
 
     enforceEmisMasterDeletedStaffFilter();
@@ -46920,6 +46971,13 @@ pullAllPortalDataFromFirebase = async function(showNotification) {
   } finally {
     _isPullingFromFirebaseLock = false;
   }
+};
+
+// When Admin opens Admin Portal, trigger one clean pull
+const _origOpenAdminPortal = openAdminPortal;
+openAdminPortal = function(isRestoringSession) {
+  _origOpenAdminPortal(isRestoringSession);
+  setTimeout(() => { pullAllPortalDataFromFirebase(false); }, 150);
 };
 
 // --- 5. SITE MAINTENANCE MODE & FORCE LOGOUT ALL USERS ENGINE ---
@@ -47135,7 +47193,7 @@ setTimeout(() => {
   enforceEmisMasterDeletedStaffFilter();
   renderSiteMaintenanceUI();
   pollSiteMaintenanceFromCloud();
-  setInterval(pollSiteMaintenanceFromCloud, 12000);
+  setInterval(() => { if (!document.hidden) pollSiteMaintenanceFromCloud(); }, 60000);
 }, 300);
 
 
