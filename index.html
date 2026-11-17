@@ -6403,23 +6403,169 @@ Location என்பதில் <strong>Singapore (asia-southeast1)</strong> (
 <strong>படி 3 (Security Rules அமைத்தல்):</strong>
 Realtime Database பக்கத்தில் மேலே உள்ள <strong>"Rules"</strong> தாவலைத் (Tab) திறந்து, கீழேயுள்ள விதிகளை நகலெடுத்து ஒட்டி <strong>"Publish"</strong> பொத்தானை அழுத்தவும்:
 <div style="background:#0f172a; color:#a7f3d0; padding:10px 12px; border-radius:8px; margin-top:6px; font-family:monospace; font-size:0.78rem; position:relative;">
-<pre id="fbSecurityRulesPre" style="margin:0; white-space:pre-wrap;">{
-"rules": {
-"ceosvg_live": {
-".read": true,
-".write": true,
-"school_extra": {
-"$uNo": { ".read": true, ".write": true }
-},
-"master_schools_by_uno": {
-"$uNo": { ".read": true, ".write": true }
-}
-}
-}
+<pre id="fbSecurityRulesPre" style="margin:0; white-space:pre-wrap; max-height:260px; overflow-y:auto;">{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "ceosvg_live": {
+      ".read": false,
+      ".write": false,
+      "static_master": {
+        ".read": true,
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+      },
+      "master_schools_by_uno": {
+        ".read": true,
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": true,
+          ".write": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/) &amp;&amp; newData.hasChildren(['uNo'])"
+        }
+      },
+      "exam_centres_10": {
+        ".read": true,
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+      },
+      "exam_centres_12": {
+        ".read": true,
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+      },
+      "school_extra": {
+        ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".write": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/) &amp;&amp; newData.hasChildren()"
+        }
+      },
+      "ebs_2026_27": {
+        ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".write": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/)"
+        }
+      },
+      "exam_result_analysis_by_uno": {
+        ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".write": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/)"
+        }
+      },
+      "school_auth": {
+        ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        "$uNo": {
+          ".read": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".write": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+          ".validate": "$uNo.matches(/^[0-9]{1,4}$/) &amp;&amp; newData.hasChildren(['uNo'])"
+        }
+      },
+      "stores": {
+        ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        "CEOSVG_MASTER_SCHOOLS": {
+          ".read": true,
+          ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+        },
+        "CEOSVG_DIGNITARIES_DATA_V3": {
+          ".read": true,
+          ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+        },
+        "CEOSVG_DIGNITARIES_PHOTO_VAULT": {
+          ".read": true,
+          ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+        },
+        "CEOSVG_CIRCULARS": {
+          ".read": true,
+          ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+        },
+        "CEOSVG_DIVISIONS": {
+          ".read": true,
+          ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+        },
+        "CEOSVG_HSS_GROUP_MASTER_V1": {
+          ".read": true,
+          ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+        },
+        "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1": {
+          ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+          ".write": "auth != null &amp;&amp; auth.token.role === 'admin'",
+          "_classMasterByUNo": {
+            "$uNo": {
+              ".read": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+              ".write": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)"
+            }
+          },
+          "_classMaster12ByUNo": {
+            "$uNo": {
+              ".read": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+              ".write": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)"
+            }
+          },
+          "$termKey": {
+            "$uNo": {
+              ".read": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)",
+              ".write": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo === $uNo)"
+            }
+          }
+        },
+        "CEOSVG_ADMIN_AUDIT_LOGS_V1": {
+          ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+          ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+        },
+        "CEOSVG_WA_CLOUD_CFG": {
+          ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+          ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+        }
+      },
+      "admin_security": {
+        ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+      },
+      "verified_otp_vault": {
+        ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+      },
+      "backups_latest_meta": {
+        ".read": "auth != null &amp;&amp; auth.token.role === 'admin'",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+      },
+      "teachers_sheet_meta": {
+        ".read": "auth != null",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+      },
+      "live_presence": {
+        ".read": "auth != null",
+        "$sessionId": {
+          ".write": "auth != null"
+        }
+      },
+      "last_event": {
+        ".read": "auth != null",
+        ".write": "auth != null &amp;&amp; (auth.token.role === 'admin' || auth.token.uNo != null)"
+      },
+      "connection_test": {
+        ".read": "auth != null",
+        ".write": "auth != null &amp;&amp; auth.token.role === 'admin'"
+      }
+    }
+  }
 }</pre>
-<button type="button" class="btn btn-outline btn-sm" onclick="copyFirebaseSecurityRules()" style="position:absolute; top:8px; right:8px; background:#1e293b; color:#fff; border-color:#475569; font-size:0.74rem; padding:3px 9px;">
+<div style="position:absolute; top:8px; right:8px; display:flex; gap:6px;">
+<button type="button" class="btn btn-outline btn-sm" onclick="copyFirebaseSecurityRules()" style="background:#1e293b; color:#fff; border-color:#475569; font-size:0.74rem; padding:3px 9px;">
 📋 Rules நகலெடு (Copy)
 </button>
+<button type="button" class="btn btn-outline btn-sm" onclick="downloadFirebaseSecurityRulesJson()" style="background:#0f766e; color:#fff; border-color:#14b8a6; font-size:0.74rem; padding:3px 9px;">
+📥 database.rules.json
+</button>
+</div>
 </div>
 </li>
 <li>
@@ -6510,6 +6656,12 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
     <div style="display:flex; gap:5px;">
       <button type="button" class="btn btn-outline btn-sm" onclick="copyCloudflareWorkerProxyCode()" style="font-size:0.73rem; font-weight:800; border-color:#0284c7; color:#0369a1; background:#f0f9ff; white-space:nowrap;">
         ☁️ Worker.js நகலெடு
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="downloadCloudflareWorkerProxyJs()" style="font-size:0.73rem; font-weight:800; border-color:#0f766e; color:#0f766e; background:#f0fdfa; white-space:nowrap;">
+        📥 Worker.js பதிவிறக்கு
+      </button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="testCloudflareWorkerProxyHealth()" style="font-size:0.73rem; font-weight:800; border-color:#7c3aed; color:#6d28d9; background:#f5f3ff; white-space:nowrap;">
+        🩺 Proxy சோதனை
       </button>
       <button type="button" class="btn btn-outline btn-sm" onclick="pushWaTokenToServerVaultAndWipeClient()" style="font-size:0.73rem; font-weight:800; border-color:#15803d; color:#15803d; background:#f0fdf4; white-space:nowrap;">
         🔒 Server Vault-ல் Token பதிவேற்று
@@ -9238,12 +9390,14 @@ box.innerHTML = filtered.slice(0, 45).map(s => `
    All WhatsApp OTP dispatches route through Cloudflare Worker or Google Apps Script
    Web App Proxy where WA_ACCESS_TOKEN is stored in server environment / ScriptProperties.
    ============================================================================ */
+/* ============================================================================
+   ZERO CLIENT-SIDE TOKEN EXPOSURE (CLOUDFLARE WORKER / SERVER PROXY ONLY)
+   Meta WhatsApp Access Token is NEVER stored in client-side HTML/JS or localStorage.
+   All WhatsApp OTP & reminder dispatches route through Cloudflare Worker Proxy
+   (env.WA_ACCESS_TOKEN) or Google Apps Script Web App Proxy (ScriptProperties).
+   ============================================================================ */
 const _WA_VAULT_KEY_SEED = "CEOSVG_VAULT_KEY_2026";
-const _WA_VAULT_SEG_1 = "BgQONGAMbmZ2ABUjHRh2aBxrQmh0E3EcHCEdHg8HYBYXCnwEDjQGCVx1Cih/JjEDHj8QZw";
-const _WA_VAULT_SEG_2 = "olbQATGzxHQFwBDygqMDUzZjU4LDsHFAodbThQY11fGQQ1Ky8DFzgQJjkOHXofGjpUAWh1";
-const _WA_VAULT_SEG_3 = "cxEuPhUECzcGEHgiFCAfGhQGXXxSNSsVEDcRGCAkJxxnBgkqIA0ARnxzECcqahF0HSYyAy";
-const _WA_VAULT_SEG_4 = "QOHh8iaA50AWJsACA3JmEPEgwCDw84azokYRFocn4HBHQYGCACLgMGMgQCOg1wLgV2anY=";
-const _WA_TOTP_VAULT_ENC = "ENC_V5:cERQSU9VHAcVHRocCBB6eE8IBhU=";
+const _WA_TOTP_VAULT_ENC = "";
 const WA_DEFAULT_CONFIG = {
 phoneNumberId: "1307132059159317",
 altPhoneNumberId: "1457353970785529",
@@ -9254,11 +9408,11 @@ templateName: "ceosivagangai",
 templateLang: "en_US",
 templateId: "1069753392749982",
 supportContact: "04575-240408",
-payloadMode: "auto_2param_fallback",
+payloadMode: "server_proxy_only",
 proxyRouteMode: "AUTO_SERVER_PROXY",
 cloudflareWorkerUrl: "",
 registeredSender: "+91 4575 240408",
-accessTokenEnc: "ENC_V4:" + _WA_VAULT_SEG_1 + _WA_VAULT_SEG_2 + _WA_VAULT_SEG_3 + _WA_VAULT_SEG_4
+accessTokenEnc: "SERVER_PROXY_VAULT_ONLY"
 };
 function _xorVaultTransform(inputStr, keyPhrase) {
 const s = String(inputStr || "");
@@ -9316,14 +9470,9 @@ function getWhatsappApiCredentials() {
     saved.vaultVersion === "v5.0_zero_client_token_proxy" ||
     saved.vaultVersion === "v5.1_hybrid_vault"
   );
-  const defaultEnc = WA_DEFAULT_CONFIG.accessTokenEnc;
-  const defaultToken = decryptLocalVaultSecret(defaultEnc);
-  const rawSavedEnc = String(saved.accessTokenEnc || saved.accessToken || "").trim();
-  const effectiveTokenEnc = (rawSavedEnc && !rawSavedEnc.includes("•") && rawSavedEnc !== "SERVER_PROXY_VAULT_ONLY")
-    ? (rawSavedEnc.startsWith("ENC_") ? rawSavedEnc : encryptLocalVaultSecret(rawSavedEnc))
-    : defaultEnc;
-  const token = decryptLocalVaultSecret(effectiveTokenEnc) || defaultToken;
-  const secretKey = decryptLocalVaultSecret(saved.secretKeyEnc || saved.secretKey || _WA_TOTP_VAULT_ENC);
+  const defaultEnc = "SERVER_PROXY_VAULT_ONLY";
+  const token = "";
+  const secretKey = "";
   const savedPid = (saved.phoneNumberId || "").trim();
   const primaryPid = (hasValidVaultVersion && savedPid && savedPid !== "1457353970785529" && savedPid !== "1399324686595291" && savedPid !== "2186573131933924")
     ? savedPid
@@ -9339,7 +9488,7 @@ function getWhatsappApiCredentials() {
   const supportContact = (hasValidVaultVersion && (saved.supportContact || "").trim()) || WA_DEFAULT_CONFIG.supportContact || "04575-240408";
   return {
     accessToken: token,
-    accessTokenEnc: encryptLocalVaultSecret(token) || defaultEnc,
+    accessTokenEnc: "SERVER_PROXY_VAULT_ONLY",
     phoneNumberId: primaryPid,
     altPhoneNumberId: WA_DEFAULT_CONFIG.altPhoneNumberId,
     messagingAccountId: WA_DEFAULT_CONFIG.messagingAccountId,
@@ -9349,7 +9498,7 @@ function getWhatsappApiCredentials() {
     templateId: effectiveTid,
     supportContact: supportContact,
     payloadMode: (hasValidVaultVersion && (saved.payloadMode || "").trim()) || "auto_2body",
-    proxyRouteMode: (saved.proxyRouteMode || "").trim() || "DIRECT_META_FIRST",
+    proxyRouteMode: (saved.proxyRouteMode || "").trim() || "AUTO_SERVER_PROXY",
     cloudflareWorkerUrl: (saved.cloudflareWorkerUrl || "").trim() || "",
     registeredSender: WA_DEFAULT_CONFIG.registeredSender,
     gatewayWebhookUrl: (saved.gatewayWebhookUrl || "").trim() || "",
@@ -16993,17 +17142,10 @@ function saveCloudSettings() {
   const waCfEl = document.getElementById("cfgWaCloudflareWorkerUrl");
   const typedWaTok = waTokEl ? waTokEl.value.trim() : "";
   const isNewValidToken = Boolean(typedWaTok && !typedWaTok.includes("•") && typedWaTok !== "SERVER_PROXY_VAULT_ONLY");
-  const prevEnc = (prevWaCfg.accessTokenEnc && !String(prevWaCfg.accessTokenEnc).includes("•") && prevWaCfg.accessTokenEnc !== "SERVER_PROXY_VAULT_ONLY")
-    ? String(prevWaCfg.accessTokenEnc)
-    : WA_DEFAULT_CONFIG.accessTokenEnc;
-  const nextAccessTokenEnc = isNewValidToken
-    ? encryptLocalVaultSecret(typedWaTok)
-    : prevEnc;
-
   const updatedWaCfg = {
-    vaultVersion: "v4.3_1307132059159317_ceosivagangai",
-    accessTokenEnc: nextAccessTokenEnc,
-    proxyRouteMode: waRouteEl && waRouteEl.value ? waRouteEl.value : (prevWaCfg.proxyRouteMode || "DIRECT_META_FIRST"),
+    vaultVersion: "v6.0_cloudflare_worker_proxy",
+    accessTokenEnc: "SERVER_PROXY_VAULT_ONLY",
+    proxyRouteMode: waRouteEl && waRouteEl.value ? waRouteEl.value : (prevWaCfg.proxyRouteMode || "AUTO_SERVER_PROXY"),
     cloudflareWorkerUrl: waCfEl ? waCfEl.value.trim() : (prevWaCfg.cloudflareWorkerUrl || ""),
     phoneNumberId: waPidEl && waPidEl.value.trim() ? waPidEl.value.trim() : "1307132059159317",
     altPhoneNumberId: "1457353970785529",
@@ -17091,11 +17233,16 @@ updateFirebaseStatusIndicators(false);
 appendFirebaseActivityLog("🔌 Firebase இணைப்பு துண்டிக்கப்பட்டது. Google Sheet + உள்ளூர் ஒத்திசைவு செயலில் உள்ளது.", "#f97316");
 showToast("ℹ️ Firebase இணைப்பு துண்டிக்கப்பட்டது.", "#f59e0b");
 }
+let firebaseSessionIdToken = "";
+function setFirebaseSessionIdToken(tok) {
+  firebaseSessionIdToken = String(tok || "").trim();
+}
 function buildFirebaseEndpoint(pathStr) {
 const base = normalizeFirebaseDbUrl(firebaseDbUrl);
 if (!base) return "";
 const cleanPath = String(pathStr || "").replace(/^\/+/, "");
-const authParam = firebaseApiKey ? `?auth=${encodeURIComponent(firebaseApiKey)}` : "";
+const effectiveAuth = firebaseSessionIdToken || firebaseApiKey || "";
+const authParam = effectiveAuth ? `?auth=${encodeURIComponent(effectiveAuth)}` : "";
 return `${base}/${cleanPath}.json${authParam}`;
 }
 function appendFirebaseActivityLog(msg, colorHex) {
@@ -18464,8 +18611,62 @@ showToast(successMsg, "#22c55e");
 }
 function copyFirebaseSecurityRules() {
 const pre = document.getElementById("fbSecurityRulesPre");
-const rulesText = pre ? pre.textContent : `{\n  "rules": {\n    "ceosvg_live": {\n      ".read": true,\n      ".write": true\n    }\n  }\n}`;
-copyTextWithFallback(rulesText, "📋 Firebase Security Rules நகலெடுக்கப்பட்டது! Firebase Console ➔ Rules தாவலில் ஒட்டவும்.");
+const rulesText = pre ? pre.textContent : "";
+copyTextWithFallback(rulesText, "📋 Role-Based Firebase Security Rules நகலெடுக்கப்பட்டது! Firebase Console ➔ Rules தாவலில் Publish செய்யவும்.");
+}
+function downloadFirebaseSecurityRulesJson() {
+const pre = document.getElementById("fbSecurityRulesPre");
+const rulesText = pre ? pre.textContent : "";
+const blob = new Blob([rulesText], { type: "application/json;charset=utf-8;" });
+const url = URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = "database.rules.json";
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+showToast("📥 database.rules.json பதிவிறக்கப்பட்டது!", "#0f766e");
+}
+function downloadCloudflareWorkerProxyJs() {
+const code = typeof getCloudflareWorkerProxySourceCode === "function" ? getCloudflareWorkerProxySourceCode() : "";
+const blob = new Blob([code], { type: "application/javascript;charset=utf-8;" });
+const url = URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = "cloudflare-worker-whatsapp-proxy.js";
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+showToast("📥 cloudflare-worker-whatsapp-proxy.js பதிவிறக்கப்பட்டது!", "#0284c7");
+}
+async function testCloudflareWorkerProxyHealth() {
+const inp = document.getElementById("cfgWaCloudflareWorkerUrl");
+const workerUrl = (inp ? inp.value.trim() : "") || (getWhatsappApiCredentials().cloudflareWorkerUrl || "");
+if (!workerUrl || !workerUrl.startsWith("http")) {
+  showToast("⚠️ முதலில் Cloudflare Worker Proxy URL-ஐ உள்ளிடவும்!", "#f59e0b");
+  if (inp) inp.focus();
+  return;
+}
+try {
+  const res = await fetch(workerUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "health" })
+  });
+  const data = await res.json();
+  if (res.ok && data && data.proxyActive) {
+    showToast(data.tokenConfigured
+      ? "✅ Cloudflare Worker Proxy இணைப்பு வெற்றி! (env.WA_ACCESS_TOKEN பாதுகாப்பாக உள்ளது)"
+      : "⚠️ Worker இணைக்கப்பட்டது, ஆனால் Cloudflare Secrets-இல் WA_ACCESS_TOKEN அமைக்கப்படவில்லை!",
+      data.tokenConfigured ? "#16a34a" : "#f59e0b");
+  } else {
+    showToast("❌ Cloudflare Worker Proxy சோதனை தோல்வியடைந்தது!", "#dc2626");
+  }
+} catch (err) {
+  showToast("❌ Worker இணைப்புப் பிழை: " + err.message, "#dc2626");
+}
 }
 function copyPermanentFirebaseConfigSnippet() {
 const urlVal = normalizeFirebaseDbUrl(document.getElementById("cfgFirebaseDbUrl")?.value || firebaseDbUrl) || "https://YOUR-PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -34814,81 +35015,7 @@ function printAdminAuditTrailReport() {
 
 
 function getCloudflareWorkerProxySourceCode() {
-  const creds = typeof getWhatsappApiCredentials === "function" ? getWhatsappApiCredentials() : {};
-  const pid = creds.phoneNumberId || "1307132059159317";
-  const tpl = creds.templateName || "ceosivagangai";
-  const sup = creds.supportContact || "04575-240408";
-  return [
-    "/**",
-    " * ============================================================================",
-    " * 🛡️ CEO SIVAGANGAI PORTAL (portal.ceosvg.in) - CLOUDFLARE WORKER TOKEN PROXY",
-    " * ----------------------------------------------------------------------------",
-    " * Zero Client-Side Token Exposure: Meta WhatsApp Access Token is stored ONLY",
-    " * in Cloudflare Worker Secret Environment Variable: env.WA_ACCESS_TOKEN",
-    " * Setup in Cloudflare Dashboard:",
-    " *   1. Workers & Pages -> Create Worker -> Paste this code & Deploy",
-    " *   2. Settings -> Variables and Secrets -> Add Secret: WA_ACCESS_TOKEN",
-    " * ============================================================================",
-    " */",
-    "export default {",
-    "  async fetch(request, env) {",
-    "    const corsHeaders = {",
-    "      'Access-Control-Allow-Origin': '*',",
-    "      'Access-Control-Allow-Methods': 'POST, OPTIONS',",
-    "      'Access-Control-Allow-Headers': 'Content-Type'",
-    "    };",
-    "    if (request.method === 'OPTIONS') {",
-    "      return new Response(null, { status: 204, headers: corsHeaders });",
-    "    }",
-    "    if (request.method !== 'POST') {",
-    "      return new Response(JSON.stringify({ ok: false, detail: 'POST_REQUIRED' }), { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });",
-    "    }",
-    "    try {",
-    "      const body = await request.json();",
-    "      const token = env.WA_ACCESS_TOKEN || '';",
-    "      if (!token) {",
-    "        return new Response(JSON.stringify({ ok: false, detail: 'MISSING_ENV_WA_ACCESS_TOKEN' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });",
-    "      }",
-    "      const toPhone = String(body.toPhone || body.phone || '').replace(/\\D/g, '');",
-    "      const otp = String(body.otp || '').trim();",
-    "      const pid = String(body.phoneNumberId || env.WA_PHONE_NUMBER_ID || '" + pid + "').trim();",
-    "      const tplName = String(body.templateName || '" + tpl + "').trim();",
-    "      const tplLang = String(body.templateLang || 'en_US').trim();",
-    "      const supContact = String(body.supportContact || '" + sup + "').trim();",
-    "      const endpoint = `https://graph.facebook.com/v22.0/${encodeURIComponent(pid)}/messages`;",
-    "      const payload = {",
-    "        messaging_product: 'whatsapp',",
-    "        recipient_type: 'individual',",
-    "        to: toPhone.length === 10 ? ('91' + toPhone) : toPhone,",
-    "        type: 'template',",
-    "        template: {",
-    "          name: tplName,",
-    "          language: { code: tplLang },",
-    "          components: [",
-    "            { type: 'body', parameters: [{ type: 'text', text: otp }, { type: 'text', text: supContact }] },",
-    "            { type: 'button', sub_type: 'url', index: '0', parameters: [{ type: 'text', text: otp }] }",
-    "          ]",
-    "        }",
-    "      };",
-    "      const metaRes = await fetch(endpoint, {",
-    "        method: 'POST',",
-    "        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },",
-    "        body: JSON.stringify(payload)",
-    "      });",
-    "      const metaData = await metaRes.json();",
-    "      return new Response(JSON.stringify({",
-    "        ok: metaRes.ok,",
-    "        whatsappSent: metaRes.ok,",
-    "        proxyMode: 'CLOUDFLARE_WORKER_PROXY',",
-    "        messages: metaData.messages || [],",
-    "        error: metaData.error || null",
-    "      }), { status: metaRes.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });",
-    "    } catch (err) {",
-    "      return new Response(JSON.stringify({ ok: false, detail: String(err.message || err) }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });",
-    "    }",
-    "  }",
-    "};"
-  ].join("\n");
+  return "/**\n * ============================================================================\n * 🛡️ CEO SIVAGANGAI PORTAL (portal.ceosvg.in) - CLOUDFLARE WORKER PROXY\n * ----------------------------------------------------------------------------\n * 1. Zero Client-Side Token Exposure:\n *    Meta WhatsApp Access Token is stored ONLY in Cloudflare Worker Secrets:\n *      - env.WA_ACCESS_TOKEN (Required Secret)\n *      - env.WA_PHONE_NUMBER_ID (Optional, default: 1307132059159317)\n *      - env.PROXY_HMAC_SECRET (Optional HMAC-SHA256 request signature secret)\n *      - env.ALLOWED_ORIGINS (Optional comma-separated list, default: portal.ceosvg.in)\n * 2. Deployment Steps:\n *    - Cloudflare Dashboard -> Workers & Pages -> Create Worker -> Paste & Deploy\n *    - Settings -> Variables and Secrets -> Add Secret: WA_ACCESS_TOKEN\n *    - Paste the Worker URL (*.workers.dev) in Admin Portal -> Cloud Settings\n * ============================================================================\n */\n\nconst DEFAULT_ALLOWED_ORIGINS = [\n  \"https://portal.ceosvg.in\",\n  \"https://www.ceosvg.in\",\n  \"http://localhost\",\n  \"http://127.0.0.1\"\n];\n\nfunction getCorsHeaders(request, env) {\n  const origin = request.headers.get(\"Origin\") || \"\";\n  const customOrigins = String(env.ALLOWED_ORIGINS || \"\")\n    .split(\",\")\n    .map(s => s.trim())\n    .filter(Boolean);\n  const allowList = customOrigins.length > 0 ? customOrigins : DEFAULT_ALLOWED_ORIGINS;\n  const isAllowed = !origin || allowList.some(a => origin === a || origin.startsWith(a + \":\"));\n  return {\n    \"Access-Control-Allow-Origin\": isAllowed ? (origin || \"https://portal.ceosvg.in\") : \"https://portal.ceosvg.in\",\n    \"Access-Control-Allow-Methods\": \"POST, OPTIONS\",\n    \"Access-Control-Allow-Headers\": \"Content-Type, X-Portal-Timestamp, X-Portal-Signature\",\n    \"Vary\": \"Origin\"\n  };\n}\n\nfunction jsonResp(obj, status, corsHeaders) {\n  return new Response(JSON.stringify(obj), {\n    status,\n    headers: { ...corsHeaders, \"Content-Type\": \"application/json\" }\n  });\n}\n\nasync function verifyHmacSignature(secret, message, providedHex) {\n  if (!secret) return true; // Optional unless PROXY_HMAC_SECRET is set\n  if (!providedHex || typeof providedHex !== \"string\") return false;\n  const enc = new TextEncoder();\n  const key = await crypto.subtle.importKey(\n    \"raw\",\n    enc.encode(secret),\n    { name: \"HMAC\", hash: \"SHA-256\" },\n    false,\n    [\"sign\"]\n  );\n  const sigBuf = await crypto.subtle.sign(\"HMAC\", key, enc.encode(message));\n  const expectedHex = Array.from(new Uint8Array(sigBuf))\n    .map(b => b.toString(16).padStart(2, \"0\"))\n    .join(\"\");\n  return expectedHex.toLowerCase() === providedHex.trim().toLowerCase();\n}\n\nexport default {\n  async fetch(request, env) {\n    const corsHeaders = getCorsHeaders(request, env);\n\n    if (request.method === \"OPTIONS\") {\n      return new Response(null, { status: 204, headers: corsHeaders });\n    }\n    if (request.method !== \"POST\") {\n      return jsonResp({ ok: false, detail: \"POST_REQUIRED\" }, 405, corsHeaders);\n    }\n\n    try {\n      const body = await request.json();\n      const action = String(body.action || \"send_whatsapp_otp\").trim();\n\n      if (action === \"health\" || action === \"verify_proxy\") {\n        return jsonResp({\n          ok: true,\n          proxyActive: true,\n          tokenConfigured: Boolean(env.WA_ACCESS_TOKEN && String(env.WA_ACCESS_TOKEN).trim().length > 20),\n          hmacEnforced: Boolean(env.PROXY_HMAC_SECRET),\n          service: \"ceosvg-whatsapp-proxy\"\n        }, 200, corsHeaders);\n      }\n\n      const token = String(env.WA_ACCESS_TOKEN || \"\").trim();\n      if (!token) {\n        return jsonResp({ ok: false, whatsappSent: false, detail: \"MISSING_ENV_WA_ACCESS_TOKEN\" }, 500, corsHeaders);\n      }\n\n      // Replay-window & optional HMAC verification\n      const tsStr = String(body.timestamp || request.headers.get(\"X-Portal-Timestamp\") || \"\").trim();\n      if (env.PROXY_HMAC_SECRET) {\n        if (!tsStr) {\n          return jsonResp({ ok: false, detail: \"MISSING_TIMESTAMP\" }, 401, corsHeaders);\n        }\n        const ageMs = Math.abs(Date.now() - Date.parse(tsStr));\n        if (isNaN(ageMs) || ageMs > 5 * 60 * 1000) {\n          return jsonResp({ ok: false, detail: \"EXPIRED_TIMESTAMP\" }, 401, corsHeaders);\n        }\n        const sig = String(body.clientSignature || request.headers.get(\"X-Portal-Signature\") || \"\");\n        const baseStr = `${body.toPhone || body.phone || \"\"}|${body.otp || \"\"}|${tsStr}`;\n        const sigOk = await verifyHmacSignature(env.PROXY_HMAC_SECRET, baseStr, sig);\n        if (!sigOk) {\n          return jsonResp({ ok: false, detail: \"INVALID_SIGNATURE\" }, 403, corsHeaders);\n        }\n      }\n\n      const rawPhone = String(body.toPhone || body.phone || \"\").replace(/\\D/g, \"\");\n      if (rawPhone.length < 10) {\n        return jsonResp({ ok: false, whatsappSent: false, detail: \"INVALID_PHONE\" }, 400, corsHeaders);\n      }\n      const normalizedTo = rawPhone.length === 10 ? (\"91\" + rawPhone) : rawPhone;\n      const pid = String(body.phoneNumberId || env.WA_PHONE_NUMBER_ID || \"1307132059159317\").trim();\n      const endpoint = `https://graph.facebook.com/v22.0/${encodeURIComponent(pid)}/messages`;\n\n      let payload;\n      if (action === \"send_whatsapp_text\" && body.message) {\n        payload = {\n          messaging_product: \"whatsapp\",\n          recipient_type: \"individual\",\n          to: normalizedTo,\n          type: \"text\",\n          text: { body: String(body.message).slice(0, 1024) }\n        };\n      } else {\n        const otp = String(body.otp || \"\").trim();\n        if (!otp) {\n          return jsonResp({ ok: false, whatsappSent: false, detail: \"MISSING_OTP\" }, 400, corsHeaders);\n        }\n        const tplName = String(body.templateName || \"ceosivagangai\").trim();\n        const tplLang = String(body.templateLang || \"en_US\").trim();\n        const supContact = String(body.supportContact || \"04575-240408\").trim();\n        payload = {\n          messaging_product: \"whatsapp\",\n          recipient_type: \"individual\",\n          to: normalizedTo,\n          type: \"template\",\n          template: {\n            name: tplName,\n            language: { code: tplLang },\n            components: [\n              {\n                type: \"body\",\n                parameters: [\n                  { type: \"text\", text: otp },\n                  { type: \"text\", text: supContact }\n                ]\n              },\n              {\n                type: \"button\",\n                sub_type: \"url\",\n                index: \"0\",\n                parameters: [{ type: \"text\", text: otp }]\n              }\n            ]\n          }\n        };\n      }\n\n      const metaRes = await fetch(endpoint, {\n        method: \"POST\",\n        headers: {\n          \"Authorization\": `Bearer ${token}`,\n          \"Content-Type\": \"application/json\"\n        },\n        body: JSON.stringify(payload)\n      });\n\n      const metaJson = await metaRes.json();\n      const ok = Boolean(metaRes.ok && Array.isArray(metaJson.messages) && metaJson.messages.length > 0);\n      return jsonResp({\n        ok,\n        whatsappSent: ok,\n        messageId: (metaJson.messages && metaJson.messages[0] && metaJson.messages[0].id) || \"\",\n        error: metaJson.error || null\n      }, metaRes.ok ? 200 : metaRes.status, corsHeaders);\n    } catch (err) {\n      return jsonResp({ ok: false, whatsappSent: false, detail: err.message || \"WORKER_ERROR\" }, 500, corsHeaders);\n    }\n  }\n};";
 }
 
 function copyCloudflareWorkerProxyCode() {
