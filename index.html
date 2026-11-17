@@ -4,24 +4,29 @@
 <script>
 (function() {
   try {
-    if (typeof window !== "undefined" && typeof window.name === "string" && window.name.length > 10000) {
+    if (typeof window !== "undefined") {
       window.name = "";
     }
+    if (typeof indexedDB !== "undefined" && typeof indexedDB.deleteDatabase === "function") {
+      try { indexedDB.deleteDatabase("CEOSVG_PERMANENT_VAULT_DB"); } catch (e) {}
+    }
     if (typeof localStorage !== "undefined") {
-      // Always remove heavy backup/student blobs that cause Out of Memory
       var dropKeys = [
         "CEOSVG_AUTO_BACKUP_HISTORY_V1",
         "CEOSVG_EMIS_STUDENT_DATA",
         "CEOSVG_DIGNITARIES_V1",
         "CEOSVG_DIGNITARIES_DATA_V1",
-        "CEOSVG_DIGNITARIES_DATA_V2"
+        "CEOSVG_DIGNITARIES_DATA_V2",
+        "CEOSVG_DIGNITARIES_DATA_V3",
+        "CEOSVG_DIGNITARIES_PHOTO_VAULT",
+        "CEOSVG_ACTIVE_UI_STATE"
       ];
       for (var i = 0; i < dropKeys.length; i++) {
         try { localStorage.removeItem(dropKeys[i]); } catch (e) {}
       }
-      // If CEOSVG_SCHOOL_EXTRA_V6 is bloated (> 1.2 MB) from old full-staff clones, slim it once safely
+      // Always slim CEOSVG_SCHOOL_EXTRA_V6 in localStorage so it never holds 7,081 cloned staff arrays!
       var rawEx = localStorage.getItem("CEOSVG_SCHOOL_EXTRA_V6");
-      if (rawEx && rawEx.length > 1200000) {
+      if (rawEx && rawEx.length > 150000) {
         try {
           var parsed = JSON.parse(rawEx);
           var slim = {};
@@ -43,6 +48,9 @@
           try { localStorage.removeItem("CEOSVG_SCHOOL_EXTRA_V6"); } catch (e2) {}
         }
       }
+    }
+    if (typeof sessionStorage !== "undefined") {
+      try { sessionStorage.removeItem("CEOSVG_ACTIVE_UI_STATE"); } catch (e) {}
     }
     if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(regs) {
@@ -822,20 +830,6 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 <!-- SCHOOL HOME UNREAD CIRCULARS & ANNOUNCEMENTS BOX (WITH MARK AS READ) -->
 <div id="schHomeUnreadCircularsBox" style="display:none; margin-bottom:14px;"></div>
-<!-- SECTION 1 OF SCHOOL DASHBOARD: DIGNITARIES & EDUCATION OFFICIALS -->
-<div id="schoolDignitariesShowcase" class="dignitary-showcase-container" style="margin-bottom:14px;">
-<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px; background:linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%); border-bottom:1.5px solid #cbd5e1; gap:8px; flex-wrap:wrap;">
-<span style="font-size:0.84rem; font-weight:900; color:#0f294a;">🏛️ முக்கியப் பிரமுகர்கள் &amp; கல்வித்துறை அலுவலர்கள்</span>
-<div style="display:flex; align-items:center; gap:6px;">
-<button type="button" class="dignitary-toggle-btn" onclick="toggleDignitariesView()" id="dignitaryToggleBtn" title="விவரங்களை சுருக்குக / விரிக்க" style="padding:2px 8px; font-size:0.72rem;">
-<span id="dignitaryToggleIcon">▲</span> <span id="dignitaryToggleText">சுருக்குக</span>
-</button>
-</div>
-</div>
-<div id="schoolDignitariesGrid" class="dignitary-cards-grid">
-<!-- Rendered dynamically via renderSchoolDignitaries() -->
-</div>
-</div>
 <!-- SECTION 2 OF SCHOOL DASHBOARD: SCHOOL IDENTITY, ESTABLISHMENT, U.NO / UDISE / DGE & EXAM CENTRE DETAILS -->
 <div id="schoolDashboardIdentityPanel" style="background:linear-gradient(135deg, #0f294a 0%, #1e3a8a 100%); color:#fff; border-radius:12px; padding:16px 18px; margin-bottom:18px; border-left:6px solid #f59e0b; box-shadow:0 4px 14px rgba(15,41,74,0.12);">
 <!-- Top Row: School Name (Tamil & English) + Edit Button -->
@@ -2205,7 +2199,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 மாவட்ட முதன்மைக் கட்டுப்பாட்டகம் (District Executive Command Center)
 </h3>
 <p style="font-size:0.9rem; color:#475569; max-width:720px; margin:0 auto;">
-சிவகங்கை மாவட்டத்தின் அனைத்துப் பள்ளிகள், ஆசிரியர்கள், மாணவர்கள் மற்றும் முக்கியப் பிரமுகர்கள் விவரங்களை நிர்வகிக்க கீழேயுள்ள நான்கு முதன்மைப் பிரிவுகளில் ஒன்றைத் தேர்வு செய்யவும்:
+சிவகங்கை மாவட்டத்தின் அனைத்துப் பள்ளிகள், ஆசிரியர்கள் மற்றும் மாணவர்கள் விவரங்களை நிர்வகிக்க கீழேயுள்ள நான்கு முதன்மைப் பிரிவுகளில் ஒன்றைத் தேர்வு செய்யவும்:
 </p>
 </div>
 <!-- Executive District-Wide Live KPI Strip & Instant Finder -->
@@ -2251,10 +2245,6 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div style="font-size:1.18rem; font-weight:900; color:#581c87;" id="admExecCentresSummaryNum">10th: 113 | +2: 91 | மற்றவை</div>
 <div style="font-size:0.70rem; color:#6b21a8; font-weight:800;">கண்காணிப்பாளர் &amp; அலுவலகப் பணியாளர் நிர்ணயம்</div>
 </div>
-<div onclick="openAdminModule('dignitaries')" style="cursor:pointer; background:#fffbeb; border:1.5px solid #fde68a; border-left:4px solid #d97706; border-radius:8px; padding:8px 12px;">
-<div style="font-size:0.72rem; font-weight:800; color:#92400e;">முக்கியப் பிரமுகர்கள் (OFFICIALS)</div>
-<div style="font-size:1.45rem; font-weight:900; color:#b45309;">12</div>
-<div style="font-size:0.70rem; color:#92400e; font-weight:700;">நிர்வாகி கட்டுப்பாட்டுப் பகுதி</div>
 </div>
 <div onclick="openAdminModule('infraNeeds')" style="cursor:pointer; background:#fff7ed; border:1.5px solid #fed7aa; border-left:4px solid #ea580c; border-radius:8px; padding:8px 12px;">
 <div style="font-size:0.72rem; font-weight:800; color:#c2410c;">🏗️ அடிப்படைத் தேவைகள் (INFRA NEEDS)</div>
@@ -2376,30 +2366,6 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 <button type="button" class="btn btn-primary" style="width:100%; font-size:1rem; font-weight:900; padding:12px; border-radius:8px; background:#059669; border-color:#059669; color:#fff;">
 👉 STUDENTS MASTER திறக்க கிளிக் செய்க (Open) ❯
-</button>
-</div>
-<!-- MODULE 4: DIGNITARIES & LEADERSHIP MANAGEMENT -->
-<div class="adm-module-card card-dignitaries" id="admModuleCardDignitaries" onclick="openAdminModule('dignitaries')" style="border-color:#f59e0b; box-shadow:0 4px 18px rgba(245,158,11,0.12); cursor:pointer;">
-<span class="adm-module-badge" style="background:#fffbeb; color:#b45309; border:1px solid #fde68a;">MOD 04</span>
-<div>
-<div class="adm-module-icon-wrap" style="background:#fef3c7; color:#d97706;">🏛️</div>
-<div style="font-size:0.78rem; font-weight:800; color:#d97706; letter-spacing:1px; text-transform:uppercase;">LEADERSHIP &amp; DIGNITARIES</div>
-<h4 style="font-size:1.35rem; font-weight:900; color:#0f294a; margin:4px 0 8px 0;">4. முக்கியப் பிரமுகர்கள் மேலாண்மை</h4>
-<div style="font-size:0.92rem; font-weight:800; color:#b45309; margin-bottom:8px;">அரசு &amp; கல்வித்துறை அதிகாரிகள் விவரங்கள் திருத்தம்</div>
-<p style="font-size:0.84rem; color:#475569; line-height:1.55; margin-bottom:14px;">
-அதிகாரிகள் மாற்றம் ஏற்படும் போது இந்திய குடியரசுத் தலைவர், தமிழக முதலமைச்சர், பள்ளிக்கல்வித்துறை அமைச்சர், மாவட்ட ஆட்சியர், CEO, DEO உள்ளிட்ட 12 முக்கியப் பிரமுகர்களின் பெயர்கள், பதவிகள், புகைப்படங்களை நிர்வாகி முகப்பில் உடனுக்குடன் மாற்றி அமைக்கும் அதிகாரம்.
-</p>
-<div style="background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:10px 12px; margin-bottom:16px;">
-<div style="font-size:0.75rem; font-weight:800; color:#b45309; margin-bottom:6px; text-transform:uppercase;">முகப்பு காட்சி நிலவரம் (Showcase Status):</div>
-<div style="display:flex; flex-wrap:wrap; gap:6px; font-size:0.8rem; font-weight:800;">
-<span style="background:#d97706; color:#fff; padding:2px 8px; border-radius:6px;" id="admChooserDignitaryCount">🏛️ 12 அலுவலர்கள்</span>
-<span style="background:#16a34a; color:#fff; padding:2px 8px; border-radius:6px;">🏫 அரசுப் பள்ளி: 10</span>
-<span style="background:#7c3aed; color:#fff; padding:2px 8px; border-radius:6px;">🏢 தனியார் பள்ளி: 12</span>
-</div>
-</div>
-</div>
-<button type="button" class="btn btn-primary" style="width:100%; font-size:1rem; font-weight:900; padding:12px; border-radius:8px; background:#d97706; border-color:#d97706; color:#fff;">
-👉 அதிகாரிகள் பெயர் திருத்தப் பகுதிக்குச் செல் ❯
 </button>
 </div>
 <!-- MODULE 5: ADMIN CIRCULARS & ANNOUNCEMENTS DISPATCH -->
@@ -2684,8 +2650,6 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <button type="button" class="nav-pill-btn" id="admTabBtnStudentsMaster" data-mod-group="studentsMaster" onclick="switchAdminTab('studentsMaster')" style="display:none;">👨‍🎓 1. மாணவர் எண்ணிக்கை (Student Strength)</button>
 <button type="button" class="nav-pill-btn" id="admTabBtnHssGroups" data-mod-group="studentsMaster" onclick="switchAdminTab('hssGroups')" style="display:none;">📚 2. HSS Group Master (மேல்நிலை பாடப்பிரிவுகள்)</button>
 <button type="button" class="nav-pill-btn" id="admTabBtnStudentExcel" data-mod-group="studentsMaster" onclick="switchAdminTab('studentExcelUpload')" style="display:none;">📥 3. Student Excel பதிவேற்றம்</button>
-<!-- GROUP 4: 4. DIGNITARIES MANAGEMENT (Single Tab) -->
-<button type="button" class="nav-pill-btn" id="admTabBtnDignitaries" data-mod-group="dignitaries" onclick="switchAdminTab('dignitaries')" style="display:none;">🏛️ முக்கியப் பிரமுகர்கள் &amp; அதிகாரிகள் மேலாண்மை</button>
 <!-- GROUP 5: 5. CIRCULARS DISPATCH (Single Tab) -->
 <button type="button" class="nav-pill-btn" id="admTabBtnCirculars" data-mod-group="circulars" onclick="switchAdminTab('circulars')" style="display:none;">📢 சுற்றறிக்கை அனுப்புதல் &amp; அறிவிப்புகள் மேலாண்மை (Circulars)</button>
 <!-- GROUP 6: SINGLE-WINDOW ALL EXCEL SYNC -->
@@ -5082,121 +5046,6 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 </div>
 <!-- ========================================================================= -->
-<!-- ADMIN SUB-TAB 9: DIGNITARIES & OFFICIALS MANAGEMENT                       -->
-<!-- ========================================================================= -->
-<div id="admPaneDignitaries" class="panel-box" style="display:none;">
-<div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-<div>
-<span style="font-size:1.15rem; font-weight:900; color:#0f294a;">🏛️ முக்கியப் பிரமுகர்கள் &amp; கல்வித்துறை அலுவலர்கள் மேலாண்மை (Hon'ble Leadership &amp; Education Officials)</span>
-<div style="font-size:0.84rem; color:#475569; font-weight:500; margin-top:2px;">
-அதிகாரிகள் மாற்றம் ஏற்படும் போது புதிய பெயர்கள், பதவிகள், மரியாதை முன்னொட்டு &amp; புகைப்படங்களை மாவட்ட நிர்வாகி இங்கே உடனுக்குடன் திருத்தம் செய்து கொள்ளலாம்.
-</div>
-</div>
-<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-<button type="button" class="btn btn-success btn-sm" onclick="openAdminAddDignitaryModal()" style="font-weight:800; background:#16a34a; border-color:#16a34a;">
-➕ புதிய அதிகாரி சேர்
-</button>
-<button type="button" class="btn btn-primary btn-sm" onclick="exportPortalHtmlWithEmbeddedPhotos()" style="font-weight:900; background:#0f766e; border-color:#0f766e;" title="மாற்றியமைத்த புகைப்படங்கள் மூல HTML கோப்பிற்குள்ளேயே நிரந்தரமாகச் சேமிக்கப்படும்">
-💾 புகைப்படங்களுடன் முழு HTML கோப்பினைச் சேமி
-</button>
-<button type="button" class="btn btn-outline btn-sm" onclick="exportDignitariesPhotosBackupJson()" style="font-weight:800; color:#0369a1; border-color:#7dd3fc; background:#f0f9ff;">
-📤 படங்கள் Backup (.json)
-</button>
-<label class="btn btn-outline btn-sm" style="font-weight:800; color:#7e22ce; border-color:#d8b4fe; background:#faf5ff; cursor:pointer; margin:0;">
-📥 படங்கள் மீட்டமை (Restore)
-<input type="file" accept=".json" style="display:none;" onchange="handleImportDignitariesPhotosBackupJson(event)">
-</label>
-<button type="button" class="btn btn-outline btn-sm" onclick="resetAdminDignitariesToDefault()" style="font-weight:800; color:#dc2626; border-color:#fca5a5; background:#fff5f5;">
-🔄 இயல்புநிலைக்கு மீட்டமை
-</button>
-<button type="button" class="btn btn-primary btn-sm" onclick="previewDignitariesInSchoolShowcase()" style="font-weight:800; background:#d97706; border-color:#d97706;">
-👁️ பள்ளி முகப்பில் காண்க
-</button>
-</div>
-</div>
-<!-- 4 Quick Metric Summary Cards for Dignitaries -->
-<div class="grid-4" style="margin-bottom:14px; gap:10px;">
-<div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 14px; text-align:center;">
-<div style="font-size:0.74rem; font-weight:800; color:#64748b; text-transform:uppercase;">மொத்த பிரமுகர்கள்</div>
-<div style="font-size:1.5rem; font-weight:900; color:#0f294a; line-height:1.2; margin-top:2px;" id="admDignitaryStatTotal">12</div>
-<div style="font-size:0.72rem; color:#64748b;">அனைத்து நிலைகள்</div>
-</div>
-<div style="background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:10px; padding:10px 14px; text-align:center;">
-<div style="font-size:0.74rem; font-weight:800; color:#166534; text-transform:uppercase;">அரசு &amp; உதவிபெறும் பள்ளி முகப்பு</div>
-<div style="font-size:1.5rem; font-weight:900; color:#16a34a; line-height:1.2; margin-top:2px;" id="admDignitaryStatGovt">10</div>
-<div style="font-size:0.72rem; color:#166534;">தனியார் பள்ளி அலுவலர்கள் நீங்கலாக</div>
-</div>
-<div style="background:#fef3c7; border:1.5px solid #fde68a; border-radius:10px; padding:10px 14px; text-align:center;">
-<div style="font-size:0.74rem; font-weight:800; color:#92400e; text-transform:uppercase;">தனியார் பள்ளி முகப்பு</div>
-<div style="font-size:1.5rem; font-weight:900; color:#d97706; line-height:1.2; margin-top:2px;" id="admDignitaryStatPvt">12</div>
-<div style="font-size:0.72rem; color:#92400e;">தனியார் இயக்குநர் &amp; DEO உள்பட</div>
-</div>
-<div style="background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; padding:10px 14px; text-align:center;">
-<div style="font-size:0.74rem; font-weight:800; color:#1e40af; text-transform:uppercase;">சேமிப்பு நிலை (Storage)</div>
-<div style="font-size:1.15rem; font-weight:900; color:#1d4ed8; line-height:1.2; margin-top:4px;" id="admDignitaryStatStatus">🟢 நேரடி ஒத்திசைவு</div>
-<div style="font-size:0.72rem; color:#1e40af;">Firebase நேரடி மேகக்கணி (Cloud Memory)</div>
-</div>
-</div>
-<!-- LIVE VISUAL DIGNITARIES BOX IN ADMIN WITH DIRECT EDIT BUTTONS -->
-<div id="admDignitariesVisualBox" style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:14px;">
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;">
-<div style="font-size:0.86rem; font-weight:900; color:#0f294a;">
-🖼️ முக்கியப் பிரமுகர்கள் நேரடி அட்டைப் பெட்டி (அட்டையில் உள்ள <strong>✏️ திருத்து</strong> பொத்தானை அழுத்தி உடனடியாகத் திருத்தலாம்)
-</div>
-<span style="font-size:0.74rem; color:#0369a1; background:#e0f2fe; padding:3px 9px; border-radius:6px; font-weight:800;">1:1 சதுர வடிவப் புகைப்படங்கள்</span>
-</div>
-<div id="admDignitariesCardsPreviewGrid" class="dignitary-cards-grid" style="padding:4px 0;">
-<!-- Rendered via renderAdminDignitariesManager() -->
-</div>
-</div>
-<!-- SEARCH & FILTER BAR -->
-<div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-<div style="flex:1; min-width:240px; position:relative;">
-<input type="text" id="admDignitarySearchInput" class="form-control" placeholder="🔍 பெயர், பதவி அல்லது துறை வாரியாகத் தேடுக..." oninput="filterAdminDignitariesTable()" style="padding-left:34px;">
-<span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:0.9rem; color:#94a3b8;">🔍</span>
-</div>
-<div style="display:flex; gap:8px; align-items:center;">
-<select id="admDignitaryTierFilter" class="form-control" onchange="filterAdminDignitariesTable()" style="width:auto; font-size:0.84rem;">
-<option value="">அனைத்து நிலைகளும் (All Tiers)</option>
-<option value="tier-national">மத்திய அரசு (National)</option>
-<option value="tier-state">தமிழ்நாடு அரசு (State Govt)</option>
-<option value="tier-dept">பள்ளிக்கல்வித்துறை (Dept)</option>
-<option value="tier-district">மாவட்ட நிர்வாகம் (District)</option>
-<option value="pvt">தனியார் பள்ளி அலுவலர்கள் (Private)</option>
-</select>
-<button type="button" class="btn btn-outline btn-sm" onclick="resetAdminDignitaryFilters()" style="font-weight:700;">வடிகட்டிகளை நீக்கு</button>
-</div>
-</div>
-<!-- DIGNITARIES TABLE -->
-<div class="table-responsive" style="border:1.5px solid #cbd5e1; border-radius:10px; overflow:hidden; background:#fff;">
-<table class="table" style="margin-bottom:0; width:100%; border-collapse:collapse;" id="admDignitariesTable">
-<thead>
-<tr style="background:#f1f5f9; color:#0f294a; font-weight:800; font-size:0.82rem; border-bottom:2px solid #cbd5e1;">
-<th style="padding:10px; text-align:center; width:65px;">வ.எண்</th>
-<th style="padding:10px; text-align:center; width:70px;">படம் / ஐகான்</th>
-<th style="padding:10px; width:110px;">மரியாதை</th>
-<th style="padding:10px; min-width:220px;">பதவி / பொறுப்பு</th>
-<th style="padding:10px; min-width:220px;">அதிகாரி பெயர்</th>
-<th style="padding:10px; width:140px;">நிர்வாக நிலை</th>
-<th style="padding:10px; width:140px;">முகப்பு வகை</th>
-<th style="padding:10px; text-align:center; width:140px;">நடவடிக்கைகள்</th>
-</tr>
-</thead>
-<tbody id="admDignitariesTbody">
-<!-- Rendered via renderAdminDignitariesManager() -->
-</tbody>
-</table>
-</div>
-<div style="margin-top:14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px 14px; font-size:0.82rem; color:#1e40af; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-<div>
-ℹ️ <strong>அரசு விதிமுறை:</strong> அரசு மற்றும் அரசு உதவிபெறும் பள்ளிகளின் முகப்பில் <strong>தனியார் பள்ளிகள் இயக்குநர்</strong> மற்றும் <strong>மாவட்டக் கல்வி அலுவலர் (தனியார் பள்ளிகள்)</strong> விவரங்கள் இடம்பெற வேண்டியதில்லை. அவை தனியார் பள்ளிகளுக்கு மட்டுமே முகப்பில் தோன்றும்.
-</div>
-<button type="button" class="btn btn-primary btn-sm" onclick="saveAllDignitariesDirectly()" style="background:#0284c7; border-color:#0284c7; font-weight:800;">
-💾 அனைத்து மாற்றங்களையும் சேமிக்க
-</button>
-</div>
-</div>
-<!-- ========================================================================= -->
 <!-- ADMIN SUB-TAB 12: DISTRICT INFRASTRUCTURE NEEDS DASHBOARD                 -->
 <!-- ========================================================================= -->
 <div id="admPaneInfraNeeds" class="panel-box" style="display:none; border-top:4px solid #ea580c;">
@@ -7076,97 +6925,6 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 <div style="display:flex; gap:10px; align-items:center;">
 <button type="button" class="btn btn-outline" onclick="closeAdminEditStaffModal()">❌ ரத்து செய் (Cancel)</button>
 <button type="submit" class="btn btn-success" style="font-weight:800; padding:10px 20px;">💾 மாற்றங்களைச் சேமி (Update Staff Details)</button>
-</div>
-</div>
-</form>
-</div>
-</div>
-<!-- ADMIN DIGNITARY EDIT / ADD MODAL -->
-<div id="adminDignitaryEditModal" class="modal-backdrop" onclick="if(event.target===this) closeAdminDignitaryModal()">
-<div class="modal-card" style="max-width:760px;">
-<div class="modal-header" style="background:#f8fafc; border-bottom:2px solid #d97706; padding:14px 18px;">
-<div class="modal-title" id="admDignitaryModalTitle" style="font-size:1.15rem; font-weight:900; color:#0f294a;">
-✏️ அதிகாரி விவரங்களைத் திருத்துதல் (Edit Official Details)
-</div>
-<button type="button" class="btn btn-outline btn-sm" onclick="closeAdminDignitaryModal()">✕ மூடுக</button>
-</div>
-<form onsubmit="saveAdminDignitaryForm(event)" style="padding:18px;">
-<input type="hidden" id="admDigFormId">
-<!-- TOP LIVE PREVIEW CARD -->
-<div style="background:#f8fafc; border:1.5px dashed #cbd5e1; border-radius:10px; padding:12px; margin-bottom:16px;">
-<div style="font-size:0.74rem; font-weight:800; color:#64748b; text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between;">
-<span>👁️ நேரடி முகப்பு முன்னோட்டம் (Live Public Card Preview):</span>
-<span id="admDigPreviewBadge" style="font-size:0.72rem; color:#1d4ed8; font-weight:700;">உடனுக்குடன் மாறும் காட்சி</span>
-</div>
-<div id="admDigPreviewCardContainer" style="max-width:320px; margin:0 auto;">
-<!-- Dynamically updated preview -->
-</div>
-</div>
-<div class="grid-3" style="gap:12px; margin-bottom:12px;">
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800;">மரியாதை முன்னொட்டு (Honorific) <span class="required">*</span></label>
-<select id="admDigFormHonorific" class="form-control" onchange="updateAdminDignitaryPreview()" required>
-<option value="மேதகு">மேதகு (His/Her Excellency)</option>
-<option value="மாண்புமிகு">மாண்புமிகு (Hon'ble)</option>
-<option value="மதிப்புமிகு">மதிப்புமிகு (Respected)</option>
-<option value="திரு.">திரு.</option>
-<option value="திருமதி">திருமதி</option>
-<option value="டாக்டர்">டாக்டர் (Dr.)</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800;">நிர்வாக நிலை (Tier) <span class="required">*</span></label>
-<select id="admDigFormTier" class="form-control" onchange="updateAdminDignitaryPreview()" required>
-<option value="tier-national">மத்திய அரசு (National)</option>
-<option value="tier-state">தமிழ்நாடு அரசு (State Govt)</option>
-<option value="tier-dept">பள்ளிக்கல்வித்துறை (Dept of School Edn)</option>
-<option value="tier-dept-pvt">பள்ளிக்கல்வி (தனியார் பள்ளிகள்)</option>
-<option value="tier-district">மாவட்ட நிர்வாகம் (District)</option>
-<option value="tier-district-pvt">மாவட்ட நிர்வாகம் (தனியார் பள்ளிகள்)</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800;">முகப்பு வகை (School Applicability) <span class="required">*</span></label>
-<select id="admDigFormPrivateOnly" class="form-control" onchange="updateAdminDignitaryPreview()" required>
-<option value="false">அனைத்துப் பள்ளிகளுக்கும் (All Schools)</option>
-<option value="true">தனியார் பள்ளிகளுக்கு மட்டும் (Private Only)</option>
-</select>
-</div>
-</div>
-<div class="grid-2" style="gap:12px; margin-bottom:12px;">
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800;">பதவி / பொறுப்பு (Role / Designation) <span class="required">*</span></label>
-<input type="text" id="admDigFormRole" class="form-control" placeholder="எ.கா: சிவகங்கை மாவட்ட ஆட்சியர்" oninput="updateAdminDignitaryPreview()" required>
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800;">அதிகாரி / பிரமுகர் பெயர் (Official's Name) <span class="required">*</span></label>
-<input type="text" id="admDigFormName" class="form-control" placeholder="எ.கா: திரு. ப. ஆகாஷ், IAS" oninput="updateAdminDignitaryPreview()" required>
-</div>
-</div>
-<div class="grid-3" style="gap:12px; margin-bottom:14px;">
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800;">வகைப்பட்டை உரை (Tier Badge Text)</label>
-<input type="text" id="admDigFormTierBadge" class="form-control" placeholder="எ.கா: மாவட்ட நிர்வாகம்" oninput="updateAdminDignitaryPreview()">
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800;">சின்னம் / எமோஜி (Icon / Emoji)</label>
-<input type="text" id="admDigFormIcon" class="form-control" placeholder="எ.கா: 🛡️ அல்லது 🏛️" oninput="updateAdminDignitaryPreview()">
-</div>
-<div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800;">புகைப்படம் கோப்பு (Photo File)</label>
-<input type="file" id="admDigFormPhotoFile" class="form-control" accept="image/*" onchange="handleDignitaryPhotoUpload(event)">
-</div>
-</div>
-<div class="form-group" style="margin-bottom:14px;">
-<label class="form-label" style="font-weight:800;">புகைப்படம் URL (Photo Web URL - விருப்பத்தேர்வு)</label>
-<input type="text" id="admDigFormPhotoUrl" class="form-control" placeholder="https://... அல்லது மேலே உள்ள கோப்பு பதிவேற்றத்தைப் பயன்படுத்தவும்" oninput="updateAdminDignitaryPreview()">
-</div>
-<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:14px; margin-top:10px;">
-<button type="button" class="btn btn-outline" onclick="closeAdminDignitaryModal()">ரத்து செய் (Cancel)</button>
-<div style="display:flex; gap:8px;">
-<button type="submit" class="btn btn-primary" style="background:#d97706; border-color:#d97706; font-weight:900; padding:8px 20px;">
-💾 விவரங்களைச் சேமி (Save Dignitary)
-</button>
 </div>
 </div>
 </form>
@@ -11466,940 +11224,20 @@ schoolExtraDataStore[uNo].studentsEmisV38 = true;
 }
 return schoolExtraDataStore[uNo];
 }
-const DEFAULT_DIGNITARIES = [
-{
-id: "pres",
-tier: "tier-national",
-tierBadge: "மத்திய அரசு",
-honorific: "மேதகு",
-honorificClass: "hon-excellency",
-role: "இந்திய குடியரசுத் தலைவர்",
-name: "திருமதி திரௌபதி முர்மு",
-icon: "🏛️",
-photo: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Droupadi_Murmu_official_portrait.jpg",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_PRESIDENT%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23ea580c%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%239a3412%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_PRESIDENT%29%22%20stroke%3D%22%23c2410c%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpath%20d%3D%22M48%2C70%20Q60%2C82%2072%2C96%22%20stroke%3D%22%23fbbf24%22%20stroke-width%3D%224%22%20fill%3D%22none%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M36%2C44%20C34%2C22%2086%2C22%2084%2C44%20C84%2C52%2080%2C56%2080%2C56%20C78%2C34%2060%2C30%2060%2C30%20C60%2C30%2042%2C34%2040%2C56%20C40%2C56%2036%2C52%2036%2C44%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23c2410c%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EPRESIDENT%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)",
-privateOnly: false
-},
-{
-id: "pm",
-tier: "tier-national",
-tierBadge: "மத்திய அரசு",
-honorific: "மாண்புமிகு",
-honorificClass: "hon-honorable",
-role: "இந்தியப் பிரதமர்",
-name: "திரு. நரேந்திர மோடி",
-icon: "🇮🇳",
-photo: "https://upload.wikimedia.org/wikipedia/commons/1/14/Official_portrait_of_Narendra_Modi_2022.jpg",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_PRIME_MIN%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23ea580c%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23c2410c%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_PRIME_MIN%29%22%20stroke%3D%22%23f97316%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23f97316%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EPRIME%20MIN%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)",
-privateOnly: false
-},
-{
-id: "gov",
-tier: "tier-state",
-tierBadge: "தமிழ்நாடு அரசு",
-honorific: "மேதகு",
-honorificClass: "hon-excellency",
-role: "தமிழக ஆளுநர்",
-name: "திரு. ராஜேந்திர விஸ்வநாத் அர்லேகர்",
-icon: "🏛️",
-photo: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Rajendra_Arlekar.jpg",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_GOVERNOR%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%237c3aed%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%235b21b6%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_GOVERNOR%29%22%20stroke%3D%22%238b5cf6%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%238b5cf6%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EGOVERNOR%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #f5d0fe 0%, #e9d5ff 100%)",
-privateOnly: false
-},
-{
-id: "cm",
-tier: "tier-state",
-tierBadge: "தமிழ்நாடு அரசு",
-honorific: "மாண்புமிகு",
-honorificClass: "hon-honorable",
-role: "தமிழக முதலமைச்சர்",
-name: "திரு. ச. ஜோசப் விஜய்",
-icon: "🌟",
-photo: "https://upload.wikimedia.org/wikipedia/commons/0/06/C._Joseph_Vijay_%28cropped%29.jpg",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_CHIEF_MIN%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231d4ed8%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%231e3a8a%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_CHIEF_MIN%29%22%20stroke%3D%22%232563eb%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%232563eb%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3ECHIEF%20MIN%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)",
-privateOnly: false
-},
-{
-id: "minister",
-tier: "tier-state",
-tierBadge: "தமிழ்நாடு அரசு",
-honorific: "மாண்புமிகு",
-honorificClass: "hon-honorable",
-role: "தமிழக பள்ளிக்கல்வித்துறை அமைச்சர்",
-name: "திரு. ஏ. ராஜ்மோகன்",
-icon: "📖",
-photo: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_MINISTER%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231e3a8a%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%231e1b4b%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_MINISTER%29%22%20stroke%3D%22%232563eb%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%232563eb%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EMINISTER%3C/text%3E%0A%3C/svg%3E",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_MINISTER%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231e3a8a%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%231e1b4b%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_MINISTER%29%22%20stroke%3D%22%232563eb%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%232563eb%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EMINISTER%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)",
-privateOnly: false
-},
-{
-id: "sec",
-tier: "tier-dept",
-tierBadge: "பள்ளிக்கல்வித்துறை",
-honorific: "மதிப்புமிகு",
-honorificClass: "hon-respected",
-role: "பள்ளிக்கல்வித்துறைச் செயலர்",
-name: "திருமதி ஜெ. இன்னசென்ட் திவ்யா, IAS",
-icon: "📜",
-photo: "https://images.stocklens.co.in/ias-images/tamil-nadu/01TN812111.jpg?v=2",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_IAS_SEC%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23065f46%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23047857%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_IAS_SEC%29%22%20stroke%3D%22%23059669%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpath%20d%3D%22M48%2C70%20Q60%2C82%2072%2C96%22%20stroke%3D%22%23fbbf24%22%20stroke-width%3D%224%22%20fill%3D%22none%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M36%2C44%20C34%2C22%2086%2C22%2084%2C44%20C84%2C52%2080%2C56%2080%2C56%20C78%2C34%2060%2C30%2060%2C30%20C60%2C30%2042%2C34%2040%2C56%20C40%2C56%2036%2C52%2036%2C44%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23059669%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EIAS%20SEC%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)",
-privateOnly: false
-},
-{
-id: "dir_se",
-tier: "tier-dept",
-tierBadge: "பள்ளிக்கல்வி இயக்ககம்",
-honorific: "மதிப்புமிகு",
-honorificClass: "hon-respected",
-role: "பள்ளிக்கல்வி இயக்குநர்",
-name: "திருமதி என். லதா (கூடுதல் பொறுப்பு)",
-icon: "🎓",
-photo: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_DIR_SE%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%236b21a8%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%234c1d95%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_DIR_SE%29%22%20stroke%3D%22%239333ea%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpath%20d%3D%22M48%2C70%20Q60%2C82%2072%2C96%22%20stroke%3D%22%23fbbf24%22%20stroke-width%3D%224%22%20fill%3D%22none%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M36%2C44%20C34%2C22%2086%2C22%2084%2C44%20C84%2C52%2080%2C56%2080%2C56%20C78%2C34%2060%2C30%2060%2C30%20C60%2C30%2042%2C34%2040%2C56%20C40%2C56%2036%2C52%2036%2C44%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%239333ea%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EDIR%20SE%3C/text%3E%0A%3C/svg%3E",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_DIR_SE%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%236b21a8%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%234c1d95%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_DIR_SE%29%22%20stroke%3D%22%239333ea%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpath%20d%3D%22M48%2C70%20Q60%2C82%2072%2C96%22%20stroke%3D%22%23fbbf24%22%20stroke-width%3D%224%22%20fill%3D%22none%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M36%2C44%20C34%2C22%2086%2C22%2084%2C44%20C84%2C52%2080%2C56%2080%2C56%20C78%2C34%2060%2C30%2060%2C30%20C60%2C30%2042%2C34%2040%2C56%20C40%2C56%2036%2C52%2036%2C44%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%239333ea%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EDIR%20SE%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)",
-privateOnly: false
-},
-{
-id: "dir_pvt",
-tier: "tier-dept-pvt",
-tierBadge: "தனியார் பள்ளிகள்",
-honorific: "மதிப்புமிகு",
-honorificClass: "hon-respected",
-role: "தனியார் பள்ளிகள் இயக்குநர்",
-name: "திருமதி எஸ். சுகன்யா",
-icon: "🏫",
-photo: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_DIR_PVT%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23b45309%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2378350f%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_DIR_PVT%29%22%20stroke%3D%22%23d97706%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpath%20d%3D%22M48%2C70%20Q60%2C82%2072%2C96%22%20stroke%3D%22%23fbbf24%22%20stroke-width%3D%224%22%20fill%3D%22none%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M36%2C44%20C34%2C22%2086%2C22%2084%2C44%20C84%2C52%2080%2C56%2080%2C56%20C78%2C34%2060%2C30%2060%2C30%20C60%2C30%2042%2C34%2040%2C56%20C40%2C56%2036%2C52%2036%2C44%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d97706%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EDIR%20PVT%3C/text%3E%0A%3C/svg%3E",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_DIR_PVT%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23b45309%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2378350f%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_DIR_PVT%29%22%20stroke%3D%22%23d97706%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpath%20d%3D%22M48%2C70%20Q60%2C82%2072%2C96%22%20stroke%3D%22%23fbbf24%22%20stroke-width%3D%224%22%20fill%3D%22none%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M36%2C44%20C34%2C22%2086%2C22%2084%2C44%20C84%2C52%2080%2C56%2080%2C56%20C78%2C34%2060%2C30%2060%2C30%20C60%2C30%2042%2C34%2040%2C56%20C40%2C56%2036%2C52%2036%2C44%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23d97706%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EDIR%20PVT%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
-privateOnly: true
-},
-{
-id: "collector",
-tier: "tier-district",
-tierBadge: "மாவட்ட நிர்வாகம்",
-honorific: "மதிப்புமிகு",
-honorificClass: "hon-respected",
-role: "சிவகங்கை மாவட்ட ஆட்சியர்",
-name: "திரு. ப. ஆகாஷ், IAS",
-icon: "🛡️",
-photo: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_IAS_COLL%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231e3a8a%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230f172a%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_IAS_COLL%29%22%20stroke%3D%22%230284c7%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%230284c7%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EIAS%20COLL%3C/text%3E%0A%3C/svg%3E",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_IAS_COLL%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231e3a8a%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230f172a%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_IAS_COLL%29%22%20stroke%3D%22%230284c7%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%230284c7%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EIAS%20COLL%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)",
-privateOnly: false
-},
-{
-id: "ceo",
-tier: "tier-district",
-tierBadge: "சிவகங்கை CEO",
-honorific: "மதிப்புமிகு",
-honorificClass: "hon-respected",
-role: "சிவகங்கை முதன்மைக்கல்வி அலுவலர் (CEO)",
-name: "திரு. க. பாலதண்டாயுதபாணி",
-icon: "🏛️",
-photo: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_CEO_SVG%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%230f766e%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23134e4a%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_CEO_SVG%29%22%20stroke%3D%22%2314b8a6%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%2314b8a6%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3ECEOSVG%3C/text%3E%0A%3C/svg%3E",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_CEO_SVG%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%230f766e%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23134e4a%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_CEO_SVG%29%22%20stroke%3D%22%2314b8a6%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%2314b8a6%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3ECEOSVG%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)",
-privateOnly: false
-},
-{
-id: "deo_sec",
-tier: "tier-district",
-tierBadge: "இடைநிலைக்கல்வி",
-honorific: "மதிப்புமிகு",
-honorificClass: "hon-respected",
-role: "சிவகங்கை மாவட்டக்கல்வி அலுவலர் (இடைநிலை)",
-name: "திரு. சே. மாரிமுத்து",
-icon: "📚",
-photo: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_DEO_SEC%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231d4ed8%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%231e40af%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_DEO_SEC%29%22%20stroke%3D%22%233b82f6%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%233b82f6%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EDEO%20SEC%3C/text%3E%0A%3C/svg%3E",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_DEO_SEC%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231d4ed8%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%231e40af%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_DEO_SEC%29%22%20stroke%3D%22%233b82f6%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%233b82f6%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EDEO%20SEC%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)",
-privateOnly: false
-},
-{
-id: "deo_pvt",
-tier: "tier-district-pvt",
-tierBadge: "தனியார் பள்ளிகள்",
-honorific: "மதிப்புமிகு",
-honorificClass: "hon-respected",
-role: "சிவகங்கை மாவட்டக்கல்வி அலுவலர் (தனியார் பள்ளிகள்)",
-name: "திரு. ப. வடிவேல்",
-icon: "🏫",
-photo: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_DEO_PVT%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23c2410c%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%239a3412%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_DEO_PVT%29%22%20stroke%3D%22%23f97316%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23f97316%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EDEO%20PVT%3C/text%3E%0A%3C/svg%3E",
-fallbackPhoto: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22grad_DEO_PVT%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23c2410c%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%239a3412%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3C%21--%20Background%20Disc%20--%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2257%22%20fill%3D%22url%28%23grad_DEO_PVT%29%22%20stroke%3D%22%23f97316%22%20stroke-width%3D%224%22/%3E%0A%20%20%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2251%22%20fill%3D%22none%22%20stroke%3D%22rgba%28255%2C255%2C255%2C0.35%29%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%2C3%22/%3E%0A%20%20%3C%21--%20Shadow%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2298%22%20rx%3D%2232%22%20ry%3D%226%22%20fill%3D%22rgba%280%2C0%2C0%2C0.2%29%22/%3E%0A%20%20%3C%21--%20Attire%20--%3E%0A%20%20%3Cpath%20d%3D%22M32%2C96%20C32%2C74%2046%2C66%2060%2C66%20C74%2C66%2088%2C74%2088%2C96%20Z%22%20fill%3D%22%23f8fafc%22/%3E%0A%20%20%3Cpolygon%20points%3D%2258%2C68%2062%2C68%2064%2C88%2060%2C94%2056%2C88%22%20fill%3D%22%23fbbf24%22/%3E%0A%20%20%3C%21--%20Neck%20--%3E%0A%20%20%3Crect%20x%3D%2254%22%20y%3D%2254%22%20width%3D%2212%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23fed7aa%22/%3E%0A%20%20%3C%21--%20Head%20--%3E%0A%20%20%3Cellipse%20cx%3D%2260%22%20cy%3D%2246%22%20rx%3D%2216%22%20ry%3D%2218%22%20fill%3D%22%23ffedd5%22/%3E%0A%20%20%3C%21--%20Hair%20--%3E%0A%20%20%3Cpath%20d%3D%22M40%2C36%20C40%2C22%2080%2C22%2080%2C36%20C80%2C42%2076%2C46%2076%2C46%20C76%2C46%2074%2C32%2060%2C32%20C46%2C32%2044%2C46%2044%2C46%20C44%2C46%2040%2C42%2040%2C36%20Z%22%20fill%3D%22%231e293b%22/%3E%0A%20%20%3C%21--%20Insignia%20Lapel%20Pin%20--%3E%0A%20%20%3Ccircle%20cx%3D%2246%22%20cy%3D%2278%22%20r%3D%224.5%22%20fill%3D%22%23fbbf24%22%20stroke%3D%22%23b45309%22%20stroke-width%3D%221%22/%3E%0A%20%20%3C%21--%20Role%20Badge%20--%3E%0A%20%20%3Crect%20x%3D%2214%22%20y%3D%2294%22%20width%3D%2292%22%20height%3D%2218%22%20rx%3D%229%22%20fill%3D%22%23f97316%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221.5%22/%3E%0A%20%20%3Ctext%20x%3D%2260%22%20y%3D%22106.5%22%20font-family%3D%22-apple-system%2C%20BlinkMacSystemFont%2C%20%27Segoe%20UI%27%2C%20Roboto%2C%20sans-serif%22%20font-size%3D%229%22%20font-weight%3D%22800%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%220.5%22%3EDEO%20PVT%3C/text%3E%0A%3C/svg%3E",
-avatarBg: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
-privateOnly: true
-}
-];
+const DEFAULT_DIGNITARIES = [];
 const DIGNITARIES_STORAGE_KEY = "CEOSVG_DIGNITARIES_DATA_V3";
 const DIGNITARIES_PHOTO_VAULT_KEY = "CEOSVG_DIGNITARIES_PHOTO_VAULT";
-let dignitariesMemoryStore = null;
-function isCustomUploadedOrEditedPhoto(photoStr, defPhotoStr) {
-  if (!photoStr || typeof photoStr !== "string") return false;
-  const trimmed = photoStr.trim();
-  if (!trimmed) return false;
-  if (/^data:image\/(jpeg|jpg|png|webp|gif)/i.test(trimmed)) return true;
-  if (!trimmed.startsWith("data:image/svg+xml") && trimmed !== (defPhotoStr || "")) return true;
-  return false;
-}
-function isDignitaryModifiedFromDefault(d, def) {
-  if (!d || typeof d !== "object") return false;
-  if (d.userEdited) return true;
-  if (!def) return true;
-  if (isCustomUploadedOrEditedPhoto(d.photo, def.photo)) return true;
-  if (String(d.name || "").trim() !== String(def.name || "").trim()) return true;
-  if (String(d.role || "").trim() !== String(def.role || "").trim()) return true;
-  if (String(d.honorific || "").trim() !== String(def.honorific || "").trim()) return true;
-  if (String(d.tierBadge || "").trim() !== String(def.tierBadge || "").trim()) return true;
-  if (Boolean(d.privateOnly) !== Boolean(def.privateOnly)) return true;
-  return false;
-}
-function buildPermanentPhotoVaultFromAllSources(currentList) {
-  const vault = Object.assign({}, safeGetStorage(DIGNITARIES_PHOTO_VAULT_KEY, {}) || {});
-  if (Array.isArray(currentList)) {
-    currentList.forEach(d => {
-      if (!d || !d.id) return;
-      const def = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(d.id));
-      if (isDignitaryModifiedFromDefault(d, def)) {
-        const prev = vault[d.id] || {};
-        const finalPhoto = isCustomUploadedOrEditedPhoto(d.photo, def ? def.photo : "")
-          ? d.photo
-          : (isCustomUploadedOrEditedPhoto(prev.photo, def ? def.photo : "") ? prev.photo : (d.photo || (def ? def.photo : "")));
-        vault[d.id] = {
-          id: d.id,
-          photo: finalPhoto,
-          name: d.name,
-          role: d.role,
-          honorific: d.honorific,
-          honorificClass: d.honorificClass || getHonorificClass(d.honorific),
-          tier: d.tier,
-          tierBadge: d.tierBadge,
-          icon: d.icon,
-          privateOnly: Boolean(d.privateOnly),
-          userEdited: true,
-          updatedAt: d.updatedAt || prev.updatedAt || Date.now()
-        };
-      }
-    });
-  }
-  return vault;
-}
-function saveToIndexedDbDignitariesVault(list, vault) {
-  try {
-    if (typeof indexedDB === "undefined") return;
-    const req = indexedDB.open("CEOSVG_PERMANENT_VAULT_DB", 1);
-    req.onupgradeneeded = function(e) {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains("dignitaries_store")) {
-        db.createObjectStore("dignitaries_store");
-      }
-    };
-    req.onsuccess = function(e) {
-      try {
-        const db = e.target.result;
-        const tx = db.transaction("dignitaries_store", "readwrite");
-        const store = tx.objectStore("dignitaries_store");
-        store.put(list, "dignitaries_list");
-        store.put(vault, "dignitaries_photo_vault");
-      } catch (err) {}
-    };
-  } catch (e) {}
-}
-function restoreFromIndexedDbDignitariesVault() {
-  try {
-    if (typeof indexedDB === "undefined") return;
-    const req = indexedDB.open("CEOSVG_PERMANENT_VAULT_DB", 1);
-    req.onupgradeneeded = function(e) {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains("dignitaries_store")) {
-        db.createObjectStore("dignitaries_store");
-      }
-    };
-    req.onsuccess = function(e) {
-      try {
-        const db = e.target.result;
-        const tx = db.transaction("dignitaries_store", "readonly");
-        const store = tx.objectStore("dignitaries_store");
-        const getVault = store.get("dignitaries_photo_vault");
-        const getList = store.get("dignitaries_list");
-        getVault.onsuccess = function() {
-          const idbVault = getVault.result || {};
-          getList.onsuccess = function() {
-            const idbList = getList.result;
-            const curVault = safeGetStorage(DIGNITARIES_PHOTO_VAULT_KEY, {}) || {};
-            const mergedVault = Object.assign({}, idbVault);
-            Object.keys(curVault).forEach(k => {
-              if (!mergedVault[k] || (curVault[k].updatedAt || 0) >= (mergedVault[k].updatedAt || 0)) {
-                mergedVault[k] = curVault[k];
-              }
-            });
-            if (Object.keys(mergedVault).length > 0) {
-              safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, mergedVault, true);
-            }
-            const baseList = (Array.isArray(idbList) && idbList.length > 0 && (!dignitariesMemoryStore || dignitariesMemoryStore.length === 0))
-              ? idbList
-              : getDignitariesList();
-            const migrated = migrateDignitariesList(baseList);
-            dignitariesMemoryStore = migrated;
-            safeSetStorage(DIGNITARIES_STORAGE_KEY, migrated, true);
-            renderSchoolDignitaries();
-            renderAdminDignitariesManager();
-            updateDignitaryStorageStatusBadge();
-          };
-        };
-      } catch (err) {}
-    };
-  } catch (e) {}
-}
-function migrateDignitariesList(list) {
-  if (!Array.isArray(list) || list.length === 0) list = JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES));
-  const vault = buildPermanentPhotoVaultFromAllSources(list);
-  const updated = list.map(d => {
-    const def = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(d.id));
-    const vEntry = vault[d.id];
-    if (vEntry && typeof vEntry === "object") {
-      const vTime = Number(vEntry.updatedAt || 0);
-      const dTime = Number(d.updatedAt || 0);
-      if (vTime >= dTime || !d.userEdited) {
-        if (vEntry.name) d.name = vEntry.name;
-        if (vEntry.role) d.role = vEntry.role;
-        if (vEntry.honorific) {
-          d.honorific = vEntry.honorific;
-          d.honorificClass = vEntry.honorificClass || getHonorificClass(vEntry.honorific);
-        }
-        if (vEntry.tier) d.tier = vEntry.tier;
-        if (vEntry.tierBadge) d.tierBadge = vEntry.tierBadge;
-        if (vEntry.icon) d.icon = vEntry.icon;
-        if (typeof vEntry.privateOnly === "boolean") d.privateOnly = vEntry.privateOnly;
-        if (vEntry.photo && (isCustomUploadedOrEditedPhoto(vEntry.photo, def ? def.photo : "") || !isCustomUploadedOrEditedPhoto(d.photo, def ? def.photo : ""))) {
-          d.photo = vEntry.photo;
-        }
-        d.userEdited = true;
-        d.updatedAt = Math.max(vTime, dTime);
-      }
-    }
-    if (def) {
-      if (!d.photo || d.photo === "") {
-        d.photo = (vEntry && vEntry.photo) ? vEntry.photo : def.photo;
-      }
-      if (!d.fallbackPhoto) {
-        d.fallbackPhoto = def.fallbackPhoto;
-      }
-    } else if (vEntry && vEntry.photo && (!d.photo || d.photo === "")) {
-      d.photo = vEntry.photo;
-    }
-    return d;
-  });
-  if (Object.keys(vault).length > 0) {
-    safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, vault, true);
-  }
-  return updated;
-}
-function getDignitariesList() {
-  if (Array.isArray(dignitariesMemoryStore) && dignitariesMemoryStore.length > 0) {
-    return dignitariesMemoryStore;
-  }
-  const saved = safeGetStorage(DIGNITARIES_STORAGE_KEY, null);
-  if (Array.isArray(saved) && saved.length > 0) {
-    dignitariesMemoryStore = migrateDignitariesList(saved);
-    return dignitariesMemoryStore;
-  }
-  dignitariesMemoryStore = migrateDignitariesList(JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES)));
-  return dignitariesMemoryStore;
-}
-function saveDignitariesList(list) {
-  dignitariesMemoryStore = JSON.parse(JSON.stringify(list));
-  const vault = buildPermanentPhotoVaultFromAllSources(dignitariesMemoryStore);
-  safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, vault, true);
-  safeSetStorage("CEOSVG_DIGNITARIES_V1", dignitariesMemoryStore, true);
-  safeSetStorage(DIGNITARIES_STORAGE_KEY, dignitariesMemoryStore, false);
-  saveToIndexedDbDignitariesVault(dignitariesMemoryStore, vault);
-  renderSchoolDignitaries();
-  renderAdminDignitariesManager();
-  updateDignitaryStorageStatusBadge();
-}
-function updateDignitaryStorageStatusBadge() {
-const el = document.getElementById("admDignitaryStatStatus");
-if (!el) return;
-const vault = safeGetStorage(DIGNITARIES_PHOTO_VAULT_KEY, {}) || {};
-const customCount = Object.keys(vault).length;
-el.textContent = customCount > 0 ? `🟢 ${customCount} படங்கள் நிரந்தர சேமிப்பு` : "🟢 நேரடி ஒத்திசைவு";
-}
-function exportPortalHtmlWithEmbeddedPhotos() {
-const currentList = getDignitariesList();
-let fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-const startMarker = "const DEFAULT_DIGNITARIES = [";
-const endMarker = "const DIGNITARIES_STORAGE_KEY =";
-const sIdx = fullHtml.indexOf(startMarker);
-const eIdx = fullHtml.indexOf(endMarker, sIdx);
-if (sIdx !== -1 && eIdx !== -1) {
-const replacement = "const DEFAULT_DIGNITARIES = " + JSON.stringify(currentList, null, 4) + ";\n\n  ";
-fullHtml = fullHtml.substring(0, sIdx) + replacement + fullHtml.substring(eIdx);
-}
-const blob = new Blob([fullHtml], { type: "text/html;charset=utf-8;" });
-const url = URL.createObjectURL(blob);
-const a = document.createElement("a");
-a.href = url;
-a.download = "index.html";
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
-showToast("✅ தற்போதைய பிரமுகர்கள் புகைப்படங்களுடன் முழு index.html கோப்பு நிரந்தரமாகப் பதிவிறக்கம் செய்யப்பட்டது!", "#16a34a");
-}
-function exportDignitariesPhotosBackupJson() {
-const currentList = getDignitariesList();
-const vault = buildPermanentPhotoVaultFromAllSources(currentList);
-const payload = {
-version: "3.4",
-exportedAt: new Date().toISOString(),
-dignitaries: currentList,
-photoVault: vault
-};
-const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8;" });
-const url = URL.createObjectURL(blob);
-const a = document.createElement("a");
-a.href = url;
-a.download = "ceosvg-dignitaries-photos-backup.json";
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
-showToast("✅ பிரமுகர்கள் புகைப்படக் காப்புக்கோப்பு (JSON) பதிவிறக்கம் செய்யப்பட்டது!", "#0284c7");
-}
-function handleImportDignitariesPhotosBackupJson(event) {
-const file = event.target && event.target.files ? event.target.files[0] : null;
-if (!file) return;
-const reader = new FileReader();
-reader.onload = function(e) {
-try {
-const data = JSON.parse(e.target.result || "{}");
-const importedList = Array.isArray(data) ? data : (Array.isArray(data.dignitaries) ? data.dignitaries : null);
-if (data.photoVault && typeof data.photoVault === "object") {
-const curVault = safeGetStorage(DIGNITARIES_PHOTO_VAULT_KEY, {}) || {};
-safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, Object.assign({}, curVault, data.photoVault));
-}
-if (importedList && importedList.length > 0) {
-saveDignitariesList(importedList);
-showToast(`✅ ${importedList.length} பிரமுகர்கள் மற்றும் புகைப்படங்கள் வெற்றிகரமாக மீட்டமைக்கப்பட்டன!`, "#16a34a");
-} else {
-showToast("⚠️ காப்புக்கோப்பில் பிரமுகர்கள் விவரம் காணப்படவில்லை.", "#dc2626");
-}
-} catch (err) {
-showToast("⚠️ காப்புக்கோப்பினைப் படிப்பதில் பிழை ஏற்பட்டது.", "#dc2626");
-}
-};
-reader.readAsText(file);
-}
-function getHonorificClass(hon) {
-if (hon === "மேதகு") return "hon-excellency";
-if (hon === "மாண்புமிகு") return "hon-honorable";
-return "hon-respected";
-}
-function getDefaultAvatarBg(tier) {
-if (tier === "tier-national") return "linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)";
-if (tier === "tier-state") return "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)";
-if (tier === "tier-dept") return "linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)";
-if (tier === "tier-dept-pvt" || tier === "tier-district-pvt") return "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)";
-return "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)";
-}
-function renderSchoolDignitaries(mgmtType) {
-const grid = document.getElementById("schoolDignitariesGrid");
-if (!grid) return;
-const mgmt = String(mgmtType || (activeSchoolSession ? activeSchoolSession.mgmt1 : "1G")).trim().toUpperCase();
-const isPrivate = Boolean(mgmt.startsWith("3") || mgmt.includes("3P") || mgmt.includes("PVT") || mgmt.includes("தனியார்"));
-const currentList = getDignitariesList();
-const listToRender = currentList.filter(d => {
-if (d.privateOnly) {
-return isPrivate;
-}
-return true;
-});
-grid.innerHTML = listToRender.map(d => {
-const fb = d.fallbackPhoto || '';
-const safeId = String(d.id).replace(/'/g, "\\'");
-const avatarContent = d.photo 
-? `<img src="${d.photo}" alt="${d.name}" style="width:100%; height:100%; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
-           <div class="dignitary-avatar-fallback" style="display:none; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`
-: `<div class="dignitary-avatar-fallback" style="display:flex; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`;
-return `
-      <div class="dignitary-card ${d.tier || 'tier-district'}" id="digCard_${d.id}" style="position:relative;">
-        <div class="dignitary-card-top">
-          <span class="dignitary-hon-badge ${d.honorificClass || getHonorificClass(d.honorific)}">${d.honorific || ''}</span>
-          <span class="dignitary-tier-tag">${d.tierBadge || ''}</span>
-        </div>
-        <div class="dignitary-card-body">
-          <div class="dignitary-avatar" style="background:${d.avatarBg || '#e0f2fe'}; overflow:hidden;" aria-hidden="true">
-            ${avatarContent}
-          </div>
-          <div class="dignitary-details">
-            <div class="dignitary-role">${d.role || ''}</div>
-            <div class="dignitary-name">${d.name || ''}</div>
-          </div>
-        </div>
-      </div>
-    `;
-}).join("");
-}
-function toggleDignitariesView() {
-const container = document.getElementById("schoolDignitariesShowcase");
-const btnText = document.getElementById("dignitaryToggleText");
-const btnIcon = document.getElementById("dignitaryToggleIcon");
-if (!container) return;
-const isCollapsed = container.classList.toggle("collapsed");
-if (btnText && btnIcon) {
-if (isCollapsed) {
-btnText.textContent = "விரிக்க";
-btnIcon.textContent = "▼";
-} else {
-btnText.textContent = "சுருக்குக";
-btnIcon.textContent = "▲";
-}
-}
-}
-let admDignitariesFilterText = "";
-let admDignitariesFilterTier = "";
-let tempDignitaryUploadedPhoto = "";
-function renderAdminDignitariesManager() {
-const tbody = document.getElementById("admDignitariesTbody");
-const cardsGrid = document.getElementById("admDignitariesCardsPreviewGrid");
-const statTotal = document.getElementById("admDignitaryStatTotal");
-const statGovt = document.getElementById("admDignitaryStatGovt");
-const statPvt = document.getElementById("admDignitaryStatPvt");
-const chooserBadge = document.getElementById("admChooserDignitaryCount");
-const list = getDignitariesList();
-if (statTotal) statTotal.textContent = list.length;
-if (statGovt) statGovt.textContent = list.filter(d => !d.privateOnly).length;
-if (statPvt) statPvt.textContent = list.length;
-if (chooserBadge) chooserBadge.textContent = `🏛️ ${list.length} அலுவலர்கள்`;
-let filtered = list.filter(d => {
-if (admDignitariesFilterTier) {
-if (admDignitariesFilterTier === "pvt" && !d.privateOnly) return false;
-if (admDignitariesFilterTier !== "pvt" && d.tier !== admDignitariesFilterTier) return false;
-}
-if (admDignitariesFilterText) {
-const q = admDignitariesFilterText.toLowerCase();
-const str = `${d.honorific} ${d.name} ${d.role} ${d.tierBadge}`.toLowerCase();
-if (!str.includes(q)) return false;
-}
-return true;
-});
-if (cardsGrid) {
-if (filtered.length === 0) {
-cardsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:18px; color:#64748b; font-weight:700;">பொருந்திய அதிகாரிகள் எவரும் காணப்படவில்லை.</div>`;
-} else {
-cardsGrid.innerHTML = filtered.map(d => {
-const fb = d.fallbackPhoto || '';
-const safeId = String(d.id).replace(/'/g, "\\'");
-const avatarContent = d.photo 
-? `<img src="${d.photo}" alt="${d.name}" style="width:100%; height:100%; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
-               <div class="dignitary-avatar-fallback" style="display:none; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`
-: `<div class="dignitary-avatar-fallback" style="display:flex; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${d.icon || '🏛️'}</div>`;
-return `
-            <div class="dignitary-card ${d.tier || 'tier-district'}" style="position:relative;">
-              <div class="dignitary-card-top">
-                <span class="dignitary-hon-badge ${d.honorificClass || getHonorificClass(d.honorific)}">${d.honorific || ''}</span>
-                <span class="dignitary-tier-tag">${d.tierBadge || ''}</span>
-              </div>
-              <div class="dignitary-card-body">
-                <div class="dignitary-avatar" style="background:${d.avatarBg || '#e0f2fe'}; overflow:hidden;" aria-hidden="true">
-                  ${avatarContent}
-                </div>
-                <div class="dignitary-details">
-                  <div class="dignitary-role">${d.role || ''}</div>
-                  <div class="dignitary-name">${d.name || ''}</div>
-                </div>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:6px; padding-top:6px; border-top:1px dashed #e2e8f0;">
-                <span style="font-size:0.65rem; font-weight:800; color:${d.privateOnly ? '#92400e' : '#166534'};">
-                  ${d.privateOnly ? '🏢 தனியார் மட்டும்' : '🏫 அனைத்துப் பள்ளிகள்'}
-                </span>
-                <div style="display:flex; gap:4px;">
-                  <button type="button" class="btn btn-outline btn-sm" onclick="openAdminEditDignitaryModal('${safeId}')" style="font-size:0.72rem; font-weight:800; padding:2px 8px; border-color:#0284c7; color:#0369a1; background:#f0f9ff;">
-                    ✏️ திருத்து
-                  </button>
-                  <button type="button" class="btn btn-outline btn-sm" onclick="deleteAdminDignitary('${safeId}')" style="font-size:0.72rem; font-weight:800; padding:2px 6px; border-color:#fca5a5; color:#dc2626;" title="நீக்குக">
-                    🗑️
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-}).join("");
-}
-}
-if (!tbody) return;
-if (filtered.length === 0) {
-tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:#64748b; font-weight:700;">பொருந்திய அதிகாரிகள் எவரும் காணப்படவில்லை.</td></tr>`;
-return;
-}
-tbody.innerHTML = filtered.map((d, idx) => {
-const realIdx = list.findIndex(item => String(item.id) === String(d.id));
-const safeId = String(d.id).replace(/'/g, "\\'");
-const fb = d.fallbackPhoto || '';
-const avatarThumb = d.photo 
-? `<img src="${d.photo}" style="width:42px; height:42px; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px; border:1.5px solid #cbd5e1;" onerror="if('${fb}' && this.src!=='${fb}'){this.src='${fb}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}">
-           <div style="display:none; width:38px; height:38px; border-radius:6px; background:${d.avatarBg || '#e0f2fe'}; align-items:center; justify-content:center; font-size:1.1rem; margin:0 auto;">${d.icon || '🏛️'}</div>`
-: `<div style="width:38px; height:38px; border-radius:6px; background:${d.avatarBg || '#e0f2fe'}; display:flex; align-items:center; justify-content:center; font-size:1.1rem; margin:0 auto;">${d.icon || '🏛️'}</div>`;
-const honClass = d.honorificClass || getHonorificClass(d.honorific);
-const isPvt = Boolean(d.privateOnly);
-const visBadge = isPvt
-? `<span style="font-size:0.72rem; background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:2px 7px; border-radius:4px; font-weight:800;">🏢 தனியார் பள்ளி மட்டும்</span>`
-: `<span style="font-size:0.72rem; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:2px 7px; border-radius:4px; font-weight:800;">🏫 அனைத்துப் பள்ளிகள்</span>`;
-return `
-        <tr style="border-bottom:1px solid #e2e8f0; transition:background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-          <td style="padding:10px; text-align:center; font-weight:800; color:#475569;">
-            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
-              <span>${realIdx + 1}</span>
-              <div style="display:flex; gap:2px;">
-                <button type="button" onclick="moveAdminDignitary(${realIdx}, -1)" title="மேலே நகர்த்து" style="border:none; background:none; cursor:pointer; font-size:0.7rem; color:${realIdx === 0 ? '#cbd5e1' : '#0284c7'};" ${realIdx === 0 ? 'disabled' : ''}>▲</button>
-                <button type="button" onclick="moveAdminDignitary(${realIdx}, 1)" title="கீழே நகர்த்து" style="border:none; background:none; cursor:pointer; font-size:0.7rem; color:${realIdx === list.length - 1 ? '#cbd5e1' : '#0284c7'};" ${realIdx === list.length - 1 ? 'disabled' : ''}>▼</button>
-              </div>
-            </div>
-          </td>
-          <td style="padding:10px; text-align:center;">
-            ${avatarThumb}
-          </td>
-          <td style="padding:10px;">
-            <span class="dignitary-hon-badge ${honClass}" style="display:inline-block;">${d.honorific || ''}</span>
-          </td>
-          <td style="padding:10px;">
-            <strong style="color:#0f294a; font-size:0.9rem;">${d.role || ''}</strong>
-          </td>
-          <td style="padding:10px;">
-            <span style="font-weight:800; color:#1d4ed8; font-size:0.92rem;">${d.name || ''}</span>
-          </td>
-          <td style="padding:10px;">
-            <span class="dignitary-tier-tag" style="display:inline-block;">${d.tierBadge || ''}</span>
-          </td>
-          <td style="padding:10px;">
-            ${visBadge}
-          </td>
-          <td style="padding:10px; text-align:center;">
-            <div style="display:flex; gap:6px; justify-content:center; align-items:center;">
-              <button type="button" class="btn btn-outline btn-sm" onclick="openAdminEditDignitaryModal('${safeId}')" style="font-size:0.76rem; font-weight:800; padding:4px 10px; border-color:#0284c7; color:#0369a1; background:#f0f9ff; cursor:pointer;" title="விவரங்களைத் திருத்துக">
-                ✏️ திருத்து
-              </button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="deleteAdminDignitary('${safeId}')" style="font-size:0.76rem; font-weight:800; padding:4px 8px; border-color:#fca5a5; color:#dc2626; cursor:pointer;" title="நீக்குக">
-                🗑️
-              </button>
-            </div>
-          </td>
-        </tr>
-      `;
-}).join("");
-}
-function filterAdminDignitariesTable() {
-const searchInput = document.getElementById("admDignitarySearchInput");
-const tierSelect = document.getElementById("admDignitaryTierFilter");
-admDignitariesFilterText = searchInput ? searchInput.value.trim() : "";
-admDignitariesFilterTier = tierSelect ? tierSelect.value : "";
-renderAdminDignitariesManager();
-}
-function resetAdminDignitaryFilters() {
-const searchInput = document.getElementById("admDignitarySearchInput");
-const tierSelect = document.getElementById("admDignitaryTierFilter");
-if (searchInput) searchInput.value = "";
-if (tierSelect) tierSelect.value = "";
-admDignitariesFilterText = "";
-admDignitariesFilterTier = "";
-renderAdminDignitariesManager();
-}
-function isAdminAuthorizedForDignitaries() {
-const viewAdm = document.getElementById("viewAdmin");
-if (viewAdm && viewAdm.classList.contains("active")) return true;
-const sess = safeGetStorage("CEOSVG_ACTIVE_SESSION", null);
-if (sess && sess.role === "admin") return true;
-if (activeSchoolSession && activeSchoolSession.isAdminInspection) return true;
-return false;
-}
-function openAdminEditDignitaryModal(id) {
-if (!isAdminAuthorizedForDignitaries()) {
-showToast("🔒 முக்கியப் பிரமுகர்கள் விவரங்களை மாவட்ட நிர்வாகி (CEO Admin) மட்டுமே திருத்த முடியும்!", "#ef4444");
-return;
-}
-const list = getDignitariesList();
-const d = list.find(item => String(item.id) === String(id));
-if (!d) {
-showToast("⚠️ அதிகாரி விவரம் காணப்படவில்லை.", "#ef4444");
-return;
-}
-const idEl = document.getElementById("admDigFormId");
-const honEl = document.getElementById("admDigFormHonorific");
-const roleEl = document.getElementById("admDigFormRole");
-const nameEl = document.getElementById("admDigFormName");
-const tierEl = document.getElementById("admDigFormTier");
-const badgeEl = document.getElementById("admDigFormTierBadge");
-const iconEl = document.getElementById("admDigFormIcon");
-const urlEl = document.getElementById("admDigFormPhotoUrl");
-const pvtEl = document.getElementById("admDigFormPrivateOnly");
-if (idEl) idEl.value = d.id;
-if (honEl) honEl.value = d.honorific || "மதிப்புமிகு";
-if (roleEl) roleEl.value = d.role || "";
-if (nameEl) nameEl.value = d.name || "";
-if (tierEl) tierEl.value = d.tier || "tier-district";
-if (badgeEl) badgeEl.value = d.tierBadge || "";
-if (iconEl) iconEl.value = d.icon || "🏛️";
-if (pvtEl) pvtEl.value = String(Boolean(d.privateOnly));
-tempDignitaryUploadedPhoto = d.photo || "";
-if (urlEl) {
-if (d.photo && !String(d.photo).startsWith("data:")) {
-urlEl.value = d.photo;
-} else {
-urlEl.value = "";
-urlEl.placeholder = d.photo
-? "✅ தற்போதைய புகைப்படம் இணைக்கப்பட்டுள்ளது — மாற்ற புதிய URL உள்ளிடவும் அல்லது கோப்பு பதிவேற்றவும்"
-: "https://... அல்லது மேலே உள்ள கோப்பு பதிவேற்றத்தைப் பயன்படுத்தவும்";
-}
-}
-const fileInput = document.getElementById("admDigFormPhotoFile");
-if (fileInput) fileInput.value = "";
-const titleEl = document.getElementById("admDignitaryModalTitle");
-if (titleEl) {
-titleEl.textContent = `✏️ அதிகாரி விவரங்களைத் திருத்துதல்: ${d.role} (${d.name})`;
-}
-const modal = document.getElementById("adminDignitaryEditModal");
-if (modal) {
-modal.classList.add("open");
-modal.classList.add("active");
-modal.style.display = "flex";
-}
-updateAdminDignitaryPreview();
-if (nameEl) {
-setTimeout(() => {
-try { nameEl.focus(); nameEl.select(); } catch (e) {}
-}, 60);
-}
-}
-function openAdminAddDignitaryModal() {
-if (!isAdminAuthorizedForDignitaries()) {
-showToast("🔒 புதிய அதிகாரி சேர்க்கும் அதிகாரம் மாவட்ட நிர்வாகிக்கு (CEO Admin) மட்டுமே உள்ளது!", "#ef4444");
-return;
-}
-const idEl = document.getElementById("admDigFormId");
-const honEl = document.getElementById("admDigFormHonorific");
-const roleEl = document.getElementById("admDigFormRole");
-const nameEl = document.getElementById("admDigFormName");
-const tierEl = document.getElementById("admDigFormTier");
-const badgeEl = document.getElementById("admDigFormTierBadge");
-const iconEl = document.getElementById("admDigFormIcon");
-const urlEl = document.getElementById("admDigFormPhotoUrl");
-const pvtEl = document.getElementById("admDigFormPrivateOnly");
-if (idEl) idEl.value = "dig_" + Date.now();
-if (honEl) honEl.value = "மதிப்புமிகு";
-if (roleEl) roleEl.value = "";
-if (nameEl) nameEl.value = "";
-if (tierEl) tierEl.value = "tier-district";
-if (badgeEl) badgeEl.value = "மாவட்ட நிர்வாகம்";
-if (iconEl) iconEl.value = "🏛️";
-if (urlEl) {
-urlEl.value = "";
-urlEl.placeholder = "https://... அல்லது மேலே உள்ள கோப்பு பதிவேற்றத்தைப் பயன்படுத்தவும்";
-}
-if (pvtEl) pvtEl.value = "false";
-tempDignitaryUploadedPhoto = "";
-const fileInput = document.getElementById("admDigFormPhotoFile");
-if (fileInput) fileInput.value = "";
-const titleEl = document.getElementById("admDignitaryModalTitle");
-if (titleEl) {
-titleEl.textContent = "➕ புதிய அதிகாரி / பிரமுகர் சேர்த்தல்";
-}
-const modal = document.getElementById("adminDignitaryEditModal");
-if (modal) {
-modal.classList.add("open");
-modal.classList.add("active");
-modal.style.display = "flex";
-}
-updateAdminDignitaryPreview();
-if (roleEl) {
-setTimeout(() => {
-try { roleEl.focus(); } catch (e) {}
-}, 60);
-}
-}
-function closeAdminDignitaryModal() {
-const modal = document.getElementById("adminDignitaryEditModal");
-if (modal) {
-modal.classList.remove("open");
-modal.classList.remove("active");
-modal.style.display = "";
-}
-}
-function handleDignitaryPhotoUpload(event) {
-const file = event.target.files && event.target.files[0];
-if (!file) return;
-const reader = new FileReader();
-reader.onload = function(e) {
-const rawDataUrl = e.target.result;
-const img = new Image();
-img.onload = function() {
-try {
-const canvas = document.createElement("canvas");
-const size = 260;
-canvas.width = size;
-canvas.height = size;
-const ctx = canvas.getContext("2d");
-const minSide = Math.min(img.width, img.height);
-const sx = Math.max(0, (img.width - minSide) / 2);
-const sy = Math.max(0, (img.height - minSide) * 0.15);
-ctx.fillStyle = "#ffffff";
-ctx.fillRect(0, 0, size, size);
-ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
-tempDignitaryUploadedPhoto = canvas.toDataURL("image/jpeg", 0.88);
-} catch (err) {
-tempDignitaryUploadedPhoto = rawDataUrl;
-}
-const urlInput = document.getElementById("admDigFormPhotoUrl");
-if (urlInput) urlInput.value = "";
-updateAdminDignitaryPreview();
-showToast("🖼️ புகைப்படம் 1:1 சதுர வடிவில் தயார் செய்யப்பட்டது!", "#0284c7");
-};
-img.onerror = function() {
-tempDignitaryUploadedPhoto = rawDataUrl;
-const urlInput = document.getElementById("admDigFormPhotoUrl");
-if (urlInput) urlInput.value = "";
-updateAdminDignitaryPreview();
-};
-img.src = rawDataUrl;
-};
-reader.readAsDataURL(file);
-}
-function updateAdminDignitaryPreview() {
-const container = document.getElementById("admDigPreviewCardContainer");
-if (!container) return;
-const hon = document.getElementById("admDigFormHonorific").value || "மதிப்புமிகு";
-const role = document.getElementById("admDigFormRole").value || "பதவிப் பெயர்";
-const name = document.getElementById("admDigFormName").value || "அதிகாரி பெயர்";
-const tier = document.getElementById("admDigFormTier").value || "tier-district";
-let tierBadge = document.getElementById("admDigFormTierBadge").value;
-if (!tierBadge) {
-if (tier === "tier-national") tierBadge = "மத்திய அரசு";
-else if (tier === "tier-state") tierBadge = "தமிழ்நாடு அரசு";
-else if (tier === "tier-dept") tierBadge = "பள்ளிக்கல்வித்துறை";
-else if (tier === "tier-dept-pvt" || tier === "tier-district-pvt") tierBadge = "தனியார் பள்ளிகள்";
-else tierBadge = "மாவட்ட நிர்வாகம்";
-}
-const icon = document.getElementById("admDigFormIcon").value || "🏛️";
-const photoUrl = (document.getElementById("admDigFormPhotoUrl").value || "").trim();
-const finalPhoto = photoUrl || tempDignitaryUploadedPhoto;
-const honClass = getHonorificClass(hon);
-const avatarBg = getDefaultAvatarBg(tier);
-const avatarContent = finalPhoto
-? `<img src="${finalPhoto}" alt="${name}" style="width:100%; height:100%; aspect-ratio:1/1; object-fit:cover; object-position:top center; border-radius:6px;" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-         <div style="display:none; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${icon}</div>`
-: `<div style="display:flex; width:100%; height:100%; aspect-ratio:1/1; align-items:center; justify-content:center; font-size:1.5rem; border-radius:6px;">${icon}</div>`;
-container.innerHTML = `
-      <div class="dignitary-card ${tier}" style="box-shadow:0 3px 8px rgba(0,0,0,0.08);">
-        <div class="dignitary-card-top">
-          <span class="dignitary-hon-badge ${honClass}">${hon}</span>
-          <span class="dignitary-tier-tag">${tierBadge}</span>
-        </div>
-        <div class="dignitary-card-body">
-          <div class="dignitary-avatar" style="background:${avatarBg}; overflow:hidden;" aria-hidden="true">
-            ${avatarContent}
-          </div>
-          <div class="dignitary-details">
-            <div class="dignitary-role">${role}</div>
-            <div class="dignitary-name">${name}</div>
-          </div>
-        </div>
-      </div>
-    `;
-}
-function saveAdminDignitaryForm(event) {
-event.preventDefault();
-const id = document.getElementById("admDigFormId").value;
-const hon = document.getElementById("admDigFormHonorific").value;
-const role = (document.getElementById("admDigFormRole").value || "").trim();
-const name = (document.getElementById("admDigFormName").value || "").trim();
-const tier = document.getElementById("admDigFormTier").value;
-let tierBadge = (document.getElementById("admDigFormTierBadge").value || "").trim();
-if (!tierBadge) {
-if (tier === "tier-national") tierBadge = "மத்திய அரசு";
-else if (tier === "tier-state") tierBadge = "தமிழ்நாடு அரசு";
-else if (tier === "tier-dept") tierBadge = "பள்ளிக்கல்வித்துறை";
-else if (tier === "tier-dept-pvt" || tier === "tier-district-pvt") tierBadge = "தனியார் பள்ளிகள்";
-else tierBadge = "மாவட்ட நிர்வாகம்";
-}
-const icon = (document.getElementById("admDigFormIcon").value || "🏛️").trim();
-const photoUrl = (document.getElementById("admDigFormPhotoUrl").value || "").trim();
-const photo = photoUrl || tempDignitaryUploadedPhoto || "";
-const privateOnly = document.getElementById("admDigFormPrivateOnly").value === "true";
-const list = getDignitariesList();
-const existingIdx = list.findIndex(item => String(item.id) === String(id));
-const existingObj = existingIdx >= 0 ? list[existingIdx] : null;
-const defObj = DEFAULT_DIGNITARIES.find(item => String(item.id) === String(id));
-const digObj = {
-id: id || ("dig_" + Date.now()),
-tier: tier,
-tierBadge: tierBadge,
-honorific: hon,
-honorificClass: getHonorificClass(hon),
-role: role,
-name: name,
-icon: icon,
-photo: photo,
-fallbackPhoto: (existingObj && existingObj.fallbackPhoto) || (defObj && defObj.fallbackPhoto) || "",
-avatarBg: getDefaultAvatarBg(tier),
-privateOnly: privateOnly,
-userEdited: true,
-updatedAt: Date.now()
-};
-if (existingIdx >= 0) {
-list[existingIdx] = digObj;
-} else {
-list.push(digObj);
-}
-saveDignitariesList(list);
-closeAdminDignitaryModal();
-showToast(`✅ ${digObj.role} (${digObj.name}) விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!`, "#22c55e");
-}
-function deleteAdminDignitary(id) {
-const list = getDignitariesList();
-const d = list.find(item => String(item.id) === String(id));
-if (!d) return;
-const updated = list.filter(item => String(item.id) !== String(id));
-saveDignitariesList(updated);
-showToast(`🗑️ ${d.role} விவரங்கள் நீக்கப்பட்டன.`, "#ef4444");
-}
-function moveAdminDignitary(index, direction) {
-const list = getDignitariesList();
-const newIdx = index + direction;
-if (newIdx < 0 || newIdx >= list.length) return;
-const temp = list[index];
-list[index] = list[newIdx];
-list[newIdx] = temp;
-saveDignitariesList(list);
-showToast(`↔️ அதிகாரி வரிசை மாற்றப்பட்டது.`, "#0284c7");
-}
-function resetAdminDignitariesToDefault() {
-safeSetStorage(DIGNITARIES_PHOTO_VAULT_KEY, {}, true);
-try { window.name = ""; } catch (e) {}
-dignitariesMemoryStore = JSON.parse(JSON.stringify(DEFAULT_DIGNITARIES));
-saveDignitariesList(dignitariesMemoryStore);
-showToast("🔄 அதிகாரிகள் பட்டியல் இயல்புநிலைக்கு மீட்டமைக்கப்பட்டது!", "#f59e0b");
-}
-function saveAllDignitariesDirectly() {
-const list = getDignitariesList();
-saveDignitariesList(list);
-showToast("💾 அதிகாரிகள் பட்டியல் வெற்றிகரமாகச் சேமிக்கப்பட்டது!", "#22c55e");
-}
-function previewDignitariesInSchoolShowcase() {
-const admBox = document.getElementById("admDignitariesVisualBox");
-const showcase = document.getElementById("schoolDignitariesShowcase");
-if (admBox && admBox.offsetParent !== null) {
-admBox.scrollIntoView({ behavior: "smooth", block: "center" });
-showToast("👀 முக்கியப் பிரமுகர்கள் நேரடி அட்டைப் பெட்டி", "#0284c7");
-} else if (showcase) {
-showcase.scrollIntoView({ behavior: "smooth" });
-showToast("👀 முகப்பில் தோன்றும் முக்கிய பிரமுகர்கள் காட்சிப்பலகை", "#0284c7");
-}
-}
+let dignitariesMemoryStore = [];
+function getDignitariesList() { return []; }
+function saveDignitariesList() {}
+function renderSchoolDignitaries() {}
+function renderAdminDignitariesManager() {}
+function restoreFromIndexedDbDignitariesVault() {}
+function saveToIndexedDbDignitariesVault() {}
+function updateDignitaryStorageStatusBadge() {}
+function buildPermanentPhotoVaultFromAllSources() { return {}; }
+function migrateDignitariesList() { return []; }
+
 const DEFAULT_HSS_GROUP_TEMPLATES = [
 { groupCode: "2501", catCode: 1, category: "SCIENCE", groupName: "STATISTICS-MATHS", majorSubjects: "PHY/CHE/STATISTICS/MATHEMATICS", sub1: "LANGUAGE", sub2: "ENGLISH", sub3: "PHYSICS", sub4: "CHEMISTRY", sub5: "STATISTICS", sub6: "MATHEMATICS" },
 { groupCode: "2502", catCode: 1, category: "SCIENCE", groupName: "COMPUTER-MATHS", majorSubjects: "PHY/CHE/MAT/COMPUTER SCIENCE", sub1: "LANGUAGE", sub2: "ENGLISH", sub3: "PHYSICS", sub4: "CHEMISTRY", sub5: "COMPUTER SCIENCE", sub6: "MATHEMATICS" },
@@ -44453,7 +43291,6 @@ const PORTAL_ADMIN_MODULES_CATALOG = [
   { key: "schoolMaster",      cardId: "admModuleCardSchoolMaster",     num: 1,  icon: "🏫", shortTa: "பள்ளி முதன்மைப் பதிவேடு",       shortEn: "School Master",       labelTa: "1. பள்ளி முதன்மைப் பதிவேடு (School Master)" },
   { key: "emisStaff",         cardId: "admModuleCardEmisStaff",        num: 2,  icon: "👨‍🏫", shortTa: "ஆசிரியர்கள் & பணியாளர்கள்",    shortEn: "EMIS Staff Roster",   labelTa: "2. ஆசிரியர்கள் & பணியாளர்கள் (EMIS Staff)" },
   { key: "studentsMaster",    cardId: "admModuleCardStudentsMaster",   num: 3,  icon: "👨‍🎓", shortTa: "மாணவர்கள் சேர்க்கை",            shortEn: "Students Master",     labelTa: "3. மாணவர்கள் சேர்க்கை (Students Master)" },
-  { key: "dignitaries",       cardId: "admModuleCardDignitaries",      num: 4,  icon: "🏛️", shortTa: "முக்கியப் பிரமுகர்கள்",         shortEn: "Dignitaries",         labelTa: "4. முக்கியப் பிரமுகர்கள் (Dignitaries)" },
   { key: "circulars",         cardId: "admModuleCardCirculars",        num: 5,  icon: "📢", shortTa: "சுற்றறிக்கை அனுப்புதல்",         shortEn: "Circulars",           labelTa: "5. சுற்றறிக்கை அனுப்புதல் (Circulars)" },
   { key: "hssGroups",         cardId: "admModuleCardHssGroups",        num: 6,  icon: "📚", shortTa: "மேல்நிலை பாடப்பிரிவுகள்",        shortEn: "HSS Groups",          labelTa: "6. மேல்நிலை பாடப்பிரிவுகள் (HSS Groups)" },
   { key: "infraNeeds",        cardId: "admModuleCardInfraNeeds",       num: 7,  icon: "🏗️", shortTa: "அடிப்படைத் தேவைகள்",            shortEn: "Infra Needs",         labelTa: "7. அடிப்படைத் தேவைகள் (Infra Needs)" },
@@ -44579,7 +43416,7 @@ const OFFICE_ROLE_PRESETS = {
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
-    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "dignitaries", "circulars", "hssGroups", "infraNeeds", "ebsMaster", "examDutyAllotment", "auditTrail", "midTermMaster", "officeUsers"],
+    allowedModules: ["schoolMaster", "emisStaff", "studentsMaster", "circulars", "hssGroups", "infraNeeds", "ebsMaster", "examDutyAllotment", "auditTrail", "midTermMaster", "officeUsers"],
     actions: { canView: true, canEdit: true, canApprove: true, canDelete: true, canSendCircular: true, canManageUsers: true }
   }
 };
@@ -47351,6 +46188,343 @@ if (document.readyState === "loading") {
 } else {
   setTimeout(_safeBootPortalOnce, 0);
 }
+
+
+
+// --- 6. DUPLICATE STAFF MOBILE NUMBER PREVENTION ENGINE (UNIQUE MOBILE PER STAFF) ---
+let _staffMobileDirectoryIndex = null;
+let _staffMobileDirectoryBuiltAt = 0;
+
+function invalidateStaffMobileDirectoryIndex() {
+  _staffMobileDirectoryIndex = null;
+  _staffMobileDirectoryBuiltAt = 0;
+}
+
+function buildStaffMobileDirectoryIndex() {
+  const now = Date.now();
+  if (_staffMobileDirectoryIndex && (now - _staffMobileDirectoryBuiltAt < 4000)) {
+    return _staffMobileDirectoryIndex;
+  }
+  const map = {}; // clean10DigitMob -> { staffId, name, desig, uNo, schoolName }
+  const delMap = getGlobalEmisDeletedStaffMap();
+  const ovMap = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+  const schByUNo = {};
+  (masterSchools || []).forEach(s => { if (s && s.uNo) schByUNo[String(s.uNo)] = s; });
+
+  const registerMob = (mobRaw, sidRaw, nameRaw, desigRaw, uNoRaw, priority) => {
+    const mob = String(mobRaw || "").replace(/\D/g, "").slice(-10);
+    const sid = String(sidRaw || "").trim();
+    const uNo = String(uNoRaw || "").trim();
+    if (mob.length !== 10 || !/^[6-9]\d{9}$/.test(mob) || !sid) return;
+    if (delMap[sid] && delMap[sid].deleted) return;
+    if (ovMap[sid] && ovMap[sid].deleted) return;
+    const sch = schByUNo[uNo];
+    // Ignore school office mobile number if it was auto-copied to non-HM staff
+    const schMob = sch ? String(sch.mobile || "").replace(/\D/g, "").slice(-10) : "";
+    const isHm = /^(HEADMASTER|HEADMISTRESS|PRINCIPAL|HEAD TEACHER)/i.test(String(desigRaw || "").trim());
+    if (schMob && mob === schMob && !isHm && priority < 3) return;
+
+    const existing = map[mob];
+    if (!existing || priority >= existing.priority) {
+      map[mob] = {
+        staffId: sid,
+        name: String(nameRaw || sid).trim(),
+        desig: String(desigRaw || "Staff").trim(),
+        uNo: uNo,
+        schoolName: sch ? (sch.nameTa || sch.nameEn || ("U.NO " + uNo)) : ("U.NO " + uNo),
+        priority: priority
+      };
+    }
+  };
+
+  // 1) Base EMIS_STAFF_DATA (priority 1)
+  const emis = getEmisStaffData();
+  if (emis && emis.byUNo) {
+    const pool = emis.pool || [];
+    Object.entries(emis.byUNo).forEach(([uKey, rows]) => {
+      if (!Array.isArray(rows)) return;
+      const ext = (schoolExtraDataStore && schoolExtraDataStore[uKey]) ? schoolExtraDataStore[uKey] : null;
+      const remSet = new Set(ext && ext.ebs2026 && Array.isArray(ext.ebs2026.removedStaffIds) ? ext.ebs2026.removedStaffIds.map(String) : []);
+      rows.forEach(r => {
+        if (!Array.isArray(r) || !r[1]) return;
+        const sid = String(r[1]).trim();
+        if (remSet.has(sid)) return;
+        registerMob(r[17], sid, r[2], pool[r[3]] || "", uKey, 1);
+      });
+    });
+  }
+
+  // 2) CEOSVG_STAFF_OVERRIDES (priority 2)
+  Object.entries(ovMap).forEach(([sid, ov]) => {
+    if (!ov || ov.deleted) return;
+    if (ov.mobile) {
+      registerMob(ov.mobile, sid, ov.name, ov.desig, ov.uNo, 2);
+    }
+  });
+
+  // 3) schoolExtraDataStore staff & ebs2026.staffProfiles (priority 3 - highest)
+  if (typeof schoolExtraDataStore === "object" && schoolExtraDataStore) {
+    Object.entries(schoolExtraDataStore).forEach(([uKey, ext]) => {
+      if (!ext || typeof ext !== "object") return;
+      const remSet = new Set(ext.ebs2026 && Array.isArray(ext.ebs2026.removedStaffIds) ? ext.ebs2026.removedStaffIds.map(String) : []);
+      if (Array.isArray(ext.staff)) {
+        ext.staff.forEach(st => {
+          if (!st) return;
+          const sid = String(st.id || st.staffId || "").trim();
+          if (!sid || remSet.has(sid)) return;
+          if (st.mobile) registerMob(st.mobile, sid, st.name, st.desig, uKey, 2);
+        });
+      }
+      if (ext.ebs2026 && ext.ebs2026.staffProfiles && typeof ext.ebs2026.staffProfiles === "object") {
+        Object.entries(ext.ebs2026.staffProfiles).forEach(([sid, prof]) => {
+          if (!prof || remSet.has(String(sid).trim())) return;
+          if (prof.mobile) registerMob(prof.mobile, sid, prof.name, prof.desig, uKey, 3);
+        });
+      }
+    });
+  }
+
+  _staffMobileDirectoryIndex = map;
+  _staffMobileDirectoryBuiltAt = now;
+  return map;
+}
+
+function findDuplicateStaffByMobile(mobileStr, currentStaffId) {
+  const cleanMob = String(mobileStr || "").replace(/\D/g, "").slice(0, 10);
+  const curSid = String(currentStaffId || "").trim();
+  if (cleanMob.length !== 10 || !/^[6-9]\d{9}$/.test(cleanMob)) return null;
+
+  // Check current school's live staffList first for immediate accuracy
+  const activeUNo = getCurrentActiveEbsUNo();
+  if (activeUNo && typeof schoolExtraDataStore === "object" && schoolExtraDataStore[activeUNo]) {
+    const ext = schoolExtraDataStore[activeUNo];
+    const profs = (ext.ebs2026 && ext.ebs2026.staffProfiles) ? ext.ebs2026.staffProfiles : {};
+    const remSet = new Set(ext.ebs2026 && Array.isArray(ext.ebs2026.removedStaffIds) ? ext.ebs2026.removedStaffIds.map(String) : []);
+    for (const [sid, p] of Object.entries(profs)) {
+      if (String(sid).trim() === curSid || remSet.has(String(sid).trim())) continue;
+      if (p && String(p.mobile || "").replace(/\D/g, "").slice(-10) === cleanMob) {
+        const sch = (masterSchools || []).find(s => String(s.uNo) === activeUNo);
+        return {
+          staffId: String(sid).trim(),
+          name: p.name || sid,
+          desig: p.desig || "Staff",
+          uNo: activeUNo,
+          schoolName: sch ? (sch.nameTa || sch.nameEn) : ("U.NO " + activeUNo)
+        };
+      }
+    }
+  }
+
+  const idxMap = buildStaffMobileDirectoryIndex();
+  const hit = idxMap[cleanMob];
+  if (hit && String(hit.staffId).trim() !== curSid) {
+    return hit;
+  }
+  return null;
+}
+
+function formatDuplicateMobileAlertTa(cleanMob, dup) {
+  return `❌ கைபேசி எண் ${cleanMob} ஏற்கனவே [${dup.uNo}] ${dup.name} (${dup.desig}, EMIS ID: ${dup.staffId}) என்பவருக்குப் பயன்படுத்தப்பட்டுள்ளது! ஒரே மொபைல் எண்ணை இரு பணியாளர்களுக்குப் பயன்படுத்த இயலாது.`;
+}
+
+// 1) Wrap onEbsStfMobileInput (Modal live mobile input validation)
+const _origOnEbsStfMobileInput = onEbsStfMobileInput;
+onEbsStfMobileInput = function() {
+  _origOnEbsStfMobileInput();
+  const mobEl = document.getElementById("ebsStfMobile");
+  const badgeEl = document.getElementById("ebsStfWaOtpBadge");
+  const verEl = document.getElementById("ebsStfWhatsappVerified");
+  if (!mobEl) return;
+  const curMob = String(mobEl.value || "").replace(/\D/g, "").slice(0, 10);
+  const sidForMob = (_activeEbsEditingStaff && _activeEbsEditingStaff.staffId) || (document.getElementById("ebsStfEmisId")?.value || "");
+  if (curMob.length === 10) {
+    const dup = findDuplicateStaffByMobile(curMob, sidForMob);
+    if (dup) {
+      mobEl.style.borderColor = "#dc2626";
+      mobEl.style.background = "#fef2f2";
+      if (verEl) verEl.value = "false";
+      if (badgeEl) {
+        badgeEl.style.background = "#fee2e2";
+        badgeEl.style.color = "#991b1b";
+        badgeEl.style.borderColor = "#fca5a5";
+        badgeEl.textContent = `❌ இந்த எண் ஏற்கனவே [${dup.uNo}] ${dup.name} (${dup.desig}, EMIS: ${dup.staffId}) என்பவருக்கு உள்ளது!`;
+      }
+      showToast(formatDuplicateMobileAlertTa(curMob, dup), "#dc2626", true);
+      return;
+    }
+  }
+  mobEl.style.background = "#fff";
+};
+
+// 2) Wrap sendEbsStaffWhatsappOtp (Modal OTP button)
+const _origSendEbsStaffWhatsappOtp = sendEbsStaffWhatsappOtp;
+sendEbsStaffWhatsappOtp = async function() {
+  const mobEl = document.getElementById("ebsStfMobile");
+  const cleanMob = mobEl ? String(mobEl.value || "").replace(/\D/g, "").slice(0, 10) : "";
+  const staffId = (_activeEbsEditingStaff && _activeEbsEditingStaff.staffId) || (document.getElementById("ebsStfEmisId")?.value || "");
+  if (cleanMob.length === 10) {
+    const dup = findDuplicateStaffByMobile(cleanMob, staffId);
+    if (dup) {
+      showToast(formatDuplicateMobileAlertTa(cleanMob, dup), "#dc2626", true);
+      if (mobEl) mobEl.focus();
+      return;
+    }
+  }
+  return await _origSendEbsStaffWhatsappOtp();
+};
+
+// 3) Guard saveEbsStaffProfileModal (Modal Save button) against duplicate mobile numbers
+const _v52SaveEbsStaffProfileModal = saveEbsStaffProfileModal;
+saveEbsStaffProfileModal = async function(e) {
+  if (e && typeof e.preventDefault === "function") e.preventDefault();
+  const mobEl = document.getElementById("ebsStfMobile");
+  const cleanMob = mobEl ? String(mobEl.value || "").replace(/\D/g, "").slice(0, 10) : "";
+  const staffId = (_activeEbsEditingStaff && _activeEbsEditingStaff.staffId) || (document.getElementById("ebsStfEmisId")?.value || "");
+  if (cleanMob.length === 10) {
+    const dup = findDuplicateStaffByMobile(cleanMob, staffId);
+    if (dup) {
+      showToast(formatDuplicateMobileAlertTa(cleanMob, dup), "#dc2626", true);
+      if (mobEl) {
+        mobEl.style.borderColor = "#dc2626";
+        mobEl.style.background = "#fef2f2";
+        mobEl.focus();
+      }
+      return;
+    }
+  }
+  invalidateStaffMobileDirectoryIndex();
+  return await _v52SaveEbsStaffProfileModal(e);
+};
+
+// 4) Guard saveInlineRowContactDirect & sendInlineRowWhatsappOtp (Inline Table Row) against duplicate mobile numbers
+const _v52SaveInlineRowContactDirect = saveInlineRowContactDirect;
+saveInlineRowContactDirect = function(uNo, staffId) {
+  uNo = String(uNo || getCurrentActiveEbsUNo() || "").trim();
+  staffId = String(staffId || "").trim();
+  if (!uNo || !staffId) return;
+  const mobInp = document.getElementById("inlineWaMobEdit_" + staffId);
+  if (mobInp) {
+    const cleanMob = String(mobInp.value || "").replace(/\D/g, "").slice(0, 10);
+    if (cleanMob.length === 10) {
+      const dup = findDuplicateStaffByMobile(cleanMob, staffId);
+      if (dup) {
+        showToast(formatDuplicateMobileAlertTa(cleanMob, dup), "#dc2626", true);
+        mobInp.style.borderColor = "#dc2626";
+        mobInp.style.background = "#fef2f2";
+        const extra = getSchoolExtra(uNo);
+        const prevMob = (extra && extra.ebs2026 && extra.ebs2026.staffProfiles && extra.ebs2026.staffProfiles[staffId] && extra.ebs2026.staffProfiles[staffId].mobile) || "";
+        const prevDup = prevMob ? findDuplicateStaffByMobile(prevMob, staffId) : null;
+        mobInp.value = (!prevDup && prevMob !== cleanMob) ? prevMob : "";
+        return;
+      }
+    }
+    mobInp.style.borderColor = "#86efac";
+    mobInp.style.background = "#fff";
+  }
+  invalidateStaffMobileDirectoryIndex();
+  return _v52SaveInlineRowContactDirect(uNo, staffId);
+};
+
+const _origSendInlineRowWhatsappOtp = sendInlineRowWhatsappOtp;
+sendInlineRowWhatsappOtp = async function(uNo, staffId) {
+  uNo = String(uNo || getCurrentActiveEbsUNo() || "").trim();
+  staffId = String(staffId || "").trim();
+  const mobInpEl = document.getElementById("inlineWaMobEdit_" + staffId);
+  const cleanMob = mobInpEl ? String(mobInpEl.value || "").replace(/\D/g, "").slice(0, 10) : "";
+  if (cleanMob.length === 10) {
+    const dup = findDuplicateStaffByMobile(cleanMob, staffId);
+    if (dup) {
+      showToast(formatDuplicateMobileAlertTa(cleanMob, dup), "#dc2626", true);
+      if (mobInpEl) {
+        mobInpEl.style.borderColor = "#dc2626";
+        mobInpEl.style.background = "#fef2f2";
+        mobInpEl.focus();
+      }
+      return;
+    }
+  }
+  return await _origSendInlineRowWhatsappOtp(uNo, staffId);
+};
+
+// 5) Guard addStaffMemberToSchool & saveAdminEditStaff against duplicate mobile numbers
+const _origAddStaffMemberToSchool = addStaffMemberToSchool;
+addStaffMemberToSchool = function(event) {
+  if (event && typeof event.preventDefault === "function") event.preventDefault();
+  const editId = String((document.getElementById("stfEditId") || {}).value || "").trim();
+  const mobEl = document.getElementById("stfMobile");
+  const cleanMob = mobEl ? String(mobEl.value || "").replace(/\D/g, "").slice(0, 10) : "";
+  if (cleanMob.length === 10) {
+    const dup = findDuplicateStaffByMobile(cleanMob, editId || "NEW_STAFF");
+    if (dup) {
+      showToast(formatDuplicateMobileAlertTa(cleanMob, dup), "#dc2626", true);
+      if (mobEl) mobEl.focus();
+      return;
+    }
+  }
+  invalidateStaffMobileDirectoryIndex();
+  return _origAddStaffMemberToSchool(event);
+};
+
+const _origSaveAdminEditStaff = saveAdminEditStaff;
+saveAdminEditStaff = function(event) {
+  if (event && typeof event.preventDefault === "function") event.preventDefault();
+  const staffId = (document.getElementById("admEditStaffId")?.value || "").trim();
+  const mobEl = document.getElementById("admEditStaffMobile");
+  const cleanMob = mobEl ? String(mobEl.value || "").replace(/\D/g, "").slice(0, 10) : "";
+  if (cleanMob.length === 10) {
+    const dup = findDuplicateStaffByMobile(cleanMob, staffId);
+    if (dup) {
+      showToast(formatDuplicateMobileAlertTa(cleanMob, dup), "#dc2626", true);
+      if (mobEl) mobEl.focus();
+      return;
+    }
+  }
+  invalidateStaffMobileDirectoryIndex();
+  return _origSaveAdminEditStaff(event);
+};
+
+// Ensure within any single school's EBS staff list, if the exact same mobile number was accidentally
+// assigned to multiple staff members, only the first/HM owner retains it and duplicates are cleared!
+const _origGetSchoolFixedPortalStaffList = getSchoolFixedPortalStaffList;
+getSchoolFixedPortalStaffList = function(uNo) {
+  const list = _origGetSchoolFixedPortalStaffList(uNo);
+  if (!Array.isArray(list) || list.length <= 1) return list;
+  const seenMobsInSchool = new Set();
+  // First pass: reserve mobile numbers for HM or OTP-verified staff
+  list.forEach(st => {
+    if (!st) return;
+    const m = String(st.mobile || "").replace(/\D/g, "").slice(-10);
+    const isHm = /^(HEADMASTER|HEADMISTRESS|PRINCIPAL|HEAD TEACHER)/i.test(String(st.desig || "").trim());
+    if (m.length === 10 && (isHm || st.whatsappVerified)) {
+      if (!seenMobsInSchool.has(m)) {
+        seenMobsInSchool.add(m);
+        st._reservedMobOwner = true;
+      }
+    }
+  });
+  // Second pass: deduplicate across all staff in the school
+  const finalSeen = new Set();
+  list.forEach(st => {
+    if (!st) return;
+    const m = String(st.mobile || "").replace(/\D/g, "").slice(-10);
+    if (m.length !== 10) return;
+    if (st._reservedMobOwner && !finalSeen.has(m)) {
+      finalSeen.add(m);
+      delete st._reservedMobOwner;
+      return;
+    }
+    delete st._reservedMobOwner;
+    if (finalSeen.has(m) || seenMobsInSchool.has(m)) {
+      // Duplicate mobile on another staff member in the same school -> clear duplicate!
+      st.mobile = "";
+      st.whatsappVerified = false;
+      st.verifiedMobile = "";
+    } else {
+      finalSeen.add(m);
+    }
+  });
+  return list;
+};
 
 </script>
 </body>
