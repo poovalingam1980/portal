@@ -475,28 +475,12 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <input type="email" id="regSchoolEmail" class="form-control" style="padding:7px 10px; font-size:0.84rem; font-weight:700;" placeholder="school@gmail.com" oninput="resetRegOtpStateOnContactChange()" onblur="this.value=normalizeAndRepairSchoolEmail(this.value)" required>
 </div>
 </div>
-<!-- Step 4: Email OTP Verification (Clean neutral box, no blue frame) -->
-<div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-<span style="font-size:0.8rem; font-weight:800; color:#0f172a;">5. பள்ளி மின்னஞ்சல் OTP சரிபார்ப்பு (Email OTP Verification) <span class="required">*</span></span>
-<button type="button" id="btnSendRegDualOtp" class="btn btn-primary btn-sm" onclick="sendRegistrationDualOtp()" style="font-weight:800; font-size:0.78rem; padding:6px 14px;">
-📧 பள்ளி Email-க்கு OTP அனுப்புக (Send Email OTP)
-</button>
-</div>
-<!-- Email OTP Input Box -->
-<div id="regOtpVerifyInputWrap" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1;">
-<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-<label class="form-label" style="font-size:0.78rem; color:#0f172a; font-weight:800; margin:0;">6-இலக்க Email OTP <span class="required">*</span>:</label>
-<input type="text" id="regEmailOtpInput" class="form-control" maxlength="6" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" placeholder="OTP உள்ளிடவும்" style="max-width:180px; padding:6px 10px; font-size:0.9rem; font-weight:900; letter-spacing:3px; text-align:center;">
-<button type="button" class="btn btn-success btn-sm" onclick="verifyRegistrationDualOtp()" style="font-weight:900; padding:7px 16px; white-space:nowrap;">
-✓ OTP சரிபார்க்க
-</button>
-</div>
-</div>
-<div id="regOtpStatusMsg" style="font-size:0.76rem; font-weight:700; color:#0f766e; margin-top:6px; display:none;"></div>
-<div id="regOtpVerifiedBadge" style="display:none; margin-top:6px; background:#dcfce7; border:1px solid #22c55e; color:#14532d; padding:5px 10px; border-radius:6px; font-size:0.78rem; font-weight:800; text-align:center;">
-✅ பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (Email ID) OTP மூலம் வெற்றிகரமாக உறுதிப்படுத்தப்பட்டது!
-</div>
+<!-- Email OTP Verification Removed per User Request -->
+<div style="display:none !important;">
+<div id="regOtpVerifyInputWrap" style="display:none;"></div>
+<input type="hidden" id="regEmailOtpInput" value="">
+<div id="regOtpStatusMsg" style="display:none;"></div>
+<div id="regOtpVerifiedBadge" style="display:none;"></div>
 </div>
 <!-- Step 5: Password & 6-Digit PIN Setup (Always active with Eye / Show Toggle) -->
 <div id="regPasswordSetupWrap" style="opacity:1; pointer-events:auto; transition:all 0.25s;">
@@ -576,11 +560,11 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <!-- 1C. PASSWORD RESET WITH EMAIL OTP VERIFICATION -->
 <div id="authPanePassReset" style="display:none;">
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-<h3 style="font-size:1.2rem; font-weight:900; color:#0f172a;">🔑 கடவுச்சொல் மீட்பு (Forgot Password - Email OTP)</h3>
+<h3 style="font-size:1.2rem; font-weight:900; color:#0f172a;">🔑 கடவுச்சொல் மீட்பு (Forgot Password - WhatsApp OTP)</h3>
 <button type="button" class="btn btn-outline btn-sm" onclick="switchAuthTab('schoolLogin')">← Sign in</button>
 </div>
-<div style="font-size:0.78rem; color:#334155; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:8px; margin-bottom:10px; line-height:1.45;">
-🔐 ஏற்கனவே பதிவு செய்த பள்ளிகள் தங்களின் <strong>பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (School Email ID)</strong> முகவரிக்கு <strong>6-இலக்க OTP</strong> பெற்றுச் சரிபார்த்த பின் புதிய கடவுச்சொல்லை அமைக்கலாம்.
+<div style="font-size:0.78rem; color:#334155; background:#f0fdf4; border:1px solid #86efac; padding:8px 10px; border-radius:8px; margin-bottom:10px; line-height:1.45;">
+🔐 ஏற்கனவே பதிவு செய்த பள்ளிகள் தங்களின் <strong>பள்ளித் தலைமையாசிரியர் கைபேசி எண்ணிற்கு (HM WhatsApp Mobile)</strong> <strong>6-இலக்க WhatsApp OTP</strong> பெற்றுச் சரிபார்த்த பின் புதிய கடவுச்சொல்லை அமைக்கலாம்.
 </div>
 <form onsubmit="handlePasswordResetSubmit(event)">
 <div class="form-group" style="margin-bottom:8px;">
@@ -588,17 +572,17 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <input type="text" id="resetSchoolIdInput" class="form-control" placeholder="எ.கா: 101 அல்லது 33231106101" oninput="onResetIdType(this.value)" required>
 </div>
 <div id="resetSchoolPreview" style="font-size:0.84rem; font-weight:800; color:#15803d; margin-bottom:8px;"></div>
-<!-- Email OTP Verification Box -->
-<div id="resetOtpSectionWrap" style="display:none; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:9px; padding:10px; margin-bottom:10px;">
+<!-- WhatsApp OTP Verification Box -->
+<div id="resetOtpSectionWrap" style="display:none; background:#f0fdf4; border:1.5px solid #86efac; border-radius:9px; padding:10px; margin-bottom:10px;">
 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
-<span style="font-size:0.78rem; font-weight:800; color:#1d4ed8;">
-<input type="radio" name="resetOtpChannel" value="email" checked style="display:none;">
-🔵 பள்ளி மின்னஞ்சல் (Email OTP): <strong id="resetMaskedEmail">-</strong>
-<span id="resetMaskedPhone" style="display:none;">-</span>
+<span style="font-size:0.78rem; font-weight:800; color:#15803d;">
+<input type="radio" name="resetOtpChannel" value="whatsapp" checked style="display:none;">
+🟢 HM WhatsApp எண்: <strong id="resetMaskedPhone">-</strong>
+<span id="resetMaskedEmail" style="display:none;">-</span>
 </span>
 </div>
-<button type="button" class="btn btn-primary btn-sm" onclick="sendPasswordResetOtp()" style="width:100%; font-weight:800; font-size:0.78rem;">
-📧 பள்ளி Email-க்கு OTP அனுப்புக (Send Reset OTP)
+<button type="button" class="btn btn-success btn-sm" onclick="sendPasswordResetOtp()" style="width:100%; font-weight:800; font-size:0.78rem; background:#16a34a; border-color:#15803d;">
+📲 HM WhatsApp எண்ணிற்கு OTP அனுப்புக (Send Reset OTP)
 </button>
 <div id="resetOtpStatusMsg" style="font-size:0.74rem; font-weight:700; color:#0f766e; margin-top:6px; display:none;"></div>
 <div id="resetOtpInputBox" style="display:none; margin-top:8px; display:flex; gap:6px;">
@@ -10829,43 +10813,39 @@ showToast("⚠️ முதலில் பள்ளியின் U.NO அல�
 return;
 }
 const authRec = schoolAuthStore[s.uNo] || {};
-const email = normalizeAndRepairSchoolEmail(authRec.email || s.email || "");
-if (!isValidSchoolEmailFormat(email)) {
-showToast("⚠️ இப்பள்ளிக்கு Email முகவரி இன்னும் பதிவு செய்யப்படவில்லை! முதலில் 'Sign Up / புதிய பதிவு' செய்யவும்.", "#ef4444");
+const resetPhone = (authRec.phone || s.mobile || "").replace(/\D/g, "").slice(-10);
+if (resetPhone.length !== 10) {
+showToast("⚠️ இப்பள்ளிக்கு HM கைபேசி எண் இன்னும் பதிவு செய்யப்படவில்லை! முதலில் 'Sign Up / புதிய பதிவு' செய்யவும்.", "#ef4444");
 return;
 }
 const otp = generateSixDigitOtp();
 _resetOtpSession = {
 uNo: s.uNo,
 otpCode: otp,
-channel: "email",
-target: email,
+channel: "whatsapp",
+target: resetPhone,
 verified: false,
 sentAt: Date.now()
 };
 const inpBox = document.getElementById("resetOtpInputBox");
 if (inpBox) inpBox.style.display = "flex";
 const msgEl = document.getElementById("resetOtpStatusMsg");
-const targetDesc = `Email (${maskEmailForDisplay(email)})`;
+const targetDesc = `WhatsApp (${maskPhoneForDisplay(resetPhone)})`;
 const renderResetMsg = (prefixText) => {
 if (!msgEl) return;
 msgEl.style.display = "block";
-msgEl.innerHTML = `${prefixText} <strong>${targetDesc}</strong> முகவரிக்கு 6-இலக்க OTP அனுப்பப்பட்டுள்ளது! மின்னஞ்சல் Inbox / Spam கோப்புறையைப் பார்த்து கீழே உள்ளிடவும்.`;
+msgEl.innerHTML = `${prefixText} <strong>${targetDesc}</strong> எண்ணிற்கு 6-இலக்க WhatsApp OTP அனுப்பப்பட்டுள்ளது! கீழே உள்ளிடவும்.`;
 };
-renderResetMsg("📡 உங்கள் பள்ளி");
+renderResetMsg("📡 உங்கள் பள்ளி HM");
 document.getElementById("resetOtpCodeInput")?.focus();
-showToast(`📧 கடவுச்சொல் மீட்பு Email OTP அனுப்பப்படுகிறது!`, "#0284c7");
-const resetPhone = (authRec.phone || s.mobile || "").replace(/\D/g, "").slice(-10);
+showToast(`📲 கடவுச்சொல் மீட்பு WhatsApp OTP அனுப்பப்படுகிறது!`, "#16a34a");
 try {
 await Promise.race([
-Promise.allSettled([
-dispatchEmailOtpMessage(email, otp, s, "Password Reset OTP"),
-resetPhone.length === 10 ? dispatchWhatsappOtpMessage(resetPhone, otp, s, "Password Reset OTP") : Promise.resolve()
-]),
+dispatchWhatsappOtpMessage(resetPhone, otp, s, "Password Reset OTP"),
 new Promise(resolve => setTimeout(resolve, 11000))
 ]);
 } catch (e) {}
-renderResetMsg("✅ உங்கள் பள்ளி");
+renderResetMsg("✅ உங்கள் பள்ளி HM");
 }
 function verifyPasswordResetOtp() {
 const code = (document.getElementById("resetOtpCodeInput")?.value || "").trim();
@@ -27910,25 +27890,9 @@ function renderEbsStaffRowCol4OtpCellHtml(uNo, st) {
       </div>
 
       <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:7px; padding:5px 7px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; flex-wrap:wrap;">
-          <div style="display:flex; align-items:center; gap:4px; flex:1; min-width:140px;">
-            <span style="font-size:0.78rem;">✉️</span>
-            <input type="email" id="inlineEmAddrEdit_${sid}" value="${escapeHtmlAttr(dispEm)}" placeholder="staff@gmail.com" onblur="if(typeof normalizeAndRepairSchoolEmail==='function')this.value=normalizeAndRepairSchoolEmail(this.value); saveInlineRowContactDirect('${uNoEsc}', '${sid}');" style="width:100%; min-width:125px; font-size:0.74rem; font-weight:800; color:#1e3a8a; background:#fff; border:1px solid #93c5fd; border-radius:5px; padding:2px 6px;">
-          </div>
-          <div style="display:flex; align-items:center; gap:4px;">
-            ${emVerified
-              ? `<span style="background:#dcfce7; color:#15803d; border:1px solid #22c55e; border-radius:999px; padding:1px 7px; font-size:0.68rem; font-weight:900;" title="Email OTP Verified">✓ OTP</span>
-                 <button type="button" id="inlineEmBtn_${sid}" onclick="sendInlineRowEmailOtp('${uNoEsc}', '${sid}')" title="மீண்டும் Email OTP அனுப்பு" style="background:#fff; color:#1d4ed8; border:1px solid #93c5fd; border-radius:5px; padding:1px 5px; font-size:0.66rem; font-weight:900; cursor:pointer;">🔄</button>`
-              : `<button type="button" id="inlineEmBtn_${sid}" onclick="sendInlineRowEmailOtp('${uNoEsc}', '${sid}')" style="background:#2563eb; color:#fff; border:none; border-radius:5px; padding:2px 8px; font-size:0.69rem; font-weight:900; cursor:pointer; white-space:nowrap;">${activeEmSess ? "🔄 மறு-OTP" : "📧 OTP"}</button>`
-            }
-          </div>
-        </div>
-        <div id="inlineEmOtpBox_${sid}" style="display:${activeEmSess ? "block" : "none"}; margin-top:5px; padding-top:4px; border-top:1px dashed #93c5fd;">
-          <div style="display:flex; gap:4px; align-items:center;">
-            <input type="text" id="inlineEmOtpInp_${sid}" maxlength="6" inputmode="numeric" value="${escapeHtmlAttr(activeEmSess ? (activeEmSess.draftCode || "") : "")}" placeholder="6-இலக்க OTP" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); if(_inlineRowEmOtpSessions && _inlineRowEmOtpSessions['${sid}']) _inlineRowEmOtpSessions['${sid}'].draftCode=this.value;" onkeydown="if(event.key==='Enter'){event.preventDefault();verifyInlineRowEmailOtp('${uNoEsc}','${sid}');}" style="width:105px; font-size:0.78rem; font-weight:900; text-align:center; letter-spacing:1.5px; padding:2px 5px; border:1px solid #2563eb; border-radius:4px; background:#fff;">
-            <button type="button" onclick="verifyInlineRowEmailOtp('${uNoEsc}', '${sid}')" style="background:#16a34a; color:#fff; border:none; border-radius:4px; padding:3px 8px; font-size:0.70rem; font-weight:900; cursor:pointer;">✔️ உறுதி</button>
-          </div>
-          <div id="inlineEmOtpHint_${sid}" style="font-size:0.66rem; font-weight:800; margin-top:3px; color:${activeEmSess ? (activeEmSess.statusColor || "#1e40af") : "#1e40af"};">${escapeHtmlAttr(activeEmSess ? (activeEmSess.statusText || "") : "")}</div>
+        <div style="display:flex; align-items:center; gap:4px; width:100%;">
+          <span style="font-size:0.78rem;">✉️</span>
+          <input type="email" id="inlineEmAddrEdit_${sid}" value="${escapeHtmlAttr(dispEm)}" placeholder="staff@gmail.com" onblur="if(typeof normalizeAndRepairSchoolEmail==='function')this.value=normalizeAndRepairSchoolEmail(this.value); saveInlineRowContactDirect('${uNoEsc}', '${sid}');" style="width:100%; min-width:125px; font-size:0.74rem; font-weight:800; color:#1e3a8a; background:#fff; border:1px solid #93c5fd; border-radius:5px; padding:2px 6px;">
         </div>
       </div>
     </div>
@@ -29616,29 +29580,12 @@ ${mainSubOpts}
             <input type="text" id="ebsStfAltMobile" maxlength="10" class="form-control" value="${escapeHtmlAttr(String(st.altMobile || "").replace(/\D/g, "").slice(-10))}" placeholder="10-Digit Alternate">
           </div>
           <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e40af;">Personal E-mail Address <span style="font-weight:700; color:#64748b; font-size:0.70rem;">(OTP கட்டாயமல்ல)</span></label>
+            <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e40af;">Personal E-mail Address</label>
             <div style="display:flex; gap:5px; align-items:center;">
-              <input type="email" id="ebsStfEmail" class="form-control" value="${escapeHtmlAttr(st.email || "")}" placeholder="staff@gmail.com" oninput="onEbsStfEmailInput()" onblur="this.value=normalizeAndRepairSchoolEmail(this.value); onEbsStfEmailInput();" style="flex:1; font-weight:800; border-color:${isEmailOtpVerifiedInitial ? "#16a34a" : "#2563eb"};">
-              <button type="button" id="ebsStfSendOtpBtn" onclick="sendEbsStaffEmailOtp()" class="btn btn-primary btn-sm" style="background:${isEmailOtpVerifiedInitial ? "#15803d" : "#2563eb"}; border-color:${isEmailOtpVerifiedInitial ? "#166534" : "#1d4ed8"}; white-space:nowrap; font-weight:900; font-size:0.72rem; padding:7px 10px;">
-                ${isEmailOtpVerifiedInitial ? "🔄 மறு-OTP" : "📧 OTP அனுப்பு"}
-              </button>
+              <input type="email" id="ebsStfEmail" class="form-control" value="${escapeHtmlAttr(st.email || "")}" placeholder="staff@gmail.com" onblur="this.value=normalizeAndRepairSchoolEmail(this.value);" style="flex:1; font-weight:800; border-color:#2563eb;">
             </div>
-            <div style="margin-top:5px; display:flex; align-items:center; justify-content:flex-start;">
-              <span id="ebsStfEmailOtpBadge" style="display:inline-flex; align-items:center; gap:4px; font-size:0.70rem; font-weight:900; padding:2px 9px; border-radius:999px; background:${isEmailOtpVerifiedInitial ? "#dcfce7" : "#fef3c7"}; color:${isEmailOtpVerifiedInitial ? "#166534" : "#92400e"}; border:1px solid ${isEmailOtpVerifiedInitial ? "#86efac" : "#fde68a"};">
-                ${isEmailOtpVerifiedInitial ? "✅ OTPக்கப்பட்டது" : "ℹ️ OTP கட்டாயமல்ல (விருப்பத்தேர்வு)"}
-              </span>
-            </div>
-            <input type="hidden" id="ebsStfEmailVerified" value="${isEmailOtpVerifiedInitial ? "true" : "false"}">
-            <input type="hidden" id="ebsStfVerifiedEmailAddr" value="${isEmailOtpVerifiedInitial ? escapeHtmlAttr(String(st.email || "").trim().toLowerCase()) : ""}">
-            <div id="ebsStfEmailOtpBox" style="display:none; margin-top:6px; padding:8px 10px; background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px;">
-              <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                <input type="text" id="ebsStfEmailOtpInput" maxlength="6" inputmode="numeric" class="form-control" placeholder="6-இலக்க OTP" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="width:155px; min-width:155px; font-weight:900; text-align:center; letter-spacing:1.5px; font-size:0.88rem; border-color:#2563eb; background:#fff;">
-                <button type="button" onclick="verifyEbsStaffEmailOtp()" class="btn btn-primary btn-sm" style="background:#16a34a; border-color:#15803d; font-weight:900; font-size:0.74rem; padding:6px 11px;">
-                  ✔️ உறுதிப்படுத்து
-                </button>
-              </div>
-              <div id="ebsStfEmailOtpHint" style="font-size:0.71rem; font-weight:800; color:#1e40af; margin-top:5px;"></div>
-            </div>
+            <input type="hidden" id="ebsStfEmailVerified" value="true">
+            <input type="hidden" id="ebsStfVerifiedEmailAddr" value="${escapeHtmlAttr(String(st.email || "").trim().toLowerCase())}">
           </div>
         </div>
 
@@ -33801,10 +33748,10 @@ function evaluateSchoolEbsOverallReadiness(uNo) {
   const totalStaff = teachList.length + nonTeachList.length;
   const totalComplete = teachComplete + ntComplete;
   const totalWaOk = teachWaOk + ntWaOk;
-  const totalEmailOk = teachEmailOk + ntEmailOk;
+  const totalEmailOk = totalStaff;
 
   const waOtpPct = totalStaff > 0 ? Math.round((totalWaOk / totalStaff) * 100) : 100;
-  const emailOtpPct = totalStaff > 0 ? Math.round((totalEmailOk / totalStaff) * 100) : 100;
+  const emailOtpPct = 100;
 
   const totalUnits = (isHSS ? 2 : 1) + totalStaff;
   const doneUnits = (f1Ok ? 1 : 0) + (isHSS ? (f2Ok ? 1 : 0) : 0) + totalComplete;
@@ -33897,7 +33844,7 @@ function renderSchoolEbsFinalDeclarationBox(uNo) {
         <div>
           <div style="font-size:0.95rem; font-weight:900; color:#14532d;">🎉 100% பூர்த்தியானது! தலைமை ஆசிரியர் இறுதி உறுதிமொழிப் பூட்டுக்குத் தயார்</div>
           <div style="font-size:0.78rem; color:#1e3a8a; font-weight:700; margin-top:2px;">
-            Form I${r.isHSS ? ", II" : ""}, III (${r.teachComplete}/${r.teachTotal}) &amp; IV (${r.ntComplete}/${r.ntTotal}) விவரங்கள் அனைத்தும் பூர்த்தி செய்யப்பட்டுள்ளன (WhatsApp / Email OTP கட்டாயமல்ல).
+            Form I${r.isHSS ? ", II" : ""}, III (${r.teachComplete}/${r.teachTotal}) &amp; IV (${r.ntComplete}/${r.ntTotal}) விவரங்கள் அனைத்தும் பூர்த்தி செய்யப்பட்டுள்ளன (WhatsApp OTP கட்டாயமல்ல).
           </div>
         </div>
         <button type="button" class="btn btn-primary" onclick="openEbsHmFinalLockModal('${r.uNo}')" style="background:#15803d; border-color:#166534; font-weight:900;">
@@ -33914,7 +33861,7 @@ function renderSchoolEbsFinalDeclarationBox(uNo) {
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <span style="font-size:0.90rem; font-weight:900; color:#92400e;">⏳ EBS பதிவு முன்னேற்றம்: ${r.overallPct}%</span>
           <span style="background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:900;">
-            Form-I: ${r.f1Ok ? "✅" : "⚠️"} | F3: ${r.teachComplete}/${r.teachTotal} | F4: ${r.ntComplete}/${r.ntTotal} | WA OTP: ${r.totalWaOk}/${r.totalStaff} | Email OTP: ${r.totalEmailOk}/${r.totalStaff}
+            Form-I: ${r.f1Ok ? "✅" : "⚠️"} | F3: ${r.teachComplete}/${r.teachTotal} | F4: ${r.ntComplete}/${r.ntTotal} | WA OTP: ${r.totalWaOk}/${r.totalStaff}
           </span>
         </div>
         <div style="width:100%; height:7px; background:#fde68a; border-radius:999px; overflow:hidden; margin-top:6px;">
@@ -33942,7 +33889,7 @@ function openEbsHmFinalLockModal(uNo) {
   const chkEl = document.getElementById("ebsHmLockAgreeChk");
   if (subEl) subEl.textContent = `U.NO: ${r.uNo} | ${r.sch.nameTa || r.sch.nameEn}`;
   if (sumEl) {
-    sumEl.innerHTML = `✅ Form-I: பூர்த்தி &nbsp;|&nbsp; ${r.isHSS ? "✅ Form-II: பூர்த்தி &nbsp;|&nbsp; " : ""}✅ Form-III: ${r.teachTotal}/${r.teachTotal} &nbsp;|&nbsp; ✅ Form-IV: ${r.ntTotal}/${r.ntTotal} &nbsp;|&nbsp; ✅ WhatsApp &amp; Email OTP: ${r.totalStaff}/${r.totalStaff} (100%)`;
+    sumEl.innerHTML = `✅ Form-I: பூர்த்தி &nbsp;|&nbsp; ${r.isHSS ? "✅ Form-II: பூர்த்தி &nbsp;|&nbsp; " : ""}✅ Form-III: ${r.teachTotal}/${r.teachTotal} &nbsp;|&nbsp; ✅ Form-IV: ${r.ntTotal}/${r.ntTotal} &nbsp;|&nbsp; ✅ WhatsApp OTP: ${r.totalWaOk}/${r.totalStaff}`;
   }
   if (nmEl) nmEl.value = r.f1.hmName || r.sch.hmName || "";
   if (chkEl) chkEl.checked = false;
@@ -34036,7 +33983,6 @@ function buildSchoolEbsReminderMessage(r) {
   if (!r.f1Ok) parts.push("Form-I பள்ளி விவரம்");
   if (r.pendingProfiles > 0) parts.push(`${r.pendingProfiles} பணியாளர் படிவங்கள்`);
   if (r.pendingWaOtp > 0) parts.push(`${r.pendingWaOtp} WhatsApp OTP`);
-  if (r.pendingEmailOtp > 0) parts.push(`${r.pendingEmailOtp} Email OTP`);
   if (r.is100PercentReady && !(r.finalLock && r.finalLock.locked)) parts.push("HM Final Declaration Lock");
   const pendingTxt = parts.length > 0 ? parts.join(", ") : "EBS 2026-27 பதிவு";
   return `அன்புள்ள தலைமை ஆசிரியர் / முதல்வர் அவர்களுக்கு, [U.NO: ${r.uNo}] ${schName} பள்ளியின் EBS 2026-27 (portal.ceosvg.in) பதிவில் ${pendingTxt} நிலுவையில் உள்ளது (நிறைவு: ${r.overallPct}%). உடனடியாகப் பூர்த்தி செய்து Final Lock செய்யுமாறு முதன்மைக் கல்வி அலுவலர், சிவகங்கை கேட்டுக்கொள்கிறார்.`;
@@ -34068,7 +34014,7 @@ async function dispatchSingleSchoolWaReminderViaApi(uNo, btnEl) {
   try {
     if (typeof dispatchWhatsappOtpMessage === "function") {
       const hmLabel = r.f1.hmName || r.sch.hmName || `HM (U.NO ${uNo})`;
-      const summaryCode = `${r.overallPct}% (WA:${r.pendingWaOtp}, EM:${r.pendingEmailOtp})`;
+      const summaryCode = `${r.overallPct}% (WA:${r.pendingWaOtp})`;
       const res = await dispatchWhatsappOtpMessage(mob, summaryCode, r.sch, `EBS 2026-27 Reminder`);
       ok = Boolean(res && res.apiDispatched);
     }
@@ -34119,7 +34065,7 @@ function openBulkEbsWaReminderModal() {
               <span style="color:${mob.length === 10 ? "#15803d" : "#dc2626"};">${mob.length === 10 ? "📱 +91 " + mob : "⚠️ எண் இல்லை"}</span>
             </td>
             <td style="font-size:0.74rem; font-weight:800; color:#92400e;">
-              நிறைவு: <strong>${r.overallPct}%</strong> | WA OTP நிலுவை: <strong>${r.pendingWaOtp}</strong> | Email OTP நிலுவை: <strong>${r.pendingEmailOtp}</strong>
+              நிறைவு: <strong>${r.overallPct}%</strong> | WA OTP நிலுவை: <strong>${r.pendingWaOtp}</strong>
             </td>
             <td style="text-align:center;">
               <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">
@@ -34164,7 +34110,7 @@ async function dispatchBulkEbsWaRemindersViaApi() {
     const mob = String(r.f1.hmMobile || r.sch.hmMobile || "").replace(/\D/g, "").slice(-10);
     try {
       if (typeof dispatchWhatsappOtpMessage === "function") {
-        const res = await dispatchWhatsappOtpMessage(mob, `${r.overallPct}% (WA:${r.pendingWaOtp}, EM:${r.pendingEmailOtp})`, r.sch, "EBS Bulk Reminder");
+        const res = await dispatchWhatsappOtpMessage(mob, `${r.overallPct}% (WA:${r.pendingWaOtp})`, r.sch, "EBS Bulk Reminder");
         if (res && res.apiDispatched) sent++;
       }
     } catch (e) {}
@@ -34282,10 +34228,6 @@ function renderAdminEbsMasterDashboard() {
         <div style="font-size:0.71rem; font-weight:800; color:#475569;">📲 WhatsApp OTP சரிபார்ப்பு</div>
         <div style="font-size:1.15rem; font-weight:900; color:#16a34a;">${distWaOk.toLocaleString("en-IN")} / ${distStaff.toLocaleString("en-IN")} (${waPct}%)</div>
       </div>
-      <div style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px;">
-        <div style="font-size:0.71rem; font-weight:800; color:#475569;">✉️ Email OTP சரிபார்ப்பு</div>
-        <div style="font-size:1.15rem; font-weight:900; color:#1d4ed8;">${distEmailOk.toLocaleString("en-IN")} / ${distStaff.toLocaleString("en-IN")} (${emPct}%)</div>
-      </div>
       <div style="background:#fff; border:1px solid #fca5a5; border-radius:8px; padding:8px 10px;">
         <div style="font-size:0.71rem; font-weight:800; color:#991b1b;">⏳ OTP நிலுவைப் பள்ளிகள்</div>
         <div style="font-size:1.15rem; font-weight:900; color:#dc2626;">${distOtpPendingSchools} பள்ளிகள்</div>
@@ -34383,7 +34325,6 @@ function renderAdminEbsMasterDashboard() {
           </div>
           <div style="display:flex; gap:4px; flex-wrap:wrap;">
             <span style="padding:1px 5px; border-radius:4px; background:${r.pendingWaOtp === 0 ? "#dcfce7; color:#15803d;" : "#fee2e2; color:#b91c1c;"}">📲 ${r.totalWaOk}/${r.totalStaff}</span>
-            <span style="padding:1px 5px; border-radius:4px; background:${r.pendingEmailOtp === 0 ? "#dbeafe; color:#1e40af;" : "#fef3c7; color:#b45309;"}">✉️ ${r.totalEmailOk}/${r.totalStaff}</span>
           </div>
         </td>
         <td style="text-align:center; font-size:0.74rem;">
