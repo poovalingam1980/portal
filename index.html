@@ -1,6 +1,52 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
+<script>
+(function() {
+  try {
+    if (typeof window !== "undefined" && typeof window.name === "string" && window.name.length > 20000) {
+      window.name = "";
+    }
+    if (typeof localStorage !== "undefined") {
+      ["CEOSVG_AUTO_BACKUP_HISTORY_V1", "CEOSVG_EMIS_STUDENT_DATA", "CEOSVG_DIGNITARIES_V1", "CEOSVG_DIGNITARIES_DATA_V1", "CEOSVG_DIGNITARIES_DATA_V2"].forEach(function(k) {
+        try { localStorage.removeItem(k); } catch (e) {}
+      });
+      var rawEx = localStorage.getItem("CEOSVG_SCHOOL_EXTRA_V6");
+      if (rawEx && rawEx.length > 1000) {
+        try {
+          var parsed = JSON.parse(rawEx);
+          if (parsed && typeof parsed === "object") {
+            Object.keys(parsed).forEach(function(u) {
+              var item = parsed[u];
+              if (item && typeof item === "object") {
+                if (Array.isArray(item.staff)) {
+                  item.staff = item.staff.filter(function(st) { return st && (st.isAddedEbs || st.isTempId || st.source === "EMIS_TRANSFER"); });
+                  if (item.staff.length === 0) delete item.staff;
+                }
+                if (!item.userEditedStudentsV40) delete item.students;
+                if (!item.userEditedHssGroupsV39) delete item.hssGroups;
+              }
+            });
+            localStorage.setItem("CEOSVG_SCHOOL_EXTRA_V6", JSON.stringify(parsed));
+          }
+        } catch (e) {
+          try { localStorage.removeItem("CEOSVG_SCHOOL_EXTRA_V6"); } catch (e2) {}
+        }
+      }
+    }
+    if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { try { r.unregister(); } catch (e) {} });
+      }).catch(function() {});
+    }
+    if (typeof window !== "undefined" && "caches" in window) {
+      caches.keys().then(function(keys) {
+        keys.forEach(function(k) { try { caches.delete(k); } catch (e) {} });
+      }).catch(function() {});
+    }
+  } catch (err) {}
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 <meta name="theme-color" content="#0f294a">
@@ -14222,14 +14268,16 @@ if (typeof renderSchoolStudentDashboardTables === "function") renderSchoolStuden
 }
 function saveSchoolStudentsData(event) {
 if (event) event.preventDefault();
-if (activeSchoolSession) {
-const uNo = String(activeSchoolSession.uNo);
+const uNo = getCurrentActiveEbsUNo();
+if (uNo) {
 const extra = getSchoolExtra(uNo);
 extra.userEditedStudentsV40 = true;
 extra.studentsEmisV38 = true;
+extra.updatedAt = Date.now();
 if (extra.ebs2026 && extra.ebs2026.f1 && extra.ebs2026.f1.sslcEdited) {
   delete extra.ebs2026.f1.sslcEdited;
 }
+window._activeSyncTargetUNo = uNo;
 }
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 if (typeof pushCloudUpdate === "function" && activeSchoolSession) {
@@ -14613,13 +14661,6 @@ if (typeof renderAdminOfficeUsersDashboard === "function") {
 }
 populateAdminDirectSchoolDropdowns();
 renderAdminDirectoryTable();
-renderAdminDivisionsManager();
-renderAdminCredentialsTable();
-renderAdminExamCentresTable();
-renderAdminCircularsList();
-renderAdminDignitariesManager();
-if (typeof renderAdminInfraNeedsDashboard === "function") renderAdminInfraNeedsDashboard();
-if (typeof renderAdminEbsMasterDashboard === "function") renderAdminEbsMasterDashboard();
 switchMainView("viewAdmin");
 returnToAdminDashboard(isRestoringSession);
 if (!isRestoringSession) {
@@ -17194,7 +17235,10 @@ function setFirebaseSessionIdToken(tok) {
 function buildFirebaseEndpoint(pathStr) {
 const base = normalizeFirebaseDbUrl(firebaseDbUrl);
 if (!base) return "";
-const cleanPath = String(pathStr || "").replace(/^\/+/, "");
+let cleanPath = String(pathStr || "").replace(/^\/+/, "").replace(/\/+$/, "");
+if (cleanPath === "ceosvg_live") {
+  cleanPath = "ceosvg_live/last_event";
+}
 const rawAuth = String(firebaseSessionIdToken || "").trim();
 const authParam = (rawAuth && !rawAuth.startsWith("AIza")) ? `?auth=${encodeURIComponent(rawAuth)}` : "";
 return `${base}/${cleanPath}.json${authParam}`;
@@ -18053,24 +18097,32 @@ if (typeof sanitizeAllPortalStores === "function") {
 sanitizeAllPortalStores();
 }
 }
+let _refreshViewsDebounceTimer = null;
 function refreshAllActivePortalViews() {
+if (_refreshViewsDebounceTimer) clearTimeout(_refreshViewsDebounceTimer);
+_refreshViewsDebounceTimer = setTimeout(_executeRefreshAllActivePortalViewsNow, 80);
+}
+function _executeRefreshAllActivePortalViewsNow() {
 try {
 updateAllSummaryCounters();
-renderPublicQuickFinder();
-renderAdminDirectoryTable();
-renderAdminCredentialsTable();
-renderAdminCircularsList();
-if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
-if (typeof renderAdminInfraNeedsDashboard === "function") renderAdminInfraNeedsDashboard();
-if (typeof renderAdminEbsMasterDashboard === "function") {
-const ebsPane = document.getElementById("admPaneEbsMaster");
-if (ebsPane && ebsPane.style.display !== "none") renderAdminEbsMasterDashboard();
+const isAuthVisible = document.getElementById("viewAuth")?.classList.contains("active");
+const isAdminVisible = document.getElementById("viewAdmin")?.classList.contains("active");
+if (isAuthVisible) {
+  renderPublicQuickFinder();
 }
-if (typeof renderSchoolDignitaries === "function") renderSchoolDignitaries();
-if (typeof renderAdminDignitariesManager === "function") renderAdminDignitariesManager();
-if (typeof getDistrictAllStaffList === "function") {
-getDistrictAllStaffList(true);
-if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
+if (isAdminVisible) {
+  const isVisiblePane = (id) => { const el = document.getElementById(id); return Boolean(el && el.style.display !== "none"); };
+  if (isVisiblePane("admPaneDirectory")) renderAdminDirectoryTable();
+  if (isVisiblePane("admPaneCredentials")) renderAdminCredentialsTable();
+  if (isVisiblePane("admPaneCirculars")) renderAdminCircularsList();
+  if (isVisiblePane("admPaneDeleteReqs") && typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+  if (isVisiblePane("admPaneInfraNeeds") && typeof renderAdminInfraNeedsDashboard === "function") renderAdminInfraNeedsDashboard();
+  if (isVisiblePane("admPaneEbsMaster") && typeof renderAdminEbsMasterDashboard === "function") renderAdminEbsMasterDashboard();
+  if (isVisiblePane("admPaneDignitaries") && typeof renderAdminDignitariesManager === "function") renderAdminDignitariesManager();
+  if (isVisiblePane("admPaneTeacherMaster") && typeof getDistrictAllStaffList === "function") {
+    getDistrictAllStaffList(true);
+    if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
+  }
 }
 if (typeof renderAdminStudentsMasterView === "function") {
 const stuPane = document.getElementById("admPaneStudentsMaster");
@@ -22317,11 +22369,7 @@ if (normalizeFirebaseDbUrl(firebaseDbUrl)) {
 pullAllPortalDataFromFirebase(false);
 }
 }
-if (document.readyState === "loading") {
-document.addEventListener("DOMContentLoaded", _safeBootPortalOnce);
-} else {
-setTimeout(_safeBootPortalOnce, 0);
-}
+/* Deferred _safeBootPortalOnce to end of final script */
 function renderSchoolStaffStrengthUI(s) {
 if (!s) return;
 const uNo = String(s.uNo || "").trim();
@@ -26090,7 +26138,10 @@ function getSchoolFixedPortalStaffList(uNo) {
 uNo = String(uNo || "").trim();
 const sch = masterSchools.find(m => String(m.uNo) === uNo) || { uNo, nameEn: "", nameTa: "", block: "", mgmt1: "1G" };
 const extra = getSchoolExtra(uNo);
-initSchoolStaffFromEmis(sch, extra);
+const isCurrentActiveSchool = Boolean(activeSchoolSession && String(activeSchoolSession.uNo) === uNo);
+if (isCurrentActiveSchool) {
+  initSchoolStaffFromEmis(sch, extra);
+}
 const emis = getEmisStaffData();
 const rawMap = {};
 if (emis && emis.byUNo) {
@@ -26179,7 +26230,10 @@ const uPrefix3 = String(uNo || "101").replace(/\D/g, "").padStart(3, "0").slice(
 const tempIdRegex = new RegExp("^" + uPrefix3 + "00\\d{3}$");
 const isPrivSch = String(sch.mgmt1 || "").toUpperCase().trim() === "3P";
 const isAidedSch = String(sch.mgmt1 || "").toUpperCase().trim().startsWith("2");
-const list = (extra.staff || []).map(st => {
+const sourceStaffArray = (Array.isArray(extra.staff) && extra.staff.length > 0)
+  ? extra.staff
+  : Object.keys(rawMap).filter(sid => !globalRemSet.has(sid)).map(sid => Object.assign({ id: sid, staffId: sid }, rawMap[sid]));
+const list = sourceStaffArray.map(st => {
 const sid = String(st.id || st.staffId || "").trim();
 st.nature = normalizeStaffNatureBySchoolMgmt(st.nature, sch.mgmt1);
 const raw = rawMap[sid] || {};
@@ -35156,7 +35210,7 @@ function initCeosvgProgressiveWebApp() {
 
     attachDynamicManifest();
 
-    if ("serviceWorker" in navigator && (window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+    if (false && "serviceWorker" in navigator) {
       navigator.serviceWorker.register("./sw.js", { scope: "./" }).then((reg) => {
         const swBadge = document.getElementById("pwaStatusSwBadge");
         if (swBadge) swBadge.textContent = "✅ Service Worker (sw.js) இயங்குகிறது";
@@ -44400,15 +44454,7 @@ function closeAdminBackupCenterModal() {
   if (m) m.style.display = "none";
 }
 
-// Start the periodic auto-backup scheduler automatically when the portal loads
-setTimeout(() => {
-  try {
-    startOrRestartAdminAutoBackupScheduler();
-    if (getAdminBackupHistoryList().length === 0) {
-      executePortalBackupSnapshot(false, false);
-    }
-  } catch (e) {}
-}, 1200);
+/* Auto-backup on boot disabled to prevent memory spike */
 
 // ============================================================================
 // MODULE 12: CEO OFFICE STAFF & DEO ROLE-BASED ACCESS CONTROL (RBAC) ENGINE
@@ -46655,25 +46701,35 @@ deepMergeSchoolExtraPreserveOtp = function(existingExt, incomingExt, uNo) {
     });
     merged.ebs2026.staffProfiles = mergedProfiles;
   }
+  if (Array.isArray(merged.staff)) {
+    merged.staff = merged.staff.filter(st => st && (st.isAddedEbs || st.isTempId || st.source === "EMIS_TRANSFER" || st.categoryChangedV53));
+    if (merged.staff.length === 0) delete merged.staff;
+  }
   return merged;
 };
 
 const _origEvaluateSchoolEbsOverallReadiness = evaluateSchoolEbsOverallReadiness;
 evaluateSchoolEbsOverallReadiness = function(uNo) {
-  const ctx = getOrInitSchoolEbs2026Data(uNo, false);
-  if (ctx && ctx.ebs) {
-    const lck = (ctx.ebs.finalLock && ctx.ebs.finalLock.locked)
-      ? ctx.ebs.finalLock
-      : ((ctx.ebs.hmFinalLock && ctx.ebs.hmFinalLock.locked) ? ctx.ebs.hmFinalLock : null);
+  const activeU = getCurrentActiveEbsUNo();
+  const extra = getSchoolExtra(uNo);
+  const hadStaffBefore = Boolean(extra && Array.isArray(extra.staff) && extra.staff.length > 0);
+  const res = _origEvaluateSchoolEbsOverallReadiness(uNo);
+  if (res && res.ebs) {
+    const lck = (res.ebs.finalLock && res.ebs.finalLock.locked)
+      ? res.ebs.finalLock
+      : ((res.ebs.hmFinalLock && res.ebs.hmFinalLock.locked) ? res.ebs.hmFinalLock : null);
     if (lck) {
-      ctx.ebs.finalLock = lck;
-      ctx.ebs.hmFinalLock = lck;
+      res.ebs.finalLock = lck;
+      res.ebs.hmFinalLock = lck;
+      res.finalLock = lck;
+      res.is100PercentReady = true;
+      res.overallPct = 100;
     }
   }
-  const res = _origEvaluateSchoolEbsOverallReadiness(uNo);
-  if (res && res.finalLock && res.finalLock.locked) {
-    res.is100PercentReady = true;
-    res.overallPct = 100;
+  // Free transient extra.staff for non-active schools during 282-school dashboard loops so RAM stays < 40MB!
+  if (!hadStaffBefore && String(uNo) !== String(activeU) && extra && Array.isArray(extra.staff)) {
+    const kept = extra.staff.filter(st => st && (st.isAddedEbs || st.isTempId || st.source === "EMIS_TRANSFER"));
+    extra.staff = kept;
   }
   return res;
 };
@@ -46685,28 +46741,23 @@ pullAllPortalDataFromFirebase = async function(showNotification) {
   if (!cleanUrl || _isPullingFromFirebaseLock) return;
   _isPullingFromFirebaseLock = true;
   try {
-    // Fetch ONLY the specific lightweight nodes (NEVER download `ceosvg_live.json` root or `static_master`!)
-    const [
-      rSchools,
-      rExtra,
-      rEbs27,
-      rAuth,
-      rVault,
-      rOverrides,
-      rDelReqs,
-      rDelMap,
-      rRa
-    ] = await Promise.all([
-      fetch(buildFirebaseEndpoint("ceosvg_live/master_schools_by_uno")).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(buildFirebaseEndpoint("ceosvg_live/school_extra")).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(buildFirebaseEndpoint("ceosvg_live/ebs_2026_27")).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(buildFirebaseEndpoint("ceosvg_live/school_auth")).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(buildFirebaseEndpoint("ceosvg_live/verified_otp_vault")).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES")).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_DELETE_REQUESTS")).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1")).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(buildFirebaseEndpoint("ceosvg_live/exam_result_analysis_by_uno")).then(r => r.ok ? r.json() : null).catch(() => null)
+    const fetchJsonSafe = async (path) => {
+      try {
+        const r = await fetch(buildFirebaseEndpoint(path));
+        return r && r.ok ? await r.json() : null;
+      } catch (e) { return null; }
+    };
+    const [rSchools, rAuth, rVault, rOverrides, rDelReqs, rDelMap] = await Promise.all([
+      fetchJsonSafe("ceosvg_live/master_schools_by_uno"),
+      fetchJsonSafe("ceosvg_live/school_auth"),
+      fetchJsonSafe("ceosvg_live/verified_otp_vault"),
+      fetchJsonSafe("ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES"),
+      fetchJsonSafe("ceosvg_live/stores/CEOSVG_DELETE_REQUESTS"),
+      fetchJsonSafe("ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1")
     ]);
+    const rExtra = await fetchJsonSafe("ceosvg_live/school_extra");
+    const rEbs27 = await fetchJsonSafe("ceosvg_live/ebs_2026_27");
+    const rRa = null;
 
     isApplyingRemoteRealtimeUpdate = true;
 
@@ -46733,6 +46784,9 @@ pullAllPortalDataFromFirebase = async function(showNotification) {
       Object.keys(rExtra).forEach(uKey => {
         const extObj = rExtra[uKey];
         if (extObj && typeof extObj === "object") {
+          if (Array.isArray(extObj.staff)) {
+            extObj.staff = extObj.staff.filter(st => st && (st.isAddedEbs || st.isTempId || st.source === "EMIS_TRANSFER"));
+          }
           schoolExtraDataStore[uKey] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uKey], extObj, uKey);
         }
       });
@@ -47230,6 +47284,15 @@ setTimeout(() => {
     }
   } catch (e) {}
 }, 200);
+
+
+
+// Boot portal ONLY ONCE after all V53 overrides are active!
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", _safeBootPortalOnce);
+} else {
+  setTimeout(_safeBootPortalOnce, 0);
+}
 
 </script>
 </body>
