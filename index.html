@@ -82,7 +82,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.1)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -431,7 +431,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.1</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.2</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -2223,6 +2223,9 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openCloudSettingsModal('firebase')" style="font-weight:800; border-color:#f97316; color:#c2410c; background:#fff7ed;">
 🔥 Firebase நேரடித் தரவுத்தளம் (Real-Time DB)
+</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openFirebaseSafeCleanupModal()" style="font-weight:800; border-color:#0f766e; color:#0f766e; background:#f0fdfa;" title="பழைய தேவையற்ற Firebase Nodes-களை மட்டும் பாதுகாப்பாக சுத்தம் செய்து Download அளவைக் குறைக்க">
+🧹 Firebase சுத்தம் (Safe Cleanup)
 </button>
 </div>
 </div>
@@ -6323,6 +6326,9 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </button>
 <button type="button" class="btn btn-outline" onclick="testFirebaseConnection()" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#f0f9ff;">
 🔌 இணைப்பைச் சோதி (Test Connection)
+</button>
+<button type="button" class="btn btn-outline" onclick="openFirebaseSafeCleanupModal()" style="font-weight:900; border-color:#0f766e; color:#0f766e; background:#f0fdfa;">
+🧹 பழைய தேவையற்ற Firebase Nodes சுத்தம் (Safe Cleanup)
 </button>
 <button type="button" class="btn btn-outline" onclick="simulateLiveSchoolToCeoSync()" style="font-weight:800; border-color:#ea580c; color:#c2410c; background:#fff7ed;">
 ⚡ நேரடி Dual-Sync மாதிரிச் சோதனை (Simulate HM ➔ CEO)
@@ -17163,16 +17169,12 @@ CEOSVG_DELETED_STAFF_ARCHIVE: deletedStaffArchiveStore,
 CEOSVG_CIRCULARS: districtCirculars,
 CEOSVG_DIVISIONS: divisionsRegistry,
 CEOSVG_HSS_GROUP_MASTER_V1: typeof getHssGroupMasterList === "function" ? getHssGroupMasterList() : [],
-CEOSVG_DIGNITARIES_DATA_V3: currentDigs,
-CEOSVG_DIGNITARIES_V1: currentDigs,
-CEOSVG_DIGNITARIES_PHOTO_VAULT: currentVault,
 CEOSVG_STAFF_OVERRIDES: safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}),
 CEOSVG_EXAM_DUTY_APPOINTMENTS_V1: typeof getExamDutyStore === "function" ? getExamDutyStore() : safeGetStorage("CEOSVG_EXAM_DUTY_APPOINTMENTS_V1", {}),
 CEOSVG_EXAM_DUTY_META_V1: typeof getExamDutyMeta === "function" ? getExamDutyMeta() : safeGetStorage("CEOSVG_EXAM_DUTY_META_V1", {}),
 CEOSVG_OTHER_EXAMS_CONFIG_V1: typeof getOtherExamsConfigStore === "function" ? getOtherExamsConfigStore() : safeGetStorage("CEOSVG_OTHER_EXAMS_CONFIG_V1", {}),
 CEOSVG_OFFICE_USERS_RBAC_V1: typeof getOfficeUsersStore === "function" ? getOfficeUsersStore() : safeGetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", []),
-CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1: typeof getExamResultAnalysisStore === "function" ? getExamResultAnalysisStore() : safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {}),
-CEOSVG_EMIS_STUDENT_DATA: typeof EMIS_STUDENT_DATA !== "undefined" ? EMIS_STUDENT_DATA : {}
+CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1: typeof getExamResultAnalysisStore === "function" ? getExamResultAnalysisStore() : safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {})
 };
 await fetch(buildFirebaseEndpoint("ceosvg_live/stores"), {
 method: "PUT",
@@ -49856,6 +49858,402 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
       return r;
     };
   }
+})();
+</script>
+
+
+<!-- === CEOSVG v6.2: SAFE FIREBASE OBSOLETE NODES CLEANUP MODAL === -->
+<div id="firebaseSafeCleanupModal" class="modal-backdrop" style="z-index:10050;">
+  <div class="modal-card" style="max-width:860px; width:96%; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; border-bottom:2px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px;">
+      <div>
+        <div style="font-size:1.08rem; font-weight:900; color:#0f766e;">🧹 Firebase பழைய &amp; தேவையற்ற Nodes பாதுகாப்பான சுத்தம் (Safe Cleanup)</div>
+        <div style="font-size:0.78rem; color:#475569; margin-top:2px;">
+          ஏற்கனவே உள்ள பள்ளிகள், ஆசிரியர்கள், EBS படிவங்கள், OTP, பகுப்பாய்வு அறிக்கை மற்றும் நீக்கக் கோரிக்கைகளுக்கு <strong>எவ்வித பாதிப்பும் இன்றி</strong>, பயன்படுத்தப்படாத பழைய நகல்கள் &amp; Drive-ல் சேமிக்கப்பட்ட Base64 கழிவுகள் மட்டும் நீக்கப்படும்.
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeFirebaseSafeCleanupModal()">✕ மூடுக</button>
+    </div>
+
+    <div style="background:#f0fdf4; border:1.5px solid #86efac; border-left:5px solid #16a34a; border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:0.79rem; color:#14532d; line-height:1.55;">
+      <strong>🛡️ 100% பாதுகாக்கப்படும் செயலில் உள்ள தரவுகள் (ஒருபோதும் தொடப்படாது):</strong><br>
+      <code>master_schools_by_uno</code>, <code>school_auth</code>, <code>school_extra</code>, <code>ebs_2026_27</code>, <code>exam_result_analysis_by_uno</code>, <code>verified_otp_vault</code>, <code>DeleteRequests</code>, <code>CEOSVG_DELETE_REQUESTS</code>, <code>CEOSVG_RESOLVED_DELETE_REQ_MAP_V1</code>, <code>CEOSVG_STAFF_OVERRIDES</code>, <code>CEOSVG_USER_EDITED_STAFF_VAULT_V1</code>, <code>CEOSVG_EDITED_SCHOOLS_VAULT_V1</code>, <code>CEOSVG_CIRCULARS</code>, <code>CEOSVG_ADMIN_SECURITY_VAULT</code>.
+    </div>
+
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; align-items:center;">
+      <button type="button" id="fbCleanScanBtn" class="btn btn-primary btn-sm" onclick="scanObsoleteFirebaseNodes()" style="font-weight:800; background:#0284c7; border-color:#0284c7;">
+        🔍 1. பழைய Nodes-களை ஆய்வு செய் (Safe Scan)
+      </button>
+      <button type="button" id="fbCleanBackupBtn" class="btn btn-outline btn-sm" onclick="downloadObsoleteFirebaseBackupJson()" disabled style="font-weight:800; border-color:#7c3aed; color:#6d28d9; background:#f5f3ff;">
+        💾 2. Backup பதிவிறக்கு (.json)
+      </button>
+      <button type="button" id="fbCleanExecuteBtn" class="btn btn-danger btn-sm" onclick="executeSafeFirebaseCleanup()" disabled style="font-weight:900; background:#dc2626; border-color:#dc2626;">
+        🧹 3. தேர்ந்தெடுத்த பழைய Nodes-களை மட்டும் சுத்தம் செய்
+      </button>
+    </div>
+
+    <div id="fbCleanStatusMsg" style="font-size:0.82rem; font-weight:800; color:#1e3a8a; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:8px 12px; margin-bottom:10px;">
+      "🔍 1. பழைய Nodes-களை ஆய்வு செய்" பொத்தானைக் கிளிக் செய்து Firebase-ல் உள்ள தேவையற்ற தரவு அளவை முதலில் பார்வையிடவும்.
+    </div>
+
+    <div style="overflow-x:auto; border:1px solid #cbd5e1; border-radius:8px;">
+      <table class="data-table" style="width:100%; font-size:0.80rem; margin:0;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th style="width:36px; text-align:center;">தேர்வு</th>
+            <th>Firebase Node பாதை</th>
+            <th>விவரம் &amp; பாதுகாப்பு உறுதி</th>
+            <th style="width:105px; text-align:right;">தற்போதைய அளவு</th>
+            <th style="width:130px; text-align:center;">நிலை</th>
+          </tr>
+        </thead>
+        <tbody id="fbCleanTableBody">
+          <tr><td colspan="5" style="text-align:center; padding:18px; color:#64748b; font-weight:700;">ஆய்வு இன்னும் தொடங்கப்படவில்லை.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// === CEOSVG_V62_SAFE_FIREBASE_CLEANUP_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV62CleanupApplied) return;
+  window.__ceosvgV62CleanupApplied = true;
+
+  let _fbCleanScanResults = [];
+  let _fbCleanRawPayloads = {};
+
+  function formatBytesHuman(bytes) {
+    const b = Number(bytes || 0);
+    if (b <= 0) return "0 B";
+    if (b < 1024) return b + " B";
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB";
+    return (b / (1024 * 1024)).toFixed(2) + " MB";
+  }
+
+  window.openFirebaseSafeCleanupModal = function() {
+    const modal = document.getElementById("firebaseSafeCleanupModal");
+    if (modal) modal.classList.add("active");
+    if (typeof scanObsoleteFirebaseNodes === "function") {
+      scanObsoleteFirebaseNodes();
+    }
+  };
+
+  window.closeFirebaseSafeCleanupModal = function() {
+    const modal = document.getElementById("firebaseSafeCleanupModal");
+    if (modal) modal.classList.remove("active");
+  };
+
+  async function fetchFbJsonSafe(pathStr, shallow) {
+    const base = buildFirebaseEndpoint(pathStr);
+    const url = shallow ? (base + (base.includes("?") ? "&" : "?") + "shallow=true") : base;
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    return await r.json();
+  }
+
+  window.scanObsoleteFirebaseNodes = async function() {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    const statusEl = document.getElementById("fbCleanStatusMsg");
+    const tbody = document.getElementById("fbCleanTableBody");
+    const scanBtn = document.getElementById("fbCleanScanBtn");
+    const bakBtn = document.getElementById("fbCleanBackupBtn");
+    const execBtn = document.getElementById("fbCleanExecuteBtn");
+
+    if (!cleanUrl) {
+      if (statusEl) statusEl.textContent = "❌ Firebase Database URL இணைக்கப்படவில்லை!";
+      return;
+    }
+
+    if (scanBtn) { scanBtn.disabled = true; scanBtn.textContent = "⏳ ஆய்வு நடக்கிறது..."; }
+    if (bakBtn) bakBtn.disabled = true;
+    if (execBtn) execBtn.disabled = true;
+    if (statusEl) statusEl.textContent = "⏳ Firebase-ல் உள்ள பழைய / நகல் Nodes-கள் பாதுகாப்பாகச் சரிபார்க்கப்படுகின்றன...";
+
+    _fbCleanScanResults = [];
+    _fbCleanRawPayloads = {};
+
+    try {
+      // First verify active primary nodes exist (via tiny shallow=true calls!)
+      const [activeExtraShallow, activeRaShallow] = await Promise.all([
+        fetchFbJsonSafe("ceosvg_live/school_extra", true).catch(() => null),
+        fetchFbJsonSafe("ceosvg_live/exam_result_analysis_by_uno", true).catch(() => null)
+      ]);
+      const hasPrimarySchoolExtra = Boolean(activeExtraShallow && typeof activeExtraShallow === "object" && Object.keys(activeExtraShallow).length > 0);
+      const hasPrimaryRaByUno = Boolean(activeRaShallow && typeof activeRaShallow === "object" && Object.keys(activeRaShallow).length > 0);
+
+      // Candidates strictly limited to obsolete/duplicate/base64-synced items
+      const candidates = [
+        {
+          id: "dig_photo_vault",
+          path: "ceosvg_live/stores/CEOSVG_DIGNITARIES_PHOTO_VAULT",
+          label: "பழைய முக்கியப் பிரமுகர்கள் புகைப்படங்கள் (நீக்கப்பட்ட பகுதி)",
+          type: "DELETE_NODE",
+          safeToDelete: true
+        },
+        {
+          id: "dig_v3",
+          path: "ceosvg_live/stores/CEOSVG_DIGNITARIES_DATA_V3",
+          label: "பழைய முக்கியப் பிரமுகர்கள் பட்டியல் V3 (நீக்கப்பட்ட பகுதி)",
+          type: "DELETE_NODE",
+          safeToDelete: true
+        },
+        {
+          id: "dig_v1",
+          path: "ceosvg_live/stores/CEOSVG_DIGNITARIES_V1",
+          label: "பழைய முக்கியப் பிரமுகர்கள் பட்டியல் V1 (நீக்கப்பட்ட பகுதி)",
+          type: "DELETE_NODE",
+          safeToDelete: true
+        },
+        {
+          id: "emis_stu_dup",
+          path: "ceosvg_live/stores/CEOSVG_EMIS_STUDENT_DATA",
+          label: "EMIS மாணவர் நிலையான தரவு நகல் (index.html-ல் ஏற்கனவே உள்ளது)",
+          type: "DELETE_NODE",
+          safeToDelete: true
+        },
+        {
+          id: "stores_extra_dup",
+          path: "ceosvg_live/stores/CEOSVG_SCHOOL_EXTRA_V6",
+          label: hasPrimarySchoolExtra
+            ? "பள்ளி தரவின் பழைய இரட்டை நகல் (முதன்மை ceosvg_live/school_extra பாதுகாப்பாக உள்ளது)"
+            : "⚠️ முதன்மை school_extra காணப்படாததால் நீக்கப்படாது (பாதுகாப்பு)",
+          type: "DELETE_NODE",
+          safeToDelete: hasPrimarySchoolExtra
+        },
+        {
+          id: "stores_ra_dup",
+          path: "ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1",
+          label: hasPrimaryRaByUno
+            ? "பகுப்பாய்வு அறிக்கை பழைய இரட்டை நகல் (முதன்மை exam_result_analysis_by_uno பாதுகாப்பாக உள்ளது)"
+            : "⚠️ முதன்மை exam_result_analysis_by_uno காணப்படாததால் நீக்கப்படாது (பாதுகாப்பு)",
+          type: "DELETE_NODE",
+          safeToDelete: hasPrimaryRaByUno
+        },
+        {
+          id: "drive_synced_cert_base64",
+          path: "ceosvg_live/exemption_certificates",
+          label: "Google Drive-ல் சேமிக்கப்பட்ட சான்றிதழ்களின் Base64 பகுதி மட்டும் (Drive Link & விவரம் 100% பாதுகாக்கப்படும்)",
+          type: "PRUNE_SYNCED_CERT_BASE64",
+          safeToDelete: true
+        },
+        {
+          id: "stale_presence",
+          path: "ceosvg_live/live_presence",
+          label: "30 நிமிடங்களுக்கு மேல் பழைய செயலற்ற Online Presence பதிவுகள் மட்டும்",
+          type: "PRUNE_STALE_PRESENCE",
+          safeToDelete: true
+        }
+      ];
+
+      let totalCleanableBytes = 0;
+
+      for (const c of candidates) {
+        try {
+          const data = await fetchFbJsonSafe(c.path, false);
+          if (data === null || data === undefined) {
+            _fbCleanScanResults.push(Object.assign({}, c, { exists: false, bytes: 0, itemCount: 0, checked: false, statusText: "✅ ஏற்கனவே சுத்தமாக உள்ளது" }));
+            continue;
+          }
+
+          if (c.type === "DELETE_NODE") {
+            const rawStr = JSON.stringify(data);
+            const bytes = rawStr ? rawStr.length : 0;
+            _fbCleanRawPayloads[c.id] = data;
+            const canCheck = c.safeToDelete && bytes > 2;
+            if (canCheck) totalCleanableBytes += bytes;
+            _fbCleanScanResults.push(Object.assign({}, c, {
+              exists: true,
+              bytes: bytes,
+              itemCount: 1,
+              checked: canCheck,
+              statusText: canCheck ? "🧹 சுத்தம் செய்யத் தயார்" : "🛡️ பாதுகாக்கப்பட்டது"
+            }));
+          } else if (c.type === "PRUNE_SYNCED_CERT_BASE64" && typeof data === "object") {
+            const syncedKeys = [];
+            let bytes = 0;
+            const backupObj = {};
+            Object.entries(data).forEach(([k, v]) => {
+              if (!v || typeof v !== "object") return;
+              const dUrl = String(v.driveUrl || "").trim();
+              const hasBase64 = Boolean((v.dataUrl && String(v.dataUrl).length > 100) || (v.base64 && String(v.base64).length > 100));
+              // STRICT SAFETY: Only prune base64 if Google Drive URL is confirmed!
+              if (dUrl.startsWith("https://drive.google.com/") && hasBase64) {
+                syncedKeys.push(k);
+                bytes += String(v.dataUrl || "").length + String(v.base64 || "").length;
+                backupObj[k] = v;
+              }
+            });
+            _fbCleanRawPayloads[c.id] = backupObj;
+            if (bytes > 0) totalCleanableBytes += bytes;
+            _fbCleanScanResults.push(Object.assign({}, c, {
+              exists: syncedKeys.length > 0,
+              bytes: bytes,
+              itemCount: syncedKeys.length,
+              syncedKeys: syncedKeys,
+              checked: syncedKeys.length > 0,
+              statusText: syncedKeys.length > 0 ? `🧹 ${syncedKeys.length} சான்றிதழ் Base64` : "✅ கழிவு Base64 இல்லை"
+            }));
+          } else if (c.type === "PRUNE_STALE_PRESENCE" && typeof data === "object") {
+            const now = Date.now();
+            const staleKeys = [];
+            let bytes = 0;
+            Object.entries(data).forEach(([k, v]) => {
+              const ts = Number((v && (v.lastSeen || v.ts || v.timestamp)) || 0);
+              if (!ts || (now - ts) > 30 * 60 * 1000) {
+                staleKeys.push(k);
+                bytes += JSON.stringify(v || {}).length;
+              }
+            });
+            if (bytes > 0) totalCleanableBytes += bytes;
+            _fbCleanScanResults.push(Object.assign({}, c, {
+              exists: staleKeys.length > 0,
+              bytes: bytes,
+              itemCount: staleKeys.length,
+              staleKeys: staleKeys,
+              checked: staleKeys.length > 0,
+              statusText: staleKeys.length > 0 ? `🧹 ${staleKeys.length} பழைய அமர்வுகள்` : "✅ சுத்தமாக உள்ளது"
+            }));
+          }
+        } catch (err) {
+          _fbCleanScanResults.push(Object.assign({}, c, { exists: false, bytes: 0, checked: false, statusText: "⚠️ சரிபார்க்க இயலவில்லை" }));
+        }
+      }
+
+      if (tbody) {
+        tbody.innerHTML = _fbCleanScanResults.map((row, idx) => {
+          const disabledAttr = (!row.exists || !row.safeToDelete) ? "disabled" : "";
+          const checkedAttr = row.checked ? "checked" : "";
+          return `
+            <tr>
+              <td style="text-align:center;">
+                <input type="checkbox" class="fb-clean-chk" data-idx="${idx}" ${checkedAttr} ${disabledAttr} style="width:16px; height:16px; accent-color:#0f766e;">
+              </td>
+              <td><code style="font-size:0.74rem; color:#0f294a; font-weight:800;">${escapeHtmlAttr(row.path)}</code></td>
+              <td style="font-size:0.78rem; color:#334155;">${escapeHtmlAttr(row.label)}</td>
+              <td style="text-align:right; font-weight:900; color:${row.bytes > 0 ? "#dc2626" : "#16a34a"};">${formatBytesHuman(row.bytes)}</td>
+              <td style="text-align:center; font-size:0.74rem; font-weight:800;">${escapeHtmlAttr(row.statusText)}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      if (totalCleanableBytes > 0) {
+        if (statusEl) {
+          statusEl.style.background = "#fff7ed";
+          statusEl.style.borderColor = "#fdba74";
+          statusEl.style.color = "#9a3412";
+          statusEl.innerHTML = `✅ ஆய்வு முடிந்தது: <strong>${formatBytesHuman(totalCleanableBytes)}</strong> அளவுள்ள பழைய / தேவையற்ற Firebase தரவுகள் கண்டறியப்பட்டன. முதலில் Backup எடுத்துவிட்டு சுத்தம் செய்யலாம்.`;
+        }
+        if (bakBtn) bakBtn.disabled = false;
+        if (execBtn) execBtn.disabled = false;
+      } else {
+        if (statusEl) {
+          statusEl.style.background = "#f0fdf4";
+          statusEl.style.borderColor = "#86efac";
+          statusEl.style.color = "#166534";
+          statusEl.textContent = "✅ Firebase தரவுத்தளம் ஏற்கனவே சுத்தமாக உள்ளது! நீக்க வேண்டிய பழைய / தேவையற்ற Nodes எதுவும் இல்லை.";
+        }
+      }
+    } finally {
+      if (scanBtn) { scanBtn.disabled = false; scanBtn.textContent = "🔍 1. பழைய Nodes-களை ஆய்வு செய் (Safe Scan)"; }
+    }
+  };
+
+  window.downloadObsoleteFirebaseBackupJson = function() {
+    try {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        note: "Backup of obsolete Firebase nodes before safe cleanup (portal.ceosvg.in v6.2)",
+        nodes: _fbCleanRawPayloads
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Firebase_Obsolete_Nodes_Backup_" + new Date().toISOString().slice(0, 10) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        if (a.parentNode) a.parentNode.removeChild(a);
+      }, 500);
+      if (typeof showToast === "function") showToast("💾 Backup JSON கோப்பு பாதுகாப்பாகப் பதிவிறக்கப்பட்டது!", "#7c3aed");
+    } catch (e) {}
+  };
+
+  window.executeSafeFirebaseCleanup = async function() {
+    const chks = Array.from(document.querySelectorAll(".fb-clean-chk:checked"));
+    if (chks.length === 0) {
+      if (typeof showToast === "function") showToast("⚠️ சுத்தம் செய்ய குறைந்தது ஒரு பழைய Node-ஐத் தேர்ந்தெடுக்கவும்.", "#f59e0b");
+      return;
+    }
+    const ok = confirm(`தேர்ந்தெடுக்கப்பட்ட ${chks.length} பழைய / தேவையற்ற Firebase Nodes-களை மட்டும் பாதுகாப்பாக நீக்கவா?
+
+(செயலில் உள்ள பள்ளி, ஆசிரியர், EBS, OTP, பகுப்பாய்வு அறிக்கை மற்றும் நீக்கக் கோரிக்கை தரவுகள் எதுவும் பாதிக்கப்படாது.)`);
+    if (!ok) return;
+
+    const execBtn = document.getElementById("fbCleanExecuteBtn");
+    const statusEl = document.getElementById("fbCleanStatusMsg");
+    if (execBtn) { execBtn.disabled = true; execBtn.textContent = "⏳ சுத்தம் செய்யப்படுகிறது..."; }
+
+    let freedBytes = 0;
+    let cleanedCount = 0;
+
+    try {
+      for (const chk of chks) {
+        const idx = Number(chk.getAttribute("data-idx"));
+        const row = _fbCleanScanResults[idx];
+        if (!row || !row.exists || !row.safeToDelete) continue;
+
+        if (row.type === "DELETE_NODE") {
+          const r = await fetch(buildFirebaseEndpoint(row.path), { method: "DELETE" });
+          if (r.ok) {
+            freedBytes += row.bytes;
+            cleanedCount++;
+          }
+        } else if (row.type === "PRUNE_SYNCED_CERT_BASE64" && Array.isArray(row.syncedKeys)) {
+          for (const k of row.syncedKeys) {
+            const r = await fetch(buildFirebaseEndpoint(`ceosvg_live/exemption_certificates/${encodeURIComponent(k)}`), {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ dataUrl: null, base64: null, base64PrunedAt: new Date().toISOString() })
+            });
+            if (r.ok) cleanedCount++;
+          }
+          freedBytes += row.bytes;
+        } else if (row.type === "PRUNE_STALE_PRESENCE" && Array.isArray(row.staleKeys)) {
+          const patchObj = {};
+          row.staleKeys.forEach(k => { patchObj[k] = null; });
+          const r = await fetch(buildFirebaseEndpoint("ceosvg_live/live_presence"), {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(patchObj)
+          });
+          if (r.ok) {
+            freedBytes += row.bytes;
+            cleanedCount++;
+          }
+        }
+      }
+
+      if (statusEl) {
+        statusEl.style.background = "#f0fdf4";
+        statusEl.style.borderColor = "#86efac";
+        statusEl.style.color = "#166534";
+        statusEl.innerHTML = `✅ சுத்தம் வெற்றிகரமாக முடிந்தது! <strong>${formatBytesHuman(freedBytes)}</strong> தேவையற்ற தரவு பாதுகாப்பாக நீக்கப்பட்டது. செயலில் உள்ள அனைத்துத் தரவுகளும் 100% பாதுகாப்பாக உள்ளன.`;
+      }
+      if (typeof showToast === "function") {
+        showToast(`🧹 Firebase சுத்தம் முடிந்தது! ${formatBytesHuman(freedBytes)} சேமிக்கப்பட்டது.`, "#16a34a", true);
+      }
+      // Re-scan to confirm clean state
+      setTimeout(() => { scanObsoleteFirebaseNodes(); }, 600);
+    } catch (err) {
+      if (statusEl) statusEl.textContent = "❌ சுத்தம் செய்யும்போது பிழை ஏற்பட்டது: " + (err.message || err);
+    } finally {
+      if (execBtn) { execBtn.textContent = "🧹 3. தேர்ந்தெடுத்த பழைய Nodes-களை மட்டும் சுத்தம் செய்"; }
+    }
+  };
 })();
 </script>
 
