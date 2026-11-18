@@ -50843,5 +50843,406 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
 })();
 </script>
 
+
+<style>
+  .ceosvg-combo-wrap {
+    position: relative;
+    width: 100%;
+  }
+  .ceosvg-combo-input-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .ceosvg-combo-input {
+    width: 100%;
+    padding: 7px 54px 7px 10px !important;
+    font-weight: 700 !important;
+    font-size: 0.84rem !important;
+    border: 1.5px solid #94a3b8 !important;
+    border-radius: 7px !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .ceosvg-combo-input:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+  }
+  .ceosvg-combo-actions {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .ceosvg-combo-btn {
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 900;
+    padding: 2px 5px;
+    border-radius: 4px;
+    line-height: 1;
+  }
+  .ceosvg-combo-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+  }
+  .ceosvg-combo-list {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 3px);
+    max-height: 230px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1.5px solid #2563eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+    z-index: 10090;
+    display: none;
+  }
+  .ceosvg-combo-list.open {
+    display: block;
+  }
+  .ceosvg-combo-item {
+    padding: 7px 10px;
+    font-size: 0.81rem;
+    font-weight: 700;
+    color: #1e293b;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    line-height: 1.35;
+  }
+  .ceosvg-combo-item:last-child {
+    border-bottom: none;
+  }
+  .ceosvg-combo-item:hover,
+  .ceosvg-combo-item.active {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+  .ceosvg-combo-item.selected {
+    background: #dcfce7;
+    color: #166534;
+    font-weight: 900;
+  }
+  .ceosvg-combo-empty {
+    padding: 10px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 700;
+  }
+  .ceosvg-combo-mark {
+    background: #fef08a;
+    color: #0f172a;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+</style>
+
+<script>
+// === CEOSVG_V65_SEARCHABLE_CENTRE_COMBOBOX_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65SearchableComboApplied) return;
+  window.__ceosvgV65SearchableComboApplied = true;
+
+  const SEARCHABLE_CENTRE_SELECT_IDS = [
+    "ebsStfPracSslc1",
+    "ebsStfPracHsc1",
+    "ebsStfPracHsc2",
+    "ebsStfDutySslcCentre",
+    "ebsStfDutyHseCentre",
+    "ebsStfDutyCampCentre",
+    "ebsStfChildCentre1",
+    "ebsStfChildCentre2"
+  ];
+
+  function escapeRegex(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function highlightTokens(text, tokens) {
+    let safe = escapeHtmlAttr(text);
+    if (!tokens || tokens.length === 0) return safe;
+    tokens.forEach(tok => {
+      if (!tok || tok.length < 1) return;
+      try {
+        const re = new RegExp("(" + escapeRegex(escapeHtmlAttr(tok)) + ")", "ig");
+        safe = safe.replace(re, '<span class="ceosvg-combo-mark">$1</span>');
+      } catch (e) {}
+    });
+    return safe;
+  }
+
+  function getSelectedOptionLabel(sel) {
+    if (!sel) return "";
+    const val = String(sel.value || "").trim();
+    if (!val) return "";
+    const opt = Array.from(sel.options).find(o => o.value === sel.value);
+    return opt ? String(opt.textContent || opt.value).trim() : val;
+  }
+
+  window.syncSearchableComboboxFromSelect = function(selectId) {
+    const sel = document.getElementById(selectId);
+    if (!sel || !sel._comboInputEl) return;
+    const lbl = getSelectedOptionLabel(sel);
+    sel._comboInputEl.value = lbl;
+    if (sel._comboClearBtn) {
+      sel._comboClearBtn.style.display = lbl ? "inline-block" : "none";
+    }
+  };
+
+  window.enhanceSelectToSearchableCombobox = function(selectId) {
+    const sel = document.getElementById(selectId);
+    if (!sel || sel.tagName !== "SELECT") return;
+    if (sel.dataset.ceosvgComboEnhanced === "1") {
+      syncSearchableComboboxFromSelect(selectId);
+      return;
+    }
+    sel.dataset.ceosvgComboEnhanced = "1";
+
+    const parent = sel.parentNode;
+    if (!parent) return;
+
+    const wrap = document.createElement("div");
+    wrap.className = "ceosvg-combo-wrap";
+
+    const inputBox = document.createElement("div");
+    inputBox.className = "ceosvg-combo-input-box";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "form-control ceosvg-combo-input";
+    input.autocomplete = "off";
+    input.spellcheck = false;
+    input.placeholder = "🔍 மையத்தின் பெயர் / எண் பகுதியாக தட்டச்சு செய்க...";
+    input.value = getSelectedOptionLabel(sel);
+
+    const actions = document.createElement("div");
+    actions.className = "ceosvg-combo-actions";
+
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "ceosvg-combo-btn";
+    clearBtn.title = "அழித்து மீண்டும் தேடு";
+    clearBtn.textContent = "✕";
+    clearBtn.style.display = input.value ? "inline-block" : "none";
+
+    const toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "ceosvg-combo-btn";
+    toggleBtn.title = "பட்டியலைத் திற";
+    toggleBtn.textContent = "▾";
+
+    actions.appendChild(clearBtn);
+    actions.appendChild(toggleBtn);
+    inputBox.appendChild(input);
+    inputBox.appendChild(actions);
+
+    const listEl = document.createElement("div");
+    listEl.className = "ceosvg-combo-list";
+
+    wrap.appendChild(inputBox);
+    wrap.appendChild(listEl);
+
+    // Keep original <select> in DOM (visually hidden) so all existing save/validation logic works 100% identically
+    parent.insertBefore(wrap, sel);
+    sel.style.display = "none";
+    wrap.appendChild(sel);
+
+    sel._comboInputEl = input;
+    sel._comboClearBtn = clearBtn;
+    sel._comboListEl = listEl;
+
+    let activeIdx = -1;
+    let currentMatches = [];
+
+    function renderList(filterQuery) {
+      const q = String(filterQuery || "").trim().toLowerCase();
+      const tokens = q ? q.split(/\s+/).filter(Boolean) : [];
+      const opts = Array.from(sel.options).filter(o => String(o.value || "").trim() !== "");
+
+      currentMatches = opts.filter(o => {
+        if (tokens.length === 0) return true;
+        const hay = (String(o.textContent || "") + " " + String(o.value || "")).toLowerCase();
+        return tokens.every(t => hay.includes(t));
+      });
+
+      const MAX_SHOW = 80;
+      const shown = currentMatches.slice(0, MAX_SHOW);
+      activeIdx = shown.length > 0 ? 0 : -1;
+
+      if (shown.length === 0) {
+        listEl.innerHTML = `<div class="ceosvg-combo-empty">பொருந்தும் தேர்வு மையம் இல்லை. வேறு எழுத்துகளைத் தட்டச்சு செய்க.</div>`;
+      } else {
+        const curVal = String(sel.value || "");
+        listEl.innerHTML = shown.map((o, idx) => {
+          const isSel = o.value === curVal;
+          const cls = "ceosvg-combo-item" + (isSel ? " selected" : "") + (idx === 0 && q ? " active" : "");
+          return `<div class="${cls}" data-idx="${idx}">${highlightTokens(String(o.textContent || o.value).trim(), tokens)}</div>`;
+        }).join("") + (currentMatches.length > MAX_SHOW
+          ? `<div class="ceosvg-combo-empty" style="background:#f8fafc; color:#475569;">மேலும் ${currentMatches.length - MAX_SHOW} மையங்கள் உள்ளன — இன்னும் சில எழுத்துகளைத் தட்டச்சு செய்க...</div>`
+          : "");
+      }
+      listEl.classList.add("open");
+    }
+
+    function closeList() {
+      listEl.classList.remove("open");
+      activeIdx = -1;
+    }
+
+    function commitOption(opt) {
+      if (!opt) return;
+      sel.value = opt.value;
+      input.value = String(opt.textContent || opt.value).trim();
+      clearBtn.style.display = input.value ? "inline-block" : "none";
+      closeList();
+      sel.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    input.addEventListener("focus", function() {
+      input.select();
+      renderList("");
+    });
+
+    input.addEventListener("input", function() {
+      clearBtn.style.display = input.value ? "inline-block" : "none";
+      renderList(input.value);
+    });
+
+    input.addEventListener("keydown", function(ev) {
+      const items = listEl.querySelectorAll(".ceosvg-combo-item");
+      if (ev.key === "ArrowDown") {
+        ev.preventDefault();
+        if (!listEl.classList.contains("open")) { renderList(input.value); return; }
+        if (items.length === 0) return;
+        activeIdx = Math.min(items.length - 1, activeIdx + 1);
+        items.forEach((el, i) => el.classList.toggle("active", i === activeIdx));
+        if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: "nearest" });
+      } else if (ev.key === "ArrowUp") {
+        ev.preventDefault();
+        if (items.length === 0) return;
+        activeIdx = Math.max(0, activeIdx - 1);
+        items.forEach((el, i) => el.classList.toggle("active", i === activeIdx));
+        if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: "nearest" });
+      } else if (ev.key === "Enter") {
+        if (listEl.classList.contains("open") && activeIdx >= 0 && currentMatches[activeIdx]) {
+          ev.preventDefault();
+          commitOption(currentMatches[activeIdx]);
+        }
+      } else if (ev.key === "Escape") {
+        closeList();
+        syncSearchableComboboxFromSelect(selectId);
+      }
+    });
+
+    listEl.addEventListener("mousedown", function(ev) {
+      const itemEl = ev.target.closest(".ceosvg-combo-item");
+      if (!itemEl) return;
+      ev.preventDefault();
+      const idx = Number(itemEl.getAttribute("data-idx"));
+      if (currentMatches[idx]) {
+        commitOption(currentMatches[idx]);
+      }
+    });
+
+    clearBtn.addEventListener("mousedown", function(ev) {
+      ev.preventDefault();
+      sel.value = "";
+      input.value = "";
+      clearBtn.style.display = "none";
+      sel.dispatchEvent(new Event("change", { bubbles: true }));
+      input.focus();
+      renderList("");
+    });
+
+    toggleBtn.addEventListener("mousedown", function(ev) {
+      ev.preventDefault();
+      if (listEl.classList.contains("open")) {
+        closeList();
+      } else {
+        input.focus();
+        renderList("");
+      }
+    });
+
+    input.addEventListener("blur", function() {
+      setTimeout(() => {
+        closeList();
+        const typed = String(input.value || "").trim();
+        if (!typed) {
+          if (sel.value) {
+            sel.value = "";
+            sel.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          clearBtn.style.display = "none";
+          return;
+        }
+        // Check if typed text exactly matches an option; otherwise restore currently selected valid option
+        const exact = Array.from(sel.options).find(o =>
+          String(o.value || "").trim().toLowerCase() === typed.toLowerCase() ||
+          String(o.textContent || "").trim().toLowerCase() === typed.toLowerCase()
+        );
+        if (exact) {
+          if (sel.value !== exact.value) {
+            sel.value = exact.value;
+            sel.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          input.value = String(exact.textContent || exact.value).trim();
+        } else {
+          syncSearchableComboboxFromSelect(selectId);
+        }
+      }, 160);
+    });
+  };
+
+  function enhanceAllEbsCentreDropdowns() {
+    SEARCHABLE_CENTRE_SELECT_IDS.forEach(id => {
+      try { enhanceSelectToSearchableCombobox(id); } catch (e) {}
+    });
+  }
+
+  // Hook openEbsStaffProfileModal so all 8 centre dropdowns become type-to-search immediately
+  if (typeof openEbsStaffProfileModal === "function") {
+    const _v65PrevOpenModal = openEbsStaffProfileModal;
+    openEbsStaffProfileModal = function() {
+      const res = _v65PrevOpenModal.apply(this, arguments);
+      setTimeout(enhanceAllEbsCentreDropdowns, 0);
+      return res;
+    };
+  }
+
+  // Hook onEbsLastYearDutyWorkChange so auto-filled "Not Applicable" syncs into the visible search box
+  if (typeof onEbsLastYearDutyWorkChange === "function") {
+    const _v65PrevDutyWorkChange = onEbsLastYearDutyWorkChange;
+    onEbsLastYearDutyWorkChange = function(kind, val) {
+      const res = _v65PrevDutyWorkChange.apply(this, arguments);
+      try { syncSearchableComboboxFromSelect("ebsStfDuty" + kind + "Centre"); } catch (e) {}
+      return res;
+    };
+  }
+
+  // Hook onEbsChildCentre1Change so auto-filled Child Centre 2 syncs into the visible search box
+  if (typeof onEbsChildCentre1Change === "function") {
+    const _v65PrevChild1Change = onEbsChildCentre1Change;
+    onEbsChildCentre1Change = function(val) {
+      const res = _v65PrevChild1Change.apply(this, arguments);
+      try { syncSearchableComboboxFromSelect("ebsStfChildCentre2"); } catch (e) {}
+      return res;
+    };
+  }
+})();
+</script>
+
 </body>
 </html>
