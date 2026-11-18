@@ -82,7 +82,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.2)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.3)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -431,7 +431,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.2</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.3</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -6329,6 +6329,9 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </button>
 <button type="button" class="btn btn-outline" onclick="openFirebaseSafeCleanupModal()" style="font-weight:900; border-color:#0f766e; color:#0f766e; background:#f0fdfa;">
 🧹 பழைய தேவையற்ற Firebase Nodes சுத்தம் (Safe Cleanup)
+</button>
+<button type="button" id="fbRebuildSummaryIdxBtn" class="btn btn-outline" onclick="rebuildAll282SchoolSummaryIndexToFirebase(true)" style="font-weight:900; border-color:#2563eb; color:#1d4ed8; background:#eff6ff;" title="282 பள்ளிகளின் ~30 KB சுருக்க அட்டவணையை (school_summary_index) Firebase-ல் உடனடியாகப் புதுப்பிக்க">
+⚡ 282 பள்ளி சுருக்க அட்டவணை புதுப்பி (Summary Index)
 </button>
 <button type="button" class="btn btn-outline" onclick="simulateLiveSchoolToCeoSync()" style="font-weight:800; border-color:#ea580c; color:#c2410c; background:#fff7ed;">
 ⚡ நேரடி Dual-Sync மாதிரிச் சோதனை (Simulate HM ➔ CEO)
@@ -50254,6 +50257,296 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
       if (execBtn) { execBtn.textContent = "🧹 3. தேர்ந்தெடுத்த பழைய Nodes-களை மட்டும் சுத்தம் செய்"; }
     }
   };
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V63_LIGHTWEIGHT_SUMMARY_INDEX_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV63SummaryIndexApplied) return;
+  window.__ceosvgV63SummaryIndexApplied = true;
+
+  const SUMMARY_STORAGE_KEY = "CEOSVG_SCHOOL_SUMMARY_INDEX_V1";
+  let _schoolSummaryIndexCache = safeGetStorage(SUMMARY_STORAGE_KEY, {}) || {};
+  let _lastSummaryIndexPullTs = 0;
+
+  function saveLocalSummaryIndexCache() {
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem(SUMMARY_STORAGE_KEY, JSON.stringify(_schoolSummaryIndexCache));
+      }
+    } catch (e) {}
+  }
+
+  function countSchoolRaTermsSaved(uNo) {
+    try {
+      const raStore = (typeof getExamResultAnalysisStore === "function") ? getExamResultAnalysisStore() : null;
+      if (!raStore || typeof raStore !== "object") return 0;
+      let count = 0;
+      Object.keys(raStore).forEach(tk => {
+        if (tk.startsWith("_")) return;
+        const termMap = raStore[tk];
+        if (termMap && termMap[uNo] && typeof termMap[uNo] === "object") {
+          const rec = termMap[uNo];
+          const hasRows = (Array.isArray(rec.students) && rec.students.length > 0) ||
+                          (rec.summary && Object.keys(rec.summary).length > 0) ||
+                          Boolean(rec.updatedAt);
+          if (hasRows) count++;
+        }
+      });
+      return count;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  // Raw (non-overlaid) readiness builder for computing a school's compact summary (~120 bytes)
+  const _v63OrigEvalReadiness = (typeof evaluateSchoolEbsOverallReadiness === "function")
+    ? evaluateSchoolEbsOverallReadiness
+    : null;
+
+  function buildCompactSchoolSummaryRecord(uNo) {
+    uNo = String(uNo || "").trim();
+    if (!uNo || !_v63OrigEvalReadiness) return null;
+    try {
+      const r = _v63OrigEvalReadiness(uNo);
+      if (!r) return null;
+      const fl = r.finalLock || {};
+      return {
+        u: uNo,
+        p: Number(r.overallPct || 0),
+        l: fl.locked ? 1 : 0,
+        la: String(fl.lockedAt || "").slice(0, 32),
+        lb: String(fl.lockedBy || "").slice(0, 48),
+        ts: Number(r.totalStaff || 0),
+        tc: Number(r.totalComplete || 0),
+        wa: Number(r.totalWaOk || 0),
+        tt: Number(r.teachTotal || 0),
+        tcm: Number(r.teachComplete || 0),
+        twa: Number(r.teachWaOk || 0),
+        nt: Number(r.ntTotal || 0),
+        ncm: Number(r.ntComplete || 0),
+        nwa: Number(r.ntWaOk || 0),
+        f1: r.f1Ok ? 1 : 0,
+        f2: r.f2Ok ? 1 : 0,
+        ra: countSchoolRaTermsSaved(uNo),
+        up: Date.now()
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Push a single school's ~120-byte summary to ceosvg_live/school_summary_index/{uNo}
+  window.pushSingleSchoolSummaryIndexToFirebase = function(uNo) {
+    uNo = String(uNo || "").trim();
+    if (!uNo) return;
+    const rec = buildCompactSchoolSummaryRecord(uNo);
+    if (!rec) return;
+    _schoolSummaryIndexCache[uNo] = rec;
+    saveLocalSummaryIndexCache();
+
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") return;
+    fetch(buildFirebaseEndpoint(`ceosvg_live/school_summary_index/${encodeURIComponent(uNo)}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(rec)
+    }).catch(() => {});
+  };
+
+  // Rebuild & upload compact ~30 KB summary index for all 282 schools
+  window.rebuildAll282SchoolSummaryIndexToFirebase = async function(showNotification) {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") {
+      if (showNotification && typeof showToast === "function") showToast("❌ Firebase URL இணைக்கப்படவில்லை!", "#ef4444");
+      return;
+    }
+    const btn = document.getElementById("fbRebuildSummaryIdxBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ Summary Index உருவாகிறது..."; }
+    try {
+      const list = (typeof getEbs282MasterSchools === "function") ? getEbs282MasterSchools() : (masterSchools || []);
+      const idxMap = {};
+      list.forEach(s => {
+        if (!s || !s.uNo) return;
+        const u = String(s.uNo).trim();
+        const rec = buildCompactSchoolSummaryRecord(u);
+        if (rec) idxMap[u] = rec;
+      });
+      const jsonStr = JSON.stringify(idxMap);
+      const r = await fetch(buildFirebaseEndpoint("ceosvg_live/school_summary_index"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: jsonStr
+      });
+      if (r.ok) {
+        _schoolSummaryIndexCache = idxMap;
+        saveLocalSummaryIndexCache();
+        const kb = (jsonStr.length / 1024).toFixed(1);
+        if (showNotification && typeof showToast === "function") {
+          showToast(`⚡ ${Object.keys(idxMap).length} பள்ளிகளின் சுருக்க அட்டவணை (${kb} KB) Firebase-ல் புதுப்பிக்கப்பட்டது!`, "#16a34a", true);
+        }
+      }
+    } catch (e) {
+      if (showNotification && typeof showToast === "function") showToast("❌ Summary Index புதுப்பிப்பில் பிழை!", "#ef4444");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "⚡ 282 பள்ளி சுருக்க அட்டவணை புதுப்பி (Summary Index)"; }
+    }
+  };
+
+  // Pull ONLY the ~30 KB school_summary_index + lightweight delete requests (~40 KB total vs 8-12 MB!)
+  window.pullLightweightSchoolSummaryIndexFromFirebase = async function(showNotification) {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") return false;
+    try {
+      const [rIdx, rDelReqsMap, rResMap] = await Promise.all([
+        fetch(buildFirebaseEndpoint("ceosvg_live/school_summary_index")).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch(buildFirebaseEndpoint("ceosvg_live/DeleteRequests")).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1")).then(r => r.ok ? r.json() : null).catch(() => null)
+      ]);
+
+      let gotIndex = false;
+      if (rIdx && typeof rIdx === "object" && Object.keys(rIdx).length > 0) {
+        _schoolSummaryIndexCache = Object.assign({}, _schoolSummaryIndexCache, rIdx);
+        saveLocalSummaryIndexCache();
+        _lastSummaryIndexPullTs = Date.now();
+        gotIndex = true;
+      }
+
+      if (rResMap && typeof rResMap === "object" && typeof reloadInMemoryStoreFromKey === "function") {
+        reloadInMemoryStoreFromKey("CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", rResMap);
+      }
+      if (rDelReqsMap && typeof rDelReqsMap === "object" && typeof reconcileAndDeduplicateDeleteRequests === "function") {
+        const incoming = Object.values(rDelReqsMap).filter(Boolean);
+        if (incoming.length > 0) reconcileAndDeduplicateDeleteRequests(incoming, false);
+      }
+
+      if (gotIndex) {
+        if (typeof updateAllSummaryCounters === "function") updateAllSummaryCounters();
+        if (typeof renderAdminEbsMasterDashboard === "function") {
+          const ebsPane = document.getElementById("admPaneEbsMaster");
+          if (ebsPane && ebsPane.style.display !== "none") renderAdminEbsMasterDashboard();
+        }
+        if (typeof renderAdminDeleteRequestsTable === "function") {
+          const delPane = document.getElementById("admPaneDeleteReqs");
+          if (delPane && delPane.style.display !== "none") renderAdminDeleteRequestsTable();
+        }
+        if (typeof renderAdminEbsDeleteReqsBox === "function") renderAdminEbsDeleteReqsBox();
+        if (typeof updateFirebaseStatusIndicators === "function") updateFirebaseStatusIndicators(true);
+        if (showNotification && typeof showToast === "function") {
+          const kb = (JSON.stringify(rIdx).length / 1024).toFixed(1);
+          showToast(`⚡ சுருக்க அட்டவணை (${Object.keys(rIdx).length} பள்ளிகள் — ${kb} KB மட்டும்) ஒத்திசைக்கப்பட்டது!`, "#0284c7");
+        }
+      }
+      return gotIndex;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  // Hydrate evaluateSchoolEbsOverallReadiness(uNo) from Lightweight Summary Index when local data is stale/unloaded
+  if (_v63OrigEvalReadiness) {
+    evaluateSchoolEbsOverallReadiness = function(uNo) {
+      const localRes = _v63OrigEvalReadiness(uNo);
+      const u = String(uNo || "").trim();
+      const idx = _schoolSummaryIndexCache && _schoolSummaryIndexCache[u];
+      if (!idx || !localRes) return localRes;
+
+      // Only overlay when viewing Admin (not when the school itself is actively editing locally)
+      const isAdminView = Boolean(document.body && document.body.classList.contains("admin-mode")) ||
+        Boolean(document.getElementById("viewAdmin")?.classList.contains("active"));
+      if (!isAdminView) return localRes;
+
+      // Overlay if Summary Index has a confirmed lock or fresher/richer progress than unloaded local cache
+      const idxLocked = Boolean(idx.l);
+      const localLocked = Boolean(localRes.finalLock && localRes.finalLock.locked);
+      const idxHasMoreProgress = (Number(idx.p || 0) > Number(localRes.overallPct || 0)) ||
+                                 (Number(idx.wa || 0) > Number(localRes.totalWaOk || 0)) ||
+                                 (idxLocked && !localLocked);
+
+      if (idxHasMoreProgress) {
+        const ts = Number(idx.ts || localRes.totalStaff || 0);
+        const tc = Number(idx.tc || localRes.totalComplete || 0);
+        const wa = Number(idx.wa || localRes.totalWaOk || 0);
+        const tt = Number(idx.tt || localRes.teachTotal || 0);
+        const nt = Number(idx.nt || localRes.ntTotal || 0);
+        const f1Ok = Boolean(idx.f1);
+        const f2Ok = Boolean(idx.f2);
+        const overallPct = Number(idx.p || 0);
+        const waOtpPct = ts > 0 ? Math.round((wa / ts) * 100) : 100;
+        const mergedLock = idxLocked
+          ? Object.assign({}, localRes.finalLock || {}, { locked: true, lockedAt: idx.la || (localRes.finalLock && localRes.finalLock.lockedAt) || "", lockedBy: idx.lb || (localRes.finalLock && localRes.finalLock.lockedBy) || "HM Verified" })
+          : localRes.finalLock;
+
+        return Object.assign({}, localRes, {
+          f1Ok: f1Ok,
+          f2Ok: f2Ok,
+          teachTotal: tt,
+          teachComplete: Number(idx.tcm || localRes.teachComplete || 0),
+          teachWaOk: Number(idx.twa || localRes.teachWaOk || 0),
+          ntTotal: nt,
+          ntComplete: Number(idx.ncm || localRes.ntComplete || 0),
+          ntWaOk: Number(idx.nwa || localRes.ntWaOk || 0),
+          totalStaff: ts,
+          totalComplete: tc,
+          totalWaOk: wa,
+          totalEmailOk: ts,
+          pendingWaOtp: Math.max(0, ts - wa),
+          pendingEmailOtp: 0,
+          pendingProfiles: Math.max(0, ts - tc),
+          waOtpPct: waOtpPct,
+          overallPct: overallPct,
+          is100PercentReady: Boolean(f1Ok && f2Ok && ts > 0 && tc >= ts),
+          finalLock: mergedLock,
+          _fromLightweightSummaryIndex: true
+        });
+      }
+      return localRes;
+    };
+  }
+
+  // Hook saveSchoolEbs2026Data so every school save automatically updates its ~120-byte Summary Index entry
+  if (typeof saveSchoolEbs2026Data === "function") {
+    const _v63PrevSaveEbs = saveSchoolEbs2026Data;
+    saveSchoolEbs2026Data = function(showNotification, optionalUNo) {
+      const res = _v63PrevSaveEbs.apply(this, arguments);
+      try {
+        const uNo = String(optionalUNo || (activeSchoolSession && activeSchoolSession.uNo) || (_activeEbsEditingStaff && _activeEbsEditingStaff.uNo) || "").trim();
+        if (uNo) setTimeout(() => pushSingleSchoolSummaryIndexToFirebase(uNo), 120);
+      } catch (e) {}
+      return res;
+    };
+  }
+
+  // Hook pullAllPortalDataFromFirebase:
+  // - Routine automatic Admin background sync (showNotification === false) uses ~30 KB Lightweight Summary Index!
+  // - Explicit manual sync (showNotification === true) performs full pull AND refreshes the 282-school Summary Index!
+  if (typeof pullAllPortalDataFromFirebase === "function") {
+    const _v63PrevPullAll = pullAllPortalDataFromFirebase;
+    pullAllPortalDataFromFirebase = async function(showNotification) {
+      const isAdminView = Boolean(document.body && document.body.classList.contains("admin-mode")) ||
+        Boolean(document.getElementById("viewAdmin")?.classList.contains("active"));
+      const activeTab = (typeof currentAdminTabKey !== "undefined") ? currentAdminTabKey : "";
+
+      // For automatic background Admin sync (except when actively inside Result Analysis master tab),
+      // use the ~30 KB Lightweight Summary Index first to save 95%+ Firebase download bandwidth!
+      if (isAdminView && !showNotification && activeTab !== "midTermMaster") {
+        if ((Date.now() - _lastSummaryIndexPullTs) < 30000) return;
+        const ok = await pullLightweightSchoolSummaryIndexFromFirebase(false);
+        if (ok) return;
+        // Fallback to full pull only if school_summary_index has not been seeded yet!
+      }
+
+      const res = await _v63PrevPullAll.apply(this, arguments);
+
+      // After a full Admin pull, if school_summary_index was empty or manually synced, seed it once (~30 KB)
+      if (isAdminView && (showNotification || Object.keys(_schoolSummaryIndexCache || {}).length === 0)) {
+        setTimeout(() => rebuildAll282SchoolSummaryIndexToFirebase(false), 800);
+      }
+      return res;
+    };
+  }
 })();
 </script>
 
