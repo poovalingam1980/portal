@@ -82,7 +82,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.4)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.5)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -431,7 +431,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.4</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.5</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -49853,11 +49853,7 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
     const _v61PrevSwitchAdminTab = switchAdminTab;
     switchAdminTab = function(tabKey) {
       const r = _v61PrevSwitchAdminTab.apply(this, arguments);
-      if (tabKey === "midTermMaster" || tabKey === "deleteReqs" || tabKey === "ebsMaster") {
-        if (typeof pullAllPortalDataFromFirebase === "function") {
-          pullAllPortalDataFromFirebase(false);
-        }
-      }
+      // Handled by v6.5 lazyLoadAdminTabDataFromFirebase (per-tab on-demand slice fetch)
       return r;
     };
   }
@@ -50635,6 +50631,213 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
         }
       } catch (e) {}
       return res;
+    };
+  }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_LAZY_TAB_LOADING_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65LazyTabApplied) return;
+  window.__ceosvgV65LazyTabApplied = true;
+
+  const LAZY_TAB_TTL_MS = 180000; // 3 minutes cache per tab slice
+  const _lazySliceLoadedAt = {};
+  const _lazySliceInFlight = {};
+
+  async function fetchFbSlice(pathStr) {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") return null;
+    try {
+      const r = await fetch(buildFirebaseEndpoint(pathStr));
+      return (r && r.ok) ? await r.json() : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function resolveTabSliceGroup(tabKey) {
+    if (tabKey === "directory" || tabKey === "divisions" || tabKey === "centres" || tabKey === "addSchool") return "schools";
+    if (tabKey === "credentials") return "auth";
+    if (tabKey === "deleteReqs") return "deleteReqs";
+    if (tabKey === "teacherMaster" || tabKey === "seniorityList") return "teachers";
+    if (tabKey === "ebsMaster" || tabKey === "examDutyAllotment") return "ebsSummary";
+    if (tabKey === "midTermMaster") return "resultAnalysis";
+    if (tabKey === "infraNeeds" || tabKey === "studentsMaster" || tabKey === "hssGroups") return "schoolExtra";
+    if (tabKey === "circulars") return "circulars";
+    return "ebsSummary";
+  }
+
+  window.lazyLoadAdminTabDataFromFirebase = async function(tabKey, forceRefresh) {
+    const slice = resolveTabSliceGroup(tabKey);
+    const now = Date.now();
+    if (!forceRefresh && _lazySliceLoadedAt[slice] && (now - _lazySliceLoadedAt[slice]) < LAZY_TAB_TTL_MS) {
+      return false; // Already fresh in memory — 0 bytes downloaded!
+    }
+    if (_lazySliceInFlight[slice]) return false;
+
+    _lazySliceInFlight[slice] = true;
+    try {
+      isApplyingRemoteRealtimeUpdate = true;
+
+      if (slice === "schools") {
+        const [rSchools, rEditedSch] = await Promise.all([
+          fetchFbSlice("ceosvg_live/master_schools_by_uno"),
+          fetchFbSlice("ceosvg_live/stores/CEOSVG_EDITED_SCHOOLS_VAULT_V1")
+        ]);
+        if (rSchools && typeof rSchools === "object" && typeof mergeSchoolsIntoMasterList === "function") {
+          mergeSchoolsIntoMasterList(Object.values(rSchools), true);
+          safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+        }
+        if (rEditedSch && typeof rEditedSch === "object") {
+          safeSetStorage("CEOSVG_EDITED_SCHOOLS_VAULT_V1", rEditedSch, true);
+          if (typeof sanitizeAllPortalStores === "function") sanitizeAllPortalStores();
+        }
+        if (typeof renderAdminDirectoryTable === "function") renderAdminDirectoryTable();
+      } else if (slice === "auth") {
+        const rAuth = await fetchFbSlice("ceosvg_live/school_auth");
+        if (rAuth && typeof rAuth === "object") {
+          reloadInMemoryStoreFromKey("CEOSVG_SCHOOL_AUTH", rAuth);
+          safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+        }
+        if (typeof renderAdminCredentialsTable === "function") renderAdminCredentialsTable();
+      } else if (slice === "deleteReqs") {
+        const [rDelMap, rDelArr, rResMap, rEmisDel] = await Promise.all([
+          fetchFbSlice("ceosvg_live/DeleteRequests"),
+          fetchFbSlice("ceosvg_live/stores/CEOSVG_DELETE_REQUESTS"),
+          fetchFbSlice("ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1"),
+          fetchFbSlice("ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1")
+        ]);
+        if (rEmisDel && typeof rEmisDel === "object") {
+          _cachedEmisDeletedMap = Object.assign({}, (typeof getGlobalEmisDeletedStaffMap === "function" ? getGlobalEmisDeletedStaffMap() : {}), rEmisDel);
+          safeSetStorage("CEOSVG_EMIS_DELETED_MAP_V1", _cachedEmisDeletedMap, true);
+        }
+        if (rResMap && typeof rResMap === "object") {
+          reloadInMemoryStoreFromKey("CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", rResMap);
+        }
+        const combined = [];
+        if (Array.isArray(rDelArr)) combined.push(...rDelArr);
+        if (rDelMap && typeof rDelMap === "object") combined.push(...Object.values(rDelMap).filter(Boolean));
+        if (combined.length > 0 && typeof reconcileAndDeduplicateDeleteRequests === "function") {
+          reconcileAndDeduplicateDeleteRequests(combined, false);
+        }
+        if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+        if (typeof renderAdminEbsDeleteReqsBox === "function") renderAdminEbsDeleteReqsBox();
+      } else if (slice === "teachers") {
+        const [rOv, rVault, rEmisDel] = await Promise.all([
+          fetchFbSlice("ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES"),
+          fetchFbSlice("ceosvg_live/stores/CEOSVG_USER_EDITED_STAFF_VAULT_V1"),
+          fetchFbSlice("ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1")
+        ]);
+        if (rEmisDel && typeof rEmisDel === "object") {
+          _cachedEmisDeletedMap = Object.assign({}, (typeof getGlobalEmisDeletedStaffMap === "function" ? getGlobalEmisDeletedStaffMap() : {}), rEmisDel);
+          safeSetStorage("CEOSVG_EMIS_DELETED_MAP_V1", _cachedEmisDeletedMap, true);
+        }
+        if (rOv && typeof rOv === "object") reloadInMemoryStoreFromKey("CEOSVG_STAFF_OVERRIDES", rOv);
+        if (rVault && typeof rVault === "object") safeSetStorage("CEOSVG_USER_EDITED_STAFF_VAULT_V1", rVault, true);
+        if (typeof getDistrictAllStaffList === "function") getDistrictAllStaffList(true);
+        if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
+      } else if (slice === "ebsSummary") {
+        const gotIdx = (typeof pullLightweightSchoolSummaryIndexFromFirebase === "function")
+          ? await pullLightweightSchoolSummaryIndexFromFirebase(false)
+          : false;
+        if (!gotIdx) {
+          // One-time fallback if Summary Index has not been created in Firebase yet
+          const [rEbs27, rVault] = await Promise.all([
+            fetchFbSlice("ceosvg_live/ebs_2026_27"),
+            fetchFbSlice("ceosvg_live/verified_otp_vault")
+          ]);
+          if (rEbs27 && typeof rEbs27 === "object" && typeof mergeSingleSchoolEbs27PacketIntoLocal === "function") {
+            Object.entries(rEbs27).forEach(([u, pkt]) => mergeSingleSchoolEbs27PacketIntoLocal(u, pkt));
+          }
+          if (rVault && typeof rVault === "object" && typeof harvestAndRestoreAllVerifiedOtps === "function") {
+            harvestAndRestoreAllVerifiedOtps(null, rVault);
+          }
+          if (typeof rebuildAll282SchoolSummaryIndexToFirebase === "function") {
+            setTimeout(() => rebuildAll282SchoolSummaryIndexToFirebase(false), 600);
+          }
+        }
+        if (typeof renderAdminEbsMasterDashboard === "function") renderAdminEbsMasterDashboard();
+        if (typeof renderAdminEbsDeleteReqsBox === "function") renderAdminEbsDeleteReqsBox();
+      } else if (slice === "resultAnalysis") {
+        // Fetch ONLY exam_result_analysis_by_uno (avoid duplicate CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1 download!)
+        let rRaByUno = await fetchFbSlice("ceosvg_live/exam_result_analysis_by_uno");
+        let rRaStore = null;
+        if (!rRaByUno || Object.keys(rRaByUno).length === 0) {
+          rRaStore = await fetchFbSlice("ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1");
+        }
+        if ((rRaByUno && typeof rRaByUno === "object") || (rRaStore && typeof rRaStore === "object")) {
+          const curRa = _examResultAnalysisStoreCache || safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {}) || {};
+          if (typeof deepMergeExamResultAnalysisStore === "function") {
+            _examResultAnalysisStoreCache = deepMergeExamResultAnalysisStore(curRa, rRaStore, rRaByUno);
+          }
+          if (typeof ensureUlagampatti206PreloadedInMidTermStore === "function") {
+            ensureUlagampatti206PreloadedInMidTermStore(_examResultAnalysisStoreCache);
+          }
+          safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", _examResultAnalysisStoreCache, true);
+        }
+        if (typeof updateAdminMidTermChooserBadge === "function") updateAdminMidTermChooserBadge();
+        if (typeof renderAdminMidTermDashboard === "function") renderAdminMidTermDashboard();
+      } else if (slice === "schoolExtra") {
+        const rExtra = await fetchFbSlice("ceosvg_live/school_extra");
+        if (rExtra && typeof rExtra === "object") {
+          Object.keys(rExtra).forEach(uKey => {
+            const extObj = rExtra[uKey];
+            if (extObj && typeof extObj === "object" && typeof deepMergeSchoolExtraPreserveOtp === "function") {
+              schoolExtraDataStore[uKey] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uKey], extObj, uKey);
+            }
+          });
+          safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+        }
+        if (tabKey === "infraNeeds" && typeof renderAdminInfraNeedsDashboard === "function") renderAdminInfraNeedsDashboard();
+        if (tabKey === "studentsMaster" && typeof renderAdminStudentsMasterView === "function") renderAdminStudentsMasterView();
+      } else if (slice === "circulars") {
+        const rCir = await fetchFbSlice("ceosvg_live/stores/CEOSVG_CIRCULARS");
+        if (Array.isArray(rCir)) {
+          reloadInMemoryStoreFromKey("CEOSVG_CIRCULARS", rCir);
+          safeSetStorage("CEOSVG_CIRCULARS", districtCirculars, true);
+        }
+        if (typeof renderAdminCircularsList === "function") renderAdminCircularsList();
+      }
+
+      _lazySliceLoadedAt[slice] = Date.now();
+      if (typeof updateAllSummaryCounters === "function") updateAllSummaryCounters();
+      if (typeof updateFirebaseStatusIndicators === "function") updateFirebaseStatusIndicators(true);
+      return true;
+    } catch (e) {
+      return false;
+    } finally {
+      isApplyingRemoteRealtimeUpdate = false;
+      _lazySliceInFlight[slice] = false;
+    }
+  };
+
+  // Hook switchAdminTab so each tab loads ONLY its own required Firebase slice on-demand
+  if (typeof switchAdminTab === "function") {
+    const _v65PrevSwitchAdminTab = switchAdminTab;
+    switchAdminTab = function(tabKey) {
+      const res = _v65PrevSwitchAdminTab.apply(this, arguments);
+      setTimeout(() => {
+        window.lazyLoadAdminTabDataFromFirebase(tabKey, false);
+      }, 30);
+      return res;
+    };
+  }
+
+  // Hook pullAllPortalDataFromFirebase so automatic background Admin polls ALWAYS stay on the active tab's lightweight slice!
+  if (typeof pullAllPortalDataFromFirebase === "function") {
+    const _v65PrevPullAll = pullAllPortalDataFromFirebase;
+    pullAllPortalDataFromFirebase = async function(showNotification) {
+      const isAdminView = Boolean(document.body && document.body.classList.contains("admin-mode")) ||
+        Boolean(document.getElementById("viewAdmin")?.classList.contains("active"));
+      if (isAdminView && !showNotification) {
+        const activeTab = (typeof currentAdminTabKey !== "undefined" && currentAdminTabKey) ? currentAdminTabKey : "ebsMaster";
+        await window.lazyLoadAdminTabDataFromFirebase(activeTab, false);
+        return;
+      }
+      return await _v65PrevPullAll.apply(this, arguments);
     };
   }
 })();
