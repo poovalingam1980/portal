@@ -431,7 +431,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v5.9</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.0</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -7429,7 +7429,7 @@ let fbLiveActivityLog = [];
 let currentSchoolTabKey = "staffStrength";
 const _firebaseMemoryKvStore = {};
 const _SESSION_ONLY_KEYS = new Set(["CEOSVG_ACTIVE_SESSION", "CEOSVG_ACTIVE_UI_STATE", "CEOSVG_ACTIVE_OFFICER_USER"]);
-const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_USER_EDITED_STAFF_VAULT_V1", "CEOSVG_PORTAL_CFG", "CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", "CEOSVG_EMIS_DELETED_MAP_V1", "CEOSVG_SITE_MAINTENANCE_CFG_V1", "CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_OFFICE_USERS_RBAC_V1", "CEOSVG_OFFICE_USERS_INIT_V1", "CEOSVG_DELETED_SCHOOL_UNOS_V1", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1", "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", "CEOSVG_SCHOOL_EXTRA_V6", "CEOSVG_VERIFIED_OTP_VAULT_V1", "CEOSVG_MASTER_SCHOOLS", "CEOSVG_SCHOOL_AUTH", "CEOSVG_DELETE_REQUESTS", "CEOSVG_DELETED_STAFF_ARCHIVE", "CEOSVG_CIRCULARS", "CEOSVG_STAFF_OVERRIDES", "CEOSVG_AUTO_BACKUP_CFG_V1", "CEOSVG_EXAM_DUTY_APPOINTMENTS_V1", "CEOSVG_EXAM_DUTY_META_V1", "CEOSVG_OTHER_EXAMS_CONFIG_V1", "CEOSVG_HSS_GROUP_MASTER_V1", "CEOSVG_DIVISIONS", "CEOSVG_EXAM_CENTRES_10", "CEOSVG_EXAM_CENTRES_12", "CEOSVG_ADMIN_SECURITY_VAULT", "CEOSVG_EBS_SHEET_ID", "CEOSVG_EBS_DROPDOWN_LIVE_V5"]);
+const _LOCAL_PERSIST_KEYS = new Set(["CEOSVG_EDITED_SCHOOLS_VAULT_V1", "CEOSVG_USER_EDITED_STAFF_VAULT_V1", "CEOSVG_PORTAL_CFG", "CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", "CEOSVG_EMIS_DELETED_MAP_V1", "CEOSVG_SITE_MAINTENANCE_CFG_V1", "CEOSVG_ACTIVE_SESSION", "CEOSVG_ADMIN_AUTH_OK", "CEOSVG_OFFICE_USERS_RBAC_V1", "CEOSVG_OFFICE_USERS_INIT_V1", "CEOSVG_DELETED_SCHOOL_UNOS_V1", "CEOSVG_DIGNITARIES_DATA_V3", "CEOSVG_DIGNITARIES_PHOTO_VAULT", "CEOSVG_WA_OTP_CONFIG_V1", "CEOSVG_WA_CLOUD_CFG", "CEOSVG_PORTAL_CFG", "CEOSVG_TOTP_2FA_SECRET_ENC", "CEOSVG_ADMIN_AUDIT_LOGS_V1", "CEOSVG_PWA_BANNER_DISMISSED", "CEOSVG_PWA_INSTALLED_FLAG", "CEOSVG_ADM_STAFF_CUSTOM_COLS_V1", "CEOSVG_ADM_STAFF_TABLE_STYLE_V1", "CEOSVG_ADM_SENIORITY_CFG_V1", "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", "CEOSVG_SCHOOL_EXTRA_V6", "CEOSVG_VERIFIED_OTP_VAULT_V1", "CEOSVG_MASTER_SCHOOLS", "CEOSVG_SCHOOL_AUTH", "CEOSVG_DELETE_REQUESTS", "CEOSVG_DELETED_STAFF_ARCHIVE", "CEOSVG_CIRCULARS", "CEOSVG_STAFF_OVERRIDES", "CEOSVG_AUTO_BACKUP_CFG_V1", "CEOSVG_EXAM_DUTY_APPOINTMENTS_V1", "CEOSVG_EXAM_DUTY_META_V1", "CEOSVG_OTHER_EXAMS_CONFIG_V1", "CEOSVG_HSS_GROUP_MASTER_V1", "CEOSVG_DIVISIONS", "CEOSVG_EXAM_CENTRES_10", "CEOSVG_EXAM_CENTRES_12", "CEOSVG_ADMIN_SECURITY_VAULT", "CEOSVG_EBS_SHEET_ID", "CEOSVG_EBS_DROPDOWN_LIVE_V5"]);
 function compactSchoolExtraForLocalStorage(rawStore) {
   if (!rawStore || typeof rawStore !== "object") return {};
   const slim = {};
@@ -48708,6 +48708,644 @@ triggerUploadEbsExemptionCertificate = async function() {
     }
   }
   return res;
+};
+
+
+
+// ============================================================================
+// 🏆 V6.0 COMPLETE PORTAL PERSISTENCE (ALL STAFF, EBS & SCHOOL FIELDS) +
+//    CONDITIONAL EXEMPTION CERTIFICATE SUBMISSION INSTRUCTION ENGINE
+// ============================================================================
+
+// --- PART 1: CONDITIONAL EXEMPTION CERTIFICATE SUBMISSION INSTRUCTION ---
+// Shown ONLY for staff members who have uploaded a certificate in Ground of Exemption!
+function hasStaffUploadedExemptionCertificate(certUrlRaw, exGroundRaw) {
+  const url = String(certUrlRaw || "").trim();
+  const ground = String(exGroundRaw || "").trim();
+  if (!url || url === "-") return false;
+  if (ground && /^(none|not applicable|none\s*\(.*\)|விலக்கு இல்லை)$/i.test(ground)) return false;
+  return true;
+}
+
+function getExemptionOriginalSubmissionBannerHtml(isPrintMode) {
+  const msgTa = "படிவத்தை முதன்மைக் கல்வி அலுவலகத்தில் ஒப்படைக்கும் பொழுது அசல் சான்றிதழையும், விலக்குக் கோரும் கடிதத்தையும் இணைத்து ஒப்படைக்க வேண்டும்.";
+  if (isPrintMode) {
+    return `
+      <div style="margin-top:4px; padding:3px 6px; border:1.2px solid #000; border-radius:4px; background:#f8fafc; font-size:10px; font-weight:900; color:#000; line-height:1.35;">
+        📌 குறிப்பு: ${msgTa}
+      </div>
+    `;
+  }
+  return `
+    <div id="ebsExemptionOrigSubmitNoticeBox" style="margin-top:8px; padding:8px 12px; background:#fef2f2; border:1.5px solid #ef4444; border-left:5px solid #dc2626; border-radius:8px; color:#7f1d1d; font-size:0.78rem; font-weight:900; line-height:1.45; box-shadow:0 1px 3px rgba(220,38,38,0.12);">
+      📌 முக்கியக் குறிப்பு: ${msgTa}
+    </div>
+  `;
+}
+
+// Override renderExemptionGroundPrintCellHtml so Form-III & Form-IV A4 Printouts show the instruction
+// ONLY for staff members who have uploaded a certificate!
+renderExemptionGroundPrintCellHtml = function(st) {
+  const exRaw = String((st && st.exemptionGround) || "").trim();
+  const ex = (exRaw && exRaw !== "-") ? exRaw : "None";
+  const specRaw = String((st && st.exemptionOtherSpec) || "").trim();
+  const spec = (specRaw && specRaw !== "-") ? specRaw : "";
+  const certUrl = String((st && st.exemptionCertUrl) || "").trim();
+  const isNoneOrNa = /^(none|not applicable|none\s*\(.*\)|விலக்கு இல்லை)$/i.test(ex);
+  const displayEx = /^none\s*\(.*\)$/i.test(ex) ? "None" : ex;
+  const showSpec = Boolean(spec && (!isNoneOrNa || spec.toLowerCase() !== displayEx.toLowerCase()));
+  const showCertNote = hasStaffUploadedExemptionCertificate(certUrl, ex);
+  return `
+    <div style="padding:3px 6px; line-height:1.4;">
+      <div style="font-weight:900; font-size:11.5px; color:#000;">${isNoneOrNa ? escapeHtmlAttr(displayEx) : `<span class="ebs-chk-sq" style="margin-right:6px;">✓</span>${escapeHtmlAttr(displayEx)}`}</div>
+      ${showSpec ? `<div style="font-weight:800; font-size:11px; color:#000; margin-top:3px;">Details : <span style="font-weight:900;">${escapeHtmlAttr(spec)}</span></div>` : ``}
+      ${showCertNote ? getExemptionOriginalSubmissionBannerHtml(true) : ``}
+    </div>
+  `;
+};
+
+function refreshModalExemptionOriginalSubmitNote() {
+  const statusEl = document.getElementById("ebsStfExemptionCertStatus");
+  if (!statusEl) return;
+  const urlInput = document.getElementById("ebsStfExemptionCertUrl");
+  const groundSelect = document.getElementById("ebsStfExemptionGround");
+  const curUrl = urlInput ? String(urlInput.value || "").trim() : "";
+  const curGround = groundSelect ? String(groundSelect.value || "None").trim() : "None";
+  const existingBox = document.getElementById("ebsExemptionOrigSubmitNoticeBox");
+  if (existingBox && existingBox.parentNode) {
+    existingBox.parentNode.removeChild(existingBox);
+  }
+  if (hasStaffUploadedExemptionCertificate(curUrl, curGround)) {
+    statusEl.insertAdjacentHTML("beforeend", getExemptionOriginalSubmissionBannerHtml(false));
+  }
+}
+
+// Wrap onEbsExemptionGroundChange so if user changes Ground to "None" / "Not Applicable", the note updates dynamically
+const _v60OrigOnEbsExemptionGroundChange = onEbsExemptionGroundChange;
+onEbsExemptionGroundChange = function(selectEl) {
+  _v60OrigOnEbsExemptionGroundChange(selectEl);
+  refreshModalExemptionOriginalSubmitNote();
+};
+
+
+// --- PART 2: COMPLETE EXTRACTION & PERSISTENCE OF ALL 45+ STAFF MODAL FIELDS ---
+function readCurrentEbsStaffModalDomIntoProfile(uNo, staffId, isTeaching) {
+  uNo = String(uNo || (_activeEbsEditingStaff && _activeEbsEditingStaff.uNo) || "").trim();
+  staffId = String(staffId || (_activeEbsEditingStaff && _activeEbsEditingStaff.staffId) || "").trim();
+  if (!uNo || !staffId) return null;
+
+  const extra = getSchoolExtra(uNo);
+  const existingProf = (extra && extra.ebs2026 && extra.ebs2026.staffProfiles && extra.ebs2026.staffProfiles[staffId])
+    ? extra.ebs2026.staffProfiles[staffId]
+    : {};
+
+  // Check if the modal form is currently mounted in the DOM for this staff member
+  const emisInp = document.getElementById("ebsStfEmisId");
+  if (!emisInp || String(emisInp.value || "").trim() !== staffId) {
+    return Object.assign({}, existingProf, { staffId, uNo, updatedAt: Date.now() });
+  }
+
+  const catSel = document.getElementById("ebsStfCategorySelect");
+  const resolvedIsTeach = catSel
+    ? (catSel.value === "TEACHING")
+    : (typeof isTeaching === "boolean" ? isTeaching : (typeof existingProf.isTeaching === "boolean" ? existingProf.isTeaching : true));
+
+  const nameTaInputEl = document.getElementById("ebsStfNameTa");
+  if (nameTaInputEl && typeof convertRemainingTanglishInInput === "function") {
+    convertRemainingTanglishInInput(nameTaInputEl);
+  }
+
+  const getVal = (id, fallback) => {
+    const el = document.getElementById(id);
+    if (!el) return fallback !== undefined ? fallback : "";
+    return String(el.value || "").trim();
+  };
+
+  const classesHandling = Object.assign({}, existingProf.classesHandling || {});
+  if (resolvedIsTeach) {
+    ["6", "7", "8", "9", "10", "11", "12"].forEach(c => {
+      const subEl = document.getElementById("ebsClsSub_" + c);
+      const medEl = document.getElementById("ebsClsMed_" + c);
+      if (subEl || medEl) {
+        classesHandling[c] = {
+          sub: subEl ? String(subEl.value || "").trim() : ((classesHandling[c] && classesHandling[c].sub) || ""),
+          med: medEl ? String(medEl.value || "").trim() : ((classesHandling[c] && classesHandling[c].med) || "")
+        };
+      }
+    });
+  }
+
+  const selectedNatureVal = getVal("ebsStfNature", existingProf.nature || "Regular (Govt.Salaried )");
+  const isContractSelected = /contract/i.test(selectedNatureVal);
+  const selectedTypeOfContract = isContractSelected ? getVal("ebsStfTypeOfContract", existingProf.typeOfContract || "") : "";
+  const dob = getVal("ebsStfDob", existingProf.dob || "");
+  const computedAgeDor = (typeof computeAgeAndDorFromDob === "function") ? computeAgeAndDorFromDob(dob) : { age26: "", dor: "" };
+  const ageVal = getVal("ebsStfAge", computedAgeDor.age26 || existingProf.age || "");
+  const dorVal = getVal("ebsStfDor", computedAgeDor.dor || existingProf.dor || "");
+  const rawEmail = getVal("ebsStfEmail", existingProf.email || "");
+  const cleanEmail = (typeof normalizeAndRepairSchoolEmail === "function") ? normalizeAndRepairSchoolEmail(rawEmail) : rawEmail.toLowerCase();
+  const cleanMob = getVal("ebsStfMobile", existingProf.mobile || "").replace(/\D/g, "").slice(0, 10);
+  const cleanAltMob = getVal("ebsStfAltMobile", existingProf.altMobile || "").replace(/\D/g, "").slice(0, 10);
+  const rawDesig = getVal("ebsStfDesig", existingProf.desig || "");
+  const desig = rawDesig ? normalizeCanonicalStaffDesignation(rawDesig) : "";
+
+  const nowMs = Date.now();
+  const prof = Object.assign({}, existingProf, {
+    staffId: staffId,
+    id: staffId,
+    uNo: uNo,
+    name: getVal("ebsStfNameEn", existingProf.name || ""),
+    ifhrmsId: isContractSelected ? "" : getVal("ebsStfIfhrmsId", existingProf.ifhrmsId || ""),
+    prefix: getVal("ebsStfPrefix", existingProf.prefix || ""),
+    nameTa: getVal("ebsStfNameTa", existingProf.nameTa || ""),
+    gender: getVal("ebsStfGender", existingProf.gender || "Male"),
+    dob: dob,
+    age: ageVal,
+    dor: dorVal,
+    desig: desig,
+    qualification: getVal("ebsStfQual", existingProf.qualification || ""),
+    subject: resolvedIsTeach ? getVal("ebsStfSubject", existingProf.subject || "-") : "-",
+    mobile: cleanMob,
+    whatsappVerified: Boolean(
+      document.getElementById("ebsStfWhatsappVerified")?.value === "true" &&
+      cleanMob.length === 10
+    ),
+    verifiedMobile: (document.getElementById("ebsStfWhatsappVerified")?.value === "true" && cleanMob.length === 10) ? cleanMob : "",
+    altMobile: cleanAltMob,
+    email: cleanEmail,
+    emailVerified: Boolean(cleanEmail && cleanEmail.includes("@")),
+    verifiedEmail: (cleanEmail && cleanEmail.includes("@")) ? cleanEmail : "",
+    resPlace: getVal("ebsStfResPlace", existingProf.resPlace || ""),
+    resDistrict: getVal("ebsStfResDistrict", existingProf.resDistrict || "Sivagangai"),
+    prefCamp: getVal("ebsStfPrefCamp", existingProf.prefCamp || "01-Sivagangai"),
+    nature: selectedNatureVal,
+    typeOfContract: selectedTypeOfContract,
+    modeFirstApp: isContractSelected ? "" : getVal("ebsStfModeFirstApp", existingProf.modeFirstApp || (resolvedIsTeach ? "TRB" : "TNPSC")),
+    firstApp: isContractSelected ? "" : getVal("ebsStfModeFirstApp", existingProf.modeFirstApp || (resolvedIsTeach ? "TRB" : "TNPSC")),
+    dojService: isContractSelected ? "" : getVal("ebsStfDojService", existingProf.dojService || ""),
+    firstJoinPost: isContractSelected ? "" : normalizeCanonicalStaffDesignation(getVal("ebsStfFirstJoinPost", existingProf.firstJoinPost || desig)),
+    modePresPost: isContractSelected ? "" : getVal("ebsStfModePresPost", existingProf.modePresPost || "NEW APPOINTMENT"),
+    dojPresPost: getVal("ebsStfDojPresPost", existingProf.dojPresPost || ""),
+    dojSchool: getVal("ebsStfDojSchool", existingProf.dojSchool || ""),
+    unitTransferDate: isContractSelected ? "" : getVal("ebsStfUnitTransfer", existingProf.unitTransferDate || ""),
+    classesHandling: classesHandling,
+    pracSslc1: resolvedIsTeach ? getVal("ebsStfPracSslc1", existingProf.pracSslc1 || "") : "",
+    pracHsc1: resolvedIsTeach ? getVal("ebsStfPracHsc1", existingProf.pracHsc1 || "") : "",
+    pracHsc2: resolvedIsTeach ? getVal("ebsStfPracHsc2", existingProf.pracHsc2 || "") : "",
+    dutySslcWork: getVal("ebsStfDutySslcWork", existingProf.dutySslcWork || ""),
+    dutySslcCentre: getVal("ebsStfDutySslcCentre", existingProf.dutySslcCentre || ""),
+    dutyHseWork: getVal("ebsStfDutyHseWork", existingProf.dutyHseWork || ""),
+    dutyHseCentre: getVal("ebsStfDutyHseCentre", existingProf.dutyHseCentre || ""),
+    dutyCampWork: getVal("ebsStfDutyCampWork", existingProf.dutyCampWork || ""),
+    dutyCampCentre: getVal("ebsStfDutyCampCentre", existingProf.dutyCampCentre || ""),
+    childCentre1: getVal("ebsStfChildCentre1", existingProf.childCentre1 || ""),
+    childCentre2: getVal("ebsStfChildCentre2", existingProf.childCentre2 || ""),
+    exemptionGround: getVal("ebsStfExemptionGround", existingProf.exemptionGround || "None"),
+    exemptionOtherSpec: getVal("ebsStfExemptionSpec", existingProf.exemptionOtherSpec || ""),
+    exemptionCertUrl: getVal("ebsStfExemptionCertUrl", existingProf.exemptionCertUrl || ""),
+    exemptionCertName: getVal("ebsStfExemptionCertName", existingProf.exemptionCertName || ""),
+    isTeaching: Boolean(resolvedIsTeach),
+    userSavedExemptionV44: true,
+    userSavedSslcDutyV46: true,
+    userExplicitlyChangedMobile: true,
+    userExplicitlyChangedEmail: true,
+    userEditedStaffV59: true,
+    updatedAt: nowMs
+  });
+
+  // Also update verifiedOtpVault if email or mobile was changed so old verified email/mobile never overwrites the new one!
+  try {
+    const otpVault = getVerifiedOtpVault();
+    if (otpVault && otpVault.byStaffId && otpVault.byStaffId[staffId]) {
+      if (cleanEmail && cleanEmail.includes("@")) {
+        otpVault.byStaffId[staffId].email = cleanEmail;
+        otpVault.byStaffId[staffId].verifiedEmail = cleanEmail;
+      }
+      if (cleanMob && cleanMob.length === 10) {
+        otpVault.byStaffId[staffId].mobile = cleanMob;
+        otpVault.byStaffId[staffId].verifiedMobile = cleanMob;
+      }
+      saveVerifiedOtpVault(otpVault, false);
+    }
+  } catch (ve) {}
+
+  return prof;
+}
+
+// Upgrade saveEbsStaffProfileModal so `readCurrentEbsStaffModalDomIntoProfile` + `recordAndSyncUnifiedStaffEdit`
+// runs BEFORE `_origSaveEbsStaffProfileModal` (preventing `recalcSchoolEbsF1StaffCountsFromList` from ever overwriting new values with old vault values!)
+// AND runs AFTER `_origSaveEbsStaffProfileModal`!
+saveEbsStaffProfileModal = async function(e) {
+  if (e && typeof e.preventDefault === "function") e.preventDefault();
+  if (!_activeEbsEditingStaff) return;
+
+  // 1) Check duplicate mobile number first
+  const mobEl = document.getElementById("ebsStfMobile");
+  const cleanMob = mobEl ? String(mobEl.value || "").replace(/\D/g, "").slice(0, 10) : "";
+  const staffId = String(_activeEbsEditingStaff.staffId || document.getElementById("ebsStfEmisId")?.value || "").trim();
+  const uNo = String(_activeEbsEditingStaff.uNo || getCurrentActiveEbsUNo() || "").trim();
+  const isTeaching = Boolean(_activeEbsEditingStaff.isTeaching);
+
+  if (cleanMob.length === 10 && typeof findDuplicateStaffByMobile === "function") {
+    const dup = findDuplicateStaffByMobile(cleanMob, staffId);
+    if (dup) {
+      showToast(formatDuplicateMobileAlertTa(cleanMob, dup), "#dc2626", true);
+      if (mobEl) {
+        mobEl.style.borderColor = "#dc2626";
+        mobEl.style.background = "#fef2f2";
+        mobEl.focus();
+      }
+      return;
+    }
+  }
+
+  // 2) If a certificate file is pending upload, upload it first
+  if (_pendingExemptionCertUpload) {
+    await triggerUploadEbsExemptionCertificate();
+  }
+
+  // 3) Read ALL 45+ fields from the modal DOM and immediately stamp & persist them into `vault`, `ovMap`, and `extra.ebs2026.staffProfiles`
+  //    BEFORE calling `recalcSchoolEbsF1StaffCountsFromList` so nothing can overwrite them!
+  const fullProf = readCurrentEbsStaffModalDomIntoProfile(uNo, staffId, isTeaching);
+  if (fullProf) {
+    recordAndSyncUnifiedStaffEdit(uNo, staffId, fullProf);
+  }
+
+  if (typeof invalidateStaffMobileDirectoryIndex === "function") {
+    invalidateStaffMobileDirectoryIndex();
+  }
+
+  // 4) Propagate HM details if this staff member is the Headmaster/Principal
+  if (fullProf && /^(HEADMASTER|HEADMISTRESS|PRINCIPAL|HEAD TEACHER)/i.test(String(fullProf.desig || "").trim())) {
+    propagateSchoolAndHmDetailsEverywhere(uNo, {
+      hmName: fullProf.name || undefined,
+      hmTa: fullProf.nameTa || undefined,
+      mobile: (fullProf.mobile && fullProf.mobile.length === 10) ? fullProf.mobile : undefined,
+      _skipHmStaffRowSync: true
+    });
+  }
+
+  // 5) Recalculate F1 counts, close modal, refresh views, and push to Firebase & Google Sheet
+  recalcSchoolEbsF1StaffCountsFromList(uNo);
+  districtFlattenedStaffCache = null;
+  closeEbsStaffProfileModal();
+
+  if (document.body && document.body.classList.contains("admin-mode")) {
+    if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
+    if (typeof renderAdminEbsMasterUI === "function") renderAdminEbsMasterUI();
+  }
+  if (typeof renderSchoolEbsModule === "function") renderSchoolEbsModule();
+  if (activeSchoolSession) {
+    const extra = getSchoolExtra(uNo);
+    renderSchoolStaffTable(extra);
+    renderSchoolStaffStrengthUI(activeSchoolSession);
+  }
+  saveSchoolEbs2026Data(false, uNo);
+  showToast(`✅ [${fullProf ? fullProf.name : staffId}] அனைத்து விவரங்களும் (மின்னஞ்சல், தேர்வு மையம், சான்றிதழ் உட்பட) முழுமையாகச் சேமிக்கப்பட்டன!`, "#16a34a");
+};
+
+// Also upgrade triggerUploadEbsExemptionCertificate so when a certificate is uploaded inside the modal,
+// it preserves ALL other fields currently entered in the modal AND shows the conditional original certificate instruction!
+const _v60OrigTriggerUploadEbsExemptionCertificate = triggerUploadEbsExemptionCertificate;
+triggerUploadEbsExemptionCertificate = async function() {
+  if (!_activeEbsEditingStaff) return false;
+  const { uNo, staffId, isTeaching } = _activeEbsEditingStaff;
+  // Snapshot all current DOM inputs in the modal BEFORE upload starts
+  const preUploadDomProf = readCurrentEbsStaffModalDomIntoProfile(uNo, staffId, isTeaching);
+  if (preUploadDomProf) {
+    recordAndSyncUnifiedStaffEdit(uNo, staffId, preUploadDomProf);
+  }
+
+  const res = await _v60OrigTriggerUploadEbsExemptionCertificate();
+
+  // After upload completes, read ALL current DOM inputs again (which now includes the new `ebsStfExemptionCertUrl` & `ebsStfExemptionCertName`)
+  // and persist the full profile everywhere!
+  const postUploadDomProf = readCurrentEbsStaffModalDomIntoProfile(uNo, staffId, isTeaching);
+  if (postUploadDomProf) {
+    recordAndSyncUnifiedStaffEdit(uNo, staffId, postUploadDomProf);
+  }
+
+  // Show the conditional instruction to submit original certificate & exemption request letter to CEO Office!
+  refreshModalExemptionOriginalSubmitNote();
+  return res;
+};
+
+// Also attach live auto-save on input/select changes inside `openEbsStaffProfileModal` AND show conditional note if certificate already exists!
+const _v60OrigOpenEbsStaffProfileModal = openEbsStaffProfileModal;
+openEbsStaffProfileModal = function(uNo, staffId) {
+  _v60OrigOpenEbsStaffProfileModal(uNo, staffId);
+  refreshModalExemptionOriginalSubmitNote();
+  const formEl = document.getElementById("ebsStaffProfileForm");
+  if (formEl && !formEl._v60LiveSyncAttached) {
+    formEl._v60LiveSyncAttached = true;
+    const syncNow = () => {
+      if (!_activeEbsEditingStaff) return;
+      const p = readCurrentEbsStaffModalDomIntoProfile(_activeEbsEditingStaff.uNo, _activeEbsEditingStaff.staffId, _activeEbsEditingStaff.isTeaching);
+      if (p) {
+        const extra = getSchoolExtra(_activeEbsEditingStaff.uNo);
+        if (extra) {
+          if (!extra.ebs2026) extra.ebs2026 = {};
+          if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+          extra.ebs2026.staffProfiles[_activeEbsEditingStaff.staffId] = p;
+        }
+        const vault = getUserEditedStaffVault();
+        vault[_activeEbsEditingStaff.staffId] = p;
+        saveUserEditedStaffVault(vault, true);
+      }
+      refreshModalExemptionOriginalSubmitNote();
+    };
+    formEl.addEventListener("change", syncNow);
+  }
+};
+
+
+// --- PART 3: APPLY ALL 45+ SAVED FIELDS IN `getSchoolFixedPortalStaffList` & `getDistrictAllStaffList` ---
+function overlayCompleteSavedStaffFieldsOntoObject(st, src) {
+  if (!st || !src || typeof src !== "object") return st;
+  const copyStr = (k) => {
+    if (src[k] !== undefined && src[k] !== null && String(src[k]).trim() !== "") {
+      st[k] = src[k];
+    }
+  };
+  copyStr("name");
+  copyStr("nameTa");
+  copyStr("prefix");
+  copyStr("gender");
+  copyStr("dob");
+  copyStr("age");
+  copyStr("dor");
+  if (src.desig) st.desig = normalizeCanonicalStaffDesignation(src.desig);
+  copyStr("qualification");
+  if (src. isTeaching !== undefined && typeof src.isTeaching === "boolean") {
+    st.isTeaching = src.isTeaching;
+  }
+  if (st.isTeaching && src.subject) st.subject = src.subject;
+  copyStr("nature");
+  const isCon = /contract/i.test(String(st.nature || ""));
+  if (isCon) {
+    copyStr("typeOfContract");
+    st.ifhrmsId = "";
+  } else {
+    if (src.ifhrmsId !== undefined && src.ifhrmsId !== null && String(src.ifhrmsId).trim() !== "") {
+      st.ifhrmsId = String(src.ifhrmsId).trim();
+    }
+    copyStr("modeFirstApp");
+    copyStr("firstApp");
+    if (src.firstJoinPost) st.firstJoinPost = normalizeCanonicalStaffDesignation(src.firstJoinPost);
+    copyStr("modePresPost");
+    copyStr("dojService");
+    copyStr("unitTransferDate");
+  }
+  copyStr("dojPresPost");
+  copyStr("dojSchool");
+  copyStr("senDateRule");
+
+  if (src.mobile && String(src.mobile).replace(/\D/g, "").slice(-10).length === 10) {
+    st.mobile = String(src.mobile).replace(/\D/g, "").slice(-10);
+  }
+  if (src.altMobile !== undefined && src.altMobile !== null && String(src.altMobile).trim() !== "") {
+    st.altMobile = String(src.altMobile).replace(/\D/g, "").slice(-10);
+  }
+  if (src.email !== undefined && src.email !== null && String(src.email).trim() !== "") {
+    st.email = String(src.email).trim().toLowerCase();
+    st.emailVerified = true;
+    st.verifiedEmail = st.email;
+  }
+  copyStr("resPlace");
+  copyStr("resDistrict");
+  copyStr("prefCamp");
+
+  if (src.classesHandling && typeof src.classesHandling === "object") {
+    st.classesHandling = JSON.parse(JSON.stringify(src.classesHandling));
+  }
+  copyStr("pracSslc1");
+  copyStr("pracHsc1");
+  copyStr("pracHsc2");
+  copyStr("dutySslcWork");
+  copyStr("dutySslcCentre");
+  copyStr("dutyHseWork");
+  copyStr("dutyHseCentre");
+  copyStr("dutyCampWork");
+  copyStr("dutyCampCentre");
+  copyStr("childCentre1");
+  copyStr("childCentre2");
+  copyStr("exemptionGround");
+  copyStr("exemptionOtherSpec");
+  copyStr("exemptionCertUrl");
+  copyStr("exemptionCertName");
+  copyStr("exemptionCertDriveId");
+  copyStr("examDuty");
+  copyStr("campDuty");
+  copyStr("campOption");
+  return st;
+}
+
+const _v60OrigGetSchoolFixedPortalStaffList = getSchoolFixedPortalStaffList;
+getSchoolFixedPortalStaffList = function(uNo) {
+  uNo = String(uNo || "").trim();
+  applyAllSavedStaffEditsToSchool(uNo);
+  const list = _v60OrigGetSchoolFixedPortalStaffList(uNo);
+  const vault = getUserEditedStaffVault();
+  const ovMap = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+  const extra = getSchoolExtra(uNo);
+  const profiles = (extra && extra.ebs2026 && extra.ebs2026.staffProfiles) ? extra.ebs2026.staffProfiles : {};
+  if (Array.isArray(list)) {
+    list.forEach(st => {
+      if (!st || !st.staffId) return;
+      const sid = String(st.staffId).trim();
+      const ov = (ovMap[sid] && !ovMap[sid].deleted) ? ovMap[sid] : null;
+      const prof = profiles[sid] || null;
+      const vRec = vault[sid] || null;
+      if (ov) overlayCompleteSavedStaffFieldsOntoObject(st, ov);
+      if (prof) overlayCompleteSavedStaffFieldsOntoObject(st, prof);
+      if (vRec && (!prof || parseAnyTimestampMs(vRec.updatedAt) >= parseAnyTimestampMs(prof.updatedAt))) {
+        overlayCompleteSavedStaffFieldsOntoObject(st, vRec);
+      }
+    });
+  }
+  return list;
+};
+
+const _v60OrigGetDistrictAllStaffList = getDistrictAllStaffList;
+getDistrictAllStaffList = function(forceRefresh) {
+  const vault = getUserEditedStaffVault();
+  const ovMap = safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}) || {};
+  const touchedUNos = new Set();
+  Object.values(vault).forEach(v => { if (v && v.uNo) touchedUNos.add(String(v.uNo).trim()); });
+  Object.values(ovMap).forEach(v => { if (v && v.uNo) touchedUNos.add(String(v.uNo).trim()); });
+  touchedUNos.forEach(u => applyAllSavedStaffEditsToSchool(u));
+
+  const list = _v60OrigGetDistrictAllStaffList(forceRefresh);
+  if (Array.isArray(list)) {
+    list.forEach(st => {
+      if (!st || !st.staffId) return;
+      const sid = String(st.staffId).trim();
+      const uNo = String(st.uNo || "").trim();
+      const extra = uNo ? getSchoolExtra(uNo) : null;
+      const prof = extra?.ebs2026?.staffProfiles?.[sid] || null;
+      const ov = (ovMap[sid] && !ovMap[sid].deleted) ? ovMap[sid] : null;
+      const vRec = vault[sid] || null;
+      if (ov) overlayCompleteSavedStaffFieldsOntoObject(st, ov);
+      if (prof) overlayCompleteSavedStaffFieldsOntoObject(st, prof);
+      if (vRec && (!prof || parseAnyTimestampMs(vRec.updatedAt) >= parseAnyTimestampMs(prof.updatedAt))) {
+        overlayCompleteSavedStaffFieldsOntoObject(st, vRec);
+      }
+    });
+  }
+  return list;
+};
+
+
+// --- PART 4: SCHOOL PROFILE, EXAM CENTRE & EBS F1/F2 PERMANENT VAULT ---
+let _cachedEditedSchoolsVault = null;
+
+function getEditedSchoolsVault() {
+  if (_cachedEditedSchoolsVault && typeof _cachedEditedSchoolsVault === "object") {
+    return _cachedEditedSchoolsVault;
+  }
+  let v = null;
+  try {
+    if (typeof localStorage !== "undefined") {
+      const raw = localStorage.getItem("CEOSVG_EDITED_SCHOOLS_VAULT_V1");
+      if (raw && raw !== "null") v = JSON.parse(raw);
+    }
+  } catch (e) {}
+  if (!v || typeof v !== "object") v = {};
+  _cachedEditedSchoolsVault = v;
+  return v;
+}
+
+function saveEditedSchoolsVault(vaultObj, skipCloudPush) {
+  const v = (vaultObj && typeof vaultObj === "object") ? vaultObj : getEditedSchoolsVault();
+  _cachedEditedSchoolsVault = v;
+  try {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("CEOSVG_EDITED_SCHOOLS_VAULT_V1", JSON.stringify(v));
+    }
+  } catch (e) {
+    freeLocalStorageSpaceForCriticalWrite();
+    try { localStorage.setItem("CEOSVG_EDITED_SCHOOLS_VAULT_V1", JSON.stringify(v)); } catch (e2) {}
+  }
+  _firebaseMemoryKvStore["CEOSVG_EDITED_SCHOOLS_VAULT_V1"] = v;
+  if (!skipCloudPush) {
+    const cleanFb = typeof normalizeFirebaseDbUrl === "function" ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanFb) {
+      fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_EDITED_SCHOOLS_VAULT_V1"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(v)
+      }).catch(() => {});
+    }
+  }
+}
+
+function applySavedSchoolEditsFromVault() {
+  const v = getEditedSchoolsVault();
+  if (!v || typeof v !== "object" || Object.keys(v).length === 0) return;
+  Object.entries(v).forEach(([uNo, patch]) => {
+    if (!patch || typeof patch !== "object") return;
+    const sch = (masterSchools || []).find(m => m && String(m.uNo) === String(uNo));
+    if (sch) {
+      Object.keys(patch).forEach(k => {
+        if (patch[k] !== undefined && patch[k] !== null && patch[k] !== "") {
+          sch[k] = patch[k];
+        }
+      });
+      sch.adminEditedV1 = true;
+    }
+    if (activeSchoolSession && String(activeSchoolSession.uNo) === String(uNo)) {
+      Object.keys(patch).forEach(k => {
+        if (patch[k] !== undefined && patch[k] !== null && patch[k] !== "") {
+          activeSchoolSession[k] = patch[k];
+        }
+      });
+    }
+    const extra = schoolExtraDataStore && schoolExtraDataStore[uNo];
+    if (extra && typeof extra === "object") {
+      ["nameEn", "nameTa", "address", "pincode", "hmName", "hmTa", "mobile", "email", "dgeNo", "estDate", "hssUpgradedDate", "hssGoDetails", "centre10", "centre12", "isExamCentre"].forEach(k => {
+        if (patch[k] !== undefined && patch[k] !== null && patch[k] !== "") {
+          extra[k] = patch[k];
+        }
+      });
+    }
+  });
+}
+
+const _v60OrigPropagateSchoolAndHmDetailsEverywhere = propagateSchoolAndHmDetailsEverywhere;
+propagateSchoolAndHmDetailsEverywhere = function(uNo, updates) {
+  _v60OrigPropagateSchoolAndHmDetailsEverywhere(uNo, updates);
+  uNo = String(uNo || "").trim();
+  if (!uNo || !updates || typeof updates !== "object") return;
+  const v = getEditedSchoolsVault();
+  const cleanCopy = Object.assign({}, v[uNo] || {});
+  Object.keys(updates).forEach(k => {
+    if (!k.startsWith("_") && updates[k] !== undefined) {
+      cleanCopy[k] = updates[k];
+    }
+  });
+  cleanCopy.uNo = uNo;
+  cleanCopy.updatedAt = Date.now();
+  v[uNo] = cleanCopy;
+  saveEditedSchoolsVault(v, false);
+};
+
+const _v60OrigSanitizeAllPortalStores = sanitizeAllPortalStores;
+sanitizeAllPortalStores = function() {
+  _v60OrigSanitizeAllPortalStores();
+  applySavedSchoolEditsFromVault();
+};
+
+const _v60OrigRenderSchoolDashboard = renderSchoolDashboard;
+renderSchoolDashboard = function() {
+  applySavedSchoolEditsFromVault();
+  _v60OrigRenderSchoolDashboard();
+  if (activeSchoolSession && activeSchoolSession.uNo) {
+    const uNo = String(activeSchoolSession.uNo);
+    const s = (masterSchools || []).find(m => m && String(m.uNo) === uNo) || activeSchoolSession;
+    const extra = getSchoolExtra(uNo);
+    const f1 = (extra.ebs2026 && extra.ebs2026.f1) ? extra.ebs2026.f1 : {};
+    const auth = schoolAuthStore[uNo] || {};
+    const emEl = document.getElementById("schFormEmail");
+    if (emEl) emEl.value = s.email || extra.email || f1.gmail || auth.email || "";
+    const c10El = document.getElementById("schFormCentre10");
+    if (c10El) c10El.value = extra.centre10 || s.centre10 || "";
+    const c12El = document.getElementById("schFormCentre12");
+    if (c12El) c12El.value = extra.centre12 || s.centre12 || "";
+    const isExEl = document.getElementById("schFormIsExamCentre");
+    if (isExEl) isExEl.value = (extra.isExamCentre || s.isExamCentre || extra.centre10 || s.centre10 || extra.centre12 || s.centre12) ? "YES" : "NO";
+    toggleSchFormExamCentreInputs();
+  }
+};
+
+// Also ensure EBS F1 & F2 field edits push to cloud immediately
+const _v60OrigOnEbsF1FieldChange = onEbsF1FieldChange;
+onEbsF1FieldChange = function(field, val) {
+  _v60OrigOnEbsF1FieldChange(field, val);
+  const uNo = getCurrentActiveEbsUNo();
+  if (uNo) {
+    window._activeSyncTargetUNo = uNo;
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+  }
+};
+
+const _v60OrigOnEbsF2LangOrEngChange = onEbsF2LangOrEngChange;
+onEbsF2LangOrEngChange = function(subKey, val) {
+  _v60OrigOnEbsF2LangOrEngChange(subKey, val);
+  const uNo = getCurrentActiveEbsUNo();
+  if (uNo) {
+    window._activeSyncTargetUNo = uNo;
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+  }
+};
+
+const _v60OrigOnEbsF2SubjectMediumChange = onEbsF2SubjectMediumChange;
+onEbsF2SubjectMediumChange = function(subKey, medField, val) {
+  _v60OrigOnEbsF2SubjectMediumChange(subKey, medField, val);
+  const uNo = getCurrentActiveEbsUNo();
+  if (uNo) {
+    window._activeSyncTargetUNo = uNo;
+    safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+  }
 };
 
 </script>
