@@ -51242,5 +51242,186 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
 
 
 <!-- CEOSVG_V65_STOP_DUPLICATE_RA_NODE_PATCH_APPLIED -->
+
+<!-- === CEOSVG v6.5: SCHOOL IDLE AUTO-LOGOUT WARNING MODAL === -->
+<div id="schoolIdleLogoutWarnModal" class="modal-backdrop" style="z-index:10120;">
+  <div class="modal-card" style="max-width:460px; width:94%; text-align:center; border-top:5px solid #f59e0b;">
+    <div style="font-size:2.2rem; margin-bottom:6px;">⏱️</div>
+    <div style="font-size:1.06rem; font-weight:900; color:#92400e; margin-bottom:6px;">
+      நீண்ட நேரம் செயலற்ற நிலை — தானியங்கி வெளியேற்றம் (Auto Logout)
+    </div>
+    <div style="font-size:0.84rem; color:#334155; line-height:1.55; margin-bottom:12px;">
+      நீங்கள் நீண்ட நேரமாகப் பணியாற்றாமல் உள்ளீர்கள். பள்ளித் தரவுப் பாதுகாப்பு மற்றும் இணையத் தரவு சேமிப்பிற்காக கீழ்க்கண்ட நேரத்தில் தானாக வெளியேற்றப்படுவீர்கள்:
+    </div>
+    <div id="schoolIdleCountdownBadge" style="display:inline-block; background:#fef3c7; border:2px solid #f59e0b; color:#b45309; font-size:1.45rem; font-weight:900; padding:6px 22px; border-radius:999px; margin-bottom:14px;">
+      60 வினாடிகள்
+    </div>
+    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+      <button type="button" class="btn btn-success" onclick="keepSchoolSessionAlive()" style="font-weight:900; padding:8px 18px;">
+        ✅ பணியைத் தொடரவும் (Stay Logged In)
+      </button>
+      <button type="button" class="btn btn-outline" onclick="triggerSchoolIdleAutoLogoutNow(false)" style="font-weight:800; border-color:#dc2626; color:#dc2626; background:#fff;">
+        🚪 இப்போதே வெளியேறு
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// === CEOSVG_V65_SCHOOL_IDLE_AUTO_LOGOUT_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65IdleLogoutApplied) return;
+  window.__ceosvgV65IdleLogoutApplied = true;
+
+  // Default: 15 minutes total idle timeout (warning shown at 14th minute for 60 seconds)
+  const DEFAULT_IDLE_MINUTES = 15;
+  const WARN_SECONDS = 60;
+  const LAST_ACTIVITY_STORAGE_KEY = "CEOSVG_SCHOOL_LAST_ACTIVITY_TS";
+
+  let _lastSchoolActivityTs = Date.now();
+  let _lastActivityThrottleTs = 0;
+  let _idleWarningVisible = false;
+
+  function getConfiguredIdleTimeoutMs() {
+    const customMins = Number(window.CEOSVG_SCHOOL_IDLE_TIMEOUT_MINUTES || 0);
+    const mins = (customMins >= 2 && customMins <= 120) ? customMins : DEFAULT_IDLE_MINUTES;
+    return mins * 60 * 1000;
+  }
+
+  function isRegularSchoolSessionActive() {
+    if (typeof activeSchoolSession === "undefined" || !activeSchoolSession || !activeSchoolSession.uNo) return false;
+    if (activeSchoolSession.isAdminInspection || activeSchoolSession._fromAdminEbs || activeSchoolSession._fromAdminMidTerm) return false;
+    if (document.body && document.body.classList.contains("admin-mode")) return false;
+    const viewSch = document.getElementById("viewSchool");
+    return Boolean(viewSch && viewSch.classList.contains("active"));
+  }
+
+  function recordSchoolActivity(force) {
+    const now = Date.now();
+    if (!force && (now - _lastActivityThrottleTs) < 2000) return;
+    _lastActivityThrottleTs = now;
+    _lastSchoolActivityTs = now;
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem(LAST_ACTIVITY_STORAGE_KEY, String(now));
+      }
+    } catch (e) {}
+  }
+
+  function hideIdleWarnModal() {
+    _idleWarningVisible = false;
+    const modal = document.getElementById("schoolIdleLogoutWarnModal");
+    if (modal) modal.classList.remove("active");
+  }
+
+  window.keepSchoolSessionAlive = function() {
+    recordSchoolActivity(true);
+    hideIdleWarnModal();
+    if (typeof showToast === "function") {
+      showToast("✅ உங்கள் பள்ளி அமர்வு (Session) தொடர்ந்து செயலில் உள்ளது.", "#16a34a");
+    }
+  };
+
+  window.triggerSchoolIdleAutoLogoutNow = function(isAutoTimeout) {
+    hideIdleWarnModal();
+    if (!isRegularSchoolSessionActive()) return;
+    const mins = Math.round(getConfiguredIdleTimeoutMs() / 60000);
+    if (typeof logoutSchool === "function") {
+      logoutSchool();
+    }
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.removeItem(LAST_ACTIVITY_STORAGE_KEY);
+      }
+    } catch (e) {}
+    if (isAutoTimeout) {
+      const msg = `⏱️ ${mins} நிமிடங்களுக்கு மேல் பணியாற்றாமல் இருந்ததால் பாதுகாப்பிற்காக தானாக வெளியேற்றப்பட்டீர்கள் (Auto Logout). தொடர்ந்து பணியாற்ற மீண்டும் உள்நுழையவும்.`;
+      const errEl = document.getElementById("schoolLoginErrorMsg");
+      if (errEl) {
+        errEl.innerHTML = `<div style="background:#fffbeb; border:1.5px solid #f59e0b; color:#92400e; padding:8px 10px; border-radius:8px; font-weight:800;">${msg}</div>`;
+      }
+      if (typeof showToast === "function") {
+        showToast(msg, "#d97706", true);
+      }
+    }
+  };
+
+  // Reset idle timer whenever a school logs in
+  if (typeof loginAsSchool === "function") {
+    const _v65PrevLoginAsSchool = loginAsSchool;
+    loginAsSchool = function(school, isRestoringSession) {
+      if (isRestoringSession && school && !school.isAdminInspection) {
+        // Check if restored session already exceeded idle timeout while tab was closed!
+        try {
+          const savedTs = Number(localStorage.getItem(LAST_ACTIVITY_STORAGE_KEY) || 0);
+          if (savedTs > 0 && (Date.now() - savedTs) >= getConfiguredIdleTimeoutMs()) {
+            const res = _v65PrevLoginAsSchool.apply(this, arguments);
+            setTimeout(() => window.triggerSchoolIdleAutoLogoutNow(true), 150);
+            return res;
+          }
+        } catch (e) {}
+      }
+      recordSchoolActivity(true);
+      hideIdleWarnModal();
+      return _v65PrevLoginAsSchool.apply(this, arguments);
+    };
+  }
+
+  // Listen to user interactions (only when warning modal is not actively waiting for explicit click)
+  ["mousemove", "mousedown", "keydown", "touchstart", "scroll", "click", "input", "change"].forEach(evtName => {
+    window.addEventListener(evtName, function() {
+      if (!isRegularSchoolSessionActive()) return;
+      if (_idleWarningVisible) return;
+      recordSchoolActivity(false);
+    }, { passive: true });
+  });
+
+  // Check idle timer every 1 second using wall-clock timestamp (works accurately even after laptop sleep / background tab)
+  setInterval(function() {
+    if (!isRegularSchoolSessionActive()) {
+      if (_idleWarningVisible) hideIdleWarnModal();
+      return;
+    }
+
+    // Sync latest activity across tabs if same school is open in 2 tabs
+    try {
+      const sharedTs = Number(localStorage.getItem(LAST_ACTIVITY_STORAGE_KEY) || 0);
+      if (sharedTs > _lastSchoolActivityTs) _lastSchoolActivityTs = sharedTs;
+    } catch (e) {}
+
+    const timeoutMs = getConfiguredIdleTimeoutMs();
+    const warnStartMs = Math.max(10000, timeoutMs - WARN_SECONDS * 1000);
+    const elapsedMs = Date.now() - _lastSchoolActivityTs;
+
+    if (elapsedMs >= timeoutMs) {
+      window.triggerSchoolIdleAutoLogoutNow(true);
+      return;
+    }
+
+    if (elapsedMs >= warnStartMs) {
+      const remainSec = Math.max(1, Math.ceil((timeoutMs - elapsedMs) / 1000));
+      const badge = document.getElementById("schoolIdleCountdownBadge");
+      if (badge) badge.textContent = `${remainSec} வினாடிகள்`;
+      if (!_idleWarningVisible) {
+        _idleWarningVisible = true;
+        const modal = document.getElementById("schoolIdleLogoutWarnModal");
+        if (modal) modal.classList.add("active");
+      }
+    } else if (_idleWarningVisible) {
+      hideIdleWarnModal();
+    }
+  }, 1000);
+
+  // Immediately re-check when user switches back to the browser tab
+  document.addEventListener("visibilitychange", function() {
+    if (!document.hidden && isRegularSchoolSessionActive()) {
+      if ((Date.now() - _lastSchoolActivityTs) >= getConfiguredIdleTimeoutMs()) {
+        window.triggerSchoolIdleAutoLogoutNow(true);
+      }
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
