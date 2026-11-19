@@ -42258,12 +42258,6 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
             </span>
           </td>
           <td style="${bdr} background:#ffffff !important; text-align:center; ${numFont} font-size:0.88rem; color:#1e3a8a;">${gradeStr}</td>
-          <td style="${bdr} background:#ffffff !important; padding:4px 6px; text-align:left;">
-            <div style="width:100%; height:8px; background:#e2e8f0 !important; border-radius:999px; overflow:hidden; margin-bottom:2px;">
-              <div style="width:${pctWidth}%; height:100%; background:${barColor} !important;"></div>
-            </div>
-            <div class="ra-ta" style="font-size:0.68rem; color:#475569; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">👨‍🏫 ${escapeHtmlAttr(teacherName)}</div>
-          </td>
         </tr>
       `;
     }).join("");
@@ -42271,15 +42265,14 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
     marksTableHtml = `
       <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
         <colgroup>
-          <col style="width:5%;">
-          <col style="width:24%;">
-          <col style="width:6%;">
-          <col style="width:6%;">
-          ${isSplit ? '<col style="width:7%;"><col style="width:7%;"><col style="width:7%;">' : ''}
-          <col style="width:9%;">
-          <col style="width:11%;">
-          <col style="width:7%;">
-          <col style="width:${isSplit ? '11%' : '32%'};">
+          <col style="width:${isSplit ? '5%' : '6%'};">
+          <col style="width:${isSplit ? '28%' : '36%'};">
+          <col style="width:${isSplit ? '6%' : '8%'};">
+          <col style="width:${isSplit ? '6%' : '8%'};">
+          ${isSplit ? '<col style="width:8%;"><col style="width:8%;"><col style="width:8%;">' : ''}
+          <col style="width:${isSplit ? '10%' : '14%'};">
+          <col style="width:${isSplit ? '13%' : '18%'};">
+          <col style="width:${isSplit ? '8%' : '10%'};">
         </colgroup>
         <tr style="height:36px;">
           <td style="${bdr} background:#0f294a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">வ.எண்</td>
@@ -42294,7 +42287,6 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
           <td style="${bdr} background:#1e3a8a !important; color:#fde047 !important; text-align:center; font-weight:900; font-size:0.78rem;">பெற்ற<br>மதிப்பெண்</td>
           <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">தேர்ச்சி நிலை<br>(Result)</td>
           <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">தரம்<br>(Grade)</td>
-          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:4px 6px; text-align:left; font-weight:900; font-size:0.74rem;">முன்னேற்றம் &amp; பாட ஆசிரியர்</td>
         </tr>
         ${subRowsHtml}
         <tr style="height:36px;">
@@ -42306,8 +42298,9 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
           <td style="${bdr} background:${isPassOverall ? '#dcfce7' : '#fee2e2'} !important; text-align:center; font-weight:900; font-size:0.82rem; color:${isPassOverall ? '#166534' : '#991b1b'};">
             ${isPassOverall ? "🏆 தேர்ச்சி (PASSED)" : (stu.resultType === "FAIL" ? "❌ தோல்வி (FAILED)" : stu.resultType)}
           </td>
-          <td colspan="2" style="${bdr} background:#eff6ff !important; padding:4px 8px; text-align:center; font-weight:900; font-size:0.84rem; color:#1e3a8a;">
-            வகுப்புத் தரவரிசை (Rank): <strong style="font-size:1.02rem; color:#6d28d9;">${rankVal}</strong> &nbsp;|&nbsp; சதவீதம்: <strong>${pctStr}</strong>
+          <td style="${bdr} background:#eff6ff !important; padding:4px 4px; text-align:center; font-weight:900; font-size:0.76rem; color:#1e3a8a; line-height:1.25;">
+            <div>Rank: <strong style="font-size:0.92rem; color:#6d28d9;">${rankVal}</strong></div>
+            <div style="font-size:0.72rem; color:#1e40af;">${pctStr}</div>
           </td>
         </tr>
       </table>
