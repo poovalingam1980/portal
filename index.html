@@ -196,7 +196,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v7.6)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v7.7)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -545,7 +545,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v7.6</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v7.7</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -6303,6 +6303,11 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         <option value="2A">2A - அரசு உதவிபெறும்</option>
         <option value="3P">3P - தனியார்</option>
       </select>
+      <select id="admMtFilterLevel" class="form-control" style="width:auto; padding:5px 8px; font-size:0.78rem; font-weight:800;" onchange="renderAdminMidTermDashboard()">
+        <option value="">அனைத்துப் பள்ளி வகை (HS / HSS)</option>
+        <option value="HS">HS - உயர்நிலைப்பள்ளி</option>
+        <option value="HSS">HSS - மேல்நிலைப்பள்ளி</option>
+      </select>
       <select id="admMtFilterStatus" class="form-control" style="width:auto; padding:5px 8px; font-size:0.78rem; font-weight:800;" onchange="renderAdminMidTermDashboard()">
         <option value="ALL">அனைத்துப் பள்ளிகள் (All)</option>
         <option value="COMPLETED">✅ சமர்ப்பித்த பள்ளிகள் (Completed)</option>
@@ -6319,6 +6324,20 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         <option value="SOCIAL">சமூக அறிவியல் (SOCIAL SCIENCE)</option>
       </select>
       <input type="text" id="admMtFilterSearch" class="form-control" style="width:210px; padding:5px 10px; font-size:0.78rem; font-weight:800;" placeholder="🔍 U.No, பள்ளி, ஆசிரியர் தேடுக..." oninput="renderAdminMidTermDashboard()">
+    </div>
+  </div>
+
+  <!-- v7.7 Filtered / Bulk Reports Download Bar (Block / Management / HS-HSS / All) -->
+  <div id="admMtFilteredBulkBar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:linear-gradient(90deg,#f0fdfa 0%,#eff6ff 100%); border:1.5px solid #99f6e4; border-left:5px solid #0f766e; border-radius:10px; padding:9px 12px; margin-bottom:12px;">
+    <div style="font-size:0.79rem; font-weight:900; color:#134e4a;">
+      📥 பிரிவு வாரியான &amp; மொத்த அறிக்கைகள் பதிவிறக்கம் (ஒன்றியம் / நிர்வாகம் / HS-HSS):
+      <span id="admMtFilteredSummaryPill" style="margin-left:6px; background:#ffffff; color:#0f294a; border:1px solid #cbd5e1; padding:2px 9px; border-radius:999px; font-size:0.73rem;">வடிகட்டிய பள்ளிகள்: 0</span>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SCHOOL_CSV', false)" style="background:#0f766e; border-color:#0f766e; font-size:0.74rem; font-weight:900;">📊 School Performance (CSV)</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SUBJECT_CSV', false)" style="background:#1d4ed8; border-color:#1e40af; font-size:0.74rem; font-weight:900;">📚 Subject Performance (CSV)</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('REVIEW_PRINT', false)" style="background:#7c3aed; border-color:#6d28d9; font-size:0.74rem; font-weight:900;">📋 Review Report (PDF / Print)</button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="exportFilteredMidTermReports('ALL_PRINT', false)" style="background:#fff; color:#9a3412; border-color:#ea580c; font-size:0.74rem; font-weight:900;">📦 School + Subject + Review (மொத்த PDF)</button>
     </div>
   </div>
 
@@ -6349,7 +6368,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v7.6</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v7.7</strong>
 </p>
 </footer>
 </div>
@@ -23880,7 +23899,7 @@ function renderAdminEbsDeleteReqsBox() {
                 <th>ஆசிரியர் / பணியாளர் &amp; EMIS ID</th>
                 <th>நீக்கம் / மாறுதல் காரணம் &amp; சென்ற பள்ளி</th>
                 <th style="text-align:center;">நிலை &amp; குறிப்பு</th>
-                <th style="text-align:center;">நடவடிக்கை</th>
+                <th style="text-align:center; min-width:240px;">அறிக்கைகள்</th>
               </tr>
             </thead>
             <tbody>${rowsHtml}</tbody>
@@ -41402,6 +41421,7 @@ function renderAdminMidTermDashboard() {
 
   const blkFilter = document.getElementById("admMtFilterBlock")?.value || "";
   const mgmtFilter = document.getElementById("admMtFilterMgmt")?.value || "";
+  const fLevel = (document.getElementById("admMtFilterLevel")?.value || "").trim().toUpperCase();
   const stFilter = document.getElementById("admMtFilterStatus")?.value || "ALL";
   const subFilter = document.getElementById("admMtFilterSubject")?.value || "";
   const q = (document.getElementById("admMtFilterSearch")?.value || "").trim().toLowerCase();
@@ -41409,6 +41429,7 @@ function renderAdminMidTermDashboard() {
   const filteredCalcs = allCalcs.filter(c => {
     if (blkFilter && c.sch.block !== blkFilter) return false;
     if (mgmtFilter && c.sch.mgmt1 !== mgmtFilter) return false;
+    if (fLevel && String(c.sch.level || "").toUpperCase() !== fLevel) return false;
     const isDone = c.hasStudentEntries || c.rec.isSubmitted;
     if (stFilter === "COMPLETED" && !isDone) return false;
     if (stFilter === "PENDING" && isDone) return false;
@@ -41449,10 +41470,12 @@ function renderAdminMidTermDashboard() {
           </td>
           <td style="text-align:center;">${stBadge}</td>
           <td style="text-align:center; white-space:nowrap;">
-            <button type="button" class="btn btn-primary btn-sm" onclick="openAdminSchoolMidTermDirect('${escapeHtmlAttr(c.uNo)}')" style="background:#0f766e; border-color:#0f766e; font-size:0.72rem; padding:3px 8px; font-weight:900;">
-              👁️ திற / மதிப்பெண் பதிவு
-            </button>
-            ${isDone ? `<button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', '${escapeHtmlAttr(c.uNo)}', this)" style="font-size:0.72rem; padding:3px 7px; font-weight:900; margin-left:4px; background:#dc2626; border-color:#b91c1c;" title="Landscape PDF பதிவிறக்கு">📥 PDF</button>` : ""}
+            <div style="display:inline-flex; gap:4px; flex-wrap:wrap; justify-content:center; align-items:center;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_1', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#0f766e; border-color:#0f766e; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="School Performance PDF பதிவிறக்கு">📊 School Perf</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_2', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#1d4ed8; border-color:#1e40af; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="Subject Performance PDF பதிவிறக்கு">📚 Subject Perf</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#7c3aed; border-color:#6d28d9; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="Review Report PDF பதிவிறக்கு">📋 Review</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="openAdminSchoolMidTermDirect('${escapeHtmlAttr(c.uNo)}')" style="background:#fff; color:#0f766e; border-color:#0f766e; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="Super Admin: பள்ளி முகப்பில் திற">👁️ திற</button>
+            </div>
           </td>
         </tr>
       `;
@@ -43560,7 +43583,7 @@ const OFFICE_ROLE_PRESETS = {
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
-    allowedModules: ["ebsMaster", "examDutyAllotment", "midTermMaster", "hssGroups"],
+    allowedModules: ["ebsMaster", "examDutyAllotment", "midTermMaster", "hssGroups", "emisStaff"],
     actions: { canView: true, canEdit: true, canApprove: false, canDelete: false, canSendCircular: false, canManageUsers: false }
   },
   "CLERK_EST": {
@@ -43769,7 +43792,7 @@ const DEFAULT_OFFICE_USERS_SEED = [
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
     status: "ACTIVE",
-    allowedModules: ["ebsMaster", "examDutyAllotment", "midTermMaster", "hssGroups"],
+    allowedModules: ["ebsMaster", "examDutyAllotment", "midTermMaster", "hssGroups", "emisStaff"],
     actions: { canView: true, canEdit: true, canApprove: false, canDelete: false, canSendCircular: false, canManageUsers: false },
     updatedAt: "16/11/2026"
   },
@@ -47923,7 +47946,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v7.6) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v7.7) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -47985,7 +48008,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v7.6)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v7.7)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -47994,7 +48017,7 @@ function openPortalShortcutModal() {
         <div style="background:#f0f9ff; border:1.5px solid #7dd3fc; border-left:5px solid #0284c7; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
           <div style="font-size:0.90rem; font-weight:900; color:#0c4a6e;">💡 ஏன் செயலிக்கு (App) பதிலாக நேரடி Shortcut பயன்படுத்த வேண்டும்?</div>
           <div style="font-size:0.79rem; color:#0369a1; font-weight:700; margin-top:4px; line-height:1.5;">
-            பழைய செயலி (App) முறையினால் சில பள்ளிகளுக்குப் புதிய மேம்பாடுகள் உடனடியாகப் புதுப்பிக்கப்படாமல் பழைய பதிப்பே (Old Version) காட்டப்பட்டது. அதனைத் தவிர்த்து, <strong>ஒவ்வொரு முறை திறக்கும்போதும் 100% சமீபத்திய நேரடிப் பதிப்பு (Live Version v7.6)</strong> மட்டுமே திறக்கும் வகையில் இந்த <strong>Shortcut</strong> வசதி அமைக்கப்பட்டுள்ளது.
+            பழைய செயலி (App) முறையினால் சில பள்ளிகளுக்குப் புதிய மேம்பாடுகள் உடனடியாகப் புதுப்பிக்கப்படாமல் பழைய பதிப்பே (Old Version) காட்டப்பட்டது. அதனைத் தவிர்த்து, <strong>ஒவ்வொரு முறை திறக்கும்போதும் 100% சமீபத்திய நேரடிப் பதிப்பு (Live Version v7.7)</strong> மட்டுமே திறக்கும் வகையில் இந்த <strong>Shortcut</strong> வசதி அமைக்கப்பட்டுள்ளது.
           </div>
         </div>
 
@@ -53327,7 +53350,7 @@ export default {
 
 
 <style>
-/* CEOSVG v7.6: Hide passwordless school-entry buttons for non-Super-Admin Office Staff / DEO sessions */
+/* CEOSVG v7.7: Hide passwordless school-entry buttons for non-Super-Admin Office Staff / DEO sessions */
 body.office-staff-no-school-entry [onclick*="adminInspectSchoolPortal"],
 body.office-staff-no-school-entry [onclick*="openAdminSchoolEbsDirect"],
 body.office-staff-no-school-entry [onclick*="openAdminMidTermSchoolDirect"],
@@ -53495,6 +53518,230 @@ body.office-staff-no-school-entry #admMaintenanceControlStrip {
   }
 
   syncOfficeStaffSchoolEntryRestrictionUi();
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V77_EXAM_REPORTS_AND_SENIORITY_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV77Applied) return;
+  window.__ceosvgV77Applied = true;
+
+  // 1) Auto-upgrade any already-saved CLERK_EXAM / OU_CLERK_EXAM user in storage to include "emisStaff"
+  function ensureExamClerkHasSeniorityAndCustomTable() {
+    try {
+      const list = (typeof getOfficeUsersStore === "function") ? getOfficeUsersStore() : (safeGetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", []) || []);
+      let changed = false;
+      if (Array.isArray(list)) {
+        list.forEach(u => {
+          if (!u) return;
+          if (u.rolePreset === "CLERK_EXAM" || u.id === "OU_CLERK_EXAM" || String(u.username || "").toLowerCase() === "clerk_exam") {
+            if (!Array.isArray(u.allowedModules)) u.allowedModules = [];
+            if (!u.allowedModules.includes("emisStaff")) {
+              u.allowedModules.push("emisStaff");
+              changed = true;
+            }
+          }
+        });
+        if (changed) {
+          safeSetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", list, true);
+        }
+      }
+      if (typeof activeAdminOfficerSession !== "undefined" && activeAdminOfficerSession) {
+        const u = activeAdminOfficerSession;
+        if (u.rolePreset === "CLERK_EXAM" || u.id === "OU_CLERK_EXAM" || String(u.username || "").toLowerCase() === "clerk_exam") {
+          if (!Array.isArray(u.allowedModules)) u.allowedModules = [];
+          if (!u.allowedModules.includes("emisStaff")) {
+            u.allowedModules.push("emisStaff");
+            safeSetStorage("CEOSVG_ACTIVE_OFFICER_USER", u, true);
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Hook loginAsOfficeStaffOrDeo so Exam Section login always gets emisStaff (Seniority + Customized Table)
+  if (typeof loginAsOfficeStaffOrDeo === "function") {
+    const _v77OrigLoginOfficer = loginAsOfficeStaffOrDeo;
+    loginAsOfficeStaffOrDeo = function(userObj, isPreview) {
+      try {
+        if (userObj && (userObj.rolePreset === "CLERK_EXAM" || userObj.id === "OU_CLERK_EXAM" || String(userObj.username || "").toLowerCase() === "clerk_exam")) {
+          if (!Array.isArray(userObj.allowedModules)) userObj.allowedModules = [];
+          if (!userObj.allowedModules.includes("emisStaff")) userObj.allowedModules.push("emisStaff");
+        }
+      } catch (e) {}
+      return _v77OrigLoginOfficer.apply(this, arguments);
+    };
+  }
+  ensureExamClerkHasSeniorityAndCustomTable();
+
+  // 2) Helper: get currently filtered Result Analysis calculations (Block + Mgmt + HS/HSS Level + Status + Search)
+  function getFilteredMidTermCalcsForExport(ignoreFilters) {
+    const is12 = (_activeResultAnalysisStd === "12");
+    const schools = is12 ? getHssSchoolsListFor12th() : getHighAndHigherSecSchoolsList();
+    const allCalcs = schools.map(s => computeSchoolExamResultAnalysis(s.uNo, _activeMidTermTermKey, _activeResultAnalysisStd));
+    if (ignoreFilters) return allCalcs;
+
+    const fBlock = (document.getElementById("admMtFilterBlock")?.value || "").trim();
+    const fMgmt = (document.getElementById("admMtFilterMgmt")?.value || "").trim();
+    const fLevel = (document.getElementById("admMtFilterLevel")?.value || "").trim().toUpperCase();
+    const fStatus = (document.getElementById("admMtFilterStatus")?.value || "ALL").trim();
+    const q = (document.getElementById("admMtFilterSearch")?.value || "").trim().toLowerCase();
+
+    return allCalcs.filter(c => {
+      if (fBlock && String(c.sch.block || "") !== fBlock) return false;
+      if (fMgmt && String(c.sch.mgmt1 || "") !== fMgmt) return false;
+      if (fLevel && String(c.sch.level || "").toUpperCase() !== fLevel) return false;
+      const isDone = c.hasStudentEntries || c.rec.isSubmitted;
+      if (fStatus === "COMPLETED" && !isDone) return false;
+      if (fStatus === "PENDING" && isDone) return false;
+      if (fStatus === "PASS_100" && (!isDone || c.passPctNum < 100)) return false;
+      if (fStatus === "BELOW_80" && (!isDone || c.passPctNum >= 80)) return false;
+      if (q) {
+        const hay = `${c.uNo} ${c.sch.nameTa} ${c.sch.nameEn} ${c.sch.block} ${c.sch.udiseNo}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function updateFilteredSummaryPill() {
+    try {
+      const pill = document.getElementById("admMtFilteredSummaryPill");
+      if (!pill) return;
+      const list = getFilteredMidTermCalcsForExport(false);
+      const doneCnt = list.filter(c => c.hasStudentEntries || c.rec.isSubmitted).length;
+      const fBlock = (document.getElementById("admMtFilterBlock")?.value || "").trim() || "அனைத்து ஒன்றியம்";
+      const fMgmt = (document.getElementById("admMtFilterMgmt")?.value || "").trim() || "அனைத்து நிர்வாகம்";
+      const fLevel = (document.getElementById("admMtFilterLevel")?.value || "").trim() || "HS/HSS";
+      pill.textContent = `${fBlock} • ${fMgmt} • ${fLevel} — பள்ளிகள்: ${list.length} (சமர்ப்பித்தவை: ${doneCnt})`;
+    } catch (e) {}
+  }
+
+  if (typeof renderAdminMidTermDashboard === "function") {
+    const _v77OrigRenderMt = renderAdminMidTermDashboard;
+    renderAdminMidTermDashboard = function() {
+      const r = _v77OrigRenderMt.apply(this, arguments);
+      updateFilteredSummaryPill();
+      return r;
+    };
+  }
+
+  // 3) Filtered & Bulk Reports Exporter (School Performance CSV, Subject Performance CSV, Review Report Print/PDF, All Combined Print/PDF)
+  window.exportFilteredMidTermReports = function(mode, ignoreFilters) {
+    const list = getFilteredMidTermCalcsForExport(Boolean(ignoreFilters));
+    if (!list || list.length === 0) {
+      if (typeof showToast === "function") showToast("⚠️ தேர்ந்தெடுத்த வடிகட்டியில் பள்ளிகள் எதுவும் இல்லை.", "#f59e0b");
+      return;
+    }
+
+    const is12 = (_activeResultAnalysisStd === "12");
+    const stdTag = is12 ? "12th" : "10th";
+    const fBlock = ((document.getElementById("admMtFilterBlock")?.value || "").trim() || "All_Blocks").replace(/[^A-Za-z0-9]+/g, "_");
+    const fMgmt = (document.getElementById("admMtFilterMgmt")?.value || "").trim() || "All_Mgmt";
+    const fLevel = (document.getElementById("admMtFilterLevel")?.value || "").trim() || "All_Level";
+    const scopeTag = ignoreFilters ? "District_All" : `${fBlock}_${fMgmt}_${fLevel}`;
+    const esc = v => `"${String(v !== undefined && v !== null ? v : "").replace(/"/g, '""')}"`;
+
+    if (mode === "SCHOOL_CSV") {
+      const headers = [
+        "SN", "U.No", "UDISE", "Block", "Management", "Level", "School Name (EN)", "School Name (TA)",
+        "EMIS_Total", "Appeared", "Passed", "Failed", "Pass_%", "1Sub_Fail", "2Sub_Fail", "3+Sub_Fail",
+        "First_Mark", "School_Avg", "Status"
+      ];
+      const rows = [headers.map(esc).join(",")];
+      list.forEach((c, i) => {
+        const isDone = c.hasStudentEntries || c.rec.isSubmitted;
+        rows.push([
+          i + 1, c.uNo, c.sch.udiseNo || "", c.sch.block || "", c.sch.mgmt1 || "", c.sch.level || "",
+          c.sch.nameEn || "", c.sch.nameTa || "",
+          c.emis.t, isDone ? c.appeared.t : "", isDone ? c.passed.t : "", isDone ? c.failed.t : "",
+          isDone ? c.passPctStr : "", isDone ? c.failedSubCounts.s1 : "", isDone ? c.failedSubCounts.s2 : "",
+          isDone ? c.failedSubCounts.s3 : "", isDone ? c.schoolFirstMark : "", isDone ? c.schoolAvgMark100 : "",
+          c.rec.isSubmitted ? "Completed" : (c.hasStudentEntries ? "Draft" : "Pending")
+        ].map(esc).join(","));
+      });
+      const blob = new Blob(["\uFEFF" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `School_Performance_${stdTag}_${_activeMidTermTermKey}_${scopeTag}.csv`;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); if (a.parentNode) a.parentNode.removeChild(a); }, 400);
+      if (typeof showToast === "function") showToast(`📊 School Performance CSV (${list.length} பள்ளிகள்) பதிவிறக்கப்பட்டது!`, "#0f766e");
+      return;
+    }
+
+    if (mode === "SUBJECT_CSV") {
+      const headers = [
+        "SN", "U.No", "Block", "Management", "Level", "School Name", "Teacher Name (EN)", "Teacher Name (TA)",
+        "Designation", "EMIS ID", "Mobile", "Subject", "Medium",
+        "Students", "Appeared", "Passed", "Failed", "Pass_%", "Avg_Mark", "Max_Mark", "Centums", "1Sub_Fail_Only"
+      ];
+      const rows = [headers.map(esc).join(",")];
+      let sn = 1;
+      list.forEach(c => {
+        if (!c.hasStudentEntries && !c.rec.isSubmitted) return;
+        (c.f2Rows || []).forEach(r => {
+          const t = r.teacher || {};
+          rows.push([
+            sn++, c.uNo, c.sch.block || "", c.sch.mgmt1 || "", c.sch.level || "",
+            `${c.sch.nameEn || ""} (${c.sch.nameTa || ""})`,
+            t.nameEn || "", t.nameTa || "", t.desig || "", t.staffId || "", t.mobile || "",
+            r.subLabel || r.subKey || "", r.medium || "",
+            r.totStudents || 0, r.appeared || 0, r.passed || 0, r.failed || 0,
+            r.passPctStr || "", r.avgMark || "", r.maxMark || "", r.centum || 0, r.onlyThisFail || 0
+          ].map(esc).join(","));
+        });
+      });
+      if (rows.length <= 1) {
+        if (typeof showToast === "function") showToast("⚠️ தேர்ந்தெடுத்த பள்ளிகளில் பாட வாரியான பதிவுகள் இல்லை.", "#f59e0b");
+        return;
+      }
+      const blob = new Blob(["\uFEFF" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Subject_Performance_${stdTag}_${_activeMidTermTermKey}_${scopeTag}.csv`;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); if (a.parentNode) a.parentNode.removeChild(a); }, 400);
+      if (typeof showToast === "function") showToast(`📚 Subject Performance CSV (${rows.length - 1} பாடப் பதிவுகள்) பதிவிறக்கப்பட்டது!`, "#1d4ed8");
+      return;
+    }
+
+    if (mode === "REVIEW_PRINT" || mode === "ALL_PRINT") {
+      const submitted = list.filter(c => c.hasStudentEntries || c.rec.isSubmitted);
+      if (submitted.length === 0) {
+        if (typeof showToast === "function") showToast("⚠️ தேர்ந்தெடுத்த பிரிவில் மதிப்பெண் பதிவு செய்த பள்ளிகள் எதுவும் இல்லை.", "#f59e0b");
+        return;
+      }
+      const pages = [];
+      submitted.forEach(c => {
+        if (mode === "ALL_PRINT") {
+          if (typeof buildMidTermForm1_1ExactHtml === "function") pages.push(buildMidTermForm1_1ExactHtml(c, true));
+          if (typeof buildMidTermForm1_2ExactHtml === "function") pages.push(buildMidTermForm1_2ExactHtml(c, true));
+        }
+        if (is12 && typeof build12thReviewReportExactHtml === "function") {
+          pages.push(build12thReviewReportExactHtml(c, true));
+        } else if (!is12 && typeof build10thReviewReportExactHtml === "function") {
+          pages.push(build10thReviewReportExactHtml(c, true));
+        }
+      });
+      if (pages.length === 0) {
+        if (typeof showToast === "function") showToast("⚠️ அறிக்கை உருவாக்க இயலவில்லை.", "#ef4444");
+        return;
+      }
+      const w = window.open("", "_blank");
+      if (!w) {
+        if (typeof showToast === "function") showToast("⚠️ Pop-up தடுக்கப்பட்டுள்ளது! உலாவியில் Pop-up அனுமதித்து மீண்டும் முயலவும்.", "#f59e0b");
+        return;
+      }
+      const titleText = `${mode === "ALL_PRINT" ? "School + Subject + Review" : "Review Report"} - ${stdTag} (${scopeTag} - ${submitted.length} Schools)`;
+      w.document.open();
+      w.document.write(`<!DOCTYPE html><html lang="ta"><head><meta charset="UTF-8"><title>${titleText}</title><style>@page{size:A4 landscape;margin:6mm}body{margin:0;padding:8px;background:#fff;color:#000;font-family:Arial,'Mukta Malar',sans-serif}.mt-bulk-page{page-break-after:always;break-after:page;margin-bottom:14px}.mt-bulk-page:last-child{page-break-after:auto;break-after:auto}@media print{.no-print{display:none !important}body{padding:0}}</style></head><body><div class="no-print" style="background:#0f294a;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-radius:8px;margin-bottom:12px;"><strong>${titleText}</strong><button onclick="window.print()" style="background:#16a34a;color:#fff;border:none;padding:7px 16px;border-radius:6px;font-weight:900;cursor:pointer;">🖨️ Print / Save as PDF</button></div>${pages.map(p => `<div class="mt-bulk-page">${p}</div>`).join("")}</body></html>`);
+      w.document.close();
+      if (typeof showToast === "function") showToast(`📋 ${submitted.length} பள்ளிகளின் அறிக்கை Print / PDF திரையில் திறக்கப்பட்டது!`, "#7c3aed");
+    }
+  };
 })();
 </script>
 
