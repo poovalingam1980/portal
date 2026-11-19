@@ -2,6 +2,120 @@
 <html lang="ta">
 <head>
 <script>
+// === CEOSVG_V66_UNIFIED_MASTER_SCHEDULER_PATCH_APPLIED ===
+// Single Master Scheduler replacing all 10 separate setInterval timers.
+// Automatically pauses (0 active timers) when tab is hidden (document.hidden === true)
+// to minimize CPU, battery, and Firebase requests, and resumes cleanly on tab focus.
+window.CEOSVG_MASTER_SCHEDULER = (function() {
+  const tasks = new Map();
+  let masterTimerId = null;
+  let currentTickMs = 0;
+
+  function computeDesiredTickMs() {
+    if (tasks.size === 0) return 0;
+    let minMs = 60000;
+    tasks.forEach(t => {
+      if (t.intervalMs < minMs) minMs = t.intervalMs;
+    });
+    return minMs < 5000 ? 1000 : 5000;
+  }
+
+  function runDueTasks(forceWakeCheck) {
+    if (typeof document !== "undefined" && document.hidden) return;
+    const now = Date.now();
+    tasks.forEach((task, id) => {
+      if (task.running) return;
+      const due = (now - task.lastRun) >= task.intervalMs;
+      const wakeHit = Boolean(forceWakeCheck && task.runOnWake && (now - task.lastRun) >= 1000);
+      if (due || wakeHit) {
+        task.lastRun = now;
+        task.running = true;
+        try {
+          const ret = task.fn();
+          if (ret && typeof ret.finally === "function") {
+            ret.finally(() => { task.running = false; });
+          } else {
+            task.running = false;
+          }
+        } catch (err) {
+          task.running = false;
+        }
+      }
+    });
+  }
+
+  function stopMasterLoop() {
+    if (masterTimerId !== null) {
+      clearInterval(masterTimerId);
+      masterTimerId = null;
+      currentTickMs = 0;
+    }
+  }
+
+  function syncMasterLoop() {
+    if (typeof document !== "undefined" && document.hidden) {
+      stopMasterLoop();
+      return;
+    }
+    const desired = computeDesiredTickMs();
+    if (desired === 0) {
+      stopMasterLoop();
+      return;
+    }
+    if (masterTimerId !== null && currentTickMs === desired) return;
+    stopMasterLoop();
+    currentTickMs = desired;
+    // The ONLY setInterval in the entire portal!
+    masterTimerId = setInterval(function() {
+      runDueTasks(false);
+    }, currentTickMs);
+  }
+
+  if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
+    document.addEventListener("visibilitychange", function() {
+      if (document.hidden) {
+        stopMasterLoop();
+      } else {
+        runDueTasks(true);
+        syncMasterLoop();
+      }
+    });
+  }
+
+  return {
+    register: function(id, fn, intervalMs, opts) {
+      const key = String(id || ("task_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6)));
+      const ms = Math.max(1000, Number(intervalMs || 1000));
+      tasks.set(key, {
+        id: key,
+        fn: fn,
+        intervalMs: ms,
+        lastRun: Date.now(),
+        running: false,
+        runOnWake: Boolean((opts && opts.runOnWake) || key === "school_idle_auto_logout")
+      });
+      syncMasterLoop();
+      return key;
+    },
+    unregister: function(id) {
+      if (!id) return;
+      tasks.delete(String(id));
+      syncMasterLoop();
+    },
+    getStatus: function() {
+      return {
+        paused: Boolean(typeof document !== "undefined" && document.hidden),
+        activeMasterTimer: masterTimerId !== null,
+        tickMs: currentTickMs,
+        taskCount: tasks.size,
+        taskIds: Array.from(tasks.keys())
+      };
+    }
+  };
+})();
+</script>
+
+<script>
 (function() {
   try {
     if (typeof window !== "undefined") {
@@ -82,7 +196,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.5)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.6)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -431,7 +545,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.5</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.6</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -17038,8 +17152,8 @@ window.addEventListener("online", function() {
 appendFirebaseActivityLog("🌐 இணைய இணைப்பு மீட்டமைக்கப்பட்டது – நிலுவையிலுள்ள Dual-Sync தரவுகள் ஒத்திசைக்கப்படுகின்றன...", "#4ade80");
 flushDualSyncRetryQueue();
 });
-if (_dualSyncRetryTimer) clearInterval(_dualSyncRetryTimer);
-_dualSyncRetryTimer = setInterval(() => {
+if (_dualSyncRetryTimer) CEOSVG_MASTER_SCHEDULER.unregister(_dualSyncRetryTimer);
+_dualSyncRetryTimer = CEOSVG_MASTER_SCHEDULER.register("dual_sync_retry", () => {
 if (navigator.onLine !== false) flushDualSyncRetryQueue();
 }, 20000);
 updateFirebaseStatusIndicators();
@@ -17055,7 +17169,7 @@ try { firebaseSseSource.close(); } catch (e) {}
 firebaseSseSource = null;
 }
 if (firebasePollTimer) {
-clearInterval(firebasePollTimer);
+CEOSVG_MASTER_SCHEDULER.unregister(firebasePollTimer);
 firebasePollTimer = null;
 }
 }
@@ -17066,7 +17180,7 @@ function startFirebaseRealtimeListener() {
   updateFirebaseStatusIndicators(true);
   // Quota-Safe Mode: No persistent EventSource (prevents 100/100 connection exhaustion).
   // Poll lightweight last_event (~200 bytes) ONLY every 45s when tab is visible & user is logged in as Admin!
-  firebasePollTimer = setInterval(async () => {
+  firebasePollTimer = CEOSVG_MASTER_SCHEDULER.register("firebase_admin_poll", async () => {
     if (document.hidden || !normalizeFirebaseDbUrl(firebaseDbUrl) || !firebaseAutoSyncEnabled) return;
     const isAdminActive = Boolean(document.getElementById("viewAdmin")?.classList.contains("active"));
     if (!isAdminActive) return;
@@ -34166,17 +34280,17 @@ function updatePwaUiStatusIndicators() {
 
 function startPwaFloatingBannerAutoHide(seconds) {
   if (_pwaBannerAutoHideTimer) clearTimeout(_pwaBannerAutoHideTimer);
-  if (_pwaBannerCountdownInterval) clearInterval(_pwaBannerCountdownInterval);
+  if (_pwaBannerCountdownInterval) CEOSVG_MASTER_SCHEDULER.unregister(_pwaBannerCountdownInterval);
   let remaining = Number(seconds || 8);
   const timerBadge = document.getElementById("pwaBannerAutoHideTimerText");
   if (timerBadge) timerBadge.textContent = `${remaining}s`;
-  _pwaBannerCountdownInterval = setInterval(() => {
+  _pwaBannerCountdownInterval = CEOSVG_MASTER_SCHEDULER.register("pwa_banner_countdown", () => {
     remaining -= 1;
     if (timerBadge && remaining > 0) {
       timerBadge.textContent = `${remaining}s`;
     }
     if (remaining <= 0) {
-      clearInterval(_pwaBannerCountdownInterval);
+      CEOSVG_MASTER_SCHEDULER.unregister(_pwaBannerCountdownInterval);
       _pwaBannerCountdownInterval = null;
     }
   }, 1000);
@@ -34184,7 +34298,7 @@ function startPwaFloatingBannerAutoHide(seconds) {
     const banner = document.getElementById("pwaInstallFloatingBanner");
     if (banner) banner.style.display = "none";
     if (_pwaBannerCountdownInterval) {
-      clearInterval(_pwaBannerCountdownInterval);
+      CEOSVG_MASTER_SCHEDULER.unregister(_pwaBannerCountdownInterval);
       _pwaBannerCountdownInterval = null;
     }
   }, remaining * 1000);
@@ -34192,17 +34306,17 @@ function startPwaFloatingBannerAutoHide(seconds) {
 
 function startPwaModalAutoHide(seconds) {
   if (_pwaModalAutoHideTimer) clearTimeout(_pwaModalAutoHideTimer);
-  if (_pwaModalCountdownInterval) clearInterval(_pwaModalCountdownInterval);
+  if (_pwaModalCountdownInterval) CEOSVG_MASTER_SCHEDULER.unregister(_pwaModalCountdownInterval);
   let remaining = Number(seconds || 12);
   const timerEl = document.getElementById("pwaModalAutoHideCountdown");
   if (timerEl) timerEl.textContent = `⏱️ ${remaining} வினாடிகளில் தானாக மறையும்`;
-  _pwaModalCountdownInterval = setInterval(() => {
+  _pwaModalCountdownInterval = CEOSVG_MASTER_SCHEDULER.register("pwa_modal_countdown", () => {
     remaining -= 1;
     if (timerEl && remaining > 0) {
       timerEl.textContent = `⏱️ ${remaining} வினாடிகளில் தானாக மறையும்`;
     }
     if (remaining <= 0) {
-      clearInterval(_pwaModalCountdownInterval);
+      CEOSVG_MASTER_SCHEDULER.unregister(_pwaModalCountdownInterval);
       _pwaModalCountdownInterval = null;
     }
   }, 1000);
@@ -34268,7 +34382,7 @@ function closePwaInstallGuideModal() {
     _pwaModalAutoHideTimer = null;
   }
   if (_pwaModalCountdownInterval) {
-    clearInterval(_pwaModalCountdownInterval);
+    CEOSVG_MASTER_SCHEDULER.unregister(_pwaModalCountdownInterval);
     _pwaModalCountdownInterval = null;
   }
   const modal = document.getElementById("pwaInstallGuideModal");
@@ -34284,7 +34398,7 @@ function dismissPwaFloatingBanner() {
     _pwaBannerAutoHideTimer = null;
   }
   if (_pwaBannerCountdownInterval) {
-    clearInterval(_pwaBannerCountdownInterval);
+    CEOSVG_MASTER_SCHEDULER.unregister(_pwaBannerCountdownInterval);
     _pwaBannerCountdownInterval = null;
   }
   const banner = document.getElementById("pwaInstallFloatingBanner");
@@ -41928,10 +42042,10 @@ function closeAdminLiveUsersModal() {
 function initPortalLivePresenceEngine() {
   sendLiveUserHeartbeat();
   refreshLivePresenceFromCloud(false);
-  if (_livePresenceIntervalId) clearInterval(_livePresenceIntervalId);
-  _livePresenceIntervalId = setInterval(() => {
+  if (_livePresenceIntervalId) CEOSVG_MASTER_SCHEDULER.unregister(_livePresenceIntervalId);
+  _livePresenceIntervalId = CEOSVG_MASTER_SCHEDULER.register("live_presence_refresh", () => {
     refreshLivePresenceFromCloud(false);
-  }, 20000);
+  }, 60000);
 
   if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
     window.addEventListener("beforeunload", () => {
@@ -43159,8 +43273,8 @@ function updateAdminAutoBackupUiStrip() {
 }
 
 function startOrRestartAdminAutoBackupScheduler() {
-  if (_adminAutoBackupTimer) clearInterval(_adminAutoBackupTimer);
-  if (_adminAutoBackupCountdownTimer) clearInterval(_adminAutoBackupCountdownTimer);
+  if (_adminAutoBackupTimer) CEOSVG_MASTER_SCHEDULER.unregister(_adminAutoBackupTimer);
+  if (_adminAutoBackupCountdownTimer) CEOSVG_MASTER_SCHEDULER.unregister(_adminAutoBackupCountdownTimer);
   const cfg = getAdminAutoBackupConfig();
   const mins = Number(cfg.intervalMinutes || 0);
   updateAdminAutoBackupUiStrip();
@@ -43171,12 +43285,12 @@ function startOrRestartAdminAutoBackupScheduler() {
   }
   const intervalMs = mins * 60 * 1000;
   _adminNextBackupTimestamp = Date.now() + intervalMs;
-  _adminAutoBackupTimer = setInterval(() => {
+  _adminAutoBackupTimer = CEOSVG_MASTER_SCHEDULER.register("admin_auto_backup", () => {
     _adminNextBackupTimestamp = Date.now() + intervalMs;
     executePortalBackupSnapshot(false, false);
   }, intervalMs);
 
-  _adminAutoBackupCountdownTimer = setInterval(() => {
+  _adminAutoBackupCountdownTimer = CEOSVG_MASTER_SCHEDULER.register("admin_auto_backup_countdown", () => {
     const remSec = Math.max(0, Math.floor((_adminNextBackupTimestamp - Date.now()) / 1000));
     const m = String(Math.floor(remSec / 60)).padStart(2, "0");
     const s = String(remSec % 60).padStart(2, "0");
@@ -46078,7 +46192,7 @@ setTimeout(() => {
   enforceEmisMasterDeletedStaffFilter();
   renderSiteMaintenanceUI();
   pollSiteMaintenanceFromCloud();
-  setInterval(() => { if (!document.hidden) pollSiteMaintenanceFromCloud(); }, 240000);
+  CEOSVG_MASTER_SCHEDULER.register("site_maintenance_poll", () => { pollSiteMaintenanceFromCloud(); }, 240000);
 }, 300);
 
 
@@ -46091,8 +46205,8 @@ setTimeout(() => {
    ============================================================================ */
 
 startOrRestartAdminAutoBackupScheduler = function() {
-  if (typeof _adminAutoBackupTimer !== "undefined" && _adminAutoBackupTimer) clearInterval(_adminAutoBackupTimer);
-  if (typeof _adminAutoBackupCountdownTimer !== "undefined" && _adminAutoBackupCountdownTimer) clearInterval(_adminAutoBackupCountdownTimer);
+  if (typeof _adminAutoBackupTimer !== "undefined" && _adminAutoBackupTimer) CEOSVG_MASTER_SCHEDULER.unregister(_adminAutoBackupTimer);
+  if (typeof _adminAutoBackupCountdownTimer !== "undefined" && _adminAutoBackupCountdownTimer) CEOSVG_MASTER_SCHEDULER.unregister(_adminAutoBackupCountdownTimer);
   const pill = document.getElementById("admBackupStatusPill");
   if (pill) {
     pill.textContent = "நிர்வாகி தேவையெனில் மட்டும் (MANUAL)";
@@ -51376,7 +51490,7 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
   });
 
   // Check idle timer every 1 second using wall-clock timestamp (works accurately even after laptop sleep / background tab)
-  setInterval(function() {
+  CEOSVG_MASTER_SCHEDULER.register("school_idle_auto_logout", function() {
     if (!isRegularSchoolSessionActive()) {
       if (_idleWarningVisible) hideIdleWarnModal();
       return;
@@ -51691,7 +51805,7 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
       if (!cleanUrl) return;
       if (typeof updateFirebaseStatusIndicators === "function") updateFirebaseStatusIndicators(true);
       // Quota-Safe v6.5: Poll ONLY ~200-byte meta_versions every 4 minutes (240s) when tab is visible & Admin is active!
-      firebasePollTimer = setInterval(async () => {
+      firebasePollTimer = CEOSVG_MASTER_SCHEDULER.register("firebase_admin_poll", async () => {
         if (document.hidden || !normalizeFirebaseDbUrl(firebaseDbUrl) || !firebaseAutoSyncEnabled) return;
         const isAdminActive = Boolean(document.getElementById("viewAdmin")?.classList.contains("active"));
         if (!isAdminActive) return;
