@@ -17224,7 +17224,7 @@ if (showNotification) showToast("⚠️ முதலில் Firebase Database 
 return;
 }
 try {
-const res = await fetch(buildFirebaseEndpoint("ceosvg_live"));
+return; /* v6.5: Legacy full root ceosvg_live GET permanently removed to prevent 10-25MB downloads */ const res = { ok: false };
 if (!res.ok) throw new Error("HTTP " + res.status);
 const rootData = await res.json();
 if (!rootData) {
@@ -21067,7 +21067,7 @@ async function loadStaticMasterDatasetsFromFirebaseIfNeeded() {
   const cleanUrl = normalizeFirebaseDbUrl(firebaseDbUrl);
   if (!cleanUrl) return;
   try {
-    const res = await fetch(buildFirebaseEndpoint("ceosvg_live/static_master"));
+    return; /* v6.5: Legacy full static_master GET permanently removed — static datasets are embedded locally */ const res = { ok: false };
     if (res.ok) {
       const sm = await res.json();
       if (sm && typeof sm === "object") {
@@ -45771,7 +45771,7 @@ pullAllPortalDataFromFirebase = async function(showNotification) {
     return;
   }
   // Throttle automatic admin full-pulls to at most once every 45 seconds unless manually clicked
-  if (!showNotification && (Date.now() - _lastFullAdminFirebasePullTs < 45000)) {
+  if (!showNotification && (Date.now() - _lastFullAdminFirebasePullTs < 240000)) {
     return;
   }
 
@@ -45941,8 +45941,7 @@ async function pushSiteMaintenanceConfigToCloud(cfg) {
   if (cleanUrl) {
     try {
       await Promise.all([
-        fetch(buildFirebaseEndpoint("ceosvg_live/site_maintenance"), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cfg) }),
-        fetch(buildFirebaseEndpoint("ceosvg_live/static_master/site_maintenance"), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cfg) })
+        fetch(buildFirebaseEndpoint("ceosvg_live/site_maintenance"), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cfg) })
       ]);
     } catch (e) {}
   }
@@ -46079,7 +46078,7 @@ setTimeout(() => {
   enforceEmisMasterDeletedStaffFilter();
   renderSiteMaintenanceUI();
   pollSiteMaintenanceFromCloud();
-  setInterval(() => { if (!document.hidden) pollSiteMaintenanceFromCloud(); }, 60000);
+  setInterval(() => { if (!document.hidden) pollSiteMaintenanceFromCloud(); }, 240000);
 }, 300);
 
 
@@ -51420,6 +51419,304 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
       }
     }
   });
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_BLOCK_ROOT_STATIC_MASTER_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65RootGuardApplied) return;
+  window.__ceosvgV65RootGuardApplied = true;
+
+  // 1. Permanently neutralize legacy static_master loaders/pushers (all static datasets are already embedded in index.html)
+  window.loadStaticMasterDatasetsFromFirebase = async function() {
+    return false;
+  };
+  window.pushStaticMasterDatasetsToFirebase = async function(showProgress) {
+    if (showProgress && typeof showToast === "function") {
+      showToast("ℹ️ அடிப்படை Static Master தரவுகள் இணையதளக் கோப்பிலேயே உள்ளதால் Firebase-ல் மீண்டும் பதிவேற்றத் தேவையில்லை (Download சேமிப்பு).", "#0284c7");
+    }
+    return true;
+  };
+
+  // 2. Hard Network-Level Firewall on window.fetch:
+  //    Strictly blocks any accidental GET to Firebase root (/), /ceosvg_live, /ceosvg_live/stores,
+  //    or /ceosvg_live/static_master (unless ?shallow=true is explicitly passed).
+  //    Individual small/granular nodes remain 100% allowed!
+  if (typeof window.fetch === "function" && !window.fetch.__ceosvgV65Guarded) {
+    const _origFetch = window.fetch.bind(window);
+    const guardedFetch = function(input, init) {
+      try {
+        const method = String((init && init.method) || (input && typeof input === "object" && input.method) || "GET").toUpperCase();
+        const urlStr = typeof input === "string" ? input : (input && input.url ? String(input.url) : "");
+
+        if (method === "GET" && urlStr && (urlStr.includes("firebasedatabase.app") || urlStr.includes("firebaseio.com"))) {
+          const parsed = new URL(urlStr);
+          const isShallow = parsed.searchParams.get("shallow") === "true";
+          const cleanPath = parsed.pathname.replace(/\.json$/i, "").replace(/\/+$/, "") || "/";
+
+          const isBlockedBulkRoot =
+            cleanPath === "/" ||
+            cleanPath === "/ceosvg_live" ||
+            cleanPath === "/ceosvg_live/stores" ||
+            cleanPath === "/ceosvg_live/static_master" ||
+            cleanPath.startsWith("/ceosvg_live/static_master/");
+
+          if (isBlockedBulkRoot && !isShallow) {
+            console.warn("[CEOSVG v6.5 Firewall] Blocked bulk Firebase GET to prevent 10-25MB download:", cleanPath);
+            if (typeof Response !== "undefined") {
+              return Promise.resolve(new Response("null", {
+                status: 200,
+                headers: { "Content-Type": "application/json", "X-CEOSVG-Blocked": "bulk-root-get" }
+              }));
+            }
+          }
+        }
+      } catch (guardErr) {}
+      return _origFetch(input, init);
+    };
+    guardedFetch.__ceosvgV65Guarded = true;
+    window.fetch = guardedFetch;
+  }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_BANDWIDTH_OPTIMIZER_ALL_5_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65BandwidthOptApplied) return;
+  window.__ceosvgV65BandwidthOptApplied = true;
+
+  const META_LOCAL_KEY = "CEOSVG_META_VERSIONS_LOCAL_V1";
+  let _localMetaVersions = safeGetStorage(META_LOCAL_KEY, {}) || {};
+  let _lastMetaFetchTs = 0;
+  let _cachedRemoteMeta = null;
+  let _lastLoginAuthPullTs = Number(safeGetStorage("CEOSVG_LAST_LOGIN_AUTH_PULL_TS", 0) || 0);
+
+  function saveLocalMetaVersions() {
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem(META_LOCAL_KEY, JSON.stringify(_localMetaVersions));
+      }
+    } catch (e) {}
+  }
+
+  // Feature #2: Stamp lightweight ~30-byte domain timestamp in ceosvg_live/meta_versions
+  window.stampFirebaseMetaVersion = function(domainKey) {
+    domainKey = String(domainKey || "").trim();
+    if (!domainKey) return;
+    const now = Date.now();
+    _localMetaVersions[domainKey] = now;
+    saveLocalMetaVersions();
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") return;
+    const patch = {};
+    patch[domainKey] = now;
+    fetch(buildFirebaseEndpoint("ceosvg_live/meta_versions"), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch)
+    }).catch(() => {});
+  };
+
+  // Fetch ~200-byte ceosvg_live/meta_versions (cached for 20s to avoid redundant micro-fetches)
+  window.fetchRemoteMetaVersions = async function(forceRefresh) {
+    if (!forceRefresh && _cachedRemoteMeta && (Date.now() - _lastMetaFetchTs) < 20000) {
+      return _cachedRemoteMeta;
+    }
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") return null;
+    try {
+      const r = await fetch(buildFirebaseEndpoint("ceosvg_live/meta_versions"));
+      if (r && r.ok) {
+        const data = await r.json();
+        _cachedRemoteMeta = (data && typeof data === "object") ? data : {};
+        _lastMetaFetchTs = Date.now();
+        return _cachedRemoteMeta;
+      }
+    } catch (e) {}
+    return null;
+  };
+
+  function hasDomainChanged(remoteMeta, domainKey) {
+    if (!remoteMeta || typeof remoteMeta !== "object") return true;
+    const remTs = Number(remoteMeta[domainKey] || 0);
+    const locTs = Number(_localMetaVersions[domainKey] || 0);
+    // If remote has never been stamped yet (remTs === 0), fetch once if local is also 0
+    if (remTs === 0) return locTs === 0;
+    return remTs > locTs;
+  }
+
+  function markDomainSynced(remoteMeta, domainKey) {
+    const remTs = Number((remoteMeta && remoteMeta[domainKey]) || 0);
+    _localMetaVersions[domainKey] = Math.max(remTs, Date.now());
+    saveLocalMetaVersions();
+  }
+
+  // Stamp meta_versions automatically whenever any key store writes to Firebase
+  if (typeof triggerRealtimeSyncForStorageKey === "function") {
+    const _v65PrevTriggerSync = triggerRealtimeSyncForStorageKey;
+    triggerRealtimeSyncForStorageKey = function(key, val) {
+      const res = _v65PrevTriggerSync.apply(this, arguments);
+      try {
+        if (key === "CEOSVG_SCHOOL_EXTRA_V6") window.stampFirebaseMetaVersion("ebs");
+        else if (key === "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1") window.stampFirebaseMetaVersion("ra");
+        else if (key === "CEOSVG_DELETE_REQUESTS" || key === "CEOSVG_RESOLVED_DELETE_REQ_MAP_V1") window.stampFirebaseMetaVersion("delReqs");
+        else if (key === "CEOSVG_STAFF_OVERRIDES" || key === "CEOSVG_USER_EDITED_STAFF_VAULT_V1") window.stampFirebaseMetaVersion("overrides");
+        else if (key === "CEOSVG_MASTER_SCHOOLS" || key === "CEOSVG_EDITED_SCHOOLS_VAULT_V1") window.stampFirebaseMetaVersion("schools");
+        else if (key === "CEOSVG_SCHOOL_AUTH") window.stampFirebaseMetaVersion("auth");
+      } catch (e) {}
+      return res;
+    };
+  }
+
+  if (typeof pushSingleSchoolSummaryIndexToFirebase === "function") {
+    const _v65PrevPushIdx = pushSingleSchoolSummaryIndexToFirebase;
+    pushSingleSchoolSummaryIndexToFirebase = function(uNo) {
+      const res = _v65PrevPushIdx.apply(this, arguments);
+      window.stampFirebaseMetaVersion("summaryIdx");
+      return res;
+    };
+  }
+
+  // Feature #3: Lazy / On-Demand Admin Tab Loaders (Downloads ONLY the active tab's node, and ONLY if meta_versions changed!)
+  window.lazyLoadAdminTabFromFirebase = async function(tabKey, forceRefresh) {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") return;
+
+    const remoteMeta = await window.fetchRemoteMetaVersions(Boolean(forceRefresh));
+
+    // 1) Result Analysis Tab -> ONLY exam_result_analysis_by_uno (no duplicate stores fetch!)
+    if (tabKey === "midTermMaster") {
+      if (!forceRefresh && !hasDomainChanged(remoteMeta, "ra")) return;
+      try {
+        let rRaByUno = await fetch(buildFirebaseEndpoint("ceosvg_live/exam_result_analysis_by_uno")).then(r => r.ok ? r.json() : null).catch(() => null);
+        let rRaStore = null;
+        if (!rRaByUno || Object.keys(rRaByUno).length === 0) {
+          rRaStore = await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1")).then(r => r.ok ? r.json() : null).catch(() => null);
+        }
+        if ((rRaByUno && typeof rRaByUno === "object") || (rRaStore && typeof rRaStore === "object")) {
+          const curRa = _examResultAnalysisStoreCache || safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {}) || {};
+          if (typeof deepMergeExamResultAnalysisStore === "function") {
+            _examResultAnalysisStoreCache = deepMergeExamResultAnalysisStore(curRa, rRaStore || null, rRaByUno || null);
+          }
+          if (typeof ensureUlagampatti206PreloadedInMidTermStore === "function") {
+            ensureUlagampatti206PreloadedInMidTermStore(_examResultAnalysisStoreCache);
+          }
+          safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", _examResultAnalysisStoreCache, true);
+          markDomainSynced(remoteMeta, "ra");
+          if (typeof updateAdminMidTermChooserBadge === "function") updateAdminMidTermChooserBadge();
+          if (typeof renderAdminMidTermDashboard === "function") renderAdminMidTermDashboard();
+        }
+      } catch (e) {}
+      return;
+    }
+
+    // 2) Delete Requests Tab -> ONLY DeleteRequests + RESOLVED_DELETE_REQ_MAP (~10 KB)
+    if (tabKey === "deleteReqs") {
+      if (!forceRefresh && !hasDomainChanged(remoteMeta, "delReqs")) return;
+      try {
+        const [rDelMap, rResMap] = await Promise.all([
+          fetch(buildFirebaseEndpoint("ceosvg_live/DeleteRequests")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1")).then(r => r.ok ? r.json() : null).catch(() => null)
+        ]);
+        if (rResMap && typeof rResMap === "object" && typeof reloadInMemoryStoreFromKey === "function") {
+          reloadInMemoryStoreFromKey("CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", rResMap);
+        }
+        if (rDelMap && typeof rDelMap === "object" && typeof reconcileAndDeduplicateDeleteRequests === "function") {
+          const list = Object.values(rDelMap).filter(Boolean);
+          if (list.length > 0) reconcileAndDeduplicateDeleteRequests(list, false);
+        }
+        markDomainSynced(remoteMeta, "delReqs");
+        if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+        if (typeof renderAdminEbsDeleteReqsBox === "function") renderAdminEbsDeleteReqsBox();
+        if (typeof updateAllSummaryCounters === "function") updateAllSummaryCounters();
+      } catch (e) {}
+      return;
+    }
+
+    // 3) EBS Master Tab -> ONLY ~30 KB school_summary_index if summaryIdx changed!
+    if (tabKey === "ebsMaster") {
+      if (!forceRefresh && !hasDomainChanged(remoteMeta, "summaryIdx") && !hasDomainChanged(remoteMeta, "delReqs")) return;
+      if (typeof pullLightweightSchoolSummaryIndexFromFirebase === "function") {
+        const ok = await pullLightweightSchoolSummaryIndexFromFirebase(false);
+        if (ok) {
+          markDomainSynced(remoteMeta, "summaryIdx");
+          markDomainSynced(remoteMeta, "delReqs");
+        }
+      }
+      return;
+    }
+
+    // 4) Teacher Master Tab -> ONLY staff overrides & edited vault if overrides changed!
+    if (tabKey === "teacherMaster") {
+      if (!forceRefresh && !hasDomainChanged(remoteMeta, "overrides")) return;
+      try {
+        const [rOv, rVault] = await Promise.all([
+          fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_USER_EDITED_STAFF_VAULT_V1")).then(r => r.ok ? r.json() : null).catch(() => null)
+        ]);
+        if (rOv && typeof rOv === "object" && typeof reloadInMemoryStoreFromKey === "function") {
+          reloadInMemoryStoreFromKey("CEOSVG_STAFF_OVERRIDES", rOv);
+        }
+        if (rVault && typeof rVault === "object") {
+          safeSetStorage("CEOSVG_USER_EDITED_STAFF_VAULT_V1", rVault, true);
+        }
+        markDomainSynced(remoteMeta, "overrides");
+        if (typeof getDistrictAllStaffList === "function") getDistrictAllStaffList(true);
+        if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
+      } catch (e) {}
+    }
+  };
+
+  // Route Admin tab switches directly to Lazy Loader instead of heavy pullAllPortalDataFromFirebase
+  if (typeof switchAdminTab === "function") {
+    const _v65PrevSwitchAdminTab = switchAdminTab;
+    switchAdminTab = function(tabKey) {
+      const r = _v65PrevSwitchAdminTab.apply(this, arguments);
+      if (tabKey === "midTermMaster" || tabKey === "deleteReqs" || tabKey === "ebsMaster" || tabKey === "teacherMaster") {
+        setTimeout(() => window.lazyLoadAdminTabFromFirebase(tabKey, false), 60);
+      }
+      return r;
+    };
+  }
+
+  // Feature #5: Upgrade startFirebaseRealtimeListener to 4-minute (240s) conditional meta_versions check
+  if (typeof startFirebaseRealtimeListener === "function") {
+    startFirebaseRealtimeListener = function() {
+      if (typeof stopFirebaseRealtimeListener === "function") stopFirebaseRealtimeListener();
+      const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+      if (!cleanUrl) return;
+      if (typeof updateFirebaseStatusIndicators === "function") updateFirebaseStatusIndicators(true);
+      // Quota-Safe v6.5: Poll ONLY ~200-byte meta_versions every 4 minutes (240s) when tab is visible & Admin is active!
+      firebasePollTimer = setInterval(async () => {
+        if (document.hidden || !normalizeFirebaseDbUrl(firebaseDbUrl) || !firebaseAutoSyncEnabled) return;
+        const isAdminActive = Boolean(document.getElementById("viewAdmin")?.classList.contains("active"));
+        if (!isAdminActive) return;
+        const activeTab = (typeof currentAdminTabKey !== "undefined") ? currentAdminTabKey : "ebsMaster";
+        await window.lazyLoadAdminTabFromFirebase(activeTab, false);
+      }, 240000);
+    };
+    // Restart listener immediately with the new 4-minute Quota-Safe interval
+    try { startFirebaseRealtimeListener(); } catch (e) {}
+  }
+
+  // Feature #Bonus: Zero-Bulk Login Screen — skip repeated 282-school auth downloads if cached within 10 minutes
+  if (typeof pullLightweightLoginAuthFromFirebase === "function") {
+    const _v65PrevLoginAuthPull = pullLightweightLoginAuthFromFirebase;
+    pullLightweightLoginAuthFromFirebase = async function() {
+      const hasCachedAuth = schoolAuthStore && typeof schoolAuthStore === "object" && Object.keys(schoolAuthStore).length > 20;
+      if (hasCachedAuth && (Date.now() - _lastLoginAuthPullTs) < 600000) {
+        return;
+      }
+      const res = await _v65PrevLoginAuthPull.apply(this, arguments);
+      _lastLoginAuthPullTs = Date.now();
+      try { safeSetStorage("CEOSVG_LAST_LOGIN_AUTH_PULL_TS", _lastLoginAuthPullTs, true); } catch (e) {}
+      return res;
+    };
+  }
 })();
 </script>
 
