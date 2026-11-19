@@ -16691,31 +16691,28 @@ await Promise.all([
   })
 ]);
 } else if (key === "CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1" && targetUNo !== "ADMIN" && val && typeof val === "object") {
+  // v6.5: Write ONLY to single authoritative per-school node ceosvg_live/exam_result_analysis_by_uno/{uNo}
   const uEnc = encodeURIComponent(targetUNo);
-  const putTasks = [];
-  if (val._classMasterByUNo && val._classMasterByUNo[targetUNo]) {
-    putTasks.push(fetch(buildFirebaseEndpoint(`ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1/_classMasterByUNo/${uEnc}`), {
-      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(val._classMasterByUNo[targetUNo])
-    }));
-  }
-  if (val._classMaster12ByUNo && val._classMaster12ByUNo[targetUNo]) {
-    putTasks.push(fetch(buildFirebaseEndpoint(`ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1/_classMaster12ByUNo/${uEnc}`), {
-      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(val._classMaster12ByUNo[targetUNo])
-    }));
-  }
-  const dirtySet = (typeof _dirtyRaTermKeysByUNo === "object" && _dirtyRaTermKeysByUNo[targetUNo] && _dirtyRaTermKeysByUNo[targetUNo].size > 0)
-    ? _dirtyRaTermKeysByUNo[targetUNo]
-    : null;
+  const termsObj = {};
   Object.keys(val).forEach(tk => {
     if (!tk.startsWith("_") && val[tk] && val[tk][targetUNo]) {
-      if (dirtySet && !dirtySet.has(tk)) return;
-      putTasks.push(fetch(buildFirebaseEndpoint(`ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1/${encodeURIComponent(tk)}/${uEnc}`), {
-        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(val[tk][targetUNo])
-      }));
+      termsObj[tk] = val[tk][targetUNo];
     }
   });
+  const schoolRaPacket = {
+    uNo: targetUNo,
+    updatedAt: new Date().toISOString(),
+    cm10: (val._classMasterByUNo && val._classMasterByUNo[targetUNo]) ? val._classMasterByUNo[targetUNo] : null,
+    cm12: (val._classMaster12ByUNo && val._classMaster12ByUNo[targetUNo]) ? val._classMaster12ByUNo[targetUNo] : null,
+    terms: termsObj
+  };
+  const dirtySet = (typeof _dirtyRaTermKeysByUNo === "object" && _dirtyRaTermKeysByUNo[targetUNo]) ? _dirtyRaTermKeysByUNo[targetUNo] : null;
   if (dirtySet) dirtySet.clear();
-  await Promise.all(putTasks);
+  await fetch(buildFirebaseEndpoint(`ceosvg_live/exam_result_analysis_by_uno/${uEnc}`), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(schoolRaPacket)
+  });
 } else {
 await fetch(buildFirebaseEndpoint(`ceosvg_live/stores/${encodeURIComponent(key)}`), {
 method: "PUT",
@@ -17176,8 +17173,7 @@ CEOSVG_STAFF_OVERRIDES: safeGetStorage("CEOSVG_STAFF_OVERRIDES", {}),
 CEOSVG_EXAM_DUTY_APPOINTMENTS_V1: typeof getExamDutyStore === "function" ? getExamDutyStore() : safeGetStorage("CEOSVG_EXAM_DUTY_APPOINTMENTS_V1", {}),
 CEOSVG_EXAM_DUTY_META_V1: typeof getExamDutyMeta === "function" ? getExamDutyMeta() : safeGetStorage("CEOSVG_EXAM_DUTY_META_V1", {}),
 CEOSVG_OTHER_EXAMS_CONFIG_V1: typeof getOtherExamsConfigStore === "function" ? getOtherExamsConfigStore() : safeGetStorage("CEOSVG_OTHER_EXAMS_CONFIG_V1", {}),
-CEOSVG_OFFICE_USERS_RBAC_V1: typeof getOfficeUsersStore === "function" ? getOfficeUsersStore() : safeGetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", []),
-CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1: typeof getExamResultAnalysisStore === "function" ? getExamResultAnalysisStore() : safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {})
+CEOSVG_OFFICE_USERS_RBAC_V1: typeof getOfficeUsersStore === "function" ? getOfficeUsersStore() : safeGetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", [])
 };
 await fetch(buildFirebaseEndpoint("ceosvg_live/stores"), {
 method: "PUT",
@@ -49762,11 +49758,11 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
           Boolean(activeSchoolSession && activeSchoolSession.isAdminInspection);
         const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
         if (isAdminView && cleanUrl && typeof buildFirebaseEndpoint === "function") {
-          const [rRaByUno, rRaStore, rDelReqsMap] = await Promise.all([
+          const [rRaByUno, rDelReqsMap] = await Promise.all([
             fetch(buildFirebaseEndpoint("ceosvg_live/exam_result_analysis_by_uno")).then(r => r.ok ? r.json() : null).catch(() => null),
-            fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1")).then(r => r.ok ? r.json() : null).catch(() => null),
             fetch(buildFirebaseEndpoint("ceosvg_live/DeleteRequests")).then(r => r.ok ? r.json() : null).catch(() => null)
           ]);
+          const rRaStore = null; // v6.5: Duplicate stores/CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1 pull eliminated
 
           let raChanged = false;
           if ((rRaByUno && typeof rRaByUno === "object") || (rRaStore && typeof rRaStore === "object")) {
@@ -51244,5 +51240,7 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
 })();
 </script>
 
+
+<!-- CEOSVG_V65_STOP_DUPLICATE_RA_NODE_PATCH_APPLIED -->
 </body>
 </html>
