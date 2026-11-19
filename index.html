@@ -1969,8 +1969,11 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
         <button type="button" class="btn btn-primary btn-sm" id="schReviewReportTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; padding:6px 12px;">
           📥 Review Report PDF
         </button>
-        <button type="button" class="btn btn-primary btn-sm" id="schMidTermTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', null, this)" style="background:#dc2626; border-color:#b91c1c; color:#fff; font-weight:900; padding:6px 14px;">
-          📥 F1 &amp; F2 PDF பதிவிறக்கு
+        <button type="button" class="btn btn-primary btn-sm" id="schMidTermTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_1', null, this)" style="background:#0f766e; border-color:#0f766e; color:#fff; font-weight:900; padding:6px 12px;">
+          📥 School Perf (F1) PDF
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" id="schMidTermTopPdfBtnF2" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_2', null, this)" style="background:#1d4ed8; border-color:#1e40af; color:#fff; font-weight:900; padding:6px 12px;">
+          📥 Subject Perf (F2) PDF
         </button>
         <button type="button" class="btn btn-outline btn-sm" id="schMidTermTopCsvBtn" onclick="exportSingleSchoolMidTermExcelCsv()" style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; font-weight:900; padding:6px 12px;">
           📊 F1 &amp; F2 Excel (.csv)
@@ -2193,6 +2196,8 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('infraNeeds')" style="background:#fff7ed; color:#9a3412; border-color:#fb923c; font-weight:900; font-size:0.84rem;">🏗️ அடிப்படைத் தேவைகள் அறிக்கை</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('midTermMaster')" style="background:#f0fdfa; color:#0f766e; border-color:#2dd4bf; font-weight:900; font-size:0.84rem;">📈 தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (Result Analysis)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('ebsMaster')" style="background:#f5f3ff; color:#4c1d95; border-color:#a78bfa; font-weight:900; font-size:0.84rem;">📋 EBS 2026-27 (F1–F4)</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('seniorityList')" style="background:#fffbeb; color:#92400e; border-color:#f59e0b; font-weight:900; font-size:0.84rem;">🎖️ ஆசிரியர் முன்னுரிமைப் பட்டியல்</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('examCentres')" style="background:#ecfeff; color:#155e75; border-color:#06b6d4; font-weight:900; font-size:0.84rem;">🏫 தேர்வு மையங்கள் (10 &amp; 12 பொது &amp; செய்முறை)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('officeUsers')" style="background:#fdf4ff; color:#701a75; border-color:#e879f9; font-weight:900; font-size:0.84rem;">👥 அலுவலகப் பணியாளர்கள் &amp; DEO அதிகாரங்கள்</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('auditTrail')" style="background:#fef2f2; color:#991b1b; border-color:#f87171; font-weight:900; font-size:0.84rem;">📜 தணிக்கைப் பதிவேடு (Audit Trail)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminSecurityVaultModal()" style="background:#f0fdf4; color:#14532d; border-color:#4ade80; font-weight:900; font-size:0.84rem;">🔐 பாதுகாப்பு &amp; SHA-256 Vault</button>
@@ -2680,6 +2685,34 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 👉 👥 பணியாளர்கள் &amp; DEO அதிகார மேலாண்மையைத் திற ❯
 </button>
 </div>
+<!-- MOD 12: DEDICATED TEACHER SENIORITY LIST PREPARATION -->
+<div class="portal-chooser-card" id="admModuleCardSeniorityList" onclick="openAdminModule('seniorityList')" style="cursor:pointer; background:linear-gradient(145deg, #ffffff 0%, #fffbeb 100%); border:2.5px solid #d97706; border-radius:16px; padding:22px; box-shadow:0 10px 25px rgba(217,119,6,0.14); transition:transform 0.2s, box-shadow 0.2s;">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+<span style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:900;">MOD 12 • SENIORITY PANEL</span>
+<span style="font-size:1.8rem;">🎖️</span>
+</div>
+<h3 style="margin:0 0 6px 0; color:#78350f; font-size:1.12rem; font-weight:900;">ஆசிரியர் முன்னுரிமைப் பட்டியல் தயாரித்தல்</h3>
+<p style="margin:0 0 14px 0; font-size:0.82rem; color:#475569; line-height:1.45;">
+பொது மாறுதல் கலந்தாய்வு, பதவி உயர்வு, பொதுத்தேர்வுப் பணி மற்றும் விடைத்தாள் முகாம் பணிகளுக்கான <strong>5-கூறு முன்னுரிமைப் பட்டியல் (Seniority Panel)</strong> தயாரித்தல், அச்சிடுதல் &amp; CSV பதிவிறக்கம்.
+</p>
+<button type="button" class="btn btn-primary" style="width:100%; font-size:0.96rem; font-weight:900; padding:11px; border-radius:8px; background:#d97706; border-color:#b45309; color:#fff;">
+👉 🎖️ முன்னுரிமைப் பட்டியல் தயாரிப்பைத் திற ❯
+</button>
+</div>
+<!-- MOD 13: DEDICATED EXAM CENTRES MANAGEMENT (10th & 12th PUBLIC + PRACTICAL) -->
+<div class="portal-chooser-card" id="admModuleCardExamCentres" onclick="openAdminModule('examCentres')" style="cursor:pointer; background:linear-gradient(145deg, #ffffff 0%, #ecfeff 100%); border:2.5px solid #0891b2; border-radius:16px; padding:22px; box-shadow:0 10px 25px rgba(8,145,178,0.14); transition:transform 0.2s, box-shadow 0.2s;">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+<span style="background:#cffafe; color:#155e75; border:1px solid #67e8f9; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:900;">MOD 13 • EXAM CENTRES</span>
+<span style="font-size:1.8rem;">🏫</span>
+</div>
+<h3 style="margin:0 0 6px 0; color:#164e63; font-size:1.12rem; font-weight:900;">தேர்வு மையங்கள் மேலாண்மை (10 &amp; 12 பொது &amp; செய்முறை)</h3>
+<p style="margin:0 0 14px 0; font-size:0.82rem; color:#475569; line-height:1.45;">
+10 &amp; 12-ஆம் வகுப்பு <strong>பொதுத்தேர்வு மையங்கள்</strong> மற்றும் <strong>செய்முறைத் தேர்வு மையங்களை (Practical Centres)</strong> சேர்க்க, திருத்த, நீக்க; மாற்றங்கள் அனைத்தும் படிவங்களின் Drop-down பட்டியல்களில் உடனே பிரதிபலிக்கும்.
+</p>
+<button type="button" class="btn btn-primary" style="width:100%; font-size:0.96rem; font-weight:900; padding:11px; border-radius:8px; background:#0891b2; border-color:#0e7490; color:#fff;">
+👉 🏫 தேர்வு மையங்கள் மேலாண்மையைத் திற ❯
+</button>
+</div>
 </div>
 </div>
 <!-- ========================================================================= -->
@@ -3082,6 +3115,69 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </button>
 <button type="button" class="btn btn-success btn-sm" onclick="exportExamCentresCsv()" style="font-weight:800;">📥 CSV பதிவிறக்கு</button>
 </div>
+</div>
+<!-- === CEOSVG v7.7: 10th & 12th PRACTICAL & PUBLIC EXAM CENTRES LIVE DROPDOWN MANAGER === -->
+<div id="admPracticalCentresManagerBox" style="background:linear-gradient(135deg,#ecfeff 0%,#f0fdfa 100%); border:2px solid #0891b2; border-radius:12px; padding:14px 16px; margin-bottom:16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1.5px solid #bae6fd; padding-bottom:8px;">
+    <div>
+      <div style="font-size:1.02rem; font-weight:900; color:#155e75;">🧪 10 &amp; 12-ஆம் வகுப்பு செய்முறைத் தேர்வு மையங்கள் &amp; பொதுத்தேர்வு மையங்கள் (Live Drop-down Manager)</div>
+      <div style="font-size:0.77rem; color:#0f766e; font-weight:700; margin-top:2px;">
+        இங்கே சேர்க்கப்படும் / திருத்தப்படும் 10 &amp; 12 பொதுத்தேர்வு மற்றும் செய்முறைத் தேர்வு மையங்கள் அனைத்தும் EBS Form-3 / Form-4 மற்றும் பிற படிவங்களின் Drop-down பட்டியல்களில் <strong>உடனடியாகப் பிரதிபலிக்கும்</strong>.
+      </div>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <button type="button" id="admPracTabBtn10" class="btn btn-primary btn-sm" onclick="switchAdminPracticalCentresTab('10')" style="font-weight:900; background:#0891b2; border-color:#0e7490;">
+        🧪 10th செய்முறை மையங்கள் (<span id="admPrac10CountBadge">0</span>)
+      </button>
+      <button type="button" id="admPracTabBtn12" class="btn btn-outline btn-sm" onclick="switchAdminPracticalCentresTab('12')" style="font-weight:900; border-color:#0891b2; color:#155e75; background:#fff;">
+        🔬 12th செய்முறை மையங்கள் (<span id="admPrac12CountBadge">0</span>)
+      </button>
+      <button type="button" id="admPracTabBtnPub10" class="btn btn-outline btn-sm" onclick="switchAdminPracticalCentresTab('PUB10')" style="font-weight:900; border-color:#1d4ed8; color:#1e40af; background:#fff;">
+        📝 10th பொதுத்தேர்வு மையம் சேர்
+      </button>
+      <button type="button" id="admPracTabBtnPub12" class="btn btn-outline btn-sm" onclick="switchAdminPracticalCentresTab('PUB12')" style="font-weight:900; border-color:#7c3aed; color:#5b21b6; background:#fff;">
+        🎓 12th பொதுத்தேர்வு மையம் சேர்
+      </button>
+    </div>
+  </div>
+
+  <!-- Add / Edit Form Strip -->
+  <div style="display:grid; grid-template-columns:160px 1fr 120px auto; gap:8px; align-items:end; margin-bottom:10px; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:10px;">
+    <div>
+      <label style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">மைய எண் / குறியீடு (Code):</label>
+      <input type="text" id="admPracCentreCodeInp" class="form-control" placeholder="எ.கா: DVKI0001 / 16101" style="font-size:0.80rem; font-weight:800;">
+    </div>
+    <div>
+      <label style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">பள்ளி / தேர்வு மையத்தின் பெயர் (Centre Name):</label>
+      <input type="text" id="admPracCentreNameInp" class="form-control" placeholder="எ.கா: GOVT. HSS, SIVAGANGAI" style="font-size:0.80rem; font-weight:800;">
+    </div>
+    <div>
+      <label style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">U.NO (விருப்பம்):</label>
+      <input type="text" id="admPracCentreUnoInp" class="form-control" placeholder="எ.கா: 206" style="font-size:0.80rem; font-weight:800;">
+    </div>
+    <div style="display:flex; gap:6px;">
+      <button type="button" id="admPracCentreSaveBtn" class="btn btn-success btn-sm" onclick="saveAdminManagedCentreEntry()" style="font-weight:900; padding:7px 14px;">➕ சேர் / புதுப்பி</button>
+      <button type="button" id="admPracCentreCancelBtn" class="btn btn-outline btn-sm" onclick="cancelEditAdminManagedCentre()" style="display:none; font-weight:800;">ரத்து</button>
+    </div>
+  </div>
+
+  <!-- Search & Table for Practical / Managed Centres -->
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+    <input type="text" id="admPracCentreSearchInp" class="form-control" placeholder="🔍 செய்முறை / பொதுத்தேர்வு மையம் தேடு (Code, Name, U.No)..." oninput="renderAdminPracticalCentresTable()" style="max-width:360px; font-size:0.80rem; font-weight:700; background:#fff;">
+    <span id="admPracCentreActiveModeLabel" style="font-size:0.78rem; font-weight:900; color:#0f766e;">🧪 10-ஆம் வகுப்பு செய்முறைத் தேர்வு மையங்கள் பட்டியல்</span>
+  </div>
+  <div style="max-height:260px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px; background:#fff;">
+    <table class="data-table" style="width:100%; font-size:0.79rem; margin:0;">
+      <thead style="position:sticky; top:0; z-index:2; background:#f1f5f9;">
+        <tr>
+          <th style="width:48px; text-align:center;">வ.எண்</th>
+          <th>மையப் பெயர் (Drop-down-ல் தோன்றும் வடிவம்)</th>
+          <th style="width:150px; text-align:center;">நடவடிக்கை</th>
+        </tr>
+      </thead>
+      <tbody id="admPracCentresTbody"></tbody>
+    </table>
+  </div>
 </div>
 <!-- KPI SUMMARY CARDS FOR EXAM CENTRES & STAFF ALLOCATION -->
 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(185px, 1fr)); gap:10px; margin-bottom:14px;">
@@ -6337,7 +6433,8 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
       <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SCHOOL_CSV', false)" style="background:#0f766e; border-color:#0f766e; font-size:0.74rem; font-weight:900;">📊 School Performance (CSV)</button>
       <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SUBJECT_CSV', false)" style="background:#1d4ed8; border-color:#1e40af; font-size:0.74rem; font-weight:900;">📚 Subject Performance (CSV)</button>
       <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('REVIEW_PRINT', false)" style="background:#7c3aed; border-color:#6d28d9; font-size:0.74rem; font-weight:900;">📋 Review Report (PDF / Print)</button>
-      <button type="button" class="btn btn-outline btn-sm" onclick="exportFilteredMidTermReports('ALL_PRINT', false)" style="background:#fff; color:#9a3412; border-color:#ea580c; font-size:0.74rem; font-weight:900;">📦 School + Subject + Review (மொத்த PDF)</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SCHOOL_PRINT', false)" style="background:#047857; border-color:#065f46; font-size:0.74rem; font-weight:900;">📄 School Performance (PDF)</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SUBJECT_PRINT', false)" style="background:#1e40af; border-color:#1e3a8a; font-size:0.74rem; font-weight:900;">📘 Subject Performance (PDF)</button>
     </div>
   </div>
 
@@ -38730,8 +38827,11 @@ function renderSchoolMidTermClassStudentsPane(calc) {
         <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; font-size:0.78rem;">
           📥 Review Report PDF
         </button>
-        <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', null, this)" style="background:#dc2626; border-color:#b91c1c; color:#fff; font-weight:900; font-size:0.78rem;">
-          📥 F1 &amp; F2 PDF பதிவிறக்கு
+        <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_1', null, this)" style="background:#0f766e; border-color:#0f766e; color:#fff; font-weight:900; font-size:0.78rem;">
+          📥 School Perf (F1) PDF
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_2', null, this)" style="background:#1d4ed8; border-color:#1e40af; color:#fff; font-weight:900; font-size:0.78rem;">
+          📥 Subject Perf (F2) PDF
         </button>
       </div>
     </div>
@@ -53708,7 +53808,7 @@ body.office-staff-no-school-entry #admMaintenanceControlStrip {
       return;
     }
 
-    if (mode === "REVIEW_PRINT" || mode === "ALL_PRINT") {
+    if (mode === "SCHOOL_PRINT" || mode === "SUBJECT_PRINT" || mode === "REVIEW_PRINT" || mode === "ALL_PRINT") {
       const submitted = list.filter(c => c.hasStudentEntries || c.rec.isSubmitted);
       if (submitted.length === 0) {
         if (typeof showToast === "function") showToast("⚠️ தேர்ந்தெடுத்த பிரிவில் மதிப்பெண் பதிவு செய்த பள்ளிகள் எதுவும் இல்லை.", "#f59e0b");
@@ -53716,14 +53816,18 @@ body.office-staff-no-school-entry #admMaintenanceControlStrip {
       }
       const pages = [];
       submitted.forEach(c => {
-        if (mode === "ALL_PRINT") {
+        if (mode === "SCHOOL_PRINT" || mode === "ALL_PRINT") {
           if (typeof buildMidTermForm1_1ExactHtml === "function") pages.push(buildMidTermForm1_1ExactHtml(c, true));
+        }
+        if (mode === "SUBJECT_PRINT" || mode === "ALL_PRINT") {
           if (typeof buildMidTermForm1_2ExactHtml === "function") pages.push(buildMidTermForm1_2ExactHtml(c, true));
         }
-        if (is12 && typeof build12thReviewReportExactHtml === "function") {
-          pages.push(build12thReviewReportExactHtml(c, true));
-        } else if (!is12 && typeof build10thReviewReportExactHtml === "function") {
-          pages.push(build10thReviewReportExactHtml(c, true));
+        if (mode === "REVIEW_PRINT" || mode === "ALL_PRINT") {
+          if (is12 && typeof build12thReviewReportExactHtml === "function") {
+            pages.push(build12thReviewReportExactHtml(c, true));
+          } else if (!is12 && typeof build10thReviewReportExactHtml === "function") {
+            pages.push(build10thReviewReportExactHtml(c, true));
+          }
         }
       });
       if (pages.length === 0) {
@@ -53735,13 +53839,376 @@ body.office-staff-no-school-entry #admMaintenanceControlStrip {
         if (typeof showToast === "function") showToast("⚠️ Pop-up தடுக்கப்பட்டுள்ளது! உலாவியில் Pop-up அனுமதித்து மீண்டும் முயலவும்.", "#f59e0b");
         return;
       }
-      const titleText = `${mode === "ALL_PRINT" ? "School + Subject + Review" : "Review Report"} - ${stdTag} (${scopeTag} - ${submitted.length} Schools)`;
+      const modeLabelMap = { SCHOOL_PRINT: "School Performance Report", SUBJECT_PRINT: "Subject Performance Report", REVIEW_PRINT: "Review Report", ALL_PRINT: "School + Subject + Review" }; const titleText = `${modeLabelMap[mode] || "Report"} - ${stdTag} (${scopeTag} - ${submitted.length} Schools)`;
       w.document.open();
       w.document.write(`<!DOCTYPE html><html lang="ta"><head><meta charset="UTF-8"><title>${titleText}</title><style>@page{size:A4 landscape;margin:6mm}body{margin:0;padding:8px;background:#fff;color:#000;font-family:Arial,'Mukta Malar',sans-serif}.mt-bulk-page{page-break-after:always;break-after:page;margin-bottom:14px}.mt-bulk-page:last-child{page-break-after:auto;break-after:auto}@media print{.no-print{display:none !important}body{padding:0}}</style></head><body><div class="no-print" style="background:#0f294a;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-radius:8px;margin-bottom:12px;"><strong>${titleText}</strong><button onclick="window.print()" style="background:#16a34a;color:#fff;border:none;padding:7px 16px;border-radius:6px;font-weight:900;cursor:pointer;">🖨️ Print / Save as PDF</button></div>${pages.map(p => `<div class="mt-bulk-page">${p}</div>`).join("")}</body></html>`);
       w.document.close();
       if (typeof showToast === "function") showToast(`📋 ${submitted.length} பள்ளிகளின் அறிக்கை Print / PDF திரையில் திறக்கப்பட்டது!`, "#7c3aed");
     }
   };
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V77_INDIVIDUAL_PDF_SENIORITY_CENTRES_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV77Applied) return;
+  window.__ceosvgV77Applied = true;
+
+  // ------------------------------------------------------------------------
+  // PART 1: DEDICATED MENU ROUTING (seniorityList & examCentres)
+  // ------------------------------------------------------------------------
+  if (typeof openAdminModule === "function") {
+    const _v77OrigOpenMod = openAdminModule;
+    openAdminModule = function(modKey) {
+      if (modKey === "seniorityList") {
+        const chooser = document.getElementById("admMainPortalChooser");
+        const secSch = document.getElementById("admSectionSchoolMaster");
+        if (chooser) chooser.style.display = "none";
+        if (secSch) secSch.style.display = "block";
+        if (typeof switchAdminTab === "function") switchAdminTab("seniorityList");
+        try {
+          if (typeof isSeniorityMode !== "undefined" && !isSeniorityMode && typeof toggleSeniorityMode === "function") {
+            toggleSeniorityMode();
+          }
+          const senBox = document.getElementById("admSeniorityConfigBox");
+          if (senBox) senBox.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (e) {}
+        return;
+      }
+      if (modKey === "examCentres") {
+        const chooser = document.getElementById("admMainPortalChooser");
+        const secSch = document.getElementById("admSectionSchoolMaster");
+        if (chooser) chooser.style.display = "none";
+        if (secSch) secSch.style.display = "block";
+        if (typeof switchAdminTab === "function") switchAdminTab("centres");
+        setTimeout(() => {
+          if (typeof renderAdminPracticalCentresTable === "function") renderAdminPracticalCentresTable();
+        }, 60);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      return _v77OrigOpenMod.apply(this, arguments);
+    };
+  }
+
+  // ------------------------------------------------------------------------
+  // PART 2: 10th & 12th PRACTICAL + PUBLIC EXAM CENTRES MANAGER & LIVE DROPDOWNS
+  // ------------------------------------------------------------------------
+  const PRAC_10_KEY = "CEOSVG_PRACTICAL_CENTRES_10_V1";
+  const PRAC_12_KEY = "CEOSVG_PRACTICAL_CENTRES_12_V1";
+  let _admPracActiveTab = "10"; // "10" | "12" | "PUB10" | "PUB12"
+  let _admPracEditIdx = -1;
+
+  function getManagedPracticalList(levelStr) {
+    const key = (levelStr === "12") ? PRAC_12_KEY : PRAC_10_KEY;
+    const saved = (typeof safeGetStorage === "function") ? safeGetStorage(key, null) : null;
+    if (Array.isArray(saved) && saved.length > 0) return saved.slice();
+    // Seed from existing merged list on first access
+    const fallback = (levelStr === "12")
+      ? (typeof getUpdatedPracticalCentres12List === "function" ? getUpdatedPracticalCentres12List() : ((typeof EBS_DROPDOWN_DATA === "object" && EBS_DROPDOWN_DATA.practicalCentres12) || []))
+      : (typeof getUpdatedPracticalCentres10List === "function" ? getUpdatedPracticalCentres10List() : ((typeof EBS_DROPDOWN_DATA === "object" && EBS_DROPDOWN_DATA.practicalCentres10) || []));
+    return Array.isArray(fallback) ? fallback.slice() : [];
+  }
+
+  function saveManagedPracticalList(levelStr, arr) {
+    const key = (levelStr === "12") ? PRAC_12_KEY : PRAC_10_KEY;
+    const fbPath = (levelStr === "12") ? "ceosvg_live/practical_centres_12" : "ceosvg_live/practical_centres_10";
+    const cleanArr = Array.from(new Set((arr || []).map(x => String(x || "").trim()).filter(Boolean)));
+    if (typeof safeSetStorage === "function") safeSetStorage(key, cleanArr, true);
+    if (typeof EBS_DROPDOWN_DATA === "object" && EBS_DROPDOWN_DATA) {
+      if (levelStr === "12") EBS_DROPDOWN_DATA.practicalCentres12 = cleanArr.slice();
+      else EBS_DROPDOWN_DATA.practicalCentres10 = cleanArr.slice();
+      if (typeof safeSetStorage === "function") safeSetStorage("CEOSVG_EBS_DROPDOWN_LIVE_V5", EBS_DROPDOWN_DATA, true);
+    }
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      fetch(buildFirebaseEndpoint(fbPath), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cleanArr)
+      }).catch(() => {});
+    }
+    syncAllPortalCentreDropdownsFromManagers();
+  }
+
+  // Reflect all 4 managed lists (10th Public, 12th Public, 10th Practical, 12th Practical) into EBS_DROPDOWN_DATA immediately
+  window.syncAllPortalCentreDropdownsFromManagers = function() {
+    try {
+      if (typeof EBS_DROPDOWN_DATA !== "object" || !EBS_DROPDOWN_DATA) return;
+      const p10 = getManagedPracticalList("10");
+      const p12 = getManagedPracticalList("12");
+      if (p10.length > 0) EBS_DROPDOWN_DATA.practicalCentres10 = p10;
+      if (p12.length > 0) EBS_DROPDOWN_DATA.practicalCentres12 = p12;
+
+      const pub10 = (typeof getEffectiveExamCentres10List === "function") ? getEffectiveExamCentres10List() : [];
+      const pub12 = (typeof getEffectiveExamCentres12List === "function") ? getEffectiveExamCentres12List() : [];
+      const formatPub = (c) => `${c.centreNo ? c.centreNo + "-" : ""}${c.centreNameEn || c.centreNameTa || ""}${c.uNo ? " (U.NO:" + c.uNo + ")" : ""}`.trim();
+
+      if (pub10.length > 0) {
+        const baseSslc = Array.isArray(EBS_DROPDOWN_DATA.sslcExamCentres) ? EBS_DROPDOWN_DATA.sslcExamCentres : [];
+        const merged10 = Array.from(new Set([...pub10.map(formatPub).filter(Boolean), ...baseSslc]));
+        EBS_DROPDOWN_DATA.sslcExamCentres = merged10;
+      }
+      if (pub12.length > 0) {
+        const baseHse = Array.isArray(EBS_DROPDOWN_DATA.hseExamCentres) ? EBS_DROPDOWN_DATA.hseExamCentres : [];
+        const merged12 = Array.from(new Set([...pub12.map(formatPub).filter(Boolean), ...baseHse]));
+        EBS_DROPDOWN_DATA.hseExamCentres = merged12;
+      }
+    } catch (e) {}
+  };
+
+  // Override getUpdatedPracticalCentres10List / 12List so EBS staff modal always reads the Admin-managed list first!
+  window.getUpdatedPracticalCentres10List = function() {
+    return getManagedPracticalList("10");
+  };
+  window.getUpdatedPracticalCentres12List = function() {
+    return getManagedPracticalList("12");
+  };
+
+  window.switchAdminPracticalCentresTab = function(tabMode) {
+    _admPracActiveTab = tabMode || "10";
+    _admPracEditIdx = -1;
+    window.cancelEditAdminManagedCentre();
+    const mapBtns = {
+      "10": "admPracTabBtn10",
+      "12": "admPracTabBtn12",
+      "PUB10": "admPracTabBtnPub10",
+      "PUB12": "admPracTabBtnPub12"
+    };
+    Object.entries(mapBtns).forEach(([k, id]) => {
+      const b = document.getElementById(id);
+      if (!b) return;
+      if (k === _admPracActiveTab) {
+        b.className = "btn btn-primary btn-sm";
+        b.style.background = (k === "PUB10") ? "#1d4ed8" : ((k === "PUB12") ? "#7c3aed" : "#0891b2");
+        b.style.color = "#fff";
+      } else {
+        b.className = "btn btn-outline btn-sm";
+        b.style.background = "#fff";
+        b.style.color = (k === "PUB10") ? "#1e40af" : ((k === "PUB12") ? "#5b21b6" : "#155e75");
+      }
+    });
+    window.renderAdminPracticalCentresTable();
+  };
+
+  window.cancelEditAdminManagedCentre = function() {
+    _admPracEditIdx = -1;
+    const cInp = document.getElementById("admPracCentreCodeInp");
+    const nInp = document.getElementById("admPracCentreNameInp");
+    const uInp = document.getElementById("admPracCentreUnoInp");
+    const sBtn = document.getElementById("admPracCentreSaveBtn");
+    const xBtn = document.getElementById("admPracCentreCancelBtn");
+    if (cInp) cInp.value = "";
+    if (nInp) nInp.value = "";
+    if (uInp) uInp.value = "";
+    if (sBtn) sBtn.textContent = "➕ சேர் / புதுப்பி";
+    if (xBtn) xBtn.style.display = "none";
+  };
+
+  window.editAdminManagedCentreRow = function(idx) {
+    _admPracEditIdx = Number(idx);
+    const cInp = document.getElementById("admPracCentreCodeInp");
+    const nInp = document.getElementById("admPracCentreNameInp");
+    const uInp = document.getElementById("admPracCentreUnoInp");
+    const sBtn = document.getElementById("admPracCentreSaveBtn");
+    const xBtn = document.getElementById("admPracCentreCancelBtn");
+
+    if (_admPracActiveTab === "10" || _admPracActiveTab === "12") {
+      const arr = getManagedPracticalList(_admPracActiveTab);
+      const val = String(arr[_admPracEditIdx] || "");
+      const uMatch = val.match(/\(U\.NO:\s*(\d+)\)/i);
+      const uNo = uMatch ? uMatch[1] : "";
+      const withoutUno = val.replace(/\s*\(U\.NO:\s*\d+\)/i, "").trim();
+      const dashIdx = withoutUno.indexOf("-");
+      if (cInp) cInp.value = dashIdx > 0 ? withoutUno.slice(0, dashIdx).trim() : "";
+      if (nInp) nInp.value = dashIdx > 0 ? withoutUno.slice(dashIdx + 1).trim() : withoutUno;
+      if (uInp) uInp.value = uNo;
+    } else {
+      const list = (_admPracActiveTab === "PUB12")
+        ? (typeof getEffectiveExamCentres12List === "function" ? getEffectiveExamCentres12List() : [])
+        : (typeof getEffectiveExamCentres10List === "function" ? getEffectiveExamCentres10List() : []);
+      const rec = list[_admPracEditIdx];
+      if (rec) {
+        if (cInp) cInp.value = rec.centreNo || "";
+        if (nInp) nInp.value = rec.centreNameEn || rec.centreNameTa || "";
+        if (uInp) uInp.value = rec.uNo || "";
+      }
+    }
+    if (sBtn) sBtn.textContent = "💾 மாற்றத்தைச் சேமி";
+    if (xBtn) xBtn.style.display = "inline-flex";
+    if (nInp) nInp.focus();
+  };
+
+  window.deleteAdminManagedCentreRow = function(idx) {
+    idx = Number(idx);
+    if (!confirm("இந்தத் தேர்வு மையத்தைப் பட்டியலிலிருந்து நீக்கவா?")) return;
+    if (_admPracActiveTab === "10" || _admPracActiveTab === "12") {
+      const arr = getManagedPracticalList(_admPracActiveTab);
+      if (idx >= 0 && idx < arr.length) {
+        arr.splice(idx, 1);
+        saveManagedPracticalList(_admPracActiveTab, arr);
+        window.renderAdminPracticalCentresTable();
+        if (typeof showToast === "function") showToast("🗑️ செய்முறைத் தேர்வு மையம் நீக்கப்பட்டு Drop-down பட்டியல்களில் புதுப்பிக்கப்பட்டது!", "#dc2626");
+      }
+    } else {
+      const is12 = (_admPracActiveTab === "PUB12");
+      const key = is12 ? "CEOSVG_EXAM_CENTRES_12" : "CEOSVG_EXAM_CENTRES_10";
+      const list = is12 ? getEffectiveExamCentres12List() : getEffectiveExamCentres10List();
+      if (idx >= 0 && idx < list.length) {
+        list.splice(idx, 1);
+        safeSetStorage(key, list, false);
+        syncAllPortalCentreDropdownsFromManagers();
+        if (typeof renderAdminExamCentresTable === "function") renderAdminExamCentresTable();
+        window.renderAdminPracticalCentresTable();
+        if (typeof showToast === "function") showToast("🗑️ பொதுத்தேர்வு மையம் நீக்கப்பட்டு Drop-down பட்டியல்களில் புதுப்பிக்கப்பட்டது!", "#dc2626");
+      }
+    }
+  };
+
+  window.saveAdminManagedCentreEntry = function() {
+    const code = String(document.getElementById("admPracCentreCodeInp")?.value || "").trim();
+    const name = String(document.getElementById("admPracCentreNameInp")?.value || "").trim();
+    const uNo = String(document.getElementById("admPracCentreUnoInp")?.value || "").trim();
+    if (!name) {
+      if (typeof showToast === "function") showToast("⚠️ தேர்வு மையத்தின் பெயரை உள்ளிடவும்.", "#f59e0b");
+      return;
+    }
+
+    if (_admPracActiveTab === "10" || _admPracActiveTab === "12") {
+      const label = `${code ? code + "-" : ""}${name}${uNo ? " (U.NO:" + uNo + ")" : ""}`;
+      const arr = getManagedPracticalList(_admPracActiveTab);
+      if (_admPracEditIdx >= 0 && _admPracEditIdx < arr.length) {
+        arr[_admPracEditIdx] = label;
+      } else {
+        // Insert before trailing "Other District" / "Not allotted" / "Duty Cancelled"
+        const tailIdx = arr.findIndex(x => /^(Other District|Not allotted|Duty Cancelled)$/i.test(String(x).trim()));
+        if (tailIdx >= 0) arr.splice(tailIdx, 0, label);
+        else arr.push(label);
+      }
+      saveManagedPracticalList(_admPracActiveTab, arr);
+      window.cancelEditAdminManagedCentre();
+      window.renderAdminPracticalCentresTable();
+      if (typeof showToast === "function") {
+        showToast(`✅ ${_admPracActiveTab}th செய்முறைத் தேர்வு மையம் சேமிக்கப்பட்டு அனைத்து Drop-down பட்டியல்களிலும் புதுப்பிக்கப்பட்டது!`, "#16a34a", true);
+      }
+    } else {
+      const is12 = (_admPracActiveTab === "PUB12");
+      const key = is12 ? "CEOSVG_EXAM_CENTRES_12" : "CEOSVG_EXAM_CENTRES_10";
+      const list = is12 ? getEffectiveExamCentres12List() : getEffectiveExamCentres10List();
+      const schMatch = uNo ? (masterSchools || []).find(s => String(s.uNo) === uNo) : null;
+      const entry = {
+        sn: list.length + 1,
+        uNo: uNo || "",
+        centreNo: code || (is12 ? "208000" : "20800"),
+        centreNameEn: name,
+        centreNameTa: (schMatch && schMatch.nameTa) ? schMatch.nameTa : name,
+        block: (schMatch && schMatch.block) ? schMatch.block : "12 Sivagangai"
+      };
+      if (_admPracEditIdx >= 0 && _admPracEditIdx < list.length) {
+        list[_admPracEditIdx] = Object.assign({}, list[_admPracEditIdx], entry);
+      } else {
+        list.push(entry);
+      }
+      if (schMatch) {
+        if (is12) schMatch.centre12 = entry.centreNo;
+        else schMatch.centre10 = entry.centreNo;
+        schMatch.isExamCentre = true;
+      }
+      safeSetStorage(key, list, false);
+      syncAllPortalCentreDropdownsFromManagers();
+      window.cancelEditAdminManagedCentre();
+      if (typeof renderAdminExamCentresTable === "function") renderAdminExamCentresTable();
+      window.renderAdminPracticalCentresTable();
+      if (typeof showToast === "function") {
+        showToast(`✅ ${is12 ? "12th" : "10th"} பொதுத்தேர்வு மையம் சேமிக்கப்பட்டு அனைத்து Drop-down பட்டியல்களிலும் புதுப்பிக்கப்பட்டது!`, "#16a34a", true);
+      }
+    }
+  };
+
+  window.renderAdminPracticalCentresTable = function() {
+    const tbody = document.getElementById("admPracCentresTbody");
+    const b10 = document.getElementById("admPrac10CountBadge");
+    const b12 = document.getElementById("admPrac12CountBadge");
+    const lbl = document.getElementById("admPracCentreActiveModeLabel");
+    const q = String(document.getElementById("admPracCentreSearchInp")?.value || "").trim().toLowerCase();
+
+    const p10 = getManagedPracticalList("10");
+    const p12 = getManagedPracticalList("12");
+    if (b10) b10.textContent = String(p10.length);
+    if (b12) b12.textContent = String(p12.length);
+    if (!tbody) return;
+
+    let rows = [];
+    if (_admPracActiveTab === "10" || _admPracActiveTab === "12") {
+      const src = (_admPracActiveTab === "12") ? p12 : p10;
+      if (lbl) lbl.textContent = (_admPracActiveTab === "12")
+        ? `🔬 12-ஆம் வகுப்பு செய்முறைத் தேர்வு மையங்கள் (${src.length})`
+        : `🧪 10-ஆம் வகுப்பு செய்முறைத் தேர்வு மையங்கள் (${src.length})`;
+      rows = src.map((txt, idx) => ({ idx, label: String(txt || "") }));
+    } else {
+      const is12 = (_admPracActiveTab === "PUB12");
+      const src = is12 ? getEffectiveExamCentres12List() : getEffectiveExamCentres10List();
+      if (lbl) lbl.textContent = is12
+        ? `🎓 12-ஆம் வகுப்பு பொதுத்தேர்வு மையங்கள் (${src.length})`
+        : `📝 10-ஆம் வகுப்பு பொதுத்தேர்வு மையங்கள் (${src.length})`;
+      rows = src.map((c, idx) => ({
+        idx,
+        label: `${c.centreNo ? c.centreNo + " - " : ""}${c.centreNameEn || c.centreNameTa || ""}${c.uNo ? " (U.NO:" + c.uNo + ")" : ""}`
+      }));
+    }
+
+    const filtered = q ? rows.filter(r => r.label.toLowerCase().includes(q)) : rows;
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:16px; color:#64748b; font-weight:700;">பொருத்தமான தேர்வு மையங்கள் எதுவும் இல்லை.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.slice(0, 450).map((r, i) => `
+      <tr>
+        <td style="text-align:center; font-weight:800; color:#64748b;">${i + 1}</td>
+        <td style="font-weight:800; color:#0f294a;">${escapeHtmlAttr(r.label)}</td>
+        <td style="text-align:center;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="editAdminManagedCentreRow(${r.idx})" style="padding:2px 8px; font-size:0.72rem; font-weight:800; color:#0369a1; border-color:#7dd3fc;">✏️ திருத்து</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="deleteAdminManagedCentreRow(${r.idx})" style="padding:2px 8px; font-size:0.72rem; font-weight:800; color:#dc2626; border-color:#fca5a5;">🗑️ நீக்கு</button>
+        </td>
+      </tr>
+    `).join("");
+  };
+
+  // Pull Admin-managed Practical Centres from Firebase on boot so all 282 schools get updated dropdowns automatically!
+  async function pullManagedPracticalCentresFromFirebase() {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") return;
+    try {
+      const [r10, r12] = await Promise.all([
+        fetch(buildFirebaseEndpoint("ceosvg_live/practical_centres_10")).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch(buildFirebaseEndpoint("ceosvg_live/practical_centres_12")).then(r => r.ok ? r.json() : null).catch(() => null)
+      ]);
+      if (Array.isArray(r10) && r10.length > 0 && typeof safeSetStorage === "function") {
+        safeSetStorage(PRAC_10_KEY, r10, true);
+      }
+      if (Array.isArray(r12) && r12.length > 0 && typeof safeSetStorage === "function") {
+        safeSetStorage(PRAC_12_KEY, r12, true);
+      }
+      syncAllPortalCentreDropdownsFromManagers();
+      if (document.getElementById("admPracCentresTbody")) {
+        window.renderAdminPracticalCentresTable();
+      }
+    } catch (e) {}
+  }
+
+  // Hook openEbsStaffProfileModal so dropdowns always reflect the latest managed centres
+  if (typeof openEbsStaffProfileModal === "function") {
+    const _v77PrevOpenStf = openEbsStaffProfileModal;
+    openEbsStaffProfileModal = function() {
+      syncAllPortalCentreDropdownsFromManagers();
+      return _v77PrevOpenStf.apply(this, arguments);
+    };
+  }
+
+  syncAllPortalCentreDropdownsFromManagers();
+  setTimeout(pullManagedPracticalCentresFromFirebase, 1200);
 })();
 </script>
 
