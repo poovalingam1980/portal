@@ -196,7 +196,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.7)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.9)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -545,7 +545,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.7</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.9</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -6349,7 +6349,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v2.5</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v6.9</strong>
 </p>
 </footer>
 </div>
@@ -36145,8 +36145,8 @@ function renderSchool12thStuMarksPane(calc) {
         </div>
         <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
           ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">⚡ முழு Internal (10) &amp; Practical (20) நிரப்பு</button>` : ""}
-          <button type="button" class="btn btn-outline btn-sm" onclick="triggerModifiedTmlExcelUpload(false)" style="background:#f5f3ff; color:#5b21b6; border-color:#c4b5fd; font-weight:900; font-size:0.76rem;">
-            📤 TML (.xlsx) பதிவேற்று
+          <button type="button" class="btn btn-outline btn-sm" onclick="openMidTermBulkPasteModal()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900; font-size:0.76rem;">
+            📋 Excel Copy-Paste
           </button>
           <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(1)" style="font-weight:800; font-size:0.76rem;">
             ➕ +1 மாணவர்
@@ -36589,7 +36589,7 @@ function build12thForm2_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPages
             <th rowspan="2" style="${hdrCell}">LA</th>
             <th rowspan="2" style="${hdrCell}">AB</th>
             <th rowspan="2" style="${hdrCell}">Ex.</th>
-            <th rowspan="2" style="${hdrCell} background:#dbeafe;">Appear</th>
+            <th rowspan="2" style="${hdrCell} background:#dbeafe; font-size:0.64rem; white-space:nowrap;">Appear</th>
             <th rowspan="2" style="${hdrCell} background:#dcfce7;">Pass</th>
             <th rowspan="2" style="${hdrCell} background:#fee2e2;">Fail</th>
             <th rowspan="2" style="${hdrCell} background:#fef3c7;">Pass<br>%</th>
@@ -36605,7 +36605,7 @@ function build12thForm2_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPages
             <th style="${subHdrCell}">61-80</th>
             <th style="${subHdrCell}">81-99</th>
             <th style="${subHdrCell}">100</th>
-            <th style="${subHdrCell}">Appear</th>
+            <th style="${subHdrCell} font-size:0.62rem; white-space:nowrap;">Appear</th>
             <th style="${subHdrCell}">Pass</th>
             <th style="${subHdrCell}">Pass %</th>
             <th style="${subHdrCell}">Avg</th>
@@ -36625,11 +36625,7 @@ function build12thForm2_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPages
 
 function build12thForm2_2ExactHtml(calc, forPrint) {
   const rowsList = calc.f2Rows.slice();
-  if (forPrint) {
-    while (rowsList.length < 12) {
-      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
-    }
-  }
+  // v6.5: Show only rows with actual teacher/subject details (no trailing empty rows)
   if (!forPrint || rowsList.length <= 12) {
     return build12thForm2_2SinglePageTableHtml(calc, rowsList, 0, 1, forPrint);
   }
@@ -40199,7 +40195,7 @@ function buildMidTermForm1_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPa
             <th rowspan="2" style="${hdrCell}">AB</th>
             <th rowspan="2" style="${hdrCell}">HB</th>
             <th rowspan="2" style="${hdrCell}">Ex.</th>
-            <th rowspan="2" style="${hdrCell} background:#dbeafe;">Appear</th>
+            <th rowspan="2" style="${hdrCell} background:#dbeafe; font-size:0.64rem; white-space:nowrap;">Appear</th>
             <th rowspan="2" style="${hdrCell} background:#dcfce7;">Pass</th>
             <th rowspan="2" style="${hdrCell} background:#fee2e2;">Fail</th>
             <th rowspan="2" style="${hdrCell} background:#fef3c7;">Pass<br>%</th>
@@ -40216,7 +40212,7 @@ function buildMidTermForm1_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPa
             <th style="${subHdrCell}">61-80</th>
             <th style="${subHdrCell}">81-99</th>
             <th style="${subHdrCell}">100</th>
-            <th style="${subHdrCell}">Appear</th>
+            <th style="${subHdrCell} font-size:0.62rem; white-space:nowrap;">Appear</th>
             <th style="${subHdrCell}">Pass</th>
             <th style="${subHdrCell}">Pass %</th>
             <th style="${subHdrCell}">Avg</th>
@@ -40237,11 +40233,7 @@ function buildMidTermForm1_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPa
 function buildMidTermForm1_2ExactHtml(calc, forPrint) {
   if (calc && calc.std === '12') return build12thForm2_2ExactHtml(calc, forPrint);
   const rowsList = calc.f2Rows.slice();
-  if (forPrint) {
-    while (rowsList.length < 12) {
-      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
-    }
-  }
+  // v6.5: Show only rows with actual teacher/subject details (no trailing empty rows)
   if (!forPrint || rowsList.length <= 12) {
     return buildMidTermForm1_2SinglePageTableHtml(calc, rowsList, 0, 1, forPrint);
   }
@@ -40952,9 +40944,7 @@ async function downloadSchoolMidTermFormsPdfLandscape(mode, explicitUNo, btnEl) 
   }
   if (mode === "F1_2" || mode === "BOTH") {
     const rowsList = calc.f2Rows.slice();
-    while (rowsList.length < 12) {
-      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
-    }
+    // v6.8: Only include rows with actual teacher/subject details (no blank rows)
     if (rowsList.length <= 12) {
       pageHtmlBlocks.push(
         is12
@@ -47913,7 +47903,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v5.7) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v6.9) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -47975,7 +47965,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v5.7)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v6.9)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -47984,7 +47974,7 @@ function openPortalShortcutModal() {
         <div style="background:#f0f9ff; border:1.5px solid #7dd3fc; border-left:5px solid #0284c7; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
           <div style="font-size:0.90rem; font-weight:900; color:#0c4a6e;">💡 ஏன் செயலிக்கு (App) பதிலாக நேரடி Shortcut பயன்படுத்த வேண்டும்?</div>
           <div style="font-size:0.79rem; color:#0369a1; font-weight:700; margin-top:4px; line-height:1.5;">
-            பழைய செயலி (App) முறையினால் சில பள்ளிகளுக்குப் புதிய மேம்பாடுகள் உடனடியாகப் புதுப்பிக்கப்படாமல் பழைய பதிப்பே (Old Version) காட்டப்பட்டது. அதனைத் தவிர்த்து, <strong>ஒவ்வொரு முறை திறக்கும்போதும் 100% சமீபத்திய நேரடிப் பதிப்பு (Live Version v5.7)</strong> மட்டுமே திறக்கும் வகையில் இந்த <strong>Shortcut</strong> வசதி அமைக்கப்பட்டுள்ளது.
+            பழைய செயலி (App) முறையினால் சில பள்ளிகளுக்குப் புதிய மேம்பாடுகள் உடனடியாகப் புதுப்பிக்கப்படாமல் பழைய பதிப்பே (Old Version) காட்டப்பட்டது. அதனைத் தவிர்த்து, <strong>ஒவ்வொரு முறை திறக்கும்போதும் 100% சமீபத்திய நேரடிப் பதிப்பு (Live Version v6.9)</strong> மட்டுமே திறக்கும் வகையில் இந்த <strong>Shortcut</strong> வசதி அமைக்கப்பட்டுள்ளது.
           </div>
         </div>
 
@@ -52284,6 +52274,377 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
         refreshModalExemptionOriginalSubmitNote();
       }
       return res;
+    };
+  }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_RA_BLANK_ZEROS_NO_EMPTY_ROWS_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65RaCleanApplied) return;
+  window.__ceosvgV65RaCleanApplied = true;
+
+  // Replace standalone "0" (and "0%", "0.00%") inside <td> cells of Result Analysis Form-I(1) & Form-I(2) with blank ""
+  // Also strip any residual blank/empty <tr> rows in Subject Performance tables.
+  function cleanResultAnalysisReportHtmlZerosAndBlankRows(htmlStr) {
+    if (!htmlStr || typeof htmlStr !== "string") return htmlStr;
+    try {
+      if (typeof document !== "undefined" && typeof document.createElement === "function") {
+        const wrap = document.createElement("div");
+        wrap.innerHTML = htmlStr;
+        const sheets = wrap.querySelectorAll(".ra-report-sheet");
+        const roots = sheets.length > 0 ? Array.from(sheets) : [wrap];
+        roots.forEach(root => {
+          // 1) Remove any <td> that contains strictly 0 / 0.0 / 0.00 / 0% / 0.00%
+          root.querySelectorAll("td").forEach(td => {
+            if (td.querySelector("table, input, select, button")) return;
+            const txt = String(td.textContent || "").trim();
+            if (txt === "0" || txt === "0.0" || txt === "0.00" || txt === "0%" || txt === "0.00%") {
+              td.innerHTML = "";
+            }
+          });
+          // 2) In Subject Performance tables (tbody rows with >= 15 cells), remove rows with empty teacher & subject
+          root.querySelectorAll("tbody tr").forEach(tr => {
+            const cells = tr.querySelectorAll("td");
+            if (cells.length >= 15) {
+              const teacherTxt = String(cells[1]?.textContent || "").trim();
+              const subTxt = String(cells[2]?.textContent || "").trim();
+              if (!teacherTxt && !subTxt) {
+                tr.remove();
+              }
+            }
+          });
+        });
+        return wrap.innerHTML;
+      }
+    } catch (e) {}
+    // Regex fallback if DOM not available
+    return htmlStr.replace(/(<td\b[^>]*>)\s*(?:0|0\.0+|0(?:\.0+)?%)\s*(<\/td>)/gi, "$1$2");
+  }
+
+  window.cleanResultAnalysisReportHtmlZerosAndBlankRows = cleanResultAnalysisReportHtmlZerosAndBlankRows;
+
+  // Wrap 10th Form-I(1)
+  if (typeof buildMidTermForm1_1ExactHtml === "function") {
+    const _v65PrevF11 = buildMidTermForm1_1ExactHtml;
+    buildMidTermForm1_1ExactHtml = function(calc, forPrint) {
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v65PrevF11.apply(this, arguments));
+    };
+  }
+  // Wrap 10th Form-I(2)
+  if (typeof buildMidTermForm1_2ExactHtml === "function") {
+    const _v65PrevF12 = buildMidTermForm1_2ExactHtml;
+    buildMidTermForm1_2ExactHtml = function(calc, forPrint) {
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v65PrevF12.apply(this, arguments));
+    };
+  }
+  // Wrap 12th Form-I(1)
+  if (typeof build12thForm2_1ExactHtml === "function") {
+    const _v65Prev12F1 = build12thForm2_1ExactHtml;
+    build12thForm2_1ExactHtml = function(calc, forPrint) {
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v65Prev12F1.apply(this, arguments));
+    };
+  }
+  // Wrap 10th & 12th SinglePageTableHtml (used directly by downloadSchoolMidTermFormsPdfLandscape)
+  if (typeof buildMidTermForm1_2SinglePageTableHtml === "function") {
+    const _v68Prev10Single = buildMidTermForm1_2SinglePageTableHtml;
+    buildMidTermForm1_2SinglePageTableHtml = function(calc, pageRows, pageIdx, totalPages, forPrint) {
+      const cleanRows = Array.isArray(pageRows) ? pageRows.filter(r => r && !r.isBlank) : pageRows;
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v68Prev10Single.call(this, calc, cleanRows, pageIdx, totalPages, forPrint));
+    };
+  }
+  if (typeof build12thForm2_2SinglePageTableHtml === "function") {
+    const _v68Prev12Single = build12thForm2_2SinglePageTableHtml;
+    build12thForm2_2SinglePageTableHtml = function(calc, pageRows, pageIdx, totalPages, forPrint) {
+      const cleanRows = Array.isArray(pageRows) ? pageRows.filter(r => r && !r.isBlank) : pageRows;
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v68Prev12Single.call(this, calc, cleanRows, pageIdx, totalPages, forPrint));
+    };
+  }
+  // Wrap 12th Form-I(2)
+  if (typeof build12thForm2_2ExactHtml === "function") {
+    const _v65Prev12F2 = build12thForm2_2ExactHtml;
+    build12thForm2_2ExactHtml = function(calc, forPrint) {
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v65Prev12F2.apply(this, arguments));
+    };
+  }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_12TH_EXCEL_COPY_PASTE_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65Class12PasteApplied) return;
+  window.__ceosvgV65Class12PasteApplied = true;
+
+  function getClass12SectionSubjects(rec, secId) {
+    const secs = Array.isArray(rec && rec.sections) ? rec.sections : [];
+    const targetSec = secs.find(s => s && String(s.secId) === String(secId)) || secs[0];
+    if (targetSec && Array.isArray(targetSec.groupSubjects) && targetSec.groupSubjects.length >= 6) {
+      return targetSec.groupSubjects.slice(0, 6);
+    }
+    return ["TAMIL", "ENGLISH", "PHYSICS", "CHEMISTRY", "COMPUTER_SCIENCE", "MATHS"];
+  }
+
+  function get12SubDisplayLabel(sk) {
+    if (typeof HSC12_SUBJECT_MAP === "object" && HSC12_SUBJECT_MAP && HSC12_SUBJECT_MAP[sk]) {
+      const m = HSC12_SUBJECT_MAP[sk];
+      return m.labelTa || m.shortEn || sk;
+    }
+    return sk;
+  }
+
+  function refreshBulkPasteModalForActiveStd() {
+    const is12 = (typeof _activeResultAnalysisStd !== "undefined" && String(_activeResultAnalysisStd) === "12");
+    const modal = document.getElementById("midTermBulkPasteModal");
+    if (!modal) return;
+    const titleEl = modal.querySelector(".modal-title");
+    const guideEl = modal.querySelector("div[style*='#f0fdfa']");
+    const secSel = document.getElementById("mtBulkPasteDefaultSec");
+    const ta = document.getElementById("mtBulkPasteTextarea");
+
+    if (!is12) {
+      if (titleEl) titleEl.innerHTML = "📋 Excel / தாள் பட்டியலிலிருந்து 10-ஆம் வகுப்பு மாணவர் பெயர் &amp; மதிப்பெண்களை Copy-Paste செய்தல்";
+      if (guideEl) {
+        guideEl.innerHTML = `💡 <strong>பயன்படுத்தும் முறை (10-ஆம் வகுப்பு):</strong> உங்கள் Excel கோப்பில் உள்ள மாணவர் வரிசைகளை (<strong>Roll No, பெயர் (தமிழில்), பெயர் (ஆங்கிலத்தில்), பாலினம் (M/F), பிரிவு (A/B), தமிழ், ஆங்கிலம், கணிதம், அறிவியல், சமூக அறிவியல்</strong>) அப்படியே Copy செய்து கீழே உள்ள பெட்டியில் Paste செய்யவும். (வருகை புரியாத பாடத்திற்கு <code>AB</code> என்றும், விலக்கு எனில் <code>EX</code> என்றும் குறிப்பிடலாம்).`;
+      }
+      if (ta) {
+        ta.placeholder = "உதாரணம் (Roll No, தமிழ் பெயர், ஆங்கிலப் பெயர், பாலினம், பிரிவு, 5 பாட மதிப்பெண்கள்):\n1001\tஅருண் குமார் க\tARUN KUMAR K\tM\tA\t78\t65\t84\t91\t88";
+      }
+      return;
+    }
+
+    // Class 12 mode
+    const uNo = String((activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+    const rec = (uNo && typeof getSchool12thExamRecord === "function")
+      ? getSchool12thExamRecord(uNo, _activeMidTermTermKey)
+      : null;
+
+    const secs = (rec && Array.isArray(rec.sections) && rec.sections.length > 0)
+      ? rec.sections
+      : [{ secId: "A" }, { secId: "B" }, { secId: "C" }, { secId: "D" }];
+
+    if (secSel) {
+      const currentActiveSec = (typeof _mtStuFilterSec !== "undefined" && _mtStuFilterSec && _mtStuFilterSec !== "ALL" && _mtStuFilterSec !== "ALL_EXPLICIT")
+        ? _mtStuFilterSec
+        : ((typeof _raSelectedSecId !== "undefined" && _raSelectedSecId) ? _raSelectedSecId : secs[0].secId);
+      secSel.innerHTML = secs.map(s => {
+        const grpTxt = Array.isArray(s.groupSubjects) ? ` (${s.groupSubjects.slice(2, 6).join("/")})` : "";
+        return `<option value="${escapeHtmlAttr(s.secId)}">Section ${escapeHtmlAttr(s.secId)}${escapeHtmlAttr(grpTxt)}</option>`;
+      }).join("");
+      if (secs.some(s => String(s.secId) === String(currentActiveSec))) {
+        secSel.value = currentActiveSec;
+      }
+      secSel.onchange = function() { updateClass12GuideForSelectedSec(); };
+    }
+
+    function updateClass12GuideForSelectedSec() {
+      const chosenSec = (secSel && secSel.value) ? secSel.value : secs[0].secId;
+      const subs6 = getClass12SectionSubjects(rec, chosenSec);
+      const subNamesTa = subs6.map(get12SubDisplayLabel);
+      if (titleEl) {
+        titleEl.innerHTML = `📋 12-ஆம் வகுப்பு (பிரிவு ${escapeHtmlAttr(chosenSec)}) – Excel மதிப்பெண் Copy-Paste`;
+      }
+      if (guideEl) {
+        guideEl.innerHTML = `💡 <strong>பயன்படுத்தும் முறை (12-ஆம் வகுப்பு – 6 பாடங்கள்):</strong><br>` +
+          `1️⃣ <strong>முழு வரிசை Paste:</strong> Excel-லிருந்து <code>Roll No, தமிழ் பெயர், ஆங்கிலப் பெயர், பாலினம் (M/F), பிரிவு, ${escapeHtmlAttr(subNamesTa.join(", "))}</code> ஆகிய வரிசைகளை Copy-Paste செய்யலாம்.<br>` +
+          `2️⃣ <strong>மதிப்பெண்கள் மட்டும் Paste (6 நெடுவரிசைகள்):</strong> பிரிவு <strong>${escapeHtmlAttr(chosenSec)}</strong>-ல் ஏற்கனவே மாணவர்கள் இருந்தால், அவர்களின் 6 பாட மதிப்பெண்களை மட்டும் (${escapeHtmlAttr(subNamesTa.join(" | "))}) நேரடியாக Copy-Paste செய்தாலும் வரிசைப்படி மதிப்பெண்கள் உடனடியாக நிரப்பப்படும்! (<code>AB</code> = Absent, <code>EX</code> = Exempt).`;
+      }
+      if (ta) {
+        ta.placeholder = `உதாரணம் 1 (முழு வரிசை – Roll No, தமிழ் பெயர், ஆங்கிலப் பெயர், பாலினம், பிரிவு, 6 பாடங்கள்):\n1201\tகார்த்திக் க\tKARTHIK K\tM\t${chosenSec}\t82\t76\t88\t91\t94\t85\n\nஉதாரணம் 2 (ஏற்கனவே உள்ள மாணவர்களுக்கு 6 பாட மதிப்பெண்கள் மட்டும்):\n82\t76\t88\t91\t94\t85\n75\t68\t79\t84\t90\t77`;
+      }
+    }
+    updateClass12GuideForSelectedSec();
+  }
+
+  if (typeof openMidTermBulkPasteModal === "function") {
+    const _v65OrigOpenPaste = openMidTermBulkPasteModal;
+    openMidTermBulkPasteModal = function() {
+      refreshBulkPasteModalForActiveStd();
+      const ta = document.getElementById("mtBulkPasteTextarea");
+      if (ta) ta.value = "";
+      return _v65OrigOpenPaste.apply(this, arguments);
+    };
+  }
+
+  if (typeof processMidTermBulkPasteStudents === "function") {
+    const _v65OrigProcessPaste = processMidTermBulkPasteStudents;
+    processMidTermBulkPasteStudents = function() {
+      const is12 = (typeof _activeResultAnalysisStd !== "undefined" && String(_activeResultAnalysisStd) === "12");
+      if (!is12) {
+        return _v65OrigProcessPaste.apply(this, arguments);
+      }
+
+      if (!activeSchoolSession) return;
+      const uNo = String(activeSchoolSession.uNo);
+      const rawText = (document.getElementById("mtBulkPasteTextarea")?.value || "").trim();
+      if (!rawText) {
+        if (typeof showToast === "function") showToast("⚠️ தயவுசெய்து Excel வரிசைகளை Paste செய்யவும்.", "#f59e0b");
+        return;
+      }
+
+      const defSec = (document.getElementById("mtBulkPasteDefaultSec")?.value || "A").trim();
+      const defGender = (document.getElementById("mtBulkPasteDefaultGender")?.value || "Male").trim();
+      const replaceAll = Boolean(document.getElementById("mtBulkPasteReplaceAll")?.checked);
+      const rec = getSchool12thExamRecord(uNo, _activeMidTermTermKey);
+      if (!rec) return;
+      if (!Array.isArray(rec.students)) rec.students = [];
+
+      const isSplitTerm = (typeof isSplitMarkExamTerm === "function") ? isSplitMarkExamTerm(_activeMidTermTermKey) : false;
+
+      if (replaceAll) {
+        // Replace only the selected section's students if multiple sections exist, or all if single section
+        if ((rec.sections || []).length > 1) {
+          rec.students = rec.students.filter(st => String(st.section || "") !== defSec);
+        } else {
+          rec.students = [];
+        }
+      }
+
+      const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const existingSecStudents = rec.students.filter(st => String(st.section || "") === defSec);
+
+      let added = 0;
+      let updated = 0;
+      let marksOnlyCursor = 0;
+
+      function isMarkToken(tok) {
+        const s = String(tok || "").trim().toUpperCase();
+        if (s === "" || s === "-" || s === "AB" || s === "EX" || s === "A") return true;
+        return /^\d{1,3}(\.\d+)?$/.test(s) && Number(s) <= 100;
+      }
+
+      function apply6MarksToStudent(stuObj, subs6, mVals) {
+        if (!stuObj.marks || typeof stuObj.marks !== "object") stuObj.marks = {};
+        if (isSplitTerm && (!stuObj.splitMarks || typeof stuObj.splitMarks !== "object")) {
+          stuObj.splitMarks = {};
+        }
+        subs6.forEach((sk, i) => {
+          const rawV = String(mVals[i] !== undefined ? mVals[i] : "").trim().toUpperCase();
+          const cleanV = (rawV === "-" ? "" : (rawV === "A" ? "AB" : rawV));
+          stuObj.marks[sk] = cleanV;
+          if (isSplitTerm && typeof getSubjectSplitRule === "function") {
+            const rule = getSubjectSplitRule("12", sk);
+            if (cleanV === "AB" || cleanV === "EX" || cleanV === "") {
+              stuObj.splitMarks[sk] = { th: cleanV, pr: cleanV === "AB" ? "AB" : "", in: cleanV === "AB" ? "AB" : "" };
+            } else {
+              const totNum = Math.min(100, Math.max(0, Math.round(Number(cleanV) || 0)));
+              if (rule && rule.splitMode === "TH_PR_INT") {
+                const inM = Math.min(rule.maxInt || 10, totNum);
+                const prM = Math.min(rule.maxPr || 20, Math.max(0, totNum - inM));
+                const thM = Math.min(rule.maxTh || 70, Math.max(0, totNum - inM - prM));
+                stuObj.splitMarks[sk] = { th: String(thM), pr: String(prM), in: String(inM) };
+              } else if (rule && rule.splitMode === "PR_INT_VOC") {
+                const inM = Math.min(rule.maxInt || 25, totNum);
+                const prM = Math.min(rule.maxPr || 75, Math.max(0, totNum - inM));
+                stuObj.splitMarks[sk] = { th: "", pr: String(prM), in: String(inM) };
+              } else {
+                const inM = Math.min((rule && rule.maxInt) || 10, totNum);
+                const thM = Math.min((rule && rule.maxTh) || 90, Math.max(0, totNum - inM));
+                stuObj.splitMarks[sk] = { th: String(thM), pr: "", in: String(inM) };
+              }
+            }
+          }
+        });
+      }
+
+      lines.forEach((line, idx) => {
+        const cols = line.includes("\t") ? line.split("\t").map(c => c.trim()) : line.split(",").map(c => c.trim());
+        if (cols.length < 2) return;
+        // Skip header row
+        if (/^(s\.?no|roll|வ\.?எண்|tamil|தமிழ்|reg\.?no)/i.test(cols[0]) && !isMarkToken(cols[0])) return;
+
+        // Case A: Marks-Only paste (6 columns, all look like marks) -> update existing section students in order!
+        if (cols.length === 6 && cols.every(isMarkToken) && existingSecStudents[marksOnlyCursor]) {
+          const targetStu = existingSecStudents[marksOnlyCursor++];
+          const subs6 = getClass12SectionSubjects(rec, targetStu.section || defSec);
+          apply6MarksToStudent(targetStu, subs6, cols);
+          updated++;
+          return;
+        }
+
+        let rollNo = "", nameTa = "", nameEn = "", name = "", gender = defGender, sec = defSec;
+        let mVals = ["", "", "", "", "", ""];
+
+        if (cols.length >= 11) {
+          rollNo = cols[0];
+          nameTa = cols[1];
+          nameEn = cols[2];
+          gender = /^(f|female|பெண்|g)/i.test(cols[3]) ? "Female" : "Male";
+          sec = cols[4].toUpperCase().replace(/[^A-Z0-9]/g, "") || defSec;
+          mVals = cols.slice(5, 11);
+        } else if (cols.length === 10) {
+          rollNo = cols[0];
+          name = cols[1];
+          gender = /^(f|female|பெண்|g)/i.test(cols[2]) ? "Female" : "Male";
+          sec = cols[3].toUpperCase().replace(/[^A-Z0-9]/g, "") || defSec;
+          mVals = cols.slice(4, 10);
+        } else if (cols.length === 9) {
+          rollNo = cols[0];
+          nameTa = cols[1];
+          nameEn = cols[2];
+          mVals = cols.slice(3, 9);
+        } else if (cols.length === 8) {
+          rollNo = cols[0];
+          name = cols[1];
+          mVals = cols.slice(2, 8);
+        } else if (cols.length === 7) {
+          rollNo = String(1200 + rec.students.length + 1);
+          name = cols[0];
+          mVals = cols.slice(1, 7);
+        } else {
+          rollNo = String(1200 + rec.students.length + 1);
+          name = cols[0];
+          mVals = cols.slice(1, 7);
+        }
+
+        const subs6 = getClass12SectionSubjects(rec, sec);
+
+        // If rollNo matches an existing student in that section, update their marks in place
+        const existingMatch = (!replaceAll && rollNo)
+          ? rec.students.find(st => st && String(st.rollNo || "").trim() === String(rollNo).trim() && String(st.section || "") === sec)
+          : null;
+
+        if (existingMatch) {
+          if (nameTa) existingMatch.nameTa = nameTa;
+          if (nameEn) existingMatch.nameEn = nameEn;
+          if (name && !existingMatch.name) existingMatch.name = name;
+          apply6MarksToStudent(existingMatch, subs6, mVals);
+          if (typeof normalizeStudentNamesTaEn === "function") normalizeStudentNamesTaEn(existingMatch);
+          updated++;
+        } else {
+          const stuObj = {
+            id: "STU12_" + Date.now() + "_" + idx,
+            rollNo: rollNo || String(1200 + rec.students.length + 1),
+            name: name || nameEn || nameTa,
+            nameTa: nameTa,
+            nameEn: nameEn,
+            gender: gender,
+            section: sec,
+            status: "PRESENT",
+            marks: {}
+          };
+          apply6MarksToStudent(stuObj, subs6, mVals);
+          if (typeof normalizeStudentNamesTaEn === "function") normalizeStudentNamesTaEn(stuObj);
+          rec.students.push(stuObj);
+          added++;
+        }
+      });
+
+      if (typeof syncSchool12thClassMasterFromRecord === "function") {
+        syncSchool12thClassMasterFromRecord(uNo, rec);
+      }
+      saveExamResultAnalysisStore();
+      closeMidTermBulkPasteModal();
+      renderSchoolMidTermModule();
+      const msgParts = [];
+      if (added > 0) msgParts.push(`${added} புதிய மாணவர்கள் சேர்க்கப்பட்டனர்`);
+      if (updated > 0) msgParts.push(`${updated} மாணவர்களின் மதிப்பெண்கள் புதுப்பிக்கப்பட்டன`);
+      if (typeof showToast === "function") {
+        showToast(`✅ 12-ஆம் வகுப்பு: ${msgParts.join(" & ") || "மதிப்பெண்கள் பதிவேற்றப்பட்டன"} – FORM-II(1) & II(2) கணக்கிடப்பட்டன!`, "#16a34a", true);
+      }
     };
   }
 })();
