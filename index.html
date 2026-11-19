@@ -196,7 +196,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.6)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.7)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -545,7 +545,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.6</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.7</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -44908,6 +44908,7 @@ submitStaffDeleteRequest = function(event) {
   resolveAdminDeleteRequest(newReq.reqId, "APPROVED");
 };
 
+window.__ceosvgBaseResolveAdminDeleteRequest = resolveAdminDeleteRequest;
 const _origResolveAdminDeleteRequest = resolveAdminDeleteRequest;
 resolveAdminDeleteRequest = function(reqId, decision, rejectNote) {
   const req = (staffDeleteRequests || []).find(r => r && r.reqId === reqId);
@@ -47576,6 +47577,7 @@ async function syncAllExemptionCertificatesToGoogleDrive() {
 }
 
 // Enhance openEbsStaffProfileModal so existing certificate links always use formatCertificateActionLinksHtml
+window.__ceosvgBaseOpenEbsStaffProfileModal = openEbsStaffProfileModal;
 const _v56OrigOpenEbsStaffProfileModal = openEbsStaffProfileModal;
 openEbsStaffProfileModal = function(uNo, staffId) {
   _v56OrigOpenEbsStaffProfileModal(uNo, staffId);
@@ -48739,6 +48741,7 @@ loginAsSchool = function(school, isRestoringSession) {
 
 // 6. Upgrade triggerUploadEbsExemptionCertificate to ALSO trigger GET `?action=sync_firebase_cert_to_drive&certKey=...`
 //    (bypassing 302 POST redirect body loss) AND verify Firebase `driveFileUrl` before showing status!
+window.__ceosvgBaseUploadExemptionCert = triggerUploadEbsExemptionCertificate;
 const _v59OrigTriggerUploadEbsExemptionCertificate = triggerUploadEbsExemptionCertificate;
 triggerUploadEbsExemptionCertificate = async function() {
   if (!_activeEbsEditingStaff) return false;
@@ -51828,6 +51831,458 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
       const res = await _v65PrevLoginAuthPull.apply(this, arguments);
       _lastLoginAuthPullTs = Date.now();
       try { safeSetStorage("CEOSVG_LAST_LOGIN_AUTH_PULL_TS", _lastLoginAuthPullTs, true); } catch (e) {}
+      return res;
+    };
+  }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V67_UNIFIED_WRAPPER_CONSOLIDATION_APPLIED ===
+(function() {
+  if (window.__ceosvgV67Consolidated) return;
+  window.__ceosvgV67Consolidated = true;
+
+  // ========================================================================
+  // 1. UNIFIED `pullAllPortalDataFromFirebase(showNotification)`
+  //    Replaces 7 stacked wrappers (v52 + v56 + v59 + v61 + v63 + v65) with
+  //    ONE single-flight, race-condition-free, zero-duplicate-fetch engine!
+  // ========================================================================
+  let _v67PullInFlightPromise = null;
+
+  pullAllPortalDataFromFirebase = async function(showNotification) {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl) return;
+
+    const isAdminView = Boolean(document.body && document.body.classList.contains("admin-mode")) ||
+      Boolean(document.getElementById("viewAdmin")?.classList.contains("active")) ||
+      Boolean(activeSchoolSession && activeSchoolSession.isAdminInspection);
+
+    // Route 1: Single school logged in (non-Admin, background sync) -> ~15 KB single-school pull
+    if (!isAdminView && activeSchoolSession && activeSchoolSession.uNo && !showNotification) {
+      if (typeof pullSingleSchoolDataFromFirebase === "function") {
+        return await pullSingleSchoolDataFromFirebase(activeSchoolSession.uNo);
+      }
+      return;
+    }
+
+    // Route 2: Public Login screen (#viewAuth, background sync) -> ~45 KB lightweight auth pull
+    if (!isAdminView && !activeSchoolSession && !showNotification) {
+      if (typeof pullLightweightLoginAuthFromFirebase === "function") {
+        return await pullLightweightLoginAuthFromFirebase();
+      }
+      return;
+    }
+
+    // Route 3: Admin automatic background refresh -> Lazy per-tab / ~30 KB Summary Index (ZERO bulk download!)
+    if (isAdminView && !showNotification) {
+      const activeTab = (typeof currentAdminTabKey !== "undefined" && currentAdminTabKey) ? currentAdminTabKey : "ebsMaster";
+      if (typeof window.lazyLoadAdminTabDataFromFirebase === "function") {
+        return await window.lazyLoadAdminTabDataFromFirebase(activeTab, false);
+      }
+      if (typeof window.pullLightweightSchoolSummaryIndexFromFirebase === "function") {
+        const ok = await window.pullLightweightSchoolSummaryIndexFromFirebase(false);
+        if (ok) return;
+      }
+    }
+
+    // Single-flight deduplication guard for full Admin pulls (prevents overlapping race conditions)
+    if (_v67PullInFlightPromise) return await _v67PullInFlightPromise;
+    if (!showNotification && typeof _lastFullAdminFirebasePullTs !== "undefined" && (Date.now() - _lastFullAdminFirebasePullTs < 45000)) {
+      return;
+    }
+
+    _v67PullInFlightPromise = (async () => {
+      _isPullingFromFirebaseLock = true;
+      _lastFullAdminFirebasePullTs = Date.now();
+      try {
+        // ONE parallel batch fetching every active store once (ZERO duplicate or sequential pulls!)
+        const [
+          rSchools,
+          rExtra,
+          rEbs27,
+          rAuth,
+          rVault,
+          rOverrides,
+          rDelReqsArr,
+          rDelReqsMap,
+          rResDelMap,
+          rDelMap,
+          rEditedStaffVault,
+          rRaByUno
+        ] = await Promise.all([
+          fetch(buildFirebaseEndpoint("ceosvg_live/master_schools_by_uno")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/school_extra")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/ebs_2026_27")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/school_auth")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/verified_otp_vault")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_DELETE_REQUESTS")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/DeleteRequests")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_USER_EDITED_STAFF_VAULT_V1")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/exam_result_analysis_by_uno")).then(r => r.ok ? r.json() : null).catch(() => null)
+        ]);
+
+        const gotAnyFirebaseData = Boolean(rSchools || rExtra || rEbs27 || rAuth);
+        if (!gotAnyFirebaseData) {
+          if (typeof pullAllPortalDataFromGoogleSheet === "function") {
+            await pullAllPortalDataFromGoogleSheet(showNotification);
+          }
+          return;
+        }
+
+        isApplyingRemoteRealtimeUpdate = true;
+
+        // 1) Resolved Delete Map & EMIS Deleted Map
+        if (rDelMap && typeof rDelMap === "object") {
+          _cachedEmisDeletedMap = Object.assign({}, getGlobalEmisDeletedStaffMap(), rDelMap);
+          safeSetStorage("CEOSVG_EMIS_DELETED_MAP_V1", _cachedEmisDeletedMap, true);
+        }
+        if (rResDelMap && typeof rResDelMap === "object") {
+          reloadInMemoryStoreFromKey("CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", rResDelMap);
+        }
+
+        // 2) Staff Overrides & Edited Staff Vault
+        if (rOverrides && typeof rOverrides === "object") {
+          reloadInMemoryStoreFromKey("CEOSVG_STAFF_OVERRIDES", rOverrides);
+        }
+        if (rEditedStaffVault && typeof rEditedStaffVault === "object" && typeof getUserEditedStaffVault === "function") {
+          const localVault = getUserEditedStaffVault();
+          Object.keys(rEditedStaffVault).forEach(sid => {
+            const rem = rEditedStaffVault[sid];
+            const loc = localVault[sid];
+            if (!loc || (typeof parseAnyTimestampMs === "function" ? parseAnyTimestampMs(rem?.updatedAt) >= parseAnyTimestampMs(loc?.updatedAt) : true)) {
+              localVault[sid] = Object.assign({}, loc || {}, rem);
+            }
+          });
+          if (typeof saveUserEditedStaffVault === "function") saveUserEditedStaffVault(localVault, true);
+        }
+
+        // 3) Delete Requests (merged cleanly from both legacy array and granular DeleteRequests map)
+        const combinedDelReqs = [];
+        if (Array.isArray(rDelReqsArr)) combinedDelReqs.push(...rDelReqsArr);
+        if (rDelReqsMap && typeof rDelReqsMap === "object") combinedDelReqs.push(...Object.values(rDelReqsMap).filter(Boolean));
+        if (typeof reconcileAndDeduplicateDeleteRequests === "function") {
+          reconcileAndDeduplicateDeleteRequests(combinedDelReqs.length > 0 ? combinedDelReqs : null, false);
+        } else if (combinedDelReqs.length > 0) {
+          reloadInMemoryStoreFromKey("CEOSVG_DELETE_REQUESTS", combinedDelReqs);
+        }
+
+        // 4) Master Schools, Auth, School Extra, EBS 2026-27 & OTP Vault
+        if (rSchools && typeof rSchools === "object") {
+          mergeSchoolsIntoMasterList(Object.values(rSchools), true);
+          safeSetStorage("CEOSVG_MASTER_SCHOOLS", masterSchools, true);
+        }
+        if (rAuth && typeof rAuth === "object") {
+          reloadInMemoryStoreFromKey("CEOSVG_SCHOOL_AUTH", rAuth);
+          safeSetStorage("CEOSVG_SCHOOL_AUTH", schoolAuthStore, true);
+        }
+        if (rExtra && typeof rExtra === "object") {
+          Object.keys(rExtra).forEach(uKey => {
+            const extObj = rExtra[uKey];
+            if (extObj && typeof extObj === "object") {
+              schoolExtraDataStore[uKey] = deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uKey], extObj, uKey);
+            }
+          });
+        }
+        if (rEbs27 && typeof rEbs27 === "object") {
+          Object.entries(rEbs27).forEach(([uNo, pkt]) => {
+            mergeSingleSchoolEbs27PacketIntoLocal(uNo, pkt);
+          });
+        }
+        if (rVault && typeof rVault === "object") {
+          harvestAndRestoreAllVerifiedOtps(null, rVault);
+        }
+
+        // 5) Result Analysis (single canonical source: exam_result_analysis_by_uno)
+        if (rRaByUno && typeof rRaByUno === "object") {
+          const curRa = _examResultAnalysisStoreCache || safeGetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", {}) || {};
+          if (typeof deepMergeExamResultAnalysisStore === "function") {
+            _examResultAnalysisStoreCache = deepMergeExamResultAnalysisStore(curRa, null, rRaByUno);
+          }
+          if (typeof ensureUlagampatti206PreloadedInMidTermStore === "function") {
+            ensureUlagampatti206PreloadedInMidTermStore(_examResultAnalysisStoreCache);
+          }
+          safeSetStorage("CEOSVG_EXAM_RESULT_ANALYSIS_2026_V1", _examResultAnalysisStoreCache, true);
+        }
+
+        // 6) Reapply Edited Staff Vault & EMIS deletion filters once
+        if (typeof getUserEditedStaffVault === "function" && typeof applyAllSavedStaffEditsToSchool === "function") {
+          const vNow = getUserEditedStaffVault();
+          const touchedUNos = new Set();
+          Object.values(vNow).forEach(v => { if (v && v.uNo) touchedUNos.add(String(v.uNo).trim()); });
+          touchedUNos.forEach(u => applyAllSavedStaffEditsToSchool(u));
+        }
+        if (typeof enforceEmisMasterDeletedStaffFilter === "function") enforceEmisMasterDeletedStaffFilter();
+        districtFlattenedStaffCache = null;
+        safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
+
+        isApplyingRemoteRealtimeUpdate = false;
+
+        // 7) Single clean UI refresh pass
+        if (typeof refreshAllActivePortalViews === "function") refreshAllActivePortalViews();
+        if (typeof updateAllSummaryCounters === "function") updateAllSummaryCounters();
+        if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+        if (typeof renderAdminEbsDeleteReqsBox === "function") renderAdminEbsDeleteReqsBox();
+        if (typeof updateAdminMidTermChooserBadge === "function") updateAdminMidTermChooserBadge();
+        if (typeof updateFirebaseStatusIndicators === "function") updateFirebaseStatusIndicators(true);
+
+        if (isAdminView && showNotification && typeof window.rebuildAll282SchoolSummaryIndexToFirebase === "function") {
+          setTimeout(() => window.rebuildAll282SchoolSummaryIndexToFirebase(false), 700);
+        }
+        if (showNotification && typeof showToast === "function") {
+          showToast("✅ Firebase மேகக்கணியிலிருந்து அனைத்துப் பள்ளிகளின் சமீபத்திய தரவுகளும் வெற்றிகரமாக மீட்டெடுக்கப்பட்டன!", "#16a34a");
+        }
+      } catch (err) {
+        isApplyingRemoteRealtimeUpdate = false;
+      } finally {
+        _isPullingFromFirebaseLock = false;
+        _v67PullInFlightPromise = null;
+      }
+    })();
+
+    return await _v67PullInFlightPromise;
+  };
+
+  // ========================================================================
+  // 2. UNIFIED `openEbsStaffProfileModal(uNo, staffId)`
+  //    Replaces 6 stacked wrappers (v56 + v57 + v60 + v61 + v65) with ONE
+  //    clean function calling only the direct base implementation!
+  // ========================================================================
+  if (typeof window.__ceosvgBaseOpenEbsStaffProfileModal === "function") {
+    const _baseOpenModal = window.__ceosvgBaseOpenEbsStaffProfileModal;
+    openEbsStaffProfileModal = function(uNo, staffId) {
+      // Step 1: Refresh 10th & 12th practical centres dropdowns before building modal HTML
+      try {
+        if (typeof EBS_DROPDOWN_DATA === "object" && EBS_DROPDOWN_DATA) {
+          if (typeof window.getUpdatedPracticalCentres10List === "function") {
+            const p10 = window.getUpdatedPracticalCentres10List();
+            if (p10 && p10.length > 0) EBS_DROPDOWN_DATA.practicalCentres10 = p10;
+          }
+          if (typeof window.getUpdatedPracticalCentres12List === "function") {
+            const p12 = window.getUpdatedPracticalCentres12List();
+            if (p12 && p12.length > 0) EBS_DROPDOWN_DATA.practicalCentres12 = p12;
+          }
+        }
+      } catch (e) {}
+
+      // Step 2: Call clean base modal renderer directly (zero intermediate wrappers!)
+      const res = _baseOpenModal.apply(this, arguments);
+
+      // Step 3: Certificate action links + Admin Google Drive diagnostic bar
+      try {
+        const statusEl = document.getElementById("ebsStfExemptionCertStatus");
+        const urlInput = document.getElementById("ebsStfExemptionCertUrl");
+        const nameInput = document.getElementById("ebsStfExemptionCertName");
+        const curUrl = urlInput ? String(urlInput.value || "").trim() : "";
+        const curName = nameInput ? String(nameInput.value || "").trim() : "";
+
+        if (statusEl && curUrl && typeof formatCertificateActionLinksHtml === "function") {
+          if (curUrl.includes("/drive/folders/")) {
+            statusEl.style.color = "#b45309";
+            statusEl.innerHTML = `⚠️ முந்தைய பதிவேற்றத்தில் கோப்புறை இணைப்பு மட்டுமே பதிவாகியுள்ளது. தயவுசெய்து சான்றிதழ் கோப்பினைத் தேர்ந்தெடுத்து <strong>"☁️ பதிவேற்று"</strong> பொத்தானை அழுத்தவும். ${formatCertificateActionLinksHtml(uNo, staffId, curUrl, curName || "Certificate")}`;
+          } else {
+            statusEl.style.color = "#15803d";
+            statusEl.innerHTML = `✅ சான்றிதழ் இணைக்கப்பட்டுள்ளது: ${formatCertificateActionLinksHtml(uNo, staffId, curUrl, curName || "View Certificate")}`;
+          }
+        }
+
+        const isAdminViewing = Boolean(document.body && document.body.classList.contains("admin-mode")) ||
+                               Boolean(activeSchoolSession && activeSchoolSession.isAdminInspection);
+        if (statusEl && isAdminViewing && !document.getElementById("admDriveQuickDiagBar")) {
+          const diagBar = document.createElement("div");
+          diagBar.id = "admDriveQuickDiagBar";
+          diagBar.style.cssText = "margin-top:8px; padding-top:8px; border-top:1px dashed #fda4af; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:0.72rem;";
+          diagBar.innerHTML = `
+            <span style="color:#881337; font-weight:800;">🛠️ நிர்வாகி Google Drive இணைப்புக் கட்டுப்பாடு:</span>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="testGoogleDriveCertificateUploadConnection()" style="font-size:0.70rem; padding:3px 9px; font-weight:900; background:#fff; color:#0f766e; border-color:#14b8a6;">
+                🧪 Google Drive பதிவேற்ற சோதனை (Test Drive Upload)
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="syncAllExemptionCertificatesToGoogleDrive()" style="font-size:0.70rem; padding:3px 9px; font-weight:900; background:#fff; color:#1d4ed8; border-color:#93c5fd;">
+                ☁️ அனைத்தையும் Drive-ல் ஒத்திசை
+              </button>
+            </div>
+          `;
+          statusEl.parentNode && statusEl.parentNode.appendChild(diagBar);
+        }
+      } catch (e) {}
+
+      // Step 4: Conditional original certificate submission note + live form change sync
+      try {
+        if (typeof refreshModalExemptionOriginalSubmitNote === "function") {
+          refreshModalExemptionOriginalSubmitNote();
+        }
+        const formEl = document.getElementById("ebsStaffProfileForm");
+        if (formEl && !formEl._v67LiveSyncAttached) {
+          formEl._v67LiveSyncAttached = true;
+          formEl.addEventListener("change", () => {
+            if (!_activeEbsEditingStaff) return;
+            if (typeof readCurrentEbsStaffModalDomIntoProfile === "function") {
+              const p = readCurrentEbsStaffModalDomIntoProfile(_activeEbsEditingStaff.uNo, _activeEbsEditingStaff.staffId, _activeEbsEditingStaff.isTeaching);
+              if (p) {
+                const extra = getSchoolExtra(_activeEbsEditingStaff.uNo);
+                if (extra) {
+                  if (!extra.ebs2026) extra.ebs2026 = {};
+                  if (!extra.ebs2026.staffProfiles) extra.ebs2026.staffProfiles = {};
+                  extra.ebs2026.staffProfiles[_activeEbsEditingStaff.staffId] = p;
+                }
+                if (typeof getUserEditedStaffVault === "function" && typeof saveUserEditedStaffVault === "function") {
+                  const vault = getUserEditedStaffVault();
+                  vault[_activeEbsEditingStaff.staffId] = p;
+                  saveUserEditedStaffVault(vault, true);
+                }
+              }
+            }
+            if (typeof refreshModalExemptionOriginalSubmitNote === "function") {
+              refreshModalExemptionOriginalSubmitNote();
+            }
+          });
+        }
+      } catch (e) {}
+
+      // Step 5: Upgrade exam centre dropdowns into searchable comboboxes once
+      if (typeof window.enhanceAllEbsCentreDropdowns === "function") {
+        setTimeout(window.enhanceAllEbsCentreDropdowns, 0);
+      }
+
+      return res;
+    };
+  }
+
+  // ========================================================================
+  // 3. UNIFIED `resolveAdminDeleteRequest(reqId, decision, rejectNote)`
+  //    Replaces 4 stacked wrappers (v50 + v56 + v61) with ONE clean function!
+  // ========================================================================
+  if (typeof window.__ceosvgBaseResolveAdminDeleteRequest === "function") {
+    const _baseResolveDelReq = window.__ceosvgBaseResolveAdminDeleteRequest;
+    resolveAdminDeleteRequest = function(reqId, decision, rejectNote) {
+      const cleanReqId = String(reqId || "").trim();
+      if (!cleanReqId) return;
+      const req = (staffDeleteRequests || []).find(r => r && String(r.reqId || "").trim() === cleanReqId);
+      if (!req) return;
+
+      const sid = String(req.emisId || req.staffRecordId || "").trim();
+      const fromUNo = String(req.uNo || "").trim();
+      const toUNo = String(req.toUNo || "").trim();
+      const resDateStr = (typeof formatDateDisplayDMY === "function") ? formatDateDisplayDMY(new Date().toISOString().slice(0, 10)) : new Date().toLocaleDateString("en-GB");
+      const cleanNote = String(rejectNote !== undefined ? rejectNote : (req.rejectNote || req.adminNote || "")).trim();
+
+      // 1) Update all matching requests in memory
+      (staffDeleteRequests || []).forEach(r => {
+        if (!r) return;
+        const rId = String(r.reqId || "").trim();
+        const rU = String(r.uNo || "").trim();
+        const rSid = String(r.emisId || r.staffRecordId || "").trim();
+        if (rId === cleanReqId || (fromUNo && sid && rU === fromUNo && rSid === sid)) {
+          r.status = decision;
+          r.resolvedAt = resDateStr;
+          r.resolvedTimestamp = Date.now();
+          if (decision === "REJECTED") {
+            r.rejectNote = cleanNote;
+            r.adminNote = cleanNote;
+          }
+        }
+      });
+
+      // 2) Permanently record in CEOSVG_RESOLVED_DELETE_REQ_MAP_V1 + Firebase
+      if (typeof recordResolvedDeleteRequestInMap === "function") {
+        recordResolvedDeleteRequestInMap(req, decision, cleanNote, false);
+      }
+
+      // 3) Run base archive / school removal logic once
+      _baseResolveDelReq(cleanReqId, decision, rejectNote);
+
+      // 4) If APPROVED, purge from EMIS Master & School store
+      if (decision === "APPROVED" && sid && typeof purgeStaffFromEmisMasterAndSchoolStore === "function") {
+        purgeStaffFromEmisMasterAndSchoolStore(fromUNo, sid, toUNo);
+      }
+
+      // 5) Deduplicate & persist to localStorage + both Firebase delete request paths
+      if (typeof reconcileAndDeduplicateDeleteRequests === "function") {
+        reconcileAndDeduplicateDeleteRequests(null, true);
+      }
+      safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests, false);
+
+      const cleanFbUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+      if (cleanFbUrl && typeof buildFirebaseEndpoint === "function") {
+        fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_DELETE_REQUESTS"), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(staffDeleteRequests)
+        }).catch(() => {});
+
+        const updatedRec = (staffDeleteRequests || []).find(r => r && String(r.reqId || "").trim() === cleanReqId);
+        if (updatedRec) {
+          fetch(buildFirebaseEndpoint(`ceosvg_live/DeleteRequests/${encodeURIComponent(cleanReqId)}`), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedRec)
+          }).catch(() => {});
+        }
+      }
+
+      // 6) Single UI refresh pass
+      if (typeof updateAllSummaryCounters === "function") updateAllSummaryCounters();
+      if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+      if (typeof renderAdminEbsDeleteReqsBox === "function") renderAdminEbsDeleteReqsBox();
+      if (typeof renderAdminEbsMasterDashboard === "function") renderAdminEbsMasterDashboard();
+      if (typeof renderSchoolEbsModule === "function") renderSchoolEbsModule();
+      if (typeof applyAdminStaffFiltersAndRender === "function") applyAdminStaffFiltersAndRender();
+    };
+  }
+
+  // ========================================================================
+  // 4. UNIFIED `triggerUploadEbsExemptionCertificate()`
+  //    Replaces 4 stacked post-v56 wrappers (v59 + v60 + v64) with ONE clean
+  //    wrapper over the v56 core upload engine!
+  // ========================================================================
+  if (typeof window.__ceosvgBaseUploadExemptionCert === "function") {
+    const _baseUploadCert = window.__ceosvgBaseUploadExemptionCert;
+    triggerUploadEbsExemptionCertificate = async function() {
+      if (!_activeEbsEditingStaff) return false;
+      const { uNo, staffId, isTeaching } = _activeEbsEditingStaff;
+      const certKey = `${String(uNo).trim()}_${String(staffId).trim()}`;
+
+      // Step 1: Capture all live DOM edits BEFORE upload so nothing in the modal is lost
+      if (typeof readCurrentEbsStaffModalDomIntoProfile === "function" && typeof recordAndSyncUnifiedStaffEdit === "function") {
+        const preProf = readCurrentEbsStaffModalDomIntoProfile(uNo, staffId, isTeaching);
+        if (preProf) recordAndSyncUnifiedStaffEdit(uNo, staffId, preProf);
+      }
+
+      // Step 2: Run the core v56 upload (Apps Script + Firebase Cloud Vault)
+      const res = await _baseUploadCert.apply(this, arguments);
+
+      // Step 3: Verify/trigger GET Drive sync if URL is still firebase-cert://
+      try {
+        const urlInput = document.getElementById("ebsStfExemptionCertUrl");
+        let curUrl = urlInput ? String(urlInput.value || "").trim() : "";
+        const gasUrl = (typeof appsScriptUrl === "string" && appsScriptUrl.startsWith("http")) ? appsScriptUrl : "";
+        if (curUrl.startsWith("firebase-cert://") && gasUrl) {
+          const syncUrl = gasUrl + (gasUrl.includes("?") ? "&" : "?") + "action=sync_firebase_cert_to_drive&certKey=" + encodeURIComponent(certKey);
+          const sr = await fetch(syncUrl).then(r => r.ok ? r.json() : null).catch(() => null);
+          if (sr && sr.ok && sr.fileUrl && (sr.fileUrl.includes("/file/d/") || sr.fileUrl.startsWith("https://drive.google.com/"))) {
+            curUrl = sr.fileUrl;
+            if (urlInput) urlInput.value = curUrl;
+          }
+        }
+        // Step 4: Auto-prune base64Data from Firebase once Drive URL is confirmed
+        if (curUrl && (curUrl.startsWith("https://drive.google.com/") || curUrl.includes("/file/d/")) && typeof window.pruneSyncedCertBase64FromFirebase === "function") {
+          setTimeout(() => window.pruneSyncedCertBase64FromFirebase(certKey, curUrl), 350);
+        }
+      } catch (e) {}
+
+      // Step 5: Re-capture complete profile with updated certUrl & refresh conditional original cert note
+      if (typeof readCurrentEbsStaffModalDomIntoProfile === "function" && typeof recordAndSyncUnifiedStaffEdit === "function") {
+        const postProf = readCurrentEbsStaffModalDomIntoProfile(uNo, staffId, isTeaching);
+        if (postProf) recordAndSyncUnifiedStaffEdit(uNo, staffId, postProf);
+      }
+      if (typeof refreshModalExemptionOriginalSubmitNote === "function") {
+        refreshModalExemptionOriginalSubmitNote();
+      }
       return res;
     };
   }
