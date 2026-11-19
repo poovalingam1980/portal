@@ -196,7 +196,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.9)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v7.2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -545,7 +545,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.9</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v7.2</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -6349,7 +6349,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v6.9</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v7.2</strong>
 </p>
 </footer>
 </div>
@@ -6447,6 +6447,30 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <button type="button" id="fbRebuildSummaryIdxBtn" class="btn btn-outline" onclick="rebuildAll282SchoolSummaryIndexToFirebase(true)" style="font-weight:900; border-color:#2563eb; color:#1d4ed8; background:#eff6ff;" title="282 பள்ளிகளின் ~30 KB சுருக்க அட்டவணையை (school_summary_index) Firebase-ல் உடனடியாகப் புதுப்பிக்க">
 ⚡ 282 பள்ளி சுருக்க அட்டவணை புதுப்பி (Summary Index)
 </button>
+<button type="button" id="fbCfPurgeCacheBtn" class="btn btn-outline" onclick="purgeCloudflareFirebaseCacheNow(true)" style="font-weight:900; border-color:#f97316; color:#c2410c; background:#fff7ed;" title="Cloudflare KV Cache முழுவதையும் உடனடியாகப் புதுப்பிக்க (/__purge)">
+☁️ Cloudflare KV Cache சுத்தம் (Purge)
+</button>
+<div style="flex-basis:100%; width:100%; margin-top:10px; background:linear-gradient(135deg,#fff7ed 0%,#eff6ff 100%); border:1.5px solid #fdba74; border-left:5px solid #ea580c; border-radius:10px; padding:12px 14px; box-sizing:border-box;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+    <div>
+      <div style="font-size:0.92rem; font-weight:900; color:#9a3412;">☁️ Cloudflare Workers KV Read-Cache + Firebase (Hybrid 85%–90% Download சேமிப்பு)</div>
+      <div style="font-size:0.75rem; color:#475569; margin-top:2px;">
+        அனைத்து சேமிப்புகளும் (Writes) நேரடியாக Firebase-ல் நடக்கும் (<strong>0% தரவு இழப்பு</strong>). அடிக்கடி படிக்கும் <code>school_summary_index</code>, <code>master_schools</code>, <code>school_auth</code> மட்டும் Cloudflare Workers KV-ல் Cache செய்யப்படும்.
+      </div>
+    </div>
+    <span id="cfKvStatusBadge" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:900;">⚪ இணைக்கப்படவில்லை</span>
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px;">
+    <input type="url" id="cfgCfKvProxyUrl" class="form-control" placeholder="https://ceosvg-fb-cache.YOUR-SUBDOMAIN.workers.dev  (அல்லது https://cache.ceosvg.in)" style="flex:1; min-width:240px; font-size:0.82rem; font-weight:700;">
+    <button type="button" class="btn btn-primary btn-sm" onclick="saveCfKvProxyUrlConfig()" style="font-weight:900; background:#ea580c; border-color:#ea580c;">💾 சேமி &amp; இயக்கு</button>
+    <button type="button" class="btn btn-outline btn-sm" onclick="testCfKvProxyConnection()" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#fff;">🔌 சோதி (Test)</button>
+    <button type="button" class="btn btn-outline btn-sm" onclick="purgeCfKvProxyCache(true)" style="font-weight:800; border-color:#7c3aed; color:#6d28d9; background:#fff;">🧹 KV Cache சுத்தம்</button>
+    <button type="button" class="btn btn-outline btn-sm" onclick="copyCfKvWorkerSourceCode()" style="font-weight:800; border-color:#0f766e; color:#0f766e; background:#f0fdfa;">📋 worker.js நகலெடு</button>
+  </div>
+  <div id="cfKvLiveStatsLine" style="font-size:0.74rem; color:#1e3a8a; font-weight:800;">
+    📊 அமர்வு நிலை: KV Cache Hits: <strong>0</strong> | Firebase Direct: <strong>0</strong> | Auto-Fallback: <strong>தயார்</strong>
+  </div>
+</div>
 <button type="button" class="btn btn-outline" onclick="simulateLiveSchoolToCeoSync()" style="font-weight:800; border-color:#ea580c; color:#c2410c; background:#fff7ed;">
 ⚡ நேரடி Dual-Sync மாதிரிச் சோதனை (Simulate HM ➔ CEO)
 </button>
@@ -7194,6 +7218,13 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 <div class="form-group" style="margin-bottom:8px;">
 <label class="form-label">புதிய நிர்வாகி கடவுச்சொல் (New Admin Password) <span class="required">*</span></label>
 <input type="password" id="admSecNewPass" class="form-control" minlength="6" required placeholder="புதிய கடவுச்சொல் (Min 6 chars)" oninput="previewAdminPasswordSha256Hash(this.value)">
+</div>
+<div class="form-group" style="margin-bottom:8px; grid-column:1 / -1;">
+<label class="form-label">புதிய கடவுச்சொல்லை உறுதி செய்க (Confirm New Password) <span class="required">*</span></label>
+<div style="display:flex; gap:8px; align-items:center;">
+<input type="password" id="admSecConfirmPass" class="form-control" minlength="6" required placeholder="புதிய கடவுச்சொல்லை மீண்டும் உள்ளிடவும்" style="flex:1;">
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleAdminSecPassVisibility()" style="white-space:nowrap; font-weight:800;">👁️ காட்டு / மறை</button>
+</div>
 </div>
 </div>
 <div style="background:#0f172a; color:#38bdf8; border-radius:8px; padding:8px 12px; font-family:monospace; font-size:0.75rem; margin-bottom:10px; word-break:break-all;">
@@ -16668,7 +16699,6 @@ const ignoredKeys = [
 "CEOSVG_PORTAL_CFG",
 "CEOSVG_FIREBASE_CFG",
 "CEOSVG_WA_CLOUD_CFG",
-"CEOSVG_ADMIN_SECURITY_VAULT",
 "CEOSVG_DUAL_SYNC_QUEUE",
 "CEOSVG_PENDING_REG_UNO",
 "CEOSVG_AUTH_RESET_V37_DONE",
@@ -47896,7 +47926,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v6.9) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v7.2) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -47958,7 +47988,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v6.9)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v7.2)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -47967,7 +47997,7 @@ function openPortalShortcutModal() {
         <div style="background:#f0f9ff; border:1.5px solid #7dd3fc; border-left:5px solid #0284c7; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
           <div style="font-size:0.90rem; font-weight:900; color:#0c4a6e;">💡 ஏன் செயலிக்கு (App) பதிலாக நேரடி Shortcut பயன்படுத்த வேண்டும்?</div>
           <div style="font-size:0.79rem; color:#0369a1; font-weight:700; margin-top:4px; line-height:1.5;">
-            பழைய செயலி (App) முறையினால் சில பள்ளிகளுக்குப் புதிய மேம்பாடுகள் உடனடியாகப் புதுப்பிக்கப்படாமல் பழைய பதிப்பே (Old Version) காட்டப்பட்டது. அதனைத் தவிர்த்து, <strong>ஒவ்வொரு முறை திறக்கும்போதும் 100% சமீபத்திய நேரடிப் பதிப்பு (Live Version v6.9)</strong> மட்டுமே திறக்கும் வகையில் இந்த <strong>Shortcut</strong> வசதி அமைக்கப்பட்டுள்ளது.
+            பழைய செயலி (App) முறையினால் சில பள்ளிகளுக்குப் புதிய மேம்பாடுகள் உடனடியாகப் புதுப்பிக்கப்படாமல் பழைய பதிப்பே (Old Version) காட்டப்பட்டது. அதனைத் தவிர்த்து, <strong>ஒவ்வொரு முறை திறக்கும்போதும் 100% சமீபத்திய நேரடிப் பதிப்பு (Live Version v7.2)</strong> மட்டுமே திறக்கும் வகையில் இந்த <strong>Shortcut</strong> வசதி அமைக்கப்பட்டுள்ளது.
           </div>
         </div>
 
@@ -52640,6 +52670,739 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
       }
     };
   }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_ADMIN_PASSWORD_CHANGE_FIX_APPLIED ===
+(function() {
+  if (window.__ceosvgV65AdminPassFixApplied) return;
+  window.__ceosvgV65AdminPassFixApplied = true;
+
+  window.toggleAdminSecPassVisibility = function() {
+    ["admSecCurrentPass", "admSecNewPass", "admSecConfirmPass"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.type = (el.type === "password") ? "text" : "password";
+    });
+  };
+
+  // Sync latest CEOSVG_ADMIN_SECURITY_VAULT from Firebase before opening modal
+  const _v65OrigOpenVaultModal = (typeof openAdminSecurityVaultModal === "function") ? openAdminSecurityVaultModal : null;
+  window.openAdminSecurityVaultModal = async function() {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      try {
+        const r = await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"));
+        if (r && r.ok) {
+          const remoteVault = await r.json();
+          if (remoteVault && typeof remoteVault === "object" && remoteVault.customAdminPassHash) {
+            safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", remoteVault, true);
+          }
+        }
+      } catch (e) {}
+    }
+    const confInp = document.getElementById("admSecConfirmPass");
+    if (confInp) confInp.value = "";
+    if (_v65OrigOpenVaultModal) _v65OrigOpenVaultModal();
+    const badge = document.getElementById("admSecCurrentVaultStatusBadge");
+    const secVault = safeGetStorage("CEOSVG_ADMIN_SECURITY_VAULT", null) || {};
+    if (badge) {
+      badge.textContent = secVault.customAdminPassHash
+        ? `🟢 நிலை: தனிப்பயன் நிர்வாகி கடவுச்சொல் செயலில் உள்ளது (${secVault.updatedAt || "Cloud Synced"})`
+        : "🟢 நிலை: இயல்புநிலை Salted SHA-256 Hash செயலில் உள்ளது";
+    }
+  };
+
+  // Strictly enforce customAdminPassHash when set (so old default password stops working after change!)
+  window.isValidAdminLogin = function(u, p) {
+    const userHash = computeAdminSaltedHash(u);
+    if (!userHash || !_ADMIN_USER_SHA256_HASHES.includes(userHash)) return false;
+    const rawPass = String(p || "").trim();
+    if (!rawPass) return false;
+    const passHashUpper = computeAdminSaltedHash(rawPass);
+    const passHashExact = sha256HexSync(_ADMIN_AUTH_SALT + rawPass);
+    const secVault = safeGetStorage("CEOSVG_ADMIN_SECURITY_VAULT", null) || {};
+
+    if (secVault && (secVault.customAdminPassHash || secVault.customAdminPassHashExact)) {
+      const ok = Boolean(
+        (secVault.customAdminPassHashExact && passHashExact === secVault.customAdminPassHashExact) ||
+        (secVault.customAdminPassHash && (passHashUpper === secVault.customAdminPassHash || passHashExact === secVault.customAdminPassHash))
+      );
+      if (ok && typeof verifyAdminAuthWithCloudAsync === "function") {
+        verifyAdminAuthWithCloudAsync(userHash, secVault.customAdminPassHashExact || secVault.customAdminPassHash);
+      }
+      return ok;
+    }
+
+    const isDefaultValid = Boolean(passHashUpper && _ADMIN_PASS_SHA256_HASHES.includes(passHashUpper));
+    if (isDefaultValid && typeof verifyAdminAuthWithCloudAsync === "function") {
+      verifyAdminAuthWithCloudAsync(userHash, passHashUpper);
+    }
+    return isDefaultValid;
+  };
+
+  // Upgrade handleAdminPasswordHashUpdate to:
+  // 1) Verify current password against latest Firebase vault
+  // 2) Verify Confirm Password matches
+  // 3) Store both exact-case & normalized SHA-256 hashes
+  // 4) Explicitly PUT to Firebase ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT AND Apps Script!
+  window.handleAdminPasswordHashUpdate = async function(event) {
+    if (event && typeof event.preventDefault === "function") event.preventDefault();
+    const curPass = (document.getElementById("admSecCurrentPass")?.value || "").trim();
+    const newPass = (document.getElementById("admSecNewPass")?.value || "").trim();
+    const confInp = document.getElementById("admSecConfirmPass");
+    const confPass = confInp ? (confInp.value || "").trim() : newPass;
+
+    // Fetch latest Firebase vault first so current password validation is never stale
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      try {
+        const r = await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"));
+        if (r && r.ok) {
+          const remoteVault = await r.json();
+          if (remoteVault && typeof remoteVault === "object" && remoteVault.customAdminPassHash) {
+            safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", remoteVault, true);
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (!isValidAdminLogin("CEOSVG_ADMIN", curPass)) {
+      if (typeof showToast === "function") showToast("❌ தற்போதைய நிர்வாகி கடவுச்சொல் தவறானது!", "#ef4444");
+      return;
+    }
+    if (newPass.length < 6) {
+      if (typeof showToast === "function") showToast("⚠️ புதிய கடவுச்சொல் குறைந்தது 6 எழுத்துகள் இருக்க வேண்டும்.", "#f59e0b");
+      return;
+    }
+    if (confInp && newPass !== confPass) {
+      if (typeof showToast === "function") showToast("⚠️ புதிய கடவுச்சொல்லும் உறுதிப்படுத்தல் கடவுச்சொல்லும் பொருந்தவில்லை!", "#ef4444");
+      return;
+    }
+
+    const newHashUpper = computeAdminSaltedHash(newPass);
+    const newHashExact = sha256HexSync(_ADMIN_AUTH_SALT + newPass);
+    const vaultPayload = {
+      customAdminPassHash: newHashUpper,
+      customAdminPassHashExact: newHashExact,
+      hashAlgorithm: "SHA-256-SALTED-V2",
+      updatedAt: new Date().toLocaleString("en-IN"),
+      updatedTs: Date.now()
+    };
+
+    // 1) Save locally
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("CEOSVG_ADMIN_SECURITY_VAULT", JSON.stringify(vaultPayload));
+      }
+    } catch (e) {}
+    safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", vaultPayload, true);
+
+    // 2) Explicitly push to Firebase RTDB so it persists across devices, browsers, and re-logins!
+    let fbSaved = false;
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      try {
+        const fbRes = await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(vaultPayload)
+        });
+        fbSaved = Boolean(fbRes && fbRes.ok);
+      } catch (e) {}
+    }
+
+    // 3) Sync to Google Apps Script Vault
+    if (typeof sendToAppsScript === "function") {
+      sendToAppsScript({
+        action: "save_api_secrets_vault",
+        adminPassHash: newHashExact,
+        updatedAt: vaultPayload.updatedAt
+      }).catch(() => {});
+    }
+
+    if (typeof closeAdminSecurityVaultModal === "function") closeAdminSecurityVaultModal();
+    if (typeof showToast === "function") {
+      showToast(
+        fbSaved
+          ? "🔐 புதிய நிர்வாகி கடவுச்சொல் Firebase மேகக்கணி & உள்ளூர் பெட்டகத்தில் வெற்றிகரமாக மாற்றப்பட்டுச் சேமிக்கப்பட்டது!"
+          : "🔐 புதிய நிர்வாகி கடவுச்சொல் உள்ளூரில் சேமிக்கப்பட்டது (Firebase இணைப்பைச் சரிபார்க்கவும்).",
+        fbSaved ? "#16a34a" : "#f59e0b",
+        true
+      );
+    }
+  };
+
+  // Also sync resetCustomAdminPasswordHash to Firebase!
+  window.resetCustomAdminPasswordHash = async function() {
+    if (!confirm("தனிப்பயன் நிர்வாகி கடவுச்சொல்லை நீக்கி இயல்புநிலை கடவுச்சொல்லுக்கு மீட்டமைக்கவா?")) return;
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("CEOSVG_ADMIN_SECURITY_VAULT", "{}");
+      }
+    } catch (e) {}
+    safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", {}, true);
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      }).catch(() => {});
+    }
+    const prev = document.getElementById("admSecLiveHashPreview");
+    if (prev) prev.textContent = `Active Default Salted SHA-256 Hash: ${_ADMIN_PASS_SHA256_HASHES[0]}`;
+    const badge = document.getElementById("admSecCurrentVaultStatusBadge");
+    if (badge) badge.textContent = "🟢 நிலை: இயல்புநிலை Salted SHA-256 Hash மீட்டமைக்கப்பட்டது";
+    if (typeof showToast === "function") showToast("🔄 இயல்புநிலை நிர்வாகி கடவுச்சொல் Firebase & உள்ளூர் இரண்டிலும் மீட்டமைக்கப்பட்டது.", "#0284c7", true);
+  };
+
+  // Ensure handleAdminLoginSubmit fetches latest CEOSVG_ADMIN_SECURITY_VAULT from Firebase before verifying!
+  if (typeof handleAdminLoginSubmit === "function") {
+    const _v65OrigAdminLogin = handleAdminLoginSubmit;
+    handleAdminLoginSubmit = async function(event) {
+      if (event && typeof event.preventDefault === "function") event.preventDefault();
+      const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+      if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+        try {
+          const r = await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"));
+          if (r && r.ok) {
+            const remoteVault = await r.json();
+            if (remoteVault && typeof remoteVault === "object") {
+              safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", remoteVault, true);
+            }
+          }
+        } catch (e) {}
+      }
+      return _v65OrigAdminLogin(event);
+    };
+  }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_CLOUDFLARE_KV_HYBRID_CACHE_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65CfKvHybridApplied) return;
+  window.__ceosvgV65CfKvHybridApplied = true;
+
+  const CF_KV_STORAGE_KEY = "CEOSVG_CF_KV_PROXY_URL";
+  // Optional permanent default Worker URL (Admin can also configure live in Cloud Settings -> Firebase)
+  const DEFAULT_CF_KV_PROXY_URL = "";
+
+  let _cfKvStats = { kvHits: 0, kvMisses: 0, fbDirect: 0, fallbacks: 0 };
+
+  function normalizeCfKvUrl(raw) {
+    const s = String(raw || "").trim().replace(/\/+$/, "");
+    if (!s || !/^https:\/\/[a-z0-9.-]+/i.test(s)) return "";
+    return s;
+  }
+
+  function getActiveCfKvProxyUrl() {
+    try {
+      const saved = (typeof localStorage !== "undefined") ? localStorage.getItem(CF_KV_STORAGE_KEY) : "";
+      if (saved) return normalizeCfKvUrl(saved);
+    } catch (e) {}
+    return normalizeCfKvUrl(DEFAULT_CF_KV_PROXY_URL);
+  }
+
+  function updateCfKvStatusUi() {
+    const url = getActiveCfKvProxyUrl();
+    const inp = document.getElementById("cfgCfKvProxyUrl");
+    const badge = document.getElementById("cfKvStatusBadge");
+    const statsEl = document.getElementById("cfKvLiveStatsLine");
+    if (inp && !inp.value && url) inp.value = url;
+    if (badge) {
+      if (url) {
+        badge.style.background = "#dcfce7";
+        badge.style.color = "#166534";
+        badge.style.borderColor = "#86efac";
+        badge.textContent = "🟢 Hybrid KV Cache செயலில்";
+      } else {
+        badge.style.background = "#f1f5f9";
+        badge.style.color = "#334155";
+        badge.style.borderColor = "#cbd5e1";
+        badge.textContent = "⚪ இணைக்கப்படவில்லை (Direct Firebase)";
+      }
+    }
+    if (statsEl) {
+      statsEl.innerHTML = `📊 அமர்வு நிலை: KV Cache Hits: <strong style="color:#16a34a;">${_cfKvStats.kvHits}</strong> | KV Misses: <strong>${_cfKvStats.kvMisses}</strong> | Firebase Direct: <strong>${_cfKvStats.fbDirect}</strong> | Auto-Fallback: <strong>${_cfKvStats.fallbacks}</strong>`;
+    }
+  }
+
+  // High-read, low-write Firebase paths routed through Cloudflare Workers KV Read-Cache
+  const CACHEABLE_READ_PREFIXES = [
+    "ceosvg_live/school_summary_index",
+    "ceosvg_live/master_schools_by_uno",
+    "ceosvg_live/school_auth",
+    "ceosvg_live/site_maintenance",
+    "ceosvg_live/verified_otp_vault",
+    "ceosvg_live/exam_centres_10",
+    "ceosvg_live/exam_centres_12",
+    "ceosvg_live/stores/CEOSVG_PORTAL_CFG",
+    "ceosvg_live/stores/CEOSVG_MASTER_SCHOOLS",
+    "ceosvg_live/stores/CEOSVG_SCHOOL_AUTH",
+    "ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES",
+    "ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1",
+    "ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1",
+    "ceosvg_live/stores/CEOSVG_HSS_GROUP_MASTER_V1",
+    "ceosvg_live/stores/CEOSVG_CIRCULARS",
+    "ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"
+  ];
+
+  function isCacheableFirebasePath(cleanPath) {
+    if (!cleanPath) return false;
+    return CACHEABLE_READ_PREFIXES.some(p => cleanPath === p || cleanPath.startsWith(p + "/"));
+  }
+
+  // Transparent Hybrid Fetch Interceptor:
+  // - Reads (GET) on high-read paths -> Cloudflare Workers KV Read-Cache (with instant automatic Firebase fallback)
+  // - Writes (PUT/PATCH/POST/DELETE) -> Direct Firebase RTDB (0% data loss) + immediate KV cache invalidation!
+  const _origWindowFetch = window.fetch.bind(window);
+  window.fetch = async function(input, init) {
+    const reqUrl = (typeof input === "string") ? input : (input && input.url ? input.url : "");
+    const method = String((init && init.method) || (input && input.method) || "GET").toUpperCase();
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined")
+      ? normalizeFirebaseDbUrl(firebaseDbUrl)
+      : "";
+    const cfUrl = getActiveCfKvProxyUrl();
+
+    if (cfUrl && fbBase && reqUrl.startsWith(fbBase + "/")) {
+      const relWithQuery = reqUrl.slice(fbBase.length + 1); // e.g. ceosvg_live/school_summary_index.json?shallow=true
+      const qIdx = relWithQuery.indexOf("?");
+      const relPathJson = qIdx >= 0 ? relWithQuery.slice(0, qIdx) : relWithQuery;
+      const queryPart = qIdx >= 0 ? relWithQuery.slice(qIdx) : "";
+      const cleanPath = relPathJson.replace(/\.json$/i, "");
+
+      if (method === "GET" && isCacheableFirebasePath(cleanPath) && !queryPart.includes("shallow=true")) {
+        try {
+          const kvResp = await _origWindowFetch(`${cfUrl}/${relPathJson}${queryPart}`, {
+            method: "GET",
+            headers: (init && init.headers) || undefined
+          });
+          if (kvResp && kvResp.ok) {
+            const xCache = String(kvResp.headers.get("X-Cache") || "");
+            if (xCache.includes("HIT")) _cfKvStats.kvHits++;
+            else _cfKvStats.kvMisses++;
+            updateCfKvStatusUi();
+            return kvResp;
+          }
+          _cfKvStats.fallbacks++;
+        } catch (e) {
+          _cfKvStats.fallbacks++;
+        }
+        // Instant seamless fallback to Firebase RTDB if Worker is unreachable
+        _cfKvStats.fbDirect++;
+        updateCfKvStatusUi();
+        return _origWindowFetch(input, init);
+      }
+
+      if (method === "PUT" || method === "PATCH" || method === "POST" || method === "DELETE") {
+        // 1) Always write 100% directly to Firebase RTDB first (0% data loss!)
+        const fbWriteResp = await _origWindowFetch(input, init);
+        // 2) Immediately invalidate affected KV cache key(s) in background
+        if (isCacheableFirebasePath(cleanPath)) {
+          _origWindowFetch(`${cfUrl}/__invalidate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ path: cleanPath })
+          }).catch(() => {});
+        }
+        return fbWriteResp;
+      }
+
+      _cfKvStats.fbDirect++;
+      updateCfKvStatusUi();
+    }
+
+    return _origWindowFetch(input, init);
+  };
+
+  // Auto-sync Cloudflare KV Proxy URL from Firebase CEOSVG_PORTAL_CFG so all 282 schools adopt it automatically!
+  async function syncCfKvUrlFromPortalCfg() {
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined")
+      ? normalizeFirebaseDbUrl(firebaseDbUrl)
+      : "";
+    if (!fbBase) return;
+    try {
+      const r = await _origWindowFetch(`${fbBase}/ceosvg_live/stores/CEOSVG_PORTAL_CFG/cfKvProxyUrl.json`);
+      if (r && r.ok) {
+        const remoteUrl = normalizeCfKvUrl(await r.json());
+        if (remoteUrl && remoteUrl !== getActiveCfKvProxyUrl()) {
+          localStorage.setItem(CF_KV_STORAGE_KEY, remoteUrl);
+          updateCfKvStatusUi();
+        }
+      }
+    } catch (e) {}
+  }
+
+  window.saveCfKvProxyUrlConfig = async function() {
+    const inp = document.getElementById("cfgCfKvProxyUrl");
+    const raw = inp ? inp.value.trim() : "";
+    if (!raw) {
+      localStorage.removeItem(CF_KV_STORAGE_KEY);
+      updateCfKvStatusUi();
+      const fbBase = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+      if (fbBase) {
+        _origWindowFetch(`${fbBase}/ceosvg_live/stores/CEOSVG_PORTAL_CFG/cfKvProxyUrl.json`, {
+          method: "DELETE"
+        }).catch(() => {});
+      }
+      if (typeof showToast === "function") showToast("⚪ Cloudflare KV Cache துண்டிக்கப்பட்டது (Direct Firebase மட்டும்).", "#64748b");
+      return;
+    }
+    const clean = normalizeCfKvUrl(raw);
+    if (!clean) {
+      if (typeof showToast === "function") showToast("⚠️ சரியான https:// Cloudflare Worker URL-ஐ உள்ளிடவும்.", "#ef4444");
+      return;
+    }
+    localStorage.setItem(CF_KV_STORAGE_KEY, clean);
+    updateCfKvStatusUi();
+    // Save to Firebase Portal Config so all 282 schools automatically use Cloudflare KV Read-Cache!
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (fbBase) {
+      await _origWindowFetch(`${fbBase}/ceosvg_live/stores/CEOSVG_PORTAL_CFG/cfKvProxyUrl.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(clean)
+      }).catch(() => {});
+    }
+    if (typeof showToast === "function") {
+      showToast("✅ Cloudflare Workers KV Read-Cache இணைக்கப்பட்டு அனைத்து 282 பள்ளிகளுக்கும் இயக்கப்பட்டது!", "#16a34a", true);
+    }
+  };
+
+  window.testCfKvProxyConnection = async function() {
+    const inp = document.getElementById("cfgCfKvProxyUrl");
+    const url = normalizeCfKvUrl((inp && inp.value) || getActiveCfKvProxyUrl());
+    if (!url) {
+      if (typeof showToast === "function") showToast("⚠️ முதலில் Cloudflare Worker URL-ஐ உள்ளிடவும்.", "#f59e0b");
+      return;
+    }
+    try {
+      const t0 = performance.now();
+      const r = await _origWindowFetch(`${url}/__health`);
+      const ms = Math.round(performance.now() - t0);
+      if (r && r.ok) {
+        const j = await r.json().catch(() => ({}));
+        if (typeof showToast === "function") {
+          showToast(`✅ Cloudflare KV Worker இணைப்பு வெற்றிகரமாக உள்ளது! (${ms} ms | KV: ${j.kvBound ? "இணைக்கப்பட்டது" : "இல்லை"})`, "#16a34a", true);
+        }
+      } else {
+        if (typeof showToast === "function") showToast(`❌ Worker பதில் பிழை (HTTP ${r ? r.status : "?"})`, "#ef4444");
+      }
+    } catch (e) {
+      if (typeof showToast === "function") showToast("❌ Cloudflare Worker-ஐ அணுக இயலவில்லை. URL-ஐச் சரிபார்க்கவும்.", "#ef4444");
+    }
+  };
+
+  window.purgeCfKvProxyCache = async function(showNotification) {
+    const url = getActiveCfKvProxyUrl();
+    if (!url) {
+      if (showNotification && typeof showToast === "function") showToast("⚠️ Cloudflare Worker URL இணைக்கப்படவில்லை.", "#f59e0b");
+      return;
+    }
+    try {
+      const r = await _origWindowFetch(`${url}/__purge`, { method: "POST" });
+      if (r && r.ok) {
+        const j = await r.json().catch(() => ({}));
+        if (showNotification && typeof showToast === "function") {
+          showToast(`🧹 Cloudflare KV Cache சுத்தம் செய்யப்பட்டது (${j.purged || 0} keys)!`, "#7c3aed", true);
+        }
+      }
+    } catch (e) {
+      if (showNotification && typeof showToast === "function") showToast("❌ KV Cache சுத்தத்தில் பிழை!", "#ef4444");
+    }
+  };
+
+  window.getCfKvWorkerSourceCode = function() {
+    return `// ============================================================================
+// Cloudflare Worker: ceosvg-fb-cache (Hybrid KV Read-Cache + Firebase RTDB)
+// Binding required: KV Namespace variable name = CEOSVG_CACHE_KV
+// ============================================================================
+const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+// Cache TTL (seconds) per Firebase path prefix
+const TTL_RULES = [
+  { prefix: "ceosvg_live/master_schools_by_uno", ttl: 3600 },        // 60 min
+  { prefix: "ceosvg_live/stores/CEOSVG_MASTER_SCHOOLS", ttl: 3600 }, // 60 min
+  { prefix: "ceosvg_live/exam_centres_10", ttl: 3600 },              // 60 min
+  { prefix: "ceosvg_live/exam_centres_12", ttl: 3600 },              // 60 min
+  { prefix: "ceosvg_live/stores/CEOSVG_HSS_GROUP_MASTER_V1", ttl: 3600 },
+  { prefix: "ceosvg_live/school_auth", ttl: 600 },                   // 10 min (auto-invalidated on password change)
+  { prefix: "ceosvg_live/stores/CEOSVG_SCHOOL_AUTH", ttl: 600 },
+  { prefix: "ceosvg_live/school_summary_index", ttl: 300 },          // 5 min (auto-invalidated on school save)
+  { prefix: "ceosvg_live/verified_otp_vault", ttl: 300 },
+  { prefix: "ceosvg_live/site_maintenance", ttl: 120 },              // 2 min
+  { prefix: "ceosvg_live/stores/CEOSVG_PORTAL_CFG", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_CIRCULARS", ttl: 600 },
+  { prefix: "ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT", ttl: 600 }
+];
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Expose-Headers": "X-Cache, X-Cache-TTL"
+};
+
+function getTtlForPath(cleanPath) {
+  for (const r of TTL_RULES) {
+    if (cleanPath === r.prefix || cleanPath.startsWith(r.prefix + "/")) return r.ttl;
+  }
+  return 0;
+}
+
+function getParentCacheKeys(cleanPath) {
+  const keys = new Set(["kv:" + cleanPath]);
+  for (const r of TTL_RULES) {
+    if (cleanPath === r.prefix || cleanPath.startsWith(r.prefix + "/")) {
+      keys.add("kv:" + r.prefix);
+    }
+  }
+  return Array.from(keys);
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    const url = new URL(request.url);
+    const pathname = url.pathname.replace(/^\/+/, "");
+
+    // 1) Health check endpoint
+    if (pathname === "__health" || pathname === "") {
+      return new Response(JSON.stringify({
+        ok: true,
+        service: "ceosvg-fb-cache",
+        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),
+        ts: new Date().toISOString()
+      }), {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 2) Targeted cache invalidation after Firebase write
+    if (pathname === "__invalidate" && request.method === "POST") {
+      let body = {};
+      try { body = await request.json(); } catch (e) {}
+      const cleanPath = String(body.path || "").replace(/^\/+/, "").replace(/\.json$/i, "");
+      const keys = getParentCacheKeys(cleanPath);
+      if (env && env.CEOSVG_CACHE_KV && cleanPath) {
+        await Promise.all(keys.map(k => env.CEOSVG_CACHE_KV.delete(k).catch(() => {})));
+      }
+      return new Response(JSON.stringify({ ok: true, invalidated: keys }), {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 3) Full cache purge endpoint
+    if (pathname === "__purge") {
+      let purged = 0;
+      if (env && env.CEOSVG_CACHE_KV) {
+        const listed = await env.CEOSVG_CACHE_KV.list({ prefix: "kv:" });
+        await Promise.all((listed.keys || []).map(k => {
+          purged++;
+          return env.CEOSVG_CACHE_KV.delete(k.name).catch(() => {});
+        }));
+      }
+      return new Response(JSON.stringify({ ok: true, purged }), {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 4) Read-Cache for Firebase GET requests
+    if (request.method === "GET" && pathname.endsWith(".json")) {
+      const cleanPath = pathname.replace(/\.json$/i, "");
+      const ttl = getTtlForPath(cleanPath);
+      const kvKey = "kv:" + cleanPath;
+
+      // Try Cloudflare Workers KV first (0 bytes downloaded from Firebase!)
+      if (ttl > 0 && env && env.CEOSVG_CACHE_KV && !url.search) {
+        const cached = await env.CEOSVG_CACHE_KV.get(kvKey);
+        if (cached !== null) {
+          return new Response(cached, {
+            status: 200,
+            headers: {
+              ...CORS_HEADERS,
+              "Content-Type": "application/json; charset=utf-8",
+              "X-Cache": "HIT-KV",
+              "X-Cache-TTL": String(ttl)
+            }
+          });
+        }
+      }
+
+      // KV Miss -> Fetch once from Firebase RTDB & store in KV
+      const fbResp = await fetch(\`\${FIREBASE_BASE}/\${pathname}\${url.search}\`);
+      const text = await fbResp.text();
+      if (fbResp.ok && ttl > 0 && env && env.CEOSVG_CACHE_KV && !url.search && text && text !== "null") {
+        ctx.waitUntil(env.CEOSVG_CACHE_KV.put(kvKey, text, { expirationTtl: Math.max(60, ttl) }).catch(() => {}));
+      }
+      return new Response(text, {
+        status: fbResp.status,
+        headers: {
+          ...CORS_HEADERS,
+          "Content-Type": "application/json; charset=utf-8",
+          "X-Cache": "MISS-FB",
+          "X-Cache-TTL": String(ttl)
+        }
+      });
+    }
+
+    return new Response(JSON.stringify({ ok: false, error: "Unsupported route" }), {
+      status: 400,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+    });
+  }
+};`;
+  };
+
+  window.copyCfKvWorkerSourceCode = function() {
+    const code = window.getCfKvWorkerSourceCode();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).then(() => {
+        if (typeof showToast === "function") showToast("📋 Cloudflare Worker (worker.js) குறியீடு நகலெடுக்கப்பட்டது!", "#0f766e", true);
+      }).catch(() => {});
+    }
+  };
+
+  // Initialize UI & sync Worker URL on boot
+  setTimeout(() => {
+    updateCfKvStatusUi();
+    syncCfKvUrlFromPortalCfg();
+  }, 1500);
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_CLOUDFLARE_FB_CACHE_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65CfCacheApplied) return;
+  window.__ceosvgV65CfCacheApplied = true;
+
+  const CF_WORKER_BASE = "https://ceosvg-fb-cache.poovalingam1980.workers.dev";
+  const FB_HOST_FRAGMENT = "ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";
+  window.CEOSVG_CLOUDFLARE_FB_CACHE_URL = CF_WORKER_BASE;
+
+  // Paths that should always read directly from Firebase (tiny real-time control flags)
+  const BYPASS_CACHE_GET_PREFIXES = [
+    "ceosvg_live/site_maintenance",
+    "ceosvg_live/live_presence",
+    "ceosvg_live/admin_security"
+  ];
+
+  function extractFirebasePathInfo(urlStr) {
+    try {
+      if (!urlStr || typeof urlStr !== "string" || !urlStr.includes(FB_HOST_FRAGMENT)) return null;
+      const u = new URL(urlStr);
+      if (!u.hostname.includes(FB_HOST_FRAGMENT)) return null;
+      const rawPathname = u.pathname || "/";
+      const cleanPath = rawPathname.replace(/^\/+/, "").replace(/\.json$/i, "");
+      return {
+        rawPathname: rawPathname,
+        cleanPath: cleanPath,
+        search: u.search || ""
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function invalidateCloudflareCachePath(cleanPath) {
+    if (!cleanPath) return;
+    try {
+      _origWindowFetch(CF_WORKER_BASE + "/__invalidate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: cleanPath })
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
+  window.purgeCloudflareFirebaseCacheNow = async function(showNotification) {
+    const btn = document.getElementById("fbCfPurgeCacheBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ Cache சுத்தமாகிறது..."; }
+    try {
+      const r = await _origWindowFetch(CF_WORKER_BASE + "/__purge", { method: "POST" });
+      const data = r && r.ok ? await r.json().catch(() => ({ ok: true })) : null;
+      if (showNotification && typeof showToast === "function") {
+        if (data && data.ok !== false) {
+          showToast("☁️ Cloudflare KV Cache முழுமையாகப் புதுப்பிக்கப்பட்டது!", "#ea580c", true);
+        } else {
+          showToast("⚠️ Cloudflare Cache Purge பதிலளிக்கவில்லை.", "#f59e0b");
+        }
+      }
+      return data;
+    } catch (e) {
+      if (showNotification && typeof showToast === "function") {
+        showToast("❌ Cloudflare Cache Purge பிழை!", "#ef4444");
+      }
+      return null;
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "☁️ Cloudflare KV Cache சுத்தம் (Purge)"; }
+    }
+  };
+
+  // Transparent fetch proxy:
+  // - GET requests to Firebase RTDB -> served from Cloudflare KV Cache (with instant direct Firebase fallback!)
+  // - PUT / PATCH / POST / DELETE -> written directly to Firebase RTDB, then auto-invalidates Cloudflare KV Cache!
+  const _origWindowFetch = window.fetch.bind(window);
+  window.fetch = async function(input, init) {
+    const urlStr = (typeof input === "string") ? input : (input && input.url ? input.url : "");
+    const fbInfo = extractFirebasePathInfo(urlStr);
+    if (!fbInfo) {
+      return _origWindowFetch(input, init);
+    }
+
+    const method = String((init && init.method) || (input && input.method) || "GET").toUpperCase();
+
+    // 1) WRITE OPERATIONS (PUT / PATCH / POST / DELETE): write directly to Firebase, then invalidate CF KV Cache
+    if (method !== "GET" && method !== "HEAD") {
+      const res = await _origWindowFetch(input, init);
+      if (res && res.ok) {
+        invalidateCloudflareCachePath(fbInfo.cleanPath);
+      }
+      return res;
+    }
+
+    // 2) READ OPERATIONS (GET): skip cache for tiny real-time control flags or shallow=true probes
+    const shouldBypass = fbInfo.search.includes("shallow=true") ||
+      BYPASS_CACHE_GET_PREFIXES.some(p => fbInfo.cleanPath.startsWith(p));
+    if (shouldBypass) {
+      return _origWindowFetch(input, init);
+    }
+
+    // Route GET through Cloudflare Worker KV Cache with automatic fallback to Firebase RTDB
+    const cfUrl = CF_WORKER_BASE + fbInfo.rawPathname + fbInfo.search;
+    try {
+      const cfRes = await _origWindowFetch(cfUrl, init);
+      if (cfRes && cfRes.ok) {
+        return cfRes;
+      }
+    } catch (e) {
+      // Fall back seamlessly to direct Firebase RTDB
+    }
+    return _origWindowFetch(input, init);
+  };
+
+  // Update status indicator text subtly once DOM is ready
+  try {
+    const stText = document.getElementById("firebaseStatusText");
+    if (stText && !stText.textContent.includes("CF Cache")) {
+      stText.textContent = "⚡ Auto Dual-Sync + ☁️ CF KV Cache";
+    }
+  } catch (e) {}
 })();
 </script>
 
