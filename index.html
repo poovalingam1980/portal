@@ -6586,6 +6586,29 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
   <div id="cfKvLiveStatsLine" style="font-size:0.74rem; color:#1e3a8a; font-weight:800;">
     📊 அமர்வு நிலை: KV Cache Hits: <strong>0</strong> | Firebase Direct: <strong>0</strong> | Auto-Fallback: <strong>தயார்</strong>
   </div>
+  <div id="cfD1MigrationPanel" style="margin-top:10px; padding-top:10px; border-top:1.5px dashed #fdba74;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+      <div style="font-size:0.84rem; font-weight:900; color:#0f766e;">
+        🗄️ கட்டம் 1 &amp; 2: Cloudflare D1 Database (<code>ceosvg-portal-db</code>) — 1-Click Sync &amp; Dual-Write பாதுகாப்பு
+      </div>
+      <span id="cfD1StatusBadge" style="background:#f0fdfa; color:#0f766e; border:1px solid #99f6e4; padding:2px 10px; border-radius:999px; font-size:0.72rem; font-weight:900;">🗄️ D1 சரிபார்க்கவும்</span>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:6px;">
+      <button type="button" id="cfD1SyncAllBtn" class="btn btn-primary btn-sm" onclick="syncAllFirebaseDataToCloudflareD1(true)" style="font-weight:900; background:linear-gradient(135deg,#0f766e,#0284c7); border:none;">
+        🚀 1. 1-Click Firebase ➔ D1 Sync (282 பள்ளிகள்)
+      </button>
+      <button type="button" id="cfD1VerifyBtn" class="btn btn-outline btn-sm" onclick="verifyCloudflareD1Stats(true)" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#fff;">
+        🔍 2. D1 பதிவுகளைச் சரிபார் (Verify)
+      </button>
+      <label style="display:inline-flex; align-items:center; gap:6px; background:#fff; border:1.5px solid #16a34a; border-radius:8px; padding:4px 10px; font-size:0.76rem; font-weight:900; color:#166534; cursor:pointer;">
+        <input type="checkbox" id="cfD1DualWriteToggle" onchange="toggleCloudflareD1DualWrite(this.checked)" style="width:15px; height:15px; accent-color:#16a34a;">
+        <span>🛡️ 3. Dual-Write பாதுகாப்பு (Firebase + D1)</span>
+      </label>
+    </div>
+    <div id="cfD1ProgressLine" style="font-size:0.75rem; color:#334155; font-weight:700;">
+      முதலில் Cloudflare Worker-ல் புதிய D1+KV <code>worker.js</code>-ஐ Deploy செய்துவிட்டு, <strong>"🚀 1-Click Firebase ➔ D1 Sync"</strong> கிளிக் செய்யவும்.
+    </div>
+  </div>
 </div>
 <div id="cfD1Phase1Card" style="width:100%; margin-top:10px; background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:1.5px solid #5eead4; border-left:5px solid #0f766e; border-radius:10px; padding:12px 14px; box-sizing:border-box;">
   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
@@ -56120,6 +56143,550 @@ export default {
     updateD1StatsUi();
     syncDbModeFromCloud();
   }, 600);
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V77_CLOUDFLARE_D1_DUALWRITE_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV77D1Applied) return;
+  window.__ceosvgV77D1Applied = true;
+
+  const D1_DUAL_WRITE_KEY = "CEOSVG_D1_DUAL_WRITE_ENABLED_V1";
+  const DEFAULT_WORKER_URL = "https://ceosvg-fb-cache.poovalingam1980.workers.dev";
+  const FB_HOST_FRAG = "ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+  function getWorkerBaseUrl() {
+    try {
+      const saved = (typeof localStorage !== "undefined") ? localStorage.getItem("CEOSVG_CF_KV_PROXY_URL") : "";
+      const clean = String(saved || DEFAULT_WORKER_URL).trim().replace(/\/+$/, "");
+      return /^https:\/\/[a-z0-9.-]+/i.test(clean) ? clean : DEFAULT_WORKER_URL;
+    } catch (e) {
+      return DEFAULT_WORKER_URL;
+    }
+  }
+
+  function isD1DualWriteEnabled() {
+    try {
+      return localStorage.getItem(D1_DUAL_WRITE_KEY) === "true";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function refreshD1UiState() {
+    try {
+      const chk = document.getElementById("cfD1DualWriteToggle");
+      if (chk) chk.checked = isD1DualWriteEnabled();
+    } catch (e) {}
+  }
+
+  // Upgrade getCfKvWorkerSourceCode() to return the complete KV + D1 Worker code!
+  window.getCfKvWorkerSourceCode = function() {
+    return `// ============================================================================
+// Cloudflare Worker: ceosvg-fb-cache (Hybrid KV Read-Cache + D1 Primary Ready)
+// Required Bindings:
+//   1. KV Namespace: CEOSVG_CACHE_KV
+//   2. D1 Database : CEOSVG_D1  (ceosvg-portal-db)
+// ============================================================================
+const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+const TTL_RULES = [
+  { prefix: "ceosvg_live/master_schools_by_uno", ttl: 3600 },
+  { prefix: "ceosvg_live/stores/CEOSVG_MASTER_SCHOOLS", ttl: 3600 },
+  { prefix: "ceosvg_live/exam_centres_10", ttl: 3600 },
+  { prefix: "ceosvg_live/exam_centres_12", ttl: 3600 },
+  { prefix: "ceosvg_live/stores/CEOSVG_HSS_GROUP_MASTER_V1", ttl: 3600 },
+  { prefix: "ceosvg_live/school_auth", ttl: 600 },
+  { prefix: "ceosvg_live/stores/CEOSVG_SCHOOL_AUTH", ttl: 600 },
+  { prefix: "ceosvg_live/school_summary_index", ttl: 300 },
+  { prefix: "ceosvg_live/verified_otp_vault", ttl: 300 },
+  { prefix: "ceosvg_live/site_maintenance", ttl: 120 },
+  { prefix: "ceosvg_live/stores/CEOSVG_PORTAL_CFG", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_CIRCULARS", ttl: 600 },
+  { prefix: "ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT", ttl: 300 }
+];
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Expose-Headers": "X-Cache, X-Cache-Key, X-D1-Rows"
+};
+
+function getTtlForPath(cleanPath) {
+  for (const r of TTL_RULES) {
+    if (cleanPath === r.prefix || cleanPath.startsWith(r.prefix + "/")) return r.ttl;
+  }
+  return 180;
+}
+
+function getParentCacheKeys(cleanPath) {
+  const keys = new Set();
+  if (!cleanPath) return [];
+  keys.add("fb:" + cleanPath);
+  const parts = cleanPath.split("/");
+  while (parts.length > 2) {
+    parts.pop();
+    keys.add("fb:" + parts.join("/"));
+  }
+  return Array.from(keys);
+}
+
+let _d1TableReady = false;
+async function ensureD1Schema(env) {
+  if (!env || !env.CEOSVG_D1 || _d1TableReady) return;
+  await env.CEOSVG_D1.prepare(
+    "CREATE TABLE IF NOT EXISTS portal_nodes (path TEXT PRIMARY KEY, data TEXT NOT NULL, updated_at INTEGER NOT NULL)"
+  ).run();
+  _d1TableReady = true;
+}
+
+async function upsertD1Node(env, rawPath, data, method) {
+  const cleanPath = String(rawPath || "").replace(/^\\/+/, "").replace(/\\.json$/i, "").replace(/\\/+$/, "");
+  if (!cleanPath || !env.CEOSVG_D1) return { ok: false, error: "Invalid path or D1 unbound" };
+  await ensureD1Schema(env);
+  const m = String(method || "PUT").toUpperCase();
+
+  if (m === "DELETE" || data === null || data === undefined) {
+    await env.CEOSVG_D1.prepare("DELETE FROM portal_nodes WHERE path = ?").bind(cleanPath).run();
+  } else if (m === "PATCH" && typeof data === "object" && !Array.isArray(data)) {
+    const existing = await env.CEOSVG_D1.prepare("SELECT data FROM portal_nodes WHERE path = ?").bind(cleanPath).first();
+    let merged = data;
+    if (existing && existing.data) {
+      try {
+        const parsed = JSON.parse(existing.data);
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+          merged = Object.assign({}, parsed, data);
+        }
+      } catch (e) {}
+    }
+    await env.CEOSVG_D1.prepare(
+      "INSERT OR REPLACE INTO portal_nodes (path, data, updated_at) VALUES (?, ?, ?)"
+    ).bind(cleanPath, JSON.stringify(merged), Date.now()).run();
+  } else {
+    await env.CEOSVG_D1.prepare(
+      "INSERT OR REPLACE INTO portal_nodes (path, data, updated_at) VALUES (?, ?, ?)"
+    ).bind(cleanPath, JSON.stringify(data), Date.now()).run();
+  }
+
+  if (env.CEOSVG_CACHE_KV) {
+    const keys = getParentCacheKeys(cleanPath);
+    await Promise.all(keys.map(k => env.CEOSVG_CACHE_KV.delete(k).catch(() => {})));
+  }
+  return { ok: true, path: cleanPath };
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    const url = new URL(request.url);
+    const pathname = url.pathname.replace(/^\\/+/, "");
+
+    // 1) Health check (shows both KV and D1 binding status + D1 row count)
+    if (!pathname || pathname === "__health") {
+      let d1Rows = 0;
+      if (env && env.CEOSVG_D1) {
+        try {
+          await ensureD1Schema(env);
+          const row = await env.CEOSVG_D1.prepare("SELECT COUNT(*) AS cnt FROM portal_nodes").first();
+          d1Rows = Number((row && row.cnt) || 0);
+        } catch (e) {}
+      }
+      return new Response(JSON.stringify({
+        ok: true,
+        service: "ceosvg-fb-cache",
+        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),
+        d1Bound: Boolean(env && env.CEOSVG_D1),
+        d1Rows: d1Rows,
+        ts: new Date().toISOString()
+      }), {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 2) D1 Stats endpoint (for Admin Verification)
+    if (pathname === "__d1/stats") {
+      if (!env || !env.CEOSVG_D1) {
+        return new Response(JSON.stringify({ ok: false, error: "CEOSVG_D1 not bound" }), {
+          status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+        });
+      }
+      await ensureD1Schema(env);
+      const tot = await env.CEOSVG_D1.prepare("SELECT COUNT(*) AS cnt, COALESCE(SUM(LENGTH(data)), 0) AS bytes FROM portal_nodes").first();
+      const rows = await env.CEOSVG_D1.prepare("SELECT path FROM portal_nodes").all();
+      const counts = {};
+      (rows.results || []).forEach(r => {
+        const parts = String(r.path || "").split("/");
+        const grp = parts.length >= 2 ? (parts[0] + "/" + parts[1]) : parts[0];
+        counts[grp] = (counts[grp] || 0) + 1;
+      });
+      return new Response(JSON.stringify({
+        ok: true,
+        totalRows: Number((tot && tot.cnt) || 0),
+        totalBytes: Number((tot && tot.bytes) || 0),
+        groups: counts,
+        ts: new Date().toISOString()
+      }), {
+        status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 3) D1 Single or Batch Write endpoint (for 1-Click Sync & Dual-Write)
+    if (pathname === "__d1/write" && request.method === "POST") {
+      if (!env || !env.CEOSVG_D1) {
+        return new Response(JSON.stringify({ ok: false, error: "CEOSVG_D1 not bound" }), {
+          status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+        });
+      }
+      const body = await request.json().catch(() => ({}));
+      if (Array.isArray(body.items)) {
+        await ensureD1Schema(env);
+        const now = Date.now();
+        const stmts = [];
+        const invalidKeys = new Set();
+        for (const it of body.items) {
+          const cp = String(it.path || "").replace(/^\\/+/, "").replace(/\\.json$/i, "").replace(/\\/+$/, "");
+          if (!cp) continue;
+          if (it.data === null || it.data === undefined) {
+            stmts.push(env.CEOSVG_D1.prepare("DELETE FROM portal_nodes WHERE path = ?").bind(cp));
+          } else {
+            stmts.push(env.CEOSVG_D1.prepare("INSERT OR REPLACE INTO portal_nodes (path, data, updated_at) VALUES (?, ?, ?)").bind(cp, JSON.stringify(it.data), now));
+          }
+          getParentCacheKeys(cp).forEach(k => invalidKeys.add(k));
+        }
+        if (stmts.length > 0) await env.CEOSVG_D1.batch(stmts);
+        if (env.CEOSVG_CACHE_KV && invalidKeys.size > 0) {
+          ctx.waitUntil(Promise.all(Array.from(invalidKeys).map(k => env.CEOSVG_CACHE_KV.delete(k).catch(() => {}))));
+        }
+        return new Response(JSON.stringify({ ok: true, written: stmts.length }), {
+          status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+        });
+      }
+      const res = await upsertD1Node(env, body.path, body.data, body.method || "PUT");
+      return new Response(JSON.stringify(res), {
+        status: res.ok ? 200 : 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 4) D1 Read endpoint (for verification & future Primary mode)
+    if (pathname === "__d1/read" && request.method === "GET") {
+      if (!env || !env.CEOSVG_D1) {
+        return new Response(JSON.stringify({ ok: false, error: "CEOSVG_D1 not bound" }), {
+          status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+        });
+      }
+      await ensureD1Schema(env);
+      const cp = String(url.searchParams.get("path") || "").replace(/^\\/+/, "").replace(/\\.json$/i, "").replace(/\\/+$/, "");
+      if (!cp) return new Response("null", { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
+      const exact = await env.CEOSVG_D1.prepare("SELECT data FROM portal_nodes WHERE path = ?").bind(cp).first();
+      if (exact && exact.data !== undefined) {
+        return new Response(exact.data, { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json", "X-Cache": "D1-EXACT" } });
+      }
+      const children = await env.CEOSVG_D1.prepare("SELECT path, data FROM portal_nodes WHERE path LIKE ?").bind(cp + "/%").all();
+      if (children.results && children.results.length > 0) {
+        const obj = {};
+        for (const r of children.results) {
+          const subKey = r.path.slice(cp.length + 1);
+          if (!subKey.includes("/")) {
+            try { obj[subKey] = JSON.parse(r.data); } catch (e) {}
+          }
+        }
+        return new Response(JSON.stringify(obj), { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json", "X-Cache": "D1-GROUP" } });
+      }
+      return new Response("null", { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json", "X-Cache": "D1-MISS" } });
+    }
+
+    // 5) Targeted KV cache invalidation after Firebase write
+    if (pathname === "__invalidate" && request.method === "POST") {
+      let body = {};
+      try { body = await request.json(); } catch (e) {}
+      const cleanPath = String(body.path || "").replace(/^\\/+/, "").replace(/\\.json$/i, "");
+      const keys = getParentCacheKeys(cleanPath);
+      if (env && env.CEOSVG_CACHE_KV && cleanPath) {
+        await Promise.all(keys.map(k => env.CEOSVG_CACHE_KV.delete(k).catch(() => {})));
+      }
+      return new Response(JSON.stringify({ ok: true, invalidated: keys }), {
+        status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 6) Full KV cache purge endpoint
+    if (pathname === "__purge") {
+      let purged = 0;
+      if (env && env.CEOSVG_CACHE_KV) {
+        const list = await env.CEOSVG_CACHE_KV.list({ prefix: "fb:" });
+        await Promise.all((list.keys || []).map(k => { purged++; return env.CEOSVG_CACHE_KV.delete(k.name).catch(() => {}); }));
+      }
+      return new Response(JSON.stringify({ ok: true, purged }), {
+        status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 7) Hybrid KV Read-Cache proxy for Firebase GET requests
+    if (request.method === "GET") {
+      const cleanPath = pathname.replace(/\\.json$/i, "");
+      const cacheKey = "fb:" + cleanPath;
+      if (env && env.CEOSVG_CACHE_KV) {
+        const cached = await env.CEOSVG_CACHE_KV.get(cacheKey);
+        if (cached !== null) {
+          return new Response(cached, {
+            status: 200,
+            headers: { ...CORS_HEADERS, "Content-Type": "application/json", "X-Cache": "HIT", "X-Cache-Key": cacheKey }
+          });
+        }
+      }
+      const fbUrl = FIREBASE_BASE + "/" + pathname + url.search;
+      const fbResp = await fetch(fbUrl, { method: "GET" });
+      if (!fbResp.ok) {
+        return new Response(await fbResp.text(), { status: fbResp.status, headers: CORS_HEADERS });
+      }
+      const textBody = await fbResp.text();
+      if (env && env.CEOSVG_CACHE_KV && textBody && textBody !== "null") {
+        const ttl = getTtlForPath(cleanPath);
+        ctx.waitUntil(env.CEOSVG_CACHE_KV.put(cacheKey, textBody, { expirationTtl: ttl }).catch(() => {}));
+      }
+      return new Response(textBody, {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json", "X-Cache": "MISS", "X-Cache-Key": cacheKey }
+      });
+    }
+
+    return new Response(JSON.stringify({ ok: false, error: "Method not allowed" }), {
+      status: 405, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+    });
+  }
+};`;
+  };
+
+  // Upgrade testCfKvProxyConnection() to report BOTH KV and D1 binding status!
+  if (typeof testCfKvProxyConnection === "function") {
+    const _v77OrigTest = testCfKvProxyConnection;
+    window.testCfKvProxyConnection = async function() {
+      const res = await _v77OrigTest.apply(this, arguments);
+      try { await window.verifyCloudflareD1Stats(false); } catch (e) {}
+      return res;
+    };
+  }
+
+  window.verifyCloudflareD1Stats = async function(showNotification) {
+    const wBase = getWorkerBaseUrl();
+    const badge = document.getElementById("cfD1StatusBadge");
+    const prog = document.getElementById("cfD1ProgressLine");
+    try {
+      const [hRes, sRes] = await Promise.all([
+        fetch(wBase + "/__health").then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch(wBase + "/__d1/stats").then(r => r.ok ? r.json() : null).catch(() => null)
+      ]);
+      if (hRes && hRes.d1Bound) {
+        const rows = (sRes && sRes.ok) ? sRes.totalRows : (hRes.d1Rows || 0);
+        const kb = (sRes && sRes.ok) ? (sRes.totalBytes / 1024).toFixed(1) : "0";
+        if (badge) {
+          badge.style.background = "#dcfce7";
+          badge.style.color = "#166534";
+          badge.style.borderColor = "#86efac";
+          badge.textContent = `🟢 D1 இணைக்கப்பட்டது (${rows} பதிவுகள் | ${kb} KB)`;
+        }
+        if (prog && sRes && sRes.ok) {
+          const grpSummary = Object.entries(sRes.groups || {}).map(([k, v]) => `${k.replace("ceosvg_live/", "")}: ${v}`).join(" | ");
+          prog.innerHTML = `✅ <strong>Cloudflare D1 தயார் நிலை:</strong> மொத்தம் <strong>${rows}</strong> பதிவுகள் (${kb} KB). ${grpSummary ? `<br><span style="color:#0369a1;">${escapeHtmlAttr(grpSummary)}</span>` : ""}`;
+        }
+        if (showNotification && typeof showToast === "function") {
+          showToast(`✅ Cloudflare D1 சரிபார்ப்பு வெற்றி! ${rows} பதிவுகள் (${kb} KB) பாதுகாப்பாக உள்ளன.`, "#16a34a", true);
+        }
+        return sRes || hRes;
+      } else {
+        if (badge) {
+          badge.style.background = "#fef3c7";
+          badge.style.color = "#92400e";
+          badge.style.borderColor = "#f59e0b";
+          badge.textContent = "⚠️ புதிய worker.js Deploy தேவை";
+        }
+        if (prog) {
+          prog.innerHTML = `⚠️ <strong>📋 worker.js நகலெடு</strong> பொத்தானை அழுத்தி Cloudflare Worker-ல் (<code>ceosvg-fb-cache</code> → Edit code → Deploy) புதுப்பிக்கவும்.`;
+        }
+        if (showNotification && typeof showToast === "function") {
+          showToast("⚠️ முதலில் புதிய D1+KV worker.js-ஐ Cloudflare-ல் Deploy செய்யவும்!", "#f59e0b", true);
+        }
+        return null;
+      }
+    } catch (e) {
+      if (showNotification && typeof showToast === "function") showToast("❌ D1 சரிபார்ப்பில் பிழை!", "#ef4444");
+      return null;
+    }
+  };
+
+  window.toggleCloudflareD1DualWrite = async function(enabled) {
+    const flag = Boolean(enabled);
+    try { localStorage.setItem(D1_DUAL_WRITE_KEY, flag ? "true" : "false"); } catch (e) {}
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (fbBase) {
+      fetch(`${fbBase}/ceosvg_live/stores/CEOSVG_PORTAL_CFG/d1DualWriteEnabled.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(flag)
+      }).catch(() => {});
+    }
+    if (typeof showToast === "function") {
+      showToast(flag
+        ? "🛡️ Dual-Write பாதுகாப்பு இயக்கப்பட்டது! இனி அனைத்துச் சேமிப்புகளும் Firebase + Cloudflare D1 இரண்டிலும் பதிவாகும்."
+        : "ℹ️ Dual-Write நிறுத்தப்பட்டது (Firebase மட்டும்).", flag ? "#16a34a" : "#64748b", true);
+    }
+  };
+
+  // 1-Click Sync: Copies ALL 282 schools & active stores from Firebase -> Cloudflare D1 in safe batches (0% Firebase impact!)
+  window.syncAllFirebaseDataToCloudflareD1 = async function(showNotification) {
+    const wBase = getWorkerBaseUrl();
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    const btn = document.getElementById("cfD1SyncAllBtn");
+    const prog = document.getElementById("cfD1ProgressLine");
+    if (!fbBase) {
+      if (showNotification && typeof showToast === "function") showToast("❌ Firebase URL இணைக்கப்படவில்லை!", "#ef4444");
+      return;
+    }
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ D1 Sync நடக்கிறது..."; }
+    try {
+      // First check D1 is bound & new worker.js is deployed
+      const h = await fetch(wBase + "/__health").then(r => r.ok ? r.json() : null).catch(() => null);
+      if (!h || !h.d1Bound) {
+        if (prog) prog.innerHTML = "❌ முதலில் <strong>📋 worker.js நகலெடு</strong> செய்து <code>ceosvg-fb-cache</code> Worker-ல் <strong>Deploy</strong> செய்யவும்!";
+        if (showNotification && typeof showToast === "function") showToast("⚠️ முதலில் புதிய D1+KV worker.js-ஐ Cloudflare-ல் Deploy செய்யவும்!", "#f59e0b", true);
+        return;
+      }
+
+      const mapNodesToSplit = [
+        "ceosvg_live/master_schools_by_uno",
+        "ceosvg_live/school_auth",
+        "ceosvg_live/school_summary_index",
+        "ceosvg_live/school_extra",
+        "ceosvg_live/ebs_2026_27",
+        "ceosvg_live/exam_result_analysis_by_uno",
+        "ceosvg_live/DeleteRequests"
+      ];
+      const singleNodes = [
+        "ceosvg_live/verified_otp_vault",
+        "ceosvg_live/site_maintenance",
+        "ceosvg_live/exam_centres_10",
+        "ceosvg_live/exam_centres_12",
+        "ceosvg_live/stores/CEOSVG_DELETE_REQUESTS",
+        "ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1",
+        "ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES",
+        "ceosvg_live/stores/CEOSVG_USER_EDITED_STAFF_VAULT_V1",
+        "ceosvg_live/stores/CEOSVG_EDITED_SCHOOLS_VAULT_V1",
+        "ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1",
+        "ceosvg_live/stores/CEOSVG_CIRCULARS",
+        "ceosvg_live/stores/CEOSVG_HSS_GROUP_MASTER_V1",
+        "ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT",
+        "ceosvg_live/stores/CEOSVG_PORTAL_CFG"
+      ];
+
+      let totalWritten = 0;
+
+      async function writeBatchToD1(items) {
+        const CHUNK = 15;
+        for (let i = 0; i < items.length; i += CHUNK) {
+          const slice = items.slice(i, i + CHUNK);
+          const r = await fetch(wBase + "/__d1/write", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items: slice })
+          });
+          if (r && r.ok) {
+            const j = await r.json().catch(() => ({ written: slice.length }));
+            totalWritten += Number(j.written || slice.length);
+          }
+        }
+      }
+
+      for (let mIdx = 0; mIdx < mapNodesToSplit.length; mIdx++) {
+        const path = mapNodesToSplit[mIdx];
+        if (prog) prog.innerHTML = `⏳ படி ${mIdx + 1}/${mapNodesToSplit.length + 1}: <code>${path}</code> Firebase-லிருந்து D1-க்கு நகலெடுக்கப்படுகிறது...`;
+        const data = await fetch(`${fbBase}/${path}.json`).then(r => r.ok ? r.json() : null).catch(() => null);
+        if (data && typeof data === "object") {
+          const items = Object.entries(data)
+            .filter(([k, v]) => k && v !== null && v !== undefined)
+            .map(([k, v]) => ({ path: `${path}/${k}`, data: v }));
+          if (items.length > 0) await writeBatchToD1(items);
+        }
+      }
+
+      if (prog) prog.innerHTML = `⏳ இறுதிப் படி: முதன்மை அமைப்புகள் &amp; பதிவேடுகள் D1-க்கு நகலெடுக்கப்படுகின்றன...`;
+      const singleItems = [];
+      for (const sp of singleNodes) {
+        const data = await fetch(`${fbBase}/${sp}.json`).then(r => r.ok ? r.json() : null).catch(() => null);
+        if (data !== null && data !== undefined) {
+          singleItems.push({ path: sp, data: data });
+        }
+      }
+      if (singleItems.length > 0) await writeBatchToD1(singleItems);
+
+      // Auto-enable Dual-Write after successful initial sync
+      await window.toggleCloudflareD1DualWrite(true);
+      refreshD1UiState();
+      await window.verifyCloudflareD1Stats(false);
+      if (showNotification && typeof showToast === "function") {
+        showToast(`🚀 1-Click Sync வெற்றி! மொத்தம் ${totalWritten} பதிவுகள் Cloudflare D1-ல் நகலெடுக்கப்பட்டு Dual-Write இயக்கப்பட்டது!`, "#16a34a", true);
+      }
+    } catch (e) {
+      if (prog) prog.innerHTML = "❌ D1 Sync பிழை: " + (e.message || e);
+      if (showNotification && typeof showToast === "function") showToast("❌ D1 Sync-ல் பிழை ஏற்பட்டது!", "#ef4444");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "🚀 1. 1-Click Firebase ➔ D1 Sync (282 பள்ளிகள்)"; }
+    }
+  };
+
+  // Non-blocking Dual-Write mirror hook: mirrors successful Firebase writes to Cloudflare D1 when Dual-Write is ON
+  const _v77PrevFetch = window.fetch.bind(window);
+  window.fetch = async function(input, init) {
+    const resp = await _v77PrevFetch(input, init);
+    try {
+      if (isD1DualWriteEnabled() && resp && resp.ok) {
+        const reqUrl = (typeof input === "string") ? input : (input && input.url ? input.url : "");
+        const method = String((init && init.method) || (input && input.method) || "GET").toUpperCase();
+        if ((method === "PUT" || method === "PATCH" || method === "DELETE") && reqUrl.includes(FB_HOST_FRAG)) {
+          const u = new URL(reqUrl);
+          const cleanPath = (u.pathname || "").replace(/^\/+/, "").replace(/\.json$/i, "");
+          if (cleanPath && !cleanPath.startsWith("ceosvg_live/live_presence")) {
+            let parsedData = null;
+            if (method !== "DELETE" && init && typeof init.body === "string") {
+              try { parsedData = JSON.parse(init.body); } catch (e) { parsedData = init.body; }
+            }
+            _v77PrevFetch(getWorkerBaseUrl() + "/__d1/write", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ path: cleanPath, data: parsedData, method: method })
+            }).catch(() => {});
+          }
+        }
+      }
+    } catch (e) {}
+    return resp;
+  };
+
+  // Sync Dual-Write flag from Firebase portal config automatically for all 282 schools
+  setTimeout(async () => {
+    refreshD1UiState();
+    try {
+      const fbBase = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+      if (!fbBase) return;
+      const r = await _v77PrevFetch(`${fbBase}/ceosvg_live/stores/CEOSVG_PORTAL_CFG/d1DualWriteEnabled.json`);
+      if (r && r.ok) {
+        const val = await r.json();
+        if (typeof val === "boolean") {
+          localStorage.setItem(D1_DUAL_WRITE_KEY, val ? "true" : "false");
+          refreshD1UiState();
+        }
+      }
+    } catch (e) {}
+  }, 1800);
 })();
 </script>
 
