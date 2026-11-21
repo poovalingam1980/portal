@@ -6430,16 +6430,75 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
       <span id="admMtFilteredSummaryPill" style="margin-left:6px; background:#ffffff; color:#0f294a; border:1px solid #cbd5e1; padding:2px 9px; border-radius:999px; font-size:0.73rem;">வடிகட்டிய பள்ளிகள்: 0</span>
     </div>
     <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-      <label for="admMtBulkReportSortSelect" style="font-size:0.75rem; font-weight:900; color:#0f294a; display:inline-flex; align-items:center; gap:4px; background:#ffffff; border:1.5px solid #0f766e; border-radius:6px; padding:3px 7px;">
-        <span>↕️ வரிசை:</span>
-        <select id="admMtBulkReportSortSelect" style="border:none; outline:none; font-size:0.75rem; font-weight:900; color:#0f294a; background:transparent; cursor:pointer;">
-          <option value="UNO_ASC">இயல்புநிலை (U.NO)</option>
-          <option value="PASS_DESC">தேர்ச்சி % — இறங்குவரிசை (அதிகம் ➔ குறைவு)</option>
-          <option value="PASS_ASC">தேர்ச்சி % — ஏறுவரிசை (குறைவு ➔ அதிகம்)</option>
-          <option value="STU_DESC">மாணவர் எண்ணிக்கை — இறங்குவரிசை (அதிகம் ➔ குறைவு)</option>
-          <option value="STU_ASC">மாணவர் எண்ணிக்கை — ஏறுவரிசை (குறைவு ➔ அதிகம்)</option>
-        </select>
-      </label>
+      <select id="admMtBulkReportSortSelect" style="display:none;"><option value="MULTI_V90" selected>MULTI_V90</option></select>
+      <div id="admMtMultiSortBar" style="width:100%; display:flex; flex-wrap:wrap; gap:6px; align-items:center; background:#ffffff; border:1.5px solid #0d9488; border-radius:8px; padding:6px 10px; margin-bottom:4px;">
+        <span style="font-size:0.74rem; font-weight:900; color:#0f294a; white-space:nowrap;">↕️ பல-நிலை வரிசை (அட்டவணை &amp; பதிவிறக்கம்):</span>
+        <span style="display:inline-flex; align-items:center; gap:3px; background:#f0fdfa; border:1px solid #99f6e4; border-radius:6px; padding:2px 6px;">
+          <strong style="font-size:0.71rem; color:#0f766e;">1:</strong>
+          <select id="admMtSortField1" onchange="onAdminMidTermMultiSortChange()" style="border:none; background:transparent; font-size:0.73rem; font-weight:800; color:#0f294a; outline:none; cursor:pointer;">
+            <option value="uno" selected>U.No (இயல்புநிலை)</option>
+            <option value="passPct">தேர்ச்சி % (Pass %)</option>
+            <option value="appeared">தேர்வெழுதிய மாணவர் (Appeared)</option>
+            <option value="emis">EMIS மாணவர் எண்ணிக்கை</option>
+            <option value="avgMark">பள்ளி சராசரி மதிப்பெண் (Avg)</option>
+            <option value="firstMark">முதல் மதிப்பெண் (First Mark)</option>
+            <option value="passed">தேர்ச்சி எண்ணிக்கை (Passed)</option>
+            <option value="failed">தோல்வி எண்ணிக்கை (Failed)</option>
+            <option value="fail1s">1-பாடம் தோல்வி (1S)</option>
+            <option value="name">பள்ளியின் பெயர்</option>
+            <option value="block">ஒன்றியம் (Block)</option>
+            <option value="mgmt">நிர்வாகப் பிரிவு</option>
+            <option value="status">சமர்ப்பிப்பு நிலை</option>
+          </select>
+          <select id="admMtSortDir1" onchange="onAdminMidTermMultiSortChange()" style="border:none; background:#e0f2fe; border-radius:4px; font-size:0.71rem; font-weight:900; color:#0369a1; padding:1px 4px; cursor:pointer;">
+            <option value="ASC" selected>▲ ஏறு</option>
+            <option value="DESC">▼ இறங்கு</option>
+          </select>
+        </span>
+        <span style="display:inline-flex; align-items:center; gap:3px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:2px 6px;">
+          <strong style="font-size:0.71rem; color:#1d4ed8;">2:</strong>
+          <select id="admMtSortField2" onchange="onAdminMidTermMultiSortChange()" style="border:none; background:transparent; font-size:0.73rem; font-weight:800; color:#0f294a; outline:none; cursor:pointer;">
+            <option value="NONE" selected>— இல்லை —</option>
+            <option value="appeared">தேர்வெழுதிய மாணவர் (Appeared)</option>
+            <option value="emis">EMIS மாணவர் எண்ணிக்கை</option>
+            <option value="passPct">தேர்ச்சி % (Pass %)</option>
+            <option value="avgMark">பள்ளி சராசரி மதிப்பெண் (Avg)</option>
+            <option value="firstMark">முதல் மதிப்பெண் (First Mark)</option>
+            <option value="passed">தேர்ச்சி எண்ணிக்கை (Passed)</option>
+            <option value="failed">தோல்வி எண்ணிக்கை (Failed)</option>
+            <option value="fail1s">1-பாடம் தோல்வி (1S)</option>
+            <option value="uno">U.No</option>
+            <option value="name">பள்ளியின் பெயர்</option>
+            <option value="block">ஒன்றியம் (Block)</option>
+            <option value="mgmt">நிர்வாகப் பிரிவு</option>
+          </select>
+          <select id="admMtSortDir2" onchange="onAdminMidTermMultiSortChange()" style="border:none; background:#e0f2fe; border-radius:4px; font-size:0.71rem; font-weight:900; color:#0369a1; padding:1px 4px; cursor:pointer;">
+            <option value="DESC" selected>▼ இறங்கு</option>
+            <option value="ASC">▲ ஏறு</option>
+          </select>
+        </span>
+        <span style="display:inline-flex; align-items:center; gap:3px; background:#faf5ff; border:1px solid #e9d5ff; border-radius:6px; padding:2px 6px;">
+          <strong style="font-size:0.71rem; color:#7c3aed;">3:</strong>
+          <select id="admMtSortField3" onchange="onAdminMidTermMultiSortChange()" style="border:none; background:transparent; font-size:0.73rem; font-weight:800; color:#0f294a; outline:none; cursor:pointer;">
+            <option value="NONE" selected>— இல்லை —</option>
+            <option value="avgMark">பள்ளி சராசரி மதிப்பெண் (Avg)</option>
+            <option value="firstMark">முதல் மதிப்பெண் (First Mark)</option>
+            <option value="appeared">தேர்வெழுதிய மாணவர் (Appeared)</option>
+            <option value="passPct">தேர்ச்சி % (Pass %)</option>
+            <option value="emis">EMIS மாணவர் எண்ணிக்கை</option>
+            <option value="passed">தேர்ச்சி எண்ணிக்கை (Passed)</option>
+            <option value="failed">தோல்வி எண்ணிக்கை (Failed)</option>
+            <option value="uno">U.No</option>
+            <option value="name">பள்ளியின் பெயர்</option>
+          </select>
+          <select id="admMtSortDir3" onchange="onAdminMidTermMultiSortChange()" style="border:none; background:#e0f2fe; border-radius:4px; font-size:0.71rem; font-weight:900; color:#0369a1; padding:1px 4px; cursor:pointer;">
+            <option value="DESC" selected>▼ இறங்கு</option>
+            <option value="ASC">▲ ஏறு</option>
+          </select>
+        </span>
+        <button type="button" class="btn btn-outline btn-sm" onclick="applyAdminMidTermRankPresetV90()" style="font-size:0.71rem; font-weight:900; padding:2px 8px; border-color:#0f766e; color:#0f766e; background:#f0fdfa;" title="1. தேர்ச்சி % ▼ → 2. மாணவர் எண்ணிக்கை ▼ → 3. பள்ளி சராசரி ▼">⭐ தரவரிசை (Pass% ➔ Stu ➔ Avg)</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="resetAdminMidTermMultiSortV90()" style="font-size:0.71rem; font-weight:800; padding:2px 7px; border-color:#64748b; color:#475569; background:#f8fafc;">↺ U.No</button>
+      </div>
       <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SCHOOL_CSV', false)" style="background:#0f766e; border-color:#0f766e; font-size:0.74rem; font-weight:900;">📊 School Performance (CSV)</button>
       <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SUBJECT_CSV', false)" style="background:#1d4ed8; border-color:#1e40af; font-size:0.74rem; font-weight:900;">📚 Subject Performance (CSV)</button>
       <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('REVIEW_PRINT', false)" style="background:#7c3aed; border-color:#6d28d9; font-size:0.74rem; font-weight:900;">📋 Review Report (PDF / Print)</button>
@@ -14031,6 +14090,11 @@ allPanes.forEach(pId => {
 const pane = document.getElementById(pId);
 if (pane) pane.style.display = (pId === current.pane) ? "block" : "none";
 });
+// v9.0 Instant-Open Scheduler: paint the switched pane immediately (<16ms), then run heavy render asynchronously
+window.__ceosvgTabRenderSeq = (window.__ceosvgTabRenderSeq || 0) + 1;
+const _myTabSeq = window.__ceosvgTabRenderSeq;
+const _runDeferredAdminTabRender = () => {
+  if (_myTabSeq !== window.__ceosvgTabRenderSeq) return;
 if (tabKey === "teacherMaster" || tabKey === "seniorityList") {
 const senBox = document.getElementById("admSeniorityConfigBox");
 const headingEl = document.getElementById("admTeacherMasterMainHeading");
@@ -14071,6 +14135,12 @@ if (typeof renderAdminAuditTrailDashboard === "function") renderAdminAuditTrailD
 if (typeof renderAdminMidTermDashboard === "function") renderAdminMidTermDashboard();
 } else if (tabKey === "officeUsers") {
 if (typeof renderAdminOfficeUsersDashboard === "function") renderAdminOfficeUsersDashboard();
+}
+};
+if (typeof requestAnimationFrame === "function") {
+  requestAnimationFrame(() => setTimeout(_runDeferredAdminTabRender, 0));
+} else {
+  setTimeout(_runDeferredAdminTabRender, 0);
 }
 }
 function resetAdminDirectoryFilters() {
@@ -41556,7 +41626,15 @@ function renderAdminMidTermDashboard() {
   });
 
   if (_activeAdminMidTermSubView === "F1") {
-    const trs = filteredCalcs.map((c, idx) => {
+    const sortedF1Calcs = (typeof window.sortMidTermCalcsMultiV90 === "function")
+      ? window.sortMidTermCalcsMultiV90(filteredCalcs)
+      : filteredCalcs;
+    const _v90Th = (colKey, labelHtml, extraStyle) => {
+      const ind = (typeof window.getAdminMidTermSortIndicatorV90 === "function") ? window.getAdminMidTermSortIndicatorV90(colKey) : "⇅";
+      const isAct = (ind === "▲" || ind === "▼");
+      return `<th onclick="onAdminMidTermHeaderSortClick('${colKey}')" style="${extraStyle || ''} cursor:pointer; user-select:none;" title="ஏறுவரிசை / இறங்குவரிசை மாற்றக் கிளிக் செய்க">${labelHtml} <span style="font-size:0.72rem; opacity:${isAct ? '1' : '0.65'}; color:${isAct ? '#fde047' : '#cbd5e1'};">${ind}</span></th>`;
+    };
+    const trs = sortedF1Calcs.map((c, idx) => {
       const isDone = c.hasStudentEntries || c.rec.isSubmitted;
       const stBadge = c.rec.isSubmitted
         ? `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:2px 7px; border-radius:999px; font-size:0.70rem; font-weight:900;">✅ F1_Completed</span>`
@@ -41600,17 +41678,17 @@ function renderAdminMidTermDashboard() {
           <thead style="position:sticky; top:0; z-index:5;">
             <tr style="background:#0f294a; color:#fff;">
               <th style="width:42px; text-align:center;">SN</th>
-              <th style="width:60px; text-align:center;">U.No</th>
-              <th>பள்ளியின் பெயர், ஒன்றியம் &amp; கைபேசி</th>
-              <th style="text-align:center;">EMIS<br>Stu</th>
-              <th style="text-align:center; background:#1e3a8a;">Appeared</th>
-              <th style="text-align:center; background:#166534;">Passed</th>
-              <th style="text-align:center; background:#991b1b;">Failed</th>
-              <th style="text-align:center; background:#b45309;">Pass %</th>
-              <th style="text-align:center;">தோல்விப் பாடம்<br>(1S / 2S / 3S+)</th>
-              <th style="text-align:center;">First Mark<br>&amp; Avg</th>
+              ${_v90Th("uno", "U.No", "width:68px; text-align:center;")}
+              ${_v90Th("name", "பள்ளியின் பெயர், ஒன்றியம் &amp; கைபேசி", "")}
+              ${_v90Th("emis", "EMIS<br>Stu", "text-align:center;")}
+              ${_v90Th("appeared", "Appeared", "text-align:center; background:#1e3a8a;")}
+              ${_v90Th("passed", "Passed", "text-align:center; background:#166534;")}
+              ${_v90Th("failed", "Failed", "text-align:center; background:#991b1b;")}
+              ${_v90Th("passPct", "Pass %", "text-align:center; background:#b45309;")}
+              ${_v90Th("fail1s", "தோல்விப் பாடம்<br>(1S / 2S / 3S+)", "text-align:center;")}
+              ${_v90Th("avgMark", "First Mark<br>&amp; Avg", "text-align:center;")}
               <th style="text-align:center;">பாடவாரியான தோல்வி<br>(T | E | M | S | SS)</th>
-              <th style="text-align:center;">நிலை (Status)</th>
+              ${_v90Th("status", "நிலை (Status)", "text-align:center;")}
               <th style="text-align:center;">நடவடிக்கை</th>
             </tr>
           </thead>
@@ -53737,9 +53815,8 @@ body.office-staff-no-school-entry #admCfD1QuickBtn {
       }
       return true;
     });
-    const sortMode = (document.getElementById("admMtBulkReportSortSelect")?.value || "UNO_ASC").trim();
-    if (typeof window.sortMidTermCalcsListV90 === "function" && sortMode !== "UNO_ASC") {
-      return window.sortMidTermCalcsListV90(filteredList, sortMode);
+    if (typeof window.sortMidTermCalcsMultiV90 === "function") {
+      return window.sortMidTermCalcsMultiV90(filteredList);
     }
     return filteredList;
   }
@@ -57463,6 +57540,161 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       return Number(a.uNo || 0) - Number(b.uNo || 0);
     });
     return arr;
+  };
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V90_SPEED_AND_MULTISORT_PATCH_APPLIED ===
+// v9.0: (1) Result Analysis Memoized Calc Cache (eliminates 2x 282-school recompute),
+//       (2) 3-Level Multi-Sort Engine (Table + CSV/PDF/Print), (3) Clickable Header Row Sort (▲/▼)
+(function() {
+  if (window.__ceosvgV90SpeedMultiSortApplied) return;
+  window.__ceosvgV90SpeedMultiSortApplied = true;
+
+  // 1) Short-lived memo cache for computeSchoolExamResultAnalysis (cuts Result Analysis open time in half!)
+  const _calcMemo = new Map();
+  let _calcMemoTs = 0;
+  window.clearMidTermCalcMemoV90 = function() {
+    _calcMemo.clear();
+    _calcMemoTs = 0;
+  };
+
+  if (typeof window.computeSchoolExamResultAnalysis === "function" && !window.computeSchoolExamResultAnalysis.__v90Memoized) {
+    const _origComputeRa = window.computeSchoolExamResultAnalysis;
+    window.computeSchoolExamResultAnalysis = function(uNo, termKey, stdStr) {
+      const now = Date.now();
+      if (now - _calcMemoTs > 1800) {
+        _calcMemo.clear();
+        _calcMemoTs = now;
+      }
+      const mk = `${uNo}|${termKey}|${stdStr}`;
+      if (_calcMemo.has(mk)) return _calcMemo.get(mk);
+      const res = _origComputeRa.apply(this, arguments);
+      _calcMemo.set(mk, res);
+      return res;
+    };
+    window.computeSchoolExamResultAnalysis.__v90Memoized = true;
+  }
+
+  if (typeof window.saveExamResultAnalysisStore === "function" && !window.saveExamResultAnalysisStore.__v90MemoClear) {
+    const _origSaveRa = window.saveExamResultAnalysisStore;
+    window.saveExamResultAnalysisStore = function() {
+      window.clearMidTermCalcMemoV90();
+      return _origSaveRa.apply(this, arguments);
+    };
+    window.saveExamResultAnalysisStore.__v90MemoClear = true;
+  }
+
+  // 2) Multi-Level Sort Criteria Reader
+  function getMultiSortCriteriaV90() {
+    const c = [];
+    for (let lvl = 1; lvl <= 3; lvl++) {
+      const f = String(document.getElementById(`admMtSortField${lvl}`)?.value || (lvl === 1 ? "uno" : "NONE")).trim();
+      const d = String(document.getElementById(`admMtSortDir${lvl}`)?.value || (lvl === 1 ? "ASC" : "DESC")).trim().toUpperCase();
+      if (f && f !== "NONE") c.push({ field: f, dir: d === "DESC" ? -1 : 1 });
+    }
+    if (c.length === 0) c.push({ field: "uno", dir: 1 });
+    return c;
+  }
+
+  function extractSortValueV90(calc, field) {
+    const isDone = Boolean(calc && (calc.hasStudentEntries || (calc.rec && calc.rec.isSubmitted)));
+    switch (field) {
+      case "uno": return { num: Number(calc.uNo) || 0, isStr: false, done: true };
+      case "name": return { str: String(calc.sch?.nameTa || calc.sch?.nameEn || "").toLowerCase(), isStr: true, done: true };
+      case "block": return { str: String(calc.sch?.block || "").toLowerCase(), isStr: true, done: true };
+      case "mgmt": return { str: String(calc.sch?.mgmt1 || "").toLowerCase(), isStr: true, done: true };
+      case "emis": return { num: Number(calc.emis?.t) || 0, isStr: false, done: true };
+      case "appeared": return { num: isDone ? (Number(calc.appeared?.t) || 0) : -1, isStr: false, done: isDone };
+      case "passed": return { num: isDone ? (Number(calc.passed?.t) || 0) : -1, isStr: false, done: isDone };
+      case "failed": return { num: isDone ? (Number(calc.failed?.t) || 0) : -1, isStr: false, done: isDone };
+      case "passPct": return { num: isDone ? (Number(calc.passPctNum) || 0) : -1, isStr: false, done: isDone };
+      case "fail1s": return { num: isDone ? (Number(calc.failedSubCounts?.s1) || 0) : -1, isStr: false, done: isDone };
+      case "avgMark": return { num: isDone ? (parseFloat(calc.schoolAvgMark100) || 0) : -1, isStr: false, done: isDone };
+      case "firstMark": return { num: isDone ? (parseFloat(calc.schoolFirstMark) || 0) : -1, isStr: false, done: isDone };
+      case "status": return { num: (calc.rec && calc.rec.isSubmitted) ? 2 : (calc.hasStudentEntries ? 1 : 0), isStr: false, done: true };
+      default: return { num: Number(calc.uNo) || 0, isStr: false, done: true };
+    }
+  }
+
+  const METRIC_FIELDS = new Set(["appeared", "passed", "failed", "passPct", "fail1s", "avgMark", "firstMark"]);
+
+  window.sortMidTermCalcsMultiV90 = function(list) {
+    if (!Array.isArray(list) || list.length <= 1) return list || [];
+    const criteria = getMultiSortCriteriaV90();
+    const copy = list.slice();
+    copy.sort((a, b) => {
+      for (const crit of criteria) {
+        const va = extractSortValueV90(a, crit.field);
+        const vb = extractSortValueV90(b, crit.field);
+        // Keep Pending (not yet entered) schools at the bottom when sorting by marks/pass/student metrics
+        if (METRIC_FIELDS.has(crit.field) && va.done !== vb.done) {
+          return va.done ? -1 : 1;
+        }
+        let cmp = 0;
+        if (va.isStr) {
+          cmp = va.str.localeCompare(vb.str, "ta");
+        } else {
+          cmp = va.num - vb.num;
+        }
+        if (Math.abs(cmp) > 1e-9) return cmp * crit.dir;
+      }
+      return (Number(a.uNo) || 0) - (Number(b.uNo) || 0);
+    });
+    return copy;
+  };
+
+  window.getAdminMidTermSortIndicatorV90 = function(colKey) {
+    const f1 = document.getElementById("admMtSortField1")?.value || "uno";
+    const d1 = document.getElementById("admMtSortDir1")?.value || "ASC";
+    if (f1 === colKey) return d1 === "DESC" ? "▼" : "▲";
+    const f2 = document.getElementById("admMtSortField2")?.value || "NONE";
+    const d2 = document.getElementById("admMtSortDir2")?.value || "DESC";
+    if (f2 === colKey) return (d2 === "DESC" ? "2▼" : "2▲");
+    const f3 = document.getElementById("admMtSortField3")?.value || "NONE";
+    const d3 = document.getElementById("admMtSortDir3")?.value || "DESC";
+    if (f3 === colKey) return (d3 === "DESC" ? "3▼" : "3▲");
+    return "⇅";
+  };
+
+  window.onAdminMidTermHeaderSortClick = function(colKey) {
+    const f1El = document.getElementById("admMtSortField1");
+    const d1El = document.getElementById("admMtSortDir1");
+    if (!f1El || !d1El) return;
+    if (f1El.value === colKey) {
+      d1El.value = (d1El.value === "DESC") ? "ASC" : "DESC";
+    } else {
+      f1El.value = colKey;
+      d1El.value = (colKey === "uno" || colKey === "name" || colKey === "block") ? "ASC" : "DESC";
+    }
+    window.onAdminMidTermMultiSortChange();
+  };
+
+  window.onAdminMidTermMultiSortChange = function() {
+    if (typeof renderAdminMidTermDashboard === "function") {
+      renderAdminMidTermDashboard();
+    }
+  };
+
+  window.applyAdminMidTermRankPresetV90 = function() {
+    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+    setVal("admMtSortField1", "passPct"); setVal("admMtSortDir1", "DESC");
+    setVal("admMtSortField2", "appeared"); setVal("admMtSortDir2", "DESC");
+    setVal("admMtSortField3", "avgMark"); setVal("admMtSortDir3", "DESC");
+    window.onAdminMidTermMultiSortChange();
+    if (typeof showToast === "function") {
+      showToast("⭐ தரவரிசை அமைக்கப்பட்டது: 1. தேர்ச்சி % ▼ ➔ 2. மாணவர் எண்ணிக்கை ▼ ➔ 3. பள்ளி சராசரி ▼", "#0f766e");
+    }
+  };
+
+  window.resetAdminMidTermMultiSortV90 = function() {
+    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+    setVal("admMtSortField1", "uno"); setVal("admMtSortDir1", "ASC");
+    setVal("admMtSortField2", "NONE"); setVal("admMtSortDir2", "DESC");
+    setVal("admMtSortField3", "NONE"); setVal("admMtSortDir3", "DESC");
+    window.onAdminMidTermMultiSortChange();
   };
 })();
 </script>
