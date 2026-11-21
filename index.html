@@ -33716,16 +33716,16 @@ function renderAdminEbsMasterDashboard() {
           <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(s.nameTa || s.nameEn)}</div>
           <div style="font-size:0.75rem; color:#475569; font-weight:700;">${escapeHtmlAttr(s.nameEn)} | ${escapeHtmlAttr(s.block)}</div>
         </td>
-        <td style="text-align:center; font-size:0.78rem; font-weight:800;">
+        <td style="text-align:center; font-size:0.94rem; font-weight:900; white-space:nowrap; font-variant-numeric:tabular-nums;">
           🏫 ${f1.totalClassrooms} | 🎯 ${f1.eligibleExamRooms} | 🪑 ${f1.benchDeskPairs}
         </td>
-        <td style="text-align:center; font-size:0.80rem; font-weight:800;">
+        <td style="text-align:center; font-size:0.96rem; font-weight:900; white-space:nowrap; font-variant-numeric:tabular-nums;">
           <span style="color:#1d4ed8;">${stu10_12.sslc.tm_tot}</span> + <span style="color:#0369a1;">${stu10_12.sslc.em_tot}</span> = <strong>${stu10_12.sslc.grand}</strong>
         </td>
-        <td style="text-align:center; font-size:0.80rem; font-weight:800;">
+        <td style="text-align:center; font-size:0.96rem; font-weight:900; white-space:nowrap; font-variant-numeric:tabular-nums;">
           ${isHSS ? `<span style="color:#1d4ed8;">${stu10_12.hsc2.tm_tot}</span> + <span style="color:#0369a1;">${stu10_12.hsc2.em_tot}</span> = <strong>${stu10_12.hsc2.grand}</strong>` : `<span style="color:#94a3b8;">-</span>`}
         </td>
-        <td style="text-align:center; font-size:0.80rem; font-weight:800;">
+        <td style="text-align:center; font-size:0.96rem; font-weight:900; white-space:nowrap; font-variant-numeric:tabular-nums;">
           👨‍🏫 ${tCount} &nbsp;|&nbsp; 🧑‍💼 ${ntCount}
         </td>
         <td style="font-size:0.74rem; font-weight:800;">
@@ -41643,29 +41643,29 @@ function renderAdminMidTermDashboard() {
           : `<span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:2px 7px; border-radius:999px; font-size:0.70rem; font-weight:800;">⏳ Pending</span>`);
       return `
         <tr>
-          <td style="text-align:center; font-weight:800;">${idx + 1}</td>
-          <td style="text-align:center; font-weight:900; color:#c2410c;">${escapeHtmlAttr(c.uNo)}</td>
-          <td>
-            <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(c.sch.nameTa || c.sch.nameEn)}</div>
-            <div style="font-size:0.72rem; color:#475569;">${escapeHtmlAttr(c.sch.block)} | <span class="${getMgmtBadgeClass(c.sch.mgmt1)}" style="padding:0 5px; font-size:0.66rem;">${escapeHtmlAttr(c.sch.mgmt1)}</span> | 📱 ${escapeHtmlAttr(c.sch.mobile || "-")}</div>
+          <td style="text-align:center; font-weight:800; font-size:0.95rem; font-variant-numeric:tabular-nums;">${idx + 1}</td>
+          <td style="text-align:center; font-weight:900; font-size:1.02rem; color:#c2410c; font-variant-numeric:tabular-nums;">${escapeHtmlAttr(c.uNo)}</td>
+          <td style="max-width:240px;">
+            <div style="font-weight:900; color:#0f294a; font-size:0.88rem; line-height:1.3;">${escapeHtmlAttr(c.sch.nameTa || c.sch.nameEn)}</div>
+            <div style="font-size:0.76rem; color:#475569; margin-top:2px;">${escapeHtmlAttr(c.sch.block)} | <span class="${getMgmtBadgeClass(c.sch.mgmt1)}" style="padding:0 5px; font-size:0.70rem;">${escapeHtmlAttr(c.sch.mgmt1)}</span> | 📱 ${escapeHtmlAttr(c.sch.mobile || "-")}</div>
           </td>
-          <td style="text-align:center; font-weight:800;">${c.emis.t}<br><span style="font-size:0.68rem; color:#64748b;">(${c.emis.m}+${c.emis.f})</span></td>
-          <td style="text-align:center; font-weight:900; color:#1d4ed8;">${isDone ? c.appeared.t : "-"}</td>
-          <td style="text-align:center; font-weight:900; color:#15803d;">${isDone ? c.passed.t : "-"}</td>
-          <td style="text-align:center; font-weight:900; color:#dc2626;">${isDone ? c.failed.t : "-"}</td>
-          <td style="text-align:center; font-weight:900; background:${isDone ? '#fef3c7' : 'transparent'}; color:#92400e;">${isDone ? c.passPctStr : "-"}</td>
-          <td style="text-align:center; font-size:0.74rem; font-weight:800;">${isDone ? `${c.failedSubCounts.s1} / ${c.failedSubCounts.s2} / ${c.failedSubCounts.s3}+` : "-"}</td>
-          <td style="text-align:center; font-weight:800; color:#5b21b6;">${isDone ? `${c.schoolFirstMark} (Avg:${c.schoolAvgMark100})` : "-"}</td>
-          <td style="text-align:center; font-size:0.73rem; font-weight:800;">
+          <td style="text-align:center; font-weight:900; font-size:1.05rem; font-variant-numeric:tabular-nums; white-space:nowrap;">${c.emis.t}<br><span style="font-size:0.76rem; font-weight:700; color:#475569;">(${c.emis.m}+${c.emis.f})</span></td>
+          <td style="text-align:center; font-weight:900; font-size:1.12rem; color:#1d4ed8; font-variant-numeric:tabular-nums;">${isDone ? c.appeared.t : "-"}</td>
+          <td style="text-align:center; font-weight:900; font-size:1.12rem; color:#15803d; font-variant-numeric:tabular-nums;">${isDone ? c.passed.t : "-"}</td>
+          <td style="text-align:center; font-weight:900; font-size:1.12rem; color:#dc2626; font-variant-numeric:tabular-nums;">${isDone ? c.failed.t : "-"}</td>
+          <td style="text-align:center; font-weight:900; font-size:1.08rem; background:${isDone ? '#fef3c7' : 'transparent'}; color:#92400e; font-variant-numeric:tabular-nums; white-space:nowrap;">${isDone ? c.passPctStr : "-"}</td>
+          <td style="text-align:center; font-size:0.96rem; font-weight:900; color:#0f172a; font-variant-numeric:tabular-nums; white-space:nowrap;">${isDone ? `${c.failedSubCounts.s1} / ${c.failedSubCounts.s2} / ${c.failedSubCounts.s3}+` : "-"}</td>
+          <td style="text-align:center; font-weight:900; font-size:1.02rem; color:#5b21b6; font-variant-numeric:tabular-nums; white-space:nowrap;">${isDone ? `${c.schoolFirstMark}<br><span style="font-size:0.82rem; font-weight:800;">(Avg:${c.schoolAvgMark100})</span>` : "-"}</td>
+          <td style="text-align:center; font-size:0.92rem; font-weight:800; color:#1e293b; font-variant-numeric:tabular-nums; white-space:nowrap;">
             ${isDone ? (is12Adm ? `L:${c.subStats.LANG.failed} | E:${c.subStats.ENG.failed} | P:${c.subStats.PHY.failed} | C:${c.subStats.CHE.failed} | M:${c.subStats.MAT.failed} | Ec:${c.subStats.ECO.failed} | Ac:${c.subStats.ACC.failed}` : `T:${c.subStats.TAMIL.failed} | E:${c.subStats.ENGLISH.failed} | M:${c.subStats.MATHS.failed} | S:${c.subStats.SCIENCE.failed} | SS:${c.subStats.SOCIAL.failed}`) : "-"}
           </td>
-          <td style="text-align:center;">${stBadge}</td>
+          <td style="text-align:center; white-space:nowrap;">${stBadge}</td>
           <td style="text-align:center; white-space:nowrap;">
-            <div style="display:inline-flex; gap:4px; flex-wrap:wrap; justify-content:center; align-items:center;">
-              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_1', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#0f766e; border-color:#0f766e; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="School Performance PDF பதிவிறக்கு">📊 School Perf</button>
-              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_2', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#1d4ed8; border-color:#1e40af; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="Subject Performance PDF பதிவிறக்கு">📚 Subject Perf</button>
-              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#7c3aed; border-color:#6d28d9; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="Review Report PDF பதிவிறக்கு">📋 Review</button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="openAdminSchoolMidTermDirect('${escapeHtmlAttr(c.uNo)}')" style="background:#fff; color:#0f766e; border-color:#0f766e; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="Super Admin: பள்ளி முகப்பில் திற">👁️ திற</button>
+            <div style="display:inline-flex; gap:4px; flex-wrap:wrap; justify-content:center; align-items:center; max-width:210px;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_1', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#0f766e; border-color:#0f766e; font-size:0.72rem; padding:3px 7px; font-weight:900;" title="School Performance PDF பதிவிறக்கு">📊 School Perf</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_2', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#1d4ed8; border-color:#1e40af; font-size:0.72rem; padding:3px 7px; font-weight:900;" title="Subject Performance PDF பதிவிறக்கு">📚 Subject Perf</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#7c3aed; border-color:#6d28d9; font-size:0.72rem; padding:3px 7px; font-weight:900;" title="Review Report PDF பதிவிறக்கு">📋 Review</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="openAdminSchoolMidTermDirect('${escapeHtmlAttr(c.uNo)}')" style="background:#fff; color:#0f766e; border-color:#0f766e; font-size:0.72rem; padding:3px 7px; font-weight:900;" title="Super Admin: பள்ளி முகப்பில் திற">👁️ திற</button>
             </div>
           </td>
         </tr>
@@ -41674,22 +41674,22 @@ function renderAdminMidTermDashboard() {
 
     tblContainer.innerHTML = `
       <div class="table-responsive" style="max-height:580px; overflow:auto; border:1.5px solid #cbd5e1; border-radius:10px;">
-        <table class="data-table" style="margin:0; font-size:0.79rem;">
+        <table class="data-table" style="margin:0; width:100%; font-size:0.88rem;">
           <thead style="position:sticky; top:0; z-index:5;">
-            <tr style="background:#0f294a; color:#fff;">
-              <th style="width:42px; text-align:center;">SN</th>
-              ${_v90Th("uno", "U.No", "width:68px; text-align:center;")}
-              ${_v90Th("name", "பள்ளியின் பெயர், ஒன்றியம் &amp; கைபேசி", "")}
-              ${_v90Th("emis", "EMIS<br>Stu", "text-align:center;")}
-              ${_v90Th("appeared", "Appeared", "text-align:center; background:#1e3a8a;")}
-              ${_v90Th("passed", "Passed", "text-align:center; background:#166534;")}
-              ${_v90Th("failed", "Failed", "text-align:center; background:#991b1b;")}
-              ${_v90Th("passPct", "Pass %", "text-align:center; background:#b45309;")}
-              ${_v90Th("fail1s", "தோல்விப் பாடம்<br>(1S / 2S / 3S+)", "text-align:center;")}
-              ${_v90Th("avgMark", "First Mark<br>&amp; Avg", "text-align:center;")}
-              <th style="text-align:center;">பாடவாரியான தோல்வி<br>(T | E | M | S | SS)</th>
-              ${_v90Th("status", "நிலை (Status)", "text-align:center;")}
-              <th style="text-align:center;">நடவடிக்கை</th>
+            <tr style="background:#0f294a; color:#fff; font-size:0.84rem;">
+              <th style="width:44px; text-align:center;">SN</th>
+              ${_v90Th("uno", "U.No", "width:64px; text-align:center;")}
+              ${_v90Th("name", "பள்ளியின் பெயர், ஒன்றியம் &amp; கைபேசி", "width:230px; max-width:245px;")}
+              ${_v90Th("emis", "EMIS<br>Stu", "min-width:78px; text-align:center;")}
+              ${_v90Th("appeared", "Appeared", "min-width:76px; text-align:center; background:#1e3a8a;")}
+              ${_v90Th("passed", "Passed", "min-width:72px; text-align:center; background:#166534;")}
+              ${_v90Th("failed", "Failed", "min-width:68px; text-align:center; background:#991b1b;")}
+              ${_v90Th("passPct", "Pass %", "min-width:86px; text-align:center; background:#b45309;")}
+              ${_v90Th("fail1s", "தோல்விப் பாடம்<br>(1S / 2S / 3S+)", "min-width:118px; text-align:center;")}
+              ${_v90Th("avgMark", "First Mark<br>&amp; Avg", "min-width:104px; text-align:center;")}
+              <th style="min-width:185px; text-align:center;">பாடவாரியான தோல்வி<br>(T | E | M | S | SS)</th>
+              ${_v90Th("status", "நிலை (Status)", "min-width:96px; text-align:center;")}
+              <th style="min-width:195px; text-align:center;">நடவடிக்கை</th>
             </tr>
           </thead>
           <tbody>${trs}</tbody>
@@ -41723,12 +41723,12 @@ function renderAdminMidTermDashboard() {
               <div style="font-size:0.70rem; color:#475569;">EMIS: <strong>${escapeHtmlAttr(t.staffId || "-")}</strong> | 📱 ${escapeHtmlAttr(t.mobile || "-")}</div>
             </td>
             <td style="font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(r.subLabelEn)} (${escapeHtmlAttr(r.secId)}-${escapeHtmlAttr(r.medium)})</td>
-            <td style="text-align:center; font-weight:900;">${r.appear}</td>
-            <td style="text-align:center; font-weight:900; color:#15803d;">${r.pass}</td>
-            <td style="text-align:center; font-weight:900; color:#dc2626;">${r.fail}</td>
-            <td style="text-align:center; font-weight:900; background:#fef3c7; color:#92400e;">${r.passPct}</td>
-            <td style="text-align:center; font-weight:800;">${r.avgMark}</td>
-            <td style="text-align:center;">${r.maxMark} / ${r.minMark}</td>
+            <td style="text-align:center; font-weight:900; font-size:1.05rem; font-variant-numeric:tabular-nums;">${r.appear}</td>
+            <td style="text-align:center; font-weight:900; font-size:1.05rem; color:#15803d; font-variant-numeric:tabular-nums;">${r.pass}</td>
+            <td style="text-align:center; font-weight:900; font-size:1.05rem; color:#dc2626; font-variant-numeric:tabular-nums;">${r.fail}</td>
+            <td style="text-align:center; font-weight:900; font-size:1.02rem; background:#fef3c7; color:#92400e; font-variant-numeric:tabular-nums;">${r.passPct}</td>
+            <td style="text-align:center; font-weight:900; font-size:0.98rem; font-variant-numeric:tabular-nums;">${r.avgMark}</td>
+            <td style="text-align:center; font-weight:800; font-size:0.95rem; font-variant-numeric:tabular-nums;">${r.maxMark} / ${r.minMark}</td>
             <td style="text-align:center;">${r.r35_45 !== undefined ? r.r35_45 : r.r35_60}</td>
             <td style="text-align:center;">${r.r46_60 !== undefined ? r.r46_60 : "-"}</td>
             <td style="text-align:center;">${r.r61_80}</td>
