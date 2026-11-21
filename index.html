@@ -6430,6 +6430,16 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
       <span id="admMtFilteredSummaryPill" style="margin-left:6px; background:#ffffff; color:#0f294a; border:1px solid #cbd5e1; padding:2px 9px; border-radius:999px; font-size:0.73rem;">வடிகட்டிய பள்ளிகள்: 0</span>
     </div>
     <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+      <label for="admMtBulkReportSortSelect" style="font-size:0.75rem; font-weight:900; color:#0f294a; display:inline-flex; align-items:center; gap:4px; background:#ffffff; border:1.5px solid #0f766e; border-radius:6px; padding:3px 7px;">
+        <span>↕️ வரிசை:</span>
+        <select id="admMtBulkReportSortSelect" style="border:none; outline:none; font-size:0.75rem; font-weight:900; color:#0f294a; background:transparent; cursor:pointer;">
+          <option value="UNO_ASC">இயல்புநிலை (U.NO)</option>
+          <option value="PASS_DESC">தேர்ச்சி % — இறங்குவரிசை (அதிகம் ➔ குறைவு)</option>
+          <option value="PASS_ASC">தேர்ச்சி % — ஏறுவரிசை (குறைவு ➔ அதிகம்)</option>
+          <option value="STU_DESC">மாணவர் எண்ணிக்கை — இறங்குவரிசை (அதிகம் ➔ குறைவு)</option>
+          <option value="STU_ASC">மாணவர் எண்ணிக்கை — ஏறுவரிசை (குறைவு ➔ அதிகம்)</option>
+        </select>
+      </label>
       <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SCHOOL_CSV', false)" style="background:#0f766e; border-color:#0f766e; font-size:0.74rem; font-weight:900;">📊 School Performance (CSV)</button>
       <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SUBJECT_CSV', false)" style="background:#1d4ed8; border-color:#1e40af; font-size:0.74rem; font-weight:900;">📚 Subject Performance (CSV)</button>
       <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('REVIEW_PRINT', false)" style="background:#7c3aed; border-color:#6d28d9; font-size:0.74rem; font-weight:900;">📋 Review Report (PDF / Print)</button>
@@ -42868,7 +42878,7 @@ async function downloadStudentProgressReportPdf(targetModeOrStuId, btnEl) {
   <div class="modal-card" style="max-width:860px;">
     <div class="modal-header" style="background:linear-gradient(135deg,#064e3b,#15803d); color:#fff;">
       <div>
-        <h3 style="margin:0; font-size:1.08rem; font-weight:900;">📲 நிலுவைப் பள்ளிகளுக்கான 1-Click WhatsApp நினைவூட்டல்</h3>
+        <h3 style="margin:0; font-size:1.08rem; font-weight:900;">📧 நிலுவைப் பள்ளிகளுக்கான 1-Click மின்னஞ்சல் (Bulk Email) நினைவூட்டல்</h3>
         <div id="admEbsWaRemSub" style="font-size:0.78rem; color:#d1fae5; margin-top:2px;"></div>
       </div>
       <button type="button" onclick="closeBulkEbsWaReminderModal()" style="background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer; font-weight:900;">&times;</button>
@@ -42876,11 +42886,19 @@ async function downloadStudentProgressReportPdf(targetModeOrStuId, btnEl) {
     <div class="modal-body" style="padding:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; background:#f0fdf4; border:1px solid #86efac; padding:10px 12px; border-radius:8px;">
         <div style="font-size:0.80rem; font-weight:800; color:#14532d;">
-          கீழ்க்காணும் பள்ளிகளின் தலைமை ஆசிரியர்களுக்கு நேரடியாக <strong>WhatsApp Web / App (📲)</strong> அல்லது <strong>Cloud API</strong> வழியாக நினைவூட்டல் அனுப்பலாம்.
+          கீழ்க்காணும் நிலுவைப் பள்ளிகளுக்கு நேரடியாக <strong>Bulk Email (Apps Script)</strong> அல்லது <strong>Gmail BCC</strong> வழியாக நினைவூட்டல் அனுப்பலாம் (OTP நிலுவை விவரம் நீக்கப்பட்டது):
         </div>
-        <button type="button" id="admEbsBulkApiSendBtn" class="btn btn-primary btn-sm" onclick="dispatchBulkEbsWaRemindersViaApi()" style="background:#15803d; border-color:#166534; font-weight:900;">
-          ⚡ அனைத்திற்கும் Cloud API வழியாக அனுப்பு
-        </button>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <button type="button" id="admEbsBulkApiSendBtn" class="btn btn-primary btn-sm" onclick="dispatchBulkEbsEmailRemindersViaAppsScript()" style="background:#1d4ed8; border-color:#1d4ed8; font-weight:900;">
+            🚀 அனைத்திற்கும் Bulk Email அனுப்பு (Apps Script)
+          </button>
+          <button type="button" id="admEbsBulkGmailBccBtn" class="btn btn-outline btn-sm" onclick="openBulkEbsGmailBccCompose()" style="background:#ffffff; color:#0f766e; border-color:#0f766e; font-weight:900;">
+            ✉️ Gmail BCC Bulk திற
+          </button>
+          <button type="button" id="admEbsCopyEmailsBtn" class="btn btn-outline btn-sm" onclick="copyAllPendingSchoolEmailsV90()" style="background:#ffffff; color:#4c1d95; border-color:#7c3aed; font-weight:900;">
+            📋 மின்னஞ்சல்கள் நகலெடு
+          </button>
+        </div>
       </div>
       <div id="admEbsWaRemProgress" style="display:none; margin-bottom:10px; font-size:0.80rem; font-weight:800; color:#1d4ed8;"></div>
       <div class="table-responsive" style="max-height:420px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px;">
@@ -42889,7 +42907,7 @@ async function downloadStudentProgressReportPdf(targetModeOrStuId, btnEl) {
             <tr style="background:#0f294a; color:#fff; font-size:0.78rem;">
               <th style="width:40px; text-align:center;">#</th>
               <th>U.NO &amp; பள்ளி</th>
-              <th>தலைமை ஆசிரியர் &amp; கைபேசி</th>
+              <th>தலைமை ஆசிரியர் &amp; மின்னஞ்சல்</th>
               <th>நிலுவை விவரம்</th>
               <th style="text-align:center; min-width:190px;">நினைவூட்டல் அனுப்புக</th>
             </tr>
@@ -53704,7 +53722,7 @@ body.office-staff-no-school-entry #admCfD1QuickBtn {
     const fStatus = (document.getElementById("admMtFilterStatus")?.value || "ALL").trim();
     const q = (document.getElementById("admMtFilterSearch")?.value || "").trim().toLowerCase();
 
-    return allCalcs.filter(c => {
+    const filteredList = allCalcs.filter(c => {
       if (fBlock && String(c.sch.block || "") !== fBlock) return false;
       if (fMgmt && String(c.sch.mgmt1 || "") !== fMgmt) return false;
       if (fLevel && String(c.sch.level || "").toUpperCase() !== fLevel) return false;
@@ -53719,6 +53737,11 @@ body.office-staff-no-school-entry #admCfD1QuickBtn {
       }
       return true;
     });
+    const sortMode = (document.getElementById("admMtBulkReportSortSelect")?.value || "UNO_ASC").trim();
+    if (typeof window.sortMidTermCalcsListV90 === "function" && sortMode !== "UNO_ASC") {
+      return window.sortMidTermCalcsListV90(filteredList, sortMode);
+    }
+    return filteredList;
   }
 
   function updateFilteredSummaryPill() {
@@ -57054,6 +57077,393 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
   } else {
     initV88();
   }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V90_EMAIL_TEACHER_SORT_PATCH_APPLIED ===
+// v9.0: (1) Pending Schools Bulk Email Reminder (Zero OTP details), (2) Result Analysis Partial-Name Searchable Subject Teacher Picker (10th & 12th), (3) Admin Bulk Report Sorting (Pass % / Student Count Asc & Desc)
+(function() {
+  if (window.__ceosvgV90Applied) return;
+  window.__ceosvgV90Applied = true;
+
+  // =========================================================================
+  // 1) PENDING SCHOOLS EMAIL & BULK EMAIL REMINDER (NO OTP PENDING DETAILS)
+  // =========================================================================
+  function resolveSchoolEmailV90(r) {
+    const candidates = [
+      r && r.f1 && r.f1.schoolEmail,
+      r && r.f1 && r.f1.hmEmail,
+      r && r.f1 && r.f1.email,
+      r && r.sch && r.sch.email,
+      r && r.sch && r.sch.schoolEmail,
+      (typeof getSchoolRegisteredEmailAddress === "function" && r && r.sch) ? getSchoolRegisteredEmailAddress(r.sch) : ""
+    ];
+    for (const c of candidates) {
+      const clean = String(c || "").trim();
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) return clean;
+    }
+    return "";
+  }
+
+  // Override reminder message builder: strictly NO OTP pending details
+  window.buildSchoolEbsReminderMessage = function(r) {
+    const schName = (r && r.sch && (r.sch.nameTa || r.sch.nameEn)) || `School ${r ? r.uNo : ""}`;
+    const parts = [];
+    if (!r.f1Ok) parts.push("Form-I பள்ளி விவரம்");
+    if (r.pendingProfiles > 0) parts.push(`${r.pendingProfiles} பணியாளர் படிவங்கள்`);
+    if (r.is100PercentReady && !(r.finalLock && r.finalLock.locked)) parts.push("HM Final Declaration Lock");
+    const pendingTxt = parts.length > 0 ? parts.join(", ") : "EBS 2026-27 இறுதிப் பதிவு";
+    return `அன்புள்ள தலைமை ஆசிரியர் / முதல்வர் அவர்களுக்கு,\n\n[U.NO: ${r.uNo}] ${schName} பள்ளியின் EBS 2026-27 (https://portal.ceosvg.in) பதிவில் ${pendingTxt} நிலுவையில் உள்ளது (தற்போதைய நிறைவு: ${r.overallPct}%).\n\nதயவுசெய்து இன்று மாலைக்குள் முழுமையாகப் பதிவேற்றம் செய்து இறுதி ஒப்புதல் (Final Lock) அளிக்குமாறு கேட்டுக்கொள்ளப்படுகிறது.\n\nஇப்படிக்கு,\nமுதன்மைக் கல்வி அலுவலகம், சிவகங்கை\n(portal.ceosvg.in)`;
+  };
+
+  window.sendSingleSchoolEbsEmailReminder = function(uNo) {
+    const r = evaluateSchoolEbsOverallReadiness(uNo);
+    const email = resolveSchoolEmailV90(r);
+    if (!email) {
+      showToast(`⚠️ [U.NO: ${uNo}] பள்ளியின் மின்னஞ்சல் முகவரி பதிவு செய்யப்படவில்லை!`, "#dc2626", true);
+      return;
+    }
+    const subj = `நினைவூட்டல்: EBS 2026-27 நிலுவைப் பதிவு — [U.NO: ${r.uNo}] ${r.sch.nameEn || r.sch.nameTa}`;
+    const body = window.buildSchoolEbsReminderMessage(r);
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, "_blank", "noopener");
+  };
+
+  // Redirect single-school reminder button to Email (no OTP details)
+  window.sendSingleSchoolEbsWaReminder = function(uNo) {
+    window.sendSingleSchoolEbsEmailReminder(uNo);
+  };
+
+  // Override Bulk Reminder Modal to display Email addresses & Zero OTP pending info
+  window.openBulkEbsWaReminderModal = function() {
+    const ebsSchools = (typeof getEbs282MasterSchools === "function") ? getEbs282MasterSchools() : [];
+    const fBlock = (document.getElementById("admEbsFilterBlock")?.value || "").trim();
+    const list = [];
+    ebsSchools.forEach(s => {
+      if (fBlock && s.block !== fBlock) return;
+      const r = evaluateSchoolEbsOverallReadiness(s.uNo);
+      if (!(r.finalLock && r.finalLock.locked)) {
+        r._resolvedEmail = resolveSchoolEmailV90(r);
+        list.push(r);
+      }
+    });
+    window._pendingEmailReminderListV90 = list;
+    if (typeof _pendingWaReminderListCache !== "undefined") _pendingWaReminderListCache = list;
+
+    const withEmailCount = list.filter(x => x._resolvedEmail).length;
+    const subEl = document.getElementById("admEbsWaRemSub");
+    const tbody = document.getElementById("admEbsWaRemTbody");
+    if (subEl) {
+      subEl.textContent = `${fBlock || "அனைத்து 12 ஒன்றியங்கள்"} — நிலுவைப் பள்ளிகள்: ${list.length} | மின்னஞ்சல் உள்ளவை: ${withEmailCount}`;
+    }
+    if (tbody) {
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:18px; color:#15803d; font-weight:900;">🎉 தேர்ந்தெடுக்கப்பட்ட ஒன்றியத்தில் அனைத்துப் பள்ளிகளும் 100% நிறைவு செய்துவிட்டன!</td></tr>`;
+      } else {
+        tbody.innerHTML = list.map((r, idx) => {
+          const email = r._resolvedEmail || "";
+          const hmName = (r.f1 && r.f1.hmName) || (r.sch && r.sch.hmName) || "-";
+          const pendingItems = [];
+          if (!r.f1Ok) pendingItems.push("Form-I");
+          if (r.pendingProfiles > 0) pendingItems.push(`${r.pendingProfiles} பணியாளர்`);
+          if (r.is100PercentReady && !(r.finalLock && r.finalLock.locked)) pendingItems.push("Final Lock");
+          const pendText = pendingItems.length > 0 ? pendingItems.join(", ") : "இறுதிப் பதிவு";
+          return `
+            <tr>
+              <td style="text-align:center; font-weight:900;">${idx + 1}</td>
+              <td style="font-size:0.78rem;">
+                <strong style="color:#4c1d95;">U.NO: ${r.uNo}</strong> — ${escapeHtmlAttr(r.sch.nameTa || r.sch.nameEn)}<br>
+                <span style="color:#64748b; font-weight:700;">${escapeHtmlAttr(r.sch.block || "")}</span>
+              </td>
+              <td style="font-size:0.78rem; font-weight:800;">
+                ${escapeHtmlAttr(hmName)}<br>
+                <span style="color:${email ? "#1d4ed8" : "#dc2626"}; word-break:break-all;">${email ? "📧 " + escapeHtmlAttr(email) : "⚠️ மின்னஞ்சல் இல்லை"}</span>
+              </td>
+              <td style="font-size:0.74rem; font-weight:800; color:#92400e;">
+                நிறைவு: <strong>${r.overallPct}%</strong> | நிலுவை: <strong>${escapeHtmlAttr(pendText)}</strong>
+              </td>
+              <td style="text-align:center;">
+                ${email ? `
+                  <button type="button" class="btn btn-primary btn-sm" onclick="sendSingleSchoolEbsEmailReminder('${r.uNo}')" style="font-size:0.72rem; padding:4px 9px; font-weight:900; background:#1d4ed8; border-color:#1d4ed8;">
+                    📧 மின்னஞ்சல் அனுப்பு
+                  </button>
+                ` : `<span style="font-size:0.72rem; color:#dc2626; font-weight:800;">மின்னஞ்சல் இல்லை</span>`}
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+    }
+    const modal = document.getElementById("admEbsWaReminderModal");
+    if (modal) modal.classList.add("active");
+  };
+
+  window.dispatchBulkEbsEmailRemindersViaAppsScript = async function() {
+    const list = (window._pendingEmailReminderListV90 || []).filter(r => r._resolvedEmail);
+    if (list.length === 0) {
+      showToast("⚠️ அனுப்பத் தகுதியான பள்ளி மின்னஞ்சல்கள் இல்லை.", "#f59e0b");
+      return;
+    }
+    const ok = confirm(`நிலுவையில் உள்ள ${list.length} பள்ளிகளுக்கும் Google Apps Script வழியாக ஒரே கிளிக்கில் Bulk Email நினைவூட்டல் அனுப்பவா?\n\n(இதில் OTP நிலுவை விவரங்கள் இடம்பெறாது.)`);
+    if (!ok) return;
+
+    const btn = document.getElementById("admEbsBulkApiSendBtn");
+    const prog = document.getElementById("admEbsWaRemProgress");
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ Bulk Email அனுப்பப்படுகிறது..."; }
+    if (prog) { prog.style.display = "block"; prog.style.color = "#1d4ed8"; prog.textContent = `📧 ${list.length} பள்ளிகளுக்கு மின்னஞ்சல் அனுப்பப்படுகிறது...`; }
+
+    try {
+      const recipients = Array.from(new Set(list.map(r => r._resolvedEmail)));
+      const subject = "அவசர நினைவூட்டல்: EBS 2026-27 நிலுவைப் பதிவு — முதன்மைக் கல்வி அலுவலகம், சிவகங்கை";
+      const bodyText = "அன்புள்ள தலைமை ஆசிரியர் / முதல்வர் அவர்களுக்கு,\n\nஉங்கள் பள்ளியின் EBS 2026-27 (https://portal.ceosvg.in) பதிவில் Form-I / பணியாளர் விவரம் / இறுதி ஒப்புதல் (Final Lock) நிலுவையில் உள்ளது.\n\nதயவுசெய்து இன்று மாலைக்குள் portal.ceosvg.in தளத்தில் உள்நுழைந்து முழுமையாகப் பதிவேற்றம் செய்து இறுதி ஒப்புதல் (Final Lock) அளிக்குமாறு கேட்டுக்கொள்ளப்படுகிறது.\n\nஇப்படிக்கு,\nமுதன்மைக் கல்வி அலுவலகம், சிவகங்கை";
+
+      if (typeof sendToAppsScript === "function") {
+        await sendToAppsScript({
+          action: "send_circular_emails",
+          circular: {
+            category: "EBS 2026-27 நினைவூட்டல்",
+            title: subject,
+            description: bodyText,
+            link: "https://portal.ceosvg.in",
+            date: new Date().toISOString().split("T")[0]
+          },
+          recipients: recipients
+        });
+        if (prog) { prog.style.color = "#15803d"; prog.textContent = `✅ ${recipients.length} பள்ளிகளின் மின்னஞ்சல்களுக்கு Bulk Email நினைவூட்டல் வெற்றிகரமாக அனுப்பப்பட்டது!`; }
+        showToast(`✅ ${recipients.length} நிலுவைப் பள்ளிகளுக்கு Bulk Email அனுப்பப்பட்டது!`, "#15803d", true);
+      } else {
+        window.openBulkEbsGmailBccCompose();
+      }
+    } catch (err) {
+      if (prog) { prog.style.color = "#dc2626"; prog.textContent = "⚠️ Apps Script இணைப்பு இல்லை — Gmail BCC Bulk வழியாகத் திறக்கப்படுகிறது..."; }
+      window.openBulkEbsGmailBccCompose();
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "🚀 அனைத்திற்கும் Bulk Email அனுப்பு (Apps Script)"; }
+    }
+  };
+
+  window.openBulkEbsGmailBccCompose = function() {
+    const list = (window._pendingEmailReminderListV90 || []).filter(r => r._resolvedEmail);
+    const emails = Array.from(new Set(list.map(r => r._resolvedEmail)));
+    if (emails.length === 0) {
+      showToast("⚠️ மின்னஞ்சல் முகவரி உள்ள நிலுவைப் பள்ளிகள் இல்லை.", "#f59e0b");
+      return;
+    }
+    const batch = emails.slice(0, 80);
+    const subj = "அவசர நினைவூட்டல்: EBS 2026-27 நிலுவைப் பதிவு — முதன்மைக் கல்வி அலுவலகம், சிவகங்கை";
+    const body = "அன்புள்ள தலைமை ஆசிரியர் / முதல்வர் அவர்களுக்கு,\n\nஉங்கள் பள்ளியின் EBS 2026-27 (https://portal.ceosvg.in) பதிவில் நிலுவையில் உள்ள படிவங்களை இன்று மாலைக்குள் முழுமையாகப் பூர்த்தி செய்து Final Lock அளிக்குமாறு கேட்டுக்கொள்ளப்படுகிறது.\n\nஇப்படிக்கு,\nமுதன்மைக் கல்வி அலுவலகம், சிவகங்கை";
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&bcc=${encodeURIComponent(batch.join(","))}&su=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, "_blank", "noopener");
+    if (emails.length > 80) {
+      showToast(`✉️ முதல் 80 பள்ளிகள் Gmail BCC-இல் திறக்கப்பட்டுள்ளன (மொத்தம் ${emails.length}). மீதமுள்ளவற்றை 'மின்னஞ்சல்கள் நகலெடு' மூலம் ஒட்டவும்.`, "#0369a1", true);
+    } else {
+      showToast(`✉️ ${batch.length} பள்ளிகளுக்கான Gmail BCC Bulk சாளரம் திறக்கப்பட்டது!`, "#0f766e", true);
+    }
+  };
+
+  window.copyAllPendingSchoolEmailsV90 = function() {
+    const list = (window._pendingEmailReminderListV90 || []).filter(r => r._resolvedEmail);
+    const emails = Array.from(new Set(list.map(r => r._resolvedEmail)));
+    if (emails.length === 0) {
+      showToast("⚠️ நகலெடுக்க மின்னஞ்சல்கள் இல்லை.", "#f59e0b");
+      return;
+    }
+    const joined = emails.join(", ");
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(joined).then(() => {
+        showToast(`📋 ${emails.length} நிலுவைப் பள்ளிகளின் மின்னஞ்சல்கள் நகலெடுக்கப்பட்டன! (Gmail BCC-இல் ஒட்டவும்)`, "#4c1d95", true);
+      }).catch(() => {
+        prompt("கீழுள்ள மின்னஞ்சல்களை நகலெடுக்கவும்:", joined);
+      });
+    } else {
+      prompt("கீழுள்ள மின்னஞ்சல்களை நகலெடுக்கவும்:", joined);
+    }
+  };
+
+  // =========================================================================
+  // 2) RESULT ANALYSIS PARTIAL-NAME SEARCHABLE SUBJECT TEACHER PICKER (10TH & 12TH)
+  // =========================================================================
+  function enhanceSubjectTeacherSelectsV90() {
+    const pane = document.getElementById("mtSubPaneSecTeachers");
+    if (!pane) return;
+    const selects = pane.querySelectorAll("tbody select.form-control");
+    selects.forEach((sel) => {
+      if (sel.dataset.v90TeacherSearchReady === "1") return;
+      sel.dataset.v90TeacherSearchReady = "1";
+
+      const allOpts = Array.from(sel.options).map(o => ({
+        value: o.value,
+        text: o.textContent || "",
+        hay: (o.textContent || "").toLowerCase()
+      }));
+
+      const wrap = document.createElement("div");
+      wrap.style.cssText = "position:relative; width:100%;";
+
+      const inpWrap = document.createElement("div");
+      inpWrap.style.cssText = "display:flex; align-items:center; gap:4px;";
+
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.className = "form-control";
+      inp.autocomplete = "off";
+      inp.placeholder = "🔍 ஆசிரியர் பெயர் பகுதியாகத் தட்டச்சு செய்க...";
+      inp.style.cssText = "font-weight:800; font-size:0.79rem; padding:5px 8px; border-color:#3b82f6; background:#ffffff; flex:1;";
+
+      const curOpt = allOpts.find(o => o.value && o.value === sel.value);
+      if (curOpt) inp.value = curOpt.text;
+
+      const clearBtn = document.createElement("button");
+      clearBtn.type = "button";
+      clearBtn.textContent = "✕";
+      clearBtn.title = "தேடலை அழி / மாற்று";
+      clearBtn.style.cssText = "border:1px solid #cbd5e1; background:#f8fafc; color:#475569; border-radius:6px; padding:4px 7px; font-size:0.72rem; font-weight:900; cursor:pointer;";
+
+      const drop = document.createElement("div");
+      drop.style.cssText = "display:none; position:absolute; left:0; right:0; top:100%; z-index:999; max-height:220px; overflow-y:auto; background:#ffffff; border:1.5px solid #2563eb; border-radius:8px; box-shadow:0 10px 24px rgba(15,23,42,0.18); margin-top:2px;";
+
+      function renderMatches(queryStr) {
+        const q = String(queryStr || "").trim().toLowerCase();
+        const tokens = q ? q.split(/\s+/).filter(Boolean) : [];
+        const matches = allOpts.filter(o => {
+          if (!o.value) return !q; // show placeholder when empty
+          if (tokens.length === 0) return true;
+          return tokens.every(tk => o.hay.includes(tk));
+        }).slice(0, 60);
+
+        drop.innerHTML = "";
+        if (matches.length === 0) {
+          const empty = document.createElement("div");
+          empty.style.cssText = "padding:8px 10px; font-size:0.76rem; color:#dc2626; font-weight:800;";
+          empty.textContent = "பொருந்தும் ஆசிரியர் இல்லை";
+          drop.appendChild(empty);
+        } else {
+          matches.forEach(m => {
+            const item = document.createElement("div");
+            const isSel = m.value && m.value === sel.value;
+            item.style.cssText = `padding:7px 10px; font-size:0.77rem; font-weight:${isSel ? "900" : "700"}; color:${isSel ? "#1d4ed8" : "#0f172a"}; background:${isSel ? "#eff6ff" : "#ffffff"}; border-bottom:1px solid #f1f5f9; cursor:pointer;`;
+            item.textContent = m.text;
+            item.onmouseenter = () => { item.style.background = "#e0f2fe"; };
+            item.onmouseleave = () => { item.style.background = isSel ? "#eff6ff" : "#ffffff"; };
+            item.onmousedown = (ev) => {
+              ev.preventDefault();
+              sel.value = m.value;
+              inp.value = m.value ? m.text : "";
+              drop.style.display = "none";
+              sel.dispatchEvent(new Event("change", { bubbles: true }));
+            };
+            drop.appendChild(item);
+          });
+        }
+        drop.style.display = "block";
+      }
+
+      inp.addEventListener("focus", () => {
+        inp.select();
+        renderMatches("");
+      });
+      inp.addEventListener("input", () => {
+        renderMatches(inp.value);
+      });
+      inp.addEventListener("keydown", (ev) => {
+        if (ev.key === "Escape") {
+          drop.style.display = "none";
+        } else if (ev.key === "Enter") {
+          ev.preventDefault();
+          const firstValid = drop.querySelector("div");
+          if (firstValid && typeof firstValid.onmousedown === "function") {
+            firstValid.onmousedown(ev);
+          }
+        }
+      });
+      inp.addEventListener("blur", () => {
+        setTimeout(() => { drop.style.display = "none"; }, 160);
+      });
+      clearBtn.addEventListener("click", () => {
+        inp.value = "";
+        inp.focus();
+        renderMatches("");
+      });
+
+      sel.style.display = "none";
+      inpWrap.appendChild(inp);
+      inpWrap.appendChild(clearBtn);
+      wrap.appendChild(inpWrap);
+      wrap.appendChild(drop);
+      sel.parentNode.insertBefore(wrap, sel);
+    });
+  }
+
+  if (typeof window.renderSchool12thSecTeachersPane === "function" && !window.renderSchool12thSecTeachersPane.__v90Wrapped) {
+    const orig12 = window.renderSchool12thSecTeachersPane;
+    window.renderSchool12thSecTeachersPane = function() {
+      const r = orig12.apply(this, arguments);
+      enhanceSubjectTeacherSelectsV90();
+      return r;
+    };
+    window.renderSchool12thSecTeachersPane.__v90Wrapped = true;
+  }
+
+  if (typeof window.renderSchoolMidTermSecTeachersPane === "function" && !window.renderSchoolMidTermSecTeachersPane.__v90Wrapped) {
+    const orig10 = window.renderSchoolMidTermSecTeachersPane;
+    window.renderSchoolMidTermSecTeachersPane = function() {
+      const r = orig10.apply(this, arguments);
+      enhanceSubjectTeacherSelectsV90();
+      return r;
+    };
+    window.renderSchoolMidTermSecTeachersPane.__v90Wrapped = true;
+  }
+
+  // =========================================================================
+  // 3) ADMIN BULK REPORT SORTING (PASS % / STUDENT COUNT — ASC & DESC)
+  // =========================================================================
+  window.sortMidTermCalcsListV90 = function(list, sortMode) {
+    const arr = Array.isArray(list) ? list.slice() : [];
+    const mode = String(sortMode || "UNO_ASC").trim();
+    if (mode === "UNO_ASC") return arr;
+
+    const getPassVal = (c) => {
+      const done = Boolean(c && (c.hasStudentEntries || (c.rec && c.rec.isSubmitted)));
+      if (!done) return -1;
+      const n = Number(c.passPctNum);
+      return Number.isFinite(n) ? n : (parseFloat(c.passPctStr) || 0);
+    };
+    const getStuVal = (c) => {
+      const app = Number(c && c.appeared && c.appeared.t);
+      const em = Number(c && c.emis && c.emis.t);
+      return (Number.isFinite(app) && app > 0) ? app : (Number.isFinite(em) ? em : 0);
+    };
+
+    arr.sort((a, b) => {
+      if (mode === "PASS_DESC") {
+        const pa = getPassVal(a), pb = getPassVal(b);
+        if (pb !== pa) return pb - pa;
+        return getStuVal(b) - getStuVal(a);
+      }
+      if (mode === "PASS_ASC") {
+        const pa = getPassVal(a), pb = getPassVal(b);
+        // Put pending (-1) at bottom even in ascending pass % so real schools sort cleanly 0% -> 100%
+        if (pa < 0 && pb >= 0) return 1;
+        if (pb < 0 && pa >= 0) return -1;
+        if (pa !== pb) return pa - pb;
+        return getStuVal(b) - getStuVal(a);
+      }
+      if (mode === "STU_DESC") {
+        const sa = getStuVal(a), sb = getStuVal(b);
+        if (sb !== sa) return sb - sa;
+        return getPassVal(b) - getPassVal(a);
+      }
+      if (mode === "STU_ASC") {
+        const sa = getStuVal(a), sb = getStuVal(b);
+        if (sa !== sb) return sa - sb;
+        return getPassVal(b) - getPassVal(a);
+      }
+      return Number(a.uNo || 0) - Number(b.uNo || 0);
+    });
+    return arr;
+  };
 })();
 </script>
 
