@@ -5540,25 +5540,23 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 <!-- Admin EBS F3 & F4 Delete / Transfer Requests Approval Box -->
 <div id="admEbsDeleteReqsBox" style="margin-bottom:16px;"></div>
-<!-- CEO BLOCK-WISE & SCHOOL-WISE OTP + COMPLETION % PROGRESS TRACKER -->
-<div id="admEbsProgressTrackerPanel" style="background:linear-gradient(135deg,#f8fafc 0%,#f0fdf4 100%); border:1.5px solid #86efac; border-left:5px solid #16a34a; border-radius:12px; padding:14px 16px; margin-bottom:14px;">
+<!-- CEO SCHOOL-WISE EBS COMPLETION % & HM LOCK PROGRESS TRACKER (v9.0: No Block Strip, No OTP Tracking) -->
+<div id="admEbsProgressTrackerPanel" style="background:linear-gradient(135deg,#f8fafc 0%,#f0fdf4 100%); border:1.5px solid #86efac; border-left:5px solid #16a34a; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
     <div>
-      <div style="font-size:1rem; font-weight:900; color:#14532d;">📊 முதன்மைக் கல்வி அலுவலர் கண்காணிப்புப் பலகை — ஒன்றியம் &amp; பள்ளி வாரியான OTP மற்றும் படிவ நிறைவு %</div>
-      <div style="font-size:0.78rem; color:#166534; font-weight:700;">ஆசிரியர்கள் (F3) மற்றும் பணியாளர்களின் (F4) WhatsApp / Email OTP சரிபார்ப்பு நிலை, படிவ நிறைவு % மற்றும் HM இறுதி உறுதிமொழிப் பூட்டு</div>
+      <div style="font-size:1rem; font-weight:900; color:#14532d;">📊 முதன்மைக் கல்வி அலுவலர் கண்காணிப்புப் பலகை — பள்ளி வாரியான EBS படிவ நிறைவு % &amp; HM பூட்டு நிலை</div>
+      <div style="font-size:0.78rem; color:#166534; font-weight:700;">ஆசிரியர்கள் (F3) மற்றும் பணியாளர்களின் (F4) படிவ நிறைவு % மற்றும் HM இறுதி உறுதிமொழிப் பூட்டு கண்காணிப்பு</div>
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button type="button" class="btn btn-primary btn-sm" onclick="openBulkEbsWaReminderModal()" style="background:#15803d; border-color:#166534; font-weight:900;">
+      <button type="button" class="btn btn-primary btn-sm" onclick="openBulkEbsWaReminderModal()" style="background:#15803d; border-color:#15803d; font-weight:800;">
         📲 நிலுவைப் பள்ளிகளுக்கு WhatsApp நினைவூட்டல்
       </button>
-      <button type="button" class="btn btn-outline btn-sm" onclick="exportAdminEbsProgressExcel()" style="background:#fff; color:#15803d; border-color:#16a34a; font-weight:900;">
-        📥 நிறைவு % &amp; OTP நிலுவை Excel (.xlsx)
+      <button type="button" class="btn btn-outline btn-sm" onclick="exportAdminEbsProgressExcel()" style="background:#fff; color:#15803d; border-color:#16a34a; font-weight:800;">
+        📥 நிறைவு % அறிக்கை Excel (.xlsx)
       </button>
     </div>
   </div>
-  <div id="admEbsTrackerKpiRow" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:8px; margin-bottom:10px;"></div>
-  <div style="font-size:0.75rem; font-weight:900; color:#0f294a; margin-bottom:6px;">📍 12 ஒன்றியங்கள் வாரியான முன்னேற்றம் (ஒன்றியத்தை வடிகட்ட கிளிக் செய்க):</div>
-  <div id="admEbsBlockChipsRow" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+  <div id="admEbsTrackerKpiRow" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px;"></div>
 </div>
 <!-- Filters for Admin EBS School Table -->
 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:10px; margin-bottom:14px; background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
@@ -5586,10 +5584,9 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">4. OTP &amp; நிறைவு நிலை (Status)</label>
+<label class="form-label" style="font-size:0.76rem; font-weight:800;">4. நிறைவு &amp; பூட்டு நிலை (Status)</label>
 <select id="admEbsFilterStatus" class="form-control" onchange="renderAdminEbsMasterDashboard()">
 <option value="">அனைத்து நிலைகளும் (All Schools)</option>
-<option value="OTP_PENDING">⏳ WhatsApp / Email OTP நிலுவையில் உள்ளவை</option>
 <option value="FORMS_INCOMPLETE">📝 படிவங்கள் 100% பூர்த்தி ஆகாதவை</option>
 <option value="READY_UNLOCKED">🟢 100% தயார் — HM பூட்டு நிலுவை</option>
 <option value="FINAL_LOCKED">🔒 HM Final Verified &amp; Locked</option>
@@ -5605,14 +5602,14 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <thead style="position:sticky; top:0; z-index:5;">
 <tr style="background:#0f294a; color:#fff;">
 <th style="width:45px; text-align:center;">வ.எண்</th>
-<th style="width:90px;">U.NO &amp; நிலை</th>
-<th style="min-width:220px;">பள்ளியின் பெயர் &amp; ஒன்றியம்</th>
-<th style="text-align:center;">அறைகள் / தேர்வு அறை / Bench</th>
-<th style="text-align:center;">10th மாணவர் (TM/EM/Tot)</th>
-<th style="text-align:center;">+2 மாணவர் (TM/EM/Tot)</th>
-<th style="text-align:center;">ஆசிரியர் (F3) / பணியாளர் (F4)</th>
-<th style="text-align:center; min-width:195px;">OTP &amp; படிவ நிறைவு %</th>
-<th style="text-align:center; min-width:170px;">HM பூட்டு &amp; நினைவூட்டல்</th>
+<th style="width:105px; cursor:pointer; user-select:none;" onclick="toggleAdmEbsTableSort('uNo')" title="ஏறுவரிசை / இறங்குவரிசை மாற்ற கிளிக் செய்க">U.NO &amp; நிலை <span id="admEbsSortIcon_uNo" style="font-size:0.75rem; opacity:0.85;">▲</span></th>
+<th style="min-width:220px; cursor:pointer; user-select:none;" onclick="toggleAdmEbsTableSort('name')" title="ஏறுவரிசை / இறங்குவரிசை மாற்ற கிளிக் செய்க">பள்ளியின் பெயர் &amp; ஒன்றியம் <span id="admEbsSortIcon_name" style="font-size:0.75rem; opacity:0.55;">⇅</span></th>
+<th style="text-align:center; cursor:pointer; user-select:none;" onclick="toggleAdmEbsTableSort('rooms')" title="தேர்வு அறைகள் அடிப்படையில் வரிசைப்படுத்த கிளிக் செய்க">அறைகள் / தேர்வு அறை / Bench <span id="admEbsSortIcon_rooms" style="font-size:0.75rem; opacity:0.55;">⇅</span></th>
+<th style="text-align:center; cursor:pointer; user-select:none;" onclick="toggleAdmEbsTableSort('stu10')" title="10th மாணவர் எண்ணிக்கை அடிப்படையில் வரிசைப்படுத்த கிளிக் செய்க">10th மாணவர் (TM/EM/Tot) <span id="admEbsSortIcon_stu10" style="font-size:0.75rem; opacity:0.55;">⇅</span></th>
+<th style="text-align:center; cursor:pointer; user-select:none;" onclick="toggleAdmEbsTableSort('stu12')" title="+2 மாணவர் எண்ணிக்கை அடிப்படையில் வரிசைப்படுத்த கிளிக் செய்க">+2 மாணவர் (TM/EM/Tot) <span id="admEbsSortIcon_stu12" style="font-size:0.75rem; opacity:0.55;">⇅</span></th>
+<th style="text-align:center; cursor:pointer; user-select:none;" onclick="toggleAdmEbsTableSort('staff')" title="மொத்த பணியாளர் எண்ணிக்கை அடிப்படையில் வரிசைப்படுத்த கிளிக் செய்க">ஆசிரியர் (F3) / பணியாளர் (F4) <span id="admEbsSortIcon_staff" style="font-size:0.75rem; opacity:0.55;">⇅</span></th>
+<th style="text-align:center; min-width:175px; cursor:pointer; user-select:none;" onclick="toggleAdmEbsTableSort('pct')" title="படிவ நிறைவு % அடிப்படையில் வரிசைப்படுத்த கிளிக் செய்க">படிவ நிறைவு % <span id="admEbsSortIcon_pct" style="font-size:0.75rem; opacity:0.55;">⇅</span></th>
+<th style="text-align:center; min-width:170px; cursor:pointer; user-select:none;" onclick="toggleAdmEbsTableSort('lock')" title="HM பூட்டு நிலை அடிப்படையில் வரிசைப்படுத்த கிளிக் செய்க">HM பூட்டு &amp; நினைவூட்டல் <span id="admEbsSortIcon_lock" style="font-size:0.75rem; opacity:0.55;">⇅</span></th>
 <th style="text-align:center; min-width:255px;">EBS படிவம் திருத்து &amp; A4 பதிவிறக்கம்</th>
 </tr>
 </thead>
@@ -33450,6 +33447,17 @@ function selectAdmEbsBlockFilterChip(blockName) {
   renderAdminEbsMasterDashboard();
 }
 
+window._admEbsSortCol = window._admEbsSortCol || "uNo";
+window._admEbsSortDir = window._admEbsSortDir || "asc";
+window.toggleAdmEbsTableSort = function(colKey) {
+  if (window._admEbsSortCol === colKey) {
+    window._admEbsSortDir = (window._admEbsSortDir === "asc") ? "desc" : "asc";
+  } else {
+    window._admEbsSortCol = colKey;
+    window._admEbsSortDir = "asc";
+  }
+  renderAdminEbsMasterDashboard();
+};
 function renderAdminEbsMasterDashboard() {
   const ebsSchools = getEbs282MasterSchools();
   const blockSel = document.getElementById("admEbsFilterBlock");
@@ -33500,8 +33508,11 @@ function renderAdminEbsMasterDashboard() {
   const trackerKpiEl = document.getElementById("admEbsTrackerKpiRow");
   if (trackerKpiEl) {
     const avgPct = ebsSchools.length > 0 ? Math.round(distPctSum / ebsSchools.length) : 0;
-    const waPct = distStaff > 0 ? Math.round((distWaOk / distStaff) * 100) : 0;
-    const emPct = distStaff > 0 ? Math.round((distEmailOk / distStaff) * 100) : 0;
+    const distReadyUnlocked = ebsSchools.filter(s => {
+      const rr = readinessMap[s.uNo];
+      return rr && rr.is100PercentReady && !(rr.finalLock && rr.finalLock.locked);
+    }).length;
+    const distIncomplete = Math.max(0, ebsSchools.length - distLocked - distReadyUnlocked);
     trackerKpiEl.innerHTML = `
       <div style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px;">
         <div style="font-size:0.71rem; font-weight:800; color:#475569;">📈 மாவட்ட சராசரி நிறைவு %</div>
@@ -33511,27 +33522,15 @@ function renderAdminEbsMasterDashboard() {
         <div style="font-size:0.71rem; font-weight:800; color:#475569;">🔒 HM Final Verified &amp; Locked</div>
         <div style="font-size:1.15rem; font-weight:900; color:#4c1d95;">${distLocked} / ${ebsSchools.length} பள்ளிகள்</div>
       </div>
-      <div style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:8px 10px;">
-        <div style="font-size:0.71rem; font-weight:800; color:#475569;">📲 WhatsApp OTP சரிபார்ப்பு</div>
-        <div style="font-size:1.15rem; font-weight:900; color:#16a34a;">${distWaOk.toLocaleString("en-IN")} / ${distStaff.toLocaleString("en-IN")} (${waPct}%)</div>
+      <div style="background:#fff; border:1px solid #93c5fd; border-radius:8px; padding:8px 10px;">
+        <div style="font-size:0.71rem; font-weight:800; color:#1e40af;">🟢 100% தயார் — HM பூட்டு நிலுவை</div>
+        <div style="font-size:1.15rem; font-weight:900; color:#1d4ed8;">${distReadyUnlocked} பள்ளிகள்</div>
       </div>
-      <div style="background:#fff; border:1px solid #fca5a5; border-radius:8px; padding:8px 10px;">
-        <div style="font-size:0.71rem; font-weight:800; color:#991b1b;">⏳ OTP நிலுவைப் பள்ளிகள்</div>
-        <div style="font-size:1.15rem; font-weight:900; color:#dc2626;">${distOtpPendingSchools} பள்ளிகள்</div>
+      <div style="background:#fff; border:1px solid #fde68a; border-radius:8px; padding:8px 10px;">
+        <div style="font-size:0.71rem; font-weight:800; color:#92400e;">📝 பூர்த்தி நிலுவைப் பள்ளிகள்</div>
+        <div style="font-size:1.15rem; font-weight:900; color:#b45309;">${distIncomplete} பள்ளிகள்</div>
       </div>
     `;
-  }
-
-  const blockChipsEl = document.getElementById("admEbsBlockChipsRow");
-  if (blockChipsEl) {
-    blockChipsEl.innerHTML = Object.keys(blockStats).sort().map(blk => {
-      const st = blockStats[blk];
-      const bPct = st.schools > 0 ? Math.round(st.pctSum / st.schools) : 0;
-      const isAct = fBlock === blk;
-      return `<button type="button" onclick="selectAdmEbsBlockFilterChip('${escapeHtmlAttr(blk)}')" style="cursor:pointer; border:1.5px solid ${isAct ? "#15803d" : "#cbd5e1"}; background:${isAct ? "#dcfce7" : "#fff"}; color:${isAct ? "#14532d" : "#0f294a"}; border-radius:8px; padding:4px 9px; font-size:0.72rem; font-weight:800;">
-        ${escapeHtmlAttr(blk)}: <span style="color:#15803d;">${bPct}%</span> <span style="color:#dc2626;">(${st.otpPending} நிலுவை)</span>
-      </button>`;
-    }).join("");
   }
 
   const filtered = ebsSchools.filter(s => {
@@ -33570,6 +33569,51 @@ function renderAdminEbsMasterDashboard() {
     tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:18px; color:#64748b; font-weight:800;">தேர்ந்தெடுக்கப்பட்ட வடிகட்டிகளுக்குப் பள்ளிகள் எதுவும் இல்லை.</td></tr>`;
     return;
   }
+  // v9.0: Header-row Ascending / Descending Sorting for EBS Master Table
+  const sortCol = window._admEbsSortCol || "uNo";
+  const sortDir = window._admEbsSortDir === "desc" ? -1 : 1;
+  ["uNo", "name", "rooms", "stu10", "stu12", "staff", "pct", "lock"].forEach(col => {
+    const ic = document.getElementById("admEbsSortIcon_" + col);
+    if (!ic) return;
+    if (col === sortCol) {
+      ic.textContent = sortDir === 1 ? "▲" : "▼";
+      ic.style.opacity = "1";
+    } else {
+      ic.textContent = "⇅";
+      ic.style.opacity = "0.55";
+    }
+  });
+  filtered.sort((a, b) => {
+    const ra = readinessMap[a.uNo] || {};
+    const rb = readinessMap[b.uNo] || {};
+    const fa = ra.f1 || {};
+    const fb = rb.f1 || {};
+    let cmp = 0;
+    if (sortCol === "uNo") {
+      cmp = (Number(a.uNo) || 0) - (Number(b.uNo) || 0);
+    } else if (sortCol === "name") {
+      cmp = String(a.nameTa || a.nameEn || "").localeCompare(String(b.nameTa || b.nameEn || ""), "ta");
+    } else if (sortCol === "rooms") {
+      cmp = (Number(fa.eligibleExamRooms) || 0) - (Number(fb.eligibleExamRooms) || 0) ||
+            (Number(fa.totalClassrooms) || 0) - (Number(fb.totalClassrooms) || 0) ||
+            (Number(fa.benchDeskPairs) || 0) - (Number(fb.benchDeskPairs) || 0);
+    } else if (sortCol === "stu10") {
+      cmp = (Number(fa.sslcFixed && fa.sslcFixed.grand) || 0) - (Number(fb.sslcFixed && fb.sslcFixed.grand) || 0);
+    } else if (sortCol === "stu12") {
+      cmp = (Number(fa.hsc2Fixed && fa.hsc2Fixed.grand) || 0) - (Number(fb.hsc2Fixed && fb.hsc2Fixed.grand) || 0);
+    } else if (sortCol === "staff") {
+      cmp = (Number(ra.totalStaff) || 0) - (Number(rb.totalStaff) || 0);
+    } else if (sortCol === "pct") {
+      cmp = (Number(ra.overallPct) || 0) - (Number(rb.overallPct) || 0) ||
+            (Number(ra.totalComplete) || 0) - (Number(rb.totalComplete) || 0);
+    } else if (sortCol === "lock") {
+      const rank = (r) => (r.finalLock && r.finalLock.locked) ? 2 : (r.is100PercentReady ? 1 : 0);
+      cmp = rank(ra) - rank(rb);
+    }
+    if (cmp === 0) cmp = (Number(a.uNo) || 0) - (Number(b.uNo) || 0);
+    return cmp * sortDir;
+  });
+
   tbody.innerHTML = filtered.map((s, idx) => {
     const r = readinessMap[s.uNo] || evaluateSchoolEbsOverallReadiness(s.uNo);
     const { ebs, isHSS, f1 } = r;
@@ -33611,9 +33655,6 @@ function renderAdminEbsMasterDashboard() {
           </div>
           <div style="width:100%; height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; margin-bottom:4px;">
             <div style="width:${r.overallPct}%; height:100%; background:${progColor};"></div>
-          </div>
-          <div style="display:flex; gap:4px; flex-wrap:wrap;">
-            <span style="padding:1px 5px; border-radius:4px; background:${r.pendingWaOtp === 0 ? "#dcfce7; color:#15803d;" : "#fee2e2; color:#b91c1c;"}">📲 ${r.totalWaOk}/${r.totalStaff}</span>
           </div>
         </td>
         <td style="text-align:center; font-size:0.74rem;">
