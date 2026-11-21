@@ -35599,18 +35599,19 @@ function computeSchool12thResultAnalysis(uNo, termKey) {
     secMap[sec.secId] = sec;
   });
 
-  // Teacher-Subject aggregation map for FORM - II ( 2 ) (groups sections taught by the same teacher for the same subject & medium)
+  // Teacher-Subject aggregation map for FORM - II ( 2 ) (v9.0: groups by Subject + Teacher across all mediums; splits ONLY when subject or teacher changes)
   const teacherSubMap = new Map();
   const getTeacherSubBucket = (sec, subKey) => {
     const meta = HSC12_SUBJECT_MAP[subKey] || { key: subKey, code: "", labelEn: subKey, labelTa: subKey };
     const t = (sec.teachers && sec.teachers[subKey]) ? sec.teachers[subKey] : {};
     const med = sec.medium || "TM";
-    const tKeyId = (t.staffId || t.nameEn || ("SEC_" + sec.secId)).trim().toUpperCase();
-    const mapKey = `${subKey}__${med}__${tKeyId}`;
+    const tKeyId = (t.staffId || t.nameEn || t.nameTa || ("SEC_" + sec.secId)).trim().toUpperCase();
+    const mapKey = `${subKey}__${tKeyId}`;
     if (!teacherSubMap.has(mapKey)) {
       teacherSubMap.set(mapKey, {
         mapKey,
         secIds: [sec.secId],
+        mediums: [med],
         medium: med,
         subKey: subKey,
         subLabelEn: meta.labelEn,
@@ -35639,6 +35640,8 @@ function computeSchool12thResultAnalysis(uNo, termKey) {
     } else {
       const b = teacherSubMap.get(mapKey);
       if (!b.secIds.includes(sec.secId)) b.secIds.push(sec.secId);
+      if (b.mediums && !b.mediums.includes(med)) b.mediums.push(med);
+      b.medium = b.mediums ? b.mediums.join("/") : med;
     }
     return teacherSubMap.get(mapKey);
   };
@@ -36829,7 +36832,7 @@ function build12thForm2_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPages
           ${(t.nameEn || t.staffId) ? `<div style="font-size:0.66rem; color:#334155; font-weight:800; line-height:1.1;">${t.nameEn ? escapeHtmlAttr(t.nameEn) + " | " : ""}EMIS: <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900;">${escapeHtmlAttr(t.staffId || "-")}</span></div>` : ""}
         </td>
         <td style="${bdr} background:#ffffff; font-weight:900; color:#4c1d95; font-size:0.74rem; line-height:1.12;">
-          ${escapeHtmlAttr(r.subLabelEn)}<br><span style="font-size:0.65rem; color:#0f766e; font-weight:900;">(Sec ${escapeHtmlAttr(r.secId)}-${escapeHtmlAttr(r.medium)})</span>
+          ${escapeHtmlAttr(r.subLabelEn)}<br><span style="font-size:0.65rem; color:#0f766e; font-weight:900;">(Sec ${escapeHtmlAttr(r.secId)})</span>
         </td>
         <td ${f2NumLg}>${r.stuCount}</td>
         <td ${f2Num}>${r.la}</td>
@@ -38607,22 +38610,62 @@ function computeSchoolExamResultAnalysis(uNo, termKey, explicitStd) {
     g.statusOk = (passedBucketsSum + g.failed + g.exemption) === (appM + appF);
   });
 
-  // Finalize F1_2 rows
-  const f2Rows = [];
-  let f2Sno = 1;
+  // Finalize F1_2 rows (v9.0: aggregate by Subject + Teacher across all sections & mediums; split ONLY when subject or teacher changes)
+  const teacherSub10Map = new Map();
   (rec.sections || []).forEach(sec => {
     MIDTERM_CORE_SUBJECTS.forEach(s => {
-      const c = secSubStats[sec.secId][s.key];
-      c.sno = f2Sno++;
-      c.avgMark = c.scoredCount > 0 ? Math.round(c.markSum / c.scoredCount) : 0;
-      c.passPct = formatRaPassPct(c.pass, c.appear, "0%");
-      if (c.minMark === null) c.minMark = 0;
-      const t = c.teacher || {};
-      const pubApp = Number(t.pubAppear || 0);
-      const pubPass = Number(t.pubPass || 0);
-      c.pubPassPct = (pubApp > 0 && pubPass >= 0) ? formatRaPassPct(pubPass, pubApp, "") : "";
-      f2Rows.push(c);
+      const src = secSubStats[sec.secId] && secSubStats[sec.secId][s.key];
+      if (!src) return;
+      const t = src.teacher || {};
+      const med = src.medium || sec.medium || "TM";
+      const tKeyId = (t.staffId || t.nameEn || t.nameTa || ("SEC_" + sec.secId)).trim().toUpperCase();
+      const mapKey = `${s.key}__${tKeyId}`;
+      if (!teacherSub10Map.has(mapKey)) {
+        teacherSub10Map.set(mapKey, Object.assign({}, src, {
+          secIds: [sec.secId],
+          mediums: [med],
+          medium: med
+        }));
+      } else {
+        const agg = teacherSub10Map.get(mapKey);
+        if (!agg.secIds.includes(sec.secId)) agg.secIds.push(sec.secId);
+        if (!agg.mediums.includes(med)) agg.mediums.push(med);
+        agg.medium = agg.mediums.join("/");
+        agg.stuCount += src.stuCount;
+        agg.la += src.la;
+        agg.ab += src.ab;
+        agg.hb += src.hb;
+        agg.ex += src.ex;
+        agg.appear += src.appear;
+        agg.pass += src.pass;
+        agg.fail += src.fail;
+        agg.markSum += src.markSum;
+        agg.scoredCount += src.scoredCount;
+        if (src.maxMark > agg.maxMark) agg.maxMark = src.maxMark;
+        if (src.minMark !== null && (agg.minMark === null || src.minMark < agg.minMark)) agg.minMark = src.minMark;
+        agg.r35_45 += src.r35_45;
+        agg.r46_60 += src.r46_60;
+        agg.r61_80 += src.r61_80;
+        agg.r81_99 += src.r81_99;
+        agg.centum += src.centum;
+        agg.failThisSubOnly += src.failThisSubOnly;
+      }
     });
+  });
+
+  const f2Rows = [];
+  let f2Sno = 1;
+  teacherSub10Map.forEach(c => {
+    c.sno = f2Sno++;
+    c.secId = c.secIds.join(",");
+    c.avgMark = c.scoredCount > 0 ? Math.round(c.markSum / c.scoredCount) : 0;
+    c.passPct = formatRaPassPct(c.pass, c.appear, "0%");
+    if (c.minMark === null) c.minMark = 0;
+    const t = c.teacher || {};
+    const pubApp = Number(t.pubAppear || 0);
+    const pubPass = Number(t.pubPass || 0);
+    c.pubPassPct = (pubApp > 0 && pubPass >= 0) ? formatRaPassPct(pubPass, pubApp, "") : "";
+    f2Rows.push(c);
   });
 
   const roster10M = students.filter(s => s.gender !== "Female" && s.gender !== "F").length;
@@ -40331,7 +40374,7 @@ function buildMidTermForm1_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPa
           <div style="font-weight:900; color:#0f294a; font-size:0.78rem; line-height:1.15;">${escapeHtmlAttr(tNameDisp)}</div>
           ${t.staffId ? `<div style="font-size:0.65rem; color:#334155; font-weight:800; line-height:1.1;">EMIS: <span style="font-family:'Segoe UI',Arial,sans-serif; font-weight:900;">${escapeHtmlAttr(t.staffId)}</span> | ${escapeHtmlAttr(t.desig || "")}</div>` : ""}
         </td>
-        <td style="${bdr} background:#ffffff; font-weight:900; color:#1e3a8a; font-size:0.74rem; line-height:1.12;">${escapeHtmlAttr(r.subLabelEn)}<br><span style="font-size:0.65rem; color:#0f766e; font-weight:900;">(Sec ${escapeHtmlAttr(r.secId)}-${escapeHtmlAttr(r.medium)})</span></td>
+        <td style="${bdr} background:#ffffff; font-weight:900; color:#1e3a8a; font-size:0.74rem; line-height:1.12;">${escapeHtmlAttr(r.subLabelEn)}<br><span style="font-size:0.65rem; color:#0f766e; font-weight:900;">(Sec ${escapeHtmlAttr(r.secId)})</span></td>
         <td ${f2NumLg}>${r.stuCount}</td>
         <td ${f2Num}>${r.la}</td>
         <td ${f2Num}>${r.ab}</td>
@@ -41722,7 +41765,7 @@ function renderAdminMidTermDashboard() {
               <div style="font-weight:900; color:#0f294a;">${escapeHtmlAttr(t.nameTa || t.nameEn || "-")}</div>
               <div style="font-size:0.70rem; color:#475569;">EMIS: <strong>${escapeHtmlAttr(t.staffId || "-")}</strong> | 📱 ${escapeHtmlAttr(t.mobile || "-")}</div>
             </td>
-            <td style="font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(r.subLabelEn)} (${escapeHtmlAttr(r.secId)}-${escapeHtmlAttr(r.medium)})</td>
+            <td style="font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(r.subLabelEn)} (Sec ${escapeHtmlAttr(r.secId)})</td>
             <td style="text-align:center; font-weight:900; font-size:1.05rem; font-variant-numeric:tabular-nums;">${r.appear}</td>
             <td style="text-align:center; font-weight:900; font-size:1.05rem; color:#15803d; font-variant-numeric:tabular-nums;">${r.pass}</td>
             <td style="text-align:center; font-weight:900; font-size:1.05rem; color:#dc2626; font-variant-numeric:tabular-nums;">${r.fail}</td>
