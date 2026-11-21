@@ -47039,7 +47039,7 @@ function reconcileAndDeduplicateDeleteRequests(optionalIncomingList, skipStorage
 
     // Reconcile status against resMap and actual deletion stores
     const mapHit = (reqId && resMap["REQ_" + reqId]) || ((uNo && sid) ? resMap["STF_" + uNo + "_" + sid] : null);
-    if (mapHit && mapHit.status && mapHit.status !== "PENDING" && r.status === "PENDING") {
+    const reqTsNum = Number(r.requestedTs || 0); const mapTsNum = Number((mapHit && mapHit.resolvedTimestamp) || 0); if (mapHit && mapHit.status && mapHit.status !== "PENDING" && r.status === "PENDING" && !(reqTsNum > 0 && mapTsNum > 0 && reqTsNum > mapTsNum)) {
       r.status = mapHit.status;
       r.resolvedAt = r.resolvedAt || mapHit.resolvedAt || formatDateDisplayDMY(new Date().toISOString().slice(0, 10));
       if (mapHit.rejectNote) {
@@ -47236,8 +47236,8 @@ submitStaffDeleteRequest = function(event) {
     return;
   }
 
-  // If a school submitted a delete request, also immediately remove from school's active list & approve as per user requirement
-  resolveAdminDeleteRequest(newReq.reqId, "APPROVED");
+  // v8.5: School delete requests MUST remain PENDING until Super Admin approves (auto-approve removed)
+  safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
 };
 
 // When restoring an archived staff member, also update CEOSVG_RESOLVED_DELETE_REQ_MAP_V1
@@ -55596,6 +55596,248 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
   } else {
     initV85DualWrite();
   }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V85_SUPERADMIN_STAFF_DELETE_APPROVAL_PATCH_APPLIED ===
+// Fixes:
+//  1) submitStaffDeleteRequest: never auto-approves school or non-Super-Admin requests; always stays PENDING for Super Admin
+//  2) removeAddedEbsStaff: routes non-Super-Admin deletions to Delete Request Modal instead of direct removal
+//  3) resolveAdminDeleteRequest & adminDirectDeleteStaff: strictly gated to Super Admin only
+(function() {
+  if (window.__ceosvgV85SuperAdminDeleteApprovalApplied) return;
+  window.__ceosvgV85SuperAdminDeleteApprovalApplied = true;
+
+  function isStrictSuperAdminNow() {
+    try {
+      const inAdminMode = Boolean(document.body && document.body.classList.contains("admin-mode"));
+      if (!inAdminMode) return false;
+      if (typeof window.isCurrentActorSuperAdmin === "function") {
+        return Boolean(window.isCurrentActorSuperAdmin());
+      }
+      const offSess = (typeof activeAdminOfficerSession !== "undefined" && activeAdminOfficerSession)
+        ? activeAdminOfficerSession
+        : (typeof safeGetStorage === "function" ? safeGetStorage("CEOSVG_ACTIVE_OFFICER_USER", null) : null);
+      if (!offSess || typeof offSess !== "object") return true;
+      if (offSess._isSuperAdminPreview) return true;
+      return Boolean(offSess.rolePreset === "CEO_SUPER" && offSess.roleGroup === "CEO");
+    } catch (e) {
+      return false;
+    }
+  }
+  window.isStrictSuperAdminNow = isStrictSuperAdminNow;
+
+  // 1) Guard resolveAdminDeleteRequest strictly to Super Admin
+  if (typeof resolveAdminDeleteRequest === "function") {
+    const _v85PrevResolve = resolveAdminDeleteRequest;
+    resolveAdminDeleteRequest = function(reqId, decision, rejectNote) {
+      if (!isStrictSuperAdminNow()) {
+        if (typeof showToast === "function") {
+          showToast("🔒 அனுமதி இல்லை: முதன்மை நிர்வாகி (Super Admin) மட்டுமே பணியாளர் நீக்கக் கோரிக்கைகளுக்கு ஒப்புதல் / நிராகரிப்பு வழங்க முடியும்.", "#dc2626", true);
+        }
+        return;
+      }
+      return _v85PrevResolve.apply(this, arguments);
+    };
+    window.resolveAdminDeleteRequest = resolveAdminDeleteRequest;
+  }
+
+  // 2) Guard adminDirectDeleteStaff strictly to Super Admin
+  if (typeof adminDirectDeleteStaff === "function") {
+    const _v85PrevDirectDelete = adminDirectDeleteStaff;
+    adminDirectDeleteStaff = function(passedUNo, passedStaffId, reasonText) {
+      if (!isStrictSuperAdminNow()) {
+        if (typeof showToast === "function") {
+          showToast("🔒 முதன்மை நிர்வாகி (Super Admin) மட்டுமே பணியாளரை நேரடியாக நீக்க முடியும். நீக்கக் கோரிக்கை வழியாக அனுப்பவும்.", "#dc2626", true);
+        }
+        return;
+      }
+      return _v85PrevDirectDelete.apply(this, arguments);
+    };
+    window.adminDirectDeleteStaff = adminDirectDeleteStaff;
+  }
+
+  // 3) Route removeAddedEbsStaff to Delete Request Modal for Schools & non-Super-Admin users
+  if (typeof removeAddedEbsStaff === "function") {
+    const _v85PrevRemoveAdded = removeAddedEbsStaff;
+    removeAddedEbsStaff = function(uNo, staffId) {
+      if (isStrictSuperAdminNow()) {
+        return _v85PrevRemoveAdded.apply(this, arguments);
+      }
+      const cleanUNo = String(uNo || (typeof activeSchoolSession !== "undefined" && activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+      const cleanSid = String(staffId || "").trim();
+      if (!cleanUNo || !cleanSid) return;
+      let formType = "F3";
+      try {
+        const extra = (typeof getSchoolExtra === "function") ? getSchoolExtra(cleanUNo) : null;
+        const stList = (extra && Array.isArray(extra.staff)) ? extra.staff : [];
+        const addedList = (extra && extra.ebs2026 && Array.isArray(extra.ebs2026.addedStaff)) ? extra.ebs2026.addedStaff : [];
+        const stObj = addedList.find(x => String(x && (x.id || x.staffId) || "").trim() === cleanSid)
+          || stList.find(x => String(x && (x.id || x.staffId) || "").trim() === cleanSid);
+        if (stObj && stObj.isTeaching === false) formType = "F4";
+      } catch (e) {}
+      if (typeof showToast === "function") {
+        showToast("ℹ️ புதியதாகச் சேர்க்கப்பட்ட பணியாளரையும் முதன்மை நிர்வாகியின் (Super Admin) ஒப்புதலுக்குப் பின்னரே நீக்க முடியும். கோரிக்கைப் படிவத்தை நிரப்பவும்.", "#0284c7", true);
+      }
+      if (typeof openDeleteRequestModal === "function") {
+        openDeleteRequestModal(formType, cleanSid, cleanUNo);
+      }
+    };
+    window.removeAddedEbsStaff = removeAddedEbsStaff;
+  }
+
+  // 4) Override submitStaffDeleteRequest with exact DOM IDs & strict Super Admin approval flow
+  submitStaffDeleteRequest = function(event) {
+    if (event && typeof event.preventDefault === "function") event.preventDefault();
+    const targetUNo = String(
+      (document.getElementById("delReqSchoolUNo") && document.getElementById("delReqSchoolUNo").value) ||
+      (typeof activeSchoolSession !== "undefined" && activeSchoolSession && activeSchoolSession.uNo) ||
+      (typeof getCurrentActiveEbsUNo === "function" ? getCurrentActiveEbsUNo() : "") ||
+      ""
+    ).trim();
+    const sch = (Array.isArray(masterSchools) ? masterSchools : []).find(s => String(s.uNo) === targetUNo) ||
+      (typeof activeSchoolSession !== "undefined" ? activeSchoolSession : null);
+    if (!sch || !targetUNo) {
+      if (typeof showToast === "function") showToast("❌ பள்ளி அடையாளம் காணப்படவில்லை!", "#ef4444");
+      return;
+    }
+
+    const formType = (document.getElementById("delReqFormType") && document.getElementById("delReqFormType").value) || "F3";
+    const staffId = String((document.getElementById("delReqStaffId") && document.getElementById("delReqStaffId").value) || "").trim();
+    const reasonCat = String((document.getElementById("delReqReasonCategory") && document.getElementById("delReqReasonCategory").value) || "").trim();
+    const reasonDet = String((document.getElementById("delReqReasonDetail") && document.getElementById("delReqReasonDetail").value) || "").trim();
+    const toUNoVal = String((document.getElementById("delReqTargetSchoolUNo") && document.getElementById("delReqTargetSchoolUNo").value) || "").trim();
+
+    if (!staffId || !reasonCat || !reasonDet) {
+      if (typeof showToast === "function") showToast("⚠️ நீக்க / மாறுதல் காரணத்தைத் தேர்ந்தெடுத்து விவரம் உள்ளிடவும்.", "#f59e0b");
+      return;
+    }
+
+    const extra = (typeof getSchoolExtra === "function") ? getSchoolExtra(targetUNo) : {};
+    if (typeof initSchoolStaffFromEmis === "function") initSchoolStaffFromEmis(sch, extra);
+    const fixedList = (typeof getSchoolFixedPortalStaffList === "function") ? getSchoolFixedPortalStaffList(targetUNo) : [];
+    const staffList = (extra && Array.isArray(extra.staff)) ? extra.staff : [];
+    const addedList = (extra && extra.ebs2026 && Array.isArray(extra.ebs2026.addedStaff)) ? extra.ebs2026.addedStaff : [];
+    const stFixed = fixedList.find(item => String(item.staffId || item.id) === staffId);
+    const stRaw = staffList.find(item => String(item.id || item.staffId) === staffId);
+    const stAdded = addedList.find(item => String(item.id || item.staffId) === staffId);
+    const st = stFixed || stRaw || stAdded;
+    if (!st) {
+      if (typeof showToast === "function") showToast("❌ பணியாளர் விவரம் காணப்படவில்லை!", "#ef4444");
+      return;
+    }
+
+    // Clear any stale resolved entry for this staff so the fresh PENDING request is never auto-flipped
+    if (typeof getResolvedDeleteRequestsMap === "function") {
+      try {
+        const resMap = getResolvedDeleteRequestsMap();
+        const kStf = "STF_" + targetUNo + "_" + staffId;
+        if (resMap && resMap[kStf]) {
+          delete resMap[kStf];
+          if (typeof saveResolvedDeleteRequestsMap === "function") {
+            saveResolvedDeleteRequestsMap(resMap, false);
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (stRaw) stRaw.deleteReqStatus = "PENDING";
+    window._activeSyncTargetUNo = targetUNo;
+    if (typeof safeSetStorage === "function") safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+
+    const targetSchObj = (toUNoVal && toUNoVal !== "OUTSIDE_DISTRICT")
+      ? (Array.isArray(masterSchools) ? masterSchools : []).find(s => String(s.uNo) === String(toUNoVal))
+      : null;
+    const isNonTeach = st.isTeaching === false || formType === "F4" ||
+      /ASSISTANT|CLERK|LAB|NIGHT|WATCHMAN|SWEEPER|OFFICE|TYPIST|RECORD|GARDENER|WATER|COOK/i.test(st.desig || "");
+
+    const nowTs = Date.now();
+    const newReq = {
+      reqId: "DEL-" + targetUNo + "-" + String(nowTs).slice(-6),
+      formType: isNonTeach ? "F4" : "F3",
+      uNo: targetUNo,
+      udiseNo: sch.udiseNo || "",
+      schoolName: sch.nameTa || sch.nameEn || "",
+      schoolNameTa: sch.nameTa || sch.nameEn || "",
+      staffCategory: isNonTeach ? "Non-Teaching (F4)" : "Teaching (F3)",
+      staffRecordId: staffId,
+      emisId: staffId,
+      staffName: (st.prefix ? st.prefix + " " : "") + (st.name || ""),
+      staffNameEn: st.name || "",
+      staffNameTa: st.nameTa || "",
+      desig: st.desig || (isNonTeach ? "OFFICE STAFF" : "TEACHER"),
+      subject: st.subject || "-",
+      reasonCategory: reasonCat,
+      reasonDetail: reasonDet,
+      toUNo: targetSchObj ? String(targetSchObj.uNo) : (toUNoVal === "OUTSIDE_DISTRICT" ? "OUTSIDE_DISTRICT" : ""),
+      toSchoolName: targetSchObj
+        ? `[U.NO: ${targetSchObj.uNo}] ${targetSchObj.nameTa || targetSchObj.nameEn}`
+        : (toUNoVal === "OUTSIDE_DISTRICT" ? "பிற மாவட்டம் (Outside District)" : ""),
+      reason: `${reasonCat}${targetSchObj ? ` ➔ [U.NO: ${targetSchObj.uNo}] ${targetSchObj.nameTa || targetSchObj.nameEn}` : (toUNoVal === "OUTSIDE_DISTRICT" ? " ➔ பிற மாவட்டம்" : "")} — ${reasonDet}`,
+      staffSnapshot: Object.assign({}, st),
+      requestedAt: new Date().toLocaleString("en-IN"),
+      requestedTs: nowTs,
+      status: "PENDING",
+      resolvedAt: ""
+    };
+
+    if (!Array.isArray(staffDeleteRequests)) staffDeleteRequests = [];
+    staffDeleteRequests = staffDeleteRequests.filter(r =>
+      !(r && r.status === "PENDING" && String(r.uNo) === targetUNo && (String(r.staffRecordId) === staffId || String(r.emisId) === staffId))
+    );
+    staffDeleteRequests.unshift(newReq);
+
+    if (typeof closeDeleteRequestModal === "function") closeDeleteRequestModal();
+
+    // ONLY Super Admin acting inside Admin Mode may approve immediately
+    if (isStrictSuperAdminNow() && typeof resolveAdminDeleteRequest === "function") {
+      if (typeof safeSetStorage === "function") safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests);
+      resolveAdminDeleteRequest(newReq.reqId, "APPROVED");
+      return;
+    }
+
+    // All School & Non-Super-Admin requests MUST stay PENDING for Super Admin approval!
+    if (typeof safeSetStorage === "function") safeSetStorage("CEOSVG_DELETE_REQUESTS", staffDeleteRequests, false);
+
+    // Push granular request + safely merged array to Firebase (and Dual-Write to D1 if enabled)
+    const cleanFbUrl = (typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined")
+      ? normalizeFirebaseDbUrl(firebaseDbUrl)
+      : "";
+    if (cleanFbUrl && typeof buildFirebaseEndpoint === "function") {
+      fetch(buildFirebaseEndpoint(`ceosvg_live/DeleteRequests/${encodeURIComponent(newReq.reqId)}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReq)
+      }).catch(() => {});
+
+      fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_DELETE_REQUESTS"))
+        .then(r => r.ok ? r.json() : null)
+        .then(remoteList => {
+          if (typeof reconcileAndDeduplicateDeleteRequests === "function" && Array.isArray(remoteList)) {
+            reconcileAndDeduplicateDeleteRequests(remoteList, false);
+          }
+          return fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_DELETE_REQUESTS"), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(staffDeleteRequests)
+          });
+        })
+        .catch(() => {});
+    }
+
+    if (typeof updateAllSummaryCounters === "function") updateAllSummaryCounters();
+    if (typeof renderSchoolStaffTable === "function") renderSchoolStaffTable(extra);
+    if (typeof renderSchoolEbsModule === "function") renderSchoolEbsModule();
+    if (typeof renderAdminEbsDeleteReqsBox === "function") renderAdminEbsDeleteReqsBox();
+    if (typeof renderAdminDeleteRequestsTable === "function") renderAdminDeleteRequestsTable();
+
+    if (typeof showToast === "function") {
+      showToast("📤 நீக்க / மாறுதல் கோரிக்கை முதன்மை நிர்வாகியின் (Super Admin) ஒப்புதலுக்கு அனுப்பப்பட்டது! ஒப்புதல் அளிக்கப்பட்ட பின்னரே பணியாளர் நீக்கப்படுவார்.", "#0f766e", true);
+    }
+  };
+  window.submitStaffDeleteRequest = submitStaffDeleteRequest;
 })();
 </script>
 
