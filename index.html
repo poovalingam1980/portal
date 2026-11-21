@@ -425,10 +425,10 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 }
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="auth-mode">
 <div class="container">
@@ -2703,7 +2703,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </button>
 </div>
 <!-- MOD 13: DEDICATED EXAM CENTRES MANAGEMENT (10th & 12th PUBLIC + PRACTICAL) -->
-<div class="portal-chooser-card" id="admModuleCardExamCentres" onclick="openAdminModule('examCentres')" style="cursor:pointer; background:linear-gradient(145deg, #ffffff 0%, #ecfeff 100%); border:2.5px solid #0891b2; border-radius:16px; padding:22px; box-shadow:0 10px 25px rgba(8,145,178,0.14); transition:transform 0.2s, box-shadow 0.2s;">
+<div class="portal-chooser-card" id="admModuleCardExamCentres" onclick="openAdminModule('examCentres')" style="cursor:pointer; display:flex !important; flex-direction:column !important; justify-content:space-between !important; align-items:stretch !important; gap:10px !important; background:linear-gradient(145deg, #ffffff 0%, #ecfeff 100%); border:2.5px solid #0891b2; border-radius:16px; padding:22px; box-shadow:0 10px 25px rgba(8,145,178,0.14); transition:transform 0.2s, box-shadow 0.2s;">
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
 <span style="background:#cffafe; color:#155e75; border:1px solid #67e8f9; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:900;">MOD 13 • EXAM CENTRES</span>
 <span style="font-size:1.8rem;">🏫</span>
@@ -2712,7 +2712,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <p style="margin:0 0 14px 0; font-size:0.82rem; color:#475569; line-height:1.45;">
 10 &amp; 12-ஆம் வகுப்பு <strong>பொதுத்தேர்வு மையங்கள்</strong> மற்றும் <strong>செய்முறைத் தேர்வு மையங்களை (Practical Centres)</strong> சேர்க்க, திருத்த, நீக்க; மாற்றங்கள் அனைத்தும் படிவங்களின் Drop-down பட்டியல்களில் உடனே பிரதிபலிக்கும்.
 </p>
-<button type="button" class="btn btn-primary" style="width:100%; font-size:0.96rem; font-weight:900; padding:11px; border-radius:8px; background:#0891b2; border-color:#0e7490; color:#fff;">
+<button type="button" class="btn btn-primary" style="width:100%; margin-top:auto; font-size:0.96rem; font-weight:900; padding:11px; border-radius:8px; background:#0891b2; border-color:#0e7490; color:#fff;">
 👉 🏫 தேர்வு மையங்கள் மேலாண்மையைத் திற ❯
 </button>
 </div>
@@ -51516,7 +51516,7 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
   window.__ceosvgV65IdleLogoutApplied = true;
 
   // Default: 15 minutes total idle timeout (warning shown at 14th minute for 60 seconds)
-  const DEFAULT_IDLE_MINUTES = 15;
+  const DEFAULT_IDLE_MINUTES = 45; // v9.0: Relaxed from 15m to 45m (Cloudflare D1 Primary)
   const WARN_SECONDS = 60;
   const LAST_ACTIVITY_STORAGE_KEY = "CEOSVG_SCHOOL_LAST_ACTIVITY_TS";
 
@@ -51766,7 +51766,7 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
 
   // Fetch ~200-byte ceosvg_live/meta_versions (cached for 20s to avoid redundant micro-fetches)
   window.fetchRemoteMetaVersions = async function(forceRefresh) {
-    if (!forceRefresh && _cachedRemoteMeta && (Date.now() - _lastMetaFetchTs) < 20000) {
+    if (!forceRefresh && _cachedRemoteMeta && (Date.now() - _lastMetaFetchTs) < 5000) { // v9.0: 5s fast check
       return _cachedRemoteMeta;
     }
     const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
@@ -51940,7 +51940,7 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
         if (!isAdminActive) return;
         const activeTab = (typeof currentAdminTabKey !== "undefined") ? currentAdminTabKey : "ebsMaster";
         await window.lazyLoadAdminTabFromFirebase(activeTab, false);
-      }, 240000);
+      }, 20000); // v9.0: Relaxed from 240s to 20s for fast Cloudflare D1 Primary sync
     };
     // Restart listener immediately with the new 4-minute Quota-Safe interval
     try { startFirebaseRealtimeListener(); } catch (e) {}
@@ -51951,7 +51951,7 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
     const _v65PrevLoginAuthPull = pullLightweightLoginAuthFromFirebase;
     pullLightweightLoginAuthFromFirebase = async function() {
       const hasCachedAuth = schoolAuthStore && typeof schoolAuthStore === "object" && Object.keys(schoolAuthStore).length > 20;
-      if (hasCachedAuth && (Date.now() - _lastLoginAuthPullTs) < 600000) {
+      if (hasCachedAuth && (Date.now() - _lastLoginAuthPullTs) < 30000) { // v9.0: Relaxed from 10m to 30s
         return;
       }
       const res = await _v65PrevLoginAuthPull.apply(this, arguments);
