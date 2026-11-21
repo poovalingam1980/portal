@@ -196,7 +196,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v6.7)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v8.2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -545,7 +545,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v6.7</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v8.2</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -1969,8 +1969,11 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
         <button type="button" class="btn btn-primary btn-sm" id="schReviewReportTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; padding:6px 12px;">
           📥 Review Report PDF
         </button>
-        <button type="button" class="btn btn-primary btn-sm" id="schMidTermTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', null, this)" style="background:#dc2626; border-color:#b91c1c; color:#fff; font-weight:900; padding:6px 14px;">
-          📥 F1 &amp; F2 PDF பதிவிறக்கு
+        <button type="button" class="btn btn-primary btn-sm" id="schMidTermTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_1', null, this)" style="background:#0f766e; border-color:#0f766e; color:#fff; font-weight:900; padding:6px 12px;">
+          📥 School Perf (F1) PDF
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" id="schMidTermTopPdfBtnF2" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_2', null, this)" style="background:#1d4ed8; border-color:#1e40af; color:#fff; font-weight:900; padding:6px 12px;">
+          📥 Subject Perf (F2) PDF
         </button>
         <button type="button" class="btn btn-outline btn-sm" id="schMidTermTopCsvBtn" onclick="exportSingleSchoolMidTermExcelCsv()" style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; font-weight:900; padding:6px 12px;">
           📊 F1 &amp; F2 Excel (.csv)
@@ -2193,6 +2196,8 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('infraNeeds')" style="background:#fff7ed; color:#9a3412; border-color:#fb923c; font-weight:900; font-size:0.84rem;">🏗️ அடிப்படைத் தேவைகள் அறிக்கை</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('midTermMaster')" style="background:#f0fdfa; color:#0f766e; border-color:#2dd4bf; font-weight:900; font-size:0.84rem;">📈 தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (Result Analysis)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('ebsMaster')" style="background:#f5f3ff; color:#4c1d95; border-color:#a78bfa; font-weight:900; font-size:0.84rem;">📋 EBS 2026-27 (F1–F4)</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('seniorityList')" style="background:#fffbeb; color:#92400e; border-color:#f59e0b; font-weight:900; font-size:0.84rem;">🎖️ ஆசிரியர் முன்னுரிமைப் பட்டியல்</button>
+<button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('examCentres')" style="background:#ecfeff; color:#155e75; border-color:#06b6d4; font-weight:900; font-size:0.84rem;">🏫 தேர்வு மையங்கள் (10 &amp; 12 பொது &amp; செய்முறை)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('officeUsers')" style="background:#fdf4ff; color:#701a75; border-color:#e879f9; font-weight:900; font-size:0.84rem;">👥 அலுவலகப் பணியாளர்கள் &amp; DEO அதிகாரங்கள்</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminModule('auditTrail')" style="background:#fef2f2; color:#991b1b; border-color:#f87171; font-weight:900; font-size:0.84rem;">📜 தணிக்கைப் பதிவேடு (Audit Trail)</button>
 <button type="button" class="btn btn-outline btn-sm" onclick="openAdminSecurityVaultModal()" style="background:#f0fdf4; color:#14532d; border-color:#4ade80; font-weight:900; font-size:0.84rem;">🔐 பாதுகாப்பு &amp; SHA-256 Vault</button>
@@ -2680,6 +2685,34 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 👉 👥 பணியாளர்கள் &amp; DEO அதிகார மேலாண்மையைத் திற ❯
 </button>
 </div>
+<!-- MOD 12: DEDICATED TEACHER SENIORITY LIST PREPARATION -->
+<div class="portal-chooser-card" id="admModuleCardSeniorityList" onclick="openAdminModule('seniorityList')" style="cursor:pointer; background:linear-gradient(145deg, #ffffff 0%, #fffbeb 100%); border:2.5px solid #d97706; border-radius:16px; padding:22px; box-shadow:0 10px 25px rgba(217,119,6,0.14); transition:transform 0.2s, box-shadow 0.2s;">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+<span style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:900;">MOD 12 • SENIORITY PANEL</span>
+<span style="font-size:1.8rem;">🎖️</span>
+</div>
+<h3 style="margin:0 0 6px 0; color:#78350f; font-size:1.12rem; font-weight:900;">ஆசிரியர் முன்னுரிமைப் பட்டியல் தயாரித்தல்</h3>
+<p style="margin:0 0 14px 0; font-size:0.82rem; color:#475569; line-height:1.45;">
+பொது மாறுதல் கலந்தாய்வு, பதவி உயர்வு, பொதுத்தேர்வுப் பணி மற்றும் விடைத்தாள் முகாம் பணிகளுக்கான <strong>5-கூறு முன்னுரிமைப் பட்டியல் (Seniority Panel)</strong> தயாரித்தல், அச்சிடுதல் &amp; CSV பதிவிறக்கம்.
+</p>
+<button type="button" class="btn btn-primary" style="width:100%; font-size:0.96rem; font-weight:900; padding:11px; border-radius:8px; background:#d97706; border-color:#b45309; color:#fff;">
+👉 🎖️ முன்னுரிமைப் பட்டியல் தயாரிப்பைத் திற ❯
+</button>
+</div>
+<!-- MOD 13: DEDICATED EXAM CENTRES MANAGEMENT (10th & 12th PUBLIC + PRACTICAL) -->
+<div class="portal-chooser-card" id="admModuleCardExamCentres" onclick="openAdminModule('examCentres')" style="cursor:pointer; background:linear-gradient(145deg, #ffffff 0%, #ecfeff 100%); border:2.5px solid #0891b2; border-radius:16px; padding:22px; box-shadow:0 10px 25px rgba(8,145,178,0.14); transition:transform 0.2s, box-shadow 0.2s;">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+<span style="background:#cffafe; color:#155e75; border:1px solid #67e8f9; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:900;">MOD 13 • EXAM CENTRES</span>
+<span style="font-size:1.8rem;">🏫</span>
+</div>
+<h3 style="margin:0 0 6px 0; color:#164e63; font-size:1.12rem; font-weight:900;">தேர்வு மையங்கள் மேலாண்மை (10 &amp; 12 பொது &amp; செய்முறை)</h3>
+<p style="margin:0 0 14px 0; font-size:0.82rem; color:#475569; line-height:1.45;">
+10 &amp; 12-ஆம் வகுப்பு <strong>பொதுத்தேர்வு மையங்கள்</strong> மற்றும் <strong>செய்முறைத் தேர்வு மையங்களை (Practical Centres)</strong> சேர்க்க, திருத்த, நீக்க; மாற்றங்கள் அனைத்தும் படிவங்களின் Drop-down பட்டியல்களில் உடனே பிரதிபலிக்கும்.
+</p>
+<button type="button" class="btn btn-primary" style="width:100%; font-size:0.96rem; font-weight:900; padding:11px; border-radius:8px; background:#0891b2; border-color:#0e7490; color:#fff;">
+👉 🏫 தேர்வு மையங்கள் மேலாண்மையைத் திற ❯
+</button>
+</div>
 </div>
 </div>
 <!-- ========================================================================= -->
@@ -3082,6 +3115,69 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </button>
 <button type="button" class="btn btn-success btn-sm" onclick="exportExamCentresCsv()" style="font-weight:800;">📥 CSV பதிவிறக்கு</button>
 </div>
+</div>
+<!-- === CEOSVG v8.2: 10th & 12th PRACTICAL & PUBLIC EXAM CENTRES LIVE DROPDOWN MANAGER === -->
+<div id="admPracticalCentresManagerBox" style="background:linear-gradient(135deg,#ecfeff 0%,#f0fdfa 100%); border:2px solid #0891b2; border-radius:12px; padding:14px 16px; margin-bottom:16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; border-bottom:1.5px solid #bae6fd; padding-bottom:8px;">
+    <div>
+      <div style="font-size:1.02rem; font-weight:900; color:#155e75;">🧪 10 &amp; 12-ஆம் வகுப்பு செய்முறைத் தேர்வு மையங்கள் &amp; பொதுத்தேர்வு மையங்கள் (Live Drop-down Manager)</div>
+      <div style="font-size:0.77rem; color:#0f766e; font-weight:700; margin-top:2px;">
+        இங்கே சேர்க்கப்படும் / திருத்தப்படும் 10 &amp; 12 பொதுத்தேர்வு மற்றும் செய்முறைத் தேர்வு மையங்கள் அனைத்தும் EBS Form-3 / Form-4 மற்றும் பிற படிவங்களின் Drop-down பட்டியல்களில் <strong>உடனடியாகப் பிரதிபலிக்கும்</strong>.
+      </div>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <button type="button" id="admPracTabBtn10" class="btn btn-primary btn-sm" onclick="switchAdminPracticalCentresTab('10')" style="font-weight:900; background:#0891b2; border-color:#0e7490;">
+        🧪 10th செய்முறை மையங்கள் (<span id="admPrac10CountBadge">0</span>)
+      </button>
+      <button type="button" id="admPracTabBtn12" class="btn btn-outline btn-sm" onclick="switchAdminPracticalCentresTab('12')" style="font-weight:900; border-color:#0891b2; color:#155e75; background:#fff;">
+        🔬 12th செய்முறை மையங்கள் (<span id="admPrac12CountBadge">0</span>)
+      </button>
+      <button type="button" id="admPracTabBtnPub10" class="btn btn-outline btn-sm" onclick="switchAdminPracticalCentresTab('PUB10')" style="font-weight:900; border-color:#1d4ed8; color:#1e40af; background:#fff;">
+        📝 10th பொதுத்தேர்வு மையம் சேர்
+      </button>
+      <button type="button" id="admPracTabBtnPub12" class="btn btn-outline btn-sm" onclick="switchAdminPracticalCentresTab('PUB12')" style="font-weight:900; border-color:#7c3aed; color:#5b21b6; background:#fff;">
+        🎓 12th பொதுத்தேர்வு மையம் சேர்
+      </button>
+    </div>
+  </div>
+
+  <!-- Add / Edit Form Strip -->
+  <div style="display:grid; grid-template-columns:160px 1fr 120px auto; gap:8px; align-items:end; margin-bottom:10px; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:10px;">
+    <div>
+      <label style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">மைய எண் / குறியீடு (Code):</label>
+      <input type="text" id="admPracCentreCodeInp" class="form-control" placeholder="எ.கா: DVKI0001 / 16101" style="font-size:0.80rem; font-weight:800;">
+    </div>
+    <div>
+      <label style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">பள்ளி / தேர்வு மையத்தின் பெயர் (Centre Name):</label>
+      <input type="text" id="admPracCentreNameInp" class="form-control" placeholder="எ.கா: GOVT. HSS, SIVAGANGAI" style="font-size:0.80rem; font-weight:800;">
+    </div>
+    <div>
+      <label style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">U.NO (விருப்பம்):</label>
+      <input type="text" id="admPracCentreUnoInp" class="form-control" placeholder="எ.கா: 206" style="font-size:0.80rem; font-weight:800;">
+    </div>
+    <div style="display:flex; gap:6px;">
+      <button type="button" id="admPracCentreSaveBtn" class="btn btn-success btn-sm" onclick="saveAdminManagedCentreEntry()" style="font-weight:900; padding:7px 14px;">➕ சேர் / புதுப்பி</button>
+      <button type="button" id="admPracCentreCancelBtn" class="btn btn-outline btn-sm" onclick="cancelEditAdminManagedCentre()" style="display:none; font-weight:800;">ரத்து</button>
+    </div>
+  </div>
+
+  <!-- Search & Table for Practical / Managed Centres -->
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+    <input type="text" id="admPracCentreSearchInp" class="form-control" placeholder="🔍 செய்முறை / பொதுத்தேர்வு மையம் தேடு (Code, Name, U.No)..." oninput="renderAdminPracticalCentresTable()" style="max-width:360px; font-size:0.80rem; font-weight:700; background:#fff;">
+    <span id="admPracCentreActiveModeLabel" style="font-size:0.78rem; font-weight:900; color:#0f766e;">🧪 10-ஆம் வகுப்பு செய்முறைத் தேர்வு மையங்கள் பட்டியல்</span>
+  </div>
+  <div style="max-height:260px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:8px; background:#fff;">
+    <table class="data-table" style="width:100%; font-size:0.79rem; margin:0;">
+      <thead style="position:sticky; top:0; z-index:2; background:#f1f5f9;">
+        <tr>
+          <th style="width:48px; text-align:center;">வ.எண்</th>
+          <th>மையப் பெயர் (Drop-down-ல் தோன்றும் வடிவம்)</th>
+          <th style="width:150px; text-align:center;">நடவடிக்கை</th>
+        </tr>
+      </thead>
+      <tbody id="admPracCentresTbody"></tbody>
+    </table>
+  </div>
 </div>
 <!-- KPI SUMMARY CARDS FOR EXAM CENTRES & STAFF ALLOCATION -->
 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(185px, 1fr)); gap:10px; margin-bottom:14px;">
@@ -3679,7 +3775,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </div>
 </div>
 <!-- DEDICATED SEPARATE GOOGLE SHEET FOR 7,081 TEACHERS (CEO_Sivagangai_Teachers_Master_DB) -->
-<div style="background:linear-gradient(135deg,#f0fdf4 0%,#eff6ff 100%); border:2px solid #38bdf8; border-left:6px solid #0284c7; border-radius:12px; padding:12px 16px; margin-bottom:14px;">
+<div id="admDedicatedTeachersSheetCard" style="background:linear-gradient(135deg,#f0fdf4 0%,#eff6ff 100%); border:2px solid #38bdf8; border-left:6px solid #0284c7; border-radius:12px; padding:12px 16px; margin-bottom:14px;">
 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
 <div>
 <div style="font-size:0.94rem; font-weight:900; color:#0f294a; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -6303,6 +6399,11 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         <option value="2A">2A - அரசு உதவிபெறும்</option>
         <option value="3P">3P - தனியார்</option>
       </select>
+      <select id="admMtFilterLevel" class="form-control" style="width:auto; padding:5px 8px; font-size:0.78rem; font-weight:800;" onchange="renderAdminMidTermDashboard()">
+        <option value="">அனைத்துப் பள்ளி வகை (HS / HSS)</option>
+        <option value="HS">HS - உயர்நிலைப்பள்ளி</option>
+        <option value="HSS">HSS - மேல்நிலைப்பள்ளி</option>
+      </select>
       <select id="admMtFilterStatus" class="form-control" style="width:auto; padding:5px 8px; font-size:0.78rem; font-weight:800;" onchange="renderAdminMidTermDashboard()">
         <option value="ALL">அனைத்துப் பள்ளிகள் (All)</option>
         <option value="COMPLETED">✅ சமர்ப்பித்த பள்ளிகள் (Completed)</option>
@@ -6319,6 +6420,21 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         <option value="SOCIAL">சமூக அறிவியல் (SOCIAL SCIENCE)</option>
       </select>
       <input type="text" id="admMtFilterSearch" class="form-control" style="width:210px; padding:5px 10px; font-size:0.78rem; font-weight:800;" placeholder="🔍 U.No, பள்ளி, ஆசிரியர் தேடுக..." oninput="renderAdminMidTermDashboard()">
+    </div>
+  </div>
+
+  <!-- v8.2 Filtered / Bulk Reports Download Bar (Block / Management / HS-HSS / All) -->
+  <div id="admMtFilteredBulkBar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:linear-gradient(90deg,#f0fdfa 0%,#eff6ff 100%); border:1.5px solid #99f6e4; border-left:5px solid #0f766e; border-radius:10px; padding:9px 12px; margin-bottom:12px;">
+    <div style="font-size:0.79rem; font-weight:900; color:#134e4a;">
+      📥 பிரிவு வாரியான &amp; மொத்த அறிக்கைகள் பதிவிறக்கம் (ஒன்றியம் / நிர்வாகம் / HS-HSS):
+      <span id="admMtFilteredSummaryPill" style="margin-left:6px; background:#ffffff; color:#0f294a; border:1px solid #cbd5e1; padding:2px 9px; border-radius:999px; font-size:0.73rem;">வடிகட்டிய பள்ளிகள்: 0</span>
+    </div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SCHOOL_CSV', false)" style="background:#0f766e; border-color:#0f766e; font-size:0.74rem; font-weight:900;">📊 School Performance (CSV)</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SUBJECT_CSV', false)" style="background:#1d4ed8; border-color:#1e40af; font-size:0.74rem; font-weight:900;">📚 Subject Performance (CSV)</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('REVIEW_PRINT', false)" style="background:#7c3aed; border-color:#6d28d9; font-size:0.74rem; font-weight:900;">📋 Review Report (PDF / Print)</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SCHOOL_PRINT', false)" style="background:#047857; border-color:#065f46; font-size:0.74rem; font-weight:900;">📄 School Performance (PDF)</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="exportFilteredMidTermReports('SUBJECT_PRINT', false)" style="background:#1e40af; border-color:#1e3a8a; font-size:0.74rem; font-weight:900;">📘 Subject Performance (PDF)</button>
     </div>
   </div>
 
@@ -6349,7 +6465,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v2.5</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v8.2</strong>
 </p>
 </footer>
 </div>
@@ -6447,6 +6563,47 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <button type="button" id="fbRebuildSummaryIdxBtn" class="btn btn-outline" onclick="rebuildAll282SchoolSummaryIndexToFirebase(true)" style="font-weight:900; border-color:#2563eb; color:#1d4ed8; background:#eff6ff;" title="282 பள்ளிகளின் ~30 KB சுருக்க அட்டவணையை (school_summary_index) Firebase-ல் உடனடியாகப் புதுப்பிக்க">
 ⚡ 282 பள்ளி சுருக்க அட்டவணை புதுப்பி (Summary Index)
 </button>
+<div style="flex-basis:100%; width:100%; margin-top:10px; background:linear-gradient(135deg,#fff7ed 0%,#eff6ff 100%); border:1.5px solid #fdba74; border-left:5px solid #ea580c; border-radius:10px; padding:12px 14px; box-sizing:border-box;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+    <div>
+      <div style="font-size:0.92rem; font-weight:900; color:#9a3412;">☁️ Cloudflare Workers KV Read-Cache + Firebase (Hybrid 85%–90% Download சேமிப்பு)</div>
+      <div style="font-size:0.75rem; color:#475569; margin-top:2px;">
+        அனைத்து சேமிப்புகளும் (Writes) நேரடியாக Firebase-ல் நடக்கும் (<strong>0% தரவு இழப்பு</strong>). அடிக்கடி படிக்கும் <code>school_summary_index</code>, <code>master_schools</code>, <code>school_auth</code> மட்டும் Cloudflare Workers KV-ல் Cache செய்யப்படும்.
+      </div>
+    </div>
+    <span id="cfKvStatusBadge" style="background:#dcfce7; color:#166534; border:1px solid #86efac; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:900;">🟢 Hybrid KV Cache செயலில்</span>
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px;">
+    <input type="url" id="cfgCfKvProxyUrl" class="form-control" placeholder="https://ceosvg-fb-cache.YOUR-SUBDOMAIN.workers.dev  (அல்லது https://cache.ceosvg.in)" style="flex:1; min-width:240px; font-size:0.82rem; font-weight:700;">
+    <button type="button" class="btn btn-primary btn-sm" onclick="saveCfKvProxyUrlConfig()" style="font-weight:900; background:#ea580c; border-color:#ea580c;">💾 சேமி &amp; இயக்கு</button>
+    <button type="button" class="btn btn-outline btn-sm" onclick="testCfKvProxyConnection()" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#fff;">🔌 சோதி (Test)</button>
+    <button type="button" class="btn btn-outline btn-sm" onclick="purgeCfKvProxyCache(true)" style="font-weight:800; border-color:#7c3aed; color:#6d28d9; background:#fff;">🧹 KV Cache சுத்தம்</button>
+    <button type="button" class="btn btn-outline btn-sm" onclick="copyCfKvWorkerSourceCode()" style="font-weight:800; border-color:#0f766e; color:#0f766e; background:#f0fdfa;">📋 worker.js நகலெடு</button>
+  </div>
+  <div id="cfKvLiveStatsLine" style="font-size:0.74rem; color:#1e3a8a; font-weight:800;">
+    📊 அமர்வு நிலை: KV Cache Hits: <strong>0</strong> | Firebase Direct: <strong>0</strong> | Auto-Fallback: <strong>தயார்</strong>
+  </div>
+</div>
+<div id="cfD1Phase1Card" style="width:100%; margin-top:10px; background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:1.5px solid #5eead4; border-left:5px solid #0f766e; border-radius:10px; padding:12px 14px; box-sizing:border-box;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+    <div>
+      <div style="font-size:0.92rem; font-weight:900; color:#0f766e;">🗄️ கட்டம் 1: Cloudflare D1 Database அமைப்பு &amp; 1-Click Sync (282 பள்ளிகள்)</div>
+      <div style="font-size:0.75rem; color:#475569; margin-top:2px;">
+        <strong>0% பாதிப்பு:</strong> Firebase தொடர்ந்து முதன்மைத் தரவுத்தளமாகவே இயங்கும். 282 பள்ளிகளின் அனைத்துத் தரவுகளும் Cloudflare D1 (<code>CEOSVG_D1</code>) தரவுத்தளத்திற்குப் பாதுகாப்பாக நகலெடுக்கப்பட்டு எண்ணிக்கை சரிபார்க்கப்படும்.
+      </div>
+    </div>
+    <span id="cfD1StatusBadge" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:900;">⚪ D1 சோதிக்கப்படவில்லை</span>
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px;">
+    <button type="button" class="btn btn-outline btn-sm" onclick="copyCfKvWorkerSourceCode()" style="font-weight:800; border-color:#0f766e; color:#0f766e; background:#ffffff;">📋 1. D1 + KV worker.js நகலெடு</button>
+    <button type="button" id="cfD1CheckBtn" class="btn btn-outline btn-sm" onclick="checkCloudflareD1Status(true)" style="font-weight:800; border-color:#0284c7; color:#0369a1; background:#ffffff;">🔌 2. D1 நிலை சோதி</button>
+    <button type="button" id="cfD1SyncAllBtn" class="btn btn-primary btn-sm" onclick="syncAllFirebaseDataToCloudflareD1()" style="font-weight:900; background:linear-gradient(135deg,#0f766e,#0284c7); border:none;">🚀 3. 1-Click Firebase ➔ D1 Sync (282 பள்ளிகள்)</button>
+  </div>
+  <div id="cfD1SyncProgressText" style="font-size:0.76rem; color:#1e3a8a; font-weight:800; margin-bottom:6px;">
+    📌 Cloudflare Dashboard-ல் <code>ceosvg-portal-db</code> (D1) உருவாக்கி <code>CEOSVG_D1</code> என இணைத்தபின் <strong>"1. D1 + KV worker.js"</strong>-ஐ Deploy செய்து, <strong>"2. D1 நிலை சோதி"</strong> கிளிக் செய்க.
+  </div>
+  <div id="cfD1VerifyTableWrap" style="display:none; overflow-x:auto; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:6px;"></div>
+</div>
 <button type="button" class="btn btn-outline" onclick="simulateLiveSchoolToCeoSync()" style="font-weight:800; border-color:#ea580c; color:#c2410c; background:#fff7ed;">
 ⚡ நேரடி Dual-Sync மாதிரிச் சோதனை (Simulate HM ➔ CEO)
 </button>
@@ -7194,6 +7351,13 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 <div class="form-group" style="margin-bottom:8px;">
 <label class="form-label">புதிய நிர்வாகி கடவுச்சொல் (New Admin Password) <span class="required">*</span></label>
 <input type="password" id="admSecNewPass" class="form-control" minlength="6" required placeholder="புதிய கடவுச்சொல் (Min 6 chars)" oninput="previewAdminPasswordSha256Hash(this.value)">
+</div>
+<div class="form-group" style="margin-bottom:8px; grid-column:1 / -1;">
+<label class="form-label">புதிய கடவுச்சொல்லை உறுதி செய்க (Confirm New Password) <span class="required">*</span></label>
+<div style="display:flex; gap:8px; align-items:center;">
+<input type="password" id="admSecConfirmPass" class="form-control" minlength="6" required placeholder="புதிய கடவுச்சொல்லை மீண்டும் உள்ளிடவும்" style="flex:1;">
+<button type="button" class="btn btn-outline btn-sm" onclick="toggleAdminSecPassVisibility()" style="white-space:nowrap; font-weight:800;">👁️ காட்டு / மறை</button>
+</div>
 </div>
 </div>
 <div style="background:#0f172a; color:#38bdf8; border-radius:8px; padding:8px 12px; font-family:monospace; font-size:0.75rem; margin-bottom:10px; word-break:break-all;">
@@ -16668,7 +16832,6 @@ const ignoredKeys = [
 "CEOSVG_PORTAL_CFG",
 "CEOSVG_FIREBASE_CFG",
 "CEOSVG_WA_CLOUD_CFG",
-"CEOSVG_ADMIN_SECURITY_VAULT",
 "CEOSVG_DUAL_SYNC_QUEUE",
 "CEOSVG_PENDING_REG_UNO",
 "CEOSVG_AUTH_RESET_V37_DONE",
@@ -23853,7 +24016,7 @@ function renderAdminEbsDeleteReqsBox() {
                 <th>ஆசிரியர் / பணியாளர் &amp; EMIS ID</th>
                 <th>நீக்கம் / மாறுதல் காரணம் &amp; சென்ற பள்ளி</th>
                 <th style="text-align:center;">நிலை &amp; குறிப்பு</th>
-                <th style="text-align:center;">நடவடிக்கை</th>
+                <th style="text-align:center; min-width:240px;">அறிக்கைகள்</th>
               </tr>
             </thead>
             <tbody>${rowsHtml}</tbody>
@@ -36145,8 +36308,8 @@ function renderSchool12thStuMarksPane(calc) {
         </div>
         <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
           ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">⚡ முழு Internal (10) &amp; Practical (20) நிரப்பு</button>` : ""}
-          <button type="button" class="btn btn-outline btn-sm" onclick="triggerModifiedTmlExcelUpload(false)" style="background:#f5f3ff; color:#5b21b6; border-color:#c4b5fd; font-weight:900; font-size:0.76rem;">
-            📤 TML (.xlsx) பதிவேற்று
+          <button type="button" class="btn btn-outline btn-sm" onclick="openMidTermBulkPasteModal()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900; font-size:0.76rem;">
+            📋 Excel Copy-Paste
           </button>
           <button type="button" class="btn btn-outline btn-sm" onclick="addMidTermStudentRows(1)" style="font-weight:800; font-size:0.76rem;">
             ➕ +1 மாணவர்
@@ -36589,7 +36752,7 @@ function build12thForm2_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPages
             <th rowspan="2" style="${hdrCell}">LA</th>
             <th rowspan="2" style="${hdrCell}">AB</th>
             <th rowspan="2" style="${hdrCell}">Ex.</th>
-            <th rowspan="2" style="${hdrCell} background:#dbeafe;">Appear</th>
+            <th rowspan="2" style="${hdrCell} background:#dbeafe; font-size:0.64rem; white-space:nowrap;">Appear</th>
             <th rowspan="2" style="${hdrCell} background:#dcfce7;">Pass</th>
             <th rowspan="2" style="${hdrCell} background:#fee2e2;">Fail</th>
             <th rowspan="2" style="${hdrCell} background:#fef3c7;">Pass<br>%</th>
@@ -36605,7 +36768,7 @@ function build12thForm2_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPages
             <th style="${subHdrCell}">61-80</th>
             <th style="${subHdrCell}">81-99</th>
             <th style="${subHdrCell}">100</th>
-            <th style="${subHdrCell}">Appear</th>
+            <th style="${subHdrCell} font-size:0.62rem; white-space:nowrap;">Appear</th>
             <th style="${subHdrCell}">Pass</th>
             <th style="${subHdrCell}">Pass %</th>
             <th style="${subHdrCell}">Avg</th>
@@ -36625,11 +36788,7 @@ function build12thForm2_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPages
 
 function build12thForm2_2ExactHtml(calc, forPrint) {
   const rowsList = calc.f2Rows.slice();
-  if (forPrint) {
-    while (rowsList.length < 12) {
-      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
-    }
-  }
+  // v6.5: Show only rows with actual teacher/subject details (no trailing empty rows)
   if (!forPrint || rowsList.length <= 12) {
     return build12thForm2_2SinglePageTableHtml(calc, rowsList, 0, 1, forPrint);
   }
@@ -38688,8 +38847,11 @@ function renderSchoolMidTermClassStudentsPane(calc) {
         <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; font-size:0.78rem;">
           📥 Review Report PDF
         </button>
-        <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', null, this)" style="background:#dc2626; border-color:#b91c1c; color:#fff; font-weight:900; font-size:0.78rem;">
-          📥 F1 &amp; F2 PDF பதிவிறக்கு
+        <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_1', null, this)" style="background:#0f766e; border-color:#0f766e; color:#fff; font-weight:900; font-size:0.78rem;">
+          📥 School Perf (F1) PDF
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_2', null, this)" style="background:#1d4ed8; border-color:#1e40af; color:#fff; font-weight:900; font-size:0.78rem;">
+          📥 Subject Perf (F2) PDF
         </button>
       </div>
     </div>
@@ -40199,7 +40361,7 @@ function buildMidTermForm1_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPa
             <th rowspan="2" style="${hdrCell}">AB</th>
             <th rowspan="2" style="${hdrCell}">HB</th>
             <th rowspan="2" style="${hdrCell}">Ex.</th>
-            <th rowspan="2" style="${hdrCell} background:#dbeafe;">Appear</th>
+            <th rowspan="2" style="${hdrCell} background:#dbeafe; font-size:0.64rem; white-space:nowrap;">Appear</th>
             <th rowspan="2" style="${hdrCell} background:#dcfce7;">Pass</th>
             <th rowspan="2" style="${hdrCell} background:#fee2e2;">Fail</th>
             <th rowspan="2" style="${hdrCell} background:#fef3c7;">Pass<br>%</th>
@@ -40216,7 +40378,7 @@ function buildMidTermForm1_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPa
             <th style="${subHdrCell}">61-80</th>
             <th style="${subHdrCell}">81-99</th>
             <th style="${subHdrCell}">100</th>
-            <th style="${subHdrCell}">Appear</th>
+            <th style="${subHdrCell} font-size:0.62rem; white-space:nowrap;">Appear</th>
             <th style="${subHdrCell}">Pass</th>
             <th style="${subHdrCell}">Pass %</th>
             <th style="${subHdrCell}">Avg</th>
@@ -40237,11 +40399,7 @@ function buildMidTermForm1_2SinglePageTableHtml(calc, pageRows, pageIdx, totalPa
 function buildMidTermForm1_2ExactHtml(calc, forPrint) {
   if (calc && calc.std === '12') return build12thForm2_2ExactHtml(calc, forPrint);
   const rowsList = calc.f2Rows.slice();
-  if (forPrint) {
-    while (rowsList.length < 12) {
-      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
-    }
-  }
+  // v6.5: Show only rows with actual teacher/subject details (no trailing empty rows)
   if (!forPrint || rowsList.length <= 12) {
     return buildMidTermForm1_2SinglePageTableHtml(calc, rowsList, 0, 1, forPrint);
   }
@@ -40952,9 +41110,7 @@ async function downloadSchoolMidTermFormsPdfLandscape(mode, explicitUNo, btnEl) 
   }
   if (mode === "F1_2" || mode === "BOTH") {
     const rowsList = calc.f2Rows.slice();
-    while (rowsList.length < 12) {
-      rowsList.push({ sno: rowsList.length + 1, isBlank: true });
-    }
+    // v6.8: Only include rows with actual teacher/subject details (no blank rows)
     if (rowsList.length <= 12) {
       pageHtmlBlocks.push(
         is12
@@ -41385,6 +41541,7 @@ function renderAdminMidTermDashboard() {
 
   const blkFilter = document.getElementById("admMtFilterBlock")?.value || "";
   const mgmtFilter = document.getElementById("admMtFilterMgmt")?.value || "";
+  const fLevel = (document.getElementById("admMtFilterLevel")?.value || "").trim().toUpperCase();
   const stFilter = document.getElementById("admMtFilterStatus")?.value || "ALL";
   const subFilter = document.getElementById("admMtFilterSubject")?.value || "";
   const q = (document.getElementById("admMtFilterSearch")?.value || "").trim().toLowerCase();
@@ -41392,6 +41549,7 @@ function renderAdminMidTermDashboard() {
   const filteredCalcs = allCalcs.filter(c => {
     if (blkFilter && c.sch.block !== blkFilter) return false;
     if (mgmtFilter && c.sch.mgmt1 !== mgmtFilter) return false;
+    if (fLevel && String(c.sch.level || "").toUpperCase() !== fLevel) return false;
     const isDone = c.hasStudentEntries || c.rec.isSubmitted;
     if (stFilter === "COMPLETED" && !isDone) return false;
     if (stFilter === "PENDING" && isDone) return false;
@@ -41432,10 +41590,12 @@ function renderAdminMidTermDashboard() {
           </td>
           <td style="text-align:center;">${stBadge}</td>
           <td style="text-align:center; white-space:nowrap;">
-            <button type="button" class="btn btn-primary btn-sm" onclick="openAdminSchoolMidTermDirect('${escapeHtmlAttr(c.uNo)}')" style="background:#0f766e; border-color:#0f766e; font-size:0.72rem; padding:3px 8px; font-weight:900;">
-              👁️ திற / மதிப்பெண் பதிவு
-            </button>
-            ${isDone ? `<button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('BOTH', '${escapeHtmlAttr(c.uNo)}', this)" style="font-size:0.72rem; padding:3px 7px; font-weight:900; margin-left:4px; background:#dc2626; border-color:#b91c1c;" title="Landscape PDF பதிவிறக்கு">📥 PDF</button>` : ""}
+            <div style="display:inline-flex; gap:4px; flex-wrap:wrap; justify-content:center; align-items:center;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_1', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#0f766e; border-color:#0f766e; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="School Performance PDF பதிவிறக்கு">📊 School Perf</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('F1_2', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#1d4ed8; border-color:#1e40af; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="Subject Performance PDF பதிவிறக்கு">📚 Subject Perf</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', '${escapeHtmlAttr(c.uNo)}', this)" style="background:#7c3aed; border-color:#6d28d9; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="Review Report PDF பதிவிறக்கு">📋 Review</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="openAdminSchoolMidTermDirect('${escapeHtmlAttr(c.uNo)}')" style="background:#fff; color:#0f766e; border-color:#0f766e; font-size:0.70rem; padding:3px 7px; font-weight:900;" title="Super Admin: பள்ளி முகப்பில் திற">👁️ திற</button>
+            </div>
           </td>
         </tr>
       `;
@@ -42268,12 +42428,6 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
             </span>
           </td>
           <td style="${bdr} background:#ffffff !important; text-align:center; ${numFont} font-size:0.88rem; color:#1e3a8a;">${gradeStr}</td>
-          <td style="${bdr} background:#ffffff !important; padding:4px 6px; text-align:left;">
-            <div style="width:100%; height:8px; background:#e2e8f0 !important; border-radius:999px; overflow:hidden; margin-bottom:2px;">
-              <div style="width:${pctWidth}%; height:100%; background:${barColor} !important;"></div>
-            </div>
-            <div class="ra-ta" style="font-size:0.68rem; color:#475569; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">👨‍🏫 ${escapeHtmlAttr(teacherName)}</div>
-          </td>
         </tr>
       `;
     }).join("");
@@ -42281,15 +42435,14 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
     marksTableHtml = `
       <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
         <colgroup>
-          <col style="width:5%;">
-          <col style="width:24%;">
-          <col style="width:6%;">
-          <col style="width:6%;">
-          ${isSplit ? '<col style="width:7%;"><col style="width:7%;"><col style="width:7%;">' : ''}
-          <col style="width:9%;">
-          <col style="width:11%;">
-          <col style="width:7%;">
-          <col style="width:${isSplit ? '11%' : '32%'};">
+          <col style="width:${isSplit ? '5%' : '6%'};">
+          <col style="width:${isSplit ? '28%' : '36%'};">
+          <col style="width:${isSplit ? '6%' : '8%'};">
+          <col style="width:${isSplit ? '6%' : '8%'};">
+          ${isSplit ? '<col style="width:8%;"><col style="width:8%;"><col style="width:8%;">' : ''}
+          <col style="width:${isSplit ? '10%' : '14%'};">
+          <col style="width:${isSplit ? '13%' : '18%'};">
+          <col style="width:${isSplit ? '8%' : '10%'};">
         </colgroup>
         <tr style="height:36px;">
           <td style="${bdr} background:#0f294a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">வ.எண்</td>
@@ -42304,7 +42457,6 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
           <td style="${bdr} background:#1e3a8a !important; color:#fde047 !important; text-align:center; font-weight:900; font-size:0.78rem;">பெற்ற<br>மதிப்பெண்</td>
           <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">தேர்ச்சி நிலை<br>(Result)</td>
           <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">தரம்<br>(Grade)</td>
-          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:4px 6px; text-align:left; font-weight:900; font-size:0.74rem;">முன்னேற்றம் &amp; பாட ஆசிரியர்</td>
         </tr>
         ${subRowsHtml}
         <tr style="height:36px;">
@@ -42316,8 +42468,9 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
           <td style="${bdr} background:${isPassOverall ? '#dcfce7' : '#fee2e2'} !important; text-align:center; font-weight:900; font-size:0.82rem; color:${isPassOverall ? '#166534' : '#991b1b'};">
             ${isPassOverall ? "🏆 தேர்ச்சி (PASSED)" : (stu.resultType === "FAIL" ? "❌ தோல்வி (FAILED)" : stu.resultType)}
           </td>
-          <td colspan="2" style="${bdr} background:#eff6ff !important; padding:4px 8px; text-align:center; font-weight:900; font-size:0.84rem; color:#1e3a8a;">
-            வகுப்புத் தரவரிசை (Rank): <strong style="font-size:1.02rem; color:#6d28d9;">${rankVal}</strong> &nbsp;|&nbsp; சதவீதம்: <strong>${pctStr}</strong>
+          <td style="${bdr} background:#eff6ff !important; padding:4px 4px; text-align:center; font-weight:900; font-size:0.76rem; color:#1e3a8a; line-height:1.25;">
+            <div>Rank: <strong style="font-size:0.92rem; color:#6d28d9;">${rankVal}</strong></div>
+            <div style="font-size:0.72rem; color:#1e40af;">${pctStr}</div>
           </td>
         </tr>
       </table>
@@ -43459,7 +43612,8 @@ const PORTAL_ADMIN_MODULES_CATALOG = [
   { key: "examDutyAllotment", cardId: "admModuleCardExamDuty",         num: 9,  icon: "🎯", shortTa: "தேர்வுப் பணி நியமனம்",          shortEn: "Exam Duty Allotment", labelTa: "9. தேர்வுப் பணி நியமனம் (Exam Duty)" },
   { key: "auditTrail",        cardId: "admModuleCardAuditTrail",       num: 10, icon: "📜", shortTa: "தணிக்கைப் பதிவேடு",             shortEn: "Audit Trail",         labelTa: "10. தணிக்கைப் பதிவேடு (Audit Trail)" },
   { key: "midTermMaster",     cardId: "admModuleCardMidTermMaster",    num: 11, icon: "📈", shortTa: "தேர்ச்சிப் பகுப்பாய்வு அறிக்கை", shortEn: "Result Analysis",     labelTa: "11. தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (Result Analysis)" },
-  { key: "officeUsers",       cardId: "admModuleCardOfficeUsers",      num: 12, icon: "👥", shortTa: "அலுவலகப் பயனர்கள் & DEO",       shortEn: "Office Users RBAC",   labelTa: "12. அலுவலகப் பணியாளர்கள் & DEO அதிகாரங்கள்" }
+  { key: "officeUsers",       cardId: "admModuleCardOfficeUsers",      num: 12, icon: "👥", shortTa: "அலுவலகப் பயனர்கள் & DEO",       shortEn: "Office Users RBAC",   labelTa: "12. அலுவலகப் பணியாளர்கள் & DEO அதிகாரங்கள்" },
+  { key: "examCentres",       cardId: "admModuleCardExamCentres",      num: 13, icon: "🏫", shortTa: "தேர்வு மையங்கள் (10 & 12)",     shortEn: "Exam Centres (10&12)", labelTa: "13. தேர்வு மையங்கள் (10 & 12 பொது & செய்முறை)" }
 ];
 
 const PORTAL_ACTION_RIGHTS_CATALOG = [
@@ -43550,7 +43704,7 @@ const OFFICE_ROLE_PRESETS = {
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
-    allowedModules: ["ebsMaster", "examDutyAllotment", "midTermMaster", "hssGroups"],
+    allowedModules: ["ebsMaster", "examCentres", "examDutyAllotment", "midTermMaster", "hssGroups", "emisStaff"],
     actions: { canView: true, canEdit: true, canApprove: false, canDelete: false, canSendCircular: false, canManageUsers: false }
   },
   "CLERK_EST": {
@@ -43759,7 +43913,7 @@ const DEFAULT_OFFICE_USERS_SEED = [
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
     status: "ACTIVE",
-    allowedModules: ["ebsMaster", "examDutyAllotment", "midTermMaster", "hssGroups"],
+    allowedModules: ["ebsMaster", "examCentres", "examDutyAllotment", "midTermMaster", "hssGroups", "emisStaff"],
     actions: { canView: true, canEdit: true, canApprove: false, canDelete: false, canSendCircular: false, canManageUsers: false },
     updatedAt: "16/11/2026"
   },
@@ -47913,7 +48067,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v5.7) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v8.2) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -47975,7 +48129,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v5.7)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v8.2)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -47984,7 +48138,7 @@ function openPortalShortcutModal() {
         <div style="background:#f0f9ff; border:1.5px solid #7dd3fc; border-left:5px solid #0284c7; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
           <div style="font-size:0.90rem; font-weight:900; color:#0c4a6e;">💡 ஏன் செயலிக்கு (App) பதிலாக நேரடி Shortcut பயன்படுத்த வேண்டும்?</div>
           <div style="font-size:0.79rem; color:#0369a1; font-weight:700; margin-top:4px; line-height:1.5;">
-            பழைய செயலி (App) முறையினால் சில பள்ளிகளுக்குப் புதிய மேம்பாடுகள் உடனடியாகப் புதுப்பிக்கப்படாமல் பழைய பதிப்பே (Old Version) காட்டப்பட்டது. அதனைத் தவிர்த்து, <strong>ஒவ்வொரு முறை திறக்கும்போதும் 100% சமீபத்திய நேரடிப் பதிப்பு (Live Version v5.7)</strong> மட்டுமே திறக்கும் வகையில் இந்த <strong>Shortcut</strong> வசதி அமைக்கப்பட்டுள்ளது.
+            பழைய செயலி (App) முறையினால் சில பள்ளிகளுக்குப் புதிய மேம்பாடுகள் உடனடியாகப் புதுப்பிக்கப்படாமல் பழைய பதிப்பே (Old Version) காட்டப்பட்டது. அதனைத் தவிர்த்து, <strong>ஒவ்வொரு முறை திறக்கும்போதும் 100% சமீபத்திய நேரடிப் பதிப்பு (Live Version v8.2)</strong> மட்டுமே திறக்கும் வகையில் இந்த <strong>Shortcut</strong> வசதி அமைக்கப்பட்டுள்ளது.
           </div>
         </div>
 
@@ -49951,6 +50105,36 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
       return r;
     };
   }
+  if (typeof openAdminSchoolMidTermDirect === "function") {
+    const _v76OrigOpenSchMt = openAdminSchoolMidTermDirect;
+    openAdminSchoolMidTermDirect = function(uNo) {
+      if (!window.isCurrentActorSuperAdmin()) {
+        showBlockedSchoolEntryToast();
+        return false;
+      }
+      const res = _v76OrigOpenSchMt.apply(this, arguments);
+      try {
+        if (uNo && typeof pullSingleSchoolDataFromFirebase === "function") {
+          pullSingleSchoolDataFromFirebase(String(uNo).trim()).then(() => {
+            if (typeof renderSchoolMidTermModule === "function") renderSchoolMidTermModule();
+          }).catch(() => {});
+        }
+      } catch (e) {}
+      return res;
+    };
+  }
+
+  if (typeof triggerAdminDirectSchoolLogin === "function") {
+    const _v76OrigTrigDirect = triggerAdminDirectSchoolLogin;
+    triggerAdminDirectSchoolLogin = function() {
+      if (!window.isCurrentActorSuperAdmin()) {
+        showBlockedSchoolEntryToast();
+        return false;
+      }
+      return _v76OrigTrigDirect.apply(this, arguments);
+    };
+  }
+
   if (typeof openAdminMidTermSchoolDirect === "function") {
     const _v61PrevOpenMt = openAdminMidTermSchoolDirect;
     openAdminMidTermSchoolDirect = function(uNo) {
@@ -52286,6 +52470,2876 @@ onEbsF2SubjectMediumChange = function(subKey, medField, val) {
       return res;
     };
   }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_RA_BLANK_ZEROS_NO_EMPTY_ROWS_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65RaCleanApplied) return;
+  window.__ceosvgV65RaCleanApplied = true;
+
+  // Replace standalone "0" (and "0%", "0.00%") inside <td> cells of Result Analysis Form-I(1) & Form-I(2) with blank ""
+  // Also strip any residual blank/empty <tr> rows in Subject Performance tables.
+  function cleanResultAnalysisReportHtmlZerosAndBlankRows(htmlStr) {
+    if (!htmlStr || typeof htmlStr !== "string") return htmlStr;
+    try {
+      if (typeof document !== "undefined" && typeof document.createElement === "function") {
+        const wrap = document.createElement("div");
+        wrap.innerHTML = htmlStr;
+        const sheets = wrap.querySelectorAll(".ra-report-sheet");
+        const roots = sheets.length > 0 ? Array.from(sheets) : [wrap];
+        roots.forEach(root => {
+          // 1) Remove any <td> that contains strictly 0 / 0.0 / 0.00 / 0% / 0.00%
+          root.querySelectorAll("td").forEach(td => {
+            if (td.querySelector("table, input, select, button")) return;
+            const txt = String(td.textContent || "").trim();
+            if (txt === "0" || txt === "0.0" || txt === "0.00" || txt === "0%" || txt === "0.00%") {
+              td.innerHTML = "";
+            }
+          });
+          // 2) In Subject Performance tables (tbody rows with >= 15 cells), remove rows with empty teacher & subject
+          root.querySelectorAll("tbody tr").forEach(tr => {
+            const cells = tr.querySelectorAll("td");
+            if (cells.length >= 15) {
+              const teacherTxt = String(cells[1]?.textContent || "").trim();
+              const subTxt = String(cells[2]?.textContent || "").trim();
+              if (!teacherTxt && !subTxt) {
+                tr.remove();
+              }
+            }
+          });
+        });
+        return wrap.innerHTML;
+      }
+    } catch (e) {}
+    // Regex fallback if DOM not available
+    return htmlStr.replace(/(<td\b[^>]*>)\s*(?:0|0\.0+|0(?:\.0+)?%)\s*(<\/td>)/gi, "$1$2");
+  }
+
+  window.cleanResultAnalysisReportHtmlZerosAndBlankRows = cleanResultAnalysisReportHtmlZerosAndBlankRows;
+
+  // Wrap 10th Form-I(1)
+  if (typeof buildMidTermForm1_1ExactHtml === "function") {
+    const _v65PrevF11 = buildMidTermForm1_1ExactHtml;
+    buildMidTermForm1_1ExactHtml = function(calc, forPrint) {
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v65PrevF11.apply(this, arguments));
+    };
+  }
+  // Wrap 10th Form-I(2)
+  if (typeof buildMidTermForm1_2ExactHtml === "function") {
+    const _v65PrevF12 = buildMidTermForm1_2ExactHtml;
+    buildMidTermForm1_2ExactHtml = function(calc, forPrint) {
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v65PrevF12.apply(this, arguments));
+    };
+  }
+  // Wrap 12th Form-I(1)
+  if (typeof build12thForm2_1ExactHtml === "function") {
+    const _v65Prev12F1 = build12thForm2_1ExactHtml;
+    build12thForm2_1ExactHtml = function(calc, forPrint) {
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v65Prev12F1.apply(this, arguments));
+    };
+  }
+  // Wrap 10th & 12th SinglePageTableHtml (used directly by downloadSchoolMidTermFormsPdfLandscape)
+  if (typeof buildMidTermForm1_2SinglePageTableHtml === "function") {
+    const _v68Prev10Single = buildMidTermForm1_2SinglePageTableHtml;
+    buildMidTermForm1_2SinglePageTableHtml = function(calc, pageRows, pageIdx, totalPages, forPrint) {
+      const cleanRows = Array.isArray(pageRows) ? pageRows.filter(r => r && !r.isBlank) : pageRows;
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v68Prev10Single.call(this, calc, cleanRows, pageIdx, totalPages, forPrint));
+    };
+  }
+  if (typeof build12thForm2_2SinglePageTableHtml === "function") {
+    const _v68Prev12Single = build12thForm2_2SinglePageTableHtml;
+    build12thForm2_2SinglePageTableHtml = function(calc, pageRows, pageIdx, totalPages, forPrint) {
+      const cleanRows = Array.isArray(pageRows) ? pageRows.filter(r => r && !r.isBlank) : pageRows;
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v68Prev12Single.call(this, calc, cleanRows, pageIdx, totalPages, forPrint));
+    };
+  }
+  // Wrap 12th Form-I(2)
+  if (typeof build12thForm2_2ExactHtml === "function") {
+    const _v65Prev12F2 = build12thForm2_2ExactHtml;
+    build12thForm2_2ExactHtml = function(calc, forPrint) {
+      return cleanResultAnalysisReportHtmlZerosAndBlankRows(_v65Prev12F2.apply(this, arguments));
+    };
+  }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_12TH_EXCEL_COPY_PASTE_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65Class12PasteApplied) return;
+  window.__ceosvgV65Class12PasteApplied = true;
+
+  function getClass12SectionSubjects(rec, secId) {
+    const secs = Array.isArray(rec && rec.sections) ? rec.sections : [];
+    const targetSec = secs.find(s => s && String(s.secId) === String(secId)) || secs[0];
+    if (targetSec && Array.isArray(targetSec.groupSubjects) && targetSec.groupSubjects.length >= 6) {
+      return targetSec.groupSubjects.slice(0, 6);
+    }
+    return ["TAMIL", "ENGLISH", "PHYSICS", "CHEMISTRY", "COMPUTER_SCIENCE", "MATHS"];
+  }
+
+  function get12SubDisplayLabel(sk) {
+    if (typeof HSC12_SUBJECT_MAP === "object" && HSC12_SUBJECT_MAP && HSC12_SUBJECT_MAP[sk]) {
+      const m = HSC12_SUBJECT_MAP[sk];
+      return m.labelTa || m.shortEn || sk;
+    }
+    return sk;
+  }
+
+  function refreshBulkPasteModalForActiveStd() {
+    const is12 = (typeof _activeResultAnalysisStd !== "undefined" && String(_activeResultAnalysisStd) === "12");
+    const modal = document.getElementById("midTermBulkPasteModal");
+    if (!modal) return;
+    const titleEl = modal.querySelector(".modal-title");
+    const guideEl = modal.querySelector("div[style*='#f0fdfa']");
+    const secSel = document.getElementById("mtBulkPasteDefaultSec");
+    const ta = document.getElementById("mtBulkPasteTextarea");
+
+    if (!is12) {
+      if (titleEl) titleEl.innerHTML = "📋 Excel / தாள் பட்டியலிலிருந்து 10-ஆம் வகுப்பு மாணவர் பெயர் &amp; மதிப்பெண்களை Copy-Paste செய்தல்";
+      if (guideEl) {
+        guideEl.innerHTML = `💡 <strong>பயன்படுத்தும் முறை (10-ஆம் வகுப்பு):</strong> உங்கள் Excel கோப்பில் உள்ள மாணவர் வரிசைகளை (<strong>Roll No, பெயர் (தமிழில்), பெயர் (ஆங்கிலத்தில்), பாலினம் (M/F), பிரிவு (A/B), தமிழ், ஆங்கிலம், கணிதம், அறிவியல், சமூக அறிவியல்</strong>) அப்படியே Copy செய்து கீழே உள்ள பெட்டியில் Paste செய்யவும். (வருகை புரியாத பாடத்திற்கு <code>AB</code> என்றும், விலக்கு எனில் <code>EX</code> என்றும் குறிப்பிடலாம்).`;
+      }
+      if (ta) {
+        ta.placeholder = "உதாரணம் (Roll No, தமிழ் பெயர், ஆங்கிலப் பெயர், பாலினம், பிரிவு, 5 பாட மதிப்பெண்கள்):\n1001\tஅருண் குமார் க\tARUN KUMAR K\tM\tA\t78\t65\t84\t91\t88";
+      }
+      return;
+    }
+
+    // Class 12 mode
+    const uNo = String((activeSchoolSession && activeSchoolSession.uNo) || "").trim();
+    const rec = (uNo && typeof getSchool12thExamRecord === "function")
+      ? getSchool12thExamRecord(uNo, _activeMidTermTermKey)
+      : null;
+
+    const secs = (rec && Array.isArray(rec.sections) && rec.sections.length > 0)
+      ? rec.sections
+      : [{ secId: "A" }, { secId: "B" }, { secId: "C" }, { secId: "D" }];
+
+    if (secSel) {
+      const currentActiveSec = (typeof _mtStuFilterSec !== "undefined" && _mtStuFilterSec && _mtStuFilterSec !== "ALL" && _mtStuFilterSec !== "ALL_EXPLICIT")
+        ? _mtStuFilterSec
+        : ((typeof _raSelectedSecId !== "undefined" && _raSelectedSecId) ? _raSelectedSecId : secs[0].secId);
+      secSel.innerHTML = secs.map(s => {
+        const grpTxt = Array.isArray(s.groupSubjects) ? ` (${s.groupSubjects.slice(2, 6).join("/")})` : "";
+        return `<option value="${escapeHtmlAttr(s.secId)}">Section ${escapeHtmlAttr(s.secId)}${escapeHtmlAttr(grpTxt)}</option>`;
+      }).join("");
+      if (secs.some(s => String(s.secId) === String(currentActiveSec))) {
+        secSel.value = currentActiveSec;
+      }
+      secSel.onchange = function() { updateClass12GuideForSelectedSec(); };
+    }
+
+    function updateClass12GuideForSelectedSec() {
+      const chosenSec = (secSel && secSel.value) ? secSel.value : secs[0].secId;
+      const subs6 = getClass12SectionSubjects(rec, chosenSec);
+      const subNamesTa = subs6.map(get12SubDisplayLabel);
+      if (titleEl) {
+        titleEl.innerHTML = `📋 12-ஆம் வகுப்பு (பிரிவு ${escapeHtmlAttr(chosenSec)}) – Excel மதிப்பெண் Copy-Paste`;
+      }
+      if (guideEl) {
+        guideEl.innerHTML = `💡 <strong>பயன்படுத்தும் முறை (12-ஆம் வகுப்பு – 6 பாடங்கள்):</strong><br>` +
+          `1️⃣ <strong>முழு வரிசை Paste:</strong> Excel-லிருந்து <code>Roll No, தமிழ் பெயர், ஆங்கிலப் பெயர், பாலினம் (M/F), பிரிவு, ${escapeHtmlAttr(subNamesTa.join(", "))}</code> ஆகிய வரிசைகளை Copy-Paste செய்யலாம்.<br>` +
+          `2️⃣ <strong>மதிப்பெண்கள் மட்டும் Paste (6 நெடுவரிசைகள்):</strong> பிரிவு <strong>${escapeHtmlAttr(chosenSec)}</strong>-ல் ஏற்கனவே மாணவர்கள் இருந்தால், அவர்களின் 6 பாட மதிப்பெண்களை மட்டும் (${escapeHtmlAttr(subNamesTa.join(" | "))}) நேரடியாக Copy-Paste செய்தாலும் வரிசைப்படி மதிப்பெண்கள் உடனடியாக நிரப்பப்படும்! (<code>AB</code> = Absent, <code>EX</code> = Exempt).`;
+      }
+      if (ta) {
+        ta.placeholder = `உதாரணம் 1 (முழு வரிசை – Roll No, தமிழ் பெயர், ஆங்கிலப் பெயர், பாலினம், பிரிவு, 6 பாடங்கள்):\n1201\tகார்த்திக் க\tKARTHIK K\tM\t${chosenSec}\t82\t76\t88\t91\t94\t85\n\nஉதாரணம் 2 (ஏற்கனவே உள்ள மாணவர்களுக்கு 6 பாட மதிப்பெண்கள் மட்டும்):\n82\t76\t88\t91\t94\t85\n75\t68\t79\t84\t90\t77`;
+      }
+    }
+    updateClass12GuideForSelectedSec();
+  }
+
+  if (typeof openMidTermBulkPasteModal === "function") {
+    const _v65OrigOpenPaste = openMidTermBulkPasteModal;
+    openMidTermBulkPasteModal = function() {
+      refreshBulkPasteModalForActiveStd();
+      const ta = document.getElementById("mtBulkPasteTextarea");
+      if (ta) ta.value = "";
+      return _v65OrigOpenPaste.apply(this, arguments);
+    };
+  }
+
+  if (typeof processMidTermBulkPasteStudents === "function") {
+    const _v65OrigProcessPaste = processMidTermBulkPasteStudents;
+    processMidTermBulkPasteStudents = function() {
+      const is12 = (typeof _activeResultAnalysisStd !== "undefined" && String(_activeResultAnalysisStd) === "12");
+      if (!is12) {
+        return _v65OrigProcessPaste.apply(this, arguments);
+      }
+
+      if (!activeSchoolSession) return;
+      const uNo = String(activeSchoolSession.uNo);
+      const rawText = (document.getElementById("mtBulkPasteTextarea")?.value || "").trim();
+      if (!rawText) {
+        if (typeof showToast === "function") showToast("⚠️ தயவுசெய்து Excel வரிசைகளை Paste செய்யவும்.", "#f59e0b");
+        return;
+      }
+
+      const defSec = (document.getElementById("mtBulkPasteDefaultSec")?.value || "A").trim();
+      const defGender = (document.getElementById("mtBulkPasteDefaultGender")?.value || "Male").trim();
+      const replaceAll = Boolean(document.getElementById("mtBulkPasteReplaceAll")?.checked);
+      const rec = getSchool12thExamRecord(uNo, _activeMidTermTermKey);
+      if (!rec) return;
+      if (!Array.isArray(rec.students)) rec.students = [];
+
+      const isSplitTerm = (typeof isSplitMarkExamTerm === "function") ? isSplitMarkExamTerm(_activeMidTermTermKey) : false;
+
+      if (replaceAll) {
+        // Replace only the selected section's students if multiple sections exist, or all if single section
+        if ((rec.sections || []).length > 1) {
+          rec.students = rec.students.filter(st => String(st.section || "") !== defSec);
+        } else {
+          rec.students = [];
+        }
+      }
+
+      const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const existingSecStudents = rec.students.filter(st => String(st.section || "") === defSec);
+
+      let added = 0;
+      let updated = 0;
+      let marksOnlyCursor = 0;
+
+      function isMarkToken(tok) {
+        const s = String(tok || "").trim().toUpperCase();
+        if (s === "" || s === "-" || s === "AB" || s === "EX" || s === "A") return true;
+        return /^\d{1,3}(\.\d+)?$/.test(s) && Number(s) <= 100;
+      }
+
+      function apply6MarksToStudent(stuObj, subs6, mVals) {
+        if (!stuObj.marks || typeof stuObj.marks !== "object") stuObj.marks = {};
+        if (isSplitTerm && (!stuObj.splitMarks || typeof stuObj.splitMarks !== "object")) {
+          stuObj.splitMarks = {};
+        }
+        subs6.forEach((sk, i) => {
+          const rawV = String(mVals[i] !== undefined ? mVals[i] : "").trim().toUpperCase();
+          const cleanV = (rawV === "-" ? "" : (rawV === "A" ? "AB" : rawV));
+          stuObj.marks[sk] = cleanV;
+          if (isSplitTerm && typeof getSubjectSplitRule === "function") {
+            const rule = getSubjectSplitRule("12", sk);
+            if (cleanV === "AB" || cleanV === "EX" || cleanV === "") {
+              stuObj.splitMarks[sk] = { th: cleanV, pr: cleanV === "AB" ? "AB" : "", in: cleanV === "AB" ? "AB" : "" };
+            } else {
+              const totNum = Math.min(100, Math.max(0, Math.round(Number(cleanV) || 0)));
+              if (rule && rule.splitMode === "TH_PR_INT") {
+                const inM = Math.min(rule.maxInt || 10, totNum);
+                const prM = Math.min(rule.maxPr || 20, Math.max(0, totNum - inM));
+                const thM = Math.min(rule.maxTh || 70, Math.max(0, totNum - inM - prM));
+                stuObj.splitMarks[sk] = { th: String(thM), pr: String(prM), in: String(inM) };
+              } else if (rule && rule.splitMode === "PR_INT_VOC") {
+                const inM = Math.min(rule.maxInt || 25, totNum);
+                const prM = Math.min(rule.maxPr || 75, Math.max(0, totNum - inM));
+                stuObj.splitMarks[sk] = { th: "", pr: String(prM), in: String(inM) };
+              } else {
+                const inM = Math.min((rule && rule.maxInt) || 10, totNum);
+                const thM = Math.min((rule && rule.maxTh) || 90, Math.max(0, totNum - inM));
+                stuObj.splitMarks[sk] = { th: String(thM), pr: "", in: String(inM) };
+              }
+            }
+          }
+        });
+      }
+
+      lines.forEach((line, idx) => {
+        const cols = line.includes("\t") ? line.split("\t").map(c => c.trim()) : line.split(",").map(c => c.trim());
+        if (cols.length < 2) return;
+        // Skip header row
+        if (/^(s\.?no|roll|வ\.?எண்|tamil|தமிழ்|reg\.?no)/i.test(cols[0]) && !isMarkToken(cols[0])) return;
+
+        // Case A: Marks-Only paste (6 columns, all look like marks) -> update existing section students in order!
+        if (cols.length === 6 && cols.every(isMarkToken) && existingSecStudents[marksOnlyCursor]) {
+          const targetStu = existingSecStudents[marksOnlyCursor++];
+          const subs6 = getClass12SectionSubjects(rec, targetStu.section || defSec);
+          apply6MarksToStudent(targetStu, subs6, cols);
+          updated++;
+          return;
+        }
+
+        let rollNo = "", nameTa = "", nameEn = "", name = "", gender = defGender, sec = defSec;
+        let mVals = ["", "", "", "", "", ""];
+
+        if (cols.length >= 11) {
+          rollNo = cols[0];
+          nameTa = cols[1];
+          nameEn = cols[2];
+          gender = /^(f|female|பெண்|g)/i.test(cols[3]) ? "Female" : "Male";
+          sec = cols[4].toUpperCase().replace(/[^A-Z0-9]/g, "") || defSec;
+          mVals = cols.slice(5, 11);
+        } else if (cols.length === 10) {
+          rollNo = cols[0];
+          name = cols[1];
+          gender = /^(f|female|பெண்|g)/i.test(cols[2]) ? "Female" : "Male";
+          sec = cols[3].toUpperCase().replace(/[^A-Z0-9]/g, "") || defSec;
+          mVals = cols.slice(4, 10);
+        } else if (cols.length === 9) {
+          rollNo = cols[0];
+          nameTa = cols[1];
+          nameEn = cols[2];
+          mVals = cols.slice(3, 9);
+        } else if (cols.length === 8) {
+          rollNo = cols[0];
+          name = cols[1];
+          mVals = cols.slice(2, 8);
+        } else if (cols.length === 7) {
+          rollNo = String(1200 + rec.students.length + 1);
+          name = cols[0];
+          mVals = cols.slice(1, 7);
+        } else {
+          rollNo = String(1200 + rec.students.length + 1);
+          name = cols[0];
+          mVals = cols.slice(1, 7);
+        }
+
+        const subs6 = getClass12SectionSubjects(rec, sec);
+
+        // If rollNo matches an existing student in that section, update their marks in place
+        const existingMatch = (!replaceAll && rollNo)
+          ? rec.students.find(st => st && String(st.rollNo || "").trim() === String(rollNo).trim() && String(st.section || "") === sec)
+          : null;
+
+        if (existingMatch) {
+          if (nameTa) existingMatch.nameTa = nameTa;
+          if (nameEn) existingMatch.nameEn = nameEn;
+          if (name && !existingMatch.name) existingMatch.name = name;
+          apply6MarksToStudent(existingMatch, subs6, mVals);
+          if (typeof normalizeStudentNamesTaEn === "function") normalizeStudentNamesTaEn(existingMatch);
+          updated++;
+        } else {
+          const stuObj = {
+            id: "STU12_" + Date.now() + "_" + idx,
+            rollNo: rollNo || String(1200 + rec.students.length + 1),
+            name: name || nameEn || nameTa,
+            nameTa: nameTa,
+            nameEn: nameEn,
+            gender: gender,
+            section: sec,
+            status: "PRESENT",
+            marks: {}
+          };
+          apply6MarksToStudent(stuObj, subs6, mVals);
+          if (typeof normalizeStudentNamesTaEn === "function") normalizeStudentNamesTaEn(stuObj);
+          rec.students.push(stuObj);
+          added++;
+        }
+      });
+
+      if (typeof syncSchool12thClassMasterFromRecord === "function") {
+        syncSchool12thClassMasterFromRecord(uNo, rec);
+      }
+      saveExamResultAnalysisStore();
+      closeMidTermBulkPasteModal();
+      renderSchoolMidTermModule();
+      const msgParts = [];
+      if (added > 0) msgParts.push(`${added} புதிய மாணவர்கள் சேர்க்கப்பட்டனர்`);
+      if (updated > 0) msgParts.push(`${updated} மாணவர்களின் மதிப்பெண்கள் புதுப்பிக்கப்பட்டன`);
+      if (typeof showToast === "function") {
+        showToast(`✅ 12-ஆம் வகுப்பு: ${msgParts.join(" & ") || "மதிப்பெண்கள் பதிவேற்றப்பட்டன"} – FORM-II(1) & II(2) கணக்கிடப்பட்டன!`, "#16a34a", true);
+      }
+    };
+  }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_ADMIN_PASSWORD_CHANGE_FIX_APPLIED ===
+(function() {
+  if (window.__ceosvgV65AdminPassFixApplied) return;
+  window.__ceosvgV65AdminPassFixApplied = true;
+
+  window.toggleAdminSecPassVisibility = function() {
+    ["admSecCurrentPass", "admSecNewPass", "admSecConfirmPass"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.type = (el.type === "password") ? "text" : "password";
+    });
+  };
+
+  // Sync latest CEOSVG_ADMIN_SECURITY_VAULT from Firebase before opening modal
+  const _v65OrigOpenVaultModal = (typeof openAdminSecurityVaultModal === "function") ? openAdminSecurityVaultModal : null;
+  window.openAdminSecurityVaultModal = async function() {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      try {
+        const r = await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"));
+        if (r && r.ok) {
+          const remoteVault = await r.json();
+          if (remoteVault && typeof remoteVault === "object" && remoteVault.customAdminPassHash) {
+            safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", remoteVault, true);
+          }
+        }
+      } catch (e) {}
+    }
+    const confInp = document.getElementById("admSecConfirmPass");
+    if (confInp) confInp.value = "";
+    if (_v65OrigOpenVaultModal) _v65OrigOpenVaultModal();
+    const badge = document.getElementById("admSecCurrentVaultStatusBadge");
+    const secVault = safeGetStorage("CEOSVG_ADMIN_SECURITY_VAULT", null) || {};
+    if (badge) {
+      badge.textContent = secVault.customAdminPassHash
+        ? `🟢 நிலை: தனிப்பயன் நிர்வாகி கடவுச்சொல் செயலில் உள்ளது (${secVault.updatedAt || "Cloud Synced"})`
+        : "🟢 நிலை: இயல்புநிலை Salted SHA-256 Hash செயலில் உள்ளது";
+    }
+  };
+
+  // Strictly enforce customAdminPassHash when set (so old default password stops working after change!)
+  window.isValidAdminLogin = function(u, p) {
+    const userHash = computeAdminSaltedHash(u);
+    if (!userHash || !_ADMIN_USER_SHA256_HASHES.includes(userHash)) return false;
+    const rawPass = String(p || "").trim();
+    if (!rawPass) return false;
+    const passHashUpper = computeAdminSaltedHash(rawPass);
+    const passHashExact = sha256HexSync(_ADMIN_AUTH_SALT + rawPass);
+    const secVault = safeGetStorage("CEOSVG_ADMIN_SECURITY_VAULT", null) || {};
+
+    if (secVault && (secVault.customAdminPassHash || secVault.customAdminPassHashExact)) {
+      const ok = Boolean(
+        (secVault.customAdminPassHashExact && passHashExact === secVault.customAdminPassHashExact) ||
+        (secVault.customAdminPassHash && (passHashUpper === secVault.customAdminPassHash || passHashExact === secVault.customAdminPassHash))
+      );
+      if (ok && typeof verifyAdminAuthWithCloudAsync === "function") {
+        verifyAdminAuthWithCloudAsync(userHash, secVault.customAdminPassHashExact || secVault.customAdminPassHash);
+      }
+      return ok;
+    }
+
+    const isDefaultValid = Boolean(passHashUpper && _ADMIN_PASS_SHA256_HASHES.includes(passHashUpper));
+    if (isDefaultValid && typeof verifyAdminAuthWithCloudAsync === "function") {
+      verifyAdminAuthWithCloudAsync(userHash, passHashUpper);
+    }
+    return isDefaultValid;
+  };
+
+  // Upgrade handleAdminPasswordHashUpdate to:
+  // 1) Verify current password against latest Firebase vault
+  // 2) Verify Confirm Password matches
+  // 3) Store both exact-case & normalized SHA-256 hashes
+  // 4) Explicitly PUT to Firebase ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT AND Apps Script!
+  window.handleAdminPasswordHashUpdate = async function(event) {
+    if (event && typeof event.preventDefault === "function") event.preventDefault();
+    const curPass = (document.getElementById("admSecCurrentPass")?.value || "").trim();
+    const newPass = (document.getElementById("admSecNewPass")?.value || "").trim();
+    const confInp = document.getElementById("admSecConfirmPass");
+    const confPass = confInp ? (confInp.value || "").trim() : newPass;
+
+    // Fetch latest Firebase vault first so current password validation is never stale
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      try {
+        const r = await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"));
+        if (r && r.ok) {
+          const remoteVault = await r.json();
+          if (remoteVault && typeof remoteVault === "object" && remoteVault.customAdminPassHash) {
+            safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", remoteVault, true);
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (!isValidAdminLogin("CEOSVG_ADMIN", curPass)) {
+      if (typeof showToast === "function") showToast("❌ தற்போதைய நிர்வாகி கடவுச்சொல் தவறானது!", "#ef4444");
+      return;
+    }
+    if (newPass.length < 6) {
+      if (typeof showToast === "function") showToast("⚠️ புதிய கடவுச்சொல் குறைந்தது 6 எழுத்துகள் இருக்க வேண்டும்.", "#f59e0b");
+      return;
+    }
+    if (confInp && newPass !== confPass) {
+      if (typeof showToast === "function") showToast("⚠️ புதிய கடவுச்சொல்லும் உறுதிப்படுத்தல் கடவுச்சொல்லும் பொருந்தவில்லை!", "#ef4444");
+      return;
+    }
+
+    const newHashUpper = computeAdminSaltedHash(newPass);
+    const newHashExact = sha256HexSync(_ADMIN_AUTH_SALT + newPass);
+    const vaultPayload = {
+      customAdminPassHash: newHashUpper,
+      customAdminPassHashExact: newHashExact,
+      hashAlgorithm: "SHA-256-SALTED-V2",
+      updatedAt: new Date().toLocaleString("en-IN"),
+      updatedTs: Date.now()
+    };
+
+    // 1) Save locally
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("CEOSVG_ADMIN_SECURITY_VAULT", JSON.stringify(vaultPayload));
+      }
+    } catch (e) {}
+    safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", vaultPayload, true);
+
+    // 2) Explicitly push to Firebase RTDB so it persists across devices, browsers, and re-logins!
+    let fbSaved = false;
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      try {
+        const fbRes = await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"), {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(vaultPayload)
+        });
+        fbSaved = Boolean(fbRes && fbRes.ok);
+      } catch (e) {}
+    }
+
+    // 3) Sync to Google Apps Script Vault
+    if (typeof sendToAppsScript === "function") {
+      sendToAppsScript({
+        action: "save_api_secrets_vault",
+        adminPassHash: newHashExact,
+        updatedAt: vaultPayload.updatedAt
+      }).catch(() => {});
+    }
+
+    if (typeof closeAdminSecurityVaultModal === "function") closeAdminSecurityVaultModal();
+    if (typeof showToast === "function") {
+      showToast(
+        fbSaved
+          ? "🔐 புதிய நிர்வாகி கடவுச்சொல் Firebase மேகக்கணி & உள்ளூர் பெட்டகத்தில் வெற்றிகரமாக மாற்றப்பட்டுச் சேமிக்கப்பட்டது!"
+          : "🔐 புதிய நிர்வாகி கடவுச்சொல் உள்ளூரில் சேமிக்கப்பட்டது (Firebase இணைப்பைச் சரிபார்க்கவும்).",
+        fbSaved ? "#16a34a" : "#f59e0b",
+        true
+      );
+    }
+  };
+
+  // Also sync resetCustomAdminPasswordHash to Firebase!
+  window.resetCustomAdminPasswordHash = async function() {
+    if (!confirm("தனிப்பயன் நிர்வாகி கடவுச்சொல்லை நீக்கி இயல்புநிலை கடவுச்சொல்லுக்கு மீட்டமைக்கவா?")) return;
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("CEOSVG_ADMIN_SECURITY_VAULT", "{}");
+      }
+    } catch (e) {}
+    safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", {}, true);
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      }).catch(() => {});
+    }
+    const prev = document.getElementById("admSecLiveHashPreview");
+    if (prev) prev.textContent = `Active Default Salted SHA-256 Hash: ${_ADMIN_PASS_SHA256_HASHES[0]}`;
+    const badge = document.getElementById("admSecCurrentVaultStatusBadge");
+    if (badge) badge.textContent = "🟢 நிலை: இயல்புநிலை Salted SHA-256 Hash மீட்டமைக்கப்பட்டது";
+    if (typeof showToast === "function") showToast("🔄 இயல்புநிலை நிர்வாகி கடவுச்சொல் Firebase & உள்ளூர் இரண்டிலும் மீட்டமைக்கப்பட்டது.", "#0284c7", true);
+  };
+
+  // Ensure handleAdminLoginSubmit fetches latest CEOSVG_ADMIN_SECURITY_VAULT from Firebase before verifying!
+  if (typeof handleAdminLoginSubmit === "function") {
+    const _v65OrigAdminLogin = handleAdminLoginSubmit;
+    handleAdminLoginSubmit = async function(event) {
+      if (event && typeof event.preventDefault === "function") event.preventDefault();
+      const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+      if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+        try {
+          const r = await fetch(buildFirebaseEndpoint("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"));
+          if (r && r.ok) {
+            const remoteVault = await r.json();
+            if (remoteVault && typeof remoteVault === "object") {
+              safeSetStorage("CEOSVG_ADMIN_SECURITY_VAULT", remoteVault, true);
+            }
+          }
+        } catch (e) {}
+      }
+      return _v65OrigAdminLogin(event);
+    };
+  }
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V65_CLOUDFLARE_KV_HYBRID_CACHE_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV65CfKvHybridApplied) return;
+  window.__ceosvgV65CfKvHybridApplied = true;
+
+  const CF_KV_STORAGE_KEY = "CEOSVG_CF_KV_PROXY_URL";
+  // Optional permanent default Worker URL (Admin can also configure live in Cloud Settings -> Firebase)
+  const DEFAULT_CF_KV_PROXY_URL = "https://ceosvg-fb-cache.poovalingam1980.workers.dev";
+
+  let _cfKvStats = { kvHits: 0, kvMisses: 0, fbDirect: 0, fallbacks: 0 };
+
+  function normalizeCfKvUrl(raw) {
+    const s = String(raw || "").trim().replace(/\/+$/, "");
+    if (!s || !/^https:\/\/[a-z0-9.-]+/i.test(s)) return "";
+    return s;
+  }
+
+  function getActiveCfKvProxyUrl() {
+    try {
+      const saved = (typeof localStorage !== "undefined") ? localStorage.getItem(CF_KV_STORAGE_KEY) : "";
+      if (saved) return normalizeCfKvUrl(saved);
+    } catch (e) {}
+    return normalizeCfKvUrl(DEFAULT_CF_KV_PROXY_URL);
+  }
+
+  function updateCfKvStatusUi() {
+    const url = getActiveCfKvProxyUrl();
+    const inp = document.getElementById("cfgCfKvProxyUrl");
+    const badge = document.getElementById("cfKvStatusBadge");
+    const statsEl = document.getElementById("cfKvLiveStatsLine");
+    if (inp && !inp.value && url) inp.value = url;
+    if (badge) {
+      if (url) {
+        badge.style.background = "#dcfce7";
+        badge.style.color = "#166534";
+        badge.style.borderColor = "#86efac";
+        badge.textContent = "🟢 Hybrid KV Cache செயலில்";
+      } else {
+        badge.style.background = "#f1f5f9";
+        badge.style.color = "#334155";
+        badge.style.borderColor = "#cbd5e1";
+        badge.textContent = "⚪ இணைக்கப்படவில்லை (Direct Firebase)";
+      }
+    }
+    if (statsEl) {
+      statsEl.innerHTML = `📊 அமர்வு நிலை: KV Cache Hits: <strong style="color:#16a34a;">${_cfKvStats.kvHits}</strong> | KV Misses: <strong>${_cfKvStats.kvMisses}</strong> | Firebase Direct: <strong>${_cfKvStats.fbDirect}</strong> | Auto-Fallback: <strong>${_cfKvStats.fallbacks}</strong>`;
+    }
+  }
+
+  // High-read, low-write Firebase paths routed through Cloudflare Workers KV Read-Cache
+  const CACHEABLE_READ_PREFIXES = [
+    "ceosvg_live/school_summary_index",
+    "ceosvg_live/master_schools_by_uno",
+    "ceosvg_live/school_auth",
+    "ceosvg_live/site_maintenance",
+    "ceosvg_live/verified_otp_vault",
+    "ceosvg_live/exam_centres_10",
+    "ceosvg_live/exam_centres_12",
+    "ceosvg_live/stores/CEOSVG_PORTAL_CFG",
+    "ceosvg_live/stores/CEOSVG_MASTER_SCHOOLS",
+    "ceosvg_live/stores/CEOSVG_SCHOOL_AUTH",
+    "ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES",
+    "ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1",
+    "ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1",
+    "ceosvg_live/stores/CEOSVG_HSS_GROUP_MASTER_V1",
+    "ceosvg_live/stores/CEOSVG_CIRCULARS",
+    "ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT"
+  ];
+
+  function isCacheableFirebasePath(cleanPath) {
+    if (!cleanPath) return false;
+    return CACHEABLE_READ_PREFIXES.some(p => cleanPath === p || cleanPath.startsWith(p + "/"));
+  }
+
+  // Transparent Hybrid Fetch Interceptor:
+  // - Reads (GET) on high-read paths -> Cloudflare Workers KV Read-Cache (with instant automatic Firebase fallback)
+  // - Writes (PUT/PATCH/POST/DELETE) -> Direct Firebase RTDB (0% data loss) + immediate KV cache invalidation!
+  const _origWindowFetch = window.fetch.bind(window);
+  window.fetch = async function(input, init) {
+    const reqUrl = (typeof input === "string") ? input : (input && input.url ? input.url : "");
+    const method = String((init && init.method) || (input && input.method) || "GET").toUpperCase();
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined")
+      ? normalizeFirebaseDbUrl(firebaseDbUrl)
+      : "";
+    const cfUrl = getActiveCfKvProxyUrl();
+
+    if (cfUrl && fbBase && reqUrl.startsWith(fbBase + "/")) {
+      const relWithQuery = reqUrl.slice(fbBase.length + 1); // e.g. ceosvg_live/school_summary_index.json?shallow=true
+      const qIdx = relWithQuery.indexOf("?");
+      const relPathJson = qIdx >= 0 ? relWithQuery.slice(0, qIdx) : relWithQuery;
+      const queryPart = qIdx >= 0 ? relWithQuery.slice(qIdx) : "";
+      const cleanPath = relPathJson.replace(/\.json$/i, "");
+
+      if (method === "GET" && isCacheableFirebasePath(cleanPath) && !queryPart.includes("shallow=true")) {
+        try {
+          const kvResp = await _origWindowFetch(`${cfUrl}/${relPathJson}${queryPart}`, {
+            method: "GET",
+            headers: (init && init.headers) || undefined
+          });
+          if (kvResp && kvResp.ok) {
+            const xCache = String(kvResp.headers.get("X-Cache") || "");
+            if (xCache.includes("HIT")) _cfKvStats.kvHits++;
+            else _cfKvStats.kvMisses++;
+            updateCfKvStatusUi();
+            return kvResp;
+          }
+          _cfKvStats.fallbacks++;
+        } catch (e) {
+          _cfKvStats.fallbacks++;
+        }
+        // Instant seamless fallback to Firebase RTDB if Worker is unreachable
+        _cfKvStats.fbDirect++;
+        updateCfKvStatusUi();
+        return _origWindowFetch(input, init);
+      }
+
+      if (method === "PUT" || method === "PATCH" || method === "POST" || method === "DELETE") {
+        // 1) Always write 100% directly to Firebase RTDB first (0% data loss!)
+        const fbWriteResp = await _origWindowFetch(input, init);
+        // 2) Immediately invalidate affected KV cache key(s) in background
+        if (isCacheableFirebasePath(cleanPath)) {
+          _origWindowFetch(`${cfUrl}/__invalidate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ path: cleanPath })
+          }).catch(() => {});
+        }
+        return fbWriteResp;
+      }
+
+      _cfKvStats.fbDirect++;
+      updateCfKvStatusUi();
+    }
+
+    return _origWindowFetch(input, init);
+  };
+
+  // Auto-sync Cloudflare KV Proxy URL from Firebase CEOSVG_PORTAL_CFG so all 282 schools adopt it automatically!
+  async function syncCfKvUrlFromPortalCfg() {
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined")
+      ? normalizeFirebaseDbUrl(firebaseDbUrl)
+      : "";
+    if (!fbBase) return;
+    try {
+      const r = await _origWindowFetch(`${fbBase}/ceosvg_live/stores/CEOSVG_PORTAL_CFG/cfKvProxyUrl.json`);
+      if (r && r.ok) {
+        const remoteUrl = normalizeCfKvUrl(await r.json());
+        if (remoteUrl && remoteUrl !== getActiveCfKvProxyUrl()) {
+          localStorage.setItem(CF_KV_STORAGE_KEY, remoteUrl);
+          updateCfKvStatusUi();
+        }
+      }
+    } catch (e) {}
+  }
+
+  window.saveCfKvProxyUrlConfig = async function() {
+    const inp = document.getElementById("cfgCfKvProxyUrl");
+    const raw = inp ? inp.value.trim() : "";
+    if (!raw) {
+      localStorage.removeItem(CF_KV_STORAGE_KEY);
+      updateCfKvStatusUi();
+      const fbBase = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+      if (fbBase) {
+        _origWindowFetch(`${fbBase}/ceosvg_live/stores/CEOSVG_PORTAL_CFG/cfKvProxyUrl.json`, {
+          method: "DELETE"
+        }).catch(() => {});
+      }
+      if (typeof showToast === "function") showToast("⚪ Cloudflare KV Cache துண்டிக்கப்பட்டது (Direct Firebase மட்டும்).", "#64748b");
+      return;
+    }
+    const clean = normalizeCfKvUrl(raw);
+    if (!clean) {
+      if (typeof showToast === "function") showToast("⚠️ சரியான https:// Cloudflare Worker URL-ஐ உள்ளிடவும்.", "#ef4444");
+      return;
+    }
+    localStorage.setItem(CF_KV_STORAGE_KEY, clean);
+    updateCfKvStatusUi();
+    // Save to Firebase Portal Config so all 282 schools automatically use Cloudflare KV Read-Cache!
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (fbBase) {
+      await _origWindowFetch(`${fbBase}/ceosvg_live/stores/CEOSVG_PORTAL_CFG/cfKvProxyUrl.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(clean)
+      }).catch(() => {});
+    }
+    if (typeof showToast === "function") {
+      showToast("✅ Cloudflare Workers KV Read-Cache இணைக்கப்பட்டு அனைத்து 282 பள்ளிகளுக்கும் இயக்கப்பட்டது!", "#16a34a", true);
+    }
+  };
+
+  window.testCfKvProxyConnection = async function() {
+    const inp = document.getElementById("cfgCfKvProxyUrl");
+    const url = normalizeCfKvUrl((inp && inp.value) || getActiveCfKvProxyUrl());
+    if (!url) {
+      if (typeof showToast === "function") showToast("⚠️ முதலில் Cloudflare Worker URL-ஐ உள்ளிடவும்.", "#f59e0b");
+      return;
+    }
+    try {
+      const t0 = performance.now();
+      const r = await _origWindowFetch(`${url}/__health`);
+      const ms = Math.round(performance.now() - t0);
+      if (r && r.ok) {
+        const j = await r.json().catch(() => ({}));
+        if (url && typeof localStorage !== "undefined") {
+          localStorage.setItem(CF_KV_STORAGE_KEY, url);
+        }
+        updateCfKvStatusUi();
+        const fbBaseSave = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+        if (fbBaseSave && url) {
+          _origWindowFetch(`${fbBaseSave}/ceosvg_live/stores/CEOSVG_PORTAL_CFG/cfKvProxyUrl.json`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(url)
+          }).catch(() => {});
+        }
+        if (typeof showToast === "function") {
+          showToast(`✅ Cloudflare KV Worker இணைப்பு வெற்றிகரமாகச் சேமிக்கப்பட்டு இயக்கப்பட்டது! (${ms} ms | KV: ${j.kvBound ? "இணைக்கப்பட்டது" : "இல்லை"})`, "#16a34a", true);
+        }
+      } else {
+        if (typeof showToast === "function") showToast(`❌ Worker பதில் பிழை (HTTP ${r ? r.status : "?"})`, "#ef4444");
+      }
+    } catch (e) {
+      if (typeof showToast === "function") showToast("❌ Cloudflare Worker-ஐ அணுக இயலவில்லை. URL-ஐச் சரிபார்க்கவும்.", "#ef4444");
+    }
+  };
+
+  window.purgeCfKvProxyCache = async function(showNotification) {
+    const url = getActiveCfKvProxyUrl();
+    if (!url) {
+      if (showNotification && typeof showToast === "function") showToast("⚠️ Cloudflare Worker URL இணைக்கப்படவில்லை.", "#f59e0b");
+      return;
+    }
+    try {
+      const r = await _origWindowFetch(`${url}/__purge`, { method: "POST" });
+      if (r && r.ok) {
+        const j = await r.json().catch(() => ({}));
+        if (showNotification && typeof showToast === "function") {
+          showToast(`🧹 Cloudflare KV Cache சுத்தம் செய்யப்பட்டது (${j.purged || 0} keys)!`, "#7c3aed", true);
+        }
+      }
+    } catch (e) {
+      if (showNotification && typeof showToast === "function") showToast("❌ KV Cache சுத்தத்தில் பிழை!", "#ef4444");
+    }
+  };
+
+  window.getCfKvWorkerSourceCode = function() {
+    return `// ============================================================================
+// Cloudflare Worker: ceosvg-fb-cache (Hybrid KV Read-Cache + Firebase RTDB)
+// Binding required: KV Namespace variable name = CEOSVG_CACHE_KV
+// ============================================================================
+const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+// Cache TTL (seconds) per Firebase path prefix
+const TTL_RULES = [
+  { prefix: "ceosvg_live/master_schools_by_uno", ttl: 3600 },        // 60 min
+  { prefix: "ceosvg_live/stores/CEOSVG_MASTER_SCHOOLS", ttl: 3600 }, // 60 min
+  { prefix: "ceosvg_live/exam_centres_10", ttl: 3600 },              // 60 min
+  { prefix: "ceosvg_live/exam_centres_12", ttl: 3600 },              // 60 min
+  { prefix: "ceosvg_live/stores/CEOSVG_HSS_GROUP_MASTER_V1", ttl: 3600 },
+  { prefix: "ceosvg_live/school_auth", ttl: 600 },                   // 10 min (auto-invalidated on password change)
+  { prefix: "ceosvg_live/stores/CEOSVG_SCHOOL_AUTH", ttl: 600 },
+  { prefix: "ceosvg_live/school_summary_index", ttl: 300 },          // 5 min (auto-invalidated on school save)
+  { prefix: "ceosvg_live/verified_otp_vault", ttl: 300 },
+  { prefix: "ceosvg_live/site_maintenance", ttl: 120 },              // 2 min
+  { prefix: "ceosvg_live/stores/CEOSVG_PORTAL_CFG", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", ttl: 300 },
+  { prefix: "ceosvg_live/stores/CEOSVG_CIRCULARS", ttl: 600 },
+  { prefix: "ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT", ttl: 600 }
+];
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Expose-Headers": "X-Cache, X-Cache-TTL"
+};
+
+function getTtlForPath(cleanPath) {
+  for (const r of TTL_RULES) {
+    if (cleanPath === r.prefix || cleanPath.startsWith(r.prefix + "/")) return r.ttl;
+  }
+  return 0;
+}
+
+function getParentCacheKeys(cleanPath) {
+  const keys = new Set(["kv:" + cleanPath]);
+  for (const r of TTL_RULES) {
+    if (cleanPath === r.prefix || cleanPath.startsWith(r.prefix + "/")) {
+      keys.add("kv:" + r.prefix);
+    }
+  }
+  return Array.from(keys);
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    const url = new URL(request.url);
+    const pathname = url.pathname.replace(/^\/+/, "");
+
+    // 1) Health check endpoint
+    if (pathname === "__health" || pathname === "") {
+      return new Response(JSON.stringify({
+        ok: true,
+        service: "ceosvg-fb-cache",
+        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),
+        ts: new Date().toISOString()
+      }), {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 2) Targeted cache invalidation after Firebase write
+    if (pathname === "__invalidate" && request.method === "POST") {
+      let body = {};
+      try { body = await request.json(); } catch (e) {}
+      const cleanPath = String(body.path || "").replace(/^\/+/, "").replace(/\.json$/i, "");
+      const keys = getParentCacheKeys(cleanPath);
+      if (env && env.CEOSVG_CACHE_KV && cleanPath) {
+        await Promise.all(keys.map(k => env.CEOSVG_CACHE_KV.delete(k).catch(() => {})));
+      }
+      return new Response(JSON.stringify({ ok: true, invalidated: keys }), {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 3) Full cache purge endpoint
+    if (pathname === "__purge") {
+      let purged = 0;
+      if (env && env.CEOSVG_CACHE_KV) {
+        const listed = await env.CEOSVG_CACHE_KV.list({ prefix: "kv:" });
+        await Promise.all((listed.keys || []).map(k => {
+          purged++;
+          return env.CEOSVG_CACHE_KV.delete(k.name).catch(() => {});
+        }));
+      }
+      return new Response(JSON.stringify({ ok: true, purged }), {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+      });
+    }
+
+    // 4) Read-Cache for Firebase GET requests
+    if (request.method === "GET" && pathname.endsWith(".json")) {
+      const cleanPath = pathname.replace(/\.json$/i, "");
+      const ttl = getTtlForPath(cleanPath);
+      const kvKey = "kv:" + cleanPath;
+
+      // Try Cloudflare Workers KV first (0 bytes downloaded from Firebase!)
+      if (ttl > 0 && env && env.CEOSVG_CACHE_KV && !url.search) {
+        const cached = await env.CEOSVG_CACHE_KV.get(kvKey);
+        if (cached !== null) {
+          return new Response(cached, {
+            status: 200,
+            headers: {
+              ...CORS_HEADERS,
+              "Content-Type": "application/json; charset=utf-8",
+              "X-Cache": "HIT-KV",
+              "X-Cache-TTL": String(ttl)
+            }
+          });
+        }
+      }
+
+      // KV Miss -> Fetch once from Firebase RTDB & store in KV
+      const fbResp = await fetch(\`\${FIREBASE_BASE}/\${pathname}\${url.search}\`);
+      const text = await fbResp.text();
+      if (fbResp.ok && ttl > 0 && env && env.CEOSVG_CACHE_KV && !url.search && text && text !== "null") {
+        ctx.waitUntil(env.CEOSVG_CACHE_KV.put(kvKey, text, { expirationTtl: Math.max(60, ttl) }).catch(() => {}));
+      }
+      return new Response(text, {
+        status: fbResp.status,
+        headers: {
+          ...CORS_HEADERS,
+          "Content-Type": "application/json; charset=utf-8",
+          "X-Cache": "MISS-FB",
+          "X-Cache-TTL": String(ttl)
+        }
+      });
+    }
+
+    return new Response(JSON.stringify({ ok: false, error: "Unsupported route" }), {
+      status: 400,
+      headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+    });
+  }
+};`;
+  };
+
+  window.copyCfKvWorkerSourceCode = function() {
+    const code = window.getCfKvWorkerSourceCode();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).then(() => {
+        if (typeof showToast === "function") showToast("📋 Cloudflare Worker (worker.js) குறியீடு நகலெடுக்கப்பட்டது!", "#0f766e", true);
+      }).catch(() => {});
+    }
+  };
+
+  // Initialize UI & sync Worker URL on boot
+  setTimeout(() => {
+    updateCfKvStatusUi();
+    syncCfKvUrlFromPortalCfg();
+  }, 1500);
+})();
+</script>
+
+
+
+
+<style>
+/* CEOSVG v8.2: Hide passwordless school-entry buttons for non-Super-Admin Office Staff / DEO sessions */
+body.office-staff-no-school-entry [onclick*="adminInspectSchoolPortal"],
+body.office-staff-no-school-entry [onclick*="openAdminSchoolEbsDirect"],
+body.office-staff-no-school-entry [onclick*="openAdminMidTermSchoolDirect"],
+body.office-staff-no-school-entry [onclick*="openAdminSchoolMidTermDirect"],
+body.office-staff-no-school-entry [onclick*="triggerAdminDirectSchoolLogin"],
+body.office-staff-no-school-entry [onclick*="openAdminSampleStaffModal"],
+body.office-staff-no-school-entry #schAdminQuickSwitchSelect,
+body.office-staff-no-school-entry #admMaintenanceControlStrip {
+  display: none !important;
+}
+</style>
+<script>
+// === CEOSVG_V74_SUPERADMIN_ONLY_SCHOOL_ENTRY_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV74SuperAdminOnlySchoolEntryApplied) return;
+  window.__ceosvgV74SuperAdminOnlySchoolEntryApplied = true;
+
+  window.isCurrentActorSuperAdmin = function() {
+    try {
+      const offSess = (typeof activeAdminOfficerSession !== "undefined" && activeAdminOfficerSession)
+        ? activeAdminOfficerSession
+        : (typeof safeGetStorage === "function" ? safeGetStorage("CEOSVG_ACTIVE_OFFICER_USER", null) : null);
+      if (!offSess || typeof offSess !== "object") return true; // Direct CEO Super Admin login
+      if (offSess._isSuperAdminPreview) return true; // Super Admin previewing an officer
+      if (offSess.rolePreset === "CEO_SUPER" && offSess.roleGroup === "CEO") return true;
+      return false; // CEO Office Staff / DEO / PA / APO / DI / Superintendent / Clerk / EMIS Coord
+    } catch (e) {
+      return false;
+    }
+  };
+
+  function syncOfficeStaffSchoolEntryRestrictionUi() {
+    try {
+      const isSuper = window.isCurrentActorSuperAdmin();
+      if (document.body) {
+        document.body.classList.toggle("office-staff-no-school-entry", !isSuper);
+      }
+    } catch (e) {}
+  }
+
+  function showBlockedSchoolEntryToast() {
+    if (typeof showToast === "function") {
+      showToast("🔒 அனுமதி இல்லை: முதன்மைக் கல்வி அலுவலகப் பணியாளர்கள் உள்நுழைவு வழியாக பள்ளிகளின் முகப்பிற்கு நேரடியாக நுழைய முடியாது. Super Admin மட்டுமே நுழைய முடியும்.", "#dc2626", true);
+    }
+  }
+
+  // Wrap all passwordless Admin -> School entry functions
+  if (typeof adminInspectSchoolPortal === "function") {
+    const _v74OrigInspect = adminInspectSchoolPortal;
+    adminInspectSchoolPortal = function() {
+      if (!window.isCurrentActorSuperAdmin()) {
+        showBlockedSchoolEntryToast();
+        return false;
+      }
+      return _v74OrigInspect.apply(this, arguments);
+    };
+  }
+
+  if (typeof openAdminSchoolEbsDirect === "function") {
+    const _v74OrigOpenEbs = openAdminSchoolEbsDirect;
+    openAdminSchoolEbsDirect = function() {
+      if (!window.isCurrentActorSuperAdmin()) {
+        showBlockedSchoolEntryToast();
+        return false;
+      }
+      return _v74OrigOpenEbs.apply(this, arguments);
+    };
+  }
+
+  if (typeof openAdminMidTermSchoolDirect === "function") {
+    const _v74OrigOpenMt = openAdminMidTermSchoolDirect;
+    openAdminMidTermSchoolDirect = function() {
+      if (!window.isCurrentActorSuperAdmin()) {
+        showBlockedSchoolEntryToast();
+        return false;
+      }
+      return _v74OrigOpenMt.apply(this, arguments);
+    };
+  }
+
+  if (typeof openAdminSampleStaffModal === "function") {
+    const _v74OrigSample = openAdminSampleStaffModal;
+    openAdminSampleStaffModal = function() {
+      if (!window.isCurrentActorSuperAdmin()) {
+        showBlockedSchoolEntryToast();
+        return false;
+      }
+      return _v74OrigSample.apply(this, arguments);
+    };
+  }
+
+  // Final defense-in-depth gate inside loginAsSchool when isAdminInspection is true
+  if (typeof loginAsSchool === "function") {
+    const _v74OrigLoginAsSchool = loginAsSchool;
+    loginAsSchool = function(school, isRestoringSession) {
+      if (school && school.isAdminInspection && !window.isCurrentActorSuperAdmin()) {
+        showBlockedSchoolEntryToast();
+        return false;
+      }
+      return _v74OrigLoginAsSchool.apply(this, arguments);
+    };
+  }
+
+  // Keep body class synced whenever Office Staff / Super Admin session state changes
+  if (typeof loginAsOfficeStaffOrDeo === "function") {
+    const _v74OrigLoginOfficer = loginAsOfficeStaffOrDeo;
+    loginAsOfficeStaffOrDeo = function() {
+      const res = _v74OrigLoginOfficer.apply(this, arguments);
+      syncOfficeStaffSchoolEntryRestrictionUi();
+      return res;
+    };
+  }
+
+  if (typeof switchBackToSuperAdminMode === "function") {
+    const _v74OrigBackSuper = switchBackToSuperAdminMode;
+    switchBackToSuperAdminMode = function() {
+      const res = _v74OrigBackSuper.apply(this, arguments);
+      syncOfficeStaffSchoolEntryRestrictionUi();
+      return res;
+    };
+  }
+
+  if (typeof openAdminPortal === "function") {
+    const _v74OrigOpenAdmin = openAdminPortal;
+    openAdminPortal = function() {
+      const res = _v74OrigOpenAdmin.apply(this, arguments);
+      syncOfficeStaffSchoolEntryRestrictionUi();
+      return res;
+    };
+  }
+
+  if (typeof applyActiveOfficeUserRbacToUi === "function") {
+    const _v74OrigApplyRbac = applyActiveOfficeUserRbacToUi;
+    applyActiveOfficeUserRbacToUi = function() {
+      const res = _v74OrigApplyRbac.apply(this, arguments);
+      syncOfficeStaffSchoolEntryRestrictionUi();
+      return res;
+    };
+  }
+
+  if (typeof adminForceLogoutAllUsersNow === "function") {
+    const _v75OrigForceLogout = adminForceLogoutAllUsersNow;
+    adminForceLogoutAllUsersNow = async function() {
+      if (!window.isCurrentActorSuperAdmin()) {
+        if (typeof showToast === "function") {
+          showToast("🔒 அனுமதி இல்லை: கட்டாய வெளியேற்றக் கட்டுப்பாட்டை முதன்மை நிர்வாகி (Super Admin) மட்டுமே இயக்க முடியும்.", "#dc2626", true);
+        }
+        return false;
+      }
+      return await _v75OrigForceLogout.apply(this, arguments);
+    };
+  }
+
+  if (typeof adminSetSiteMaintenanceMode === "function") {
+    const _v75OrigSetMaint = adminSetSiteMaintenanceMode;
+    adminSetSiteMaintenanceMode = async function() {
+      if (!window.isCurrentActorSuperAdmin()) {
+        if (typeof showToast === "function") {
+          showToast("🔒 அனுமதி இல்லை: இணையதளப் பராமரிப்பு நிலையை முதன்மை நிர்வாகி (Super Admin) மட்டுமே மாற்ற முடியும்.", "#dc2626", true);
+        }
+        return false;
+      }
+      return await _v75OrigSetMaint.apply(this, arguments);
+    };
+  }
+
+  syncOfficeStaffSchoolEntryRestrictionUi();
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V77_EXAM_REPORTS_AND_SENIORITY_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV77Applied) return;
+  window.__ceosvgV77Applied = true;
+
+  // 1) Auto-upgrade any already-saved CLERK_EXAM / OU_CLERK_EXAM user in storage to include "emisStaff"
+  function ensureExamClerkHasSeniorityAndCustomTable() {
+    try {
+      const list = (typeof getOfficeUsersStore === "function") ? getOfficeUsersStore() : (safeGetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", []) || []);
+      let changed = false;
+      if (Array.isArray(list)) {
+        list.forEach(u => {
+          if (!u) return;
+          if (u.rolePreset === "CLERK_EXAM" || u.id === "OU_CLERK_EXAM" || String(u.username || "").toLowerCase() === "clerk_exam") {
+            if (!Array.isArray(u.allowedModules)) u.allowedModules = [];
+            if (!u.allowedModules.includes("emisStaff")) {
+              u.allowedModules.push("emisStaff");
+              changed = true;
+            }
+            if (!u.allowedModules.includes("examCentres")) {
+              u.allowedModules.push("examCentres");
+              changed = true;
+            }
+          }
+        });
+        if (changed) {
+          safeSetStorage("CEOSVG_OFFICE_USERS_RBAC_V1", list, true);
+        }
+      }
+      if (typeof activeAdminOfficerSession !== "undefined" && activeAdminOfficerSession) {
+        const u = activeAdminOfficerSession;
+        if (u.rolePreset === "CLERK_EXAM" || u.id === "OU_CLERK_EXAM" || String(u.username || "").toLowerCase() === "clerk_exam") {
+          if (!Array.isArray(u.allowedModules)) u.allowedModules = [];
+          if (!u.allowedModules.includes("emisStaff")) {
+            u.allowedModules.push("emisStaff");
+            safeSetStorage("CEOSVG_ACTIVE_OFFICER_USER", u, true);
+          }
+          if (!u.allowedModules.includes("examCentres")) {
+            u.allowedModules.push("examCentres");
+            safeSetStorage("CEOSVG_ACTIVE_OFFICER_USER", u, true);
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Hook loginAsOfficeStaffOrDeo so Exam Section login always gets emisStaff (Seniority + Customized Table)
+  if (typeof loginAsOfficeStaffOrDeo === "function") {
+    const _v77OrigLoginOfficer = loginAsOfficeStaffOrDeo;
+    loginAsOfficeStaffOrDeo = function(userObj, isPreview) {
+      try {
+        if (userObj && (userObj.rolePreset === "CLERK_EXAM" || userObj.id === "OU_CLERK_EXAM" || String(userObj.username || "").toLowerCase() === "clerk_exam")) {
+          if (!Array.isArray(userObj.allowedModules)) userObj.allowedModules = [];
+          if (!userObj.allowedModules.includes("emisStaff")) userObj.allowedModules.push("emisStaff");
+          if (!userObj.allowedModules.includes("examCentres")) userObj.allowedModules.push("examCentres");
+        }
+      } catch (e) {}
+      return _v77OrigLoginOfficer.apply(this, arguments);
+    };
+  }
+  ensureExamClerkHasSeniorityAndCustomTable();
+
+  // 2) Helper: get currently filtered Result Analysis calculations (Block + Mgmt + HS/HSS Level + Status + Search)
+  function getFilteredMidTermCalcsForExport(ignoreFilters) {
+    const is12 = (_activeResultAnalysisStd === "12");
+    const schools = is12 ? getHssSchoolsListFor12th() : getHighAndHigherSecSchoolsList();
+    const allCalcs = schools.map(s => computeSchoolExamResultAnalysis(s.uNo, _activeMidTermTermKey, _activeResultAnalysisStd));
+    if (ignoreFilters) return allCalcs;
+
+    const fBlock = (document.getElementById("admMtFilterBlock")?.value || "").trim();
+    const fMgmt = (document.getElementById("admMtFilterMgmt")?.value || "").trim();
+    const fLevel = (document.getElementById("admMtFilterLevel")?.value || "").trim().toUpperCase();
+    const fStatus = (document.getElementById("admMtFilterStatus")?.value || "ALL").trim();
+    const q = (document.getElementById("admMtFilterSearch")?.value || "").trim().toLowerCase();
+
+    return allCalcs.filter(c => {
+      if (fBlock && String(c.sch.block || "") !== fBlock) return false;
+      if (fMgmt && String(c.sch.mgmt1 || "") !== fMgmt) return false;
+      if (fLevel && String(c.sch.level || "").toUpperCase() !== fLevel) return false;
+      const isDone = c.hasStudentEntries || c.rec.isSubmitted;
+      if (fStatus === "COMPLETED" && !isDone) return false;
+      if (fStatus === "PENDING" && isDone) return false;
+      if (fStatus === "PASS_100" && (!isDone || c.passPctNum < 100)) return false;
+      if (fStatus === "BELOW_80" && (!isDone || c.passPctNum >= 80)) return false;
+      if (q) {
+        const hay = `${c.uNo} ${c.sch.nameTa} ${c.sch.nameEn} ${c.sch.block} ${c.sch.udiseNo}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function updateFilteredSummaryPill() {
+    try {
+      const pill = document.getElementById("admMtFilteredSummaryPill");
+      if (!pill) return;
+      const list = getFilteredMidTermCalcsForExport(false);
+      const doneCnt = list.filter(c => c.hasStudentEntries || c.rec.isSubmitted).length;
+      const fBlock = (document.getElementById("admMtFilterBlock")?.value || "").trim() || "அனைத்து ஒன்றியம்";
+      const fMgmt = (document.getElementById("admMtFilterMgmt")?.value || "").trim() || "அனைத்து நிர்வாகம்";
+      const fLevel = (document.getElementById("admMtFilterLevel")?.value || "").trim() || "HS/HSS";
+      pill.textContent = `${fBlock} • ${fMgmt} • ${fLevel} — பள்ளிகள்: ${list.length} (சமர்ப்பித்தவை: ${doneCnt})`;
+    } catch (e) {}
+  }
+
+  if (typeof renderAdminMidTermDashboard === "function") {
+    const _v77OrigRenderMt = renderAdminMidTermDashboard;
+    renderAdminMidTermDashboard = function() {
+      const r = _v77OrigRenderMt.apply(this, arguments);
+      updateFilteredSummaryPill();
+      return r;
+    };
+  }
+
+  // 3) Filtered & Bulk Reports Exporter (School Performance CSV, Subject Performance CSV, Review Report Print/PDF, All Combined Print/PDF)
+  window.exportFilteredMidTermReports = function(mode, ignoreFilters) {
+    const list = getFilteredMidTermCalcsForExport(Boolean(ignoreFilters));
+    if (!list || list.length === 0) {
+      if (typeof showToast === "function") showToast("⚠️ தேர்ந்தெடுத்த வடிகட்டியில் பள்ளிகள் எதுவும் இல்லை.", "#f59e0b");
+      return;
+    }
+
+    const is12 = (_activeResultAnalysisStd === "12");
+    const stdTag = is12 ? "12th" : "10th";
+    const fBlock = ((document.getElementById("admMtFilterBlock")?.value || "").trim() || "All_Blocks").replace(/[^A-Za-z0-9]+/g, "_");
+    const fMgmt = (document.getElementById("admMtFilterMgmt")?.value || "").trim() || "All_Mgmt";
+    const fLevel = (document.getElementById("admMtFilterLevel")?.value || "").trim() || "All_Level";
+    const scopeTag = ignoreFilters ? "District_All" : `${fBlock}_${fMgmt}_${fLevel}`;
+    const esc = v => `"${String(v !== undefined && v !== null ? v : "").replace(/"/g, '""')}"`;
+
+    if (mode === "SCHOOL_CSV") {
+      const headers = [
+        "SN", "U.No", "UDISE", "Block", "Management", "Level", "School Name (EN)", "School Name (TA)",
+        "EMIS_Total", "Appeared", "Passed", "Failed", "Pass_%", "1Sub_Fail", "2Sub_Fail", "3+Sub_Fail",
+        "First_Mark", "School_Avg", "Status"
+      ];
+      const rows = [headers.map(esc).join(",")];
+      list.forEach((c, i) => {
+        const isDone = c.hasStudentEntries || c.rec.isSubmitted;
+        rows.push([
+          i + 1, c.uNo, c.sch.udiseNo || "", c.sch.block || "", c.sch.mgmt1 || "", c.sch.level || "",
+          c.sch.nameEn || "", c.sch.nameTa || "",
+          c.emis.t, isDone ? c.appeared.t : "", isDone ? c.passed.t : "", isDone ? c.failed.t : "",
+          isDone ? c.passPctStr : "", isDone ? c.failedSubCounts.s1 : "", isDone ? c.failedSubCounts.s2 : "",
+          isDone ? c.failedSubCounts.s3 : "", isDone ? c.schoolFirstMark : "", isDone ? c.schoolAvgMark100 : "",
+          c.rec.isSubmitted ? "Completed" : (c.hasStudentEntries ? "Draft" : "Pending")
+        ].map(esc).join(","));
+      });
+      const blob = new Blob(["\uFEFF" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `School_Performance_${stdTag}_${_activeMidTermTermKey}_${scopeTag}.csv`;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); if (a.parentNode) a.parentNode.removeChild(a); }, 400);
+      if (typeof showToast === "function") showToast(`📊 School Performance CSV (${list.length} பள்ளிகள்) பதிவிறக்கப்பட்டது!`, "#0f766e");
+      return;
+    }
+
+    if (mode === "SUBJECT_CSV") {
+      const headers = [
+        "SN", "U.No", "Block", "Management", "Level", "School Name", "Teacher Name (EN)", "Teacher Name (TA)",
+        "Designation", "EMIS ID", "Mobile", "Subject", "Medium",
+        "Students", "Appeared", "Passed", "Failed", "Pass_%", "Avg_Mark", "Max_Mark", "Centums", "1Sub_Fail_Only"
+      ];
+      const rows = [headers.map(esc).join(",")];
+      let sn = 1;
+      list.forEach(c => {
+        if (!c.hasStudentEntries && !c.rec.isSubmitted) return;
+        (c.f2Rows || []).forEach(r => {
+          const t = r.teacher || {};
+          rows.push([
+            sn++, c.uNo, c.sch.block || "", c.sch.mgmt1 || "", c.sch.level || "",
+            `${c.sch.nameEn || ""} (${c.sch.nameTa || ""})`,
+            t.nameEn || "", t.nameTa || "", t.desig || "", t.staffId || "", t.mobile || "",
+            r.subLabel || r.subKey || "", r.medium || "",
+            r.totStudents || 0, r.appeared || 0, r.passed || 0, r.failed || 0,
+            r.passPctStr || "", r.avgMark || "", r.maxMark || "", r.centum || 0, r.onlyThisFail || 0
+          ].map(esc).join(","));
+        });
+      });
+      if (rows.length <= 1) {
+        if (typeof showToast === "function") showToast("⚠️ தேர்ந்தெடுத்த பள்ளிகளில் பாட வாரியான பதிவுகள் இல்லை.", "#f59e0b");
+        return;
+      }
+      const blob = new Blob(["\uFEFF" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Subject_Performance_${stdTag}_${_activeMidTermTermKey}_${scopeTag}.csv`;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); if (a.parentNode) a.parentNode.removeChild(a); }, 400);
+      if (typeof showToast === "function") showToast(`📚 Subject Performance CSV (${rows.length - 1} பாடப் பதிவுகள்) பதிவிறக்கப்பட்டது!`, "#1d4ed8");
+      return;
+    }
+
+    if (mode === "SCHOOL_PRINT" || mode === "SUBJECT_PRINT" || mode === "REVIEW_PRINT" || mode === "ALL_PRINT") {
+      const submitted = list.filter(c => c.hasStudentEntries || c.rec.isSubmitted);
+      if (submitted.length === 0) {
+        if (typeof showToast === "function") showToast("⚠️ தேர்ந்தெடுத்த பிரிவில் மதிப்பெண் பதிவு செய்த பள்ளிகள் எதுவும் இல்லை.", "#f59e0b");
+        return;
+      }
+      const pages = [];
+      submitted.forEach(c => {
+        if (mode === "SCHOOL_PRINT" || mode === "ALL_PRINT") {
+          if (typeof buildMidTermForm1_1ExactHtml === "function") pages.push(buildMidTermForm1_1ExactHtml(c, true));
+        }
+        if (mode === "SUBJECT_PRINT" || mode === "ALL_PRINT") {
+          if (typeof buildMidTermForm1_2ExactHtml === "function") pages.push(buildMidTermForm1_2ExactHtml(c, true));
+        }
+        if (mode === "REVIEW_PRINT" || mode === "ALL_PRINT") {
+          if (is12 && typeof build12thReviewReportExactHtml === "function") {
+            pages.push(build12thReviewReportExactHtml(c, true));
+          } else if (!is12 && typeof build10thReviewReportExactHtml === "function") {
+            pages.push(build10thReviewReportExactHtml(c, true));
+          }
+        }
+      });
+      if (pages.length === 0) {
+        if (typeof showToast === "function") showToast("⚠️ அறிக்கை உருவாக்க இயலவில்லை.", "#ef4444");
+        return;
+      }
+      const w = window.open("", "_blank");
+      if (!w) {
+        if (typeof showToast === "function") showToast("⚠️ Pop-up தடுக்கப்பட்டுள்ளது! உலாவியில் Pop-up அனுமதித்து மீண்டும் முயலவும்.", "#f59e0b");
+        return;
+      }
+      const modeLabelMap = { SCHOOL_PRINT: "School Performance Report", SUBJECT_PRINT: "Subject Performance Report", REVIEW_PRINT: "Review Report", ALL_PRINT: "School + Subject + Review" }; const titleText = `${modeLabelMap[mode] || "Report"} - ${stdTag} (${scopeTag} - ${submitted.length} Schools)`;
+      w.document.open();
+      w.document.write(`<!DOCTYPE html><html lang="ta"><head><meta charset="UTF-8"><title>${titleText}</title><style>@page{size:A4 landscape;margin:6mm}body{margin:0;padding:8px;background:#fff;color:#000;font-family:Arial,'Mukta Malar',sans-serif}.mt-bulk-page{page-break-after:always;break-after:page;margin-bottom:14px}.mt-bulk-page:last-child{page-break-after:auto;break-after:auto}@media print{.no-print{display:none !important}body{padding:0}}</style></head><body><div class="no-print" style="background:#0f294a;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-radius:8px;margin-bottom:12px;"><strong>${titleText}</strong><button onclick="window.print()" style="background:#16a34a;color:#fff;border:none;padding:7px 16px;border-radius:6px;font-weight:900;cursor:pointer;">🖨️ Print / Save as PDF</button></div>${pages.map(p => `<div class="mt-bulk-page">${p}</div>`).join("")}</body></html>`);
+      w.document.close();
+      if (typeof showToast === "function") showToast(`📋 ${submitted.length} பள்ளிகளின் அறிக்கை Print / PDF திரையில் திறக்கப்பட்டது!`, "#7c3aed");
+    }
+  };
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V77_INDIVIDUAL_PDF_SENIORITY_CENTRES_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV77Applied) return;
+  window.__ceosvgV77Applied = true;
+
+  // ------------------------------------------------------------------------
+  // PART 1: DEDICATED MENU ROUTING (seniorityList & examCentres)
+  // ------------------------------------------------------------------------
+  if (typeof openAdminModule === "function") {
+    const _v77OrigOpenMod = openAdminModule;
+    openAdminModule = function(modKey) {
+      if (modKey === "seniorityList") {
+        const chooser = document.getElementById("admMainPortalChooser");
+        const secSch = document.getElementById("admSectionSchoolMaster");
+        if (chooser) chooser.style.display = "none";
+        if (secSch) secSch.style.display = "block";
+        if (typeof switchAdminTab === "function") switchAdminTab("seniorityList");
+        try {
+          if (typeof isSeniorityMode !== "undefined" && !isSeniorityMode && typeof toggleSeniorityMode === "function") {
+            toggleSeniorityMode();
+          }
+          const senBox = document.getElementById("admSeniorityConfigBox");
+          if (senBox) senBox.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (e) {}
+        return;
+      }
+      if (modKey === "examCentres") {
+        const chooser = document.getElementById("admMainPortalChooser");
+        const secSch = document.getElementById("admSectionSchoolMaster");
+        if (chooser) chooser.style.display = "none";
+        if (secSch) secSch.style.display = "block";
+        if (typeof switchAdminTab === "function") switchAdminTab("centres");
+        setTimeout(() => {
+          if (typeof renderAdminPracticalCentresTable === "function") renderAdminPracticalCentresTable();
+        }, 60);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      return _v77OrigOpenMod.apply(this, arguments);
+    };
+  }
+
+  // ------------------------------------------------------------------------
+  // PART 2: 10th & 12th PRACTICAL + PUBLIC EXAM CENTRES MANAGER & LIVE DROPDOWNS
+  // ------------------------------------------------------------------------
+  const PRAC_10_KEY = "CEOSVG_PRACTICAL_CENTRES_10_V1";
+  const PRAC_12_KEY = "CEOSVG_PRACTICAL_CENTRES_12_V1";
+  let _admPracActiveTab = "10"; // "10" | "12" | "PUB10" | "PUB12"
+  let _admPracEditIdx = -1;
+
+  function getManagedPracticalList(levelStr) {
+    const key = (levelStr === "12") ? PRAC_12_KEY : PRAC_10_KEY;
+    const saved = (typeof safeGetStorage === "function") ? safeGetStorage(key, null) : null;
+    if (Array.isArray(saved) && saved.length > 0) return saved.slice();
+    // Seed from existing merged list on first access
+    const fallback = (levelStr === "12")
+      ? (typeof getUpdatedPracticalCentres12List === "function" ? getUpdatedPracticalCentres12List() : ((typeof EBS_DROPDOWN_DATA === "object" && EBS_DROPDOWN_DATA.practicalCentres12) || []))
+      : (typeof getUpdatedPracticalCentres10List === "function" ? getUpdatedPracticalCentres10List() : ((typeof EBS_DROPDOWN_DATA === "object" && EBS_DROPDOWN_DATA.practicalCentres10) || []));
+    return Array.isArray(fallback) ? fallback.slice() : [];
+  }
+
+  function saveManagedPracticalList(levelStr, arr) {
+    const key = (levelStr === "12") ? PRAC_12_KEY : PRAC_10_KEY;
+    const fbPath = (levelStr === "12") ? "ceosvg_live/practical_centres_12" : "ceosvg_live/practical_centres_10";
+    const cleanArr = Array.from(new Set((arr || []).map(x => String(x || "").trim()).filter(Boolean)));
+    if (typeof safeSetStorage === "function") safeSetStorage(key, cleanArr, true);
+    if (typeof EBS_DROPDOWN_DATA === "object" && EBS_DROPDOWN_DATA) {
+      if (levelStr === "12") EBS_DROPDOWN_DATA.practicalCentres12 = cleanArr.slice();
+      else EBS_DROPDOWN_DATA.practicalCentres10 = cleanArr.slice();
+      if (typeof safeSetStorage === "function") safeSetStorage("CEOSVG_EBS_DROPDOWN_LIVE_V5", EBS_DROPDOWN_DATA, true);
+    }
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (cleanUrl && typeof buildFirebaseEndpoint === "function") {
+      fetch(buildFirebaseEndpoint(fbPath), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cleanArr)
+      }).catch(() => {});
+    }
+    syncAllPortalCentreDropdownsFromManagers();
+  }
+
+  // Reflect all 4 managed lists (10th Public, 12th Public, 10th Practical, 12th Practical) into EBS_DROPDOWN_DATA immediately
+  window.syncAllPortalCentreDropdownsFromManagers = function() {
+    try {
+      if (typeof EBS_DROPDOWN_DATA !== "object" || !EBS_DROPDOWN_DATA) return;
+      const p10 = getManagedPracticalList("10");
+      const p12 = getManagedPracticalList("12");
+      if (p10.length > 0) EBS_DROPDOWN_DATA.practicalCentres10 = p10;
+      if (p12.length > 0) EBS_DROPDOWN_DATA.practicalCentres12 = p12;
+
+      const pub10 = (typeof getEffectiveExamCentres10List === "function") ? getEffectiveExamCentres10List() : [];
+      const pub12 = (typeof getEffectiveExamCentres12List === "function") ? getEffectiveExamCentres12List() : [];
+      const formatPub = (c) => `${c.centreNo ? c.centreNo + "-" : ""}${c.centreNameEn || c.centreNameTa || ""}${c.uNo ? " (U.NO:" + c.uNo + ")" : ""}`.trim();
+
+      if (pub10.length > 0) {
+        const baseSslc = Array.isArray(EBS_DROPDOWN_DATA.sslcExamCentres) ? EBS_DROPDOWN_DATA.sslcExamCentres : [];
+        const merged10 = Array.from(new Set([...pub10.map(formatPub).filter(Boolean), ...baseSslc]));
+        EBS_DROPDOWN_DATA.sslcExamCentres = merged10;
+      }
+      if (pub12.length > 0) {
+        const baseHse = Array.isArray(EBS_DROPDOWN_DATA.hseExamCentres) ? EBS_DROPDOWN_DATA.hseExamCentres : [];
+        const merged12 = Array.from(new Set([...pub12.map(formatPub).filter(Boolean), ...baseHse]));
+        EBS_DROPDOWN_DATA.hseExamCentres = merged12;
+      }
+    } catch (e) {}
+  };
+
+  // Override getUpdatedPracticalCentres10List / 12List so EBS staff modal always reads the Admin-managed list first!
+  window.getUpdatedPracticalCentres10List = function() {
+    return getManagedPracticalList("10");
+  };
+  window.getUpdatedPracticalCentres12List = function() {
+    return getManagedPracticalList("12");
+  };
+
+  window.switchAdminPracticalCentresTab = function(tabMode) {
+    _admPracActiveTab = tabMode || "10";
+    _admPracEditIdx = -1;
+    window.cancelEditAdminManagedCentre();
+    const mapBtns = {
+      "10": "admPracTabBtn10",
+      "12": "admPracTabBtn12",
+      "PUB10": "admPracTabBtnPub10",
+      "PUB12": "admPracTabBtnPub12"
+    };
+    Object.entries(mapBtns).forEach(([k, id]) => {
+      const b = document.getElementById(id);
+      if (!b) return;
+      if (k === _admPracActiveTab) {
+        b.className = "btn btn-primary btn-sm";
+        b.style.background = (k === "PUB10") ? "#1d4ed8" : ((k === "PUB12") ? "#7c3aed" : "#0891b2");
+        b.style.color = "#fff";
+      } else {
+        b.className = "btn btn-outline btn-sm";
+        b.style.background = "#fff";
+        b.style.color = (k === "PUB10") ? "#1e40af" : ((k === "PUB12") ? "#5b21b6" : "#155e75");
+      }
+    });
+    window.renderAdminPracticalCentresTable();
+  };
+
+  window.cancelEditAdminManagedCentre = function() {
+    _admPracEditIdx = -1;
+    const cInp = document.getElementById("admPracCentreCodeInp");
+    const nInp = document.getElementById("admPracCentreNameInp");
+    const uInp = document.getElementById("admPracCentreUnoInp");
+    const sBtn = document.getElementById("admPracCentreSaveBtn");
+    const xBtn = document.getElementById("admPracCentreCancelBtn");
+    if (cInp) cInp.value = "";
+    if (nInp) nInp.value = "";
+    if (uInp) uInp.value = "";
+    if (sBtn) sBtn.textContent = "➕ சேர் / புதுப்பி";
+    if (xBtn) xBtn.style.display = "none";
+  };
+
+  window.editAdminManagedCentreRow = function(idx) {
+    _admPracEditIdx = Number(idx);
+    const cInp = document.getElementById("admPracCentreCodeInp");
+    const nInp = document.getElementById("admPracCentreNameInp");
+    const uInp = document.getElementById("admPracCentreUnoInp");
+    const sBtn = document.getElementById("admPracCentreSaveBtn");
+    const xBtn = document.getElementById("admPracCentreCancelBtn");
+
+    if (_admPracActiveTab === "10" || _admPracActiveTab === "12") {
+      const arr = getManagedPracticalList(_admPracActiveTab);
+      const val = String(arr[_admPracEditIdx] || "");
+      const uMatch = val.match(/\(U\.NO:\s*(\d+)\)/i);
+      const uNo = uMatch ? uMatch[1] : "";
+      const withoutUno = val.replace(/\s*\(U\.NO:\s*\d+\)/i, "").trim();
+      const dashIdx = withoutUno.indexOf("-");
+      if (cInp) cInp.value = dashIdx > 0 ? withoutUno.slice(0, dashIdx).trim() : "";
+      if (nInp) nInp.value = dashIdx > 0 ? withoutUno.slice(dashIdx + 1).trim() : withoutUno;
+      if (uInp) uInp.value = uNo;
+    } else {
+      const list = (_admPracActiveTab === "PUB12")
+        ? (typeof getEffectiveExamCentres12List === "function" ? getEffectiveExamCentres12List() : [])
+        : (typeof getEffectiveExamCentres10List === "function" ? getEffectiveExamCentres10List() : []);
+      const rec = list[_admPracEditIdx];
+      if (rec) {
+        if (cInp) cInp.value = rec.centreNo || "";
+        if (nInp) nInp.value = rec.centreNameEn || rec.centreNameTa || "";
+        if (uInp) uInp.value = rec.uNo || "";
+      }
+    }
+    if (sBtn) sBtn.textContent = "💾 மாற்றத்தைச் சேமி";
+    if (xBtn) xBtn.style.display = "inline-flex";
+    if (nInp) nInp.focus();
+  };
+
+  window.deleteAdminManagedCentreRow = function(idx) {
+    idx = Number(idx);
+    if (!confirm("இந்தத் தேர்வு மையத்தைப் பட்டியலிலிருந்து நீக்கவா?")) return;
+    if (_admPracActiveTab === "10" || _admPracActiveTab === "12") {
+      const arr = getManagedPracticalList(_admPracActiveTab);
+      if (idx >= 0 && idx < arr.length) {
+        arr.splice(idx, 1);
+        saveManagedPracticalList(_admPracActiveTab, arr);
+        window.renderAdminPracticalCentresTable();
+        if (typeof showToast === "function") showToast("🗑️ செய்முறைத் தேர்வு மையம் நீக்கப்பட்டு Drop-down பட்டியல்களில் புதுப்பிக்கப்பட்டது!", "#dc2626");
+      }
+    } else {
+      const is12 = (_admPracActiveTab === "PUB12");
+      const key = is12 ? "CEOSVG_EXAM_CENTRES_12" : "CEOSVG_EXAM_CENTRES_10";
+      const list = is12 ? getEffectiveExamCentres12List() : getEffectiveExamCentres10List();
+      if (idx >= 0 && idx < list.length) {
+        list.splice(idx, 1);
+        safeSetStorage(key, list, false);
+        syncAllPortalCentreDropdownsFromManagers();
+        if (typeof renderAdminExamCentresTable === "function") renderAdminExamCentresTable();
+        window.renderAdminPracticalCentresTable();
+        if (typeof showToast === "function") showToast("🗑️ பொதுத்தேர்வு மையம் நீக்கப்பட்டு Drop-down பட்டியல்களில் புதுப்பிக்கப்பட்டது!", "#dc2626");
+      }
+    }
+  };
+
+  window.saveAdminManagedCentreEntry = function() {
+    const code = String(document.getElementById("admPracCentreCodeInp")?.value || "").trim();
+    const name = String(document.getElementById("admPracCentreNameInp")?.value || "").trim();
+    const uNo = String(document.getElementById("admPracCentreUnoInp")?.value || "").trim();
+    if (!name) {
+      if (typeof showToast === "function") showToast("⚠️ தேர்வு மையத்தின் பெயரை உள்ளிடவும்.", "#f59e0b");
+      return;
+    }
+
+    if (_admPracActiveTab === "10" || _admPracActiveTab === "12") {
+      const label = `${code ? code + "-" : ""}${name}${uNo ? " (U.NO:" + uNo + ")" : ""}`;
+      const arr = getManagedPracticalList(_admPracActiveTab);
+      if (_admPracEditIdx >= 0 && _admPracEditIdx < arr.length) {
+        arr[_admPracEditIdx] = label;
+      } else {
+        // Insert before trailing "Other District" / "Not allotted" / "Duty Cancelled"
+        const tailIdx = arr.findIndex(x => /^(Other District|Not allotted|Duty Cancelled)$/i.test(String(x).trim()));
+        if (tailIdx >= 0) arr.splice(tailIdx, 0, label);
+        else arr.push(label);
+      }
+      saveManagedPracticalList(_admPracActiveTab, arr);
+      window.cancelEditAdminManagedCentre();
+      window.renderAdminPracticalCentresTable();
+      if (typeof showToast === "function") {
+        showToast(`✅ ${_admPracActiveTab}th செய்முறைத் தேர்வு மையம் சேமிக்கப்பட்டு அனைத்து Drop-down பட்டியல்களிலும் புதுப்பிக்கப்பட்டது!`, "#16a34a", true);
+      }
+    } else {
+      const is12 = (_admPracActiveTab === "PUB12");
+      const key = is12 ? "CEOSVG_EXAM_CENTRES_12" : "CEOSVG_EXAM_CENTRES_10";
+      const list = is12 ? getEffectiveExamCentres12List() : getEffectiveExamCentres10List();
+      const schMatch = uNo ? (masterSchools || []).find(s => String(s.uNo) === uNo) : null;
+      const entry = {
+        sn: list.length + 1,
+        uNo: uNo || "",
+        centreNo: code || (is12 ? "208000" : "20800"),
+        centreNameEn: name,
+        centreNameTa: (schMatch && schMatch.nameTa) ? schMatch.nameTa : name,
+        block: (schMatch && schMatch.block) ? schMatch.block : "12 Sivagangai"
+      };
+      if (_admPracEditIdx >= 0 && _admPracEditIdx < list.length) {
+        list[_admPracEditIdx] = Object.assign({}, list[_admPracEditIdx], entry);
+      } else {
+        list.push(entry);
+      }
+      if (schMatch) {
+        if (is12) schMatch.centre12 = entry.centreNo;
+        else schMatch.centre10 = entry.centreNo;
+        schMatch.isExamCentre = true;
+      }
+      safeSetStorage(key, list, false);
+      syncAllPortalCentreDropdownsFromManagers();
+      window.cancelEditAdminManagedCentre();
+      if (typeof renderAdminExamCentresTable === "function") renderAdminExamCentresTable();
+      window.renderAdminPracticalCentresTable();
+      if (typeof showToast === "function") {
+        showToast(`✅ ${is12 ? "12th" : "10th"} பொதுத்தேர்வு மையம் சேமிக்கப்பட்டு அனைத்து Drop-down பட்டியல்களிலும் புதுப்பிக்கப்பட்டது!`, "#16a34a", true);
+      }
+    }
+  };
+
+  window.renderAdminPracticalCentresTable = function() {
+    const tbody = document.getElementById("admPracCentresTbody");
+    const b10 = document.getElementById("admPrac10CountBadge");
+    const b12 = document.getElementById("admPrac12CountBadge");
+    const lbl = document.getElementById("admPracCentreActiveModeLabel");
+    const q = String(document.getElementById("admPracCentreSearchInp")?.value || "").trim().toLowerCase();
+
+    const p10 = getManagedPracticalList("10");
+    const p12 = getManagedPracticalList("12");
+    if (b10) b10.textContent = String(p10.length);
+    if (b12) b12.textContent = String(p12.length);
+    if (!tbody) return;
+
+    let rows = [];
+    if (_admPracActiveTab === "10" || _admPracActiveTab === "12") {
+      const src = (_admPracActiveTab === "12") ? p12 : p10;
+      if (lbl) lbl.textContent = (_admPracActiveTab === "12")
+        ? `🔬 12-ஆம் வகுப்பு செய்முறைத் தேர்வு மையங்கள் (${src.length})`
+        : `🧪 10-ஆம் வகுப்பு செய்முறைத் தேர்வு மையங்கள் (${src.length})`;
+      rows = src.map((txt, idx) => ({ idx, label: String(txt || "") }));
+    } else {
+      const is12 = (_admPracActiveTab === "PUB12");
+      const src = is12 ? getEffectiveExamCentres12List() : getEffectiveExamCentres10List();
+      if (lbl) lbl.textContent = is12
+        ? `🎓 12-ஆம் வகுப்பு பொதுத்தேர்வு மையங்கள் (${src.length})`
+        : `📝 10-ஆம் வகுப்பு பொதுத்தேர்வு மையங்கள் (${src.length})`;
+      rows = src.map((c, idx) => ({
+        idx,
+        label: `${c.centreNo ? c.centreNo + " - " : ""}${c.centreNameEn || c.centreNameTa || ""}${c.uNo ? " (U.NO:" + c.uNo + ")" : ""}`
+      }));
+    }
+
+    const filtered = q ? rows.filter(r => r.label.toLowerCase().includes(q)) : rows;
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:16px; color:#64748b; font-weight:700;">பொருத்தமான தேர்வு மையங்கள் எதுவும் இல்லை.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = filtered.slice(0, 450).map((r, i) => `
+      <tr>
+        <td style="text-align:center; font-weight:800; color:#64748b;">${i + 1}</td>
+        <td style="font-weight:800; color:#0f294a;">${escapeHtmlAttr(r.label)}</td>
+        <td style="text-align:center;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="editAdminManagedCentreRow(${r.idx})" style="padding:2px 8px; font-size:0.72rem; font-weight:800; color:#0369a1; border-color:#7dd3fc;">✏️ திருத்து</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="deleteAdminManagedCentreRow(${r.idx})" style="padding:2px 8px; font-size:0.72rem; font-weight:800; color:#dc2626; border-color:#fca5a5;">🗑️ நீக்கு</button>
+        </td>
+      </tr>
+    `).join("");
+  };
+
+  // Pull Admin-managed Practical Centres from Firebase on boot so all 282 schools get updated dropdowns automatically!
+  async function pullManagedPracticalCentresFromFirebase() {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") return;
+    try {
+      const [r10, r12] = await Promise.all([
+        fetch(buildFirebaseEndpoint("ceosvg_live/practical_centres_10")).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch(buildFirebaseEndpoint("ceosvg_live/practical_centres_12")).then(r => r.ok ? r.json() : null).catch(() => null)
+      ]);
+      if (Array.isArray(r10) && r10.length > 0 && typeof safeSetStorage === "function") {
+        safeSetStorage(PRAC_10_KEY, r10, true);
+      }
+      if (Array.isArray(r12) && r12.length > 0 && typeof safeSetStorage === "function") {
+        safeSetStorage(PRAC_12_KEY, r12, true);
+      }
+      syncAllPortalCentreDropdownsFromManagers();
+      if (document.getElementById("admPracCentresTbody")) {
+        window.renderAdminPracticalCentresTable();
+      }
+    } catch (e) {}
+  }
+
+  // Hook openEbsStaffProfileModal so dropdowns always reflect the latest managed centres
+  if (typeof openEbsStaffProfileModal === "function") {
+    const _v77PrevOpenStf = openEbsStaffProfileModal;
+    openEbsStaffProfileModal = function() {
+      syncAllPortalCentreDropdownsFromManagers();
+      return _v77PrevOpenStf.apply(this, arguments);
+    };
+  }
+
+  syncAllPortalCentreDropdownsFromManagers();
+  setTimeout(pullManagedPracticalCentresFromFirebase, 1200);
+})();
+</script>
+
+
+<style>
+/* CEOSVG v7.7: Exam Section (CLERK_EXAM) Staff List Preparation clean view */
+body.exam-section-officer-mode #admTabBtnTeacherMaster,
+body.exam-section-officer-mode #admTabBtnDeleteReqs,
+body.exam-section-officer-mode #admTabBtnStaffExcel,
+body.exam-section-officer-mode #admDedicatedTeachersSheetCard,
+body.exam-section-officer-mode [onclick*="switchAdminTab('staffExcelUpload')"],
+body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
+  display: none !important;
+}
+</style>
+<script>
+// === CEOSVG_V77_EXAM_SECTION_STAFF_LIST_UI_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV77ExamSecUiApplied) return;
+  window.__ceosvgV77ExamSecUiApplied = true;
+
+  function isCurrentActorExamSection() {
+    try {
+      const offSess = (typeof activeAdminOfficerSession !== "undefined" && activeAdminOfficerSession)
+        ? activeAdminOfficerSession
+        : (typeof safeGetStorage === "function" ? safeGetStorage("CEOSVG_ACTIVE_OFFICER_USER", null) : null);
+      if (!offSess || typeof offSess !== "object") return false;
+      if (offSess._isSuperAdminPreview) return false;
+      return Boolean(
+        offSess.rolePreset === "CLERK_EXAM" ||
+        offSess.id === "OU_CLERK_EXAM" ||
+        /clerk_exam/i.test(String(offSess.username || ""))
+      );
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function applyExamSectionStaffListUi() {
+    const isExamSec = isCurrentActorExamSection();
+    if (document.body) {
+      document.body.classList.toggle("exam-section-officer-mode", isExamSec);
+    }
+
+    // Rename the top menu item for emisStaff strictly when Exam Section is logged in
+    try {
+      const menuBar = document.getElementById("admOfficerTopMenuBar");
+      if (menuBar) {
+        const staffBtn = menuBar.querySelector('[data-officer-mod="emisStaff"]');
+        if (staffBtn) {
+          const titleEl = staffBtn.querySelector(".topmenu-title");
+          const enEl = staffBtn.querySelector(".topmenu-en");
+          if (titleEl) {
+            titleEl.textContent = isExamSec ? "பணியாளர் பட்டியல் தயாரித்தல்" : "ஆசிரியர்கள் & பணியாளர்கள்";
+          }
+          if (enEl) {
+            enEl.textContent = isExamSec ? "(Staff List Preparation)" : "(EMIS Staff Roster)";
+          }
+        }
+      }
+    } catch (e) {}
+
+    // Update main heading inside #admPaneTeacherMaster for Exam Section
+    try {
+      const hEl = document.getElementById("admTeacherMasterMainHeading");
+      if (hEl) {
+        if (isExamSec) {
+          hEl.textContent = "👨‍🏫 பணியாளர் பட்டியல் தயாரித்தல் – சிவகங்கை மாவட்ட ஆசிரியர்கள் & பணியாளர்கள்";
+        } else {
+          hEl.textContent = "👨‍🏫 பணியாளர் பதிவேடு – சிவகங்கை மாவட்ட ஆசிரியர்கள் & பணியாளர்கள் முதன்மைப் பதிவேடு (7,081 Staff Roster)";
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Re-apply whenever Officer UI / Admin Tabs change
+  ["loginAsOfficeStaffOrDeo", "switchBackToSuperAdminMode", "openAdminPortal", "applyActiveOfficeUserRbacToUi", "openOfficerAllowedModule", "switchAdminTab"].forEach(fnName => {
+    if (typeof window[fnName] === "function") {
+      const orig = window[fnName];
+      window[fnName] = function() {
+        const res = orig.apply(this, arguments);
+        setTimeout(applyExamSectionStaffListUi, 0);
+        return res;
+      };
+    }
+  });
+
+  applyExamSectionStaffListUi();
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V77_CLOUDFLARE_D1_PHASE1_SYNC_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV77D1Phase1Applied) return;
+  window.__ceosvgV77D1Phase1Applied = true;
+
+  // Upgraded worker.js: preserves 100% of KV Read-Cache (CEOSVG_CACHE_KV) + adds Phase 1 Cloudflare D1 (CEOSVG_D1) endpoints
+  window.getCfKvWorkerSourceCode = function() {
+    return [
+      '// ============================================================================',
+      '// Cloudflare Worker: ceosvg-fb-cache (v8.2 — Hybrid KV Read-Cache + D1 Phase 1)',
+      '// Bindings required:',
+      '//   1) KV Namespace variable name : CEOSVG_CACHE_KV',
+      '//   2) D1 Database variable name  : CEOSVG_D1',
+      '// ============================================================================',
+      'const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";',
+      '',
+      'const TTL_RULES = [',
+      '  { prefix: "ceosvg_live/master_schools_by_uno", ttl: 3600 },',
+      '  { prefix: "ceosvg_live/stores/CEOSVG_MASTER_SCHOOLS", ttl: 3600 },',
+      '  { prefix: "ceosvg_live/exam_centres_10", ttl: 3600 },',
+      '  { prefix: "ceosvg_live/exam_centres_12", ttl: 3600 },',
+      '  { prefix: "ceosvg_live/stores/CEOSVG_HSS_GROUP_MASTER_V1", ttl: 3600 },',
+      '  { prefix: "ceosvg_live/school_auth", ttl: 600 },',
+      '  { prefix: "ceosvg_live/stores/CEOSVG_SCHOOL_AUTH", ttl: 600 },',
+      '  { prefix: "ceosvg_live/school_summary_index", ttl: 300 },',
+      '  { prefix: "ceosvg_live/verified_otp_vault", ttl: 300 },',
+      '  { prefix: "ceosvg_live/site_maintenance", ttl: 120 },',
+      '  { prefix: "ceosvg_live/stores/CEOSVG_PORTAL_CFG", ttl: 300 },',
+      '  { prefix: "ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES", ttl: 300 },',
+      '  { prefix: "ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1", ttl: 300 },',
+      '  { prefix: "ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1", ttl: 300 },',
+      '  { prefix: "ceosvg_live/stores/CEOSVG_CIRCULARS", ttl: 300 },',
+      '  { prefix: "ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT", ttl: 600 }',
+      '];',
+      '',
+      'const CORS_HEADERS = {',
+      '  "Access-Control-Allow-Origin": "*",',
+      '  "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",',
+      '  "Access-Control-Allow-Headers": "Content-Type, Authorization",',
+      '  "Access-Control-Expose-Headers": "X-Cache, X-Cache-TTL"',
+      '};',
+      '',
+      'function getTtlForPath(cleanPath) {',
+      '  for (const r of TTL_RULES) {',
+      '    if (cleanPath === r.prefix || cleanPath.startsWith(r.prefix + "/")) return r.ttl;',
+      '  }',
+      '  return 120;',
+      '}',
+      '',
+      'function getParentCacheKeys(cleanPath) {',
+      '  const keys = new Set([cleanPath]);',
+      '  const parts = cleanPath.split("/");',
+      '  while (parts.length > 2) {',
+      '    parts.pop();',
+      '    keys.add(parts.join("/"));',
+      '  }',
+      '  return Array.from(keys);',
+      '}',
+      '',
+      'async function ensureD1Table(env) {',
+      '  if (!env || !env.CEOSVG_D1) return false;',
+      '  await env.CEOSVG_D1.prepare(',
+      '    "CREATE TABLE IF NOT EXISTS portal_kv_store (k TEXT PRIMARY KEY, v TEXT NOT NULL, updated_at INTEGER NOT NULL)"',
+      '  ).run();',
+      '  return true;',
+      '}',
+      '',
+      'export default {',
+      '  async fetch(request, env, ctx) {',
+      '    if (request.method === "OPTIONS") {',
+      '      return new Response(null, { status: 204, headers: CORS_HEADERS });',
+      '    }',
+      '    const url = new URL(request.url);',
+      '    const pathname = url.pathname.replace(/^\\/+/, "");',
+      '',
+      '    // 1) Health check',
+      '    if (pathname === "" || pathname === "__health") {',
+      '      return new Response(JSON.stringify({',
+      '        ok: true,',
+      '        service: "ceosvg-fb-cache",',
+      '        version: "v8.2",',
+      '        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),',
+      '        d1Bound: Boolean(env && env.CEOSVG_D1),',
+      '        ts: new Date().toISOString()',
+      '      }), {',
+      '        status: 200,',
+      '        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '      });',
+      '    }',
+      '',
+      '    // 2) Targeted KV cache invalidation after Firebase write',
+      '    if (pathname === "__invalidate" && request.method === "POST") {',
+      '      let body = {};',
+      '      try { body = await request.json(); } catch (e) {}',
+      '      const cleanPath = String(body.path || "").replace(/^\\/+/, "").replace(/\\.json$/i, "");',
+      '      const keys = getParentCacheKeys(cleanPath);',
+      '      if (env && env.CEOSVG_CACHE_KV && cleanPath) {',
+      '        await Promise.all(keys.map(k => env.CEOSVG_CACHE_KV.delete(k).catch(() => {})));',
+      '      }',
+      '      return new Response(JSON.stringify({ ok: true, invalidated: keys }), {',
+      '        status: 200,',
+      '        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '      });',
+      '    }',
+      '',
+      '    // 3) Full KV cache purge',
+      '    if (pathname === "__purge") {',
+      '      let purged = 0;',
+      '      if (env && env.CEOSVG_CACHE_KV) {',
+      '        const listed = await env.CEOSVG_CACHE_KV.list({ limit: 1000 });',
+      '        const delTasks = (listed.keys || []).map(k => env.CEOSVG_CACHE_KV.delete(k.name).catch(() => {}));',
+      '        await Promise.all(delTasks);',
+      '        purged = delTasks.length;',
+      '      }',
+      '      return new Response(JSON.stringify({ ok: true, purged }), {',
+      '        status: 200,',
+      '        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '      });',
+      '    }',
+      '',
+      '    // 4) Phase 1 Cloudflare D1 Status & Counts',
+      '    if (pathname === "__d1/status") {',
+      '      if (!env || !env.CEOSVG_D1) {',
+      '        return new Response(JSON.stringify({ ok: false, d1Bound: false, error: "CEOSVG_D1 binding not attached" }), {',
+      '          status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '        });',
+      '      }',
+      '      await ensureD1Table(env);',
+      '      const totalRes = await env.CEOSVG_D1.prepare("SELECT COUNT(*) AS cnt, MAX(updated_at) AS last_ts FROM portal_kv_store").first();',
+      '      const prefixes = [',
+      '        "ceosvg_live/master_schools_by_uno/",',
+      '        "ceosvg_live/school_auth/",',
+      '        "ceosvg_live/school_summary_index/",',
+      '        "ceosvg_live/school_extra/",',
+      '        "ceosvg_live/ebs_2026_27/",',
+      '        "ceosvg_live/exam_result_analysis_by_uno/",',
+      '        "ceosvg_live/stores/",',
+      '        "ceosvg_live/DeleteRequests/"',
+      '      ];',
+      '      const counts = {};',
+      '      for (const p of prefixes) {',
+      '        const r = await env.CEOSVG_D1.prepare("SELECT COUNT(*) AS cnt FROM portal_kv_store WHERE k LIKE ?").bind(p + "%").first();',
+      '        counts[p.replace(/\\/$/, "")] = Number((r && r.cnt) || 0);',
+      '      }',
+      '      return new Response(JSON.stringify({',
+      '        ok: true,',
+      '        d1Bound: true,',
+      '        totalRows: Number((totalRes && totalRes.cnt) || 0),',
+      '        lastUpdatedAt: Number((totalRes && totalRes.last_ts) || 0),',
+      '        counts: counts',
+      '      }), {',
+      '        status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '      });',
+      '    }',
+      '',
+      '    // 5) Phase 1 Cloudflare D1 Batch Upsert (CORS-safe + per-item fallback)',
+      '    if (pathname === "__d1/upsert" && request.method === "POST") {',
+      '      try {',
+      '        if (!env || !env.CEOSVG_D1) {',
+      '          return new Response(JSON.stringify({ ok: false, d1Bound: false, error: "CEOSVG_D1 binding not attached" }), {',
+      '            status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '          });',
+      '        }',
+      '        await ensureD1Table(env);',
+      '        const rawText = await request.text();',
+      '        let body = {};',
+      '        try { body = JSON.parse(rawText || "{}"); } catch (e) {}',
+      '        const items = Array.isArray(body.items) ? body.items : [];',
+      '        const now = Date.now();',
+      '        const sql = "INSERT INTO portal_kv_store (k, v, updated_at) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v, updated_at = excluded.updated_at";',
+      '        const stmts = [];',
+      '        for (const it of items) {',
+      '          if (!it || !it.k) continue;',
+      '          const valStr = (typeof it.v === "string") ? it.v : JSON.stringify(it.v);',
+      '          if (valStr.length > 900000) continue; // Respect D1 1MB row safety ceiling',
+      '          stmts.push(env.CEOSVG_D1.prepare(sql).bind(String(it.k), valStr, now));',
+      '        }',
+      '        let written = 0;',
+      '        if (stmts.length > 0) {',
+      '          try {',
+      '            await env.CEOSVG_D1.batch(stmts);',
+      '            written = stmts.length;',
+      '          } catch (batchErr) {',
+      '            for (const s of stmts) {',
+      '              try { await s.run(); written++; } catch (se) {}',
+      '            }',
+      '          }',
+      '        }',
+      '        return new Response(JSON.stringify({ ok: true, written }), {',
+      '          status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '        });',
+      '      } catch (err) {',
+      '        return new Response(JSON.stringify({ ok: false, error: String(err && err.message ? err.message : err) }), {',
+      '          status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '        });',
+      '      }',
+      '    }',
+      '',
+      '    // 6) Phase 1 Cloudflare D1 Single Key Read (Verification)',
+      '    if (pathname === "__d1/get" && request.method === "GET") {',
+      '      if (!env || !env.CEOSVG_D1) {',
+      '        return new Response(JSON.stringify({ ok: false, d1Bound: false }), { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });',
+      '      }',
+      '      await ensureD1Table(env);',
+      '      const k = url.searchParams.get("k") || "";',
+      '      const row = await env.CEOSVG_D1.prepare("SELECT k, v, updated_at FROM portal_kv_store WHERE k = ?").bind(k).first();',
+      '      return new Response(JSON.stringify({ ok: true, found: Boolean(row), row: row || null }), {',
+      '        status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '      });',
+      '    }',
+      '',
+      '    // 7) Hybrid KV Read-Cache GET route for Firebase RTDB paths',
+      '    if (request.method === "GET" && pathname.endsWith(".json")) {',
+      '      const cleanPath = pathname.replace(/\\.json$/i, "");',
+      '      const ttl = getTtlForPath(cleanPath);',
+      '      if (env && env.CEOSVG_CACHE_KV && !url.search.includes("shallow=true")) {',
+      '        const cached = await env.CEOSVG_CACHE_KV.get(cleanPath);',
+      '        if (cached !== null) {',
+      '          return new Response(cached, {',
+      '            status: 200,',
+      '            headers: {',
+      '              ...CORS_HEADERS,',
+      '              "Content-Type": "application/json; charset=utf-8",',
+      '              "X-Cache": "HIT-KV",',
+      '              "X-Cache-TTL": String(ttl)',
+      '            }',
+      '          });',
+      '        }',
+      '      }',
+      '      const fbResp = await fetch(`${FIREBASE_BASE}/${pathname}${url.search}`);',
+      '      const text = await fbResp.text();',
+      '      if (fbResp.ok && env && env.CEOSVG_CACHE_KV && !url.search.includes("shallow=true") && text && text !== "null") {',
+      '        ctx.waitUntil(env.CEOSVG_CACHE_KV.put(cleanPath, text, { expirationTtl: Math.max(60, ttl) }).catch(() => {}));',
+      '      }',
+      '      return new Response(text, {',
+      '        status: fbResp.status,',
+      '        headers: {',
+      '          ...CORS_HEADERS,',
+      '          "Content-Type": "application/json; charset=utf-8",',
+      '          "X-Cache": "MISS-FB",',
+      '          "X-Cache-TTL": String(ttl)',
+      '        }',
+      '      });',
+      '    }',
+      '',
+      '    return new Response(JSON.stringify({ ok: false, error: "Unsupported route" }), {',
+      '      status: 400,',
+      '      headers: { ...CORS_HEADERS, "Content-Type": "application/json" }',
+      '    });',
+      '  }',
+      '};'
+    ].join("\n");
+  };
+
+  function getWorkerBaseUrlForD1() {
+    const inp = document.getElementById("cfgCfKvProxyUrl");
+    const raw = (inp && inp.value) ? inp.value : (localStorage.getItem("CEOSVG_CF_KV_PROXY_URL") || "https://ceosvg-fb-cache.poovalingam1980.workers.dev");
+    return String(raw || "").trim().replace(/\/+$/, "");
+  }
+
+  function renderD1VerificationTable(fbCounts, d1Counts, totalD1Rows) {
+    const wrap = document.getElementById("cfD1VerifyTableWrap");
+    if (!wrap) return;
+    const rows = [
+      { key: "ceosvg_live/master_schools_by_uno", label: "பள்ளிகள் முதன்மைப் பட்டியல் (Master Schools)" },
+      { key: "ceosvg_live/school_auth", label: "பள்ளி உள்நுழைவு & கடவுச்சொல் (School Auth)" },
+      { key: "ceosvg_live/school_summary_index", label: "பள்ளி சுருக்க அட்டவணை (Summary Index)" },
+      { key: "ceosvg_live/school_extra", label: "பள்ளி விவரம், மாணவர் & ஆசிரியர் (School Extra)" },
+      { key: "ceosvg_live/ebs_2026_27", label: "EBS 2026-27 படிவங்கள் (F1–F4 & Lock)" },
+      { key: "ceosvg_live/exam_result_analysis_by_uno", label: "தேர்ச்சிப் பகுப்பாய்வு அறிக்கை (Result Analysis)" },
+      { key: "ceosvg_live/DeleteRequests", label: "பணியாளர் நீக்கக் கோரிக்கைகள் (Delete Requests)" },
+      { key: "ceosvg_live/stores", label: "அமைப்பு & மையப் பதிவேடுகள் (Core Stores)" }
+    ];
+    wrap.style.display = "block";
+    wrap.innerHTML = `
+      <table class="data-table" style="width:100%; font-size:0.76rem; margin:0;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th>தரவுத் தொகுப்பு (Node)</th>
+            ${fbCounts ? '<th style="text-align:center; width:95px;">Firebase</th>' : ''}
+            <th style="text-align:center; width:105px;">Cloudflare D1</th>
+            <th style="text-align:center; width:95px;">நிலை</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => {
+            const dCnt = Number((d1Counts && d1Counts[r.key]) || 0);
+            const fCnt = fbCounts ? Number(fbCounts[r.key] || 0) : null;
+            const matched = fbCounts ? (dCnt >= fCnt) : (dCnt > 0);
+            return `
+              <tr>
+                <td><strong>${escapeHtmlAttr(r.label)}</strong></td>
+                ${fbCounts ? `<td style="text-align:center; font-weight:800;">${fCnt}</td>` : ''}
+                <td style="text-align:center; font-weight:900; color:#0f766e;">${dCnt}</td>
+                <td style="text-align:center; font-weight:800; color:${matched ? "#16a34a" : "#d97706"};">${matched ? "✅ சரி" : "⏳ நிலுவை"}</td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+      <div style="font-size:0.74rem; color:#0f766e; font-weight:900; margin-top:6px; text-align:right;">
+        மொத்த Cloudflare D1 பதிவுகள்: ${Number(totalD1Rows || 0)}
+      </div>
+    `;
+  }
+
+  window.checkCloudflareD1Status = async function(showNotification) {
+    const workerBase = getWorkerBaseUrlForD1();
+    const badge = document.getElementById("cfD1StatusBadge");
+    const prog = document.getElementById("cfD1SyncProgressText");
+    const btn = document.getElementById("cfD1CheckBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ சோதிக்கிறது..."; }
+    try {
+      const r = await fetch(`${workerBase}/__d1/status`);
+      const j = r && r.ok ? await r.json().catch(() => null) : null;
+      if (j && j.ok && j.d1Bound) {
+        if (badge) {
+          badge.style.background = "#dcfce7";
+          badge.style.color = "#166534";
+          badge.style.borderColor = "#86efac";
+          badge.textContent = `🟢 D1 இணைக்கப்பட்டது (${j.totalRows || 0} பதிவுகள்)`;
+        }
+        if (prog) {
+          prog.style.color = "#166534";
+          prog.textContent = `✅ Cloudflare D1 (CEOSVG_D1) தயார் நிலையில் உள்ளது! தற்போது ${j.totalRows || 0} பதிவுகள் D1-ல் உள்ளன.`;
+        }
+        renderD1VerificationTable(null, j.counts || {}, j.totalRows || 0);
+        if (showNotification && typeof showToast === "function") {
+          showToast(`✅ Cloudflare D1 இணைக்கப்பட்டுள்ளது! (${j.totalRows || 0} பதிவுகள்)`, "#16a34a", true);
+        }
+        return j;
+      } else {
+        if (badge) {
+          badge.style.background = "#fef3c7";
+          badge.style.color = "#92400e";
+          badge.style.borderColor = "#fcd34d";
+          badge.textContent = "⚠️ D1 இணைக்கப்படவில்லை";
+        }
+        if (prog) {
+          prog.style.color = "#9a3412";
+          prog.innerHTML = '⚠️ Cloudflare Worker-இல் <code>CEOSVG_D1</code> binding இணைக்கப்படவில்லை அல்லது புதிய <code>worker.js</code> இன்னும் Deploy செய்யப்படவில்லை.';
+        }
+        if (showNotification && typeof showToast === "function") {
+          showToast("⚠️ Cloudflare Worker-இல் CEOSVG_D1 இணைத்து புதிய worker.js-ஐ Deploy செய்யவும்.", "#f59e0b", true);
+        }
+        return null;
+      }
+    } catch (e) {
+      if (showNotification && typeof showToast === "function") showToast("❌ D1 நிலை சோதனையில் பிழை!", "#ef4444");
+      return null;
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "🔌 2. D1 நிலை சோதி"; }
+    }
+  };
+
+  async function upsertBatchToD1(workerBase, items, chunkSize) {
+    const size = chunkSize || 20;
+    let totalWritten = 0;
+    for (let i = 0; i < items.length; i += size) {
+      const chunk = items.slice(i, i + size);
+      const r = await fetch(`${workerBase}/__d1/upsert`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: chunk })
+      });
+      if (!r || !r.ok) {
+        const errTxt = r ? await r.text().catch(() => "") : "Network Error";
+        throw new Error(`D1 upsert failed (HTTP ${r ? r.status : 0}): ${errTxt.slice(0, 120)}`);
+      }
+      const j = await r.json().catch(() => ({}));
+      totalWritten += Number(j.written || chunk.length);
+    }
+    return totalWritten;
+  }
+
+  window.syncAllFirebaseDataToCloudflareD1 = async function() {
+    if (typeof window.isCurrentActorSuperAdmin === "function" && !window.isCurrentActorSuperAdmin()) {
+      if (typeof showToast === "function") showToast("🔒 முதன்மை நிர்வாகி (Super Admin) மட்டுமே 1-Click D1 Sync இயக்க முடியும்.", "#dc2626", true);
+      return;
+    }
+    const workerBase = getWorkerBaseUrlForD1();
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!fbBase) {
+      if (typeof showToast === "function") showToast("❌ Firebase URL இல்லை!", "#ef4444");
+      return;
+    }
+
+    const d1Check = await window.checkCloudflareD1Status(false);
+    if (!d1Check || !d1Check.d1Bound) {
+      if (typeof showToast === "function") showToast("⚠️ முதலில் Cloudflare Dashboard-ல் CEOSVG_D1 இணைத்து புதிய worker.js-ஐ Deploy செய்யவும்.", "#f59e0b", true);
+      return;
+    }
+
+    const ok = confirm("Firebase-ல் உள்ள அனைத்து 282 பள்ளிகளின் தரவுகளையும் Cloudflare D1-க்கு நகலெடுத்து சரிபார்க்கவா?\n\n(0% பாதிப்பு — Firebase-ல் எந்த மாற்றமும் செய்யப்படாது; தொடர்ந்து Firebase முதன்மைத் தரவுத்தளமாகவே இயங்கும்.)");
+    if (!ok) return;
+
+    const btn = document.getElementById("cfD1SyncAllBtn");
+    const prog = document.getElementById("cfD1SyncProgressText");
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ Sync நடக்கிறது..."; }
+
+    const fbCounts = {};
+    const setStep = (txt) => {
+      if (prog) { prog.style.color = "#1d4ed8"; prog.textContent = txt; }
+    };
+
+    try {
+      const mapNodes = [
+        { path: "ceosvg_live/master_schools_by_uno", label: "படி 1/8: 282 பள்ளிகள் முதன்மைப் பட்டியல்", chunk: 40 },
+        { path: "ceosvg_live/school_auth", label: "படி 2/8: பள்ளி உள்நுழைவு & கடவுச்சொல்", chunk: 40 },
+        { path: "ceosvg_live/school_summary_index", label: "படி 3/8: பள்ளி சுருக்க அட்டவணை", chunk: 50 },
+        { path: "ceosvg_live/school_extra", label: "படி 4/8: பள்ளி விவரம், மாணவர் & ஆசிரியர் (School Extra)", chunk: 10 },
+        { path: "ceosvg_live/ebs_2026_27", label: "படி 5/8: EBS 2026-27 படிவங்கள் (F1–F4)", chunk: 10 },
+        { path: "ceosvg_live/exam_result_analysis_by_uno", label: "படி 6/8: தேர்ச்சிப் பகுப்பாய்வு அறிக்கை", chunk: 10 },
+        { path: "ceosvg_live/DeleteRequests", label: "படி 7/8: பணியாளர் நீக்கக் கோரிக்கைகள்", chunk: 25 }
+      ];
+
+      for (const node of mapNodes) {
+        setStep(`⏳ ${node.label} — Firebase-லிருந்து பெறப்படுகிறது...`);
+        const r = await fetch(`${fbBase}/${node.path}.json`);
+        const data = (r && r.ok) ? await r.json().catch(() => null) : null;
+        if (data && typeof data === "object") {
+          const entries = Object.entries(data).filter(([k, v]) => k && v !== null && v !== undefined);
+          fbCounts[node.path] = entries.length;
+          if (entries.length > 0) {
+            setStep(`⏳ ${node.label} — ${entries.length} பதிவுகள் Cloudflare D1-ல் எழுதப்படுகின்றன...`);
+            const items = entries.map(([k, v]) => ({ k: `${node.path}/${k}`, v: v }));
+            await upsertBatchToD1(workerBase, items, node.chunk);
+          }
+        } else {
+          fbCounts[node.path] = 0;
+        }
+      }
+
+      // Step 8: Core small stores & centres
+      setStep("⏳ படி 8/8: மைய அமைப்புப் பதிவேடுகள் (Core Stores) நகலெடுக்கப்படுகின்றன...");
+      const coreStoreKeys = [
+        "ceosvg_live/stores/CEOSVG_PORTAL_CFG",
+        "ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES",
+        "ceosvg_live/stores/CEOSVG_USER_EDITED_STAFF_VAULT_V1",
+        "ceosvg_live/stores/CEOSVG_EDITED_SCHOOLS_VAULT_V1",
+        "ceosvg_live/stores/CEOSVG_DELETE_REQUESTS",
+        "ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1",
+        "ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1",
+        "ceosvg_live/stores/CEOSVG_CIRCULARS",
+        "ceosvg_live/stores/CEOSVG_HSS_GROUP_MASTER_V1",
+        "ceosvg_live/stores/CEOSVG_OFFICE_USERS_RBAC_V1",
+        "ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT",
+        "ceosvg_live/stores/CEOSVG_EXAM_DUTY_APPOINTMENTS_V1",
+        "ceosvg_live/stores/CEOSVG_EXAM_DUTY_META_V1",
+        "ceosvg_live/stores/CEOSVG_OTHER_EXAMS_CONFIG_V1",
+        "ceosvg_live/verified_otp_vault",
+        "ceosvg_live/exam_centres_10",
+        "ceosvg_live/exam_centres_12"
+      ];
+      const storeItems = [];
+      for (const sk of coreStoreKeys) {
+        try {
+          const sr = await fetch(`${fbBase}/${sk}.json`);
+          const sd = (sr && sr.ok) ? await sr.json().catch(() => null) : null;
+          if (sd !== null && sd !== undefined) {
+            storeItems.push({ k: sk, v: sd });
+          }
+        } catch (se) {}
+      }
+      fbCounts["ceosvg_live/stores"] = storeItems.filter(x => x.k.startsWith("ceosvg_live/stores/")).length;
+      if (storeItems.length > 0) {
+        await upsertBatchToD1(workerBase, storeItems, 5);
+      }
+
+      // Final verification against Cloudflare D1
+      setStep("⏳ இறுதிச் சரிபார்ப்பு: Firebase vs Cloudflare D1 எண்ணிக்கை ஒப்பிடப்படுகிறது...");
+      const finalStatus = await window.checkCloudflareD1Status(false);
+      if (finalStatus && finalStatus.ok) {
+        renderD1VerificationTable(fbCounts, finalStatus.counts || {}, finalStatus.totalRows || 0);
+        if (prog) {
+          prog.style.color = "#166534";
+          prog.innerHTML = `✅ <strong>கட்டம் 1 வெற்றிகரமாக முடிந்தது!</strong> அனைத்து 282 பள்ளிகளின் தரவுகளும் Cloudflare D1-ல் (${finalStatus.totalRows} பதிவுகள்) பாதுகாப்பாக நகலெடுக்கப்பட்டுச் சரிபார்க்கப்பட்டன. Firebase தொடர்ந்து முதன்மைத் தரவுத்தளமாக இயங்குகிறது.`;
+        }
+        if (typeof showToast === "function") {
+          showToast(`✅ 1-Click Firebase ➔ Cloudflare D1 Sync முடிந்தது! (${finalStatus.totalRows} பதிவுகள்)`, "#16a34a", true);
+        }
+      }
+    } catch (err) {
+      if (prog) {
+        prog.style.color = "#dc2626";
+        prog.textContent = "❌ D1 Sync பிழை: " + (err && err.message ? err.message : err);
+      }
+      if (typeof showToast === "function") showToast("❌ D1 Sync பிழை: " + (err && err.message ? err.message : ""), "#ef4444", true);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "🚀 3. 1-Click Firebase ➔ D1 Sync (282 பள்ளிகள்)"; }
+    }
+  };
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V81_BULLETPROOF_D1_SYNC_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV81D1SyncApplied) return;
+  window.__ceosvgV81D1SyncApplied = true;
+
+  function getD1WorkerBaseV81() {
+    const inp = document.getElementById("cfgCfKvProxyUrl");
+    const raw = (inp && inp.value) || (typeof localStorage !== "undefined" ? localStorage.getItem("CEOSVG_CF_KV_PROXY_URL") : "") || "https://ceosvg-fb-cache.poovalingam1980.workers.dev";
+    return String(raw || "https://ceosvg-fb-cache.poovalingam1980.workers.dev").trim().replace(/\/+$/, "");
+  }
+
+  // Strip any huge embedded base64 strings (>200KB) before sending to D1 so no row ever hits D1 1MB limit
+  function sanitizeForD1Payload(val) {
+    try {
+      const s = JSON.stringify(val, function(k, v) {
+        if (typeof v === "string" && v.length > 200000 && (v.startsWith("data:") || k === "base64Data" || k === "dataUrl")) {
+          return "";
+        }
+        return v;
+      });
+      return JSON.parse(s);
+    } catch (e) {
+      return val;
+    }
+  }
+
+  // Byte-aware adaptive chunked upsert (<=120 KB and <=15 items per POST) with 2x retry & single-item fallback!
+  async function upsertBatchToD1SafeV81(workerBase, items, onProgress) {
+    const MAX_CHUNK_BYTES = 120000;
+    const MAX_CHUNK_ITEMS = 15;
+    let totalWritten = 0;
+
+    // Build byte-safe chunks
+    const chunks = [];
+    let curChunk = [];
+    let curBytes = 0;
+    for (const rawIt of items) {
+      if (!rawIt || !rawIt.k) continue;
+      const cleanVal = sanitizeForD1Payload(rawIt.v);
+      const itemObj = { k: String(rawIt.k), v: cleanVal };
+      const itemBytes = JSON.stringify(itemObj).length;
+      if (itemBytes > 850000) continue; // Skip >850KB outlier row safely
+      if (curChunk.length > 0 && (curChunk.length >= MAX_CHUNK_ITEMS || (curBytes + itemBytes) > MAX_CHUNK_BYTES)) {
+        chunks.push(curChunk);
+        curChunk = [];
+        curBytes = 0;
+      }
+      curChunk.push(itemObj);
+      curBytes += itemBytes;
+    }
+    if (curChunk.length > 0) chunks.push(curChunk);
+
+    async function sendOneChunk(chunkArr) {
+      let lastErr = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          // Use text/plain to avoid CORS OPTIONS preflight failures on strict networks; worker parses JSON text!
+          const r = await fetch(`${workerBase}/__d1/upsert`, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=UTF-8" },
+            body: JSON.stringify({ items: chunkArr })
+          });
+          if (r && r.ok) {
+            const j = await r.json().catch(() => ({}));
+            return Number(j.written || chunkArr.length);
+          }
+          const errTxt = r ? await r.text().catch(() => "") : "No Response";
+          lastErr = new Error(`HTTP ${r ? r.status : 0}: ${errTxt.slice(0, 120)}`);
+        } catch (e) {
+          lastErr = e;
+        }
+        await new Promise(res => setTimeout(res, 350 * attempt));
+      }
+      // If a multi-item chunk still fails, try item-by-item so 1 problematic record never blocks the rest
+      if (chunkArr.length > 1) {
+        let subWritten = 0;
+        for (const single of chunkArr) {
+          try {
+            subWritten += await sendOneChunk([single]);
+          } catch (se) {}
+        }
+        if (subWritten > 0) return subWritten;
+      }
+      throw lastErr || new Error("D1 Upsert Failed");
+    }
+
+    for (let idx = 0; idx < chunks.length; idx++) {
+      const written = await sendOneChunk(chunks[idx]);
+      totalWritten += written;
+      if (typeof onProgress === "function") {
+        onProgress(totalWritten, items.length, idx + 1, chunks.length);
+      }
+    }
+    return totalWritten;
+  }
+
+  async function fetchFirebaseNodeOrLocalFallback(fbBase, pathStr, localFallbackBuilder) {
+    try {
+      const r = await fetch(`${fbBase}/${pathStr}.json`);
+      if (r && r.ok) {
+        const d = await r.json().catch(() => null);
+        if (d && typeof d === "object" && Object.keys(d).length > 0) {
+          return { data: d, source: "firebase" };
+        }
+      }
+    } catch (e) {
+      console.warn(`[D1 Sync v8.2] Firebase GET fallback for ${pathStr}:`, e);
+    }
+    if (typeof localFallbackBuilder === "function") {
+      try {
+        const localData = localFallbackBuilder();
+        if (localData && typeof localData === "object" && Object.keys(localData).length > 0) {
+          return { data: localData, source: "local_cache" };
+        }
+      } catch (le) {}
+    }
+    return { data: null, source: "empty" };
+  }
+
+  window.syncAllFirebaseDataToCloudflareD1 = async function() {
+    if (typeof window.isCurrentActorSuperAdmin === "function" && !window.isCurrentActorSuperAdmin()) {
+      if (typeof showToast === "function") showToast("🔒 முதன்மை நிர்வாகி (Super Admin) மட்டுமே 1-Click D1 Sync இயக்க முடியும்.", "#dc2626", true);
+      return;
+    }
+    const workerBase = getD1WorkerBaseV81();
+    const fbBase = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!fbBase) {
+      if (typeof showToast === "function") showToast("❌ Firebase URL இல்லை!", "#ef4444");
+      return;
+    }
+
+    const d1Check = await window.checkCloudflareD1Status(false);
+    if (!d1Check || !d1Check.d1Bound) {
+      if (typeof showToast === "function") showToast("⚠️ முதலில் Cloudflare Dashboard-ல் CEOSVG_D1 இணைத்து புதிய worker.js-ஐ Deploy செய்யவும்.", "#f59e0b", true);
+      return;
+    }
+
+    const ok = confirm("Firebase-ல் உள்ள அனைத்து 282 பள்ளிகளின் தரவுகளையும் Cloudflare D1-க்கு நகலெடுத்து சரிபார்க்கவா?\n\n(0% பாதிப்பு — Firebase-ல் எந்த மாற்றமும் செய்யப்படாது; தொடர்ந்து Firebase முதன்மைத் தரவுத்தளமாகவே இயங்கும்.)");
+    if (!ok) return;
+
+    const btn = document.getElementById("cfD1SyncAllBtn");
+    const prog = document.getElementById("cfD1SyncProgressText");
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ Sync நடக்கிறது..."; }
+
+    const fbCounts = {};
+    const stepErrors = [];
+    const setStep = (txt) => {
+      if (prog) { prog.style.color = "#1d4ed8"; prog.textContent = txt; }
+    };
+
+    try {
+      const mapNodes = [
+        {
+          path: "ceosvg_live/master_schools_by_uno",
+          label: "படி 1/8: 282 பள்ளிகள் முதன்மைப் பட்டியல்",
+          fallback: () => {
+            const m = {};
+            (masterSchools || []).forEach(s => { if (s && s.uNo) m[String(s.uNo)] = s; });
+            return m;
+          }
+        },
+        {
+          path: "ceosvg_live/school_auth",
+          label: "படி 2/8: பள்ளி உள்நுழைவு & கடவுச்சொல்",
+          fallback: () => (typeof schoolAuthStore === "object" && schoolAuthStore) ? schoolAuthStore : {}
+        },
+        {
+          path: "ceosvg_live/school_summary_index",
+          label: "படி 3/8: பள்ளி சுருக்க அட்டவணை",
+          fallback: () => safeGetStorage("CEOSVG_SCHOOL_SUMMARY_INDEX_V1", {}) || {}
+        },
+        {
+          path: "ceosvg_live/school_extra",
+          label: "படி 4/8: பள்ளி விவரம், மாணவர் & ஆசிரியர் (School Extra)",
+          fallback: () => (typeof schoolExtraDataStore === "object" && schoolExtraDataStore) ? schoolExtraDataStore : {}
+        },
+        {
+          path: "ceosvg_live/ebs_2026_27",
+          label: "படி 5/8: EBS 2026-27 படிவங்கள் (F1–F4)",
+          fallback: () => ({})
+        },
+        {
+          path: "ceosvg_live/exam_result_analysis_by_uno",
+          label: "படி 6/8: தேர்ச்சிப் பகுப்பாய்வு அறிக்கை",
+          fallback: () => ({})
+        },
+        {
+          path: "ceosvg_live/DeleteRequests",
+          label: "படி 7/8: பணியாளர் நீக்கக் கோரிக்கைகள்",
+          fallback: () => {
+            const m = {};
+            (staffDeleteRequests || []).forEach(r => { if (r && r.reqId) m[String(r.reqId)] = r; });
+            return m;
+          }
+        }
+      ];
+
+      for (const node of mapNodes) {
+        setStep(`⏳ ${node.label} — தரவு பெறப்படுகிறது...`);
+        const fetched = await fetchFirebaseNodeOrLocalFallback(fbBase, node.path, node.fallback);
+        if (fetched.data && typeof fetched.data === "object") {
+          const entries = Object.entries(fetched.data).filter(([k, v]) => k && v !== null && v !== undefined);
+          fbCounts[node.path] = entries.length;
+          if (entries.length > 0) {
+            const items = entries.map(([k, v]) => ({ k: `${node.path}/${k}`, v: v }));
+            try {
+              await upsertBatchToD1SafeV81(workerBase, items, (done, tot) => {
+                setStep(`⏳ ${node.label} — ${done} / ${tot} பதிவுகள் Cloudflare D1-ல் எழுதப்படுகின்றன...`);
+              });
+            } catch (stepErr) {
+              stepErrors.push(`${node.label}: ${stepErr && stepErr.message ? stepErr.message : stepErr}`);
+            }
+          }
+        } else {
+          fbCounts[node.path] = 0;
+        }
+      }
+
+      // Step 8: Core small stores & centres
+      setStep("⏳ படி 8/8: மைய அமைப்புப் பதிவேடுகள் (Core Stores) நகலெடுக்கப்படுகின்றன...");
+      const coreStoreKeys = [
+        "ceosvg_live/stores/CEOSVG_PORTAL_CFG",
+        "ceosvg_live/stores/CEOSVG_STAFF_OVERRIDES",
+        "ceosvg_live/stores/CEOSVG_USER_EDITED_STAFF_VAULT_V1",
+        "ceosvg_live/stores/CEOSVG_EDITED_SCHOOLS_VAULT_V1",
+        "ceosvg_live/stores/CEOSVG_DELETE_REQUESTS",
+        "ceosvg_live/stores/CEOSVG_RESOLVED_DELETE_REQ_MAP_V1",
+        "ceosvg_live/stores/CEOSVG_EMIS_DELETED_MAP_V1",
+        "ceosvg_live/stores/CEOSVG_CIRCULARS",
+        "ceosvg_live/stores/CEOSVG_HSS_GROUP_MASTER_V1",
+        "ceosvg_live/stores/CEOSVG_OFFICE_USERS_RBAC_V1",
+        "ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT",
+        "ceosvg_live/stores/CEOSVG_EXAM_DUTY_APPOINTMENTS_V1",
+        "ceosvg_live/stores/CEOSVG_EXAM_DUTY_META_V1",
+        "ceosvg_live/stores/CEOSVG_OTHER_EXAMS_CONFIG_V1",
+        "ceosvg_live/verified_otp_vault",
+        "ceosvg_live/exam_centres_10",
+        "ceosvg_live/exam_centres_12"
+      ];
+      const storeItems = [];
+      for (const sk of coreStoreKeys) {
+        try {
+          const sr = await fetch(`${fbBase}/${sk}.json`);
+          const sd = (sr && sr.ok) ? await sr.json().catch(() => null) : null;
+          if (sd !== null && sd !== undefined) {
+            storeItems.push({ k: sk, v: sd });
+          }
+        } catch (se) {}
+      }
+      fbCounts["ceosvg_live/stores"] = storeItems.filter(x => x.k.startsWith("ceosvg_live/stores/")).length;
+      if (storeItems.length > 0) {
+        try {
+          await upsertBatchToD1SafeV81(workerBase, storeItems, (done, tot) => {
+            setStep(`⏳ படி 8/8: மைய அமைப்புப் பதிவேடுகள் — ${done} / ${tot} எழுதப்படுகின்றன...`);
+          });
+        } catch (sErr) {
+          stepErrors.push(`Core Stores: ${sErr && sErr.message ? sErr.message : sErr}`);
+        }
+      }
+
+      // Final verification
+      setStep("⏳ இறுதிச் சரிபார்ப்பு: Firebase vs Cloudflare D1 எண்ணிக்கை ஒப்பிடப்படுகிறது...");
+      const finalStatus = await window.checkCloudflareD1Status(false);
+      if (finalStatus && finalStatus.ok) {
+        if (prog) {
+          if (stepErrors.length === 0) {
+            prog.style.color = "#166534";
+            prog.innerHTML = `✅ <strong>கட்டம் 1 வெற்றிகரமாக முடிந்தது!</strong> மொத்தம் <strong>${finalStatus.totalRows}</strong> பதிவுகள் Cloudflare D1-ல் பாதுகாப்பாக நகலெடுக்கப்பட்டுச் சரிபார்க்கப்பட்டன.`;
+          } else {
+            prog.style.color = "#b45309";
+            prog.innerHTML = `⚠️ <strong>${finalStatus.totalRows}</strong> பதிவுகள் D1-ல் சேமிக்கப்பட்டன; சில படிகளில் எச்சரிக்கை: ${escapeHtmlAttr(stepErrors.join(" | "))}`;
+          }
+        }
+        if (typeof showToast === "function") {
+          showToast(`✅ Cloudflare D1 Sync முடிந்தது! (${finalStatus.totalRows} பதிவுகள்)`, "#16a34a", true);
+        }
+      }
+    } catch (err) {
+      if (prog) {
+        prog.style.color = "#dc2626";
+        prog.textContent = "❌ D1 Sync பிழை: " + (err && err.message ? err.message : err);
+      }
+      if (typeof showToast === "function") showToast("❌ D1 Sync பிழை: " + (err && err.message ? err.message : ""), "#ef4444", true);
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "🚀 3. 1-Click Firebase ➔ D1 Sync (282 பள்ளிகள்)"; }
+    }
+  };
+})();
+</script>
+
+
+<script>
+// === CEOSVG_V82_FIX_SUMMARY_INDEX_REBUILD_PATCH_APPLIED ===
+(function() {
+  if (window.__ceosvgV82SummaryRebuildFixApplied) return;
+  window.__ceosvgV82SummaryRebuildFixApplied = true;
+
+  const SUMMARY_STORAGE_KEY = "CEOSVG_SCHOOL_SUMMARY_INDEX_V1";
+
+  function countSchoolRaTermsSafe(uNo) {
+    try {
+      const raStore = (typeof getExamResultAnalysisStore === "function") ? getExamResultAnalysisStore() : null;
+      if (!raStore || typeof raStore !== "object") return 0;
+      let cnt = 0;
+      Object.keys(raStore).forEach(tk => {
+        if (tk.startsWith("_")) return;
+        const termMap = raStore[tk];
+        if (termMap && termMap[uNo] && typeof termMap[uNo] === "object") {
+          const rec = termMap[uNo];
+          if ((Array.isArray(rec.students) && rec.students.length > 0) ||
+              (rec.summary && Object.keys(rec.summary).length > 0) ||
+              Boolean(rec.updatedAt)) {
+            cnt++;
+          }
+        }
+      });
+      return cnt;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function computeSingleSchoolSummaryFromLiveStore(uNo, prevIdxRec) {
+    uNo = String(uNo || "").trim();
+    if (!uNo || typeof evaluateSchoolEbsOverallReadiness !== "function") return prevIdxRec || null;
+    try {
+      const r = evaluateSchoolEbsOverallReadiness(uNo);
+      if (!r) return prevIdxRec || null;
+      const fl = (r.finalLock && typeof r.finalLock === "object") ? r.finalLock : {};
+      let rec = {
+        u: uNo,
+        p: Number(r.overallPct || 0),
+        l: fl.locked ? 1 : 0,
+        la: String(fl.lockedAt || "").slice(0, 32),
+        lb: String(fl.lockedBy || "").slice(0, 48),
+        ts: Number(r.totalStaff || 0),
+        tc: Number(r.totalComplete || 0),
+        wa: Number(r.totalWaOk || 0),
+        tt: Number(r.teachTotal || 0),
+        tcm: Number(r.teachComplete || 0),
+        twa: Number(r.teachWaOk || 0),
+        nt: Number(r.ntTotal || 0),
+        ncm: Number(r.ntComplete || 0),
+        nwa: Number(r.ntWaOk || 0),
+        f1: r.f1Ok ? 1 : 0,
+        f2: r.f2Ok ? 1 : 0,
+        ra: countSchoolRaTermsSafe(uNo),
+        up: Date.now()
+      };
+
+      // Zero-regression protection: if local store for a school was temporarily empty while existing cloud index had verified lock/progress, preserve it
+      if (prevIdxRec && typeof prevIdxRec === "object") {
+        const prevLocked = Boolean(prevIdxRec.l);
+        const curLocked = Boolean(rec.l);
+        if (prevLocked && !curLocked && rec.p < Number(prevIdxRec.p || 0)) {
+          rec = Object.assign({}, prevIdxRec, { u: uNo, up: Date.now() });
+        } else if (!curLocked && Number(prevIdxRec.p || 0) > rec.p && Number(prevIdxRec.wa || 0) >= rec.wa && rec.tc === 0) {
+          rec = Object.assign({}, prevIdxRec, { u: uNo, up: Date.now() });
+        }
+      }
+      return rec;
+    } catch (e) {
+      return prevIdxRec || null;
+    }
+  }
+
+  window.rebuildAll282SchoolSummaryIndexToFirebase = async function(showNotification) {
+    const cleanUrl = (typeof normalizeFirebaseDbUrl === "function") ? normalizeFirebaseDbUrl(firebaseDbUrl) : "";
+    if (!cleanUrl || typeof buildFirebaseEndpoint !== "function") {
+      if (showNotification && typeof showToast === "function") {
+        showToast("❌ Firebase Database URL இணைக்கப்படவில்லை!", "#ef4444", true);
+      }
+      return false;
+    }
+
+    const btn = document.getElementById("fbRebuildSummaryIdxBtn");
+    const origBtnText = "⚡ 282 பள்ளி சுருக்க அட்டவணை புதுப்பி (Summary Index)";
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "⏳ 1/3: மேகக்கணித் தரவு பெறப்படுகிறது...";
+    }
+
+    try {
+      let existingRemoteIdx = {};
+
+      // Step 1: When triggered manually by Admin button, pull fresh live school_extra + ebs_2026_27 + otp_vault + existing index first!
+      if (showNotification) {
+        const [rExtra, rEbs27, rVault, rOldIdx] = await Promise.all([
+          fetch(buildFirebaseEndpoint("ceosvg_live/school_extra")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/ebs_2026_27")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/verified_otp_vault")).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(buildFirebaseEndpoint("ceosvg_live/school_summary_index")).then(r => r.ok ? r.json() : null).catch(() => null)
+        ]);
+
+        if (rOldIdx && typeof rOldIdx === "object") {
+          existingRemoteIdx = rOldIdx;
+        }
+
+        if (rExtra && typeof rExtra === "object") {
+          Object.keys(rExtra).forEach(uKey => {
+            const extObj = rExtra[uKey];
+            if (extObj && typeof extObj === "object") {
+              schoolExtraDataStore[uKey] = (typeof deepMergeSchoolExtraPreserveOtp === "function")
+                ? deepMergeSchoolExtraPreserveOtp(schoolExtraDataStore[uKey], extObj, uKey)
+                : Object.assign({}, schoolExtraDataStore[uKey] || {}, extObj);
+            }
+          });
+        }
+        if (rEbs27 && typeof rEbs27 === "object" && typeof mergeSingleSchoolEbs27PacketIntoLocal === "function") {
+          Object.entries(rEbs27).forEach(([uNo, pkt]) => {
+            mergeSingleSchoolEbs27PacketIntoLocal(uNo, pkt);
+          });
+        }
+        if (rVault && typeof rVault === "object" && typeof harvestAndRestoreAllVerifiedOtps === "function") {
+          harvestAndRestoreAllVerifiedOtps(null, rVault);
+        }
+      } else {
+        existingRemoteIdx = safeGetStorage(SUMMARY_STORAGE_KEY, {}) || {};
+      }
+
+      // Step 2: Recompute compact summary for all 282 schools
+      if (btn) btn.textContent = "⏳ 2/3: 282 பள்ளிகள் கணக்கிடப்படுகின்றன...";
+      const list = (typeof getEbs282MasterSchools === "function")
+        ? getEbs282MasterSchools()
+        : (Array.isArray(masterSchools) ? masterSchools : []);
+
+      const idxMap = {};
+      let lockedCount = 0;
+      let totalWaVerified = 0;
+
+      for (const s of list) {
+        if (!s || !s.uNo) continue;
+        const u = String(s.uNo).trim();
+        const rec = computeSingleSchoolSummaryFromLiveStore(u, existingRemoteIdx[u]);
+        if (rec) {
+          idxMap[u] = rec;
+          if (rec.l) lockedCount++;
+          totalWaVerified += Number(rec.wa || 0);
+        }
+      }
+
+      const schoolCount = Object.keys(idxMap).length;
+      if (schoolCount === 0) {
+        if (showNotification && typeof showToast === "function") {
+          showToast("⚠️ சுருக்க அட்டவணை உருவாக்கப் பள்ளிகள் பட்டியல் காணப்படவில்லை.", "#f59e0b", true);
+        }
+        return false;
+      }
+
+      // Step 3: Upload compact ~30 KB summary index to Firebase + bump meta_versions + refresh UI
+      if (btn) btn.textContent = "⏳ 3/3: Firebase-ல் புதுப்பிக்கப்படுகிறது...";
+      const jsonStr = JSON.stringify(idxMap);
+      const putResp = await fetch(buildFirebaseEndpoint("ceosvg_live/school_summary_index"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: jsonStr
+      });
+
+      if (!putResp || !putResp.ok) {
+        const stCode = putResp ? putResp.status : "Network";
+        if (showNotification && typeof showToast === "function") {
+          showToast(`❌ Summary Index Firebase புதுப்பிப்பு தோல்வி (HTTP ${stCode})! இணையம் அல்லது Firebase Rules-ஐச் சரிபார்க்கவும்.`, "#ef4444", true);
+        }
+        return false;
+      }
+
+      // Save locally & bump meta_versions so all Admin tabs & Cloudflare KV Cache refresh immediately
+      try {
+        if (typeof localStorage !== "undefined") {
+          localStorage.setItem(SUMMARY_STORAGE_KEY, jsonStr);
+        }
+      } catch (e) {}
+
+      fetch(buildFirebaseEndpoint("ceosvg_live/meta_versions/summaryIdx"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Date.now())
+      }).catch(() => {});
+
+      // Refresh in-memory summary index cache & all visible Admin dashboards
+      if (typeof pullLightweightSchoolSummaryIndexFromFirebase === "function") {
+        await pullLightweightSchoolSummaryIndexFromFirebase(false);
+      }
+      if (typeof updateAllSummaryCounters === "function") updateAllSummaryCounters();
+      if (typeof renderAdminEbsMasterDashboard === "function") {
+        const ebsPane = document.getElementById("admPaneEbsMaster");
+        if (ebsPane && ebsPane.style.display !== "none") renderAdminEbsMasterDashboard();
+      }
+      if (typeof renderAdminDirectoryTable === "function") {
+        const dirPane = document.getElementById("admPaneDirectory");
+        if (dirPane && dirPane.style.display !== "none") renderAdminDirectoryTable();
+      }
+
+      const kb = (jsonStr.length / 1024).toFixed(1);
+      if (showNotification && typeof showToast === "function") {
+        showToast(`⚡ ${schoolCount} பள்ளிகளின் சுருக்க அட்டவணை (${kb} KB | 🔒 ${lockedCount} Locked | 📱 ${totalWaVerified} OTP) வெற்றிகரமாகப் புதுப்பிக்கப்பட்டது!`, "#16a34a", true);
+      }
+      return true;
+    } catch (err) {
+      console.error("v8.2 rebuildAll282SchoolSummaryIndexToFirebase error:", err);
+      if (showNotification && typeof showToast === "function") {
+        showToast(`❌ Summary Index புதுப்பிப்பில் பிழை: ${(err && err.message) ? err.message : "தொடர்பு துண்டிக்கப்பட்டது"}`, "#ef4444", true);
+      }
+      return false;
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = origBtnText;
+      }
+    }
+  };
 })();
 </script>
 
