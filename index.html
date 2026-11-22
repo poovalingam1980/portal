@@ -27900,9 +27900,20 @@ if (_ebsAddStaffSearchResultsCache.length > 0) {
   return;
 }
 
-// Local cache had 0 matches: check cloud EMIS database FIRST before ever showing "Not Found" (v9.34 fix)
-const url = (rawQuery.length >= 4) ? getGoogleSheetWebAppUrl() : "";
-if (!url) {
+// Local cache had 0 matches: query Cloudflare D1 FIRST (<200ms), auto-fallback to Google Apps Script (v9.34)
+const canCloudSearch = (qDigits.length >= 3 || qLower.length >= 3);
+const cfWorkerBase = (function() {
+  try {
+    const inp = document.getElementById("cfgCfKvProxyUrl");
+    const raw = (inp && inp.value) || (typeof localStorage !== "undefined" ? localStorage.getItem("CEOSVG_CF_KV_PROXY_URL") : "") || "https://ceosvg-fb-cache.poovalingam1980.workers.dev";
+    return String(raw || "").trim().replace(/\/+$/, "");
+  } catch (e) {
+    return "https://ceosvg-fb-cache.poovalingam1980.workers.dev";
+  }
+})();
+const gasUrl = (rawQuery.length >= 4) ? getGoogleSheetWebAppUrl() : "";
+
+if (!canCloudSearch || (!cfWorkerBase && !gasUrl)) {
   resEl.innerHTML = buildNotFoundHtml(false);
   return;
 }
@@ -27911,59 +27922,124 @@ resEl.innerHTML = `
   <div style="background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px; padding:11px 14px; display:flex; align-items:center; gap:10px;">
     <span style="display:inline-block; width:16px; height:16px; border:2.5px solid #93c5fd; border-top-color:#1d4ed8; border-radius:50%; animation:spin 0.8s linear infinite; flex-shrink:0;"></span>
     <div style="font-size:0.81rem; font-weight:800; color:#1e3a8a;">
-      🔍 சிவகங்கை மாவட்ட EMIS தரவுத்தளத்தில் <strong>"${escapeHtmlAttr(rawQuery)}"</strong> முழுமையாகத் தேடப்படுகிறது... தயவுசெய்து காத்திருக்கவும்.
+      ⚡ Cloudflare D1 மாவட்ட EMIS தரவுத்தளத்தில் <strong>"${escapeHtmlAttr(rawQuery)}"</strong> அதிவேகமாகத் தேடப்படுகிறது...
     </div>
   </div>
 `;
 
-const sep = url.includes("?") ? "&" : "?";
-const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
-_ebsAddStaffSearchAbortCtrl = ctrl;
-const timeoutId = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (e) {} }, 15000) : null;
-
-fetch(`${url}${sep}action=search_emis_staff&q=${encodeURIComponent(rawQuery)}&t=${Date.now()}`, ctrl ? { signal: ctrl.signal } : undefined)
-.then(r => r.json())
-.then(data => {
-  if (timeoutId) clearTimeout(timeoutId);
-  if (mySearchSeq !== _ebsAddStaffSearchSeq) return;
-  if (_ebsAddStaffSearchAbortCtrl === ctrl) _ebsAddStaffSearchAbortCtrl = null;
-  if (data && data.ok && Array.isArray(data.matches) && data.matches.length > 0) {
-    _ebsAddStaffSearchResultsCache = data.matches;
-    let liveHtml = `<div style="display:flex; flex-direction:column; gap:8px; max-height:240px; overflow-y:auto; padding-right:2px;">`;
-    _ebsAddStaffSearchResultsCache.forEach((m, idx) => {
-      const alreadyInCurrentSchool = curStaffIds.has(String(m.staffId));
-      liveHtml += `
-                  <div style="background:#fff; border:1.5px solid #2563eb; border-radius:8px; padding:9px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                    <div>
-                      <div style="font-weight:900; color:#0f294a; font-size:0.86rem;">
-                        <span style="color:#1d4ed8;">EMIS: ${escapeHtmlAttr(m.staffId)}</span> — ${escapeHtmlAttr(m.name)}
-                        <span style="font-size:0.72rem; padding:1px 6px; border-radius:4px; background:#f1f5f9; color:#334155; margin-left:4px;">${escapeHtmlAttr(m.desig)} (${escapeHtmlAttr(m.subject || "-")})</span>
-                      </div>
-                      <div style="font-size:0.74rem; color:#475569; font-weight:700; margin-top:2px;">
-                        🏫 தற்போதைய பள்ளி / அலுவலகம்: [${escapeHtmlAttr(m.fromUNo || "EMIS")}] ${escapeHtmlAttr(m.fromSchoolName || "")} | DOB: ${formatDateDisplayDMY(m.dob) || "-"}
-                      </div>
-                    </div>
-                    <div>
-                      ${alreadyInCurrentSchool
-                        ? `<button type="button" class="btn btn-outline btn-sm" onclick="closeEbsAddStaffModal(); openEbsStaffProfileModal('${curUNo}', '${escapeHtmlAttr(m.staffId)}');" style="font-weight:900; font-size:0.75rem; color:#1d4ed8; border-color:#93c5fd; background:#eff6ff;">✅ இப்பள்ளியில் உள்ளார் — படிவம் திற</button>`
-                        : `<button type="button" class="btn btn-primary btn-sm" onclick="selectSearchedEmisStaffForEbs(${idx})" style="background:#1d4ed8; border-color:#1d4ed8; font-weight:900; font-size:0.76rem; padding:5px 11px;">➕ இப்பள்ளியின் ${_ebsAddStaffModeIsTeaching ? "F3" : "F4"}-இல் இணை &amp; திருத்து</button>`
-                      }
-                    </div>
-                  </div>
-                `;
+const renderCloudEmisMatches = (rawMatches, sourceBadgeText) => {
+  const normalized = (rawMatches || []).map(m => {
+    const uKey = String(m.fromUNo || "").trim();
+    const schObj = masterSchools.find(ms => String(ms.uNo) === uKey);
+    return Object.assign({}, m, {
+      staffId: String(m.staffId || "").trim(),
+      desig: (typeof normalizeCanonicalStaffDesignation === "function")
+        ? normalizeCanonicalStaffDesignation(m.desig || "")
+        : (m.desig || ""),
+      fromSchoolName: schObj ? `${schObj.nameTa || schObj.nameEn}` : (m.fromSchoolName || (uKey ? `U.NO: ${uKey}` : "மாவட்ட EMIS தொகுப்பு"))
     });
-    liveHtml += `</div>`;
-    if (resEl) resEl.innerHTML = liveHtml;
-  } else {
-    if (resEl) resEl.innerHTML = buildNotFoundHtml(false);
+  });
+  _ebsAddStaffSearchResultsCache = normalized;
+  let liveHtml = sourceBadgeText
+    ? `<div style="font-size:0.71rem; font-weight:800; color:#0f766e; margin-bottom:6px;">${sourceBadgeText}</div>`
+    : "";
+  liveHtml += `<div style="display:flex; flex-direction:column; gap:8px; max-height:240px; overflow-y:auto; padding-right:2px;">`;
+  _ebsAddStaffSearchResultsCache.forEach((m, idx) => {
+    const alreadyInCurrentSchool = curStaffIds.has(String(m.staffId));
+    liveHtml += `
+      <div style="background:#fff; border:1.5px solid ${m.exactId ? "#2563eb" : "#cbd5e1"}; border-radius:8px; padding:9px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div>
+          <div style="font-weight:900; color:#0f294a; font-size:0.86rem;">
+            <span style="color:#1d4ed8;">EMIS: ${escapeHtmlAttr(m.staffId)}</span> — ${escapeHtmlAttr(m.name)}
+            <span style="font-size:0.72rem; padding:1px 6px; border-radius:4px; background:#f1f5f9; color:#334155; margin-left:4px;">${escapeHtmlAttr(m.desig)} (${escapeHtmlAttr(m.subject || "-")})</span>
+          </div>
+          <div style="font-size:0.74rem; color:#475569; font-weight:700; margin-top:2px;">
+            🏫 தற்போதைய பள்ளி / அலுவலகம்: [${escapeHtmlAttr(m.fromUNo || "EMIS")}] ${escapeHtmlAttr(m.fromSchoolName || "")} | DOB: ${formatDateDisplayDMY(m.dob) || "-"}
+          </div>
+        </div>
+        <div>
+          ${alreadyInCurrentSchool
+            ? `<button type="button" class="btn btn-outline btn-sm" onclick="closeEbsAddStaffModal(); openEbsStaffProfileModal('${curUNo}', '${escapeHtmlAttr(m.staffId)}');" style="font-weight:900; font-size:0.75rem; color:#1d4ed8; border-color:#93c5fd; background:#eff6ff;">✅ இப்பள்ளியில் உள்ளார் — படிவம் திற</button>`
+            : `<button type="button" class="btn btn-primary btn-sm" onclick="selectSearchedEmisStaffForEbs(${idx})" style="background:#1d4ed8; border-color:#1d4ed8; font-weight:900; font-size:0.76rem; padding:5px 11px;">➕ இப்பள்ளியின் ${_ebsAddStaffModeIsTeaching ? "F3" : "F4"}-இல் இணை &amp; திருத்து</button>`
+          }
+        </div>
+      </div>
+    `;
+  });
+  liveHtml += `</div>`;
+  if (resEl) resEl.innerHTML = liveHtml;
+};
+
+const runGasFallbackSearch = () => {
+  if (!gasUrl) {
+    if (resEl) resEl.innerHTML = buildNotFoundHtml(true);
+    return;
   }
-})
-.catch(err => {
-  if (timeoutId) clearTimeout(timeoutId);
-  if (mySearchSeq !== _ebsAddStaffSearchSeq) return;
-  if (_ebsAddStaffSearchAbortCtrl === ctrl) _ebsAddStaffSearchAbortCtrl = null;
-  if (resEl) resEl.innerHTML = buildNotFoundHtml(true);
-});
+  const sep = gasUrl.includes("?") ? "&" : "?";
+  const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  _ebsAddStaffSearchAbortCtrl = ctrl;
+  const timeoutId = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (e) {} }, 15000) : null;
+  fetch(`${gasUrl}${sep}action=search_emis_staff&q=${encodeURIComponent(rawQuery)}&t=${Date.now()}`, ctrl ? { signal: ctrl.signal } : undefined)
+    .then(r => r.json())
+    .then(data => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (mySearchSeq !== _ebsAddStaffSearchSeq) return;
+      if (_ebsAddStaffSearchAbortCtrl === ctrl) _ebsAddStaffSearchAbortCtrl = null;
+      if (data && data.ok && Array.isArray(data.matches) && data.matches.length > 0) {
+        renderCloudEmisMatches(data.matches, `☁️ Google Sheet EMIS தொகுப்பிலிருந்து ${data.matches.length} பதிவு(கள்) பெறப்பட்டன`);
+      } else {
+        if (resEl) resEl.innerHTML = buildNotFoundHtml(false);
+      }
+    })
+    .catch(() => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (mySearchSeq !== _ebsAddStaffSearchSeq) return;
+      if (_ebsAddStaffSearchAbortCtrl === ctrl) _ebsAddStaffSearchAbortCtrl = null;
+      if (resEl) resEl.innerHTML = buildNotFoundHtml(true);
+    });
+};
+
+if (cfWorkerBase) {
+  const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  _ebsAddStaffSearchAbortCtrl = ctrl;
+  const timeoutId = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (e) {} }, 6000) : null;
+  const reqHeaders = {};
+  try {
+    const tok = (typeof sessionStorage !== "undefined" && sessionStorage.getItem("CEOSVG_WORKER_SESSION_TOKEN_V88")) || "";
+    if (tok) {
+      reqHeaders["Authorization"] = "Bearer " + tok;
+      reqHeaders["X-CEOSVG-Token"] = tok;
+    }
+  } catch (e) {}
+  fetch(`${cfWorkerBase}/__d1/search_emis?q=${encodeURIComponent(rawQuery)}&limit=15`, {
+    method: "GET",
+    headers: reqHeaders,
+    signal: ctrl ? ctrl.signal : undefined
+  })
+    .then(r => r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)))
+    .then(data => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (mySearchSeq !== _ebsAddStaffSearchSeq) return;
+      if (_ebsAddStaffSearchAbortCtrl === ctrl) _ebsAddStaffSearchAbortCtrl = null;
+      if (data && data.ok && Array.isArray(data.matches) && data.matches.length > 0) {
+        const ms = (typeof data.elapsedMs === "number") ? ` (${data.elapsedMs}ms)` : "";
+        renderCloudEmisMatches(data.matches, `⚡ Cloudflare D1 அதிவேகத் தேடல்${ms} — ${data.matches.length} பதிவு(கள்)`);
+      } else if (data && data.ok && data.hasMeta) {
+        if (resEl) resEl.innerHTML = buildNotFoundHtml(false);
+      } else {
+        // D1 EMIS meta not yet synced or route missing -> seamless Google Apps Script fallback
+        runGasFallbackSearch();
+      }
+    })
+    .catch(() => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (mySearchSeq !== _ebsAddStaffSearchSeq) return;
+      if (_ebsAddStaffSearchAbortCtrl === ctrl) _ebsAddStaffSearchAbortCtrl = null;
+      runGasFallbackSearch();
+    });
+} else {
+  runGasFallbackSearch();
+}
 }
 function addStaffRecordToCurrentSchoolEbs(uNo, staffObj, isTeaching, isTempId) {
 uNo = String(uNo || (activeSchoolSession && activeSchoolSession.uNo) || "").trim();
@@ -56843,6 +56919,171 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '        const slice = hasMore ? rows.slice(0, limit) : rows;',
       '        const items = slice.map(r => { let parsed = r.v; try { parsed = JSON.parse(r.v); } catch (e) {} return { k: r.k, v: parsed }; });',
       '        return jsonResp({ ok: true, items, hasMore });',
+      '      } catch (err) {',
+      '        return jsonResp({ ok: false, error: String(err && err.message ? err.message : err) }, 500);',
+      '      }',
+      '    }',
+      '',
+      '    // 9B) v9.34 Ultra-Fast Cloudflare D1 EMIS Staff Search (Schools + Admin)',
+      '    if (pathname === "__d1/search_emis" && request.method === "GET") {',
+      '      const auth = await verifySessionToken(request, env);',
+      '      if (!auth.ok) return jsonResp({ ok: false, error: auth.error }, 401);',
+      '      const t0 = Date.now();',
+      '      try {',
+      '        if (!env || !env.CEOSVG_D1) return jsonResp({ ok: false, d1Bound: false, error: "CEOSVG_D1 binding not attached" }, 500);',
+      '        await ensureD1Table(env);',
+      '        const rawQ = String(url.searchParams.get("q") || "").trim();',
+      '        const limit = Math.min(25, Math.max(1, parseInt(url.searchParams.get("limit") || "15", 10) || 15));',
+      '        const qLower = rawQ.toLowerCase();',
+      '        const qDigits = rawQ.replace(/\\D/g, "");',
+      '        if (qDigits.length < 3 && qLower.length < 3) {',
+      '          return jsonResp({ ok: true, source: "d1", elapsedMs: Date.now() - t0, matches: [] });',
+      '        }',
+      '        const likeName = "%" + qLower + "%";',
+      '        const likeDig = qDigits.length >= 3 ? ("%" + qDigits + "%") : likeName;',
+      '        const [metaRow, staffRes, extraRes] = await Promise.all([',
+      '          env.CEOSVG_D1.prepare("SELECT v FROM portal_kv_store WHERE k = ?").bind("ceosvg_live/emis_staff_meta").first(),',
+      '          env.CEOSVG_D1.prepare("SELECT k, v FROM portal_kv_store WHERE k LIKE ? AND (LOWER(v) LIKE ? OR v LIKE ?) LIMIT 35").bind("ceosvg_live/emis_staff_by_uno/%", likeName, likeDig).all(),',
+      '          env.CEOSVG_D1.prepare("SELECT k, v FROM portal_kv_store WHERE k LIKE ? AND (LOWER(v) LIKE ? OR v LIKE ?) LIMIT 20").bind("ceosvg_live/school_extra/%", likeName, likeDig).all()',
+      '        ]);',
+      '        let meta = {};',
+      '        try { if (metaRow && metaRow.v) meta = JSON.parse(metaRow.v); } catch (e) {}',
+      '        const pool = Array.isArray(meta.pool) ? meta.pool : [];',
+      '        const matches = [];',
+      '        const seenIds = new Set();',
+      '        const pushMatch = (obj) => {',
+      '          if (!obj || !obj.staffId || seenIds.has(obj.staffId)) return;',
+      '          seenIds.add(obj.staffId);',
+      '          matches.push(obj);',
+      '        };',
+      '        // 1) Scan SQL-filtered emis_staff_by_uno rows',
+      '        for (const row of ((staffRes && staffRes.results) || [])) {',
+      '          const uKey = String(row.k || "").replace("ceosvg_live/emis_staff_by_uno/", "");',
+      '          let arr = [];',
+      '          try { arr = JSON.parse(row.v); } catch (e) { arr = []; }',
+      '          if (!Array.isArray(arr)) continue;',
+      '          for (const r of arr) {',
+      '            if (!Array.isArray(r)) continue;',
+      '            const sid = String(r[1] || "").trim();',
+      '            const nm = String(r[2] || "").trim();',
+      '            if (!sid || seenIds.has(sid)) continue;',
+      '            const idMatch = qDigits.length >= 3 && sid.includes(qDigits);',
+      '            const nameMatch = qLower.length >= 3 && nm.toLowerCase().includes(qLower);',
+      '            if (idMatch || nameMatch) {',
+      '              const isTeach = r[0] === 1;',
+      '              pushMatch({',
+      '                staffId: sid,',
+      '                name: nm,',
+      '                nameTa: String(r[13] || ""),',
+      '                ifhrmsId: String(r[14] || ""),',
+      '                prefix: String(r[15] || ""),',
+      '                gender: r[4] === "F" ? "Female" : "Male",',
+      '                dob: r[5] || "",',
+      '                desig: pool[r[3]] || (isTeach ? "BT ASSISTANT" : "JUNIOR ASSISTANT"),',
+      '                subject: pool[r[7]] || (isTeach ? "English" : "-"),',
+      '                classTaught: pool[r[8]] || "-",',
+      '                qualification: pool[r[9]] || "",',
+      '                dojService: r[10] || "",',
+      '                dojPresPost: r[11] || "",',
+      '                dojSchool: r[12] || r[10] || "",',
+      '                nature: r[6] === "R" ? "Regular (Govt.Salaried )" : "Contract",',
+      '                modeFirstApp: "TRB",',
+      '                isTeaching: isTeach,',
+      '                fromUNo: uKey,',
+      '                fromSchoolName: "U.NO: " + uKey,',
+      '                exactId: Boolean(qDigits && sid === qDigits)',
+      '              });',
+      '            }',
+      '          }',
+      '        }',
+      '        // 2) Scan districtExtraCompact inside emis_staff_meta if present',
+      '        if (typeof meta.districtExtraCompact === "string" && meta.districtExtraCompact.length > 0 && matches.length < limit * 2) {',
+      '          const expandDate = (c) => {',
+      '            if (!c || c.length !== 6) return "";',
+      '            const yy = parseInt(c.slice(0, 2), 10);',
+      '            return (yy <= 35 ? 2000 + yy : 1900 + yy) + "-" + c.slice(2, 4) + "-" + c.slice(4, 6);',
+      '          };',
+      '          const extraLines = meta.districtExtraCompact.split("\\n");',
+      '          for (let i = 0; i < extraLines.length; i++) {',
+      '            const ln = extraLines[i];',
+      '            if (!ln) continue;',
+      '            const p = ln.split("|");',
+      '            const sid = String(p[1] || "").trim();',
+      '            const nm = String(p[2] || "").trim();',
+      '            if (!sid || seenIds.has(sid)) continue;',
+      '            const idMatch = qDigits.length >= 3 && sid.includes(qDigits);',
+      '            const nameMatch = qLower.length >= 3 && nm.toLowerCase().includes(qLower);',
+      '            if (idMatch || nameMatch) {',
+      '              const flags = parseInt(p[0] || "0", 10);',
+      '              const isTeach = (flags & 1) === 1;',
+      '              const subStr = pool[parseInt(p[5] || "0", 10)] || (isTeach ? "English" : "-");',
+      '              const blkStr = pool[parseInt(p[12] || "0", 10)] || "";',
+      '              pushMatch({',
+      '                staffId: sid,',
+      '                name: nm,',
+      '                nameTa: String(p[14] || ""),',
+      '                ifhrmsId: String(p[15] || ""),',
+      '                prefix: String(p[16] || ""),',
+      '                gender: (flags & 2) === 2 ? "Female" : "Male",',
+      '                dob: expandDate(p[4]),',
+      '                desig: pool[parseInt(p[3] || "0", 10)] || (isTeach ? "BT ASSISTANT" : "JUNIOR ASSISTANT"),',
+      '                subject: subStr === "other" ? (isTeach ? "General" : "-") : subStr,',
+      '                classTaught: pool[parseInt(p[6] || "0", 10)] || "-",',
+      '                qualification: pool[parseInt(p[7] || "0", 10)] || "",',
+      '                dojService: expandDate(p[8]),',
+      '                dojPresPost: expandDate(p[9]),',
+      '                dojSchool: expandDate(p[10]) || expandDate(p[8]),',
+      '                nature: (flags & 4) === 4 ? "Regular (Govt.Salaried )" : "Contract",',
+      '                modeFirstApp: pool[parseInt(p[13] || "0", 10)] || "TRB",',
+      '                isTeaching: isTeach,',
+      '                fromUNo: blkStr ? "EMIS (" + blkStr + ")" : "EMIS (District)",',
+      '                fromSchoolName: pool[parseInt(p[11] || "0", 10)] || "மாவட்ட EMIS தொகுப்பு",',
+      '                exactId: Boolean(qDigits && sid === qDigits)',
+      '              });',
+      '            }',
+      '          }',
+      '        }',
+      '        // 3) Scan SQL-filtered school_extra staff additions',
+      '        for (const row of ((extraRes && extraRes.results) || [])) {',
+      '          const uKey = String(row.k || "").replace("ceosvg_live/school_extra/", "");',
+      '          let ex = null;',
+      '          try { ex = JSON.parse(row.v); } catch (e) {}',
+      '          if (!ex || !Array.isArray(ex.staff)) continue;',
+      '          for (const st of ex.staff) {',
+      '            if (!st) continue;',
+      '            const sid = String(st.id || st.staffId || "").trim();',
+      '            const nm = String(st.name || "").trim();',
+      '            if (!sid || seenIds.has(sid)) continue;',
+      '            const idMatch = qDigits.length >= 3 && sid.includes(qDigits);',
+      '            const nameMatch = qLower.length >= 3 && nm.toLowerCase().includes(qLower);',
+      '            if (idMatch || nameMatch) {',
+      '              pushMatch({',
+      '                staffId: sid,',
+      '                name: nm,',
+      '                nameTa: String(st.nameTa || ""),',
+      '                ifhrmsId: String(st.ifhrmsId || ""),',
+      '                prefix: String(st.prefix || ""),',
+      '                gender: st.gender || "Male",',
+      '                dob: st.dob || "",',
+      '                desig: st.desig || "BT ASSISTANT",',
+      '                subject: st.subject || "-",',
+      '                classTaught: st.classTaught || "-",',
+      '                qualification: st.qualification || "",',
+      '                dojService: st.dojService || "",',
+      '                dojPresPost: st.dojPresPost || "",',
+      '                dojSchool: st.dojSchool || "",',
+      '                nature: st.nature || "Regular (Govt.Salaried )",',
+      '                modeFirstApp: st.firstApp || "TRB",',
+      '                isTeaching: typeof st.isTeaching === "boolean" ? st.isTeaching : true,',
+      '                fromUNo: uKey,',
+      '                fromSchoolName: "U.NO: " + uKey,',
+      '                exactId: Boolean(qDigits && sid === qDigits)',
+      '              });',
+      '            }',
+      '          }',
+      '        }',
+      '        matches.sort((a, b) => (b.exactId ? 1 : 0) - (a.exactId ? 1 : 0));',
+      '        return jsonResp({ ok: true, source: "d1", hasMeta: Boolean(metaRow && metaRow.v), elapsedMs: Date.now() - t0, matches: matches.slice(0, limit) });',
       '      } catch (err) {',
       '        return jsonResp({ ok: false, error: String(err && err.message ? err.message : err) }, 500);',
       '      }',
