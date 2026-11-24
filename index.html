@@ -227,7 +227,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.60)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.61)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -578,7 +578,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.60</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.61</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -647,6 +647,9 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 <!-- Divider: or -->
 <div class="signin-or-divider">or</div>
 <!-- Secondary Button: Quick School U.No / UDISE Finder Modal -->
+<button type="button" class="btn-modern-other" onclick="window.openClassTeacherLoginModal()" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1.5px solid #16a34a; color:#14532d; font-weight:900; margin-bottom:8px;">
+👨‍🏫 வகுப்பாசிரியர் உள்நுழைவு (Class Teacher Login — EMIS ID)
+</button>
 <button type="button" class="btn-modern-other" onclick="openQuickFinderModal()">
 🔍 பள்ளியின் U.NO / UDISE எண் தேடுக (Find School)
 </button>
@@ -2010,6 +2013,9 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
         </button>
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnProgress" onclick="switchMarkEntrySubView('PROGRESS_REPORT')" style="font-weight:900; padding:6px 14px; border-color:#ea580c; color:#c2410c;">
           🎓 Progress Report (தேவைப்பட்டால் மட்டும்)
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" id="mtSubBtnClassMarkRegister" onclick="window.printOrDownloadClassMarkRegister()" style="background:#0f766e; border-color:#0d9488; color:#fff; font-weight:900; padding:6px 12px;">
+          📋 வகுப்பு மதிப்பெண் பதிவேடு (Class Mark Register)
         </button>
         <button type="button" class="btn btn-primary btn-sm" id="schReviewReportTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; padding:6px 12px;">
           📥 Review Report PDF
@@ -6591,7 +6597,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.60</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.61</strong>
 </p>
 </footer>
 </div>
@@ -6710,7 +6716,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     📊 அமர்வு நிலை: KV Cache Hits: <strong>0</strong> | Firebase Direct: <strong>0</strong> | Auto-Fallback: <strong>தயார்</strong>
   </div>
 </div>
-<!-- === CEOSVG v9.60: UNIFIED CLOUDFLARE D1 DATABASE PANEL (PHASE 1 SYNC + PHASE 2 DUAL-WRITE) === -->
+<!-- === CEOSVG v9.61: UNIFIED CLOUDFLARE D1 DATABASE PANEL (PHASE 1 SYNC + PHASE 2 DUAL-WRITE) === -->
 <div id="cfD1MigrationPanel" style="width:100%; margin:12px 0; background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:2px solid #0f766e; border-left:5px solid #0f766e; border-radius:10px; padding:14px 16px; box-sizing:border-box;">
   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
     <div>
@@ -36469,6 +36475,7 @@ function renderSchool12thSecTeachersPane(calc) {
             ${rec.sections.length > 1 ? `<button type="button" class="btn btn-outline btn-sm" onclick="remove12thSection('${escapeHtmlAttr(sec.secId)}')" style="color:#dc2626; border-color:#fca5a5; font-size:0.74rem; font-weight:800;">🗑️ பிரிவு நீக்கு</button>` : ""}
           </div>
         </div>
+        ${typeof window.renderClassTeacherAssignmentBarHtml === "function" ? window.renderClassTeacherAssignmentBarHtml("12", sec, teachers) : ""}
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:#f5f3ff; border:1px solid #ddd6fe; border-radius:8px; padding:6px 10px; margin-bottom:8px;">
           <span style="font-size:0.75rem; font-weight:900; color:#5b21b6;">📚 4 முதன்மைப் பாடங்கள்:</span>
           ${subSlotsSelectHtml}
@@ -38659,6 +38666,15 @@ function _pickRicherTermRecord(curRec, incRec) {
       if (prev.teachers || sec.teachers) {
         mergedSec.teachers = _mergeSectionTeachersByTimestampV952(prev.teachers, sec.teachers);
       }
+      if (prev.classTeacher || sec.classTeacher) {
+        const pCtTs = (prev.classTeacher && prev.classTeacher.updatedAt) ? (Date.parse(prev.classTeacher.updatedAt) || 0) : 0;
+        const sCtTs = (sec.classTeacher && sec.classTeacher.updatedAt) ? (Date.parse(sec.classTeacher.updatedAt) || 0) : 0;
+        if (prev.classTeacher && (!sec.classTeacher || pCtTs > sCtTs)) {
+          mergedSec.classTeacher = Object.assign({}, prev.classTeacher);
+        } else if (sec.classTeacher) {
+          mergedSec.classTeacher = Object.assign({}, sec.classTeacher);
+        }
+      }
       secMap.set(sk, mergedSec);
     }
   });
@@ -40076,6 +40092,7 @@ function renderSchoolMidTermSecTeachersPane(calc) {
             ${rec.sections.length > 1 ? `<button type="button" class="btn btn-outline btn-sm" onclick="removeMidTermSection('${escapeHtmlAttr(sec.secId)}')" style="color:#dc2626; border-color:#fca5a5; font-size:0.74rem; font-weight:800;">🗑️ பிரிவு நீக்கு</button>` : ""}
           </div>
         </div>
+        ${typeof window.renderClassTeacherAssignmentBarHtml === "function" ? window.renderClassTeacherAssignmentBarHtml("10", sec, teachers) : ""}
         <div class="table-responsive">
           <table class="data-table" style="margin:0; font-size:0.80rem;">
             <thead>
@@ -49131,7 +49148,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.60) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.61) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -49193,7 +49210,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.60)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.61)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -55684,7 +55701,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     const payload = {
       dualWriteEnabled: Boolean(enabled),
       updatedAt: Date.now(),
-      version: "v9.60"
+      version: "v9.61"
     };
     let fbOk = false;
     try {
@@ -56773,7 +56790,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       const payload = {
         d1PrimaryEnabled: Boolean(enabled),
         updatedAt: new Date().toISOString(),
-        version: "v9.60"
+        version: "v9.61"
       };
       const fbBase = getFirebaseBaseV88();
       const workerBase = getWorkerBaseV88();
@@ -56799,7 +56816,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
   // Upgraded v8.8 worker.js source generator (includes HMAC-SHA256 Session Auth + /__d1/node Primary Read + KV Cache)
   window.getCfKvWorkerSourceCode = function() {
     return [
-      '// Cloudflare Worker: ceosvg-fb-cache (v9.60 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
+      '// Cloudflare Worker: ceosvg-fb-cache (v9.61 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
       '// Bindings required: CEOSVG_CACHE_KV (KV Namespace), CEOSVG_D1 (D1 Database: ceosvg-portal-db)',
       '// Optional Secret for Auth Enforcement: SESSION_SECRET (Settings -> Variables & Secrets -> Add Secret)',
       'const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";',
@@ -56907,7 +56924,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '    // 1) Health check',
       '    if (pathname === "" || pathname === "__health") {',
       '      return jsonResp({',
-      '        ok: true, service: "ceosvg-fb-cache", version: "v9.60",',
+      '        ok: true, service: "ceosvg-fb-cache", version: "v9.61",',
       '        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),',
       '        d1Bound: Boolean(env && env.CEOSVG_D1),',
       '        authEnforced,',
@@ -59043,7 +59060,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
   }
 
   window.CEOSVG_API_CLIENT = {
-    version: "v9.60",
+    version: "v9.61",
     fetch: unifiedFetch,
     nativeFetch: nativeFetch,
     stats: stats,
@@ -60154,9 +60171,13 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
       bySec.get(sid).push({ evalStu: st, rawStu: (rec.students && rec.students[idx]) ? rec.students[idx] : st });
     });
 
+    const activeCtSec = (typeof window !== "undefined" && window.activeClassTeacherSession && window.activeClassTeacherSession.secId)
+      ? String(window.activeClassTeacherSession.secId).trim()
+      : "";
     const sectionGroups = [];
     bySec.forEach((items, secId) => {
       if (items.length === 0) return;
+      if (activeCtSec && String(secId).trim() !== activeCtSec) return;
       const secObj = secMetaMap[secId] || { secId, medium: "TM" };
       const subs = is12
         ? (typeof get12thSection6Subjects === "function" ? get12thSection6Subjects(secObj) : ["LANG", "ENG", "PHY", "CHE", "BIO", "MAT"])
@@ -60711,6 +60732,564 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  };
+})();
+</script>
+
+<style>
+/* === CEOSVG v9.61 CLASS TEACHER RESTRICTED PORTAL MODE === */
+body.class-teacher-mode #schoolTopMenuBar,
+body.class-teacher-mode #schAdminSwitchWrap,
+body.class-teacher-mode #schBackToAdminBtn,
+body.class-teacher-mode #mtMainCardClassMaster,
+body.class-teacher-mode #mtSubBtnForm1_1,
+body.class-teacher-mode #mtSubBtnForm1_2,
+body.class-teacher-mode #mtSubBtnReview,
+body.class-teacher-mode #schReviewReportTopPdfBtn,
+body.class-teacher-mode #schMidTermTopPdfBtn,
+body.class-teacher-mode #schMidTermTopPdfBtnF2,
+body.class-teacher-mode #schMidTermTopCsvBtn,
+body.class-teacher-mode #mtSubBtnResetMarks,
+body.class-teacher-mode #mtSubBtnFinalSubmit,
+body.class-teacher-mode #raStep1StdContainer,
+body.class-teacher-mode button[onclick*="resetRaStepFlowOnMenuClick"],
+body.class-teacher-mode button[onclick*="switchResultAnalysisStd"],
+body.class-teacher-mode button[onclick*="openMarkResetConfirmModal"],
+body.class-teacher-mode button[onclick*="addMidTermStudentRows"],
+body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
+  display: none !important;
+}
+</style>
+
+<!-- CLASS TEACHER LOGIN MODAL (v9.61) -->
+<div id="classTeacherLoginModal" class="modal-backdrop" onclick="if(event.target===this) window.closeClassTeacherLoginModal()">
+  <div class="modal-card" style="max-width:440px; border-top:5px solid #16a34a;">
+    <div class="modal-header" style="border-bottom:1.5px solid #dcfce7;">
+      <div class="modal-title" style="color:#14532d; font-size:1.05rem;">👨‍🏫 வகுப்பாசிரியர் உள்நுழைவு (Class Teacher Login)</div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="window.closeClassTeacherLoginModal()">✕</button>
+    </div>
+    <form onsubmit="window.handleClassTeacherLoginSubmit(event); return false;" style="padding-top:12px;">
+      <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:9px 12px; font-size:0.78rem; color:#166534; margin-bottom:12px; line-height:1.5;">
+        <div><strong>User Name:</strong> ஆசிரியரின் 8-இலக்க <strong>EMIS ID</strong></div>
+        <div><strong>Password:</strong> WhatsApp எண்ணின் முதல் 4 இலக்கங்கள் + <strong>@</strong> + பிறந்த ஆண்டு 4 இலக்கங்கள் (எ.கா: <code>9626@1980</code>)</div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label style="display:block; font-size:0.80rem; font-weight:800; color:#0f294a; margin-bottom:4px;">ஆசிரியர் EMIS ID (User Name):</label>
+        <input type="text" id="ctLoginEmisInput" class="form-control" placeholder="எ.கா: 10208747" autocomplete="username" required style="font-weight:800; font-size:0.95rem;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block; font-size:0.80rem; font-weight:800; color:#0f294a; margin-bottom:4px;">கடவுச்சொல் (Password — முதல் 4 எண்@பிறந்த ஆண்டு):</label>
+        <input type="password" id="ctLoginPassInput" class="form-control" placeholder="எ.கா: 9626@1980" autocomplete="current-password" required style="font-weight:800; font-size:0.95rem;">
+      </div>
+      <div id="ctLoginErrorMsg" style="display:none; color:#dc2626; font-size:0.80rem; font-weight:800; margin-bottom:10px; background:#fef2f2; border:1px solid #fecaca; border-radius:6px; padding:7px 10px;"></div>
+      <button type="submit" id="ctLoginSubmitBtn" class="btn btn-primary" style="width:100%; background:linear-gradient(135deg,#15803d,#166534); border-color:#15803d; font-weight:900; padding:10px; font-size:0.95rem;">
+        🔓 வகுப்பாசிரியர் முகப்பில் உள்நுழைக
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+// ============================================================================
+// === CEOSVG v9.61 CLASS TEACHER MARKING, LOGIN & RESTRICTED WORKSPACE ===
+// ============================================================================
+(function() {
+  if (window.__ceosvgV955ClassTeacherLoaded) return;
+  window.__ceosvgV955ClassTeacherLoaded = true;
+
+  const CT_SESSION_KEY = "CEOSVG_CLASS_TEACHER_SESSION_V1";
+  window.activeClassTeacherSession = null;
+
+  function escCt(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+  }
+
+  function extractFirst4MobileDigits(rawMob) {
+    const digits = String(rawMob || "").replace(/\D/g, "");
+    if (digits.length < 4) return "";
+    const ten = digits.length > 10 ? digits.slice(-10) : digits;
+    return ten.slice(0, 4);
+  }
+
+  function extract4DigitBirthYear(rawDob) {
+    const s = String(rawDob || "").trim();
+    const m = s.match(/\b(19\d{2}|20\d{2})\b/);
+    return m ? m[1] : "";
+  }
+
+  function resolveTeacherMobAndDob(uNo, st) {
+    const sid = String((st && (st.staffId || st.id)) || "").trim();
+    const extra = (typeof getSchoolExtra === "function" && uNo) ? getSchoolExtra(uNo) : null;
+    const ebsProf = (extra && extra.ebs2026 && extra.ebs2026.staffProfiles && sid) ? (extra.ebs2026.staffProfiles[sid] || {}) : {};
+    const mob = ebsProf.verifiedMobile || ebsProf.mobile || (st && (st.verifiedMobile || st.mobile)) || "";
+    const dob = ebsProf.dob || (st && st.dob) || "";
+    return {
+      first4: extractFirst4MobileDigits(mob),
+      birthYear: extract4DigitBirthYear(dob),
+      rawMob: String(mob || ""),
+      rawDob: String(dob || "")
+    };
+  }
+
+  function computeCtPassHash(emisId, plainPass) {
+    const payload = `${String(emisId || "").trim()}::${String(plainPass || "").trim()}`;
+    if (typeof sha256HexSync === "function") return sha256HexSync(payload);
+    return btoa(unescape(encodeURIComponent(payload)));
+  }
+
+  // 1) Render Class Teacher Assignment Bar inside 10th & 12th Class Master Section Card
+  window.renderClassTeacherAssignmentBarHtml = function(stdStr, sec, teachers) {
+    if (!sec) return "";
+    const uNo = (typeof activeSchoolSession !== "undefined" && activeSchoolSession && activeSchoolSession.uNo) ? String(activeSchoolSession.uNo) : "";
+    const ct = (sec.classTeacher && typeof sec.classTeacher === "object") ? sec.classTeacher : {};
+    const curSid = String(ct.staffId || "").trim();
+    const opts = `<option value="">-- வகுப்பாசிரியரைத் தேர்ந்தெடுக்கவும் (Class Teacher) --</option>` +
+      (Array.isArray(teachers) ? teachers : []).map(st => {
+        const sid = String(st.staffId || st.id || "").trim();
+        const sel = (sid && sid === curSid) ? "selected" : "";
+        const label = `${st.prefix ? st.prefix + " " : ""}${st.nameTa || st.name} (${st.name}) — ${st.desig} [EMIS: ${sid}]`;
+        return `<option value="${escCt(sid)}" ${sel}>${escCt(label)}</option>`;
+      }).join("");
+
+    let credBadgeHtml = `<span style="font-size:0.74rem; color:#64748b; font-weight:700;">வகுப்பாசிரியரைத் தேர்வு செய்தால், அவர் தனது EMIS ID மூலம் இப்பிரிவு மதிப்பெண்களை மட்டும் நேரடியாகப் பதியலாம்.</span>`;
+    if (curSid) {
+      const matched = (Array.isArray(teachers) ? teachers : []).find(st => String(st.staffId || st.id || "").trim() === curSid);
+      const info = resolveTeacherMobAndDob(uNo, matched || ct);
+      if (info.first4 && info.birthYear) {
+        credBadgeHtml = `<span style="display:inline-flex; align-items:center; gap:6px; background:#dcfce7; color:#166534; border:1px solid #86efac; padding:3px 10px; border-radius:999px; font-size:0.74rem; font-weight:900;">✅ உள்நுழைவு தயார் • User: <code>${escCt(curSid)}</code> • Pass: <code>${escCt(info.first4)}@${escCt(info.birthYear)}</code></span>`;
+      } else {
+        credBadgeHtml = `<span style="display:inline-flex; align-items:center; gap:6px; background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; padding:3px 10px; border-radius:999px; font-size:0.74rem; font-weight:800;">⚠️ WhatsApp எண் (${info.first4 ? "OK" : "இல்லை"}) அல்லது பிறந்த தேதி (${info.birthYear ? "OK" : "இல்லை"}) இல்லை — EBS சுயவிவரத்தில் புதுப்பிக்கவும்.</span>`;
+      }
+    }
+
+    return `
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1.5px solid #f59e0b; border-radius:9px; padding:8px 12px; margin-bottom:8px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex:1; min-width:260px;">
+          <span style="font-size:0.78rem; font-weight:900; color:#92400e; white-space:nowrap;">👑 வகுப்பாசிரியர் (Class Teacher):</span>
+          <select class="form-control" style="max-width:360px; padding:4px 8px; font-size:0.79rem; font-weight:800; border-color:#d97706; background:#fff;" onchange="window.onAssignSectionClassTeacher('${escCt(stdStr)}', '${escCt(sec.secId)}', this.value)">
+            ${opts}
+          </select>
+        </div>
+        <div>${credBadgeHtml}</div>
+      </div>`;
+  };
+
+  // 2) Assign Class Teacher & Sync SHA-256 Auth Node to Cloudflare D1 + Firebase RTDB
+  window.onAssignSectionClassTeacher = async function(stdStr, secId, staffId) {
+    if (!activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo);
+    const is12 = String(stdStr) === "12";
+    const rec = is12
+      ? getSchool12thExamRecord(uNo, _activeMidTermTermKey)
+      : getSchoolMidTermRecord(uNo, _activeMidTermTermKey);
+    const sec = (rec.sections || []).find(s => String(s.secId) === String(secId));
+    if (!sec) return;
+
+    const cleanSid = String(staffId || "").trim();
+    const nowIso = new Date().toISOString();
+    const prevSid = String((sec.classTeacher && sec.classTeacher.staffId) || "").trim();
+
+    if (!cleanSid) {
+      delete sec.classTeacher;
+    } else {
+      const teachers = getSchoolTeachingStaffCandidatesFor10th(uNo);
+      const match = teachers.find(t => String(t.staffId || t.id || "").trim() === cleanSid);
+      if (!match) return;
+      const cred = resolveTeacherMobAndDob(uNo, match);
+      const plainPass = (cred.first4 && cred.birthYear) ? `${cred.first4}@${cred.birthYear}` : "";
+      const passHash = plainPass ? computeCtPassHash(cleanSid, plainPass) : "";
+
+      sec.classTeacher = {
+        staffId: cleanSid,
+        nameEn: String(match.name || ""),
+        nameTa: String((match.prefix ? match.prefix + " " : "") + (match.nameTa || match.name || "")),
+        desig: String(match.desig || (is12 ? "PG ASSISTANT" : "BT ASSISTANT")),
+        hasLogin: Boolean(passHash),
+        updatedAt: nowIso
+      };
+
+      // Write SHA-256 hashed auth record to ceosvg_live/class_teacher_auth/{emisId}
+      if (passHash && typeof buildFirebaseEndpoint === "function") {
+        try {
+          const authPath = `ceosvg_live/class_teacher_auth/${encodeURIComponent(cleanSid)}`;
+          let existingAuth = null;
+          try {
+            const rPrev = await fetch(buildFirebaseEndpoint(authPath));
+            if (rPrev && rPrev.ok) existingAuth = await rPrev.json().catch(() => null);
+          } catch (e) {}
+          const assignments = Array.isArray(existingAuth && existingAuth.assignments)
+            ? existingAuth.assignments.filter(a => !(String(a.uNo) === uNo && String(a.std) === String(stdStr) && String(a.secId) === String(secId)))
+            : [];
+          assignments.unshift({
+            uNo: uNo,
+            std: String(stdStr),
+            secId: String(secId),
+            schoolNameTa: String(activeSchoolSession.nameTa || ""),
+            schoolNameEn: String(activeSchoolSession.nameEn || "")
+          });
+          const authPayload = {
+            emisId: cleanSid,
+            nameTa: sec.classTeacher.nameTa,
+            nameEn: sec.classTeacher.nameEn,
+            desig: sec.classTeacher.desig,
+            uNo: uNo,
+            std: String(stdStr),
+            secId: String(secId),
+            assignments: assignments,
+            passHash: passHash,
+            updatedAt: nowIso
+          };
+          await fetch(buildFirebaseEndpoint(authPath), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(authPayload)
+          });
+        } catch (authErr) {
+          console.warn("[v9.55 ClassTeacher Auth Sync]", authErr);
+        }
+      }
+    }
+
+    // If previous teacher was replaced, remove this section from their assignments
+    if (prevSid && prevSid !== cleanSid && typeof buildFirebaseEndpoint === "function") {
+      try {
+        const prevPath = `ceosvg_live/class_teacher_auth/${encodeURIComponent(prevSid)}`;
+        const rOld = await fetch(buildFirebaseEndpoint(prevPath));
+        if (rOld && rOld.ok) {
+          const oldObj = await rOld.json().catch(() => null);
+          if (oldObj && Array.isArray(oldObj.assignments)) {
+            const rem = oldObj.assignments.filter(a => !(String(a.uNo) === uNo && String(a.std) === String(stdStr) && String(a.secId) === String(secId)));
+            oldObj.assignments = rem;
+            if (rem.length > 0) {
+              oldObj.uNo = rem[0].uNo; oldObj.std = rem[0].std; oldObj.secId = rem[0].secId;
+            }
+            await fetch(buildFirebaseEndpoint(prevPath), {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(rem.length > 0 ? oldObj : null)
+            });
+          }
+        }
+      } catch (e) {}
+    }
+
+    rec.updatedAt = nowIso;
+    if (is12) {
+      syncSchool12thClassMasterFromRecord(uNo, rec);
+      const cm12 = getSchool12thClassMasterStore(uNo);
+      if (cm12) cm12.updatedAt = nowIso;
+    } else {
+      syncSchoolClassMasterFromRecord(uNo, rec);
+      const cm10 = getSchoolClassMasterStore(uNo);
+      if (cm10) cm10.updatedAt = nowIso;
+    }
+    saveExamResultAnalysisStore();
+    if (typeof pushCloudUpdate === "function") {
+      pushCloudUpdate("examResultAnalysis2026", getExamResultAnalysisStore(), `School [${uNo}] assigned Class Teacher for ${stdStr}th Sec ${secId}`, uNo);
+    }
+    renderSchoolMidTermModule();
+    if (typeof showToast === "function") {
+      showToast(
+        cleanSid
+          ? `👑 ${stdStr}-ஆம் வகுப்பு பிரிவு ${secId} வகுப்பாசிரியராக ${sec.classTeacher.nameTa} இணைக்கப்பட்டு உள்நுழைவு உருவாக்கப்பட்டது!`
+          : `ℹ️ பிரிவு ${secId} வகுப்பாசிரியர் நீக்கப்பட்டார்.`,
+        "#16a34a"
+      );
+    }
+  };
+
+  // 3) Class Teacher Login Modal Open/Close/Submit
+  window.openClassTeacherLoginModal = function() {
+    const m = document.getElementById("classTeacherLoginModal");
+    const err = document.getElementById("ctLoginErrorMsg");
+    if (err) { err.style.display = "none"; err.textContent = ""; }
+    if (m) m.classList.add("open");
+    setTimeout(() => { document.getElementById("ctLoginEmisInput")?.focus(); }, 80);
+  };
+
+  window.closeClassTeacherLoginModal = function() {
+    document.getElementById("classTeacherLoginModal")?.classList.remove("open");
+  };
+
+  window.handleClassTeacherLoginSubmit = async function(evt) {
+    if (evt && typeof evt.preventDefault === "function") evt.preventDefault();
+    const emisId = String(document.getElementById("ctLoginEmisInput")?.value || "").trim();
+    const pass = String(document.getElementById("ctLoginPassInput")?.value || "").trim();
+    const errEl = document.getElementById("ctLoginErrorMsg");
+    const btn = document.getElementById("ctLoginSubmitBtn");
+    const showErr = (msg) => {
+      if (errEl) { errEl.textContent = msg; errEl.style.display = "block"; }
+    };
+    if (!emisId || !pass) { showErr("⚠️ EMIS ID மற்றும் கடவுச்சொல் இரண்டையும் உள்ளிடவும்."); return; }
+
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ சரிபார்க்கப்படுகிறது..."; }
+    try {
+      const authPath = `ceosvg_live/class_teacher_auth/${encodeURIComponent(emisId)}`;
+      const resp = await fetch(buildFirebaseEndpoint(authPath));
+      const authRec = (resp && resp.ok) ? await resp.json().catch(() => null) : null;
+      if (!authRec || !authRec.passHash || !authRec.uNo) {
+        showErr("❌ இந்த EMIS ID-க்கு வகுப்பாசிரியர் (Class Teacher) மேப்பிங் இல்லை. உங்கள் பள்ளி Class Master-இல் வகுப்பாசிரியராக இணைக்கப்பட்டுள்ளதா எனச் சரிபார்க்கவும்.");
+        return;
+      }
+      const enteredHash = computeCtPassHash(emisId, pass);
+      if (enteredHash !== authRec.passHash) {
+        showErr("❌ தவறான கடவுச்சொல்! வடிவம்: WhatsApp முதல் 4 இலக்கங்கள் + @ + பிறந்த ஆண்டு 4 இலக்கங்கள் (எ.கா: 9626@1980).");
+        return;
+      }
+
+      const primaryAssign = (Array.isArray(authRec.assignments) && authRec.assignments.length > 0)
+        ? authRec.assignments[0]
+        : { uNo: authRec.uNo, std: authRec.std, secId: authRec.secId };
+
+      const schObj = (masterSchools || []).find(s => String(s.uNo) === String(primaryAssign.uNo));
+      if (!schObj) {
+        showErr("❌ பள்ளி விவரம் காணப்படவில்லை.");
+        return;
+      }
+
+      const ctSession = {
+        emisId: emisId,
+        nameTa: authRec.nameTa || authRec.nameEn || emisId,
+        nameEn: authRec.nameEn || "",
+        desig: authRec.desig || "",
+        uNo: String(primaryAssign.uNo),
+        std: String(primaryAssign.std || "10"),
+        secId: String(primaryAssign.secId || "A"),
+        assignments: Array.isArray(authRec.assignments) ? authRec.assignments : [primaryAssign]
+      };
+      window.activeClassTeacherSession = ctSession;
+      try { sessionStorage.setItem(CT_SESSION_KEY, JSON.stringify(ctSession)); } catch (e) {}
+
+      window.closeClassTeacherLoginModal();
+      // Acquire school-scoped Worker HMAC token & log into restricted school view
+      if (typeof window.refreshWorkerSessionTokenV88 === "function") {
+        try { await window.refreshWorkerSessionTokenV88("school", ctSession.uNo, false); } catch (e) {}
+      }
+      if (typeof loginAsSchool === "function") {
+        loginAsSchool(schObj, false);
+      }
+      if (typeof pullSingleSchoolDataFromFirebase === "function") {
+        try { await pullSingleSchoolDataFromFirebase(ctSession.uNo); } catch (e) {}
+      }
+      window.enterClassTeacherRestrictedWorkspace(ctSession);
+    } catch (e) {
+      showErr("❌ உள்நுழைவுப் பிழை: இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "🔓 வகுப்பாசிரியர் முகப்பில் உள்நுழைக"; }
+    }
+  };
+
+  window.enterClassTeacherRestrictedWorkspace = function(ct) {
+    if (!ct) return;
+    window.activeClassTeacherSession = ct;
+    document.body.classList.add("class-teacher-mode");
+
+    // Lock standard & section
+    _activeResultAnalysisStd = String(ct.std || "10");
+    _raStepStdChosen = true;
+    _raSelectedSecId = String(ct.secId || "A");
+
+    if (typeof switchSchoolTab === "function") switchSchoolTab("midTerm");
+    if (typeof onRaSelectMainMode === "function") onRaSelectMainMode("MARK_ENTRY");
+
+    // Inject Class Teacher Workspace Banner at top of Result Analysis
+    let banner = document.getElementById("ctRestrictedWorkspaceBanner");
+    const host = document.getElementById("raDedicatedClassHeaderBar")?.parentElement || document.getElementById("schoolTabMidTerm");
+    if (host) {
+      if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "ctRestrictedWorkspaceBanner";
+        host.insertBefore(banner, host.firstChild);
+      }
+      const assignSwitchHtml = (Array.isArray(ct.assignments) && ct.assignments.length > 1)
+        ? `<select onchange="window.switchClassTeacherAssignment(this.value)" style="padding:4px 8px; border-radius:6px; font-weight:800; font-size:0.78rem; border:1px solid #86efac; background:#fff; color:#14532d;">
+            ${ct.assignments.map((a, idx) => `<option value="${idx}" ${(String(a.std)===String(ct.std) && String(a.secId)===String(ct.secId)) ? "selected" : ""}>${escCt(a.std)}-ஆம் வகுப்பு • பிரிவு ${escCt(a.secId)}</option>`).join("")}
+          </select>`
+        : "";
+      banner.style.cssText = "display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:linear-gradient(135deg,#14532d,#166534); color:#fff; padding:10px 16px; border-radius:10px; margin-bottom:12px; border-bottom:3px solid #f59e0b;";
+      banner.innerHTML = `
+        <div>
+          <div style="font-size:0.95rem; font-weight:900;">👑 வகுப்பாசிரியர் முகப்பு: ${escCt(ct.nameTa)} <span style="font-size:0.78rem; color:#fde68a;">(EMIS: ${escCt(ct.emisId)})</span></div>
+          <div style="font-size:0.78rem; color:#dcfce7;">அனுமதிக்கப்பட்ட வகுப்பு: <strong>${escCt(ct.std)}-ஆம் வகுப்பு — பிரிவு ${escCt(ct.secId)}</strong> | மதிப்பெண் பதிவு, வகுப்பு மதிப்பெண் பதிவேடு &amp; மாணவர் முன்னேற்ற அறிக்கை மட்டும்</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          ${assignSwitchHtml}
+          <button type="button" class="btn btn-sm" onclick="window.printOrDownloadClassMarkRegister()" style="background:#f59e0b; color:#1e293b; border:none; font-weight:900; padding:5px 11px; border-radius:7px;">📋 வகுப்பு மதிப்பெண் பதிவேடு</button>
+          <button type="button" class="btn btn-sm" onclick="switchMarkEntrySubView('PROGRESS_REPORT')" style="background:#fff; color:#14532d; border:none; font-weight:900; padding:5px 11px; border-radius:7px;">🎓 Progress Report</button>
+          <button type="button" class="btn btn-sm" onclick="window.logoutClassTeacher()" style="background:#dc2626; color:#fff; border:none; font-weight:900; padding:5px 11px; border-radius:7px;">🚪 வெளியேறு</button>
+        </div>`;
+    }
+
+    // Lock section selector pills to ONLY the Class Teacher's assigned section
+    setTimeout(() => {
+      document.querySelectorAll("button[onclick*='onRaSelectSection']").forEach(b => {
+        const oc = String(b.getAttribute("onclick") || "");
+        if (!oc.includes(`'${ct.secId}'`) && !oc.includes(`"${ct.secId}"`)) {
+          b.style.display = "none";
+        }
+      });
+    }, 150);
+  };
+
+  window.switchClassTeacherAssignment = function(idxStr) {
+    const ct = window.activeClassTeacherSession;
+    if (!ct || !Array.isArray(ct.assignments)) return;
+    const target = ct.assignments[Number(idxStr)];
+    if (!target) return;
+    ct.std = String(target.std);
+    ct.secId = String(target.secId);
+    try { sessionStorage.setItem(CT_SESSION_KEY, JSON.stringify(ct)); } catch (e) {}
+    window.enterClassTeacherRestrictedWorkspace(ct);
+  };
+
+  window.logoutClassTeacher = function() {
+    window.activeClassTeacherSession = null;
+    try { sessionStorage.removeItem(CT_SESSION_KEY); } catch (e) {}
+    document.body.classList.remove("class-teacher-mode");
+    document.getElementById("ctRestrictedWorkspaceBanner")?.remove();
+    if (typeof logoutSchool === "function") logoutSchool();
+  };
+
+  // Restore Class Teacher mode on page reload if active
+  window.addEventListener("load", function() {
+    setTimeout(() => {
+      try {
+        const raw = sessionStorage.getItem(CT_SESSION_KEY);
+        if (raw) {
+          const ct = JSON.parse(raw);
+          if (ct && ct.emisId && ct.uNo) {
+            window.enterClassTeacherRestrictedWorkspace(ct);
+          }
+        }
+      } catch (e) {}
+    }, 900);
+  });
+
+  // Also ensure section pills stay locked after every renderSchoolMidTermModule when in Class Teacher mode
+  if (typeof window.renderSchoolMidTermModule === "function") {
+    const _origRenderRaV955 = window.renderSchoolMidTermModule;
+    window.renderSchoolMidTermModule = function() {
+      const ct = window.activeClassTeacherSession;
+      if (ct) {
+        _activeResultAnalysisStd = String(ct.std || "10");
+        _raStepStdChosen = true;
+        _raSelectedSecId = String(ct.secId || "A");
+      }
+      const res = _origRenderRaV955.apply(this, arguments);
+      if (ct) {
+        setTimeout(() => {
+          document.querySelectorAll("button[onclick*='onRaSelectSection']").forEach(b => {
+            const oc = String(b.getAttribute("onclick") || "");
+            if (!oc.includes(`'${ct.secId}'`) && !oc.includes(`"${ct.secId}"`)) {
+              b.style.display = "none";
+            }
+          });
+        }, 60);
+      }
+      return res;
+    };
+  }
+
+  // 4) Dedicated Class Mark Register (வகுப்பு மதிப்பெண் பதிவேடு) Print / PDF Generator
+  window.printOrDownloadClassMarkRegister = function() {
+    if (!activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo);
+    const is12 = String(_activeResultAnalysisStd || "10") === "12";
+    const termKey = _activeMidTermTermKey || "2026_QUARTERLY";
+    const calc = is12
+      ? computeSchool12thResultAnalysis(uNo, termKey)
+      : computeSchoolExamResultAnalysis(uNo, termKey, "10");
+    if (!calc || !calc.rec) return;
+
+    const ct = window.activeClassTeacherSession;
+    const targetSecId = String((ct && ct.secId) || _raSelectedSecId || (calc.rec.sections && calc.rec.sections[0] && calc.rec.sections[0].secId) || "A");
+    const secObj = (calc.rec.sections || []).find(s => String(s.secId) === targetSecId) || {};
+    const stuList = (calc.evaluatedStudents || []).filter(st => String(st.section || "") === targetSecId);
+
+    if (stuList.length === 0) {
+      if (typeof showToast === "function") showToast(`⚠️ பிரிவு ${targetSecId}-இல் மாணவர்கள் எவரும் இல்லை.`, "#f59e0b");
+      return;
+    }
+
+    const subKeys = is12
+      ? (typeof get12thSection6Subjects === "function" ? get12thSection6Subjects(secObj) : ["LANG", "ENG", "PHY", "CHE", "BIO", "MAT"])
+      : ["TAMIL", "ENGLISH", "MATHS", "SCIENCE", "SOCIAL"];
+    const subHeaders = subKeys.map(sk => {
+      if (is12 && typeof HSC12_SUBJECT_MAP === "object" && HSC12_SUBJECT_MAP[sk]) {
+        return String(HSC12_SUBJECT_MAP[sk].shortEn || sk).replace(/\n/g, " ");
+      }
+      const m10 = { TAMIL: "Tamil", ENGLISH: "English", MATHS: "Maths", SCIENCE: "Science", SOCIAL: "Social" };
+      return m10[sk] || sk;
+    });
+
+    let passCnt = 0, appCnt = 0;
+    const rowsHtml = stuList.map((st, idx) => {
+      const isApp = st.status !== "LA" && st.status !== "AB";
+      if (isApp) appCnt++;
+      if (st.resultType === "PASS") passCnt++;
+      const m = st.marks || {};
+      const markCells = subKeys.map(sk => {
+        const v = String(m[sk] == null ? "" : m[sk]).trim();
+        const num = Number(v);
+        const failStyle = (v === "AB" || (v !== "" && !isNaN(num) && num < 35)) ? "color:#dc2626; font-weight:900; background:#fef2f2;" : "color:#0f172a; font-weight:700;";
+        return `<td style="border:1px solid #334155; padding:4px 5px; text-align:center; ${failStyle}">${escCt(v || "-")}</td>`;
+      }).join("");
+      const totVal = is12 ? (st.total600 || 0) : (st.total500 || 0);
+      const resLabel = st.status === "LA" ? "LA" : (st.status === "AB" ? "AB" : (st.resultType === "PASS" ? "PASS" : "FAIL"));
+      const resColor = resLabel === "PASS" ? "#15803d" : "#dc2626";
+      return `
+        <tr>
+          <td style="border:1px solid #334155; padding:4px; text-align:center;">${idx + 1}</td>
+          <td style="border:1px solid #334155; padding:4px 6px; text-align:left; font-weight:700;">${escCt(st.nameTa || st.nameEn || st.name || "")}</td>
+          <td style="border:1px solid #334155; padding:4px; text-align:center;">${escCt(st.gender === "Female" ? "F" : "M")}</td>
+          ${markCells}
+          <td style="border:1px solid #334155; padding:4px; text-align:center; font-weight:900; background:#f8fafc;">${isApp ? totVal : "-"}</td>
+          <td style="border:1px solid #334155; padding:4px; text-align:center; font-weight:900; color:${resColor};">${resLabel}</td>
+        </tr>`;
+    }).join("");
+
+    const passPct = appCnt > 0 ? ((passCnt / appCnt) * 100).toFixed(2) : "0.00";
+    const ctName = (secObj.classTeacher && (secObj.classTeacher.nameTa || secObj.classTeacher.nameEn)) || (ct && ct.nameTa) || "-";
+    const termTitle = (calc.termMeta && (calc.termMeta.reportHeaderTa || calc.termMeta.shortName)) || termKey;
+
+    const w = window.open("", "_blank");
+    if (!w) {
+      if (typeof showToast === "function") showToast("⚠️ Pop-up அனுமதியை இயக்கி மீண்டும் அழுத்தவும்.", "#f59e0b");
+      return;
+    }
+    w.document.write(`<!DOCTYPE html><html lang="ta"><head><meta charset="utf-8"><title>Class Mark Register — ${escCt(uNo)} (${escCt(is12 ? "12th" : "10th")} Sec ${escCt(targetSecId)})</title>
+      <style>
+        @page { size: A4 landscape; margin: 10mm; }
+        body { font-family: 'Noto Sans Tamil', 'Segoe UI', Arial, sans-serif; color:#0f172a; margin:0; padding:10px; font-size:12px; }
+        table { width:100%; border-collapse:collapse; margin-top:8px; }
+        th { border:1px solid #0f294a; background:#e2e8f0; padding:5px 4px; font-weight:900; font-size:11.5px; }
+        @media print { .no-print { display:none !important; } }
+      </style></head><body>
+      <div class="no-print" style="margin-bottom:10px; text-align:right;">
+        <button onclick="window.print()" style="background:#0f766e; color:#fff; border:none; padding:7px 16px; border-radius:6px; font-weight:900; cursor:pointer;">🖨️ அச்சிடுக / PDF சேமிக்கவும்</button>
+      </div>
+      <div style="text-align:center; border:2px solid #0f294a; padding:8px; background:#f8fafc;">
+        <div style="font-size:15px; font-weight:900; color:#0f294a;">[${escCt(uNo)}] ${escCt(activeSchoolSession.nameTa || activeSchoolSession.nameEn)}</div>
+        <div style="font-size:13px; font-weight:800; color:#1e3a8a; margin-top:2px;">வகுப்பு மதிப்பெண் பதிவேடு (CLASS MARK REGISTER) — ${escCt(is12 ? "12-ஆம் வகுப்பு" : "10-ஆம் வகுப்பு")} • பிரிவு ${escCt(targetSecId)} | ${escCt(termTitle)}</div>
+        <div style="font-size:11.5px; font-weight:700; color:#334155; margin-top:3px;">வகுப்பாசிரியர்: <strong>${escCt(ctName)}</strong> | மொத்தம்: <strong>${stuList.length}</strong> | தேர்வெழுதியோர்: <strong>${appCnt}</strong> | தேர்ச்சி: <strong style="color:#15803d;">${passCnt} (${passPct}%)</strong></div>
+      </div>
+      <table>
+        <thead><tr>
+          <th style="width:36px;">வ.எண்</th>
+          <th style="text-align:left;">மாணவர் பெயர்</th>
+          <th style="width:34px;">பால்</th>
+          ${subHeaders.map(h => `<th>${escCt(h)}</th>`).join("")}
+          <th style="width:54px;">மொத்தம்</th>
+          <th style="width:52px;">முடிவு</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <div style="display:flex; justify-content:space-between; margin-top:24px; font-weight:800; font-size:12px;">
+        <div>வகுப்பாசிரியர் கையொப்பம் (${escCt(ctName)})</div>
+        <div>தலைமையாசிரியர் கையொப்பம்</div>
+      </div>
+    </body></html>`);
+    w.document.close();
   };
 })();
 </script>
