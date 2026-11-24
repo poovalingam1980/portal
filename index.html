@@ -227,7 +227,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.66)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.67)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -578,7 +578,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.66</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.67</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -6605,7 +6605,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.66</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.67</strong>
 </p>
 </footer>
 </div>
@@ -6724,7 +6724,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     📊 அமர்வு நிலை: KV Cache Hits: <strong>0</strong> | Firebase Direct: <strong>0</strong> | Auto-Fallback: <strong>தயார்</strong>
   </div>
 </div>
-<!-- === CEOSVG v9.66: UNIFIED CLOUDFLARE D1 DATABASE PANEL (PHASE 1 SYNC + PHASE 2 DUAL-WRITE) === -->
+<!-- === CEOSVG v9.67: UNIFIED CLOUDFLARE D1 DATABASE PANEL (PHASE 1 SYNC + PHASE 2 DUAL-WRITE) === -->
 <div id="cfD1MigrationPanel" style="width:100%; margin:12px 0; background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:2px solid #0f766e; border-left:5px solid #0f766e; border-radius:10px; padding:14px 16px; box-sizing:border-box;">
   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
     <div>
@@ -7905,7 +7905,7 @@ function compactSchoolExtraForLocalStorage(rawStore) {
     const ext = rawStore[uKey];
     if (!ext || typeof ext !== "object") return;
     const c = {};
-    ["uNo", "pincode", "address", "nameEn", "nameTa", "hmName", "hmTa", "mobile", "email", "estDate", "hssUpgradedDate", "hssGoDetails", "centre10", "centre12", "isExamCentre", "needs", "ebs2026", "userEditedStudentsV40", "userEditedHssGroupsV39", "updatedAt"].forEach(k => {
+    ["uNo", "pincode", "address", "nameEn", "nameTa", "hmName", "hmTa", "mobile", "email", "estDate", "hssUpgradedDate", "hssGoDetails", "centre10", "centre12", "isExamCentre", "needs", "ebs2026", "userEditedStudentsV40", "userEditedHssGroupsV39", "studentsEmisV38", "hssGroupsV34", "hssGroupsV38", "updatedAt"].forEach(k => {
       if (ext[k] !== undefined) c[k] = ext[k];
     });
     if (ext.userEditedStudentsV40 && ext.students) c.students = ext.students;
@@ -11736,7 +11736,9 @@ drinkingWater: "இல்லை (Sufficient)", compoundWall: 0, desks: 0, teache
 }
 };
 } else {
-if (isHSS && schEmis && schEmis.classes) {
+const _hasUserStuEdit = Boolean(schoolExtraDataStore[uNo].userEditedStudentsV40);
+const _hasUserHssEdit = Boolean(schoolExtraDataStore[uNo].userEditedHssGroupsV39);
+if (isHSS && schEmis && schEmis.classes && !_hasUserStuEdit && !_hasUserHssEdit) {
 if (!schoolExtraDataStore[uNo].students) schoolExtraDataStore[uNo].students = {};
 const st = schoolExtraDataStore[uNo].students;
 const c11 = st["11"];
@@ -11750,7 +11752,8 @@ if (c12Zero && schEmis.classes["12"]) {
 st["12"] = JSON.parse(JSON.stringify(schEmis.classes["12"]));
 }
 }
-if (schEmis && schEmis.classes && (!schoolExtraDataStore[uNo].studentsEmisV38 || isDummy283StudentMap(schoolExtraDataStore[uNo].students))) {
+// v9.67 Fix: NEVER overwrite school's saved student edits (userEditedStudentsV40 / userEditedHssGroupsV39) with EMIS baseline!
+if (schEmis && schEmis.classes && !_hasUserStuEdit && !_hasUserHssEdit && (!schoolExtraDataStore[uNo].studentsEmisV38 || isDummy283StudentMap(schoolExtraDataStore[uNo].students))) {
 schoolExtraDataStore[uNo].students = JSON.parse(JSON.stringify(schEmis.classes || {}));
 delete schoolExtraDataStore[uNo].userEditedStudentsV40;
 if (schoolExtraDataStore[uNo].ebs2026 && schoolExtraDataStore[uNo].ebs2026.f1 && schoolExtraDataStore[uNo].ebs2026.f1.sslcEdited) {
@@ -22068,13 +22071,17 @@ return baseList
 .map(s => {
 let extra = (typeof schoolExtraDataStore !== "undefined" && schoolExtraDataStore[s.uNo]) ? schoolExtraDataStore[s.uNo] : null;
 if (extra && !extra.studentsEmisV38) {
+if (!extra.userEditedStudentsV40) {
 extra.students = JSON.parse(JSON.stringify(s.classes || {}));
+}
+if (!extra.userEditedHssGroupsV39) {
 if (s.hssGroups) {
 extra.hssGroups = JSON.parse(JSON.stringify(s.hssGroups));
 extra.hssGroupsV34 = true;
 extra.hssGroupsV38 = true;
 } else {
 delete extra.hssGroups;
+}
 }
 extra.studentsEmisV38 = true;
 }
@@ -49202,7 +49209,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.66) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.67) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -49264,7 +49271,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.66)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.67)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -55755,7 +55762,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     const payload = {
       dualWriteEnabled: Boolean(enabled),
       updatedAt: Date.now(),
-      version: "v9.66"
+      version: "v9.67"
     };
     let fbOk = false;
     try {
@@ -56844,7 +56851,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       const payload = {
         d1PrimaryEnabled: Boolean(enabled),
         updatedAt: new Date().toISOString(),
-        version: "v9.66"
+        version: "v9.67"
       };
       const fbBase = getFirebaseBaseV88();
       const workerBase = getWorkerBaseV88();
@@ -56870,7 +56877,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
   // Upgraded v8.8 worker.js source generator (includes HMAC-SHA256 Session Auth + /__d1/node Primary Read + KV Cache)
   window.getCfKvWorkerSourceCode = function() {
     return [
-      '// Cloudflare Worker: ceosvg-fb-cache (v9.66 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
+      '// Cloudflare Worker: ceosvg-fb-cache (v9.67 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
       '// Bindings required: CEOSVG_CACHE_KV (KV Namespace), CEOSVG_D1 (D1 Database: ceosvg-portal-db)',
       '// Optional Secret for Auth Enforcement: SESSION_SECRET (Settings -> Variables & Secrets -> Add Secret)',
       'const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";',
@@ -56978,7 +56985,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '    // 1) Health check',
       '    if (pathname === "" || pathname === "__health") {',
       '      return jsonResp({',
-      '        ok: true, service: "ceosvg-fb-cache", version: "v9.66",',
+      '        ok: true, service: "ceosvg-fb-cache", version: "v9.67",',
       '        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),',
       '        d1Bound: Boolean(env && env.CEOSVG_D1),',
       '        authEnforced,',
@@ -59114,7 +59121,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
   }
 
   window.CEOSVG_API_CLIENT = {
-    version: "v9.66",
+    version: "v9.67",
     fetch: unifiedFetch,
     nativeFetch: nativeFetch,
     stats: stats,
@@ -60794,7 +60801,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
 </script>
 
 <style>
-/* === CEOSVG v9.66 CLASS TEACHER RESTRICTED PORTAL MODE === */
+/* === CEOSVG v9.67 CLASS TEACHER RESTRICTED PORTAL MODE === */
 body.class-teacher-mode #schoolTopMenuBar,
 body.class-teacher-mode #schAdminSwitchWrap,
 body.class-teacher-mode #schBackToAdminBtn,
@@ -60823,7 +60830,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
 }
 </style>
 
-<!-- CLASS TEACHER LOGIN MODAL (v9.66) -->
+<!-- CLASS TEACHER LOGIN MODAL (v9.67) -->
 <div id="classTeacherLoginModal" class="modal-backdrop" onclick="if(event.target===this) window.closeClassTeacherLoginModal()">
   <div class="modal-card" style="max-width:440px; border-top:5px solid #16a34a;">
     <div class="modal-header" style="border-bottom:1.5px solid #dcfce7;">
@@ -60859,7 +60866,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
 
 <script>
 // ============================================================================
-// === CEOSVG v9.66 CLASS TEACHER MARKING, LOGIN & RESTRICTED WORKSPACE ===
+// === CEOSVG v9.67 CLASS TEACHER MARKING, LOGIN & RESTRICTED WORKSPACE ===
 // ============================================================================
 (function() {
   if (window.__ceosvgV955ClassTeacherLoaded) return;
@@ -61028,7 +61035,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
             passHash: passHash,
             updatedAt: nowIso
           };
-          // v9.66: Write directly to Firebase RTDB (bypasses school-scoped Worker 403 on class_teacher_auth/)
+          // v9.67: Write directly to Firebase RTDB (bypasses school-scoped Worker 403 on class_teacher_auth/)
           await _nfCt(`${_fbCt}/${authPath}.json`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -61047,7 +61054,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
             }
           } catch (saErr) {}
         } catch (authErr) {
-          console.warn("[v9.55 ClassTeacher Auth Sync]", authErr);
+          console.warn("[v9.67 ClassTeacher Auth Sync]", authErr);
         }
       }
     }
@@ -61374,7 +61381,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
         }
       }
 
-      // Source 5 (v9.66 Fix): Scan district-wide school_auth map for ANY real 8-digit EMIS ID (works without knowing uNo prefix!)
+      // Source 5 (v9.67 Fix): Scan district-wide school_auth map for ANY real 8-digit EMIS ID (works without knowing uNo prefix!)
       if (!authRec) {
         const scanSchoolAuthMap = (saMap) => {
           if (!saMap || typeof saMap !== "object") return null;
@@ -61420,7 +61427,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
         }
       }
 
-      // Source 6 (v9.66 Fix): If still not found (e.g. mapped before v9.66), scan exam_result_analysis_by_uno keys & locate teacher!
+      // Source 6 (v9.67 Fix): If still not found (e.g. mapped before v9.67), scan exam_result_analysis_by_uno keys & locate teacher!
       if (!authRec) {
         try {
           const rRaKeys = await _nfCt(`${_fbCt}/ceosvg_live/exam_result_analysis_by_uno.json?shallow=true`);
@@ -61452,7 +61459,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
       }
       const enteredHash = computeCtPassHash(emisId, pass);
       if (enteredHash !== authRec.passHash) {
-        // v9.66: Re-verify against live EBS/EMIS mobile & DOB in case teacher updated WhatsApp/DOB after mapping!
+        // v9.67: Re-verify against live EBS/EMIS mobile & DOB in case teacher updated WhatsApp/DOB after mapping!
         let liveHealed = null;
         try { liveHealed = await trySelfHealFromSchoolUNo(String(authRec.uNo)); } catch (e) {}
         if (liveHealed && liveHealed.passHash && enteredHash === liveHealed.passHash) {
@@ -61831,7 +61838,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
 
 <script>
 // ============================================================================
-// === CEOSVG v9.55 FAILED STUDENTS SUBJECT-COUNT REPORT (SCHOOL & CLASS TEACHER) ===
+// === CEOSVG v9.67 FAILED STUDENTS SUBJECT-COUNT REPORT (SCHOOL & CLASS TEACHER) ===
 // Groups failed students strictly in order:
 //   10th: 1 பாடம், 2 பாடம், 3 பாடம், 4 பாடம், அனைத்துப் பாடம் (5 பாடம்)
 //   12th: 1 பாடம், 2 பாடம், 3 பாடம், 4 பாடம், 5 பாடம், அனைத்துப் பாடம் (6 பாடம்)
@@ -62099,7 +62106,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
     if (btnEl) { btnEl.disabled = true; btnEl.textContent = "⏳ PDF உருவாகிறது..."; }
     let container = null;
     try {
-      // v9.66 Fix: Render at left:0, top:0 (NEVER left:-99999px which causes html2canvas blank white PDF!)
+      // v9.67 Fix: Render at left:0, top:0 (NEVER left:-99999px which causes html2canvas blank white PDF!)
       container = document.createElement("div");
       container.style.cssText = "position:fixed; left:0; top:0; width:794px; padding:18px 20px; background:#ffffff; color:#0f172a; z-index:-9999; pointer-events:none; box-sizing:border-box;";
       container.innerHTML = htmlStr;
