@@ -227,7 +227,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.62)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.63)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -578,7 +578,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.62</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.63</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -2011,11 +2011,11 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnReview" onclick="switchMarkEntrySubView('REVIEW_REPORT')" style="font-weight:900; padding:6px 14px; border-color:#d97706; color:#b45309;">
           📋 Review Report (சுருக்க அறிக்கை)
         </button>
+        <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnClassMarkRegister" onclick="switchMarkEntrySubView('CLASS_MARK_REG')" style="font-weight:900; padding:6px 14px; border-color:#0f766e; color:#0f766e;">
+          📋 வகுப்பு மதிப்பெண் பதிவேடு (Class Mark Register)
+        </button>
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnProgress" onclick="switchMarkEntrySubView('PROGRESS_REPORT')" style="font-weight:900; padding:6px 14px; border-color:#ea580c; color:#c2410c;">
           🎓 Progress Report (தேவைப்பட்டால் மட்டும்)
-        </button>
-        <button type="button" class="btn btn-primary btn-sm" id="mtSubBtnClassMarkRegister" onclick="window.printOrDownloadClassMarkRegister()" style="background:#0f766e; border-color:#0d9488; color:#fff; font-weight:900; padding:6px 12px;">
-          📋 வகுப்பு மதிப்பெண் பதிவேடு (Class Mark Register)
         </button>
         <button type="button" class="btn btn-primary btn-sm" id="schReviewReportTopPdfBtn" onclick="downloadSchoolMidTermFormsPdfLandscape('REVIEW', null, this)" style="background:#d97706; border-color:#b45309; color:#fff; font-weight:900; padding:6px 12px;">
           📥 Review Report PDF
@@ -2038,7 +2038,6 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnResetMarks" onclick="openMarkResetConfirmModal()" style="background:#fef2f2; color:#dc2626; border:1.5px solid #fca5a5; font-weight:900; padding:6px 12px;">
           🔄 Mark Reset
         </button>
-        <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnRecoverMarks" onclick="window.recoverMissingSchoolResultAnalysisMarks(activeSchoolSession && activeSchoolSession.uNo)" style="background:#fffbeb; color:#92400e; border:1.5px solid #f59e0b; font-weight:900; padding:6px 11px;" title="D1, Firebase நேரடி &amp; Backup-இலிருந்து விடுபட்ட மதிப்பெண்களை மீட்கவும்">🔄 விடுபட்ட மதிப்பெண் மீட்பு</button>
 <button type="button" class="btn btn-success btn-sm" id="mtSubBtnSaveMarks" onclick="saveSchoolMidTermData(true, false)" style="background:#16a34a; border-color:#15803d; font-weight:900; padding:6px 14px;">
           💾 சேமி (Save)
         </button>
@@ -2066,6 +2065,9 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 
     <!-- Mark Entry Sub-Pane 2E: Student Progress Report Generator (10th & 12th) -->
     <div id="mtSubPaneProgress" style="display:none;"></div>
+
+    <!-- Mark Entry Sub-Pane 2F: Inline Class Mark Register (வகுப்பு மதிப்பெண் பதிவேடு + PDF & Excel) -->
+    <div id="mtSubPaneClassMarkReg" style="display:none;"></div>
   </div>
 </div>
 
@@ -6597,7 +6599,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.62</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.63</strong>
 </p>
 </footer>
 </div>
@@ -6716,7 +6718,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     📊 அமர்வு நிலை: KV Cache Hits: <strong>0</strong> | Firebase Direct: <strong>0</strong> | Auto-Fallback: <strong>தயார்</strong>
   </div>
 </div>
-<!-- === CEOSVG v9.62: UNIFIED CLOUDFLARE D1 DATABASE PANEL (PHASE 1 SYNC + PHASE 2 DUAL-WRITE) === -->
+<!-- === CEOSVG v9.63: UNIFIED CLOUDFLARE D1 DATABASE PANEL (PHASE 1 SYNC + PHASE 2 DUAL-WRITE) === -->
 <div id="cfD1MigrationPanel" style="width:100%; margin:12px 0; background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:2px solid #0f766e; border-left:5px solid #0f766e; border-radius:10px; padding:14px 16px; box-sizing:border-box;">
   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
     <div>
@@ -39605,7 +39607,11 @@ function onRaSelectMainMode(modeKey) {
     _activeMarkEntrySubView = "PROGRESS_REPORT";
   } else if (modeKey === "REPORTS") {
     _activeMidTermMainSection = "REPORTS";
-    if (_activeMarkEntrySubView !== "FORM1_1" && _activeMarkEntrySubView !== "FORM1_2" && _activeMarkEntrySubView !== "REVIEW_REPORT" && _activeMarkEntrySubView !== "PROGRESS_REPORT") {
+    if (window.activeClassTeacherSession) {
+      if (_activeMarkEntrySubView !== "CLASS_MARK_REG" && _activeMarkEntrySubView !== "PROGRESS_REPORT") {
+        _activeMarkEntrySubView = "CLASS_MARK_REG";
+      }
+    } else if (_activeMarkEntrySubView !== "FORM1_1" && _activeMarkEntrySubView !== "FORM1_2" && _activeMarkEntrySubView !== "REVIEW_REPORT" && _activeMarkEntrySubView !== "PROGRESS_REPORT" && _activeMarkEntrySubView !== "CLASS_MARK_REG") {
       _activeMarkEntrySubView = "FORM1_1";
     }
   } else if (modeKey === "MARK_ENTRY") {
@@ -39662,7 +39668,10 @@ function switchClassMasterSubView(subView) {
 
 function switchMarkEntrySubView(subView) {
   _activeMarkEntrySubView = subView || "STU_MARKS";
-  if (_activeMarkEntrySubView === "FORM1_1" || _activeMarkEntrySubView === "FORM1_2" || _activeMarkEntrySubView === "REVIEW_REPORT" || _activeMarkEntrySubView === "PROGRESS_REPORT") {
+  if (window.activeClassTeacherSession && (_activeMarkEntrySubView === "FORM1_1" || _activeMarkEntrySubView === "FORM1_2" || _activeMarkEntrySubView === "REVIEW_REPORT")) {
+    _activeMarkEntrySubView = "CLASS_MARK_REG";
+  }
+  if (_activeMarkEntrySubView === "FORM1_1" || _activeMarkEntrySubView === "FORM1_2" || _activeMarkEntrySubView === "REVIEW_REPORT" || _activeMarkEntrySubView === "PROGRESS_REPORT" || _activeMarkEntrySubView === "CLASS_MARK_REG") {
     _activeMidTermMainSection = "REPORTS";
   } else {
     _activeMidTermMainSection = "MARK_ENTRY";
@@ -39926,8 +39935,10 @@ function renderSchoolMidTermModule() {
   if (t2B) t2B.textContent = "🏫 School Performance";
   if (t2C) t2C.textContent = "📊 View Subject Performance";
 
-  if ((isRep || isProg) && _activeMarkEntrySubView === "STU_MARKS") {
-    _activeMarkEntrySubView = isProg ? "PROGRESS_REPORT" : "FORM1_1";
+  if (window.activeClassTeacherSession && (isRep || isProg) && _activeMarkEntrySubView !== "CLASS_MARK_REG" && _activeMarkEntrySubView !== "PROGRESS_REPORT") {
+    _activeMarkEntrySubView = isProg ? "PROGRESS_REPORT" : "CLASS_MARK_REG";
+  } else if ((isRep || isProg) && _activeMarkEntrySubView === "STU_MARKS") {
+    _activeMarkEntrySubView = isProg ? "PROGRESS_REPORT" : (window.activeClassTeacherSession ? "CLASS_MARK_REG" : "FORM1_1");
   }
   const showReportsHub = Boolean(isRep || isProg);
   if (cardProg) cardProg.style.display = "none";
@@ -39973,22 +39984,25 @@ function renderSchoolMidTermModule() {
     }
   }
 
-  if (bMarkRegPdfEl) bMarkRegPdfEl.style.display = showReportsHub ? "inline-flex" : "none";
-  if (bMarkRegXlsEl) bMarkRegXlsEl.style.display = showReportsHub ? "inline-flex" : "none";
-  if (bF1El) bF1El.style.display = showReportsHub ? "inline-flex" : "none";
-  if (bF2El) bF2El.style.display = showReportsHub ? "inline-flex" : "none";
-  if (bRevEl) bRevEl.style.display = showReportsHub ? "inline-flex" : "none";
+  const bClassRegEl = document.getElementById("mtSubBtnClassMarkRegister");
+  if (bClassRegEl) bClassRegEl.style.display = showReportsHub ? "inline-flex" : "none";
+  if (bMarkRegPdfEl) bMarkRegPdfEl.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
+  if (bMarkRegXlsEl) bMarkRegXlsEl.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
+  if (bF1El) bF1El.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
+  if (bF2El) bF2El.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
+  if (bRevEl) bRevEl.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
   if (bProgEl) bProgEl.style.display = showReportsHub ? "inline-flex" : "none";
-  if (bRevPdfEl) bRevPdfEl.style.display = showReportsHub ? "inline-flex" : "none";
-  if (bTopPdfEl) bTopPdfEl.style.display = showReportsHub ? "inline-flex" : "none";
-  if (bTopCsvEl) bTopCsvEl.style.display = showReportsHub ? "inline-flex" : "none";
+  if (bRevPdfEl) bRevPdfEl.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
+  if (bTopPdfEl) bTopPdfEl.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
+  if (bTopCsvEl) bTopCsvEl.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
 
   const mapMe = {
-    STU_MARKS:       ["mtSubBtnStuMarks", "mtSubPaneStuMarks"],
-    FORM1_1:         ["mtSubBtnForm1_1",  "mtSubPaneForm1_1"],
-    FORM1_2:         ["mtSubBtnForm1_2",  "mtSubPaneForm1_2"],
-    REVIEW_REPORT:   ["mtSubBtnReview",   "mtSubPaneReview"],
-    PROGRESS_REPORT: ["mtSubBtnProgress", "mtSubPaneProgress"]
+    STU_MARKS:       ["mtSubBtnStuMarks",          "mtSubPaneStuMarks"],
+    CLASS_MARK_REG:  ["mtSubBtnClassMarkRegister", "mtSubPaneClassMarkReg"],
+    FORM1_1:         ["mtSubBtnForm1_1",           "mtSubPaneForm1_1"],
+    FORM1_2:         ["mtSubBtnForm1_2",           "mtSubPaneForm1_2"],
+    REVIEW_REPORT:   ["mtSubBtnReview",            "mtSubPaneReview"],
+    PROGRESS_REPORT: ["mtSubBtnProgress",          "mtSubPaneProgress"]
   };
   Object.keys(mapMe).forEach(k => {
     const [bId, pId] = mapMe[k];
@@ -40025,6 +40039,10 @@ function renderSchoolMidTermModule() {
     renderSchoolMidTermForm1_2Pane(calc);
   } else if (_activeMarkEntrySubView === "REVIEW_REPORT") {
     renderSchoolReviewReportPane(calc);
+  } else if (_activeMarkEntrySubView === "CLASS_MARK_REG") {
+    if (typeof window.renderInlineClassMarkRegisterPane === "function") {
+      window.renderInlineClassMarkRegisterPane(calc);
+    }
   } else if (_activeMarkEntrySubView === "PROGRESS_REPORT") {
     renderSchoolProgressReportPane(calc);
   }
@@ -49148,7 +49166,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.62) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.63) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -49210,7 +49228,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.62)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.63)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -55701,7 +55719,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     const payload = {
       dualWriteEnabled: Boolean(enabled),
       updatedAt: Date.now(),
-      version: "v9.62"
+      version: "v9.63"
     };
     let fbOk = false;
     try {
@@ -56790,7 +56808,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       const payload = {
         d1PrimaryEnabled: Boolean(enabled),
         updatedAt: new Date().toISOString(),
-        version: "v9.62"
+        version: "v9.63"
       };
       const fbBase = getFirebaseBaseV88();
       const workerBase = getWorkerBaseV88();
@@ -56816,7 +56834,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
   // Upgraded v8.8 worker.js source generator (includes HMAC-SHA256 Session Auth + /__d1/node Primary Read + KV Cache)
   window.getCfKvWorkerSourceCode = function() {
     return [
-      '// Cloudflare Worker: ceosvg-fb-cache (v9.62 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
+      '// Cloudflare Worker: ceosvg-fb-cache (v9.63 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
       '// Bindings required: CEOSVG_CACHE_KV (KV Namespace), CEOSVG_D1 (D1 Database: ceosvg-portal-db)',
       '// Optional Secret for Auth Enforcement: SESSION_SECRET (Settings -> Variables & Secrets -> Add Secret)',
       'const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";',
@@ -56924,7 +56942,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '    // 1) Health check',
       '    if (pathname === "" || pathname === "__health") {',
       '      return jsonResp({',
-      '        ok: true, service: "ceosvg-fb-cache", version: "v9.62",',
+      '        ok: true, service: "ceosvg-fb-cache", version: "v9.63",',
       '        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),',
       '        d1Bound: Boolean(env && env.CEOSVG_D1),',
       '        authEnforced,',
@@ -59060,7 +59078,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
   }
 
   window.CEOSVG_API_CLIENT = {
-    version: "v9.62",
+    version: "v9.63",
     fetch: unifiedFetch,
     nativeFetch: nativeFetch,
     stats: stats,
@@ -60737,7 +60755,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
 </script>
 
 <style>
-/* === CEOSVG v9.62 CLASS TEACHER RESTRICTED PORTAL MODE === */
+/* === CEOSVG v9.63 CLASS TEACHER RESTRICTED PORTAL MODE === */
 body.class-teacher-mode #schoolTopMenuBar,
 body.class-teacher-mode #schAdminSwitchWrap,
 body.class-teacher-mode #schBackToAdminBtn,
@@ -60745,6 +60763,11 @@ body.class-teacher-mode #mtMainCardClassMaster,
 body.class-teacher-mode #mtSubBtnForm1_1,
 body.class-teacher-mode #mtSubBtnForm1_2,
 body.class-teacher-mode #mtSubBtnReview,
+body.class-teacher-mode #mtSubPaneForm1_1,
+body.class-teacher-mode #mtSubPaneForm1_2,
+body.class-teacher-mode #mtSubPaneReview,
+body.class-teacher-mode #schMarkRegPdfBtn,
+body.class-teacher-mode #schMarkRegExcelBtn,
 body.class-teacher-mode #schReviewReportTopPdfBtn,
 body.class-teacher-mode #schMidTermTopPdfBtn,
 body.class-teacher-mode #schMidTermTopPdfBtnF2,
@@ -60761,7 +60784,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
 }
 </style>
 
-<!-- CLASS TEACHER LOGIN MODAL (v9.62) -->
+<!-- CLASS TEACHER LOGIN MODAL (v9.63) -->
 <div id="classTeacherLoginModal" class="modal-backdrop" onclick="if(event.target===this) window.closeClassTeacherLoginModal()">
   <div class="modal-card" style="max-width:440px; border-top:5px solid #16a34a;">
     <div class="modal-header" style="border-bottom:1.5px solid #dcfce7;">
@@ -60791,7 +60814,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
 
 <script>
 // ============================================================================
-// === CEOSVG v9.62 CLASS TEACHER MARKING, LOGIN & RESTRICTED WORKSPACE ===
+// === CEOSVG v9.63 CLASS TEACHER MARKING, LOGIN & RESTRICTED WORKSPACE ===
 // ============================================================================
 (function() {
   if (window.__ceosvgV955ClassTeacherLoaded) return;
@@ -60958,7 +60981,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
             passHash: passHash,
             updatedAt: nowIso
           };
-          // v9.62 Fix: Write directly to Firebase RTDB (bypasses school-scoped Worker 403 on class_teacher_auth/)
+          // v9.63 Fix: Write directly to Firebase RTDB (bypasses school-scoped Worker 403 on class_teacher_auth/)
           const _nfCt = getNativeFetchForCtV962();
           const _fbCt = getDirectFbBaseForCtV962();
           await _nfCt(`${_fbCt}/${authPath}.json`, {
@@ -61291,7 +61314,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
         </div>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           ${assignSwitchHtml}
-          <button type="button" class="btn btn-sm" onclick="window.printOrDownloadClassMarkRegister()" style="background:#f59e0b; color:#1e293b; border:none; font-weight:900; padding:5px 11px; border-radius:7px;">📋 வகுப்பு மதிப்பெண் பதிவேடு</button>
+          <button type="button" class="btn btn-sm" onclick="switchMarkEntrySubView('CLASS_MARK_REG')" style="background:#f59e0b; color:#1e293b; border:none; font-weight:900; padding:5px 11px; border-radius:7px;">📋 வகுப்பு மதிப்பெண் பதிவேடு</button>
           <button type="button" class="btn btn-sm" onclick="switchMarkEntrySubView('PROGRESS_REPORT')" style="background:#fff; color:#14532d; border:none; font-weight:900; padding:5px 11px; border-radius:7px;">🎓 Progress Report</button>
           <button type="button" class="btn btn-sm" onclick="window.logoutClassTeacher()" style="background:#dc2626; color:#fff; border:none; font-weight:900; padding:5px 11px; border-radius:7px;">🚪 வெளியேறு</button>
         </div>`;
@@ -61366,6 +61389,115 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
       return res;
     };
   }
+
+  // 4A) Inline Class Mark Register Tab Renderer (with PDF A4 & Excel .xlsx download right inside the tab!)
+  window.renderInlineClassMarkRegisterPane = function(calcArg) {
+    const pane = document.getElementById("mtSubPaneClassMarkReg");
+    if (!pane || !activeSchoolSession) return;
+    const uNo = String(activeSchoolSession.uNo);
+    const is12 = String(_activeResultAnalysisStd || "10") === "12";
+    const termKey = _activeMidTermTermKey || "2026_QUARTERLY";
+    const calc = calcArg || (is12
+      ? computeSchool12thResultAnalysis(uNo, termKey)
+      : computeSchoolExamResultAnalysis(uNo, termKey, "10"));
+    if (!calc || !calc.rec) {
+      pane.innerHTML = `<div style="padding:18px; text-align:center; color:#64748b; font-weight:700;">மதிப்பெண் தரவுகள் எதுவும் இல்லை.</div>`;
+      return;
+    }
+
+    const ct = window.activeClassTeacherSession;
+    const sections = Array.isArray(calc.rec.sections) ? calc.rec.sections : [];
+    const targetSecId = String((ct && ct.secId) || _raSelectedSecId || (sections[0] && sections[0].secId) || "A");
+    const secObj = sections.find(s => String(s.secId) === targetSecId) || {};
+    const stuList = (calc.evaluatedStudents || []).filter(st => String(st.section || "") === targetSecId);
+
+    const subKeys = is12
+      ? (typeof get12thSection6Subjects === "function" ? get12thSection6Subjects(secObj) : ["LANG", "ENG", "PHY", "CHE", "BIO", "MAT"])
+      : ["TAMIL", "ENGLISH", "MATHS", "SCIENCE", "SOCIAL"];
+    const subHeaders = subKeys.map(sk => {
+      if (is12 && typeof HSC12_SUBJECT_MAP === "object" && HSC12_SUBJECT_MAP[sk]) {
+        return String(HSC12_SUBJECT_MAP[sk].shortEn || sk).replace(/\n/g, " ");
+      }
+      const m10 = { TAMIL: "தமிழ்", ENGLISH: "ஆங்கிலம்", MATHS: "கணிதம்", SCIENCE: "அறிவியல்", SOCIAL: "சமூக அறிவியல்" };
+      return m10[sk] || sk;
+    });
+
+    let passCnt = 0, appCnt = 0;
+    const rowsHtml = stuList.length === 0
+      ? `<tr><td colspan="${subKeys.length + 5}" style="padding:20px; text-align:center; color:#64748b; font-weight:700;">பிரிவு ${escCt(targetSecId)}-இல் மாணவர் பதிவுகள் இல்லை.</td></tr>`
+      : stuList.map((st, idx) => {
+          const isApp = st.status !== "LA" && st.status !== "AB";
+          if (isApp) appCnt++;
+          if (st.resultType === "PASS") passCnt++;
+          const m = st.marks || {};
+          const markCells = subKeys.map(sk => {
+            const v = String(m[sk] == null ? "" : m[sk]).trim();
+            const num = Number(v);
+            const isFail = (v === "AB" || (v !== "" && !isNaN(num) && num < 35));
+            const stStyle = isFail ? "color:#dc2626; font-weight:900; background:#fef2f2;" : "color:#0f172a; font-weight:700;";
+            return `<td style="border:1px solid #cbd5e1; padding:6px 5px; text-align:center; ${stStyle}">${escCt(v || "-")}</td>`;
+          }).join("");
+          const totVal = is12 ? (st.total600 || 0) : (st.total500 || 0);
+          const resLabel = st.status === "LA" ? "LA" : (st.status === "AB" ? "AB" : (st.resultType === "PASS" ? "PASS" : "FAIL"));
+          const resBg = resLabel === "PASS" ? "background:#dcfce7; color:#15803d;" : "background:#fee2e2; color:#b91c1c;";
+          return `
+            <tr>
+              <td style="border:1px solid #cbd5e1; padding:6px 4px; text-align:center; font-weight:700;">${idx + 1}</td>
+              <td style="border:1px solid #cbd5e1; padding:6px 8px; text-align:left; font-weight:800; color:#0f294a;">${escCt(st.nameTa || st.nameEn || st.name || "")}</td>
+              <td style="border:1px solid #cbd5e1; padding:6px 4px; text-align:center; font-weight:700;">${escCt(st.gender === "Female" ? "F" : "M")}</td>
+              ${markCells}
+              <td style="border:1px solid #cbd5e1; padding:6px 5px; text-align:center; font-weight:900; background:#f8fafc; color:#0f294a;">${isApp ? totVal : "-"}</td>
+              <td style="border:1px solid #cbd5e1; padding:6px 5px; text-align:center; font-weight:900; ${resBg}">${resLabel}</td>
+            </tr>`;
+        }).join("");
+
+    const passPct = appCnt > 0 ? ((passCnt / appCnt) * 100).toFixed(2) : "0.00";
+    const ctName = (secObj.classTeacher && (secObj.classTeacher.nameTa || secObj.classTeacher.nameEn)) || (ct && ct.nameTa) || "-";
+    const termTitle = (calc.termMeta && (calc.termMeta.reportHeaderTa || calc.termMeta.shortName)) || termKey;
+
+    const secPickerHtml = (!ct && sections.length > 1)
+      ? `<select onchange="_raSelectedSecId=this.value; window.renderInlineClassMarkRegisterPane();" style="padding:5px 10px; border-radius:7px; border:1.5px solid #0f766e; font-weight:800; font-size:0.80rem; color:#0f294a; background:#fff;">
+          ${sections.map(s => `<option value="${escCt(s.secId)}" ${String(s.secId) === targetSecId ? "selected" : ""}>பிரிவு ${escCt(s.secId)}</option>`).join("")}
+        </select>`
+      : "";
+
+    pane.innerHTML = `
+      <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-top:4px solid #0f766e; border-radius:10px; padding:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid #e2e8f0;">
+          <div>
+            <div style="font-size:1.0rem; font-weight:900; color:#0f294a;">📋 வகுப்பு மதிப்பெண் பதிவேடு (Class Mark Register) — ${escCt(is12 ? "12-ஆம் வகுப்பு" : "10-ஆம் வகுப்பு")} • பிரிவு ${escCt(targetSecId)}</div>
+            <div style="font-size:0.78rem; color:#475569; font-weight:700; margin-top:2px;">${escCt(termTitle)} | வகுப்பாசிரியர்: <strong>${escCt(ctName)}</strong> | மொத்தம்: <strong>${stuList.length}</strong> | தேர்வெழுதியோர்: <strong>${appCnt}</strong> | தேர்ச்சி: <strong style="color:#15803d;">${passCnt} (${passPct}%)</strong></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            ${secPickerHtml}
+            <button type="button" class="btn btn-primary btn-sm" onclick="window.downloadSchoolMarkRegisterPdfPortrait(this)" style="background:#6d28d9; border-color:#5b21b6; color:#fff; font-weight:900; padding:6px 12px;">
+              📄 Mark Register PDF (A4)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="window.exportSchoolMarkRegisterExcel()" style="background:#ecfdf5; color:#047857; border:1.5px solid #34d399; font-weight:900; padding:6px 12px;">
+              📗 Mark Register Excel (.xlsx)
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="window.printOrDownloadClassMarkRegister()" style="background:#f8fafc; color:#0f294a; border:1.5px solid #94a3b8; font-weight:900; padding:6px 12px;">
+              🖨️ அச்சிடுக (Print)
+            </button>
+          </div>
+        </div>
+        <div class="table-wrap" style="max-height:540px; overflow:auto;">
+          <table class="data-table" style="width:100%; border-collapse:collapse; font-size:0.84rem;">
+            <thead>
+              <tr style="background:#f1f5f9;">
+                <th style="width:42px; text-align:center;">வ.எண்</th>
+                <th style="text-align:left; min-width:190px;">மாணவர் பெயர்</th>
+                <th style="width:42px; text-align:center;">பால்</th>
+                ${subHeaders.map(h => `<th style="text-align:center;">${escCt(h)}</th>`).join("")}
+                <th style="width:68px; text-align:center;">மொத்தம்</th>
+                <th style="width:68px; text-align:center;">முடிவு</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+      </div>`;
+  };
 
   // 4) Dedicated Class Mark Register (வகுப்பு மதிப்பெண் பதிவேடு) Print / PDF Generator
   window.printOrDownloadClassMarkRegister = function() {
