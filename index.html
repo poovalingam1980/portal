@@ -227,7 +227,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.73)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.74)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -578,7 +578,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.73</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.74</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -678,14 +678,14 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
 <div class="grid-2" style="gap:10px; align-items:end;">
 <div>
-<label class="form-label" style="font-size:0.78rem; font-weight:800; color:#1e293b; margin-bottom:4px;">1. பள்ளி U.No / UDISE எண் தேடல் (Quick Search)</label>
+<label for="regSearchQueryInput" class="form-label" style="font-size:0.78rem; font-weight:800; color:#1e293b; margin-bottom:4px;">1. பள்ளி U.No / UDISE எண் தேடல் (Quick Search)</label>
 <div style="display:flex; gap:6px;">
 <input type="text" id="regSearchQueryInput" class="form-control" placeholder="U.No / UDISE / பள்ளிப் பெயர் (எ.கா: 101)..." oninput="lookupSchoolForRegistration(true)" onkeydown="if(event.key==='Enter'){event.preventDefault(); lookupSchoolForRegistration(false);}" style="padding:7px 10px; font-size:0.84rem;">
 <button type="button" class="btn btn-primary btn-sm" onclick="lookupSchoolForRegistration(false)" style="white-space:nowrap; padding:7px 12px;">🔍 தேடுக</button>
 </div>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem; font-weight:800; color:#1e293b; margin-bottom:4px;">பள்ளியின் பெயரைத் தேர்ந்தெடுக்கவும் (Select School) <span class="required">*</span></label>
+<label for="regSchoolSelectDropdown" class="form-label" style="font-size:0.78rem; font-weight:800; color:#1e293b; margin-bottom:4px;">பள்ளியின் பெயரைத் தேர்ந்தெடுக்கவும் (Select School) <span class="required">*</span></label>
 <select id="regSchoolSelectDropdown" class="form-control" onchange="onRegSchoolDropdownSelect(this.value)" style="padding:7px 10px; font-size:0.84rem; font-weight:800; color:#0f172a;">
 <option value="">-- உங்கள் பள்ளியைத் தேர்ந்தெடுக்கவும் (282 பள்ளிகள்) --</option>
 </select>
@@ -699,19 +699,19 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <!-- Step 2 & 3: HM Name & Contact Details in a compact 4-column row -->
 <div class="reg-form-grid-4" style="margin-bottom:12px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">2. HM Name (English) <span class="required">*</span></label>
+<label for="regHmNameEn" class="form-label" style="font-size:0.76rem; font-weight:800;">2. HM Name (English) <span class="required">*</span></label>
 <input type="text" id="regHmNameEn" class="form-control" style="padding:7px 10px; font-size:0.84rem;" placeholder="HM Name in English" required>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">HM பெயர் (தமிழில்)</label>
+<label for="regHmNameTa" class="form-label" style="font-size:0.76rem; font-weight:800;">HM பெயர் (தமிழில்)</label>
 <input type="text" id="regHmNameTa" class="form-control" style="padding:7px 10px; font-size:0.84rem;" placeholder="தலைமையாசிரியர் பெயர்">
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">3. HM கைபேசி எண் (Mobile) <span class="required">*</span></label>
+<label for="regSchoolMobile" class="form-label" style="font-size:0.76rem; font-weight:800;">3. HM கைபேசி எண் (Mobile) <span class="required">*</span></label>
 <input type="tel" id="regSchoolMobile" class="form-control" style="padding:7px 10px; font-size:0.84rem; font-weight:800;" maxlength="10" inputmode="numeric" placeholder="10-இலக்க எண்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" required>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">4. பள்ளி மின்னஞ்சல் (School Email ID) <span class="required">*</span></label>
+<label for="regSchoolEmail" class="form-label" style="font-size:0.76rem; font-weight:800;">4. பள்ளி மின்னஞ்சல் (School Email ID) <span class="required">*</span></label>
 <input type="email" id="regSchoolEmail" class="form-control" style="padding:7px 10px; font-size:0.84rem; font-weight:700;" placeholder="school@gmail.com" oninput="resetRegOtpStateOnContactChange()" onblur="this.value=normalizeAndRepairSchoolEmail(this.value)" required>
 </div>
 </div>
@@ -726,7 +726,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div id="regPasswordSetupWrap" style="opacity:1; pointer-events:auto; transition:all 0.25s;">
 <div class="grid-3" style="gap:10px; margin-bottom:8px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">6. புதிய கடவுச்சொல் (குறைந்தது 7 எழுத்துகள், 1 பெரிய &amp; 1 சிறிய எழுத்து) <span class="required">*</span></label>
+<label for="regNewPassword" class="form-label" style="font-size:0.76rem; font-weight:800;">6. புதிய கடவுச்சொல் (குறைந்தது 7 எழுத்துகள், 1 பெரிய &amp; 1 சிறிய எழுத்து) <span class="required">*</span></label>
 <div class="pw-field-wrap">
 <input type="password" id="regNewPassword" class="form-control" style="padding:7px 10px; font-size:0.84rem;" minlength="7" placeholder="எ.கா: School123" oninput="updateLivePasswordChecklist('reg')" required>
 <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('regNewPassword', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
@@ -736,7 +736,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">கடவுச்சொல்லை உறுதிப்படுத்துக (Confirm Password) <span class="required">*</span></label>
+<label for="regConfirmPassword" class="form-label" style="font-size:0.76rem; font-weight:800;">கடவுச்சொல்லை உறுதிப்படுத்துக (Confirm Password) <span class="required">*</span></label>
 <div class="pw-field-wrap">
 <input type="password" id="regConfirmPassword" class="form-control" style="padding:7px 10px; font-size:0.84rem;" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" oninput="updateLivePasswordChecklist('reg')" required>
 <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('regConfirmPassword', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
@@ -746,7 +746,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">7. 6-இலக்க PIN எண் (விரும்பினால் / Optional)</label>
+<label for="regNewPinInput" class="form-label" style="font-size:0.76rem; font-weight:800;">7. 6-இலக்க PIN எண் (விரும்பினால் / Optional)</label>
 <div class="pw-field-wrap">
 <input type="password" id="regNewPinInput" class="form-control" style="padding:7px 10px; font-size:0.88rem; font-weight:900; letter-spacing:3px; text-align:center;" maxlength="6" inputmode="numeric" placeholder="6 இலக்கம்" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); updateLivePasswordChecklist('reg')">
 <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('regNewPinInput', this)" title="PIN எண்ணைப் பார்க்க / மறைக்க (Show / Hide)">
@@ -808,7 +808,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 <form onsubmit="handlePasswordResetSubmit(event)">
 <div class="form-group" style="margin-bottom:8px;">
-<label class="form-label" style="font-size:0.78rem;">பள்ளியின் U.NO அல்லது UDISE எண் <span class="required">*</span></label>
+<label for="resetSchoolIdInput" class="form-label" style="font-size:0.78rem;">பள்ளியின் U.NO அல்லது UDISE எண் <span class="required">*</span></label>
 <input type="text" id="resetSchoolIdInput" class="form-control" placeholder="எ.கா: 101 அல்லது 33231106101" oninput="onResetIdType(this.value)" required>
 </div>
 <div id="resetSchoolPreview" style="font-size:0.84rem; font-weight:800; color:#15803d; margin-bottom:8px;"></div>
@@ -839,7 +839,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 <div class="grid-2" style="gap:8px; margin-bottom:8px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem;">புதிய கடவுச்சொல் (Min 7 Chars, 1 A-Z, 1 a-z) <span class="required">*</span></label>
+<label for="resetNewPassInput" class="form-label" style="font-size:0.76rem;">புதிய கடவுச்சொல் (Min 7 Chars, 1 A-Z, 1 a-z) <span class="required">*</span></label>
 <div class="pw-field-wrap">
 <input type="password" id="resetNewPassInput" class="form-control" minlength="7" placeholder="எ.கா: School123" required>
 <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('resetNewPassInput', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
@@ -849,7 +849,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; color:#0369a1;">🔢 புதிய 6-இலக்க PIN எண் (விரும்பினால்)</label>
+<label for="resetNewPinInput" class="form-label" style="font-size:0.76rem; color:#0369a1;">🔢 புதிய 6-இலக்க PIN எண் (விரும்பினால்)</label>
 <div class="pw-field-wrap">
 <input type="password" id="resetNewPinInput" class="form-control" maxlength="6" inputmode="numeric" placeholder="6-இலக்க PIN" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="font-weight:900; letter-spacing:2px; text-align:center;">
 <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('resetNewPinInput', this)" title="PIN எண்ணைப் பார்க்க / மறைக்க (Show / Hide)">
@@ -1212,7 +1212,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 <!-- Add a Group from Master Group Template -->
 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#ffffff; border:1px solid #fcd34d; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
-<label style="font-size:0.84rem; font-weight:900; color:#0f294a;">➕ புதிய பாடப்பிரிவு (Group) இப்பள்ளிக்குச் சேர்க்க:</label>
+<label for="schAddHssGroupSelect" style="font-size:0.84rem; font-weight:900; color:#0f294a;">➕ புதிய பாடப்பிரிவு (Group) இப்பள்ளிக்குச் சேர்க்க:</label>
 <select id="schAddHssGroupSelect" class="form-control" style="max-width:440px; font-weight:800; font-size:0.84rem;"></select>
 <button type="button" class="btn btn-primary btn-sm" onclick="addHssGroupToCurrentSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900;">
 ➕ இப்பள்ளிக்கு Group சேர்
@@ -1364,114 +1364,114 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <form onsubmit="saveSchoolProfileFromDashboard(event)">
 <div class="grid-4">
 <div class="form-group">
-<label class="form-label">பள்ளியின் U.NO (School U.NO)</label>
+<label for="schFormUNo" class="form-label">பள்ளியின் U.NO (School U.NO)</label>
 <input type="text" id="schFormUNo" class="form-control" readonly style="background:#f1f5f9; font-weight:800;">
 </div>
 <div class="form-group">
-<label class="form-label">UDISE NO (11 இலக்க எண்)</label>
+<label for="schFormUdise" class="form-label">UDISE NO (11 இலக்க எண்)</label>
 <input type="text" id="schFormUdise" class="form-control" readonly style="background:#f1f5f9; font-weight:800;">
 </div>
 <div class="form-group">
-<label class="form-label">DGE SCHOOL NUMBER</label>
+<label for="schFormDge" class="form-label">DGE SCHOOL NUMBER</label>
 <input type="text" id="schFormDge" class="form-control" placeholder="எ.கா: 208TPRS0037">
 </div>
 <div class="form-group">
-<label class="form-label">பள்ளித் தோற்றுவிக்கப்பட்ட நாள் (Est. Date)</label>
+<label for="schFormEstDate" class="form-label">பள்ளித் தோற்றுவிக்கப்பட்ட நாள் (Est. Date)</label>
 <input type="text" id="schFormEstDate" class="form-control" placeholder="எ.கா: 15.06.1965 / 1965">
 </div>
 </div>
 <!-- Conditional HSS Upgradation Fields (Shown for Higher Secondary Schools) -->
 <div id="schFormHssUpgradeRow" class="grid-2" style="background:#ecfdf5; border:1.5px solid #6ee7b7; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="color:#065f46;">🎓 மேல்நிலைப்பள்ளியாக தரம் உயர்த்தப்பட்ட நாள் (HSS Upgradation Date)</label>
+<label for="schFormHssUpgradedDate" class="form-label" style="color:#065f46;">🎓 மேல்நிலைப்பள்ளியாக தரம் உயர்த்தப்பட்ட நாள் (HSS Upgradation Date)</label>
 <input type="text" id="schFormHssUpgradedDate" class="form-control" placeholder="எ.கா: 01.07.1989">
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="color:#065f46;">📜 மேல்நிலை தரம் உயர்த்தப்பட்ட அரசாணை விவரம் (G.O. No. &amp; Date)</label>
+<label for="schFormHssGoDetails" class="form-label" style="color:#065f46;">📜 மேல்நிலை தரம் உயர்த்தப்பட்ட அரசாணை விவரம் (G.O. No. &amp; Date)</label>
 <input type="text" id="schFormHssGoDetails" class="form-control" placeholder="எ.கா: அரசாணை நிலை எண் (G.O.Ms.No.) 1240, நாள்: 28.06.1989">
 </div>
 </div>
 <!-- Exam Centre Details Row (10th & 12th Exam Centre No.) -->
 <div class="grid-3" style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="color:#92400e;">🏛️ பள்ளியானது தேர்வு மையமா? (Is Exam Centre?)</label>
+<label for="schFormIsExamCentre" class="form-label" style="color:#92400e;">🏛️ பள்ளியானது தேர்வு மையமா? (Is Exam Centre?)</label>
 <select id="schFormIsExamCentre" class="form-control" onchange="toggleSchFormExamCentreInputs()">
 <option value="NO">இல்லை (Not an Exam Centre)</option>
 <option value="YES">ஆம் – பொதுத்தேர்வு மையம் (Exam Centre)</option>
 </select>
 </div>
 <div class="form-group" id="schFormCentre10Wrap" style="margin-bottom:0;">
-<label class="form-label" style="color:#92400e;">10th Exam Centre No. (10-ஆம் வகுப்பு தேர்வு மைய எண்)</label>
+<label for="schFormCentre10" class="form-label" style="color:#92400e;">10th Exam Centre No. (10-ஆம் வகுப்பு தேர்வு மைய எண்)</label>
 <input type="text" id="schFormCentre10" class="form-control" placeholder="தேர்வு மையம் எனில் எண் (எ.கா: 108001)">
 </div>
 <div class="form-group" id="schFormCentre12Wrap" style="margin-bottom:0;">
-<label class="form-label" style="color:#92400e;">12th Exam Centre No. (+2 தேர்வு மைய எண்)</label>
+<label for="schFormCentre12" class="form-label" style="color:#92400e;">12th Exam Centre No. (+2 தேர்வு மைய எண்)</label>
 <input type="text" id="schFormCentre12" class="form-control" placeholder="தேர்வு மையம் எனில் எண் (எ.கா: 208001)">
 </div>
 </div>
 <div class="grid-2">
 <div class="form-group">
-<label class="form-label">பள்ளியின் பெயர் (தமிழில்) <span class="required">*</span></label>
+<label for="schFormNameTa" class="form-label">பள்ளியின் பெயர் (தமிழில்) <span class="required">*</span></label>
 <input type="text" id="schFormNameTa" class="form-control" required>
 </div>
 <div class="form-group">
-<label class="form-label">Name of the School (English) <span class="required">*</span></label>
+<label for="schFormNameEn" class="form-label">Name of the School (English) <span class="required">*</span></label>
 <input type="text" id="schFormNameEn" class="form-control" required>
 </div>
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">ஒன்றியம் (Block)</label>
+<label for="schFormBlock" class="form-label">ஒன்றியம் (Block)</label>
 <select id="schFormBlock" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">சட்டமன்றத் தொகுதி (Assembly)</label>
+<label for="schFormAssembly" class="form-label">சட்டமன்றத் தொகுதி (Assembly)</label>
 <select id="schFormAssembly" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">பள்ளி நிலை (School Category/Level)</label>
+<label for="schFormLevel" class="form-label">பள்ளி நிலை (School Category/Level)</label>
 <select id="schFormLevel" class="form-control" onchange="toggleSchFormHssFields()"></select>
 </div>
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">நிர்வாகப் பிரிவு 1 (MANAGEMENT_1)</label>
+<label for="schFormMgmt1" class="form-label">நிர்வாகப் பிரிவு 1 (MANAGEMENT_1)</label>
 <select id="schFormMgmt1" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">நிர்வாக உட்பிரிவு 2 (MANAGEMENT_2)</label>
+<label for="schFormMgmt2" class="form-label">நிர்வாக உட்பிரிவு 2 (MANAGEMENT_2)</label>
 <select id="schFormMgmt2" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">நிர்வாக உட்பிரிவு 3 (MANAGEMENT_3)</label>
+<label for="schFormMgmt3" class="form-label">நிர்வாக உட்பிரிவு 3 (MANAGEMENT_3)</label>
 <select id="schFormMgmt3" class="form-control"></select>
 </div>
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">தலைமையாசிரியர் / முதல்வர் (English) <span class="required">*</span></label>
+<label for="schFormHmEn" class="form-label">தலைமையாசிரியர் / முதல்வர் (English) <span class="required">*</span></label>
 <input type="text" id="schFormHmEn" class="form-control" required>
 </div>
 <div class="form-group">
-<label class="form-label">தலைமையாசிரியர் / முதல்வர் (தமிழில்)</label>
+<label for="schFormHmTa" class="form-label">தலைமையாசிரியர் / முதல்வர் (தமிழில்)</label>
 <input type="text" id="schFormHmTa" class="form-control">
 </div>
 <div class="form-group">
-<label class="form-label">கைபேசி எண் (Mobile / WhatsApp) <span class="required">*</span></label>
+<label for="schFormMobile" class="form-label">கைபேசி எண் (Mobile / WhatsApp) <span class="required">*</span></label>
 <input type="tel" id="schFormMobile" class="form-control" required>
 </div>
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">பள்ளி முகவரி (School Full Address / ஊர் &amp; முகவரி) <span class="required">*</span></label>
+<label for="schFormAddress" class="form-label">பள்ளி முகவரி (School Full Address / ஊர் &amp; முகவரி) <span class="required">*</span></label>
 <input type="text" id="schFormAddress" class="form-control" placeholder="பள்ளியின் முழு முகவரி (எ.கா: மருது பாண்டியர் நகர், சிவகங்கை)">
 </div>
 <div class="form-group">
-<label class="form-label">அஞ்சல் குறியீட்டு எண் (PIN Code)</label>
+<label for="schFormPincode" class="form-label">அஞ்சல் குறியீட்டு எண் (PIN Code)</label>
 <input type="text" id="schFormPincode" class="form-control" placeholder="630xxx" maxlength="6">
 </div>
 <div class="form-group">
-<label class="form-label">பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (Email ID)</label>
+<label for="schFormEmail" class="form-label">பள்ளி அதிகாரப்பூர்வ மின்னஞ்சல் (Email ID)</label>
 <input type="email" id="schFormEmail" class="form-control" placeholder="school@gmail.com">
 </div>
 </div>
@@ -1505,45 +1505,45 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <form onsubmit="saveSchoolNeedsData(event)">
 <div class="grid-4">
 <div class="form-group">
-<label class="form-label">கூடுதல் வகுப்பறைத் தேவை</label>
+<label for="needClassrooms" class="form-label">கூடுதல் வகுப்பறைத் தேவை</label>
 <input type="number" id="needClassrooms" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">அறிவியல் ஆய்வகம் (Science Lab)</label>
+<label for="needSciLab" class="form-label">அறிவியல் ஆய்வகம் (Science Lab)</label>
 <input type="number" id="needSciLab" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">ஆண்கள் கழிப்பறைத் தேவை</label>
+<label for="needBoysToilet" class="form-label">ஆண்கள் கழிப்பறைத் தேவை</label>
 <input type="number" id="needBoysToilet" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">பெண்கள் கழிப்பறைத் தேவை</label>
+<label for="needGirlsToilet" class="form-label">பெண்கள் கழிப்பறைத் தேவை</label>
 <input type="number" id="needGirlsToilet" class="form-control" min="0" value="0">
 </div>
 </div>
 <div class="grid-4">
 <div class="form-group">
-<label class="form-label">குடிநீர் / போர்வெல் தேவை</label>
+<label for="needDrinkingWater" class="form-label">குடிநீர் / போர்வெல் தேவை</label>
 <select id="needDrinkingWater" class="form-control">
 <option value="இல்லை (Sufficient)">போதுமானது (Sufficient)</option>
 <option value="தேவை (Required)">புதிய குடிநீர் / போர்வெல் தேவை</option>
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">சுற்றுச்சுவர் தேவை (மீட்டரில்)</label>
+<label for="needCompoundWall" class="form-label">சுற்றுச்சுவர் தேவை (மீட்டரில்)</label>
 <input type="number" id="needCompoundWall" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">இருக்கை &amp; மேசை (Desk/Bench)</label>
+<label for="needDesks" class="form-label">இருக்கை &amp; மேசை (Desk/Bench)</label>
 <input type="number" id="needDesks" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">கூடுதல் ஆசிரியர் தேவை</label>
+<label for="needTeachers" class="form-label">கூடுதல் ஆசிரியர் தேவை</label>
 <input type="number" id="needTeachers" class="form-control" min="0" value="0">
 </div>
 </div>
 <div class="form-group">
-<label class="form-label">சிறப்புக் குறிப்புரை / அவசரத் தேவைகள் (Remarks)</label>
+<label for="needRemarks" class="form-label">சிறப்புக் குறிப்புரை / அவசரத் தேவைகள் (Remarks)</label>
 <input type="text" id="needRemarks" class="form-control" placeholder="பள்ளியின் முக்கியத் தேவைகளைக் குறிப்பிடவும்...">
 </div>
 <div style="display:flex; justify-content:flex-end;">
@@ -1642,54 +1642,54 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 <div class="grid-4">
 <div class="form-group">
-<label class="form-label">முன்னொட்டு (Prefix)</label>
+<label for="stfPrefix" class="form-label">முன்னொட்டு (Prefix)</label>
 <select id="stfPrefix" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">பணியாளர் பெயர் (Staff Name) <span class="required">*</span></label>
+<label for="stfName" class="form-label">பணியாளர் பெயர் (Staff Name) <span class="required">*</span></label>
 <input type="text" id="stfName" class="form-control" placeholder="பெயர் உள்ளிடவும்" required>
 </div>
 <div class="form-group">
-<label class="form-label">பாலினம் (Gender)</label>
+<label for="stfGender" class="form-label">பாலினம் (Gender)</label>
 <select id="stfGender" class="form-control">
 <option value="Male">Male (ஆண்)</option>
 <option value="Female">Female (பெண்)</option>
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">பதவி (DESIGNATION)</label>
+<label for="stfDesig" class="form-label">பதவி (DESIGNATION)</label>
 <select id="stfDesig" class="form-control"></select>
 </div>
 </div>
 <div class="grid-4">
 <div class="form-group">
-<label class="form-label">பாடம் (Teaching Subject)</label>
+<label for="stfSubject" class="form-label">பாடம் (Teaching Subject)</label>
 <select id="stfSubject" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">முதல் நியமனம் (First Appointment)</label>
+<label for="stfFirstApp" class="form-label">முதல் நியமனம் (First Appointment)</label>
 <select id="stfFirstApp" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">நியமனத் தன்மை (Nature)</label>
+<label for="stfNature" class="form-label">நியமனத் தன்மை (Nature)</label>
 <select id="stfNature" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">தேர்வுப் பணி (EXAM DUTY)</label>
+<label for="stfExamDuty" class="form-label">தேர்வுப் பணி (EXAM DUTY)</label>
 <select id="stfExamDuty" class="form-control"></select>
 </div>
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">முகாம் பணி (CAMP DUTY)</label>
+<label for="stfCampDuty" class="form-label">முகாம் பணி (CAMP DUTY)</label>
 <select id="stfCampDuty" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">முகாம் விருப்பம் (CAMP OPTION)</label>
+<label for="stfCampOption" class="form-label">முகாம் விருப்பம் (CAMP OPTION)</label>
 <select id="stfCampOption" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">கைபேசி எண் (Mobile) <span class="required">*</span></label>
+<label for="stfMobile" class="form-label">கைபேசி எண் (Mobile) <span class="required">*</span></label>
 <input type="tel" id="stfMobile" class="form-control" maxlength="10" required>
 </div>
 </div>
@@ -2088,14 +2088,14 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
       💡 <strong>பயன்படுத்தும் முறை:</strong> உங்கள் Excel கோப்பில் உள்ள மாணவர் வரிசைகளை (<strong>Roll No, பெயர் (தமிழில்), பெயர் (ஆங்கிலத்தில்), பாலினம் (M/F), பிரிவு (A/B), தமிழ், ஆங்கிலம், கணிதம், அறிவியல், சமூக அறிவியல்</strong>) அப்படியே Copy செய்து கீழே உள்ள பெட்டியில் Paste செய்யவும். (வருகை புரியாத பாடத்திற்கு <code>AB</code> என்றும், விலக்கு எனில் <code>EX</code> என்றும் குறிப்பிடலாம்).
     </div>
     <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
-      <label style="font-size:0.78rem; font-weight:800; color:#0f294a;">இயல்புநிலைப் பிரிவு (Default Section):</label>
+      <label for="mtBulkPasteDefaultSec" style="font-size:0.78rem; font-weight:800; color:#0f294a;">இயல்புநிலைப் பிரிவு (Default Section):</label>
       <select id="mtBulkPasteDefaultSec" class="form-control" style="width:auto; padding:4px 8px; font-size:0.80rem; font-weight:800;">
         <option value="A">Section A</option>
         <option value="B">Section B</option>
         <option value="C">Section C</option>
         <option value="D">Section D</option>
       </select>
-      <label style="font-size:0.78rem; font-weight:800; color:#0f294a; margin-left:8px;">இயல்புநிலைப் பாலினம்:</label>
+      <label for="mtBulkPasteDefaultGender" style="font-size:0.78rem; font-weight:800; color:#0f294a; margin-left:8px;">இயல்புநிலைப் பாலினம்:</label>
       <select id="mtBulkPasteDefaultGender" class="form-control" style="width:auto; padding:4px 8px; font-size:0.80rem; font-weight:800;">
         <option value="Male">ஆண் (Male)</option>
         <option value="Female">பெண் (Female)</option>
@@ -2208,7 +2208,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <form onsubmit="changeLoggedSchoolPassword(event)" style="max-width:620px;">
 <div class="grid-2">
 <div class="form-group">
-<label class="form-label">புதிய கடவுச்சொல் (குறைந்தது 7 எழுத்துகள், 1 பெரிய &amp; 1 சிறிய எழுத்து) <span class="required">*</span></label>
+<label for="schSecNewPass" class="form-label">புதிய கடவுச்சொல் (குறைந்தது 7 எழுத்துகள், 1 பெரிய &amp; 1 சிறிய எழுத்து) <span class="required">*</span></label>
 <div class="pw-field-wrap">
 <input type="password" id="schSecNewPass" class="form-control" minlength="7" placeholder="எ.கா: School2026" required>
 <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('schSecNewPass', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
@@ -2218,7 +2218,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <div class="form-group">
-<label class="form-label">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக <span class="required">*</span></label>
+<label for="schSecConfirmPass" class="form-label">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக <span class="required">*</span></label>
 <div class="pw-field-wrap">
 <input type="password" id="schSecConfirmPass" class="form-control" minlength="7" placeholder="மீண்டும் உள்ளிடவும்" required>
 <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('schSecConfirmPass', this)" title="கடவுச்சொல்லைப் பார்க்க / மறைக்க (Show / Hide)">
@@ -2229,7 +2229,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <div class="form-group" style="max-width:300px;">
-<label class="form-label" style="color:#0369a1; font-weight:800;">🔢 6-இலக்க உள்நுழைவு PIN எண் (விரும்பினால் / Optional)</label>
+<label for="schSecNewPin" class="form-label" style="color:#0369a1; font-weight:800;">🔢 6-இலக்க உள்நுழைவு PIN எண் (விரும்பினால் / Optional)</label>
 <div class="pw-field-wrap">
 <input type="password" id="schSecNewPin" class="form-control" maxlength="6" inputmode="numeric" placeholder="எ.கா: 258012" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)" style="font-weight:900; letter-spacing:3px; font-size:1rem;">
 <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('schSecNewPin', this)" title="PIN எண்ணைப் பார்க்க / மறைக்க (Show / Hide)">
@@ -2329,15 +2329,15 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
   </div>
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px; align-items:end;">
     <div>
-      <label style="display:block; font-size:0.74rem; font-weight:800; color:#fde68a; margin-bottom:3px;">⏳ பராமரிப்பு தொடங்கும் நேரம் (Start Time):</label>
+      <label for="admMaintStartInput" style="display:block; font-size:0.74rem; font-weight:800; color:#fde68a; margin-bottom:3px;">⏳ பராமரிப்பு தொடங்கும் நேரம் (Start Time):</label>
       <input type="datetime-local" id="admMaintStartInput" class="form-control" style="padding:5px 8px; font-size:0.80rem; font-weight:800; background:#fff; color:#0f172a;">
     </div>
     <div>
-      <label style="display:block; font-size:0.74rem; font-weight:800; color:#86efac; margin-bottom:3px;">🟢 மீண்டும் செயல்பாட்டுக்கு வரும் நேரம் (Resume Time):</label>
+      <label for="admMaintEndInput" style="display:block; font-size:0.74rem; font-weight:800; color:#86efac; margin-bottom:3px;">🟢 மீண்டும் செயல்பாட்டுக்கு வரும் நேரம் (Resume Time):</label>
       <input type="datetime-local" id="admMaintEndInput" class="form-control" style="padding:5px 8px; font-size:0.80rem; font-weight:800; background:#fff; color:#0f172a;">
     </div>
     <div>
-      <label style="display:block; font-size:0.74rem; font-weight:800; color:#e2e8f0; margin-bottom:3px;">📢 பராமரிப்பு அறிவிப்புக் குறிப்பு (Maintenance Notice):</label>
+      <label for="admMaintReasonInput" style="display:block; font-size:0.74rem; font-weight:800; color:#e2e8f0; margin-bottom:3px;">📢 பராமரிப்பு அறிவிப்புக் குறிப்பு (Maintenance Notice):</label>
       <input type="text" id="admMaintReasonInput" class="form-control" placeholder="இணையதளம் பராமரிப்பு மற்றும் மேம்பாட்டுப் பணியில் உள்ளது..." style="padding:5px 8px; font-size:0.80rem; font-weight:700; background:#fff; color:#0f172a;">
     </div>
     <div style="display:flex; gap:6px; flex-wrap:wrap;">
@@ -2895,33 +2895,33 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:16px;">
 <div class="grid-4" style="margin-bottom:10px;">
 <div style="grid-column: span 2;">
-<label class="form-label" style="font-size:0.78rem;">🔍 விரைவுத் தேடல் (பெயர் / U.No / UDISE / DGE / தலைமையாசிரியர்):</label>
+<label for="admFilterSearch" class="form-label" style="font-size:0.78rem;">🔍 விரைவுத் தேடல் (பெயர் / U.No / UDISE / DGE / தலைமையாசிரியர்):</label>
 <input type="text" id="admFilterSearch" class="form-control" style="padding:7px 10px; font-size:0.86rem;" placeholder="தட்டச்சு செய்க..." oninput="renderAdminDirectoryTable()">
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">🏛️ முதன்மை நிர்வாகம் (MANAGEMENT_1):</label>
+<label for="admFilterMgmt1" class="form-label" style="font-size:0.78rem;">🏛️ முதன்மை நிர்வாகம் (MANAGEMENT_1):</label>
 <select id="admFilterMgmt1" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">📂 நிர்வாக உட்பிரிவு (MANAGEMENT_2):</label>
+<label for="admFilterMgmt2" class="form-label" style="font-size:0.78rem;">📂 நிர்வாக உட்பிரிவு (MANAGEMENT_2):</label>
 <select id="admFilterMgmt2" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
 </div>
 </div>
 <div class="grid-4" style="margin-bottom:10px;">
 <div>
-<label class="form-label" style="font-size:0.78rem;">📑 உதவிபெறும் பிரிவு (MANAGEMENT_3):</label>
+<label for="admFilterMgmt3" class="form-label" style="font-size:0.78rem;">📑 உதவிபெறும் பிரிவு (MANAGEMENT_3):</label>
 <select id="admFilterMgmt3" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">📍 ஒன்றியம் (Block - 12 ஒன்றியங்கள்):</label>
+<label for="admFilterBlock" class="form-label" style="font-size:0.78rem;">📍 ஒன்றியம் (Block - 12 ஒன்றியங்கள்):</label>
 <select id="admFilterBlock" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">🗳️ சட்டமன்றத் தொகுதி (Assembly):</label>
+<label for="admFilterAssembly" class="form-label" style="font-size:0.78rem;">🗳️ சட்டமன்றத் தொகுதி (Assembly):</label>
 <select id="admFilterAssembly" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">🎓 பள்ளி வகை (School Level - HS/HSS/MS):</label>
+<label for="admFilterLevel" class="form-label" style="font-size:0.78rem;">🎓 பள்ளி வகை (School Level - HS/HSS/MS):</label>
 <select id="admFilterLevel" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="renderAdminDirectoryTable()"></select>
 </div>
 </div>
@@ -2957,89 +2957,89 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div style="font-weight:800; font-size:1rem; color:var(--primary); margin-bottom:12px;" id="admSchoolFormHeading">🏫 புதிய பள்ளி விவரங்களை உள்ளிடவும் (Add / Update School in Master List)</div>
 <div class="grid-4">
 <div class="form-group">
-<label class="form-label">U.NO (பள்ளி தனி எண்) <span class="required">*</span></label>
+<label for="admAddUNo" class="form-label">U.NO (பள்ளி தனி எண்) <span class="required">*</span></label>
 <input type="text" id="admAddUNo" class="form-control" placeholder="எ.கா: 165 அல்லது 806" required>
 </div>
 <div class="form-group">
-<label class="form-label">UDISE எண் (11 Digits) <span class="required">*</span></label>
+<label for="admAddUdise" class="form-label">UDISE எண் (11 Digits) <span class="required">*</span></label>
 <input type="text" id="admAddUdise" class="form-control" placeholder="3323xxxxxxx" required>
 </div>
 <div class="form-group">
-<label class="form-label">DGE NO</label>
+<label for="admAddDge" class="form-label">DGE NO</label>
 <input type="text" id="admAddDge" class="form-control" placeholder="208SVGIxxxx">
 </div>
 <div class="form-group">
-<label class="form-label">பள்ளி நிலை (Level)</label>
+<label for="admAddLevel" class="form-label">பள்ளி நிலை (Level)</label>
 <select id="admAddLevel" class="form-control"></select>
 </div>
 </div>
 <div class="grid-2">
 <div class="form-group">
-<label class="form-label">பள்ளியின் பெயர் (தமிழில்) <span class="required">*</span></label>
+<label for="admAddNameTa" class="form-label">பள்ளியின் பெயர் (தமிழில்) <span class="required">*</span></label>
 <input type="text" id="admAddNameTa" class="form-control" placeholder="எ.கா: அரசு உயர்நிலைப்பள்ளி ..." required>
 </div>
 <div class="form-group">
-<label class="form-label">Name of the School (English) <span class="required">*</span></label>
+<label for="admAddNameEn" class="form-label">Name of the School (English) <span class="required">*</span></label>
 <input type="text" id="admAddNameEn" class="form-control" placeholder="e.g. GOVT. HS, ..." required>
 </div>
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">ஒன்றியம் (Block) <span class="required">*</span></label>
+<label for="admAddBlock" class="form-label">ஒன்றியம் (Block) <span class="required">*</span></label>
 <select id="admAddBlock" class="form-control" required></select>
 </div>
 <div class="form-group">
-<label class="form-label">சட்டமன்றத் தொகுதி (Assembly)</label>
+<label for="admAddAssembly" class="form-label">சட்டமன்றத் தொகுதி (Assembly)</label>
 <select id="admAddAssembly" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">பள்ளித் தோற்றுவிக்கப்பட்ட நாள் (Est. Date)</label>
+<label for="admAddEstDate" class="form-label">பள்ளித் தோற்றுவிக்கப்பட்ட நாள் (Est. Date)</label>
 <input type="text" id="admAddEstDate" class="form-control" placeholder="எ.கா: 15.06.1965 / 1965">
 </div>
 </div>
 <div class="grid-4" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px; margin-bottom:12px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label">மேல்நிலை தரம் உயர்த்தப்பட்ட நாள் (HSS Date)</label>
+<label for="admAddHssUpgradedDate" class="form-label">மேல்நிலை தரம் உயர்த்தப்பட்ட நாள் (HSS Date)</label>
 <input type="text" id="admAddHssUpgradedDate" class="form-control" placeholder="மேல்நிலைப்பள்ளி எனில் நாள்">
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label">அரசாணை விவரம் (HSS G.O. Details)</label>
+<label for="admAddHssGoDetails" class="form-label">அரசாணை விவரம் (HSS G.O. Details)</label>
 <input type="text" id="admAddHssGoDetails" class="form-control" placeholder="G.O.Ms.No. & Date">
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label">10th Exam Centre No.</label>
+<label for="admAddCentre10" class="form-label">10th Exam Centre No.</label>
 <input type="text" id="admAddCentre10" class="form-control" placeholder="10th தேர்வு மைய எண்">
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label">12th Exam Centre No.</label>
+<label for="admAddCentre12" class="form-label">12th Exam Centre No.</label>
 <input type="text" id="admAddCentre12" class="form-control" placeholder="12th தேர்வு மைய எண் (208xxx)">
 </div>
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">நிர்வாகப் பிரிவு 1 (MANAGEMENT_1) <span class="required">*</span></label>
+<label for="admAddMgmt1" class="form-label">நிர்வாகப் பிரிவு 1 (MANAGEMENT_1) <span class="required">*</span></label>
 <select id="admAddMgmt1" class="form-control" required></select>
 </div>
 <div class="form-group">
-<label class="form-label">நிர்வாக உட்பிரிவு 2 (MANAGEMENT_2) <span class="required">*</span></label>
+<label for="admAddMgmt2" class="form-label">நிர்வாக உட்பிரிவு 2 (MANAGEMENT_2) <span class="required">*</span></label>
 <select id="admAddMgmt2" class="form-control" required></select>
 </div>
 <div class="form-group">
-<label class="form-label">நிர்வாக உட்பிரிவு 3 (MANAGEMENT_3)</label>
+<label for="admAddMgmt3" class="form-label">நிர்வாக உட்பிரிவு 3 (MANAGEMENT_3)</label>
 <select id="admAddMgmt3" class="form-control"></select>
 </div>
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">தலைமையாசிரியர் பெயர் (English)</label>
+<label for="admAddHmEn" class="form-label">தலைமையாசிரியர் பெயர் (English)</label>
 <input type="text" id="admAddHmEn" class="form-control">
 </div>
 <div class="form-group">
-<label class="form-label">தலைமையாசிரியர் பெயர் (தமிழில்)</label>
+<label for="admAddHmTa" class="form-label">தலைமையாசிரியர் பெயர் (தமிழில்)</label>
 <input type="text" id="admAddHmTa" class="form-control">
 </div>
 <div class="form-group">
-<label class="form-label">கைபேசி எண் (Mobile)</label>
+<label for="admAddMobile" class="form-label">கைபேசி எண் (Mobile)</label>
 <input type="tel" id="admAddMobile" class="form-control">
 </div>
 </div>
@@ -3074,7 +3074,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div style="font-weight:800; color:var(--primary); margin-bottom:10px;">➕ புதிய நிர்வாகப் பிரிவு / உட்பிரிவு / ஒன்றியம் சேர்க்க:</div>
 <div class="grid-4">
 <div class="form-group">
-<label class="form-label">பிரிவின் வகை (Division Type)</label>
+<label for="divNewType" class="form-label">பிரிவின் வகை (Division Type)</label>
 <select id="divNewType" class="form-control">
 <option value="mgmt1">MANAGEMENT_1 (முதன்மை நிர்வாகம் - எ.கா: 1G, 2A, 3P, 4C)</option>
 <option value="mgmt2">MANAGEMENT_2 (நிர்வாக உட்பிரிவு - எ.கா: 1, 2, 4, 5, 6, 7, 8)</option>
@@ -3085,11 +3085,11 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">குறியீடு (Code in Google Sheet) <span class="required">*</span></label>
+<label for="divNewCode" class="form-label">குறியீடு (Code in Google Sheet) <span class="required">*</span></label>
 <input type="text" id="divNewCode" class="form-control" placeholder="எ.கா: 4C அல்லது 8 அல்லது CBSE" required>
 </div>
 <div class="form-group">
-<label class="form-label">பிரிவின் விளக்கம் (தமிழ் & English பெயர்) <span class="required">*</span></label>
+<label for="divNewLabel" class="form-label">பிரிவின் விளக்கம் (தமிழ் & English பெயர்) <span class="required">*</span></label>
 <input type="text" id="divNewLabel" class="form-control" placeholder="எ.கா: மத்திய அரசுப் பள்ளிகள் (Central Govt)" required>
 </div>
 <div class="form-group" style="display:flex; align-items:flex-end;">
@@ -3120,7 +3120,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">1️⃣ பள்ளித் தேர்வு / U.NO அல்லது UDISE எண்</label>
+<label for="admPassResetQuery" class="form-label">1️⃣ பள்ளித் தேர்வு / U.NO அல்லது UDISE எண்</label>
 <div style="display:flex; gap:6px;">
 <input type="text" id="admPassResetQuery" class="form-control" placeholder="எ.கா: 101 அல்லது 33231106101" oninput="previewAdminPassResetSchool(this.value)" style="flex:1;">
 <select id="admPassResetSchoolSelect" class="form-control" onchange="onAdminPassResetDropdownSelect(this.value)" style="max-width:190px; font-size:0.78rem;">
@@ -3129,7 +3129,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <div class="form-group">
-<label class="form-label">2️⃣ புதிய கடவுச்சொல் (நேரடியாக அமைக்க விரும்பினால்)</label>
+<label for="admPassResetNewVal" class="form-label">2️⃣ புதிய கடவுச்சொல் (நேரடியாக அமைக்க விரும்பினால்)</label>
 <div style="display:flex; gap:6px;">
 <input type="text" id="admPassResetNewVal" class="form-control" placeholder="எ.கா: Svg@2026 அல்லது U.NO" style="flex:1;">
 <button type="button" class="btn btn-outline btn-sm" onclick="setAdminPassInputToUNo()" title="பள்ளியின் U.NO எண்ணையே கடவுச்சொல்லாக நிரப்புக" style="white-space:nowrap;">U.NO-வை கடவுச்சொல்லாக்கு</button>
@@ -3217,15 +3217,15 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
   <!-- Add / Edit Form Strip -->
   <div style="display:grid; grid-template-columns:160px 1fr 120px auto; gap:8px; align-items:end; margin-bottom:10px; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:10px;">
     <div>
-      <label style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">மைய எண் / குறியீடு (Code):</label>
+      <label for="admPracCentreCodeInp" style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">மைய எண் / குறியீடு (Code):</label>
       <input type="text" id="admPracCentreCodeInp" class="form-control" placeholder="எ.கா: DVKI0001 / 16101" style="font-size:0.80rem; font-weight:800;">
     </div>
     <div>
-      <label style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">பள்ளி / தேர்வு மையத்தின் பெயர் (Centre Name):</label>
+      <label for="admPracCentreNameInp" style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">பள்ளி / தேர்வு மையத்தின் பெயர் (Centre Name):</label>
       <input type="text" id="admPracCentreNameInp" class="form-control" placeholder="எ.கா: GOVT. HSS, SIVAGANGAI" style="font-size:0.80rem; font-weight:800;">
     </div>
     <div>
-      <label style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">U.NO (விருப்பம்):</label>
+      <label for="admPracCentreUnoInp" style="display:block; font-size:0.72rem; font-weight:800; color:#334155; margin-bottom:3px;">U.NO (விருப்பம்):</label>
       <input type="text" id="admPracCentreUnoInp" class="form-control" placeholder="எ.கா: 206" style="font-size:0.80rem; font-weight:800;">
     </div>
     <div style="display:flex; gap:6px;">
@@ -3296,20 +3296,20 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <div id="admOtherExamsControlBox" style="background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:1.5px solid #5eead4; border-left:5px solid #0f766e; border-radius:12px; padding:14px 16px; margin-bottom:14px;">
 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:12px; align-items:end; margin-bottom:12px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.78rem; font-weight:900; color:#0f766e;">🎯 1. தேர்வினைத் தேர்ந்தெடுக்கவும் (Select Examination):</label>
+<label for="admOtherExamTypeSelect" class="form-label" style="font-size:0.78rem; font-weight:900; color:#0f766e;">🎯 1. தேர்வினைத் தேர்ந்தெடுக்கவும் (Select Examination):</label>
 <select id="admOtherExamTypeSelect" class="form-control" onchange="onAdminOtherExamTypeChange(this.value)" style="font-weight:900; color:#0f294a; border:2px solid #0f766e; background:#fff;">
 <option value="ALL_OTHER">📋 அனைத்து மற்ற தேர்வுகள் (All Other Exams)</option>
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.78rem; font-weight:900; color:#1e3a8a;">➕ பட்டியலில் இல்லாத புதிய தேர்வு சேர்க்க (Add New Exam):</label>
+<label for="admNewOtherExamNameInput" class="form-label" style="font-size:0.78rem; font-weight:900; color:#1e3a8a;">➕ பட்டியலில் இல்லாத புதிய தேர்வு சேர்க்க (Add New Exam):</label>
 <div style="display:flex; gap:6px;">
 <input type="text" id="admNewOtherExamNameInput" class="form-control" placeholder="எ.கா: NEET மாதிரித் தேர்வு / NAS தேர்வு..." style="font-weight:800; background:#fff;">
 <button type="button" class="btn btn-primary btn-sm" onclick="addAdminCustomOtherExam()" style="white-space:nowrap; font-weight:900; background:#0f766e; border-color:#0f766e;">➕ சேர்</button>
 </div>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.78rem; font-weight:900; color:#4c1d95;">🏫 2. பள்ளிகள் / மையங்கள் காட்சி நிலை (Display Filter):</label>
+<label for="admOtherExamShowScope" class="form-label" style="font-size:0.78rem; font-weight:900; color:#4c1d95;">🏫 2. பள்ளிகள் / மையங்கள் காட்சி நிலை (Display Filter):</label>
 <select id="admOtherExamShowScope" class="form-control" onchange="renderAdminExamCentresTable()" style="font-weight:900; color:#4c1d95; border:2px solid #7c3aed; background:#fff;">
 <option value="ALL_SCHOOLS">🏫 அனைத்து 308 பள்ளிகளிலிருந்து மையங்களைத் தேர்ந்தெடு (Select Centres)</option>
 <option value="SELECTED_ONLY">✅ தேர்ந்தெடுக்கப்பட்ட மையங்கள் மட்டும் காட்டு (Selected Centres Only)</option>
@@ -3320,13 +3320,13 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <!-- BULK ALLOCATION & FILTERS ROW -->
 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; align-items:end; padding-top:10px; border-top:1px dashed #99f6e4;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.75rem; font-weight:800;">ஒன்றியம் (Block Filter)</label>
+<label for="admCentreBlockFilter" class="form-label" style="font-size:0.75rem; font-weight:800;">ஒன்றியம் (Block Filter)</label>
 <select id="admCentreBlockFilter" class="form-control" onchange="renderAdminExamCentresTable()" style="font-weight:800; background:#fff;">
 <option value="">அனைத்து 12 ஒன்றியங்கள் (All Blocks)</option>
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.75rem; font-weight:800;">நிர்வாகம் (Management)</label>
+<label for="admCentreMgmtFilter" class="form-label" style="font-size:0.75rem; font-weight:800;">நிர்வாகம் (Management)</label>
 <select id="admCentreMgmtFilter" class="form-control" onchange="renderAdminExamCentresTable()" style="font-weight:800; background:#fff;">
 <option value="">அனைத்து நிர்வாகம் (All)</option>
 <option value="1G">1G - அரசுப் பள்ளி (Govt)</option>
@@ -3336,11 +3336,11 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.75rem; font-weight:800;">🔍 பள்ளி / மையம் தேடல்</label>
+<label for="admCentreSearch" class="form-label" style="font-size:0.75rem; font-weight:800;">🔍 பள்ளி / மையம் தேடல்</label>
 <input type="text" id="admCentreSearch" class="form-control" placeholder="🔍 மைய எண், U.No, ஒன்றியம், பள்ளி..." oninput="renderAdminExamCentresTable()" style="font-weight:800; background:#fff;">
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.75rem; font-weight:900; color:#b45309;">⚡ தேர்ந்தெடுத்த மையங்களுக்கு மொத்தமாக நிர்ணயம் செய்:</label>
+<label for="admBulkInvigInput" class="form-label" style="font-size:0.75rem; font-weight:900; color:#b45309;">⚡ தேர்ந்தெடுத்த மையங்களுக்கு மொத்தமாக நிர்ணயம் செய்:</label>
 <div style="display:flex; gap:5px; align-items:center;">
 <input type="number" id="admBulkInvigInput" class="form-control" min="0" max="200" placeholder="கண்காணிப்பாளர்" title="அறைக்கண்காணிப்பாளர்கள் எண்ணிக்கை" style="width:95px; font-weight:900; text-align:center; padding:5px; background:#fff;">
 <input type="number" id="admBulkOfficeInput" class="form-control" min="0" max="100" placeholder="அலுவலகம்" title="அலுவலகப் பணியாளர்கள் எண்ணிக்கை" style="width:88px; font-weight:900; text-align:center; padding:5px; background:#fff;">
@@ -3402,16 +3402,16 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 <form onsubmit="handleAdminAddCircularFromBox(event, 'Pane')" style="background:#fffafa; border:1.5px solid #fecaca; border-radius:10px; padding:16px;">
 <div style="font-weight:900; color:#991b1b; font-size:0.95rem; margin-bottom:12px;">✍️ புதிய மாவட்ட சுற்றறிக்கை / ஆணை அனுப்புக:</div>
 <div class="form-group">
-<label class="form-label">சுற்றறிக்கை ந.க.எண் / பிரிவு (Category / Rc.No) <span class="required">*</span></label>
+<label for="cirCategoryPane" class="form-label">சுற்றறிக்கை ந.க.எண் / பிரிவு (Category / Rc.No) <span class="required">*</span></label>
 <input type="text" id="cirCategoryPane" class="form-control" placeholder="எ.கா: ந.க.எண்: 4210/அ1/2026 / CEO CIRCULAR" required>
 </div>
 <div class="form-group">
-<label class="form-label">சுற்றறிக்கைத் தலைப்பு / கடைசி நாள் (Headline) <span class="required">*</span></label>
+<label for="cirHeadlinePane" class="form-label">சுற்றறிக்கைத் தலைப்பு / கடைசி நாள் (Headline) <span class="required">*</span></label>
 <input type="text" id="cirHeadlinePane" class="form-control" placeholder="எ.கா: நாள்: 24.10.2026 / உடனடி நடவடிக்கை" required>
 </div>
 <div class="form-group">
 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
-<label class="form-label" style="margin:0;">யாருக்கு அனுப்ப வேண்டும்? (Target Schools – Multiple Selection) <span class="required">*</span></label>
+<label for="cirTargetPane" class="form-label" style="margin:0;">யாருக்கு அனுப்ப வேண்டும்? (Target Schools – Multiple Selection) <span class="required">*</span></label>
 <span id="cirTargetMatchedCountBadge" style="background:#1e3a8a; color:#fff; font-size:0.74rem; font-weight:900; padding:2px 10px; border-radius:999px;">🎯 தேர்ந்தெடுக்கப்பட்டவை: அனைத்துப் பள்ளிகள் (282)</span>
 </div>
 <!-- Hidden legacy select for backward compatibility -->
@@ -3548,7 +3548,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <div class="form-group">
-<label class="form-label">விரிவான சுற்றறிக்கை விவரம் (Description) <span class="required">*</span></label>
+<label for="cirDescPane" class="form-label">விரிவான சுற்றறிக்கை விவரம் (Description) <span class="required">*</span></label>
 <textarea id="cirDescPane" class="form-control" rows="3" placeholder="பள்ளிகளுக்கு அனுப்ப வேண்டிய சுற்றறிக்கை விவரத்தினை இங்கே உள்ளிடவும்..." required></textarea>
 </div>
 <!-- File Attachment Upload to Google Drive Folder 1R-0i5OS83fSTLa0p3dw_mI81Pee4rZdA -->
@@ -3572,7 +3572,7 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 </div>
 </div>
 <div class="form-group">
-<label class="form-label">கூடுதல் இணைப்பு முகவரி (Optional External / Google Form Link)</label>
+<label for="cirLinkPane" class="form-label">கூடுதல் இணைப்பு முகவரி (Optional External / Google Form Link)</label>
 <input type="url" id="cirLinkPane" class="form-control" placeholder="https://docs.google.com/...">
 </div>
 <!-- Email Dispatch Option -->
@@ -3633,11 +3633,11 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 <input type="hidden" id="hssGrpEditOrigCode" value="">
 <div class="grid-4" style="margin-bottom:10px;">
 <div class="form-group">
-<label class="form-label">GROUP CODE (பாடப்பிரிவு எண்) <span class="required">*</span></label>
+<label for="hssGrpFormCode" class="form-label">GROUP CODE (பாடப்பிரிவு எண்) <span class="required">*</span></label>
 <input type="text" id="hssGrpFormCode" class="form-control" placeholder="எ.கா: 2502 / 2504" required style="font-weight:900;">
 </div>
 <div class="form-group">
-<label class="form-label">CATEGORY (பிரிவு) <span class="required">*</span></label>
+<label for="hssGrpFormCategory" class="form-label">CATEGORY (பிரிவு) <span class="required">*</span></label>
 <select id="hssGrpFormCategory" class="form-control" onchange="syncHssGrpCatCode()" required style="font-weight:800;">
 <option value="SCIENCE">SCIENCE (CAT_CODE: 1)</option>
 <option value="ARTS">ARTS (CAT_CODE: 2)</option>
@@ -3645,43 +3645,43 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">CAT_CODE (பிரிவு எண்)</label>
+<label for="hssGrpFormCatCode" class="form-label">CAT_CODE (பிரிவு எண்)</label>
 <input type="number" id="hssGrpFormCatCode" class="form-control" value="1" min="1" max="9" required style="font-weight:800;">
 </div>
 <div class="form-group">
-<label class="form-label">GROUP NAME (பாடப்பிரிவு பெயர்) <span class="required">*</span></label>
+<label for="hssGrpFormName" class="form-label">GROUP NAME (பாடப்பிரிவு பெயர்) <span class="required">*</span></label>
 <input type="text" id="hssGrpFormName" class="form-control" placeholder="எ.கா: COMPUTER-MATHS / BIO-MATHS" required style="font-weight:900;">
 </div>
 </div>
 <div class="grid-3" style="margin-bottom:10px;">
 <div class="form-group" style="grid-column: span 1;">
-<label class="form-label">MAJOR SUBJECTS (முதன்மைப் பாடங்கள் சுருக்கம்) <span class="required">*</span></label>
+<label for="hssGrpFormMajor" class="form-label">MAJOR SUBJECTS (முதன்மைப் பாடங்கள் சுருக்கம்) <span class="required">*</span></label>
 <input type="text" id="hssGrpFormMajor" class="form-control" placeholder="எ.கா: PHY/CHE/MAT/COMPUTER SCIENCE" required>
 </div>
 <div class="form-group">
-<label class="form-label">SUB_1 (பாடம் 1)</label>
+<label for="hssGrpFormSub1" class="form-label">SUB_1 (பாடம் 1)</label>
 <input type="text" id="hssGrpFormSub1" class="form-control" value="LANGUAGE" required>
 </div>
 <div class="form-group">
-<label class="form-label">SUB_2 (பாடம் 2)</label>
+<label for="hssGrpFormSub2" class="form-label">SUB_2 (பாடம் 2)</label>
 <input type="text" id="hssGrpFormSub2" class="form-control" value="ENGLISH" required>
 </div>
 </div>
 <div class="grid-4" style="margin-bottom:12px;">
 <div class="form-group">
-<label class="form-label">SUB_3 (பாடம் 3) <span class="required">*</span></label>
+<label for="hssGrpFormSub3" class="form-label">SUB_3 (பாடம் 3) <span class="required">*</span></label>
 <input type="text" id="hssGrpFormSub3" class="form-control" placeholder="எ.கா: PHYSICS / ECONOMICS" required>
 </div>
 <div class="form-group">
-<label class="form-label">SUB_4 (பாடம் 4) <span class="required">*</span></label>
+<label for="hssGrpFormSub4" class="form-label">SUB_4 (பாடம் 4) <span class="required">*</span></label>
 <input type="text" id="hssGrpFormSub4" class="form-control" placeholder="எ.கா: CHEMISTRY / COMMERCE" required>
 </div>
 <div class="form-group">
-<label class="form-label">SUB_5 (பாடம் 5) <span class="required">*</span></label>
+<label for="hssGrpFormSub5" class="form-label">SUB_5 (பாடம் 5) <span class="required">*</span></label>
 <input type="text" id="hssGrpFormSub5" class="form-control" placeholder="எ.கா: BIOLOGY / ACCOUNTANCY" required>
 </div>
 <div class="form-group">
-<label class="form-label">SUB_6 (பாடம் 6) <span class="required">*</span></label>
+<label for="hssGrpFormSub6" class="form-label">SUB_6 (பாடம் 6) <span class="required">*</span></label>
 <input type="text" id="hssGrpFormSub6" class="form-control" placeholder="எ.கா: MATHEMATICS / COMPUTER APP." required>
 </div>
 </div>
@@ -3968,7 +3968,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); margin-bottom:12px; gap:10px; align-items:end;">
 <!-- Administrative Purpose -->
 <div>
-<label class="form-label" style="font-size:0.76rem; font-weight:800; color:#78350f;">
+<label for="senCfgPurpose" class="form-label" style="font-size:0.76rem; font-weight:800; color:#78350f;">
 🏷️ முன்னுரிமைப் பணி நோக்கம் (Purpose):
 </label>
 <select id="senCfgPurpose" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityPurposeChange(this.value)">
@@ -3983,7 +3983,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </div>
 <!-- Criterion 1: Primary Criterion (Always Required) -->
 <div id="senCfgWrapPrimary" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:8px;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e40af; margin-bottom:4px;">
+<label for="senCfgPrimary" class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e40af; margin-bottom:4px;">
 🥇 1-வது கூறு (Primary - கட்டாயம்):
 </label>
 <select id="senCfgPrimary" class="form-control" style="font-size:0.82rem; padding:6px 8px; font-weight:700;" onchange="onSeniorityCriteriaChange('primary')">
@@ -3998,7 +3998,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </div>
 <!-- Criterion 2: Secondary Factor (Optional - Select only if needed) -->
 <div id="senCfgWrapSecondary" style="background:#f0fdf4; border:1px dashed #86efac; border-radius:8px; padding:8px;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800; color:#15803d; margin-bottom:4px; display:flex; justify-content:space-between;">
+<label for="senCfgSecondary" class="form-label" style="font-size:0.76rem; font-weight:800; color:#15803d; margin-bottom:4px; display:flex; justify-content:space-between;">
 <span>🥈 2-வது கூறு (தேவையெனில் மட்டும்):</span>
 <span style="font-size:0.68rem; color:#16a34a;">(Optional)</span>
 </label>
@@ -4017,7 +4017,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </div>
 <!-- Criterion 3: Tertiary Factor (Optional - Appears ONLY when 2nd criterion is selected) -->
 <div id="senCfgWrapTertiary" style="display:none; background:#faf5ff; border:1px dashed #d8b4fe; border-radius:8px; padding:8px;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800; color:#9333ea; margin-bottom:4px; display:flex; justify-content:space-between;">
+<label for="senCfgTertiary" class="form-label" style="font-size:0.76rem; font-weight:800; color:#9333ea; margin-bottom:4px; display:flex; justify-content:space-between;">
 <span>🥉 3-வது கூறு (தேவையெனில் மட்டும்):</span>
 <span style="font-size:0.68rem; color:#9333ea;">(Optional)</span>
 </label>
@@ -4036,7 +4036,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </div>
 <!-- Criterion 4: Quaternary Factor (Optional - Appears ONLY when 3rd criterion is selected) -->
 <div id="senCfgWrapQuaternary" style="display:none; background:#fff7ed; border:1px dashed #fdba74; border-radius:8px; padding:8px;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800; color:#c2410c; margin-bottom:4px; display:flex; justify-content:space-between;">
+<label for="senCfgQuaternary" class="form-label" style="font-size:0.76rem; font-weight:800; color:#c2410c; margin-bottom:4px; display:flex; justify-content:space-between;">
 <span>🏅 4-வது கூறு (தேவையெனில் மட்டும்):</span>
 <span style="font-size:0.68rem; color:#c2410c;">(Optional)</span>
 </label>
@@ -4136,7 +4136,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 <!-- Filter Row 1 -->
 <div class="grid-3" style="margin-bottom:10px;">
 <div>
-<label class="form-label" style="font-size:0.78rem;">🔍 விரைவுத் தேடல் (பெயர் / Staff ID / UDISE / கைபேசி):</label>
+<label for="admStaffFilterSearch" class="form-label" style="font-size:0.78rem;">🔍 விரைவுத் தேடல் (பெயர் / Staff ID / UDISE / கைபேசி):</label>
 <input type="text" id="admStaffFilterSearch" class="form-control" style="padding:7px 10px; font-size:0.86rem;" placeholder="ஆசிரியர் பெயர், Staff ID, பள்ளி பெயர்..." oninput="onAdminStaffFilterInput()">
 </div>
 <!-- MULTI-SELECT BLOCK -->
@@ -4158,7 +4158,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </div>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">🏫 பள்ளி (School - 281 பள்ளிகள்):</label>
+<label for="admStaffFilterSchool" class="form-label" style="font-size:0.78rem;">🏫 பள்ளி (School - 281 பள்ளிகள்):</label>
 <select id="admStaffFilterSchool" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()"></select>
 </div>
 </div>
@@ -4220,7 +4220,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </div>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">🎯 பணிப் பிரிவு (Category):</label>
+<label for="admStaffFilterCategory" class="form-label" style="font-size:0.78rem;">🎯 பணிப் பிரிவு (Category):</label>
 <select id="admStaffFilterCategory" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()">
 <option value="">அனைத்துப் பணிகள் (All Staff)</option>
 <option value="teaching">கற்பித்தல் பணி (Teaching Staff)</option>
@@ -4231,7 +4231,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 <!-- Filter Row 3 (Includes DD-MM-YYYY Date Column Filter) -->
 <div style="display:grid; grid-template-columns:1fr 1fr 1.65fr 0.85fr auto; gap:10px; align-items:end;">
 <div>
-<label class="form-label" style="font-size:0.78rem;">⚧️ பாலினம் (Gender):</label>
+<label for="admStaffFilterGender" class="form-label" style="font-size:0.78rem;">⚧️ பாலினம் (Gender):</label>
 <select id="admStaffFilterGender" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()">
 <option value="">அனைத்து பாலினம் (All)</option>
 <option value="Male">ஆண் (Male)</option>
@@ -4239,7 +4239,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">📜 நியமனத் தன்மை (Nature):</label>
+<label for="admStaffFilterNature" class="form-label" style="font-size:0.78rem;">📜 நியமனத் தன்மை (Nature):</label>
 <select id="admStaffFilterNature" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStaffFilterInput()">
 <option value="">அனைத்து நியமனம் (All)</option>
 <option value="Regular">Regular (நிரந்தரப் பணி)</option>
@@ -4247,7 +4247,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </select>
 </div>
 <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:5px 8px;">
-<label class="form-label" style="font-size:0.74rem; color:#1e40af; font-weight:900; margin-bottom:3px;">📅 தேதி நெடுவரிசை வடிகட்டி (DD-MM-YYYY):</label>
+<label for="admStaffFilterDateField" class="form-label" style="font-size:0.74rem; color:#1e40af; font-weight:900; margin-bottom:3px;">📅 தேதி நெடுவரிசை வடிகட்டி (DD-MM-YYYY):</label>
 <div style="display:flex; gap:5px; align-items:center;">
   <select id="admStaffFilterDateField" class="form-control" style="padding:5px 6px; font-size:0.78rem; font-weight:800; width:52%;" onchange="onAdminStaffFilterInput()">
     <option value="all_dates">அனைத்துத் தேதிகள்</option>
@@ -4266,7 +4266,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
 </div>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">📄 பக்க அளவு:</label>
+<label for="admStaffPageSize" class="form-label" style="font-size:0.78rem;">📄 பக்க அளவு:</label>
 <select id="admStaffPageSize" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="changeAdminStaffPageSize(this.value)">
 <option value="50">50 / பக்கம்</option>
 <option value="100">100 / பக்கம்</option>
@@ -4397,18 +4397,18 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
       <!-- Row 1: Column Header Title, Width (px), Alignment & Label Mode -->
       <div style="display:grid; grid-template-columns:1.4fr 135px 125px 135px; gap:10px; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px 12px; margin-bottom:10px;">
         <div>
-          <label style="font-size:0.73rem; font-weight:900; color:#0f294a; display:block; margin-bottom:3px;">🏷️ நெடுவரிசைத் தலைப்பு (Header Title):</label>
+          <label for="admColPickerTitleInput" style="font-size:0.73rem; font-weight:900; color:#0f294a; display:block; margin-bottom:3px;">🏷️ நெடுவரிசைத் தலைப்பு (Header Title):</label>
           <input type="text" id="admColPickerTitleInput" class="form-control" style="font-weight:800; font-size:0.83rem; padding:5px 9px;" placeholder="தானாக உருவாக்க காலியாக விடவும்" oninput="onAdmColPickerTitleInput(this.value)">
         </div>
         <div>
-          <label style="font-size:0.73rem; font-weight:900; color:#0369a1; display:block; margin-bottom:3px;">↔️ அகலம் (Width px):</label>
+          <label for="admColPickerWidthInput" style="font-size:0.73rem; font-weight:900; color:#0369a1; display:block; margin-bottom:3px;">↔️ அகலம் (Width px):</label>
           <div style="display:flex; gap:4px;">
             <input type="number" id="admColPickerWidthInput" class="form-control" min="45" max="900" step="5" style="font-weight:900; font-size:0.83rem; padding:5px 7px;" placeholder="Auto" oninput="onAdmColPickerMetaChange()">
             <button type="button" onclick="resetCurrentColWidthToAuto()" title="தானியங்கி அகலம் (Auto)" style="border:1px solid #cbd5e1; background:#f1f5f9; border-radius:6px; font-size:0.70rem; font-weight:800; padding:0 6px; cursor:pointer;">Auto</button>
           </div>
         </div>
         <div>
-          <label style="font-size:0.73rem; font-weight:900; color:#0f294a; display:block; margin-bottom:3px;">📐 சீரமைப்பு (Align):</label>
+          <label for="admColPickerAlignSelect" style="font-size:0.73rem; font-weight:900; color:#0f294a; display:block; margin-bottom:3px;">📐 சீரமைப்பு (Align):</label>
           <select id="admColPickerAlignSelect" class="form-control" style="font-weight:800; font-size:0.82rem; padding:5px 7px;" onchange="onAdmColPickerMetaChange()">
             <option value="left">இடது (Left)</option>
             <option value="center">மையம் (Center)</option>
@@ -4416,7 +4416,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
           </select>
         </div>
         <div>
-          <label style="font-size:0.73rem; font-weight:900; color:#0f294a; display:block; margin-bottom:3px;">🏷️ புலப் பெயர் (Label):</label>
+          <label for="admColPickerShowLabelSelect" style="font-size:0.73rem; font-weight:900; color:#0f294a; display:block; margin-bottom:3px;">🏷️ புலப் பெயர் (Label):</label>
           <select id="admColPickerShowLabelSelect" class="form-control" style="font-weight:800; font-size:0.82rem; padding:5px 7px;" onchange="onAdmColPickerMetaChange()">
             <option value="auto">தானியங்கி (Auto)</option>
             <option value="always">பெயருடன் காட்டு</option>
@@ -4428,7 +4428,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
       <!-- Row 2: Per-Column Font Family & Font Size Override -->
       <div style="display:grid; grid-template-columns:1fr 180px; gap:10px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:8px 12px; margin-bottom:12px;">
         <div>
-          <label style="font-size:0.73rem; font-weight:900; color:#1e3a8a; display:block; margin-bottom:3px;">🔤 இந்நெடுவரிசைக்கான தனி எழுத்துரு (Column Font Family):</label>
+          <label for="admColPickerFontFamilySelect" style="font-size:0.73rem; font-weight:900; color:#1e3a8a; display:block; margin-bottom:3px;">🔤 இந்நெடுவரிசைக்கான தனி எழுத்துரு (Column Font Family):</label>
           <select id="admColPickerFontFamilySelect" class="form-control" style="font-weight:800; font-size:0.81rem; padding:4px 8px; background:#fff;" onchange="onAdmColPickerMetaChange()">
             <option value="table">🔗 அட்டவணையின் பொது எழுத்துருவைப் பின்பற்று (Use Table Font)</option>
             <option value="'Mukta Malar', 'Inter', sans-serif">Mukta Malar &amp; Inter</option>
@@ -4445,7 +4445,7 @@ HSS_GROUP_DETAILS.xlsx அடிப்படையில் 16 அதிகா�
           </select>
         </div>
         <div>
-          <label style="font-size:0.73rem; font-weight:900; color:#1e3a8a; display:block; margin-bottom:3px;">🔠 இந்நெடுவரிசை எழுத்துரு அளவு:</label>
+          <label for="admColPickerFontSizeSelect" style="font-size:0.73rem; font-weight:900; color:#1e3a8a; display:block; margin-bottom:3px;">🔠 இந்நெடுவரிசை எழுத்துரு அளவு:</label>
           <select id="admColPickerFontSizeSelect" class="form-control" style="font-weight:800; font-size:0.81rem; padding:4px 8px; background:#fff;" onchange="onAdmColPickerMetaChange()">
             <option value="0">🔗 அட்டவணை அளவு (Default)</option>
             <option value="9">9 px</option>
@@ -5182,17 +5182,17 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <!-- Filter Row 1 -->
 <div class="grid-4" style="margin-bottom:10px;">
 <div>
-<label class="form-label" style="font-size:0.78rem;">🔍 பள்ளி விரைவுத் தேடல் (பெயர் / U.No / UDISE):</label>
+<label for="admStudentFilterSearch" class="form-label" style="font-size:0.78rem;">🔍 பள்ளி விரைவுத் தேடல் (பெயர் / U.No / UDISE):</label>
 <input type="text" id="admStudentFilterSearch" class="form-control" style="padding:7px 10px; font-size:0.86rem;" placeholder="பள்ளி பெயர், U.No, UDISE எண்..." oninput="onAdminStudentFilterInput()">
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">📍 ஒன்றியம் (Block - 12 ஒன்றியங்கள்):</label>
+<label for="admStudentFilterBlock" class="form-label" style="font-size:0.78rem;">📍 ஒன்றியம் (Block - 12 ஒன்றியங்கள்):</label>
 <select id="admStudentFilterBlock" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStudentFilterInput()">
 <option value="">அனைத்து ஒன்றியங்கள் (All 12 Blocks)</option>
 </select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">🏫 பள்ளி வகை / நிலை (Level):</label>
+<label for="admStudentFilterLevel" class="form-label" style="font-size:0.78rem;">🏫 பள்ளி வகை / நிலை (Level):</label>
 <select id="admStudentFilterLevel" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStudentFilterInput()">
 <option value="">அனைத்து நிலைகளும் (All Levels)</option>
 <option value="HSS">மேல்நிலைப்பள்ளி (Higher Secondary - HSS)</option>
@@ -5200,7 +5200,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">🏛️ நிர்வாகப் பிரிவு (Management):</label>
+<label for="admStudentFilterMgmt" class="form-label" style="font-size:0.78rem;">🏛️ நிர்வாகப் பிரிவு (Management):</label>
 <select id="admStudentFilterMgmt" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStudentFilterInput()">
 <option value="">அனைத்து நிர்வாகம் (1G, 2A, 3P)</option>
 <option value="1G">1G - அரசுப் பள்ளிகள் (Government)</option>
@@ -5212,7 +5212,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <!-- Filter Row 2 -->
 <div class="grid-4">
 <div>
-<label class="form-label" style="font-size:0.78rem;">🗣️ பயிற்று மொழி (Medium Filter):</label>
+<label for="admStudentFilterMedium" class="form-label" style="font-size:0.78rem;">🗣️ பயிற்று மொழி (Medium Filter):</label>
 <select id="admStudentFilterMedium" class="form-control" style="padding:7px 10px; font-size:0.84rem; font-weight:700; border-color:#059669;" onchange="onAdminStudentFilterInput()">
 <option value="">அனைத்து வழிகள் (All Mediums - TM &amp; EM)</option>
 <option value="Tamil">தமிழ் வழி மட்டும் (Tamil Medium - TM)</option>
@@ -5220,7 +5220,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">📚 பாடப்பிரிவு / குழு (Group Filter):</label>
+<label for="admStudentFilterGroup" class="form-label" style="font-size:0.78rem;">📚 பாடப்பிரிவு / குழு (Group Filter):</label>
 <select id="admStudentFilterGroup" class="form-control" style="padding:7px 10px; font-size:0.84rem; font-weight:700; border-color:#2563eb;" onchange="onAdminStudentFilterInput()">
 <option value="">அனைத்துப் பாடப்பிரிவுகளும் (All Groups)</option>
 <option value="GEN">பொதுப் பாடப்பிரிவு (General 6th to 10th)</option>
@@ -5252,7 +5252,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">🎓 வகுப்பு வரம்பு (Class Range Filter):</label>
+<label for="admStudentFilterClass" class="form-label" style="font-size:0.78rem;">🎓 வகுப்பு வரம்பு (Class Range Filter):</label>
 <select id="admStudentFilterClass" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="onAdminStudentFilterInput()">
 <option value="">அனைத்து வகுப்புகள் (Classes 6 to 12)</option>
 <option value="6_10">உயர்நிலை வகுப்புகள் (Classes 6 to 10)</option>
@@ -5267,7 +5267,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div>
-<label class="form-label" style="font-size:0.78rem;">📄 ஒரு பக்கத்திற்கு (Page Size):</label>
+<label for="admStudentPageSize" class="form-label" style="font-size:0.78rem;">📄 ஒரு பக்கத்திற்கு (Page Size):</label>
 <select id="admStudentPageSize" class="form-control" style="padding:7px 10px; font-size:0.84rem;" onchange="changeAdminStudentPageSize(this.value)">
 <option value="25">25 பள்ளிகள்</option>
 <option value="50" selected>50 பள்ளிகள்</option>
@@ -5463,13 +5463,13 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <!-- Filter Bar -->
 <div class="grid-4" style="gap:10px; margin-bottom:12px; background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #e2e8f0;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">1. ஒன்றியம் (Block)</label>
+<label for="infraFilterBlock" class="form-label" style="font-size:0.76rem; font-weight:800;">1. ஒன்றியம் (Block)</label>
 <select id="infraFilterBlock" class="form-control" onchange="renderAdminInfraNeedsDashboard()">
 <option value="">அனைத்து 12 ஒன்றியங்கள் (All Blocks)</option>
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">2. நிர்வாகப் பிரிவு &amp; நிலை (Management / Level)</label>
+<label for="infraFilterMgmt" class="form-label" style="font-size:0.76rem; font-weight:800;">2. நிர்வாகப் பிரிவு &amp; நிலை (Management / Level)</label>
 <div style="display:flex; gap:6px;">
 <select id="infraFilterMgmt" class="form-control" onchange="renderAdminInfraNeedsDashboard()">
 <option value="">அனைத்து நிர்வாகம் (All)</option>
@@ -5485,7 +5485,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800; color:#c2410c;">3. தேவை வகை வடிகட்டி (Need Category)</label>
+<label for="infraFilterNeedType" class="form-label" style="font-size:0.76rem; font-weight:800; color:#c2410c;">3. தேவை வகை வடிகட்டி (Need Category)</label>
 <select id="infraFilterNeedType" class="form-control" onchange="renderAdminInfraNeedsDashboard()" style="font-weight:800; border-color:#fb923c; background:#fff7ed; color:#9a3412;">
 <option value="NEED_ONLY">🚨 உடனடித் தேவை உள்ள பள்ளிகள் மட்டும் (Schools with Needs)</option>
 <option value="ALL">📋 அனைத்து 282 பள்ளிகளும் (All 282 Schools)</option>
@@ -5499,7 +5499,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">4. பள்ளி / U.NO / குறிப்புரை தேடல்</label>
+<label for="infraFilterSearch" class="form-label" style="font-size:0.76rem; font-weight:800;">4. பள்ளி / U.NO / குறிப்புரை தேடல்</label>
 <input type="text" id="infraFilterSearch" class="form-control" placeholder="🔍 U.NO, UDISE, பள்ளி பெயர், குறிப்பு..." oninput="renderAdminInfraNeedsDashboard()">
 </div>
 </div>
@@ -5631,13 +5631,13 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <!-- Filters for Admin EBS School Table -->
 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:10px; margin-bottom:14px; background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">1. ஒன்றியம் (Block)</label>
+<label for="admEbsFilterBlock" class="form-label" style="font-size:0.76rem; font-weight:800;">1. ஒன்றியம் (Block)</label>
 <select id="admEbsFilterBlock" class="form-control" onchange="renderAdminEbsMasterDashboard()">
 <option value="">அனைத்து 12 ஒன்றியங்கள் (All Blocks)</option>
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">2. பள்ளி நிலை (Level)</label>
+<label for="admEbsFilterLevel" class="form-label" style="font-size:0.76rem; font-weight:800;">2. பள்ளி நிலை (Level)</label>
 <select id="admEbsFilterLevel" class="form-control" onchange="renderAdminEbsMasterDashboard()">
 <option value="">அனைத்தும் (HS &amp; HSS)</option>
 <option value="HSS">HSS (மேல்நிலைப்பள்ளிகள் - F1 to F4)</option>
@@ -5645,7 +5645,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">3. நிர்வாகம் (Management)</label>
+<label for="admEbsFilterMgmt" class="form-label" style="font-size:0.76rem; font-weight:800;">3. நிர்வாகம் (Management)</label>
 <select id="admEbsFilterMgmt" class="form-control" onchange="renderAdminEbsMasterDashboard()">
 <option value="">அனைத்து நிர்வாகம் (All)</option>
 <option value="1G">1G - அரசுப் பள்ளி (Govt)</option>
@@ -5654,7 +5654,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">4. நிறைவு &amp; பூட்டு நிலை (Status)</label>
+<label for="admEbsFilterStatus" class="form-label" style="font-size:0.76rem; font-weight:800;">4. நிறைவு &amp; பூட்டு நிலை (Status)</label>
 <select id="admEbsFilterStatus" class="form-control" onchange="renderAdminEbsMasterDashboard()">
 <option value="">அனைத்து நிலைகளும் (All Schools)</option>
 <option value="FORMS_INCOMPLETE">📝 படிவங்கள் 100% பூர்த்தி ஆகாதவை</option>
@@ -5663,7 +5663,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </select>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-size:0.76rem; font-weight:800;">5. பள்ளி தேடல் (U.NO / பெயர்)</label>
+<label for="admEbsFilterSearch" class="form-label" style="font-size:0.76rem; font-weight:800;">5. பள்ளி தேடல் (U.NO / பெயர்)</label>
 <input type="text" id="admEbsFilterSearch" class="form-control" placeholder="🔍 U.NO, UDISE, பள்ளிப் பெயர்..." oninput="renderAdminEbsMasterDashboard()">
 </div>
 </div>
@@ -5747,7 +5747,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <div style="background:linear-gradient(135deg,#eff6ff 0%,#f0fdfa 100%); border:2px solid #0f766e; border-left:6px solid #0f766e; border-radius:12px; padding:12px 16px; margin-bottom:14px;">
   <div style="display:grid; grid-template-columns:2fr 1.1fr 0.9fr auto; gap:10px; align-items:end;">
     <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label" style="font-size:0.78rem; font-weight:900; color:#0f766e;">🎯 தற்போது தேர்ந்தெடுக்கப்பட்டுள்ள தேர்வு (Active Examination)</label>
+      <label for="admDutyExamTypeSelect" class="form-label" style="font-size:0.78rem; font-weight:900; color:#0f766e;">🎯 தற்போது தேர்ந்தெடுக்கப்பட்டுள்ள தேர்வு (Active Examination)</label>
       <select id="admDutyExamTypeSelect" class="form-control" onchange="onExamDutyTypeChanged()" style="font-weight:900; border-color:#0f766e; background:#fff; color:#0f294a;">
         <option value="HSC2_2027">🎓 மேல்நிலை இரண்டாம் ஆண்டு (+2 / HSC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027 (91 மையங்கள்)</option>
         <option value="SSLC_2027">📗 பத்தாம் வகுப்பு (10th / SSLC) பொதுத்தேர்வு – மார்ச்/ஏப்ரல் 2027 (113 மையங்கள்)</option>
@@ -5766,11 +5766,11 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
       </select>
     </div>
     <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e3a8a;">முதன்மைக் கல்வி அலுவலர் ந.க.எண் (Proceedings Rc.No)</label>
+      <label for="admDutyRcNoInput" class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e3a8a;">முதன்மைக் கல்வி அலுவலர் ந.க.எண் (Proceedings Rc.No)</label>
       <input type="text" id="admDutyRcNoInput" class="form-control" value="ந.க.எண்: 2450/அ3/2026" oninput="saveExamDutyMetaConfig()" placeholder="எ.கா: ந.க.எண்: 2450/அ3/2026" style="font-weight:800;">
     </div>
     <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e3a8a;">ஆணை நாள் / தேர்வுக் காலம் (Date)</label>
+      <label for="admDutyOrderDateInput" class="form-label" style="font-size:0.76rem; font-weight:800; color:#1e3a8a;">ஆணை நாள் / தேர்வுக் காலம் (Date)</label>
       <input type="text" id="admDutyOrderDateInput" class="form-control" value="05.11.2026" oninput="saveExamDutyMetaConfig()" placeholder="DD.MM.YYYY" style="font-weight:800;">
     </div>
     <div style="display:flex; gap:6px;">
@@ -5780,7 +5780,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     </div>
   </div>
   <div id="admDutyCustomExamNameWrap" style="display:none; margin-top:10px;">
-    <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4c1d95;">சிறப்புத் தேர்வின் பெயர் (Custom Examination Title):</label>
+    <label for="admDutyCustomExamTitleInput" class="form-label" style="font-size:0.76rem; font-weight:900; color:#4c1d95;">சிறப்புத் தேர்வின் பெயர் (Custom Examination Title):</label>
     <input type="text" id="admDutyCustomExamTitleInput" class="form-control" value="சிறப்புத் திறனறித் தேர்வு – 2026-27" oninput="saveExamDutyMetaConfig(); renderExamDutyAllotmentDashboard();" style="font-weight:900;">
   </div>
   <!-- LIVE PER-EXAM CENTRES & INVIGILATOR/OFFICE STAFF QUOTA BAR -->
@@ -5830,13 +5830,13 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
       <div style="font-size:0.76rem; font-weight:900; color:#0f294a; margin-bottom:6px;">🏫 முறை 1: மாவட்டப் பள்ளிகளிலிருந்து தேர்வு செய்து இணை (அல்லது கீழே புதிய மையப் பெயரை உள்ளிடுக)</div>
       <div style="display:grid; grid-template-columns:0.9fr 1.4fr; gap:8px; margin-bottom:8px;">
         <div>
-          <label class="form-label" style="font-size:0.71rem; font-weight:800;">ஒன்றியம் வடிகட்டி (Block)</label>
+          <label for="admDutyAddCenBlockFilter" class="form-label" style="font-size:0.71rem; font-weight:800;">ஒன்றியம் வடிகட்டி (Block)</label>
           <select id="admDutyAddCenBlockFilter" class="form-control" onchange="populateDutyNewCentreSchoolSelect()" style="font-size:0.76rem; font-weight:800;">
             <option value="">அனைத்து 12 ஒன்றியங்கள்</option>
           </select>
         </div>
         <div>
-          <label class="form-label" style="font-size:0.71rem; font-weight:800;">பள்ளியைத் தேர்ந்தெடு (Select School to Autofill)</label>
+          <label for="admDutyAddCenSchoolSelect" class="form-label" style="font-size:0.71rem; font-weight:800;">பள்ளியைத் தேர்ந்தெடு (Select School to Autofill)</label>
           <select id="admDutyAddCenSchoolSelect" class="form-control" onchange="onDutyAddCentreSchoolPicked()" style="font-size:0.76rem; font-weight:800;">
             <option value="">-- பள்ளியைத் தேர்ந்தெடுக்கவும் (அல்லது கீழே நேரடியாக உள்ளிடவும்) --</option>
           </select>
@@ -5845,38 +5845,38 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 
       <div style="display:grid; grid-template-columns:0.7fr 1.5fr 0.9fr; gap:8px; margin-bottom:8px;">
         <div>
-          <label class="form-label" style="font-size:0.71rem; font-weight:900; color:#b45309;">மைய எண் (Centre No) <span class="required">*</span></label>
+          <label for="admDutyAddCenCodeInput" class="form-label" style="font-size:0.71rem; font-weight:900; color:#b45309;">மைய எண் (Centre No) <span class="required">*</span></label>
           <input type="text" id="admDutyAddCenCodeInput" class="form-control" placeholder="எ.கா: 3001" style="font-size:0.80rem; font-weight:900; border-color:#d97706;">
         </div>
         <div>
-          <label class="form-label" style="font-size:0.71rem; font-weight:900; color:#0f294a;">தேர்வு மையத்தின் பெயர் (Centre Name) <span class="required">*</span></label>
+          <label for="admDutyAddCenNameInput" class="form-label" style="font-size:0.71rem; font-weight:900; color:#0f294a;">தேர்வு மையத்தின் பெயர் (Centre Name) <span class="required">*</span></label>
           <input type="text" id="admDutyAddCenNameInput" class="form-control" placeholder="பள்ளி / கல்லூரி / தேர்வு மையப் பெயர்" style="font-size:0.80rem; font-weight:800;">
         </div>
         <div>
-          <label class="form-label" style="font-size:0.71rem; font-weight:800;">ஒன்றியம் (Block)</label>
+          <label for="admDutyAddCenBlockInput" class="form-label" style="font-size:0.71rem; font-weight:800;">ஒன்றியம் (Block)</label>
           <input type="text" id="admDutyAddCenBlockInput" class="form-control" placeholder="எ.கா: 12 Sivagangai" style="font-size:0.78rem; font-weight:800;">
         </div>
       </div>
 
       <div style="display:grid; grid-template-columns:repeat(5, 1fr) auto; gap:6px; align-items:end;">
         <div>
-          <label class="form-label" style="font-size:0.69rem; font-weight:800; color:#1e40af;">ஆண்கள் (Boys)</label>
+          <label for="admDutyAddCenBoysInput" class="form-label" style="font-size:0.69rem; font-weight:800; color:#1e40af;">ஆண்கள் (Boys)</label>
           <input type="number" id="admDutyAddCenBoysInput" class="form-control" min="0" value="60" oninput="onDutyAddCentreBoysGirlsInput()" style="font-size:0.78rem; font-weight:800; text-align:center;">
         </div>
         <div>
-          <label class="form-label" style="font-size:0.69rem; font-weight:800; color:#9d174d;">பெண்கள் (Girls)</label>
+          <label for="admDutyAddCenGirlsInput" class="form-label" style="font-size:0.69rem; font-weight:800; color:#9d174d;">பெண்கள் (Girls)</label>
           <input type="number" id="admDutyAddCenGirlsInput" class="form-control" min="0" value="60" oninput="onDutyAddCentreBoysGirlsInput()" style="font-size:0.78rem; font-weight:800; text-align:center;">
         </div>
         <div>
-          <label class="form-label" style="font-size:0.69rem; font-weight:900; color:#0f294a;">மொத்தம் (Candidates)</label>
+          <label for="admDutyAddCenStrengthInput" class="form-label" style="font-size:0.69rem; font-weight:900; color:#0f294a;">மொத்தம் (Candidates)</label>
           <input type="number" id="admDutyAddCenStrengthInput" class="form-control" min="1" value="120" style="font-size:0.78rem; font-weight:900; text-align:center; background:#f8fafc;">
         </div>
         <div>
-          <label class="form-label" style="font-size:0.69rem; font-weight:900; color:#4c1d95;">கண்காணிப்பாளர் (HI)</label>
+          <label for="admDutyAddCenHiQuota" class="form-label" style="font-size:0.69rem; font-weight:900; color:#4c1d95;">கண்காணிப்பாளர் (HI)</label>
           <input type="number" id="admDutyAddCenHiQuota" class="form-control" min="1" value="6" style="font-size:0.78rem; font-weight:900; text-align:center; border-color:#7c3aed;">
         </div>
         <div>
-          <label class="form-label" style="font-size:0.69rem; font-weight:900; color:#92400e;">அலுவலகப் பணி (OS)</label>
+          <label for="admDutyAddCenOsQuota" class="form-label" style="font-size:0.69rem; font-weight:900; color:#92400e;">அலுவலகப் பணி (OS)</label>
           <input type="number" id="admDutyAddCenOsQuota" class="form-control" min="1" value="3" style="font-size:0.78rem; font-weight:900; text-align:center; border-color:#d97706;">
         </div>
         <div>
@@ -5937,7 +5937,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     </div>
     <div style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:8px; margin-bottom:8px;">
       <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#4c1d95;">1. தேர்வுப் பொறுப்பு (Select Duty Role) <span class="required">*</span></label>
+        <label for="admDutyManualRole" class="form-label" style="font-size:0.74rem; font-weight:900; color:#4c1d95;">1. தேர்வுப் பொறுப்பு (Select Duty Role) <span class="required">*</span></label>
         <select id="admDutyManualRole" class="form-control" onchange="onExamDutyManualRoleChange()" style="font-size:0.80rem; font-weight:900; border-color:#7c3aed; color:#4c1d95;">
           <option value="CS">1. முதன்மை கண்காணிப்பாளர் (Chief Superintendent)</option>
           <option value="DO">2. துறை அலுவலர் (Departmental Officer)</option>
@@ -5952,7 +5952,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         </select>
       </div>
       <div class="form-group" style="margin-bottom:0;" id="admDutyManualOsSubRoleWrap">
-        <label class="form-label" style="font-size:0.74rem; font-weight:800; color:#b45309;">பணி உட்பிரிவு / குறிப்பு (Sub-Role / Note)</label>
+        <label for="admDutyManualSubRole" class="form-label" style="font-size:0.74rem; font-weight:800; color:#b45309;">பணி உட்பிரிவு / குறிப்பு (Sub-Role / Note)</label>
         <select id="admDutyManualSubRole" class="form-control" style="font-size:0.78rem; font-weight:800;">
           <option value="">— பொதுப் பொறுப்பு (Standard) —</option>
           <option value="தேர்வு மைய எழுத்தர் (Clerk / Jr.Asst)">தேர்வு மைய எழுத்தர் (Clerk / Jr.Asst)</option>
@@ -5968,11 +5968,11 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     </div>
     <div style="display:grid; grid-template-columns:1.25fr 0.75fr; gap:8px; margin-bottom:8px;">
       <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#0f294a;">2. ஒதுக்கப்படும் தேர்வு மையம் / வழித்தடம் / குழு (Target Location) <span class="required">*</span></label>
+        <label for="admDutyManualCentreSelect" class="form-label" style="font-size:0.74rem; font-weight:900; color:#0f294a;">2. ஒதுக்கப்படும் தேர்வு மையம் / வழித்தடம் / குழு (Target Location) <span class="required">*</span></label>
         <select id="admDutyManualCentreSelect" class="form-control" onchange="onExamDutyManualCentreSelect()" style="font-size:0.78rem; font-weight:800;"></select>
       </div>
       <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label" style="font-size:0.74rem; font-weight:800;">அல்லது மையம்/வழித்தடம் தட்டச்சு செய்க</label>
+        <label for="admDutyManualCentreCustom" class="form-label" style="font-size:0.74rem; font-weight:800;">அல்லது மையம்/வழித்தடம் தட்டச்சு செய்க</label>
         <input type="text" id="admDutyManualCentreCustom" class="form-control" placeholder="எ.கா: Route 01 / 208001 - ..." style="font-size:0.78rem; font-weight:800;">
       </div>
     </div>
@@ -5992,7 +5992,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
       </div>
     </div>
     <div class="form-group" style="margin-bottom:10px;">
-      <label class="form-label" style="font-size:0.74rem; font-weight:900; color:#1e3a8a;">3. பணியாளரைத் தேர்ந்தெடு (Select Officer / Teacher / Office Staff — <span id="admDutyManualMatchedStaffCount">0</span> பேர்):</label>
+      <label for="admDutyManualStaffSelect" class="form-label" style="font-size:0.74rem; font-weight:900; color:#1e3a8a;">3. பணியாளரைத் தேர்ந்தெடு (Select Officer / Teacher / Office Staff — <span id="admDutyManualMatchedStaffCount">0</span> பேர்):</label>
       <select id="admDutyManualStaffSelect" class="form-control" style="font-size:0.80rem; font-weight:800; border-color:#2563eb; background:#fff;"></select>
     </div>
     <div style="display:flex; gap:8px;">
@@ -6010,7 +6010,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:12px;">
   <div style="display:grid; grid-template-columns:1.2fr 1fr 1.2fr 1.4fr; gap:8px; align-items:end;">
     <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label" style="font-size:0.74rem; font-weight:800;">1. பொறுப்பு வகை (Role Filter)</label>
+      <label for="admDutyTableFilterRole" class="form-label" style="font-size:0.74rem; font-weight:800;">1. பொறுப்பு வகை (Role Filter)</label>
       <select id="admDutyTableFilterRole" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
         <option value="">அனைத்து 10 பொறுப்புகளும் (All Roles)</option>
         <option value="CS">1. முதன்மை கண்காணிப்பாளர் (CS)</option>
@@ -6026,19 +6026,19 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
       </select>
     </div>
     <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label" style="font-size:0.74rem; font-weight:800;">2. ஒன்றியம் (Block)</label>
+      <label for="admDutyTableFilterBlock" class="form-label" style="font-size:0.74rem; font-weight:800;">2. ஒன்றியம் (Block)</label>
       <select id="admDutyTableFilterBlock" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
         <option value="">அனைத்து 12 ஒன்றியங்கள்</option>
       </select>
     </div>
     <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label" style="font-size:0.74rem; font-weight:800;">3. தேர்வு மையம் / வழித்தடம் (Centre/Route)</label>
+      <label for="admDutyTableFilterCentre" class="form-label" style="font-size:0.74rem; font-weight:800;">3. தேர்வு மையம் / வழித்தடம் (Centre/Route)</label>
       <select id="admDutyTableFilterCentre" class="form-control" onchange="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
         <option value="">அனைத்து மையங்கள் &amp; வழித்தடங்கள்</option>
       </select>
     </div>
     <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label" style="font-size:0.74rem; font-weight:800;">4. தேடல் (EMIS ID / பெயர் / பள்ளி / மையம்)</label>
+      <label for="admDutyTableFilterSearch" class="form-label" style="font-size:0.74rem; font-weight:800;">4. தேடல் (EMIS ID / பெயர் / பள்ளி / மையம்)</label>
       <input type="text" id="admDutyTableFilterSearch" class="form-control" placeholder="🔍 EMIS ID, பெயர், பதவி, பள்ளி, மையம் தேடுக..." oninput="renderExamDutyAppointmentsTable()" style="font-size:0.78rem; font-weight:800;">
     </div>
   </div>
@@ -6142,7 +6142,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
   <div style="background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:14px;">
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:10px; align-items:end;">
       <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label" style="font-size:0.75rem; font-weight:800;">1. மாற்றத்தின் பிரிவு (Category)</label>
+        <label for="admAuditFilterCategory" class="form-label" style="font-size:0.75rem; font-weight:800;">1. மாற்றத்தின் பிரிவு (Category)</label>
         <select id="admAuditFilterCategory" class="form-control" onchange="renderAdminAuditTrailDashboard()" style="font-size:0.80rem; font-weight:800;">
           <option value="">அனைத்துப் பிரிவுகளும் (All Categories)</option>
           <option value="EXAM_DUTY">🎯 தேர்வுப் பணி நியமனம் (Exam Duty)</option>
@@ -6152,13 +6152,13 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         </select>
       </div>
       <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label" style="font-size:0.75rem; font-weight:800;">2. பள்ளி வாரியாக வடிகட்டு (School U.No)</label>
+        <label for="admAuditFilterSchool" class="form-label" style="font-size:0.75rem; font-weight:800;">2. பள்ளி வாரியாக வடிகட்டு (School U.No)</label>
         <select id="admAuditFilterSchool" class="form-control" onchange="renderAdminAuditTrailDashboard()" style="font-size:0.80rem; font-weight:800;">
           <option value="">அனைத்துப் பள்ளிகளும் (All Schools)</option>
         </select>
       </div>
       <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label" style="font-size:0.75rem; font-weight:800;">3. மாற்றியவர் (Actor / Role)</label>
+        <label for="admAuditFilterActor" class="form-label" style="font-size:0.75rem; font-weight:800;">3. மாற்றியவர் (Actor / Role)</label>
         <select id="admAuditFilterActor" class="form-control" onchange="renderAdminAuditTrailDashboard()" style="font-size:0.80rem; font-weight:800;">
           <option value="">அனைவரும் (Admin &amp; HM)</option>
           <option value="ADMIN">🛡️ மாவட்ட நிர்வாகி (CEO Admin)</option>
@@ -6166,7 +6166,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         </select>
       </div>
       <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label" style="font-size:0.75rem; font-weight:800;">4. உடனடித் தேடல் (EMIS ID / பெயர் / விவரம்)</label>
+        <label for="admAuditFilterSearch" class="form-label" style="font-size:0.75rem; font-weight:800;">4. உடனடித் தேடல் (EMIS ID / பெயர் / விவரம்)</label>
         <input type="text" id="admAuditFilterSearch" class="form-control" oninput="renderAdminAuditTrailDashboard()" placeholder="EMIS எண், பெயர், பள்ளி, மையம் தேடுக..." style="font-size:0.80rem; font-weight:800;">
       </div>
     </div>
@@ -6254,23 +6254,23 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     <!-- Row 1: Name (Tamil & English), Designation/Section, Mobile, Email -->
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(205px, 1fr)); gap:12px; margin-bottom:12px;">
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">1. பணியாளர் / அலுவலர் பெயர் (தமிழில்) *</label>
+        <label for="ouNameTaInput" class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">1. பணியாளர் / அலுவலர் பெயர் (தமிழில்) *</label>
         <input type="text" id="ouNameTaInput" class="form-control" placeholder="எ.கா: திரு. க. பூவலிங்கம்" style="font-weight:800; border-color:#c084fc;">
       </div>
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">2. பெயர் (ஆங்கிலத்தில் - English) *</label>
+        <label for="ouNameEnInput" class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">2. பெயர் (ஆங்கிலத்தில் - English) *</label>
         <input type="text" id="ouNameEnInput" class="form-control" placeholder="e.g. POOVALINGAM K" style="font-weight:800; border-color:#c084fc;">
       </div>
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">3. பதவி &amp; பிரிவு (Designation &amp; Section) *</label>
+        <label for="ouSectionTitleInput" class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">3. பதவி &amp; பிரிவு (Designation &amp; Section) *</label>
         <input type="text" id="ouSectionTitleInput" class="form-control" placeholder="எ.கா: DEO (இடைநிலை) / அ1 பிரிவு / தேர்வுப் பிரிவு" style="font-weight:800; border-color:#c084fc;">
       </div>
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">4. கைபேசி எண் (Mobile - 10 Digits)</label>
+        <label for="ouMobileInput" class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">4. கைபேசி எண் (Mobile - 10 Digits)</label>
         <input type="text" id="ouMobileInput" class="form-control" maxlength="10" placeholder="9876543210" style="font-weight:800; border-color:#c084fc;">
       </div>
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">5. மின்னஞ்சல் (Official Email)</label>
+        <label for="ouEmailInput" class="form-label" style="font-size:0.76rem; font-weight:900; color:#4a044e;">5. மின்னஞ்சல் (Official Email)</label>
         <input type="email" id="ouEmailInput" class="form-control" placeholder="officer@tnschools.gov.in" style="font-weight:800; border-color:#c084fc;">
       </div>
     </div>
@@ -6278,21 +6278,21 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     <!-- Row 2: Username, Password, 6-Digit PIN & Jurisdiction Scope -->
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(185px, 1fr)); gap:12px; margin-bottom:14px; background:#f8fafc; border:1.5px solid #cbd5e1; border-radius:10px; padding:12px;">
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e3a8a;">🔑 பயனர் பெயர் (Username / Login ID) *</label>
+        <label for="ouUsernameInput" class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e3a8a;">🔑 பயனர் பெயர் (Username / Login ID) *</label>
         <input type="text" id="ouUsernameInput" class="form-control" placeholder="e.g. deo_svg / pa_hss / clerk_a1" style="font-weight:900; color:#1e3a8a; border-color:#3b82f6; background:#ffffff;">
       </div>
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e3a8a;">🔒 கடவுச்சொல் (Password) *</label>
+        <label for="ouPasswordInput" class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e3a8a;">🔒 கடவுச்சொல் (Password) *</label>
         <div style="display:flex; gap:4px;">
           <input type="text" id="ouPasswordInput" class="form-control" placeholder="e.g. DeoSvg@2026" style="font-weight:900; color:#0f766e; border-color:#3b82f6; background:#ffffff;">
         </div>
       </div>
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e3a8a;">🔢 6-இலக்க PIN (Quick Login PIN)</label>
+        <label for="ouPinInput" class="form-label" style="font-size:0.76rem; font-weight:900; color:#1e3a8a;">🔢 6-இலக்க PIN (Quick Login PIN)</label>
         <input type="text" id="ouPinInput" class="form-control" maxlength="6" placeholder="202601" style="font-weight:900; color:#7e22ce; border-color:#3b82f6; background:#ffffff; text-align:center;">
       </div>
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#0f766e;">🗺️ ஒன்றிய வரம்பு (Allowed Block Scope)</label>
+        <label for="ouScopeBlockSelect" class="form-label" style="font-size:0.76rem; font-weight:900; color:#0f766e;">🗺️ ஒன்றிய வரம்பு (Allowed Block Scope)</label>
         <select id="ouScopeBlockSelect" class="form-control" style="font-weight:800; border-color:#0d9488;">
           <option value="ALL">அனைத்து 12 ஒன்றியங்கள் (All Blocks)</option>
           <option value="EDU_SVG">சிவகங்கை கல்வி மாவட்டம் (Sivagangai, Kalayarkoil, Manamadurai, Thiruppuvanam, Ilayangudi)</option>
@@ -6313,7 +6313,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         </select>
       </div>
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#0f766e;">🏛️ நிர்வாகம் &amp; பள்ளி நிலை வரம்பு</label>
+        <label for="ouScopeMgmtSelect" class="form-label" style="font-size:0.76rem; font-weight:900; color:#0f766e;">🏛️ நிர்வாகம் &amp; பள்ளி நிலை வரம்பு</label>
         <div style="display:flex; gap:6px;">
           <select id="ouScopeMgmtSelect" class="form-control" style="font-weight:800; border-color:#0d9488; padding:6px;">
             <option value="ALL">அனைத்தும் (1G/2A/3P)</option>
@@ -6330,7 +6330,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
         </div>
       </div>
       <div>
-        <label class="form-label" style="font-size:0.76rem; font-weight:900; color:#15803d;">⚡ கணக்கு நிலை (Status)</label>
+        <label for="ouStatusSelect" class="form-label" style="font-size:0.76rem; font-weight:900; color:#15803d;">⚡ கணக்கு நிலை (Status)</label>
         <select id="ouStatusSelect" class="form-control" style="font-weight:900; border-color:#16a34a; color:#15803d;">
           <option value="ACTIVE">🟢 ACTIVE (செயலில் உள்ளது)</option>
           <option value="SUSPENDED">🔴 SUSPENDED (நிறுத்தி வைக்கப்பட்டுள்ளது)</option>
@@ -6605,7 +6605,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.73</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.74</strong>
 </p>
 </footer>
 </div>
@@ -6644,18 +6644,18 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 </div>
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800; color:#0f294a;">1. Firebase Realtime Database URL (<span style="color:#dc2626;">*</span>):</label>
+<label for="cfgFirebaseDbUrl" class="form-label" style="font-weight:800; color:#0f294a;">1. Firebase Realtime Database URL (<span style="color:#dc2626;">*</span>):</label>
 <input type="url" id="cfgFirebaseDbUrl" class="form-control" value="https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app" placeholder="https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app">
 <div style="font-size:0.73rem; color:#64748b; margin-top:3px;">Firebase Console ➔ Realtime Database ➔ Data பிரிவில் உள்ள URL</div>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800; color:#0f294a;">2. Firebase Web API Key / Auth Secret (விருப்பத்தேர்வு):</label>
+<label for="cfgFirebaseApiKey" class="form-label" style="font-weight:800; color:#0f294a;">2. Firebase Web API Key / Auth Secret (விருப்பத்தேர்வு):</label>
 <input type="text" id="cfgFirebaseApiKey" class="form-control" placeholder="AIzaSy... (அல்லது பொது விதிகளுக்கு காலியாக விடலாம்)">
 <div style="font-size:0.73rem; color:#64748b; margin-top:3px;">Project Settings ➔ General ➔ Web API Key</div>
 </div>
 </div>
 <div class="form-group" style="margin-bottom:12px; background:#f8fafc; border:1.5px dashed #94a3b8; border-radius:8px; padding:10px 12px;">
-<label class="form-label" style="font-weight:800; color:#1e3a8a;">💡 எளிய முறை: Firebase Console-லிருந்து <code>firebaseConfig</code> குறியீட்டை இங்கே ஒட்டினால் (Paste) தானாகவே மேலே நிரப்பப்படும்:</label>
+<label for="cfgFirebaseRawJson" class="form-label" style="font-weight:800; color:#1e3a8a;">💡 எளிய முறை: Firebase Console-லிருந்து <code>firebaseConfig</code> குறியீட்டை இங்கே ஒட்டினால் (Paste) தானாகவே மேலே நிரப்பப்படும்:</label>
 <textarea id="cfgFirebaseRawJson" class="form-control" rows="2" placeholder="const firebaseConfig = { apiKey: &quot;AIza...&quot;, databaseURL: &quot;https://ceosvg-portal-default-rtdb.asia-southeast1.firebasedatabase.app&quot;, projectId: &quot;ceosvg-portal&quot; };" oninput="autoExtractFirebaseConfigFromText(this.value)" style="font-family:monospace; font-size:0.78rem;"></textarea>
 </div>
 <div style="display:flex; flex-direction:column; gap:8px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:8px; padding:10px 14px; margin-bottom:14px;">
@@ -6728,7 +6728,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <div id="cfD1MigrationPanel" style="width:100%; margin:12px 0; background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:2px solid #0f766e; border-left:5px solid #0f766e; border-radius:10px; padding:14px 16px; box-sizing:border-box;">
   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
     <div>
-      <div style="font-size:0.94rem; font-weight:900; color:#0f766e;">🗄️ Cloudflare D1 Database (<code>ceosvg-portal-db</code>) — 0-Download D1 Primary &amp; Silent FB Backup (v9.73)</div>
+      <div style="font-size:0.94rem; font-weight:900; color:#0f766e;">🗄️ Cloudflare D1 Database (<code>ceosvg-portal-db</code>) — 0-Download D1 Primary &amp; Silent FB Backup (v9.74)</div>
       <div style="font-size:0.75rem; color:#334155; margin-top:2px;">
         <strong>0% பாதிப்பு:</strong> Firebase தொடர்ந்து முதன்மைத் தரவுத்தளமாகவே இயங்கும். 282 பள்ளிகளின் தரவுகளும் Cloudflare D1 (<code>CEOSVG_D1</code>) தரவுத்தளத்திற்குப் பாதுகாப்பாக நகலெடுக்கப்பட்டு எண்ணிக்கை சரிபார்க்கப்படும்.
       </div>
@@ -6975,12 +6975,12 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800; color:#0f294a;">1. முதன்மை Google Sheet ID (Master DB &amp; OTP Sheet ID):</label>
+<label for="cfgMasterSheetId" class="form-label" style="font-weight:800; color:#0f294a;">1. முதன்மை Google Sheet ID (Master DB &amp; OTP Sheet ID):</label>
 <input type="text" id="cfgMasterSheetId" class="form-control" value="1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ" placeholder="1ZOJdxEqJbsxb5pRnkWOgczB0iWBLIo3ZYX0jXnnesmQ">
 <div style="font-size:0.72rem; color:#64748b; margin-top:2px;">Google Sheet URL-ல் <code>/d/</code> மற்றும் <code>/edit</code> இடையே உள்ள குறியீடு</div>
 </div>
 <div class="form-group" style="margin-bottom:0;">
-<label class="form-label" style="font-weight:800; color:#0f294a; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+<label for="cfgTeachersSheetId" class="form-label" style="font-weight:800; color:#0f294a; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
 <span>2. தனி ஆசிரியர் Google Sheet ID (<code>CEO_Sivagangai_Teachers_Master_DB</code> - 7,081 Staff):</span>
 <a id="cfgTeachersSheetOpenLink" href="https://docs.google.com/spreadsheets/d/1CNMep10aG9GjVHkqXZZIazUEeS9V-TDs8LAyLey6C7A/edit" target="_blank" rel="noopener" style="font-size:0.72rem; color:#15803d; font-weight:900; text-decoration:underline;">📂 Teachers Sheet திறக்க ↗</a>
 </label>
@@ -6994,7 +6994,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 </div>
 <div class="form-group" style="margin-bottom:12px;">
-<label class="form-label" style="font-weight:800; color:#1e3a8a;">3. Google Apps Script Web App URL (<code>ceosvgweb@gmail.com</code>-ல் Deploy செய்த <code>/exec</code> இணைப்பு):</label>
+<label for="cfgAppsScriptUrl" class="form-label" style="font-weight:800; color:#1e3a8a;">3. Google Apps Script Web App URL (<code>ceosvgweb@gmail.com</code>-ல் Deploy செய்த <code>/exec</code> இணைப்பு):</label>
 <input type="url" id="cfgAppsScriptUrl" class="form-control" value="https://script.google.com/macros/s/AKfycbzuu9CZez1T8Sam8ofLAJHIF8Jp-jgkgd3ErxuhiD9OtiFrSd-RbInw9393pWaqKPFC/exec" placeholder="https://script.google.com/macros/s/.../exec">
 <div style="font-size:0.74rem; color:#0369a1; font-weight:700; margin-top:3px;">
 💡 கீழேயுள்ள <code>Code.gs</code> நிரலை உங்கள் Google Sheet-ல் (<strong>Extensions ➔ Apps Script</strong>) ஒட்டி, <strong>Deploy ➔ New deployment ➔ Web app</strong> (Execute as: <code>Me (ceosvgweb@gmail.com)</code>, Who has access: <code>Anyone</code>) கொடுத்துக் கிடைக்கும் Web App URL-ஐ இங்கே ஒட்டிச் சேமிக்கவும்.
@@ -7016,7 +7016,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
   </div>
   <div style="display:grid; grid-template-columns:1.2fr 1.5fr auto; gap:8px; align-items:end;">
     <div>
-      <label class="form-label" style="font-size:0.73rem; font-weight:800; color:#0f294a;">1. Token Proxy வழித்தட முறை (Proxy Route Mode):</label>
+      <label for="cfgWaProxyRouteMode" class="form-label" style="font-size:0.73rem; font-weight:800; color:#0f294a;">1. Token Proxy வழித்தட முறை (Proxy Route Mode):</label>
       <select id="cfgWaProxyRouteMode" class="form-control" style="font-size:0.76rem; font-weight:800;">
         <option value="AUTO_SERVER_PROXY">🛡️ தானியங்கி Server Proxy (Cloudflare Worker ➔ Apps Script)</option>
         <option value="APPS_SCRIPT_ONLY">📊 Google Apps Script Web App Proxy மட்டும் (ScriptProperties)</option>
@@ -7024,7 +7024,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
       </select>
     </div>
     <div>
-      <label class="form-label" style="font-size:0.73rem; font-weight:800; color:#0f294a;">2. Cloudflare Worker Token Proxy URL (விருப்பத்தேர்வு):</label>
+      <label for="cfgWaCloudflareWorkerUrl" class="form-label" style="font-size:0.73rem; font-weight:800; color:#0f294a;">2. Cloudflare Worker Token Proxy URL (விருப்பத்தேர்வு):</label>
       <input type="url" id="cfgWaCloudflareWorkerUrl" class="form-control" style="font-size:0.76rem; font-family:monospace;" placeholder="https://ceosvg-wa-proxy.<subdomain>.workers.dev">
     </div>
     <div style="display:flex; gap:5px;">
@@ -7048,7 +7048,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:10px; margin-bottom:8px;">
 <div>
-<label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Meta Access Token (🔒 Encrypted Vault):</label>
+<label for="cfgWaAccessToken" class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Meta Access Token (🔒 Encrypted Vault):</label>
 <div class="pw-field-wrap">
 <input type="password" id="cfgWaAccessToken" class="form-control" style="font-size:0.76rem; font-family:monospace;" placeholder="🔒 ENC_V4 Vault Protected (மாற்றினால் மட்டும் உள்ளிடவும்)..." oninput="renderCeosvgAppsScriptCodePreview()">
 <button type="button" class="pw-eye-toggle-btn" onclick="togglePasswordVisibilityById('cfgWaAccessToken', this)" title="Token பார்க்க / மறைக்க">
@@ -7057,15 +7057,15 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 </div>
 <div>
-<label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Phone Number ID (+91 45752 40408):</label>
+<label for="cfgWaPhoneNumberId" class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Phone Number ID (+91 45752 40408):</label>
 <input type="text" id="cfgWaPhoneNumberId" class="form-control" style="font-size:0.78rem; font-family:monospace;" value="1307132059159317" placeholder="1307132059159317" oninput="renderCeosvgAppsScriptCodePreview()">
 </div>
 <div>
-<label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Business ID (WABA):</label>
+<label for="cfgWaAltPhoneNumberId" class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Business ID (WABA):</label>
 <input type="text" id="cfgWaAltPhoneNumberId" class="form-control" style="font-size:0.76rem; font-family:monospace;" value="2186573131933924" title="Meta Business ID (WABA): 2186573131933924" oninput="renderCeosvgAppsScriptCodePreview()">
 </div>
 <div>
-<label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Template &amp; Support ({{2}}):</label>
+<label for="cfgWaTemplateName" class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">Template &amp; Support ({{2}}):</label>
 <div style="display:flex; gap:4px;">
 <input type="text" id="cfgWaTemplateName" class="form-control" style="font-size:0.76rem; font-family:monospace;" value="ceosivagangai" placeholder="ceosivagangai" title="Meta Approved Template Name (ceosivagangai)" oninput="renderCeosvgAppsScriptCodePreview()">
 <input type="text" id="cfgWaSupportContact" class="form-control" style="font-size:0.74rem; font-family:monospace; width:108px;" value="04575-240408" placeholder="04575-240408" title="Body Parameter {{2}}: Support Contact Number" oninput="renderCeosvgAppsScriptCodePreview()">
@@ -7075,7 +7075,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:8px; align-items:end;">
 <div>
-<label class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">மாற்று WhatsApp Gateway Webhook URL (விருப்பத்தேர்வு - Fast2SMS / UltraMsg / CallMeBot / TextMeBot):</label>
+<label for="cfgWaGatewayUrl" class="form-label" style="font-size:0.74rem; font-weight:800; color:#14532d;">மாற்று WhatsApp Gateway Webhook URL (விருப்பத்தேர்வு - Fast2SMS / UltraMsg / CallMeBot / TextMeBot):</label>
 <input type="url" id="cfgWaGatewayUrl" class="form-control" style="font-size:0.76rem;" placeholder="https://api.callmebot.com/whatsapp.php?apikey=... (அல்லது Custom Webhook)" oninput="renderCeosvgAppsScriptCodePreview()">
 </div>
 <div style="background:#ffffff; border:1px solid #86efac; border-radius:8px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center; gap:6px;">
@@ -7174,7 +7174,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; margin-bottom:14px; font-size:0.85rem;" id="delReqStaffSummaryBox"></div>
 <input type="hidden" id="delReqSchoolUNo" value="">
 <div class="form-group">
-<label class="form-label">நீக்கம் / மாறுதலுக்கான முதன்மைக் காரணம் (Reason Category) <span class="required">*</span></label>
+<label for="delReqReasonCategory" class="form-label">நீக்கம் / மாறுதலுக்கான முதன்மைக் காரணம் (Reason Category) <span class="required">*</span></label>
 <select id="delReqReasonCategory" class="form-control" onchange="onDelReqCategoryChange()" required style="font-weight:800;">
 <option value="">-- காரணத்தைத் தேர்ந்தெடுக்கவும் --</option>
 <option value="மாறுதல் (Transfer to another School)">1. மாறுதல் (Transfer to another School / District)</option>
@@ -7188,7 +7188,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </select>
 </div>
 <div class="form-group" id="delReqTargetSchoolWrap" style="display:none; background:#eff6ff; border:1.5px solid #93c5fd; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
-<label class="form-label" style="color:#1e40af; font-weight:900;">🏫 மாறுதல் / பணிமாற்றம் சென்ற பள்ளி (Target School in Sivagangai District / பிற மாவட்டம்)</label>
+<label for="delReqTargetSchoolUNo" class="form-label" style="color:#1e40af; font-weight:900;">🏫 மாறுதல் / பணிமாற்றம் சென்ற பள்ளி (Target School in Sivagangai District / பிற மாவட்டம்)</label>
 <select id="delReqTargetSchoolUNo" class="form-control" onchange="onDelReqTargetSchoolChange()" style="font-weight:800; border-color:#2563eb;">
 <option value="">-- மாறுதல் சென்ற பள்ளியைத் தேர்ந்தெடுக்கவும் (அல்லது பிற மாவட்டம்) --</option>
 </select>
@@ -7197,7 +7197,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 </div>
 <div class="form-group">
-<label class="form-label">விரிவான காரணம் / ஆணை எண் &amp; நாள் / மாறுதல் சென்ற பள்ளி விவரம் <span class="required">*</span></label>
+<label for="delReqReasonDetail" class="form-label">விரிவான காரணம் / ஆணை எண் &amp; நாள் / மாறுதல் சென்ற பள்ளி விவரம் <span class="required">*</span></label>
 <textarea id="delReqReasonDetail" class="form-control" rows="3" placeholder="எ.கா: முதன்மைக் கல்வி அலுவலர் செயல்முறைகள் ந.க.எண்... நாள்...ன்படி அரசு மேல்நிலைப்பள்ளி ...க்கு மாறுதல் / 31.05.2026 அன்று பணி ஓய்வு..." required></textarea>
 </div>
 <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
@@ -7280,34 +7280,34 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">ஆசிரியர் பெயர் (Staff Name) <span class="required">*</span></label>
+<label for="admEditStaffName" class="form-label">ஆசிரியர் பெயர் (Staff Name) <span class="required">*</span></label>
 <input type="text" id="admEditStaffName" class="form-control" required>
 </div>
 <div class="form-group">
-<label class="form-label">பாலினம் (Gender) <span class="required">*</span></label>
+<label for="admEditStaffGender" class="form-label">பாலினம் (Gender) <span class="required">*</span></label>
 <select id="admEditStaffGender" class="form-control" required>
 <option value="Male">Male (ஆண்)</option>
 <option value="Female">Female (பெண்)</option>
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">பிறந்த தேதி (Date of Birth)</label>
+<label for="admEditStaffDob" class="form-label">பிறந்த தேதி (Date of Birth)</label>
 <input type="date" id="admEditStaffDob" class="form-control">
 </div>
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">பதவி (Designation) <span class="required">*</span></label>
+<label for="admEditStaffDesig" class="form-label">பதவி (Designation) <span class="required">*</span></label>
 <input type="text" id="admEditStaffDesig" class="form-control" list="admEditDesigDatalist" required>
 <datalist id="admEditDesigDatalist"></datalist>
 </div>
 <div class="form-group">
-<label class="form-label">கற்பிக்கும் பாடம் (Subject)</label>
+<label for="admEditStaffSubject" class="form-label">கற்பிக்கும் பாடம் (Subject)</label>
 <input type="text" id="admEditStaffSubject" class="form-control" list="admEditSubjectDatalist">
 <datalist id="admEditSubjectDatalist"></datalist>
 </div>
 <div class="form-group">
-<label class="form-label">பணி வகை (Category)</label>
+<label for="admEditStaffCategory" class="form-label">பணி வகை (Category)</label>
 <select id="admEditStaffCategory" class="form-control">
 <option value="teaching">கற்பித்தல் பணி (Teaching)</option>
 <option value="nonteaching">அலுவலகப் பணி (Non-Teaching)</option>
@@ -7316,7 +7316,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 <div class="grid-3">
 <div class="form-group">
-<label class="form-label">பணி நியமனத் தன்மை (Nature)</label>
+<label for="admEditStaffNature" class="form-label">பணி நியமனத் தன்மை (Nature)</label>
 <select id="admEditStaffNature" class="form-control">
 <option value="Regular">Regular (நிரந்தரப் பணி)</option>
 <option value="Contract">Contract (ஒப்பந்தப் பணி)</option>
@@ -7324,15 +7324,15 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">பணியில் சேர்ந்த நாள் (DOJ in Service)</label>
+<label for="admEditStaffDojService" class="form-label">பணியில் சேர்ந்த நாள் (DOJ in Service)</label>
 <input type="date" id="admEditStaffDojService" class="form-control">
 </div>
 <div class="form-group">
-<label class="form-label">தற்போதைய பதவியில் சேர்ந்த நாள் (DOJ Present Post)</label>
+<label for="admEditStaffDojPresPost" class="form-label">தற்போதைய பதவியில் சேர்ந்த நாள் (DOJ Present Post)</label>
 <input type="date" id="admEditStaffDojPresPost" class="form-control">
 </div>
 <div class="form-group">
-<label class="form-label">இப்பள்ளியில் சேர்ந்த நாள் (DOJ in School)</label>
+<label for="admEditStaffDojSchool" class="form-label">இப்பள்ளியில் சேர்ந்த நாள் (DOJ in School)</label>
 <input type="date" id="admEditStaffDojSchool" class="form-control">
 </div>
 </div>
@@ -7342,11 +7342,11 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
   </div>
   <div class="grid-2" style="gap:10px;">
     <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label" style="color:#78350f; font-weight:800;">அலகு மாறுதலில் வந்த தேதி (Unit Transfer Date)</label>
+      <label for="admEditStaffUnitTransferDate" class="form-label" style="color:#78350f; font-weight:800;">அலகு மாறுதலில் வந்த தேதி (Unit Transfer Date)</label>
       <input type="date" id="admEditStaffUnitTransferDate" class="form-control" style="border-color:#f59e0b; font-weight:800;">
     </div>
     <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label" style="color:#78350f; font-weight:800;">முன்னுரிமைக்குக் கணக்கில் கொள்ள வேண்டிய தேதி (Admin Decision)</label>
+      <label for="admEditStaffSenDateRule" class="form-label" style="color:#78350f; font-weight:800;">முன்னுரிமைக்குக் கணக்கில் கொள்ள வேண்டிய தேதி (Admin Decision)</label>
       <select id="admEditStaffSenDateRule" class="form-control" style="border-color:#d97706; font-weight:800; background:#fff;">
         <option value="auto">⚙️ நிகழ்வின் பொது விதியைப் பின்பற்று (Follow Event Global Rule)</option>
         <option value="unit_transfer">🔄 அலகு மாறுதலில் வந்த தேதியையே கணக்கில் கொள்க (Count Unit Transfer Date)</option>
@@ -7357,21 +7357,21 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 <div class="grid-2">
 <div class="form-group">
-<label class="form-label">பணிபுரியும் பள்ளி (School Assignment / Transfer)</label>
+<label for="admEditStaffSchool" class="form-label">பணிபுரியும் பள்ளி (School Assignment / Transfer)</label>
 <select id="admEditStaffSchool" class="form-control"></select>
 </div>
 <div class="form-group">
-<label class="form-label">கல்வித் தகுதி (Educational Qualification)</label>
+<label for="admEditStaffQual" class="form-label">கல்வித் தகுதி (Educational Qualification)</label>
 <input type="text" id="admEditStaffQual" class="form-control" placeholder="எ.கா: M.Sc., B.Ed., M.Phil.">
 </div>
 </div>
 <div class="grid-4">
 <div class="form-group">
-<label class="form-label">கைபேசி எண் (Mobile) <span class="required">*</span></label>
+<label for="admEditStaffMobile" class="form-label">கைபேசி எண் (Mobile) <span class="required">*</span></label>
 <input type="tel" id="admEditStaffMobile" class="form-control" maxlength="10" required>
 </div>
 <div class="form-group">
-<label class="form-label">தேர்வுப் பணி (Exam Duty)</label>
+<label for="admEditStaffExamDuty" class="form-label">தேர்வுப் பணி (Exam Duty)</label>
 <select id="admEditStaffExamDuty" class="form-control">
 <option value="Chief Superintendent">Chief Superintendent (CS)</option>
 <option value="Department Officer">Department Officer (DO)</option>
@@ -7383,7 +7383,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">முகாம் பணி (Camp Duty)</label>
+<label for="admEditStaffCampDuty" class="form-label">முகாம் பணி (Camp Duty)</label>
 <select id="admEditStaffCampDuty" class="form-control">
 <option value="Camp Officer / CE">Camp Officer / CE</option>
 <option value="SO">Scrutiny Officer (SO)</option>
@@ -7393,7 +7393,7 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">முகாம் விருப்பம் (Camp Option)</label>
+<label for="admEditStaffCampOption" class="form-label">முகாம் விருப்பம் (Camp Option)</label>
 <select id="admEditStaffCampOption" class="form-control">
 <option value="01-Sivagangai">01-Sivagangai</option>
 <option value="02-Karaikudi">02-Karaikudi</option>
@@ -7455,50 +7455,50 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 </div>
 <form onsubmit="saveAdminInfraEditModal(event)">
 <div class="form-group">
-<label class="form-label" style="font-weight:800; color:#0f294a;">பள்ளியைத் தேர்ந்தெடுக்கவும் (Select School - U.NO / Name) <span class="required">*</span></label>
+<label for="admInfraModalSchoolSelect" class="form-label" style="font-weight:800; color:#0f294a;">பள்ளியைத் தேர்ந்தெடுக்கவும் (Select School - U.NO / Name) <span class="required">*</span></label>
 <select id="admInfraModalSchoolSelect" class="form-control" required onchange="onAdminInfraModalSchoolChange(this.value)" style="font-weight:800; color:#0f294a;"></select>
 </div>
 <div class="grid-4" style="gap:10px;">
 <div class="form-group">
-<label class="form-label">கூடுதல் வகுப்பறை</label>
+<label for="admInfraClassrooms" class="form-label">கூடுதல் வகுப்பறை</label>
 <input type="number" id="admInfraClassrooms" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">அறிவியல் ஆய்வகம்</label>
+<label for="admInfraSciLab" class="form-label">அறிவியல் ஆய்வகம்</label>
 <input type="number" id="admInfraSciLab" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">ஆண் கழிப்பறை</label>
+<label for="admInfraBoysToilet" class="form-label">ஆண் கழிப்பறை</label>
 <input type="number" id="admInfraBoysToilet" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">பெண் கழிப்பறை</label>
+<label for="admInfraGirlsToilet" class="form-label">பெண் கழிப்பறை</label>
 <input type="number" id="admInfraGirlsToilet" class="form-control" min="0" value="0">
 </div>
 </div>
 <div class="grid-4" style="gap:10px;">
 <div class="form-group">
-<label class="form-label">குடிநீர் / போர்வெல்</label>
+<label for="admInfraDrinkingWater" class="form-label">குடிநீர் / போர்வெல்</label>
 <select id="admInfraDrinkingWater" class="form-control">
 <option value="இல்லை (Sufficient)">போதுமானது (Sufficient)</option>
 <option value="தேவை (Required)">தேவை (Required)</option>
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">சுற்றுச்சுவர் (மீட்டரில்)</label>
+<label for="admInfraCompoundWall" class="form-label">சுற்றுச்சுவர் (மீட்டரில்)</label>
 <input type="number" id="admInfraCompoundWall" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">இருக்கை &amp; மேசை</label>
+<label for="admInfraDesks" class="form-label">இருக்கை &amp; மேசை</label>
 <input type="number" id="admInfraDesks" class="form-control" min="0" value="0">
 </div>
 <div class="form-group">
-<label class="form-label">கூடுதல் ஆசிரியர்</label>
+<label for="admInfraTeachers" class="form-label">கூடுதல் ஆசிரியர்</label>
 <input type="number" id="admInfraTeachers" class="form-control" min="0" value="0">
 </div>
 </div>
 <div class="form-group">
-<label class="form-label">சிறப்புக் குறிப்புரை / அவசரத் தேவை விவரம் (Remarks)</label>
+<label for="admInfraRemarks" class="form-label">சிறப்புக் குறிப்புரை / அவசரத் தேவை விவரம் (Remarks)</label>
 <input type="text" id="admInfraRemarks" class="form-control" placeholder="எ.கா: கூடுதல் 3 வகுப்பறைகள் மற்றும் குடிநீர் RO சுத்திகரிப்பு நிலையம் உடனடித் தேவை...">
 </div>
 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:12px; border-top:1px solid #e2e8f0;">
@@ -7530,15 +7530,15 @@ Realtime Database பக்கத்தில் மேலே உள்ள <stro
 <div style="font-weight:900; color:#0f294a; font-size:0.92rem; margin-bottom:10px;">🔑 நிர்வாகி புதிய கடவுச்சொல் அமைத்தல் (Update Admin Password via Salted SHA-256 Hash):</div>
 <div class="grid-2" style="gap:12px;">
 <div class="form-group" style="margin-bottom:8px;">
-<label class="form-label">தற்போதைய நிர்வாகி கடவுச்சொல் (Current Admin Password) <span class="required">*</span></label>
+<label for="admSecCurrentPass" class="form-label">தற்போதைய நிர்வாகி கடவுச்சொல் (Current Admin Password) <span class="required">*</span></label>
 <input type="password" id="admSecCurrentPass" class="form-control" required placeholder="தற்போதைய கடவுச்சொல்">
 </div>
 <div class="form-group" style="margin-bottom:8px;">
-<label class="form-label">புதிய நிர்வாகி கடவுச்சொல் (New Admin Password) <span class="required">*</span></label>
+<label for="admSecNewPass" class="form-label">புதிய நிர்வாகி கடவுச்சொல் (New Admin Password) <span class="required">*</span></label>
 <input type="password" id="admSecNewPass" class="form-control" minlength="6" required placeholder="புதிய கடவுச்சொல் (Min 6 chars)" oninput="previewAdminPasswordSha256Hash(this.value)">
 </div>
 <div class="form-group" style="margin-bottom:8px; grid-column:1 / -1;">
-<label class="form-label">புதிய கடவுச்சொல்லை உறுதி செய்க (Confirm New Password) <span class="required">*</span></label>
+<label for="admSecConfirmPass" class="form-label">புதிய கடவுச்சொல்லை உறுதி செய்க (Confirm New Password) <span class="required">*</span></label>
 <div style="display:flex; gap:8px; align-items:center;">
 <input type="password" id="admSecConfirmPass" class="form-control" minlength="6" required placeholder="புதிய கடவுச்சொல்லை மீண்டும் உள்ளிடவும்" style="flex:1;">
 <button type="button" class="btn btn-outline btn-sm" onclick="toggleAdminSecPassVisibility()" style="white-space:nowrap; font-weight:800;">👁️ காட்டு / மறை</button>
@@ -7657,7 +7657,7 @@ Download PDF
 </div>
 </div>
 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#f0fdfa; border:1.5px solid #99f6e4; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
-<label style="font-size:0.82rem; font-weight:900; color:#0f294a;">➕ புதிய பாடப்பிரிவு (Group) சேர்க்க:</label>
+<label for="ebsModalAddGroupSelect" style="font-size:0.82rem; font-weight:900; color:#0f294a;">➕ புதிய பாடப்பிரிவு (Group) சேர்க்க:</label>
 <select id="ebsModalAddGroupSelect" class="form-control" style="max-width:420px; font-weight:800; font-size:0.84rem;"></select>
 <button type="button" class="btn btn-primary btn-sm" onclick="addGroupInEbsHscModal()" style="background:#0f766e; border-color:#0f766e; font-weight:900;">
 ➕ Group சேர்
@@ -49213,7 +49213,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.73) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.74) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -49275,7 +49275,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.73)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.74)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -55768,7 +55768,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     const payload = {
       dualWriteEnabled: Boolean(enabled),
       updatedAt: Date.now(),
-      version: "v9.73"
+      version: "v9.74"
     };
     let fbOk = false;
     try {
@@ -56430,7 +56430,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     } catch (err) {
       console.warn("[v9.38 School D1 EMIS Loader]", err);
     }
-    // v9.73 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
+    // v9.74 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
     if ((!Array.isArray(stfRows) || stfRows.length === 0) && localStorage.getItem("CEOSVG_CF_D1_PRIMARY_MODE") === "0") {
       try {
         const fbOk = typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl) && typeof buildFirebaseEndpoint === "function";
@@ -56518,7 +56518,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
         console.warn("[v9.60 Admin D1 EMIS Loader]", err);
       }
 
-      // v9.73 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
+      // v9.74 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
       if (cStaff === 0 && localStorage.getItem("CEOSVG_CF_D1_PRIMARY_MODE") === "0") {
         try {
           const fbOk = typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl) && typeof buildFirebaseEndpoint === "function";
@@ -56859,7 +56859,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       const payload = {
         d1PrimaryEnabled: Boolean(enabled),
         updatedAt: new Date().toISOString(),
-        version: "v9.73"
+        version: "v9.74"
       };
       const fbBase = getFirebaseBaseV88();
       const workerBase = getWorkerBaseV88();
@@ -56885,7 +56885,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
   // Upgraded v8.8 worker.js source generator (includes HMAC-SHA256 Session Auth + /__d1/node Primary Read + KV Cache)
   window.getCfKvWorkerSourceCode = function() {
     return [
-      '// Cloudflare Worker: ceosvg-fb-cache (v9.73 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
+      '// Cloudflare Worker: ceosvg-fb-cache (v9.74 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
       '// Bindings required: CEOSVG_CACHE_KV (KV Namespace), CEOSVG_D1 (D1 Database: ceosvg-portal-db)',
       '// Optional Secret for Auth Enforcement: SESSION_SECRET (Settings -> Variables & Secrets -> Add Secret)',
       'const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";',
@@ -56993,7 +56993,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '    // 1) Health check',
       '    if (pathname === "" || pathname === "__health") {',
       '      return jsonResp({',
-      '        ok: true, service: "ceosvg-fb-cache", version: "v9.73",',
+      '        ok: true, service: "ceosvg-fb-cache", version: "v9.74",',
       '        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),',
       '        d1Bound: Boolean(env && env.CEOSVG_D1),',
       '        authEnforced,',
@@ -57058,7 +57058,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      return jsonResp({ ok: true, d1Bound: true, authEnforced, totalRows: Number((totalRes && totalRes.cnt) || 0), lastUpdatedAt: Number((totalRes && totalRes.last_ts) || 0), counts });',
       '    }',
       '',
-      '    // v9.73 Auto-Chunking Helpers (transparently supports mega-schools > 700 KB up to 10 MB in Cloudflare D1)',
+      '    // v9.74 Auto-Chunking Helpers (transparently supports mega-schools > 700 KB up to 10 MB in Cloudflare D1)',
       '    const D1_CHUNK_SUFFIX = "#__chunk_";',
       '    const D1_CHUNK_SIZE = 700000;',
       '',
@@ -57096,7 +57096,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      return true;',
       '    }',
       '',
-      '    // Helper (v9.73): Read exact D1 node OR aggregate child rows for parent collections (Auto-Chunking + 0 Firebase Reads)',
+      '    // Helper (v9.74): Read exact D1 node OR aggregate child rows for parent collections (Auto-Chunking + 0 Firebase Reads)',
       '    async function readD1NodeOrCollection(cleanKey, shallowOnly) {',
       '      if (!env || !env.CEOSVG_D1 || !cleanKey) return null;',
       '      await ensureD1Table(env);',
@@ -57134,7 +57134,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      return { text: JSON.stringify(agg), source: shallowOnly ? "D1-SHALLOW" : "D1-COLLECTION" };',
       '    }',
       '',
-      '    // 6) v9.73 Phase 3 Direct Node + Collection Primary Read (Zero Firebase Fallback)',
+      '    // 6) v9.74 Phase 3 Direct Node + Collection Primary Read (Zero Firebase Fallback)',
       '    if (pathname === "__d1/node" && request.method === "GET") {',
       '      const auth = await verifySessionToken(request, env);',
       '      if (!auth.ok) return jsonResp({ ok: false, error: auth.error }, 401);',
@@ -57180,7 +57180,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '        for (const cq of chunkedQueue) {',
       '          try { await upsertChunkedItem(cq.k, cq.v, now); written++; chunkedWritten++; } catch (ce) {}',
       '        }',
-      '        // v9.73: Non-blocking silent Firebase Write Backup (?print=silent => 204 No Content, 0 bytes download)',
+      '        // v9.74: Non-blocking silent Firebase Write Backup (?print=silent => 204 No Content, 0 bytes download)',
       '        if (written > 0 && body.fbBackup !== false && items.length <= 20) {',
       '          const fbAuth = (env && env.FIREBASE_AUTH_SECRET) ? "&auth=" + encodeURIComponent(String(env.FIREBASE_AUTH_SECRET).trim()) : "";',
       '          ctx.waitUntil(Promise.allSettled(items.map(it => {',
@@ -57429,7 +57429,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '          return new Response(cached, { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json; charset=utf-8", "X-Cache": "HIT-KV", "X-Cache-TTL": String(ttl) } });',
       '        }',
       '      }',
-      '      // v9.73 Zero-Firebase-Read: Populate KV Cache Miss directly from Cloudflare D1 (0 Firebase downloads)',
+      '      // v9.74 Zero-Firebase-Read: Populate KV Cache Miss directly from Cloudflare D1 (0 Firebase downloads)',
       '      const isShallow = url.search.includes("shallow=true");',
       '      const d1Hit = await readD1NodeOrCollection(cleanPath, isShallow);',
       '      const text = d1Hit ? d1Hit.text : "null";',
@@ -58953,13 +58953,13 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     }
     const workerHeaders = tok ? { "Authorization": "Bearer " + tok, "X-CEOSVG-Token": tok } : {};
 
-    // v9.73 Helper: Append ?print=silent to Firebase write URLs so Firebase returns 204 No Content (0 bytes download)
+    // v9.74 Helper: Append ?print=silent to Firebase write URLs so Firebase returns 204 No Content (0 bytes download)
     const toSilentFbUrl = (rawUrl) => {
       if (!rawUrl || rawUrl.includes("print=silent")) return rawUrl;
       return rawUrl + (rawUrl.includes("?") ? "&print=silent" : "?print=silent");
     };
 
-    // v9.73 Helper: Update Admin D1/KV Live Stats UI lines in real time
+    // v9.74 Helper: Update Admin D1/KV Live Stats UI lines in real time
     const syncUnifiedLiveStatsUI = () => {
       try {
         const kvEl = document.getElementById("cfKvLiveStatsLine");
@@ -58986,7 +58986,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     // STAGE 3: Phase 3 Cloudflare D1 Primary (GET & PUT) — 0 Firebase Reads + Silent FB Write Backup
     if (workerBase && isD1PrimaryEnabled() && cleanPath.startsWith("ceosvg_live/")) {
       if (method === "GET") {
-        // High-read cacheable paths try KV first (KV miss also populates from D1 in v9.73 worker.js)
+        // High-read cacheable paths try KV first (KV miss also populates from D1 in v9.74 worker.js)
         if (isCacheablePath(cleanPath) && !isShallowReq) {
           try {
             const kvResp = await fetchWithAbortTimeout(
@@ -59003,7 +59003,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
             }
           } catch (e) {}
         }
-        // v9.73 Paginated Collection Reader: Large multi-school collections use /__d1/read_prefix (25 rows/page)
+        // v9.74 Paginated Collection Reader: Large multi-school collections use /__d1/read_prefix (25 rows/page)
         // so 155–282 schools NEVER exceed Cloudflare D1's single-query 10 MB output cap!
         const LARGE_D1_COLLECTIONS = new Set([
           "ceosvg_live/exam_result_analysis_by_uno",
@@ -59072,7 +59072,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
             }
           }
         } catch (e) {}
-        // ZERO-FIREBASE READ KILL-SWITCH (v9.73): Never fall back to Firebase RTDB GET when D1 Primary is active!
+        // ZERO-FIREBASE READ KILL-SWITCH (v9.74): Never fall back to Firebase RTDB GET when D1 Primary is active!
         stats.blockedFbReads = (stats.blockedFbReads || 0) + 1;
         syncUnifiedLiveStatsUI();
         return new Response("null", {
@@ -59352,7 +59352,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
   }
 
   window.CEOSVG_API_CLIENT = {
-    version: "v9.73",
+    version: "v9.74",
     fetch: unifiedFetch,
     nativeFetch: nativeFetch,
     stats: stats,
@@ -59480,7 +59480,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     const dutyLine = extractJsVarLineFromHtml(rawText, "var EBS_10TH_DUTY_2025_26_LOOKUP = ");
     if (dutyLine && dutyLine.length > 500) {
       try {
-        // v9.73 Fix: Use CSP-safe JSON.parse() instead of new Function()
+        // v9.74 Fix: Use CSP-safe JSON.parse() instead of new Function()
         const expr = dutyLine.replace(/^var\s+EBS_10TH_DUTY_2025_26_LOOKUP\s*=\s*/, "").replace(/\/\/[^\n]*$/, "").replace(/;\s*$/, "").trim();
         const parsedDuty = JSON.parse(expr);
         if (parsedDuty && parsedDuty.byId && Object.keys(parsedDuty.byId).length > 0) {
@@ -61134,7 +61134,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
   }
 
   function getNativeFetchForCtV962() {
-    // v9.73 Zero-Firebase-Read: Route Class Teacher reads/writes through unifiedFetch (D1 Primary + Silent FB Backup)
+    // v9.74 Zero-Firebase-Read: Route Class Teacher reads/writes through unifiedFetch (D1 Primary + Silent FB Backup)
     return window.fetch.bind(window);
   }
 
@@ -61369,7 +61369,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
 
     if (btn) { btn.disabled = true; btn.textContent = "⏳ சரிபார்க்கப்படுகிறது..."; }
     try {
-      // v9.73 Fix: Acquire Worker HMAC Bearer token BEFORE D1 class_teacher_auth lookup (prevents pre-login 401!)
+      // v9.74 Fix: Acquire Worker HMAC Bearer token BEFORE D1 class_teacher_auth lookup (prevents pre-login 401!)
       if (typeof window.refreshWorkerSessionTokenV88 === "function") {
         try { await window.refreshWorkerSessionTokenV88("school", "PRELOGIN", false); } catch (e) {}
       }
@@ -62455,7 +62455,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
 </script>
 
 <script>
-// === CEOSVG v9.73: FIREBASE EXPORT JSON -> CLOUDFLARE D1 DIRECT UPLOADER (0 FIREBASE DOWNLOAD) ===
+// === CEOSVG v9.74: FIREBASE EXPORT JSON -> CLOUDFLARE D1 DIRECT UPLOADER (0 FIREBASE DOWNLOAD) ===
 (function() {
   if (window.__ceosvgV970FbJsonUploaderReady) return;
   window.__ceosvgV970FbJsonUploaderReady = true;
@@ -62624,7 +62624,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
       }
 
       const nativeFetch = window.__CEOSVG_NATIVE_FETCH__ || window.fetch.bind(window);
-      // v9.73: Group normal items in batches of 8, and send mega-schools (>350 KB, e.g. U.No 434) individually for Auto-Chunking!
+      // v9.74: Group normal items in batches of 8, and send mega-schools (>350 KB, e.g. U.No 434) individually for Auto-Chunking!
       const batches = [];
       let curBatch = [];
       for (const it of items) {
@@ -62691,13 +62691,263 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
         try { await window.checkCloudflareD1Status(false); } catch (e) {}
       }
     } catch (err) {
-      console.error("[v9.73 Firebase JSON -> D1 Upload]", err);
+      console.error("[v9.74 Firebase JSON -> D1 Upload]", err);
       setProgressV970(`❌ JSON பதிவேற்றப் பிழை: ${err && err.message ? err.message : err}`);
       if (typeof showToast === "function") showToast("❌ JSON கோப்பைப் படிக்க முடியவில்லை.", "#dc2626", true);
     } finally {
       if (btn) { btn.disabled = false; btn.textContent = "📤 7. Firebase Export JSON ➔ D1 பதிவேற்றம்"; }
     }
   };
+})();
+</script>
+
+<style id="ceosvgV974MobileA11yStyles">
+/* === CEOSVG v9.74: MOBILE-FIRST MARK ENTRY & ACCESSIBILITY ENHANCEMENTS === */
+label[for] { cursor: pointer; }
+.ceosvg-mobile-mark-toggle-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  background: #eff6ff;
+  border: 1.5px solid #93c5fd;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+.ceosvg-mobile-mark-toggle-btn {
+  background: #0f294a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .ceosvg-mobile-mark-toggle-bar { display: flex !important; }
+
+  /* Prevent iOS/Android auto-zoom and make touch targets >= 42px */
+  body.ceosvg-mobile-cards-on tr[id^="mtStuRow_"] input.form-control,
+  body.ceosvg-mobile-cards-on tr[id^="mtStuRow_"] select.form-control {
+    font-size: 16px !important;
+    min-height: 42px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Transform wide Mark Entry table into thumb-friendly vertical Student Cards */
+  body.ceosvg-mobile-cards-on table.ceosvg-mark-table-mobile {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+  body.ceosvg-mobile-cards-on table.ceosvg-mark-table-mobile > thead {
+    display: none !important;
+  }
+  body.ceosvg-mobile-cards-on table.ceosvg-mark-table-mobile > tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+  body.ceosvg-mobile-cards-on table.ceosvg-mark-table-mobile > tbody > tr[id^="mtStuRow_"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding: 12px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-left: 4px solid #0284c7 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 6px rgba(15, 41, 74, 0.06) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  body.ceosvg-mobile-cards-on table.ceosvg-mark-table-mobile > tbody > tr[id^="mtStuRow_"] > td {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 4px 2px !important;
+    border: none !important;
+    text-align: left !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+  }
+  /* Student Name cell spans full width of the mobile card */
+  body.ceosvg-mobile-cards-on table.ceosvg-mark-table-mobile > tbody > tr[id^="mtStuRow_"] > td:nth-child(3) {
+    grid-column: 1 / -1 !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px dashed #cbd5e1 !important;
+  }
+  /* Auto-injected Tamil subject / column label above each mobile cell */
+  body.ceosvg-mobile-cards-on table.ceosvg-mark-table-mobile > tbody > tr[id^="mtStuRow_"] > td[data-m-label]::before {
+    content: attr(data-m-label);
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #334155;
+    margin-bottom: 3px;
+    line-height: 1.25;
+  }
+}
+</style>
+<script>
+// === CEOSVG v9.74: MOBILE-FIRST MARK ENTRY CARD ENGINE & DYNAMIC ACCESSIBILITY AUTO-LINKER ===
+(function() {
+  if (window.__ceosvgV974MobileA11yReady) return;
+  window.__ceosvgV974MobileA11yReady = true;
+
+  const MOBILE_MODE_KEY = "CEOSVG_MOBILE_MARK_CARDS_V974";
+  let _a11ySeq = 1;
+  let _enhanceTimer = null;
+
+  function isMobileCardsPreferred() {
+    try { return localStorage.getItem(MOBILE_MODE_KEY) !== "0"; } catch (e) { return true; }
+  }
+
+  function applyMobileCardBodyClass() {
+    const on = isMobileCardsPreferred();
+    document.body.classList.toggle("ceosvg-mobile-cards-on", on);
+    document.querySelectorAll(".ceosvg-mobile-mark-toggle-btn").forEach(btn => {
+      btn.textContent = on ? "📊 அட்டவணைக் காட்சி" : "📱 மொபைல் அட்டை";
+    });
+  }
+
+  window.toggleMobileMarkCardViewV974 = function() {
+    const next = !isMobileCardsPreferred();
+    try { localStorage.setItem(MOBILE_MODE_KEY, next ? "1" : "0"); } catch (e) {}
+    applyMobileCardBodyClass();
+  };
+
+  function enhanceMarkTablesForMobile() {
+    const rows = document.querySelectorAll('tr[id^="mtStuRow_"]');
+    if (!rows || rows.length === 0) return;
+    const seenTables = new Set();
+
+    rows.forEach(tr => {
+      const tbl = tr.closest("table");
+      if (!tbl) return;
+      if (!seenTables.has(tbl)) {
+        seenTables.add(tbl);
+        tbl.classList.add("ceosvg-mark-table-mobile");
+
+        // Extract clean column labels from thead for mobile cards
+        const ths = Array.from(tbl.querySelectorAll("thead tr:last-child th, thead tr:first-child th"));
+        const headers = [];
+        const headerRow = tbl.querySelector("thead tr");
+        if (headerRow) {
+          Array.from(headerRow.children).forEach(th => {
+            const txt = String(th.textContent || "").replace(/\s+/g, " ").trim().slice(0, 34);
+            const span = Math.max(1, parseInt(th.getAttribute("colspan") || "1", 10) || 1);
+            for (let k = 0; k < span; k++) headers.push(txt);
+          });
+        }
+        tbl.__v974Headers = headers;
+
+        // Inject 1-tap mobile view toggle bar right above the table wrapper
+        const wrap = tbl.parentElement;
+        if (wrap && !wrap.previousElementSibling?.classList?.contains("ceosvg-mobile-mark-toggle-bar")) {
+          const bar = document.createElement("div");
+          bar.className = "ceosvg-mobile-mark-toggle-bar";
+          bar.innerHTML = '<span>📱 மொபைல் எளிமை மதிப்பெண் உள்ளீடு</span><button type="button" class="ceosvg-mobile-mark-toggle-btn" onclick="window.toggleMobileMarkCardViewV974()"></button>';
+          wrap.parentElement?.insertBefore(bar, wrap);
+        }
+      }
+
+      const headers = tbl.__v974Headers || [];
+      Array.from(tr.children).forEach((td, idx) => {
+        if (!td.hasAttribute("data-m-label") && headers[idx]) {
+          td.setAttribute("data-m-label", headers[idx]);
+        }
+      });
+
+      // Upgrade mark inputs with numeric mobile keypad, aria-label & Enter-to-Next focus
+      tr.querySelectorAll('input[type="text"]').forEach(inp => {
+        const ml = inp.getAttribute("maxlength");
+        const ttl = inp.getAttribute("title") || "";
+        if ((ml === "2" || ml === "3") && !inp.hasAttribute("inputmode")) {
+          inp.setAttribute("inputmode", "decimal");
+          inp.setAttribute("enterkeyhint", "next");
+        }
+        if (ttl && !inp.hasAttribute("aria-label")) {
+          inp.setAttribute("aria-label", ttl);
+        }
+        if ((ml === "2" || ml === "3") && !inp.__v974EnterBound) {
+          inp.__v974EnterBound = true;
+          inp.addEventListener("keydown", function(ev) {
+            if (ev.key === "Enter") {
+              ev.preventDefault();
+              const allMarkInps = Array.from(tbl.querySelectorAll('tr[id^="mtStuRow_"] input[inputmode="decimal"]:not([disabled])'));
+              const cur = allMarkInps.indexOf(inp);
+              if (cur >= 0 && cur + 1 < allMarkInps.length) {
+                allMarkInps[cur + 1].focus();
+                allMarkInps[cur + 1].select?.();
+              }
+            }
+          });
+        }
+      });
+    });
+
+    applyMobileCardBodyClass();
+  }
+
+  function enhanceDynamicFormLabels() {
+    document.querySelectorAll("label:not([for])").forEach(lbl => {
+      if (lbl.querySelector("input, select, textarea")) return;
+      let ctrl = null;
+      let sib = lbl.nextElementSibling;
+      let hops = 0;
+      while (sib && hops < 3) {
+        if (sib.matches && sib.matches("input, select, textarea")) { ctrl = sib; break; }
+        const inside = sib.querySelector && sib.querySelector("input:not([type='hidden']), select, textarea");
+        if (inside) { ctrl = inside; break; }
+        if (sib.tagName === "LABEL") break;
+        sib = sib.nextElementSibling;
+        hops++;
+      }
+      if (!ctrl && lbl.parentElement) {
+        ctrl = lbl.parentElement.querySelector("input:not([type='hidden']), select, textarea");
+      }
+      if (ctrl) {
+        if (!ctrl.id) ctrl.id = "ceosvgAutoFld_" + (_a11ySeq++);
+        lbl.setAttribute("for", ctrl.id);
+      }
+    });
+  }
+
+  function runAllV974Enhancements() {
+    try { enhanceDynamicFormLabels(); } catch (e) {}
+    try { enhanceMarkTablesForMobile(); } catch (e) {}
+  }
+
+  function scheduleV974Enhance() {
+    if (_enhanceTimer) clearTimeout(_enhanceTimer);
+    _enhanceTimer = setTimeout(runAllV974Enhancements, 120);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", scheduleV974Enhance);
+  } else {
+    scheduleV974Enhance();
+  }
+
+  try {
+    const obs = new MutationObserver(scheduleV974Enhance);
+    obs.observe(document.body || document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
 })();
 </script>
 </body>
