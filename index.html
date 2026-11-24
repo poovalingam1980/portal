@@ -227,7 +227,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.63)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.64)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -578,7 +578,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.63</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.64</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -2014,6 +2014,9 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnClassMarkRegister" onclick="switchMarkEntrySubView('CLASS_MARK_REG')" style="font-weight:900; padding:6px 14px; border-color:#0f766e; color:#0f766e;">
           📋 வகுப்பு மதிப்பெண் பதிவேடு (Class Mark Register)
         </button>
+        <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnFailedList" onclick="switchMarkEntrySubView('FAILED_LIST')" style="font-weight:900; padding:6px 14px; border-color:#dc2626; color:#b91c1c;">
+          ⚠️ தேர்ச்சி பெறாதோர் பட்டியல் (1–அனைத்துப் பாடம்)
+        </button>
         <button type="button" class="btn btn-outline btn-sm" id="mtSubBtnProgress" onclick="switchMarkEntrySubView('PROGRESS_REPORT')" style="font-weight:900; padding:6px 14px; border-color:#ea580c; color:#c2410c;">
           🎓 Progress Report (தேவைப்பட்டால் மட்டும்)
         </button>
@@ -2062,6 +2065,9 @@ Website Developed by Poovalingam K, DI 📞 <a href="tel:9626471035" class="logi
 
     <!-- Mark Entry Sub-Pane 2D: Visual Review Report (10th & 12th Review Report) -->
     <div id="mtSubPaneReview" style="display:none;"></div>
+
+    <!-- Mark Entry Sub-Pane 2F: Failed Students Grouped List (1, 2, 3, 4, 5, All Subjects) -->
+    <div id="mtSubPaneFailedList" style="display:none;"></div>
 
     <!-- Mark Entry Sub-Pane 2E: Student Progress Report Generator (10th & 12th) -->
     <div id="mtSubPaneProgress" style="display:none;"></div>
@@ -6599,7 +6605,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.63</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.64</strong>
 </p>
 </footer>
 </div>
@@ -6718,7 +6724,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
     📊 அமர்வு நிலை: KV Cache Hits: <strong>0</strong> | Firebase Direct: <strong>0</strong> | Auto-Fallback: <strong>தயார்</strong>
   </div>
 </div>
-<!-- === CEOSVG v9.63: UNIFIED CLOUDFLARE D1 DATABASE PANEL (PHASE 1 SYNC + PHASE 2 DUAL-WRITE) === -->
+<!-- === CEOSVG v9.64: UNIFIED CLOUDFLARE D1 DATABASE PANEL (PHASE 1 SYNC + PHASE 2 DUAL-WRITE) === -->
 <div id="cfD1MigrationPanel" style="width:100%; margin:12px 0; background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:2px solid #0f766e; border-left:5px solid #0f766e; border-radius:10px; padding:14px 16px; box-sizing:border-box;">
   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
     <div>
@@ -39935,7 +39941,7 @@ function renderSchoolMidTermModule() {
   if (t2B) t2B.textContent = "🏫 School Performance";
   if (t2C) t2C.textContent = "📊 View Subject Performance";
 
-  if (window.activeClassTeacherSession && (isRep || isProg) && _activeMarkEntrySubView !== "CLASS_MARK_REG" && _activeMarkEntrySubView !== "PROGRESS_REPORT") {
+  if (window.activeClassTeacherSession && (isRep || isProg) && _activeMarkEntrySubView !== "CLASS_MARK_REG" && _activeMarkEntrySubView !== "PROGRESS_REPORT" && _activeMarkEntrySubView !== "FAILED_LIST") {
     _activeMarkEntrySubView = isProg ? "PROGRESS_REPORT" : "CLASS_MARK_REG";
   } else if ((isRep || isProg) && _activeMarkEntrySubView === "STU_MARKS") {
     _activeMarkEntrySubView = isProg ? "PROGRESS_REPORT" : (window.activeClassTeacherSession ? "CLASS_MARK_REG" : "FORM1_1");
@@ -39986,6 +39992,8 @@ function renderSchoolMidTermModule() {
 
   const bClassRegEl = document.getElementById("mtSubBtnClassMarkRegister");
   if (bClassRegEl) bClassRegEl.style.display = showReportsHub ? "inline-flex" : "none";
+  const bFailedListEl = document.getElementById("mtSubBtnFailedList");
+  if (bFailedListEl) bFailedListEl.style.display = showReportsHub ? "inline-flex" : "none";
   if (bMarkRegPdfEl) bMarkRegPdfEl.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
   if (bMarkRegXlsEl) bMarkRegXlsEl.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
   if (bF1El) bF1El.style.display = (showReportsHub && !window.activeClassTeacherSession) ? "inline-flex" : "none";
@@ -39999,6 +40007,7 @@ function renderSchoolMidTermModule() {
   const mapMe = {
     STU_MARKS:       ["mtSubBtnStuMarks",          "mtSubPaneStuMarks"],
     CLASS_MARK_REG:  ["mtSubBtnClassMarkRegister", "mtSubPaneClassMarkReg"],
+    FAILED_LIST:     ["mtSubBtnFailedList",        "mtSubPaneFailedList"],
     FORM1_1:         ["mtSubBtnForm1_1",           "mtSubPaneForm1_1"],
     FORM1_2:         ["mtSubBtnForm1_2",           "mtSubPaneForm1_2"],
     REVIEW_REPORT:   ["mtSubBtnReview",            "mtSubPaneReview"],
@@ -40017,6 +40026,10 @@ function renderSchoolMidTermModule() {
         bEl.style.background = active ? "#d97706" : "#ffffff";
         bEl.style.color = active ? "#ffffff" : "#b45309";
         bEl.style.borderColor = "#d97706";
+      } else if (k === "FAILED_LIST") {
+        bEl.style.background = active ? "#dc2626" : "#ffffff";
+        bEl.style.color = active ? "#ffffff" : "#b91c1c";
+        bEl.style.borderColor = "#dc2626";
       } else if (k === "PROGRESS_REPORT") {
         bEl.style.background = active ? "#ea580c" : "#ffffff";
         bEl.style.color = active ? "#ffffff" : "#c2410c";
@@ -40042,6 +40055,10 @@ function renderSchoolMidTermModule() {
   } else if (_activeMarkEntrySubView === "CLASS_MARK_REG") {
     if (typeof window.renderInlineClassMarkRegisterPane === "function") {
       window.renderInlineClassMarkRegisterPane(calc);
+    }
+  } else if (_activeMarkEntrySubView === "FAILED_LIST") {
+    if (typeof window.renderSchoolFailedStudentsReportPane === "function") {
+      window.renderSchoolFailedStudentsReportPane(calc);
     }
   } else if (_activeMarkEntrySubView === "PROGRESS_REPORT") {
     renderSchoolProgressReportPane(calc);
@@ -40457,7 +40474,7 @@ function renderSchoolMidTermStuMarksPane(calc) {
           ${secPills10Html}
         </div>
         <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-          ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">⚡ அறிவியல் செய்முறை (Science Practical: 25) நிரப்பு</button>` : `<button type="button" class="btn btn-outline btn-sm" onclick="window.revertAccidentallyDoubled10thMarks()" style="background:#fef3c7; color:#92400e; border-color:#f59e0b; font-weight:800; font-size:0.74rem;" title="தவறுதலாக ✖️2 அழுத்தி இரட்டிப்பான மதிப்பெண்களை ÷2 செய்து மீட்க">➗2 இரட்டிப்பான மதிப்பெண் மீட்பு</button>`}
+          ${isSplit ? `<button type="button" class="btn btn-primary btn-sm" onclick="autoFillFullInternalPracticalMarksForSchool()" style="background:#0f766e; border-color:#0f766e; font-weight:900; font-size:0.76rem;">⚡ அறிவியல் செய்முறை (Science Practical: 25) நிரப்பு</button>` : ""}
           <button type="button" class="btn btn-outline btn-sm" onclick="openMidTermBulkPasteModal()" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd; font-weight:900; font-size:0.76rem;">
             📋 Excel Copy-Paste
           </button>
@@ -43624,7 +43641,8 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
   const secMap = {};
   (rec.sections || []).forEach(sec => { secMap[sec.secId] = sec; });
   const secObj = secMap[stu.section] || (rec.sections && rec.sections[0]) || { secId: stu.section || "A", medium: stu.medium || "TM", teachers: {} };
-  const medLabel = (secObj.medium === "EM" || stu.medium === "EM") ? "ஆங்கில வழி (English Medium)" : "தமிழ் வழி (Tamil Medium)";
+  const isEm = (String(secObj.medium || "").toUpperCase() === "EM" || String(stu.medium || "").toUpperCase() === "EM");
+  const medLabel = isEm ? "English Medium" : "தமிழ் வழி (Tamil Medium)";
 
   normalizeStudentNamesTaEn(stu);
   const nameTaDisp = stu.nameTa || stu.name || "-";
@@ -43682,8 +43700,7 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
         <tr style="height:32px;">
           <td style="${bdr} background:#f8fafc !important; padding:5px 6px; text-align:center; ${numFont} font-size:0.86rem;">${sIdx + 1}</td>
           <td style="${bdr} background:#f8fafc !important; padding:5px 8px; text-align:left; font-weight:900; font-size:0.86rem; color:#0f294a;">
-            <span class="ra-ta">${escapeHtmlAttr(subMeta.labelTa)}</span>
-            <span style="font-size:0.74rem; color:#475569; display:block;">${escapeHtmlAttr(subMeta.labelEn)}</span>
+            ${isEm ? `<span>${escapeHtmlAttr(subMeta.labelEn)}</span>` : `<span class="ra-ta">${escapeHtmlAttr(subMeta.labelTa)}</span><span style="font-size:0.74rem; color:#475569; display:block;">${escapeHtmlAttr(subMeta.labelEn)}</span>`}
           </td>
           ${cellsHtml}
           <td style="${bdr} background:#eff6ff !important; padding:5px 4px; text-align:center; ${numFont} font-size:0.96rem; color:#1e3a8a;">${avgSub}</td>
@@ -43723,21 +43740,21 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
           <col style="width:8.4%;">
         </colgroup>
         <tr style="height:36px;">
-          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">வ.எண்</td>
-          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:4px 8px; text-align:left; font-weight:900; font-size:0.82rem;">பாடம் (Subject)</td>
-          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">1. முதல்<br>பருவம்</td>
-          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">2. காலாண்டுத்<br>தேர்வு</td>
-          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">3. இரண்டாம்<br>பருவம்</td>
-          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">4. அரையாண்டுத்<br>தேர்வு</td>
-          <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">5. திருப்புதல்<br>தேர்வு 1</td>
-          <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">6. திருப்புதல்<br>தேர்வு 2</td>
-          <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">7. திருப்புதல்<br>தேர்வு 3</td>
-          <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">8. சிறப்பு<br>மாதிரி</td>
-          <td style="${bdr} background:#0f294a !important; color:#fde047 !important; text-align:center; font-weight:900; font-size:0.74rem; line-height:1.12;">சராசரி<br>(Avg)</td>
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">${isEm ? "S.No" : "வ.எண்"}</td>
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:4px 8px; text-align:left; font-weight:900; font-size:0.82rem;">${isEm ? "Subject" : "பாடம் (Subject)"}</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">${isEm ? "1. Mid<br>Term 1" : "1. முதல்<br>பருவம்"}</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">${isEm ? "2. Quarterly<br>Exam" : "2. காலாண்டுத்<br>தேர்வு"}</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">${isEm ? "3. Mid<br>Term 2" : "3. இரண்டாம்<br>பருவம்"}</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">${isEm ? "4. Half<br>Yearly" : "4. அரையாண்டுத்<br>தேர்வு"}</td>
+          <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">${isEm ? "5. Revision<br>Exam 1" : "5. திருப்புதல்<br>தேர்வு 1"}</td>
+          <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">${isEm ? "6. Revision<br>Exam 2" : "6. திருப்புதல்<br>தேர்வு 2"}</td>
+          <td style="${bdr} background:#4c1d95 !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">${isEm ? "7. Revision<br>Exam 3" : "7. திருப்புதல்<br>தேர்வு 3"}</td>
+          <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.70rem; line-height:1.12;">${isEm ? "8. Special<br>Model" : "8. சிறப்பு<br>மாதிரி"}</td>
+          <td style="${bdr} background:#0f294a !important; color:#fde047 !important; text-align:center; font-weight:900; font-size:0.74rem; line-height:1.12;">${isEm ? "Average<br>(Avg)" : "சராசரி<br>(Avg)"}</td>
         </tr>
         ${subRowsHtml}
         <tr style="height:36px;">
-          <td colspan="2" style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:5px 8px; text-align:right; font-weight:900; font-size:0.84rem;">மொத்த மதிப்பெண் (Total / ${maxTotal})</td>
+          <td colspan="2" style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:5px 8px; text-align:right; font-weight:900; font-size:0.84rem;">${isEm ? `TOTAL MARKS (Out of ${maxTotal})` : `மொத்த மதிப்பெண் (Total / ${maxTotal})`}</td>
           ${totalCellsHtml}
           <td style="${bdr} background:#0f294a !important; color:#fde047 !important; text-align:center; ${numFont} font-size:0.96rem;">${totScore || "-"}</td>
         </tr>
@@ -43768,8 +43785,7 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
         <tr style="height:34px;">
           <td style="${bdr} background:#f8fafc !important; text-align:center; ${numFont} font-size:0.88rem;">${sIdx + 1}</td>
           <td style="${bdr} background:#f8fafc !important; padding:4px 8px; text-align:left; font-weight:900; font-size:0.88rem; color:#0f294a;">
-            <span class="ra-ta">${escapeHtmlAttr(subMeta.labelTa)}</span>
-            <span style="font-size:0.75rem; color:#475569; margin-left:4px;">(${escapeHtmlAttr(subMeta.labelEn)})</span>
+            ${isEm ? `<span>${escapeHtmlAttr(subMeta.labelEn)}</span>` : `<span class="ra-ta">${escapeHtmlAttr(subMeta.labelTa)}</span><span style="font-size:0.75rem; color:#475569; margin-left:4px;">(${escapeHtmlAttr(subMeta.labelEn)})</span>`}
           </td>
           <td style="${bdr} background:#f8fafc !important; text-align:center; ${numFont} font-size:0.86rem; color:#475569;">100</td>
           <td style="${bdr} background:#f8fafc !important; text-align:center; ${numFont} font-size:0.86rem; color:#475569;">35</td>
@@ -43777,7 +43793,7 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
           <td style="${bdr} background:${!isSubPass && rawTot !== '' ? '#fef2f2' : '#fefce8'} !important; text-align:center; ${numFont} font-size:1.10rem; color:${!isSubPass && rawTot !== '' ? '#dc2626' : '#0f172a'};">${rawTot || "-"}</td>
           <td style="${bdr} background:#ffffff !important; padding:4px 6px; text-align:center;">
             <span style="display:inline-block; padding:2px 8px; border-radius:999px; font-size:0.74rem; font-weight:900; background:${rawTot === '' ? '#f1f5f9' : (isSubPass ? '#dcfce7' : '#fee2e2')} !important; color:${rawTot === '' ? '#64748b' : (isSubPass ? '#166534' : '#991b1b')} !important;">
-              ${rawTot === "" ? "நிலுவை" : (isSubPass ? "✅ தேர்ச்சி (PASS)" : "❌ தோல்வி (FAIL)")}
+              ${isEm ? (rawTot === "" ? "PENDING" : (isSubPass ? "PASS" : "FAIL")) : (rawTot === "" ? "நிலுவை" : (isSubPass ? "✅ தேர்ச்சி (PASS)" : "❌ தோல்வி (FAIL)"))}
             </span>
           </td>
           <td style="${bdr} background:#ffffff !important; text-align:center; ${numFont} font-size:0.88rem; color:#1e3a8a;">${gradeStr}</td>
@@ -43798,28 +43814,28 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
           <col style="width:${isSplit ? '8%' : '10%'};">
         </colgroup>
         <tr style="height:36px;">
-          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">வ.எண்</td>
-          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:4px 8px; text-align:left; font-weight:900; font-size:0.82rem;">பாடம் (Subject)</td>
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">${isEm ? "S.No" : "வ.எண்"}</td>
+          <td style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:4px 8px; text-align:left; font-weight:900; font-size:0.82rem;">${isEm ? "Subject" : "பாடம் (Subject)"}</td>
           <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">Max<br>100</td>
           <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">Min<br>35</td>
           ${isSplit ? `
-            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">கருத்தியல்<br>(Theory)</td>
-            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">செய்முறை<br>(Practical)</td>
-            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">அகமதிப்பீடு<br>(Internal)</td>
+            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">${isEm ? "Theory" : "கருத்தியல்<br>(Theory)"}</td>
+            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">${isEm ? "Practical" : "செய்முறை<br>(Practical)"}</td>
+            <td style="${bdr} background:#0f766e !important; color:#ffffff !important; text-align:center; font-weight:800; font-size:0.72rem;">${isEm ? "Internal" : "அகமதிப்பீடு<br>(Internal)"}</td>
           ` : ''}
-          <td style="${bdr} background:#1e3a8a !important; color:#fde047 !important; text-align:center; font-weight:900; font-size:0.78rem;">பெற்ற<br>மதிப்பெண்</td>
-          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">தேர்ச்சி நிலை<br>(Result)</td>
-          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">தரம்<br>(Grade)</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#fde047 !important; text-align:center; font-weight:900; font-size:0.78rem;">${isEm ? "Marks<br>Obtained" : "பெற்ற<br>மதிப்பெண்"}</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">${isEm ? "Result" : "தேர்ச்சி நிலை<br>(Result)"}</td>
+          <td style="${bdr} background:#1e3a8a !important; color:#ffffff !important; text-align:center; font-weight:900; font-size:0.76rem;">${isEm ? "Grade" : "தரம்<br>(Grade)"}</td>
         </tr>
         ${subRowsHtml}
         <tr style="height:36px;">
-          <td colspan="2" style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:5px 10px; text-align:right; font-weight:900; font-size:0.88rem;">மொத்த மதிப்பெண் (GRAND TOTAL)</td>
+          <td colspan="2" style="${bdr} background:#0f294a !important; color:#ffffff !important; padding:5px 10px; text-align:right; font-weight:900; font-size:0.88rem;">${isEm ? "GRAND TOTAL" : "மொத்த மதிப்பெண் (GRAND TOTAL)"}</td>
           <td style="${bdr} background:#f1f5f9 !important; text-align:center; ${numFont} font-size:0.92rem;">${maxTotal}</td>
           <td style="${bdr} background:#f1f5f9 !important; text-align:center; ${numFont} font-size:0.92rem;">${is12 ? 210 : 175}</td>
-          ${isSplit ? `<td colspan="3" style="${bdr} background:#f1f5f9 !important; text-align:center; font-size:0.76rem; font-weight:800; color:#475569;">சராசரி (Average): <strong>${pctStr}</strong></td>` : ''}
+          ${isSplit ? `<td colspan="3" style="${bdr} background:#f1f5f9 !important; text-align:center; font-size:0.76rem; font-weight:800; color:#475569;">${isEm ? "Average" : "சராசரி (Average)"}: <strong>${pctStr}</strong></td>` : ''}
           <td style="${bdr} background:#fef08a !important; text-align:center; ${numFont} font-size:1.18rem; color:#0f294a;">${totScore || "-"}</td>
           <td style="${bdr} background:${isPassOverall ? '#dcfce7' : '#fee2e2'} !important; text-align:center; font-weight:900; font-size:0.82rem; color:${isPassOverall ? '#166534' : '#991b1b'};">
-            ${isPassOverall ? "🏆 தேர்ச்சி (PASSED)" : (stu.resultType === "FAIL" ? "❌ தோல்வி (FAILED)" : stu.resultType)}
+            ${isEm ? (isPassOverall ? "PASSED" : (stu.resultType === "FAIL" ? "FAILED" : stu.resultType)) : (isPassOverall ? "🏆 தேர்ச்சி (PASSED)" : (stu.resultType === "FAIL" ? "❌ தோல்வி (FAILED)" : stu.resultType))}
           </td>
           <td style="${bdr} background:#eff6ff !important; padding:4px 4px; text-align:center; font-weight:900; font-size:0.76rem; color:#1e3a8a; line-height:1.25;">
             <div>Rank: <strong style="font-size:0.92rem; color:#6d28d9;">${rankVal}</strong></div>
@@ -43830,30 +43846,46 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
     `;
   }
 
-  const remarkText = isPassOverall
-    ? (totScore / maxTotal >= 0.85
-      ? "🌟 மிகச்சிறப்பான தேர்ச்சி! தொடர்ந்து இதே ஆர்வத்துடன் பயின்று அரசுப் பொதுத்தேர்வில் மாநில / மாவட்ட அளவில் சாதனை படைக்க வாழ்த்துகள்! (Outstanding Academic Performance!)"
-      : "✅ அனைத்துப் பாடங்களிலும் தேர்ச்சி! இன்னும் கூடுதல் மதிப்பெண்கள் பெறத் தொடர்ந்து முயற்சி செய்யவும். (Good Progress — Keep Aiming Higher!)")
-    : "💡 தோல்வியடைந்த பாடங்களில் சிறப்புக் கவனம் செலுத்தி, தினசரி திருப்புதல் பயிற்சிகள் மூலம் வரும் தேர்வில் 100% தேர்ச்சி பெற வாழ்த்துகள்! (Needs Focused Remedial Support)";
+  const remarkText = isEm
+    ? (isPassOverall
+        ? (totScore / maxTotal >= 0.85
+            ? "Outstanding Academic Performance! Keep up this dedication to achieve District / State excellence in the Public Examination."
+            : "Good Progress — Passed in all subjects. Continue steady practice to achieve even higher scores.")
+        : "Needs Focused Remedial Support in the failed subject(s). Daily revision and guided practice will help achieve 100% pass in the next exam.")
+    : (isPassOverall
+        ? (totScore / maxTotal >= 0.85
+            ? "🌟 மிகச்சிறப்பான தேர்ச்சி! தொடர்ந்து இதே ஆர்வத்துடன் பயின்று அரசுப் பொதுத்தேர்வில் மாநில / மாவட்ட அளவில் சாதனை படைக்க வாழ்த்துகள்! (Outstanding Academic Performance!)"
+            : "✅ அனைத்துப் பாடங்களிலும் தேர்ச்சி! இன்னும் கூடுதல் மதிப்பெண்கள் பெறத் தொடர்ந்து முயற்சி செய்யவும். (Good Progress — Keep Aiming Higher!)")
+        : "💡 தோல்வியடைந்த பாடங்களில் சிறப்புக் கவனம் செலுத்தி, தினசரி திருப்புதல் பயிற்சிகள் மூலம் வரும் தேர்வில் 100% தேர்ச்சி பெற வாழ்த்துகள்! (Needs Focused Remedial Support)");
+
+  const termExamEnDisp = String((calc.termMeta && (calc.termMeta.reportHeaderEn || calc.termMeta.shortName)) || "").replace(/Result\s*Analysis\s*Report/gi, "").replace(/[-–—\s]+$/g, "").trim();
 
   return `
     <div class="ra-report-sheet" style="background:#ffffff !important; color:#000000 !important; border:2.5px solid #0f294a; border-radius:12px; padding:14px 18px; margin-bottom:16px; font-family:'Segoe UI',Arial,sans-serif; box-sizing:border-box; page-break-inside:avoid;">
       <!-- Official School Header Banner -->
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2.5px solid #0f294a; padding-bottom:8px; margin-bottom:10px;">
         <div style="background:#0f294a !important; color:#ffffff !important; padding:6px 12px; border-radius:8px; font-weight:900; font-size:0.78rem; line-height:1.25;">
-          <div>பள்ளிக் கல்வித்துறை – சிவகங்கை மாவட்டம்</div>
-          <div style="color:#fde047; font-size:0.70rem;">SCHOOL EDUCATION DEPT • U.NO: ${escapeHtmlAttr(s.uNo || "")}</div>
+          <div>${isEm ? "SCHOOL EDUCATION DEPARTMENT" : "பள்ளிக் கல்வித்துறை – சிவகங்கை மாவட்டம்"}</div>
+          <div style="color:#fde047; font-size:0.70rem;">${isEm ? `SIVAGANGAI DISTRICT • U.NO: ${escapeHtmlAttr(s.uNo || "")}` : `SCHOOL EDUCATION DEPT • U.NO: ${escapeHtmlAttr(s.uNo || "")}`}</div>
         </div>
         <div style="text-align:center; flex:1; padding:0 10px;">
-          <div class="ra-ta" style="font-size:1.18rem; font-weight:900; color:#0f294a;">${escapeHtmlAttr(s.nameTa || s.nameEn || "")}</div>
-          <div style="font-size:0.86rem; font-weight:900; color:#334155;">${escapeHtmlAttr(s.nameEn || "")} ${s.udiseNo ? `• UDISE: ${escapeHtmlAttr(s.udiseNo)}` : ""}</div>
-          <div style="display:inline-block; background:#fef3c7 !important; border:1.5px solid #d97706; color:#92400e !important; padding:2px 14px; border-radius:999px; font-size:0.80rem; font-weight:900; margin-top:3px;">
-            🎓 மாணவர் தேர்ச்சி முன்னேற்ற அறிக்கை (STUDENT PROGRESS REPORT CARD • 2026–2027)
-          </div>
+          ${isEm ? `
+            <div style="font-size:1.12rem; font-weight:900; color:#0f294a;">${escapeHtmlAttr(s.nameEn || s.nameTa || "")}</div>
+            ${s.udiseNo ? `<div style="font-size:0.78rem; font-weight:800; color:#334155;">UDISE: ${escapeHtmlAttr(s.udiseNo)}</div>` : ""}
+            <div style="display:inline-block; background:#fef3c7 !important; border:1.5px solid #d97706; color:#92400e !important; padding:2px 14px; border-radius:999px; font-size:0.80rem; font-weight:900; margin-top:3px;">
+              STUDENT PROGRESS REPORT CARD • 2026–2027
+            </div>
+          ` : `
+            <div class="ra-ta" style="font-size:1.18rem; font-weight:900; color:#0f294a;">${escapeHtmlAttr(s.nameTa || s.nameEn || "")}</div>
+            <div style="font-size:0.86rem; font-weight:900; color:#334155;">${escapeHtmlAttr(s.nameEn || "")} ${s.udiseNo ? `• UDISE: ${escapeHtmlAttr(s.udiseNo)}` : ""}</div>
+            <div style="display:inline-block; background:#fef3c7 !important; border:1.5px solid #d97706; color:#92400e !important; padding:2px 14px; border-radius:999px; font-size:0.80rem; font-weight:900; margin-top:3px;">
+              🎓 மாணவர் தேர்ச்சி முன்னேற்ற அறிக்கை (STUDENT PROGRESS REPORT CARD • 2026–2027)
+            </div>
+          `}
         </div>
         <div style="text-align:right; background:#f0fdfa !important; border:1.5px solid #0f766e; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.80rem; color:#0f766e;">
-          <div>${is12 ? "📙 12-ஆம் வகுப்பு (HSC +2)" : "📘 10-ஆம் வகுப்பு (SSLC)"}</div>
-          <div style="font-size:0.74rem; color:#0f294a; margin-top:2px;">${escapeHtmlAttr(calc.termMeta ? calc.termMeta.shortName : "")}</div>
+          <div>${isEm ? (is12 ? "12th Standard (HSC +2)" : "10th Standard (SSLC)") : (is12 ? "📙 12-ஆம் வகுப்பு (HSC +2)" : "📘 10-ஆம் வகுப்பு (SSLC)")}</div>
+          <div style="font-size:0.74rem; color:#0f294a; margin-top:2px;">${escapeHtmlAttr(isEm ? termExamEnDisp : (calc.termMeta ? calc.termMeta.shortName : ""))}</div>
         </div>
       </div>
 
@@ -43861,24 +43893,28 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
       <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
         <tr>
           <td style="${bdr} background:#f8fafc !important; padding:6px 10px; width:34%; text-align:left;">
-            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">மாணவர் பெயர் (தமிழில் / English):</div>
-            <div class="ra-ta" style="font-size:0.98rem; font-weight:900; color:#0f294a;">${escapeHtmlAttr(nameTaDisp)}</div>
-            <div style="font-size:0.84rem; font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(nameEnDisp)}</div>
+            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">${isEm ? "Student Name:" : "மாணவர் பெயர் (தமிழில் / English):"}</div>
+            ${isEm ? `
+              <div style="font-size:0.98rem; font-weight:900; color:#0f294a;">${escapeHtmlAttr(nameEnDisp)}</div>
+            ` : `
+              <div class="ra-ta" style="font-size:0.98rem; font-weight:900; color:#0f294a;">${escapeHtmlAttr(nameTaDisp)}</div>
+              <div style="font-size:0.84rem; font-weight:900; color:#1e3a8a;">${escapeHtmlAttr(nameEnDisp)}</div>
+            `}
           </td>
           <td style="${bdr} background:#f8fafc !important; padding:6px 10px; width:22%; text-align:left;">
-            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">EMIS எண் &amp; வரிசை எண்:</div>
+            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">${isEm ? "EMIS ID &amp; Roll No:" : "EMIS எண் &amp; வரிசை எண்:"}</div>
             <div style="${numFont} font-size:0.92rem; color:#0f294a;">EMIS: ${escapeHtmlAttr(stu.emisId || "-")}</div>
-            <div style="font-size:0.78rem; font-weight:800; color:#475569;">Roll No: <strong>${escapeHtmlAttr(stu.rollNo || "-")}</strong> | பிறந்த தேதி: ${escapeHtmlAttr(stu.dob || "-")}</div>
+            <div style="font-size:0.78rem; font-weight:800; color:#475569;">Roll No: <strong>${escapeHtmlAttr(stu.rollNo || "-")}</strong> | ${isEm ? "DOB" : "பிறந்த தேதி"}: ${escapeHtmlAttr(stu.dob || "-")}</div>
           </td>
           <td style="${bdr} background:#f8fafc !important; padding:6px 10px; width:24%; text-align:left;">
-            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">வகுப்பு, பிரிவு &amp; பயிற்று மொழி:</div>
-            <div style="font-size:0.88rem; font-weight:900; color:#0f766e;">${is12 ? "12-ஆம் வகுப்பு" : "10-ஆம் வகுப்பு"} — பிரிவு ${escapeHtmlAttr(stu.section || "A")}</div>
+            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">${isEm ? "Class, Section &amp; Medium:" : "வகுப்பு, பிரிவு &amp; பயிற்று மொழி:"}</div>
+            <div style="font-size:0.88rem; font-weight:900; color:#0f766e;">${isEm ? `${is12 ? "12th Std" : "10th Std"} — Section ${escapeHtmlAttr(stu.section || "A")}` : `${is12 ? "12-ஆம் வகுப்பு" : "10-ஆம் வகுப்பு"} — பிரிவு ${escapeHtmlAttr(stu.section || "A")}`}</div>
             <div style="font-size:0.76rem; font-weight:800; color:#334155;">${medLabel}</div>
           </td>
           <td style="${bdr} background:${isPassOverall ? '#f0fdf4' : '#fef2f2'} !important; padding:6px 10px; width:20%; text-align:center;">
-            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">மொத்த மதிப்பெண் &amp; தரம்:</div>
+            <div style="font-size:0.72rem; color:#64748b; font-weight:800;">${isEm ? "Total Marks &amp; Rank:" : "மொத்த மதிப்பெண் &amp; தரம்:"}</div>
             <div style="${numFont} font-size:1.22rem; color:${isPassOverall ? '#15803d' : '#dc2626'};">${totScore || 0} / ${maxTotal} (${pctStr})</div>
-            <div style="font-size:0.76rem; font-weight:900; color:#1e3a8a;">தரவரிசை (Rank): ${rankVal}</div>
+            <div style="font-size:0.76rem; font-weight:900; color:#1e3a8a;">${isEm ? "Class Rank" : "தரவரிசை (Rank)"}: ${rankVal}</div>
           </td>
         </tr>
       </table>
@@ -43888,19 +43924,19 @@ function buildSingleStudentProgressCardHtml(stu, calc, rankByScore, formatMode, 
 
       <!-- Teacher Remarks & 3 Official Signatures Footer -->
       <div style="background:#fffbeb !important; border:1.5px solid #fcd34d; border-radius:8px; padding:7px 12px; margin-bottom:12px; font-size:0.80rem; font-weight:800; color:#78350f;">
-        <strong>📝 வகுப்பு ஆசிரியர் / தலைமை ஆசிரியர் குறிப்பு (Remarks):</strong> <span class="ra-ta">${remarkText}</span>
+        <strong>${isEm ? "Class Teacher / Headmaster Remarks:" : "📝 வகுப்பு ஆசிரியர் / தலைமை ஆசிரியர் குறிப்பு (Remarks):"}</strong> <span class="${isEm ? '' : 'ra-ta'}">${remarkText}</span>
       </div>
 
       <table style="width:100%; border-collapse:collapse; table-layout:fixed; margin-top:16px;">
         <tr>
           <td style="border:none; text-align:center; padding-top:22px; font-weight:900; font-size:0.82rem; color:#0f294a;">
-            <div style="border-top:1.5px dashed #475569; width:75%; margin:0 auto; padding-top:4px;">👨‍🏫 வகுப்பு ஆசிரியர் கையொப்பம்<br><span style="font-size:0.72rem; color:#64748b;">(Class Teacher's Signature)</span></div>
+            <div style="border-top:1.5px dashed #475569; width:75%; margin:0 auto; padding-top:4px;">${isEm ? "Class Teacher's Signature" : "👨‍🏫 வகுப்பு ஆசிரியர் கையொப்பம்<br><span style='font-size:0.72rem; color:#64748b;'>(Class Teacher's Signature)</span>"}</div>
           </td>
           <td style="border:none; text-align:center; padding-top:22px; font-weight:900; font-size:0.82rem; color:#0f294a;">
-            <div style="border-top:1.5px dashed #475569; width:75%; margin:0 auto; padding-top:4px;">👨‍👩‍👧 பெற்றோர் / பாதுகாவலர் கையொப்பம்<br><span style="font-size:0.72rem; color:#64748b;">(Parent / Guardian's Signature)</span></div>
+            <div style="border-top:1.5px dashed #475569; width:75%; margin:0 auto; padding-top:4px;">${isEm ? "Parent / Guardian's Signature" : "👨‍👩‍👧 பெற்றோர் / பாதுகாவலர் கையொப்பம்<br><span style='font-size:0.72rem; color:#64748b;'>(Parent / Guardian's Signature)</span>"}</div>
           </td>
           <td style="border:none; text-align:center; padding-top:22px; font-weight:900; font-size:0.82rem; color:#0f294a;">
-            <div style="border-top:1.5px dashed #475569; width:75%; margin:0 auto; padding-top:4px;">🏫 தலைமை ஆசிரியர் / முதல்வர் கையொப்பம் &amp; முத்திரை<br><span style="font-size:0.72rem; color:#64748b;">(${escapeHtmlAttr(s.hmTa || s.hmName || "Headmaster / Principal")})</span></div>
+            <div style="border-top:1.5px dashed #475569; width:75%; margin:0 auto; padding-top:4px;">${isEm ? `Headmaster / Principal's Signature &amp; Seal<br><span style="font-size:0.72rem; color:#64748b;">(${escapeHtmlAttr(s.hmName || "Headmaster / Principal")})</span>` : `🏫 தலைமை ஆசிரியர் / முதல்வர் கையொப்பம் &amp; முத்திரை<br><span style="font-size:0.72rem; color:#64748b;">(${escapeHtmlAttr(s.hmTa || s.hmName || "Headmaster / Principal")})</span>`}</div>
           </td>
         </tr>
       </table>
@@ -49166,7 +49202,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.63) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.64) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -49228,7 +49264,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.63)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.64)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -55719,7 +55755,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     const payload = {
       dualWriteEnabled: Boolean(enabled),
       updatedAt: Date.now(),
-      version: "v9.63"
+      version: "v9.64"
     };
     let fbOk = false;
     try {
@@ -56808,7 +56844,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       const payload = {
         d1PrimaryEnabled: Boolean(enabled),
         updatedAt: new Date().toISOString(),
-        version: "v9.63"
+        version: "v9.64"
       };
       const fbBase = getFirebaseBaseV88();
       const workerBase = getWorkerBaseV88();
@@ -56834,7 +56870,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
   // Upgraded v8.8 worker.js source generator (includes HMAC-SHA256 Session Auth + /__d1/node Primary Read + KV Cache)
   window.getCfKvWorkerSourceCode = function() {
     return [
-      '// Cloudflare Worker: ceosvg-fb-cache (v9.63 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
+      '// Cloudflare Worker: ceosvg-fb-cache (v9.64 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
       '// Bindings required: CEOSVG_CACHE_KV (KV Namespace), CEOSVG_D1 (D1 Database: ceosvg-portal-db)',
       '// Optional Secret for Auth Enforcement: SESSION_SECRET (Settings -> Variables & Secrets -> Add Secret)',
       'const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";',
@@ -56942,7 +56978,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '    // 1) Health check',
       '    if (pathname === "" || pathname === "__health") {',
       '      return jsonResp({',
-      '        ok: true, service: "ceosvg-fb-cache", version: "v9.63",',
+      '        ok: true, service: "ceosvg-fb-cache", version: "v9.64",',
       '        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),',
       '        d1Bound: Boolean(env && env.CEOSVG_D1),',
       '        authEnforced,',
@@ -59078,7 +59114,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
   }
 
   window.CEOSVG_API_CLIENT = {
-    version: "v9.63",
+    version: "v9.64",
     fetch: unifiedFetch,
     nativeFetch: nativeFetch,
     stats: stats,
@@ -60402,12 +60438,15 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
   }
 
   function buildMarkRegisterPageHtml(ctx, secGrp, pageRows, pageIdx, totalSecPages, isLastSecPage) {
+    const isEm = String(secGrp.medium || "TM").toUpperCase() === "EM";
     const rawTa = String(ctx.termMeta.reportHeaderTa || ctx.termMeta.shortName || "").replace(/தேர்ச்சிப்\s*பகுப்பாய்வு\s*அறிக்கை/g, "").replace(/[-–—\s]+$/g, "").trim();
     const rawEn = String(ctx.termMeta.reportHeaderEn || ctx.termKey || "").replace(/Result\s*Analysis\s*Report/gi, "").replace(/[-–—\s]+$/g, "").trim();
-    const examTitleTa = rawTa || rawEn;
-    const schoolTaName = String(ctx.sch.nameTa || ctx.sch.nameEn || ("பள்ளி " + ctx.uNo)).trim();
+    const examTitleDisp = isEm ? (rawEn || rawTa) : (rawTa || rawEn);
+    const schoolTitleDisp = isEm
+      ? String(ctx.sch.nameEn || ctx.sch.nameTa || ("School " + ctx.uNo)).trim()
+      : String(ctx.sch.nameTa || ctx.sch.nameEn || ("பள்ளி " + ctx.uNo)).trim();
     const stdNumLbl = ctx.is12 ? "12" : "10";
-    const medLbl = String(secGrp.medium || "TM").toUpperCase() === "EM" ? "English Medium (EM)" : "தமிழ் வழி (TM)";
+    const medLbl = isEm ? "English Medium" : "தமிழ் வழி (TM)";
 
     const bdr = "border:0.6px solid #94a3b8; padding:2.5px 3.5px; vertical-align:middle;";
     const hdrBdr = "border:0.6px solid #64748b; padding:5px 2px; vertical-align:middle; text-align:center; line-height:1.2; word-break:keep-all;";
@@ -60429,7 +60468,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
       return `
         <tr style="height:23px;">
           <td style="${bdr} text-align:center; font-family:'Segoe UI',Arial,sans-serif; font-weight:800; font-size:11px;">${r.sno}</td>
-          <td style="${bdr} text-align:left; font-family:'Noto Sans Tamil','Segoe UI',Arial,sans-serif; font-weight:700; font-size:10.8px; color:#0f294a; line-height:1.25; padding-left:5px;">${escMr(r.nameDisp)}</td>
+          <td style="${bdr} text-align:left; font-family:${isEm ? "'Segoe UI',Arial,sans-serif" : "'Noto Sans Tamil','Segoe UI',Arial,sans-serif"}; font-weight:700; font-size:10.8px; color:#0f294a; line-height:1.25; padding-left:5px;">${escMr(isEm ? (r.nameEn || r.nameDisp) : r.nameDisp)}</td>
           <td style="${bdr} text-align:center; font-family:'Segoe UI',Arial,sans-serif; font-weight:700; font-size:10px; color:#475569;">${escMr(r.gender)}</td>
           ${subCells}
           <td style="${bdr} text-align:center; font-family:'Segoe UI',Arial,sans-serif; font-weight:900; font-size:12.5px; color:#0f294a; background:#f8fafc;">${escMr(r.total)}</td>
@@ -60445,19 +60484,19 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
       const emptyRowHtml = pageRows.length > 0 ? `<tr>${emptyCells}</tr>` : "";
 
       const topExamRows = [
-        { label: "தேர்வு எழுதியவர்கள் (Appeared)", prop: "appeared", bg: "#f8fafc", clr: "#0f294a" },
-        { label: "தேர்ச்சி பெற்றவர்கள் (Passed)", prop: "passed", bg: "#f0fdf4", clr: "#15803d" },
-        { label: "தேர்ச்சி சதவீதம் (Pass %)", prop: "passPct", bg: "#fefce8", clr: "#92400e" }
+        { label: isEm ? "No. of Students Appeared" : "தேர்வு எழுதியவர்கள் (Appeared)", prop: "appeared", bg: "#f8fafc", clr: "#0f294a" },
+        { label: isEm ? "No. of Students Passed" : "தேர்ச்சி பெற்றவர்கள் (Passed)", prop: "passed", bg: "#f0fdf4", clr: "#15803d" },
+        { label: isEm ? "Pass Percentage (%)" : "தேர்ச்சி சதவீதம் (Pass %)", prop: "passPct", bg: "#fefce8", clr: "#92400e" }
       ];
       const statDefs = ctx.is12
         ? [
             ...topExamRows,
-            { label: "சராசரி மதிப்பெண் (Average Mark)", prop: "avg", bg: "#eff6ff", clr: "#1e3a8a" },
-            { label: "உயர்ந்த மதிப்பெண் (Highest Mark)", prop: "max", bg: "#f0fdf4", clr: "#15803d" },
-            { label: "குறைந்த மதிப்பெண் (Lowest Mark)", prop: "min", bg: "#fffbeb", clr: "#b45309" },
+            { label: isEm ? "Average Mark" : "சராசரி மதிப்பெண் (Average Mark)", prop: "avg", bg: "#eff6ff", clr: "#1e3a8a" },
+            { label: isEm ? "Highest Mark" : "உயர்ந்த மதிப்பெண் (Highest Mark)", prop: "max", bg: "#f0fdf4", clr: "#15803d" },
+            { label: isEm ? "Lowest Mark" : "குறைந்த மதிப்பெண் (Lowest Mark)", prop: "min", bg: "#fffbeb", clr: "#b45309" },
             { label: "Long Absent", prop: "la", bg: "#f8fafc", clr: "#475569" },
-            { label: "தேர்விற்கு வருகைதராதவர்கள் எண்ணிக்கை (Absent)", prop: "ab", bg: "#fff1f2", clr: "#be123c" },
-            { label: "தேர்ச்சி பெறாதவர்கள் (Failed)", prop: "failed", bg: "#fef2f2", clr: "#dc2626" },
+            { label: isEm ? "No. of Students Absent" : "தேர்விற்கு வருகைதராதவர்கள் எண்ணிக்கை (Absent)", prop: "ab", bg: "#fff1f2", clr: "#be123c" },
+            { label: isEm ? "No. of Students Failed" : "தேர்ச்சி பெறாதவர்கள் (Failed)", prop: "failed", bg: "#fef2f2", clr: "#dc2626" },
             { label: "Mark Range : 35 - 60", prop: "r35_60", bg: "#ffffff", clr: "#0f172a" },
             { label: "Mark Range : 61 - 80", prop: "r61_80", bg: "#ffffff", clr: "#0f172a" },
             { label: "Mark Range : 81 - 99", prop: "r81_99", bg: "#ffffff", clr: "#0f172a" },
@@ -60465,13 +60504,13 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
           ]
         : [
             ...topExamRows,
-            { label: "சராசரி மதிப்பெண் (Average Mark)", prop: "avg", bg: "#eff6ff", clr: "#1e3a8a" },
-            { label: "உயர்ந்த மதிப்பெண் (Highest Mark)", prop: "max", bg: "#f0fdf4", clr: "#15803d" },
-            { label: "குறைந்த மதிப்பெண் (Lowest Mark)", prop: "min", bg: "#fffbeb", clr: "#b45309" },
+            { label: isEm ? "Average Mark" : "சராசரி மதிப்பெண் (Average Mark)", prop: "avg", bg: "#eff6ff", clr: "#1e3a8a" },
+            { label: isEm ? "Highest Mark" : "உயர்ந்த மதிப்பெண் (Highest Mark)", prop: "max", bg: "#f0fdf4", clr: "#15803d" },
+            { label: isEm ? "Lowest Mark" : "குறைந்த மதிப்பெண் (Lowest Mark)", prop: "min", bg: "#fffbeb", clr: "#b45309" },
             { label: "Long Absent", prop: "la", bg: "#f8fafc", clr: "#475569" },
             { label: "Home Based Students", prop: "hb", bg: "#f8fafc", clr: "#475569" },
-            { label: "தேர்விற்கு வருகைதராதவர்கள் எண்ணிக்கை (Absent)", prop: "ab", bg: "#fff1f2", clr: "#be123c" },
-            { label: "தேர்ச்சி பெறாதவர்கள் (Failed)", prop: "failed", bg: "#fef2f2", clr: "#dc2626" },
+            { label: isEm ? "No. of Students Absent" : "தேர்விற்கு வருகைதராதவர்கள் எண்ணிக்கை (Absent)", prop: "ab", bg: "#fff1f2", clr: "#be123c" },
+            { label: isEm ? "No. of Students Failed" : "தேர்ச்சி பெறாதவர்கள் (Failed)", prop: "failed", bg: "#fef2f2", clr: "#dc2626" },
             { label: "Mark Range : 35 - 45", prop: "r35_45", bg: "#ffffff", clr: "#0f172a" },
             { label: "Mark Range : 46 - 60", prop: "r46_60", bg: "#ffffff", clr: "#0f172a" },
             { label: "Mark Range : 61 - 80", prop: "r61_80", bg: "#ffffff", clr: "#0f172a" },
@@ -60512,9 +60551,9 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
         <span style="color:#1d4ed8;">Pass %: ${secGrp.summary.passPct}</span>
       </div>
       <div style="margin-top:22px; display:flex; justify-content:space-between; font-family:'Noto Sans Tamil','Segoe UI',Arial,sans-serif; font-size:10.5px; font-weight:800; color:#0f172a; padding:0 6px;">
-        <span>வகுப்பு ஆசிரியர் கையொப்பம் (Class Teacher)</span>
-        <span>நாள்: ${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span>
-        <span>தலைமையாசிரியர் கையொப்பம் (Headmaster)</span>
+        <span>${isEm ? "Class Teacher's Signature" : "வகுப்பு ஆசிரியர் கையொப்பம் (Class Teacher)"}</span>
+        <span>${isEm ? "Date" : "நாள்"}: ${formatDateDisplayDMY(new Date().toISOString().slice(0, 10))}</span>
+        <span>${isEm ? "Headmaster's Signature" : "தலைமையாசிரியர் கையொப்பம் (Headmaster)"}</span>
       </div>` : "";
 
     return `
@@ -60522,14 +60561,14 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
         <!-- v9.60 Clean Borderless 3-Line Official Header (No borders, No Group Name) -->
         <div style="margin-bottom:8px;">
           <div style="text-align:center; font-family:'Noto Serif Tamil','Noto Sans Tamil',serif; font-weight:800; font-size:16.5px; color:#0f294a; line-height:1.35; letter-spacing:0; margin-bottom:5px;">
-            ${escMr(schoolTaName)}
+            ${escMr(schoolTitleDisp)}
           </div>
           <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
-            <span style="font-family:'Noto Sans Tamil',sans-serif; font-weight:800; font-size:12px; color:#1e3a8a;">வகுப்பு மதிப்பெண் பதிவேடு</span>
-            <span style="font-family:'Noto Sans Tamil',sans-serif; font-weight:800; font-size:12px; color:#0f294a;">${escMr(examTitleTa)}</span>
+            <span style="font-family:'Noto Sans Tamil',sans-serif; font-weight:800; font-size:12px; color:#1e3a8a;">${isEm ? "CLASS MARK REGISTER" : "வகுப்பு மதிப்பெண் பதிவேடு"}</span>
+            <span style="font-family:'Noto Sans Tamil',sans-serif; font-weight:800; font-size:12px; color:#0f294a;">${escMr(examTitleDisp)}</span>
           </div>
           <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; font-family:'Noto Sans Tamil','Segoe UI',sans-serif; font-weight:800; font-size:11px; color:#0f294a;">
-            <span style="text-align:left;">வகுப்பு: ${escMr(stdNumLbl)} &nbsp;&nbsp; பிரிவு: ${escMr(secGrp.secId)}</span>
+            <span style="text-align:left;">${isEm ? `Class: ${escMr(stdNumLbl)} &nbsp;&nbsp; Section: ${escMr(secGrp.secId)}` : `வகுப்பு: ${escMr(stdNumLbl)} &nbsp;&nbsp; பிரிவு: ${escMr(secGrp.secId)}`}</span>
             <span style="text-align:center; color:#0f766e;">${escMr(medLbl)}</span>
             <span style="text-align:right;">2026-2027</span>
           </div>
@@ -60755,7 +60794,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
 </script>
 
 <style>
-/* === CEOSVG v9.63 CLASS TEACHER RESTRICTED PORTAL MODE === */
+/* === CEOSVG v9.64 CLASS TEACHER RESTRICTED PORTAL MODE === */
 body.class-teacher-mode #schoolTopMenuBar,
 body.class-teacher-mode #schAdminSwitchWrap,
 body.class-teacher-mode #schBackToAdminBtn,
@@ -60784,7 +60823,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
 }
 </style>
 
-<!-- CLASS TEACHER LOGIN MODAL (v9.63) -->
+<!-- CLASS TEACHER LOGIN MODAL (v9.64) -->
 <div id="classTeacherLoginModal" class="modal-backdrop" onclick="if(event.target===this) window.closeClassTeacherLoginModal()">
   <div class="modal-card" style="max-width:440px; border-top:5px solid #16a34a;">
     <div class="modal-header" style="border-bottom:1.5px solid #dcfce7;">
@@ -60814,7 +60853,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
 
 <script>
 // ============================================================================
-// === CEOSVG v9.63 CLASS TEACHER MARKING, LOGIN & RESTRICTED WORKSPACE ===
+// === CEOSVG v9.64 CLASS TEACHER MARKING, LOGIN & RESTRICTED WORKSPACE ===
 // ============================================================================
 (function() {
   if (window.__ceosvgV955ClassTeacherLoaded) return;
@@ -60981,7 +61020,7 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
             passHash: passHash,
             updatedAt: nowIso
           };
-          // v9.63 Fix: Write directly to Firebase RTDB (bypasses school-scoped Worker 403 on class_teacher_auth/)
+          // v9.64 Fix: Write directly to Firebase RTDB (bypasses school-scoped Worker 403 on class_teacher_auth/)
           const _nfCt = getNativeFetchForCtV962();
           const _fbCt = getDirectFbBaseForCtV962();
           await _nfCt(`${_fbCt}/${authPath}.json`, {
@@ -61599,6 +61638,338 @@ body.class-teacher-mode button[onclick*="deleteMidTermStudentRow"] {
       </div>
     </body></html>`);
     w.document.close();
+  };
+})();
+</script>
+
+<script>
+// ============================================================================
+// === CEOSVG v9.55 FAILED STUDENTS SUBJECT-COUNT REPORT (SCHOOL & CLASS TEACHER) ===
+// Groups failed students strictly in order:
+//   10th: 1 பாடம், 2 பாடம், 3 பாடம், 4 பாடம், அனைத்துப் பாடம் (5 பாடம்)
+//   12th: 1 பாடம், 2 பாடம், 3 பாடம், 4 பாடம், 5 பாடம், அனைத்துப் பாடம் (6 பாடம்)
+// Supports Section Filter (auto-scoped for Class Teacher), PDF (A4) & Excel (.xlsx).
+// ============================================================================
+(function() {
+  if (window.__ceosvgV955FailedListLoaded) return;
+  window.__ceosvgV955FailedListLoaded = true;
+
+  let _failedListSecFilter = "ALL";
+  let _failedListBucketFilter = "ALL";
+  let _lastFailedReportCalc = null;
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+  }
+
+  function getSubDisplayLabel(subKey, is12) {
+    if (is12) {
+      if (typeof HSC12_SUBJECT_MAP !== "undefined" && HSC12_SUBJECT_MAP[subKey]) {
+        return String(HSC12_SUBJECT_MAP[subKey].shortEn || HSC12_SUBJECT_MAP[subKey].labelEn || subKey).replace(/\n/g, " ");
+      }
+      return subKey;
+    }
+    const map10 = { TAMIL: "தமிழ்", ENGLISH: "ஆங்கிலம்", MATHS: "கணிதம்", SCIENCE: "அறிவியல்", SOCIAL: "சமூக அறிவியல்" };
+    return map10[subKey] || subKey;
+  }
+
+  function collectGroupedFailedStudents(calc, secFilter) {
+    const is12 = Boolean(calc && String(calc.std || _activeResultAnalysisStd || "10") === "12");
+    const maxSubs = is12 ? 6 : 5;
+    const allStu = Array.isArray(calc && calc.evaluatedStudents) ? calc.evaluatedStudents : [];
+
+    // Respect Class Teacher section scope automatically
+    let allowedSecs = null;
+    if (window.activeClassTeacherSession && Array.isArray(window.activeClassTeacherSession.allowedSecIds) && window.activeClassTeacherSession.allowedSecIds.length > 0) {
+      allowedSecs = new Set(window.activeClassTeacherSession.allowedSecIds.map(x => String(x).trim().toUpperCase()));
+    }
+
+    const failedList = [];
+    allStu.forEach((st, idx) => {
+      if (!st) return;
+      const fSubs = Array.isArray(st.failedSubs) ? st.failedSubs : [];
+      if (fSubs.length === 0) return;
+      const secId = String(st.section || "A").trim();
+      if (allowedSecs && !allowedSecs.has(secId.toUpperCase())) return;
+      if (secFilter && secFilter !== "ALL" && secId.toUpperCase() !== String(secFilter).trim().toUpperCase()) return;
+
+      const fCount = Math.min(maxSubs, fSubs.length);
+      const bucketKey = (fCount >= maxSubs) ? "ALL_SUBS" : ("S" + fCount);
+      const bucketLabelTa = (fCount >= maxSubs) ? `அனைத்துப் பாடம் (${maxSubs} பாடங்கள்)` : `${fCount} பாடம் தோல்வி`;
+
+      const marksObj = (st.marks && typeof st.marks === "object") ? st.marks : {};
+      const failedDetailsArr = fSubs.map(item => {
+        const sk = (typeof item === "string") ? item : (item.key || item.subKey || "");
+        const lbl = (typeof item === "object" && item && (item.labelEn || item.labelTa || item.label))
+          ? String(item.labelEn || item.labelTa || item.label).replace(/\n/g, " ")
+          : getSubDisplayLabel(sk, is12);
+        const mk = (typeof item === "object" && item && item.mark !== undefined)
+          ? item.mark
+          : (marksObj[sk] !== undefined ? marksObj[sk] : "-");
+        return `${lbl}: ${mk}`;
+      });
+
+      failedList.push({
+        origIdx: idx,
+        rollNo: String(st.rollNo || (idx + 1)),
+        emisId: String(st.emisId || ""),
+        nameTa: String(st.nameTa || ""),
+        nameEn: String(st.nameEn || st.name || ""),
+        nameDisp: String(st.nameTa || st.nameEn || st.name || "-"),
+        gender: String(st.gender || ""),
+        section: secId,
+        fCount,
+        bucketKey,
+        bucketLabelTa,
+        failedDetailsText: failedDetailsArr.join(", "),
+        totalMark: is12 ? (st.total600 !== undefined ? st.total600 : "-") : (st.total500 !== undefined ? st.total500 : "-"),
+        maxTotal: is12 ? 600 : 500
+      });
+    });
+
+    // Sort strictly: 1 பாடம் -> 2 பாடம் -> 3 பாடம் -> 4 பாடம் -> 5 பாடம் -> அனைத்துப் பாடம், then section, then rollNo
+    failedList.sort((a, b) => {
+      if (a.fCount !== b.fCount) return a.fCount - b.fCount;
+      if (a.section !== b.section) return a.section.localeCompare(b.section);
+      return (Number(a.rollNo) || 0) - (Number(b.rollNo) || 0) || a.nameDisp.localeCompare(b.nameDisp);
+    });
+
+    const bucketsOrder = is12
+      ? [
+          { key: "S1", count: 1, title: "1 பாடம் தோல்வி (Single Subject Failed)", short: "1 பாடம்", bg: "#fffbeb", border: "#fcd34d", color: "#92400e" },
+          { key: "S2", count: 2, title: "2 பாடங்கள் தோல்வி (Two Subjects Failed)", short: "2 பாடம்", bg: "#fff7ed", border: "#fdba74", color: "#9a3412" },
+          { key: "S3", count: 3, title: "3 பாடங்கள் தோல்வி (Three Subjects Failed)", short: "3 பாடம்", bg: "#fef2f2", border: "#fca5a5", color: "#b91c1c" },
+          { key: "S4", count: 4, title: "4 பாடங்கள் தோல்வி (Four Subjects Failed)", short: "4 பாடம்", bg: "#fef2f2", border: "#f87171", color: "#991b1b" },
+          { key: "S5", count: 5, title: "5 பாடங்கள் தோல்வி (Five Subjects Failed)", short: "5 பாடம்", bg: "#fdf2f8", border: "#f472b6", color: "#9d174d" },
+          { key: "ALL_SUBS", count: 6, title: "அனைத்துப் பாடங்களும் தோல்வி (All 6 Subjects Failed)", short: "அனைத்துப் பாடம்", bg: "#fee2e2", border: "#dc2626", color: "#7f1d1d" }
+        ]
+      : [
+          { key: "S1", count: 1, title: "1 பாடம் தோல்வி (Single Subject Failed)", short: "1 பாடம்", bg: "#fffbeb", border: "#fcd34d", color: "#92400e" },
+          { key: "S2", count: 2, title: "2 பாடங்கள் தோல்வி (Two Subjects Failed)", short: "2 பாடம்", bg: "#fff7ed", border: "#fdba74", color: "#9a3412" },
+          { key: "S3", count: 3, title: "3 பாடங்கள் தோல்வி (Three Subjects Failed)", short: "3 பாடம்", bg: "#fef2f2", border: "#fca5a5", color: "#b91c1c" },
+          { key: "S4", count: 4, title: "4 பாடங்கள் தோல்வி (Four Subjects Failed)", short: "4 பாடம்", bg: "#fef2f2", border: "#f87171", color: "#991b1b" },
+          { key: "ALL_SUBS", count: 5, title: "அனைத்துப் பாடங்களும் தோல்வி (All 5 Subjects Failed)", short: "அனைத்துப் பாடம்", bg: "#fee2e2", border: "#dc2626", color: "#7f1d1d" }
+        ];
+
+    const grouped = bucketsOrder.map(b => ({
+      ...b,
+      students: failedList.filter(s => s.bucketKey === b.key)
+    }));
+
+    return { is12, maxSubs, failedList, grouped };
+  }
+
+  function buildPrintableFailedListHtml(calc, data, forPdf) {
+    const s = (calc && calc.sch) || activeSchoolSession || { uNo: "", nameTa: "", nameEn: "", udiseNo: "" };
+    const termTitleTa = (calc && calc.termMeta && calc.termMeta.reportHeaderTa) ? calc.termMeta.reportHeaderTa : "";
+    const termTitleEn = (calc && calc.termMeta && calc.termMeta.reportHeaderEn) ? calc.termMeta.reportHeaderEn : "";
+    const stdLabel = data.is12 ? "12-ஆம் வகுப்பு (HSC +2)" : "10-ஆம் வகுப்பு (SSLC)";
+    const secLabel = (_failedListSecFilter && _failedListSecFilter !== "ALL") ? `பிரிவு: ${_failedListSecFilter}` : (window.activeClassTeacherSession ? "வகுப்பாசிரியர் பிரிவு" : "அனைத்துப் பிரிவுகள்");
+
+    const visibleGroups = data.grouped.filter(g => g.students.length > 0 && (_failedListBucketFilter === "ALL" || _failedListBucketFilter === g.key));
+    const totalShown = visibleGroups.reduce((acc, g) => acc + g.students.length, 0);
+
+    const summaryCells = data.grouped.map(g => `
+      <td style="border:1.5px solid #0f294a; padding:5px 4px; text-align:center; background:${g.bg};">
+        <div style="font-size:0.70rem; font-weight:800; color:${g.color};">${esc(g.short)}</div>
+        <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:1.05rem; font-weight:900; color:#0f172a;">${g.students.length}</div>
+      </td>
+    `).join("");
+
+    let globalSn = 0;
+    const sectionsHtml = visibleGroups.length === 0
+      ? `<div style="padding:22px; text-align:center; background:#f0fdf4; border:1.5px solid #86efac; border-radius:8px; color:#166534; font-weight:900; font-size:0.95rem;">🎉 தேர்ந்தெடுக்கப்பட்ட பிரிவில் தேர்ச்சி பெறாத மாணவர்கள் எவரும் இல்லை (100% தேர்ச்சி)!</div>`
+      : visibleGroups.map(g => {
+          const rows = g.students.map(st => {
+            globalSn++;
+            return `
+              <tr style="page-break-inside:avoid;">
+                <td style="border:1px solid #94a3b8; padding:5px 6px; text-align:center; font-weight:800;">${globalSn}</td>
+                <td style="border:1px solid #94a3b8; padding:5px 6px; text-align:center; font-family:'Segoe UI',Arial,sans-serif; font-weight:800;">${esc(st.rollNo)}</td>
+                <td style="border:1px solid #94a3b8; padding:5px 7px; text-align:left; font-weight:800; color:#0f294a;">${esc(st.nameDisp)}</td>
+                <td style="border:1px solid #94a3b8; padding:5px 6px; text-align:center; font-weight:800;">${esc(st.section)}</td>
+                <td style="border:1px solid #94a3b8; padding:5px 7px; text-align:left; font-weight:800; color:#b91c1c;">${esc(st.failedDetailsText)}</td>
+                <td style="border:1px solid #94a3b8; padding:5px 6px; text-align:center; font-family:'Segoe UI',Arial,sans-serif; font-weight:900; color:#0f294a;">${esc(st.totalMark)}/${st.maxTotal}</td>
+              </tr>`;
+          }).join("");
+          return `
+            <div style="margin-top:12px;">
+              <div style="background:${g.bg}; border:1.5px solid ${g.border}; border-left:5px solid ${g.color}; padding:6px 10px; font-weight:900; color:${g.color}; font-size:0.86rem; border-radius:6px 6px 0 0;">
+                ${esc(g.title)} — மொத்தம்: ${g.students.length} மாணவர்கள்
+              </div>
+              <table style="width:100%; border-collapse:collapse; font-size:0.80rem; background:#ffffff;">
+                <thead>
+                  <tr style="background:#f1f5f9; color:#0f294a;">
+                    <th style="border:1px solid #94a3b8; padding:5px 6px; width:6%;">வ.எண்</th>
+                    <th style="border:1px solid #94a3b8; padding:5px 6px; width:9%;">Roll No</th>
+                    <th style="border:1px solid #94a3b8; padding:5px 7px; text-align:left; width:28%;">மாணவர் பெயர்</th>
+                    <th style="border:1px solid #94a3b8; padding:5px 6px; width:8%;">பிரிவு</th>
+                    <th style="border:1px solid #94a3b8; padding:5px 7px; text-align:left; width:37%;">தோல்வியடைந்த பாடங்கள் &amp; மதிப்பெண்கள்</th>
+                    <th style="border:1px solid #94a3b8; padding:5px 6px; width:12%;">மொத்தம்</th>
+                  </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>`;
+        }).join("");
+
+    return `
+      <div style="background:#ffffff; color:#0f172a; padding:${forPdf ? '6px' : '14px'}; border:${forPdf ? 'none' : '1.5px solid #cbd5e1; border-radius:10px;'}; font-family:'Noto Sans Tamil','Segoe UI',Arial,sans-serif;">
+        <div style="border:2px solid #0f294a; border-radius:6px; padding:8px 12px; background:#fef2f2; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <div>
+              <div style="font-size:0.78rem; font-weight:900; color:#991b1b;">முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் — தேர்ச்சி பெறாத மாணவர்கள் பட்டியல்</div>
+              <div style="font-size:0.96rem; font-weight:900; color:#0f294a;">[${esc(s.uNo)}] ${esc(s.nameTa || s.nameEn)}</div>
+              <div style="font-size:0.78rem; font-weight:800; color:#334155;">${esc(stdLabel)} | ${esc(termTitleTa || termTitleEn)} | ${esc(secLabel)}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.72rem; font-weight:800; color:#64748b;">மொத்த தேர்ச்சி பெறாதோர்</div>
+              <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:1.45rem; font-weight:900; color:#dc2626; line-height:1;">${totalShown}</div>
+            </div>
+          </div>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed;">
+          <tr>${summaryCells}</tr>
+        </table>
+
+        ${sectionsHtml}
+
+        <div style="display:flex; justify-content:space-between; margin-top:18px; padding-top:8px; border-top:1px solid #cbd5e1; font-size:0.80rem; font-weight:800; color:#0f294a;">
+          <span>நாள்: ${typeof formatDateDisplayDMY === "function" ? formatDateDisplayDMY(new Date().toISOString().slice(0, 10)) : new Date().toLocaleDateString("en-IN")}</span>
+          <span>${window.activeClassTeacherSession ? "வகுப்பாசிரியர் கையொப்பம்" : "தலைமையாசிரியர் கையொப்பம்"}</span>
+        </div>
+      </div>`;
+  }
+
+  window.renderSchoolFailedStudentsReportPane = function(calc) {
+    const pane = document.getElementById("mtSubPaneFailedList");
+    if (!pane || !calc) return;
+    _lastFailedReportCalc = calc;
+
+    const secs = Array.isArray(calc.rec && calc.rec.sections) ? calc.rec.sections : [];
+    const allowedSecs = (window.activeClassTeacherSession && Array.isArray(window.activeClassTeacherSession.allowedSecIds))
+      ? new Set(window.activeClassTeacherSession.allowedSecIds.map(x => String(x).trim().toUpperCase()))
+      : null;
+    const visibleSecs = allowedSecs ? secs.filter(s => s && allowedSecs.has(String(s.secId || "").toUpperCase())) : secs;
+    if (_failedListSecFilter !== "ALL" && !visibleSecs.some(s => String(s.secId) === String(_failedListSecFilter))) {
+      _failedListSecFilter = "ALL";
+    }
+
+    const data = collectGroupedFailedStudents(calc, _failedListSecFilter);
+    const secOpts = `<option value="ALL" ${_failedListSecFilter === "ALL" ? "selected" : ""}>அனைத்துப் பிரிவுகள் (All)</option>` +
+      visibleSecs.map(s => `<option value="${esc(s.secId)}" ${_failedListSecFilter === String(s.secId) ? "selected" : ""}>பிரிவு ${esc(s.secId)}</option>`).join("");
+
+    const bucketOpts = `<option value="ALL" ${_failedListBucketFilter === "ALL" ? "selected" : ""}>அனைத்து வகைகளும் (1 ➔ அனைத்துப் பாடம்)</option>` +
+      data.grouped.map(g => `<option value="${esc(g.key)}" ${_failedListBucketFilter === g.key ? "selected" : ""}>${esc(g.short)} (${g.students.length})</option>`).join("");
+
+    pane.innerHTML = `
+      <div style="background:#fef2f2; border:1.5px solid #fca5a5; border-radius:10px; padding:10px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <strong style="color:#991b1b; font-size:0.86rem;">⚠️ தேர்ச்சி பெறாதோர் வடிகட்டி:</strong>
+          <select class="form-control" style="width:auto; padding:4px 8px; font-size:0.80rem; font-weight:800;" onchange="window.onFailedListFilterChange('sec', this.value)">${secOpts}</select>
+          <select class="form-control" style="width:auto; padding:4px 8px; font-size:0.80rem; font-weight:800;" onchange="window.onFailedListFilterChange('bucket', this.value)">${bucketOpts}</select>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="window.downloadFailedStudentsReportPdf(this)" style="background:#dc2626; border-color:#b91c1c; color:#fff; font-weight:900;">
+            📥 தேர்ச்சி பெறாதோர் PDF (A4)
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="window.exportFailedStudentsReportExcel()" style="background:#f0fdf4; color:#15803d; border:1.5px solid #16a34a; font-weight:900;">
+            📗 தேர்ச்சி பெறாதோர் Excel (.xlsx)
+          </button>
+        </div>
+      </div>
+      ${buildPrintableFailedListHtml(calc, data, false)}
+    `;
+  };
+
+  window.onFailedListFilterChange = function(kind, val) {
+    if (kind === "sec") _failedListSecFilter = val || "ALL";
+    if (kind === "bucket") _failedListBucketFilter = val || "ALL";
+    if (_lastFailedReportCalc) window.renderSchoolFailedStudentsReportPane(_lastFailedReportCalc);
+  };
+
+  window.downloadFailedStudentsReportPdf = async function(btnEl) {
+    const calc = _lastFailedReportCalc;
+    if (!calc) return;
+    const data = collectGroupedFailedStudents(calc, _failedListSecFilter);
+    const htmlStr = buildPrintableFailedListHtml(calc, data, true);
+    const s = calc.sch || activeSchoolSession || { uNo: "School" };
+    const stdTag = data.is12 ? "12th" : "10th";
+    const termTag = String(_activeMidTermTermKey || "Exam");
+    const fileName = `[${s.uNo}]_${stdTag}_${termTag}_Failed_Students_List.pdf`;
+
+    if (typeof html2pdf !== "function") {
+      const w = window.open("", "_blank");
+      if (w) { w.document.write(`<html><head><meta charset="utf-8"><title>${esc(fileName)}</title></head><body>${htmlStr}</body></html>`); w.document.close(); w.print(); }
+      return;
+    }
+    const origTxt = btnEl ? btnEl.textContent : "";
+    if (btnEl) { btnEl.disabled = true; btnEl.textContent = "⏳ PDF உருவாகிறது..."; }
+    try {
+      const container = document.createElement("div");
+      container.style.cssText = "position:fixed; left:-99999px; top:0; width:760px; background:#fff;";
+      container.innerHTML = htmlStr;
+      document.body.appendChild(container);
+      await html2pdf().set({
+        margin: [8, 8, 8, 8],
+        filename: fileName,
+        image: { type: "jpeg", quality: 0.96 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"] }
+      }).from(container).save();
+      document.body.removeChild(container);
+      if (typeof showToast === "function") showToast(`✅ ${fileName} வெற்றிகரமாகப் பதிவிறக்கப்பட்டது!`, "#16a34a");
+    } catch (err) {
+      if (typeof showToast === "function") showToast("❌ PDF உருவாக்கத்தில் பிழை: " + (err && err.message ? err.message : err), "#dc2626");
+    } finally {
+      if (btnEl) { btnEl.disabled = false; btnEl.textContent = origTxt; }
+    }
+  };
+
+  window.exportFailedStudentsReportExcel = function() {
+    const calc = _lastFailedReportCalc;
+    if (!calc) return;
+    const data = collectGroupedFailedStudents(calc, _failedListSecFilter);
+    const visibleList = data.failedList.filter(st => _failedListBucketFilter === "ALL" || st.bucketKey === _failedListBucketFilter);
+    const s = calc.sch || activeSchoolSession || { uNo: "School", nameTa: "" };
+    const stdTag = data.is12 ? "12th" : "10th";
+    const termTag = String(_activeMidTermTermKey || "Exam");
+
+    const rows = [
+      ["வ.எண்", "Roll No", "EMIS ID", "மாணவர் பெயர்", "பிரிவு", "தோல்வி வகை (1-அனைத்துப் பாடம்)", "தோல்விப் பாட எண்ணிக்கை", "தோல்வியடைந்த பாடங்கள் & மதிப்பெண்கள்", `மொத்த மதிப்பெண் (${data.is12 ? 600 : 500})`]
+    ];
+    visibleList.forEach((st, i) => {
+      rows.push([
+        i + 1,
+        st.rollNo,
+        st.emisId || "-",
+        st.nameDisp,
+        st.section,
+        st.bucketLabelTa,
+        st.fCount,
+        st.failedDetailsText,
+        st.totalMark
+      ]);
+    });
+
+    if (typeof XLSX !== "undefined" && XLSX.utils) {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws["!cols"] = [{ wch: 6 }, { wch: 10 }, { wch: 14 }, { wch: 28 }, { wch: 8 }, { wch: 24 }, { wch: 12 }, { wch: 42 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, ws, "Failed_Students");
+      const fn = `[${s.uNo}]_${stdTag}_${termTag}_Failed_Students_List.xlsx`;
+      XLSX.writeFile(wb, fn);
+      if (typeof showToast === "function") showToast(`✅ ${fn} பதிவிறக்கப்பட்டது!`, "#16a34a");
+    } else {
+      const csv = "\uFEFF" + rows.map(r => r.map(v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `[${s.uNo}]_${stdTag}_${termTag}_Failed_Students_List.csv`;
+      a.click();
+    }
   };
 })();
 </script>
