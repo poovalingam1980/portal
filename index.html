@@ -227,7 +227,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.86)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.87)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -578,7 +578,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.86</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.87</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -6608,7 +6608,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.86</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.87</strong>
 </p>
 </footer>
 </div>
@@ -6731,7 +6731,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <div id="cfD1MigrationPanel" style="width:100%; margin:12px 0; background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:2px solid #0f766e; border-left:5px solid #0f766e; border-radius:10px; padding:14px 16px; box-sizing:border-box;">
   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
     <div>
-      <div style="font-size:0.94rem; font-weight:900; color:#0f766e;">🗄️ Cloudflare D1 Database (<code>ceosvg-portal-db</code>) — 0-Download D1 Primary &amp; Silent FB Backup (v9.86)</div>
+      <div style="font-size:0.94rem; font-weight:900; color:#0f766e;">🗄️ Cloudflare D1 Database (<code>ceosvg-portal-db</code>) — 0-Download D1 Primary &amp; Silent FB Backup (v9.87)</div>
       <div style="font-size:0.75rem; color:#334155; margin-top:2px;">
         <strong>0% பாதிப்பு:</strong> Firebase தொடர்ந்து முதன்மைத் தரவுத்தளமாகவே இயங்கும். 282 பள்ளிகளின் தரவுகளும் Cloudflare D1 (<code>CEOSVG_D1</code>) தரவுத்தளத்திற்குப் பாதுகாப்பாக நகலெடுக்கப்பட்டு எண்ணிக்கை சரிபார்க்கப்படும்.
       </div>
@@ -35486,7 +35486,7 @@ function ensureStudentSubjectMarkParts(stu, subKey, std, isSplitExam) {
     if (rawTot === "EX" || rawTot === "EXEMPT" || rawTot === "EXEMPTED") {
       return { th: mp.th, pr: mp.pr, in: mp.in, totalStr: "EX", isFail: false, failReason: "" };
     }
-    // v9.86 Fix: Normalize "A", "ABS", "ABSENT" to "AB", and never coerce non-numeric tokens ("-", "NA", etc.) to 0!
+    // v9.87 Fix: Normalize "A", "ABS", "ABSENT" to "AB", and never coerce non-numeric tokens ("-", "NA", etc.) to 0!
     if (rawTot === "" || rawTot === "AB" || rawTot === "A" || rawTot === "ABS" || rawTot === "ABSENT") {
       const normAb = rawTot === "" ? "" : "AB";
       return { th: mp.th, pr: mp.pr, in: mp.in, totalStr: normAb, isFail: true, failReason: "AB" };
@@ -36202,7 +36202,7 @@ function computeSchool12thResultAnalysis(uNo, termKey) {
         return;
       }
 
-      // v9.86 Fix: Ignore non-numeric tokens ("-", "A", etc.) instead of coercing them to 0 in Min. Mark / Avg. Mark
+      // v9.87 Fix: Ignore non-numeric tokens ("-", "A", etc.) instead of coercing them to 0 in Min. Mark / Avg. Mark
       if (isNaN(Number(rawVal))) {
         gStat.failed++;
         gStat.appeared++;
@@ -39145,7 +39145,7 @@ function getSchoolMidTermRecord(uNo, termKey, explicitStd) {
   const _realCnt10 = rec.students.filter(s => s && String(s.nameTa || s.nameEn || s.name || "").trim() !== "").length;
   if (_realCnt10 === 0) {
     let _srcRoster10 = (Array.isArray(cm.roster) && cm.roster.length > 0) ? cm.roster : null;
-    // v9.86 Auto-Heal: If Class Master roster is empty (e.g. students entered directly in Quarterly/MidTerm-1), borrow largest non-empty roster from sibling 10th exam terms!
+    // v9.87 Auto-Heal: If Class Master roster is empty (e.g. students entered directly in Quarterly/MidTerm-1), borrow largest non-empty roster from sibling 10th exam terms!
     if (!_srcRoster10 && store && typeof store === "object") {
       let bestArr = [];
       Object.keys(store).forEach(tk => {
@@ -39388,7 +39388,7 @@ function computeSchoolExamResultAnalysis(uNo, termKey, explicitStd) {
         return;
       }
 
-      // v9.86 Fix: Ignore non-numeric tokens ("-", "A", etc.) instead of coercing them to 0 in Min. Mark / Avg. Mark
+      // v9.87 Fix: Ignore non-numeric tokens ("-", "A", etc.) instead of coercing them to 0 in Min. Mark / Avg. Mark
       if (isNaN(Number(rawVal))) {
         gStat.failed++;
         gStat.appeared++;
@@ -40089,7 +40089,7 @@ function renderSchoolMidTermModule() {
         stBadgeEl.style.display = "inline-flex";
         stBadgeEl.textContent = `🔒 ${stdLbl} ${termLabel} சமர்ப்பிக்கப்பட்டது (${calc.rec.submittedAt || "Saved"})`;
       }
-      // v9.86: Inject School-Side "🔓 Unlock கோரிக்கை" button right after Final Submit button
+      // v9.87: Inject School-Side "🔓 Unlock கோரிக்கை" button right after Final Submit button
       let reqBtn = document.getElementById("mtSubBtnRequestUnlockV986");
       if (!reqBtn && bFinalEl.parentElement) {
         reqBtn = document.createElement("button");
@@ -40720,7 +40720,7 @@ function onMidTermStudentCellInput(idx, field, val, rerenderAll) {
   if (!st) return;
   st[field] = val;
   if (field === "rollNo") {
-    // v9.86: Propagate edited Roll/Register Number to Class Master & all exam terms for this school/std!
+    // v9.87: Propagate edited Roll/Register Number to Class Master & all exam terms for this school/std!
     try {
       const store = getExamResultAnalysisStore();
       const stdKey = String(_activeResultAnalysisStd || "10");
@@ -43026,7 +43026,7 @@ window.adminUnlockSchoolMidTermFinalSubmit = function(uNo, stdArg, termKeyArg) {
     }
     if (typeof renderAdminMidTermDashboard === "function") renderAdminMidTermDashboard();
   } catch (err) {
-    console.error("[v9.86 Admin Unlock RA]", err);
+    console.error("[v9.87 Admin Unlock RA]", err);
     if (typeof showToast === "function") showToast("❌ Unlock செய்வதில் பிழை ஏற்பட்டது.", "#dc2626", true);
   }
 };
@@ -49430,7 +49430,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.86) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.87) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -49492,7 +49492,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.86)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.87)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -55986,7 +55986,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     const payload = {
       dualWriteEnabled: Boolean(enabled),
       updatedAt: Date.now(),
-      version: "v9.86"
+      version: "v9.87"
     };
     let fbOk = false;
     try {
@@ -56648,7 +56648,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     } catch (err) {
       console.warn("[v9.38 School D1 EMIS Loader]", err);
     }
-    // v9.86 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
+    // v9.87 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
     if ((!Array.isArray(stfRows) || stfRows.length === 0) && localStorage.getItem("CEOSVG_CF_D1_PRIMARY_MODE") === "0") {
       try {
         const fbOk = typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl) && typeof buildFirebaseEndpoint === "function";
@@ -56736,7 +56736,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
         console.warn("[v9.60 Admin D1 EMIS Loader]", err);
       }
 
-      // v9.86 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
+      // v9.87 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
       if (cStaff === 0 && localStorage.getItem("CEOSVG_CF_D1_PRIMARY_MODE") === "0") {
         try {
           const fbOk = typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl) && typeof buildFirebaseEndpoint === "function";
@@ -57077,7 +57077,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       const payload = {
         d1PrimaryEnabled: Boolean(enabled),
         updatedAt: new Date().toISOString(),
-        version: "v9.86"
+        version: "v9.87"
       };
       const fbBase = getFirebaseBaseV88();
       const workerBase = getWorkerBaseV88();
@@ -57103,7 +57103,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
   // Upgraded v8.8 worker.js source generator (includes HMAC-SHA256 Session Auth + /__d1/node Primary Read + KV Cache)
   window.getCfKvWorkerSourceCode = function() {
     return [
-      '// Cloudflare Worker: ceosvg-fb-cache (v9.86 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
+      '// Cloudflare Worker: ceosvg-fb-cache (v9.87 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
       '// Bindings required: CEOSVG_CACHE_KV (KV Namespace), CEOSVG_D1 (D1 Database: ceosvg-portal-db)',
       '// Optional Secret for Auth Enforcement: SESSION_SECRET (Settings -> Variables & Secrets -> Add Secret)',
       'const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";',
@@ -57211,7 +57211,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '    // 1) Health check',
       '    if (pathname === "" || pathname === "__health") {',
       '      return jsonResp({',
-      '        ok: true, service: "ceosvg-fb-cache", version: "v9.86",',
+      '        ok: true, service: "ceosvg-fb-cache", version: "v9.87",',
       '        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),',
       '        d1Bound: Boolean(env && env.CEOSVG_D1),',
       '        authEnforced,',
@@ -57276,7 +57276,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      return jsonResp({ ok: true, d1Bound: true, authEnforced, totalRows: Number((totalRes && totalRes.cnt) || 0), lastUpdatedAt: Number((totalRes && totalRes.last_ts) || 0), counts });',
       '    }',
       '',
-      '    // v9.86 Auto-Chunking Helpers (transparently supports mega-schools > 700 KB up to 10 MB in Cloudflare D1)',
+      '    // v9.87 Auto-Chunking Helpers (transparently supports mega-schools > 700 KB up to 10 MB in Cloudflare D1)',
       '    const D1_CHUNK_SUFFIX = "#__chunk_";',
       '    const D1_CHUNK_SIZE = 700000;',
       '',
@@ -57314,7 +57314,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      return true;',
       '    }',
       '',
-      '    // Helper (v9.86): Read exact D1 node OR aggregate child rows for parent collections (Auto-Chunking + 0 Firebase Reads)',
+      '    // Helper (v9.87): Read exact D1 node OR aggregate child rows for parent collections (Auto-Chunking + 0 Firebase Reads)',
       '    async function readD1NodeOrCollection(cleanKey, shallowOnly) {',
       '      if (!env || !env.CEOSVG_D1 || !cleanKey) return null;',
       '      await ensureD1Table(env);',
@@ -57352,7 +57352,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      return { text: JSON.stringify(agg), source: shallowOnly ? "D1-SHALLOW" : "D1-COLLECTION" };',
       '    }',
       '',
-      '    // 6) v9.86 Phase 3 Direct Node + Collection Primary Read (Zero Firebase Fallback)',
+      '    // 6) v9.87 Phase 3 Direct Node + Collection Primary Read (Zero Firebase Fallback)',
       '    if (pathname === "__d1/node" && request.method === "GET") {',
       '      const auth = await verifySessionToken(request, env);',
       '      if (!auth.ok) return jsonResp({ ok: false, error: auth.error }, 401);',
@@ -57398,7 +57398,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '        for (const cq of chunkedQueue) {',
       '          try { await upsertChunkedItem(cq.k, cq.v, now); written++; chunkedWritten++; } catch (ce) {}',
       '        }',
-      '        // v9.86: Non-blocking silent Firebase Write Backup (?print=silent => 204 No Content, 0 bytes download)',
+      '        // v9.87: Non-blocking silent Firebase Write Backup (?print=silent => 204 No Content, 0 bytes download)',
       '        if (written > 0 && body.fbBackup !== false && items.length <= 20) {',
       '          const fbAuth = (env && env.FIREBASE_AUTH_SECRET) ? "&auth=" + encodeURIComponent(String(env.FIREBASE_AUTH_SECRET).trim()) : "";',
       '          ctx.waitUntil(Promise.allSettled(items.map(it => {',
@@ -57647,7 +57647,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '          return new Response(cached, { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json; charset=utf-8", "X-Cache": "HIT-KV", "X-Cache-TTL": String(ttl) } });',
       '        }',
       '      }',
-      '      // v9.86 Zero-Firebase-Read: Populate KV Cache Miss directly from Cloudflare D1 (0 Firebase downloads)',
+      '      // v9.87 Zero-Firebase-Read: Populate KV Cache Miss directly from Cloudflare D1 (0 Firebase downloads)',
       '      const isShallow = url.search.includes("shallow=true");',
       '      const d1Hit = await readD1NodeOrCollection(cleanPath, isShallow);',
       '      const text = d1Hit ? d1Hit.text : "null";',
@@ -59171,13 +59171,13 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     }
     const workerHeaders = tok ? { "Authorization": "Bearer " + tok, "X-CEOSVG-Token": tok } : {};
 
-    // v9.86 Helper: Append ?print=silent to Firebase write URLs so Firebase returns 204 No Content (0 bytes download)
+    // v9.87 Helper: Append ?print=silent to Firebase write URLs so Firebase returns 204 No Content (0 bytes download)
     const toSilentFbUrl = (rawUrl) => {
       if (!rawUrl || rawUrl.includes("print=silent")) return rawUrl;
       return rawUrl + (rawUrl.includes("?") ? "&print=silent" : "?print=silent");
     };
 
-    // v9.86 Helper: Update Admin D1/KV Live Stats UI lines in real time
+    // v9.87 Helper: Update Admin D1/KV Live Stats UI lines in real time
     const syncUnifiedLiveStatsUI = () => {
       try {
         const kvEl = document.getElementById("cfKvLiveStatsLine");
@@ -59204,7 +59204,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     // STAGE 3: Phase 3 Cloudflare D1 Primary (GET & PUT) — 0 Firebase Reads + Silent FB Write Backup
     if (workerBase && isD1PrimaryEnabled() && cleanPath.startsWith("ceosvg_live/")) {
       if (method === "GET") {
-        // High-read cacheable paths try KV first (KV miss also populates from D1 in v9.86 worker.js)
+        // High-read cacheable paths try KV first (KV miss also populates from D1 in v9.87 worker.js)
         if (isCacheablePath(cleanPath) && !isShallowReq) {
           try {
             const kvResp = await fetchWithAbortTimeout(
@@ -59221,7 +59221,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
             }
           } catch (e) {}
         }
-        // v9.86 Ultra-Fast Parallel Collection Reader (4x-6x faster!):
+        // v9.87 Ultra-Fast Parallel Collection Reader (4x-6x faster!):
         // (1) 60s In-Memory Cache, (2) Single-Flight Deduplication, (3) 4-way Parallel Wave Prefetch (4 x 20 = 80 schools/wave)
         const LARGE_D1_COLLECTIONS = new Set([
           "ceosvg_live/exam_result_analysis_by_uno",
@@ -59331,7 +59331,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
             }
           }
         } catch (e) {}
-        // ZERO-FIREBASE READ KILL-SWITCH (v9.86): Never fall back to Firebase RTDB GET when D1 Primary is active!
+        // ZERO-FIREBASE READ KILL-SWITCH (v9.87): Never fall back to Firebase RTDB GET when D1 Primary is active!
         stats.blockedFbReads = (stats.blockedFbReads || 0) + 1;
         syncUnifiedLiveStatsUI();
         return new Response("null", {
@@ -59616,7 +59616,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
   }
 
   window.CEOSVG_API_CLIENT = {
-    version: "v9.86",
+    version: "v9.87",
     fetch: unifiedFetch,
     nativeFetch: nativeFetch,
     stats: stats,
@@ -59744,7 +59744,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     const dutyLine = extractJsVarLineFromHtml(rawText, "var EBS_10TH_DUTY_2025_26_LOOKUP = ");
     if (dutyLine && dutyLine.length > 500) {
       try {
-        // v9.86 Fix: Use CSP-safe JSON.parse() instead of new Function()
+        // v9.87 Fix: Use CSP-safe JSON.parse() instead of new Function()
         const expr = dutyLine.replace(/^var\s+EBS_10TH_DUTY_2025_26_LOOKUP\s*=\s*/, "").replace(/\/\/[^\n]*$/, "").replace(/;\s*$/, "").trim();
         const parsedDuty = JSON.parse(expr);
         if (parsedDuty && parsedDuty.byId && Object.keys(parsedDuty.byId).length > 0) {
@@ -60795,7 +60795,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
         }
         else {
           appeared++;
-          // v9.86: Compute per-student numeric-only subject count & check AB/EX before updating Lowest/Avg
+          // v9.87: Compute per-student numeric-only subject count & check AB/EX before updating Lowest/Avg
           let stuNumCnt = 0, stuHasAbOrEx = false;
           subs.forEach(sbChk => {
             const rawV = raw.marks ? raw.marks[sbChk.key] : "";
@@ -60906,7 +60906,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
         appeared: appeared,
         passed: passed,
         passPct: cleanSecPassPct,
-        // v9.86: Average Mark uses ONLY numerically entered marks (strictly excluding EX, AB & blanks); Lowest excludes AB/EX
+        // v9.87: Average Mark uses ONLY numerically entered marks (strictly excluding EX, AB & blanks); Lowest excludes AB/EX
         avg: totMarkCount > 0 ? Math.round(totMarkSum / totMarkCount) : "-",
         max: totMax !== null ? totMax : "-",
         min: totMin !== null ? totMin : (totMinFallback !== null ? totMinFallback : "-"),
@@ -61003,7 +61003,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
         </tr>`;
     }).join("");
 
-    // Last page of section: Dedicated Abstract ("சுருக்கம்") Table with its own header (v9.86)
+    // Last page of section: Dedicated Abstract ("சுருக்கம்") Table with its own header (v9.87)
     let abstractSectionHtml = "";
     if (isLastSecPage) {
       const topExamRows = [
@@ -61452,7 +61452,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
   }
 
   function getNativeFetchForCtV962() {
-    // v9.86 Zero-Firebase-Read: Route Class Teacher reads/writes through unifiedFetch (D1 Primary + Silent FB Backup)
+    // v9.87 Zero-Firebase-Read: Route Class Teacher reads/writes through unifiedFetch (D1 Primary + Silent FB Backup)
     return window.fetch.bind(window);
   }
 
@@ -61687,7 +61687,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
 
     if (btn) { btn.disabled = true; btn.textContent = "⏳ சரிபார்க்கப்படுகிறது..."; }
     try {
-      // v9.86 Fix: Acquire Worker HMAC Bearer token BEFORE D1 class_teacher_auth lookup (prevents pre-login 401!)
+      // v9.87 Fix: Acquire Worker HMAC Bearer token BEFORE D1 class_teacher_auth lookup (prevents pre-login 401!)
       if (typeof window.refreshWorkerSessionTokenV88 === "function") {
         try { await window.refreshWorkerSessionTokenV88("school", "PRELOGIN", false); } catch (e) {}
       }
@@ -62068,7 +62068,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
     window.activeClassTeacherSession = ct;
     document.body.classList.add("class-teacher-mode");
 
-    // Lock standard & section strictly to assigned Class Teacher section (v9.86)
+    // Lock standard & section strictly to assigned Class Teacher section (v9.87)
     _activeResultAnalysisStd = String(ct.std || "10");
     _raStepStdChosen = true;
     _raSelectedSecId = String(ct.secId || "A");
@@ -62106,7 +62106,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
         </div>`;
     }
 
-    // v9.86: Strictly lock section selector pills (_mtStuFilterSec & onRaSelectSection) to ONLY assigned section(s)
+    // v9.87: Strictly lock section selector pills (_mtStuFilterSec & onRaSelectSection) to ONLY assigned section(s)
     const enforceCtSectionLock = () => {
       const curCt = window.activeClassTeacherSession;
       if (!curCt) return;
@@ -62795,7 +62795,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
 </script>
 
 <script>
-// === CEOSVG v9.86: FIREBASE EXPORT JSON -> CLOUDFLARE D1 DIRECT UPLOADER (0 FIREBASE DOWNLOAD) ===
+// === CEOSVG v9.87: FIREBASE EXPORT JSON -> CLOUDFLARE D1 DIRECT UPLOADER (0 FIREBASE DOWNLOAD) ===
 (function() {
   if (window.__ceosvgV970FbJsonUploaderReady) return;
   window.__ceosvgV970FbJsonUploaderReady = true;
@@ -62964,7 +62964,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
       }
 
       const nativeFetch = window.__CEOSVG_NATIVE_FETCH__ || window.fetch.bind(window);
-      // v9.86: Group normal items in batches of 8, and send mega-schools (>350 KB, e.g. U.No 434) individually for Auto-Chunking!
+      // v9.87: Group normal items in batches of 8, and send mega-schools (>350 KB, e.g. U.No 434) individually for Auto-Chunking!
       const batches = [];
       let curBatch = [];
       for (const it of items) {
@@ -63032,7 +63032,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
         try { await window.checkCloudflareD1Status(false); } catch (e) {}
       }
     } catch (err) {
-      console.error("[v9.86 Firebase JSON -> D1 Upload]", err);
+      console.error("[v9.87 Firebase JSON -> D1 Upload]", err);
       setProgressV970(`❌ JSON பதிவேற்றப் பிழை: ${err && err.message ? err.message : err}`);
       if (typeof showToast === "function") showToast("❌ JSON கோப்பைப் படிக்க முடியவில்லை.", "#dc2626", true);
     } finally {
@@ -63043,7 +63043,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
 </script>
 
 <style id="ceosvgV974MobileA11yStyles">
-/* === CEOSVG v9.86: EDGE-TO-EDGE MOBILE MARK ENTRY, ICON-ONLY VIEW SWITCHER & ACCESSIBILITY === */
+/* === CEOSVG v9.87: EDGE-TO-EDGE MOBILE MARK ENTRY, ICON-ONLY VIEW SWITCHER & ACCESSIBILITY === */
 label[for] { cursor: pointer; }
 .ceosvg-mobile-mark-toggle-bar {
   display: none;
@@ -63087,7 +63087,7 @@ label[for] { cursor: pointer; }
 @media (max-width: 768px) {
   .ceosvg-mobile-mark-toggle-bar { display: flex !important; }
 
-  /* v9.86: Strip ALL nested ancestor left/right borders, margins & padding (eliminates the 3 stacked side frames!) */
+  /* v9.87: Strip ALL nested ancestor left/right borders, margins & padding (eliminates the 3 stacked side frames!) */
   body.ceosvg-has-mark-table,
   .ceosvg-mobile-edge-ancestor {
     padding-left: 0 !important;
@@ -63232,7 +63232,7 @@ label[for] { cursor: pointer; }
 }
 </style>
 <script>
-// === CEOSVG v9.86: MOBILE-FIRST MARK ENTRY CARD ENGINE & DYNAMIC ACCESSIBILITY AUTO-LINKER ===
+// === CEOSVG v9.87: MOBILE-FIRST MARK ENTRY CARD ENGINE & DYNAMIC ACCESSIBILITY AUTO-LINKER ===
 (function() {
   if (window.__ceosvgV974MobileA11yReady) return;
   window.__ceosvgV974MobileA11yReady = true;
@@ -63241,7 +63241,7 @@ label[for] { cursor: pointer; }
   let _a11ySeq = 1;
   let _enhanceTimer = null;
 
-  // v9.86 Fix: Keep primary toggle state in memory so Table/Card switch ALWAYS works even if localStorage is full!
+  // v9.87 Fix: Keep primary toggle state in memory so Table/Card switch ALWAYS works even if localStorage is full!
   let _mobileCardsOn = true;
   try {
     if (localStorage.getItem(MOBILE_MODE_KEY) === "0") _mobileCardsOn = false;
@@ -63278,7 +63278,7 @@ label[for] { cursor: pointer; }
         const tblWrapEl = tbl.closest(".table-responsive") || tbl.parentElement;
         if (tblWrapEl) {
           tblWrapEl.classList.add("ceosvg-mark-wrap-mobile");
-          // v9.86: Walk up ancestor wrappers up to #viewSchool to strip all 3 nested left/right frames on phones!
+          // v9.87: Walk up ancestor wrappers up to #viewSchool to strip all 3 nested left/right frames on phones!
           let anc = tblWrapEl.parentElement;
           let depth = 0;
           while (anc && anc !== document.body && depth < 8) {
@@ -63301,7 +63301,7 @@ label[for] { cursor: pointer; }
         }
         tbl.__v974Headers = headers;
 
-        // v9.86: Inject compact ICON-ONLY switcher (📱 / 📊) with no verbose text
+        // v9.87: Inject compact ICON-ONLY switcher (📱 / 📊) with no verbose text
         const wrap = tbl.parentElement;
         if (wrap && !wrap.previousElementSibling?.classList?.contains("ceosvg-mobile-mark-toggle-bar")) {
           const bar = document.createElement("div");
@@ -63416,7 +63416,7 @@ label[for] { cursor: pointer; }
 </script>
 
 <script>
-// === CEOSVG v9.86: SCHOOL UNLOCK REQUEST + ADMIN 3-YEAR PUBLIC EXAM PASS % (2023-24, 2024-25, 2025-26) ===
+// === CEOSVG v9.87: SCHOOL UNLOCK REQUEST + ADMIN 3-YEAR PUBLIC EXAM PASS % (2023-24, 2024-25, 2025-26) ===
 (function() {
   if (window.__ceosvgV986UnlockAndPub3YrReady) return;
   window.__ceosvgV986UnlockAndPub3YrReady = true;
@@ -63557,12 +63557,42 @@ label[for] { cursor: pointer; }
     window.renderAdminPublicExam3YrPassPctPane(true);
   };
 
+  function getPub3YrEligibleSchools(stdStr) {
+    const base = (typeof masterSchools !== "undefined" && Array.isArray(masterSchools)) ? masterSchools.slice() : [];
+    // v9.87: Ensure U.No 268 (Sivagangai District Model School, Arasanur-Thirumanjolai) is ALWAYS included for 12th Std
+    const has268 = base.some(s => s && String(s.uNo) === "268");
+    if (!has268) {
+      const init268 = (typeof INITIAL_MASTER_SCHOOLS !== "undefined" && Array.isArray(INITIAL_MASTER_SCHOOLS))
+        ? INITIAL_MASTER_SCHOOLS.find(s => s && String(s.uNo) === "268")
+        : null;
+      base.push(init268 ? Object.assign({}, init268, { level: "HSS" }) : {
+        uNo: "268",
+        udiseNo: "33230104204",
+        block: "12 Sivagangai",
+        mgmt1: "1G",
+        level: "HSS",
+        nameEn: "SIVAGANGAI DISTRICT MODEL SCHOOL, ARASANUR-THIRUMANJOLAI",
+        nameTa: "சிவகங்கை மாவட்ட மாதிரிப் பள்ளி, அரசனூர் - திருமாஞ்சோலை"
+      });
+    }
+    const filtered = base.filter(s => {
+      if (!s || !s.uNo) return false;
+      if (stdStr !== "12") return true;
+      const u = String(s.uNo).trim();
+      if (u === "268") return true;
+      const lvl = String(s.level || "").toUpperCase();
+      const nm = String(s.nameEn || "").toUpperCase();
+      return lvl === "HSS" || lvl.includes("HSS") || nm.includes("HSS") || nm.includes("MODEL SCHOOL");
+    });
+    filtered.sort((a, b) => (Number(a.uNo) || 9999) - (Number(b.uNo) || 9999));
+    return filtered;
+  }
+
   window.exportAdminPub3YrExcel = function(stdStr) {
     if (typeof XLSX === "undefined") { alert("Excel நூலகம் ஏற்றப்படவில்லை."); return; }
     const store = getPub3YrStore();
     const bucket = stdStr === "12" ? store.std12 : store.std10;
-    const schools = (typeof masterSchools !== "undefined" && Array.isArray(masterSchools)) ? masterSchools : [];
-    const list = stdStr === "12" ? schools.filter(s => String(s.level || "").toUpperCase() === "HSS") : schools;
+    const list = getPub3YrEligibleSchools(stdStr);
     const rows = [["S.No", "U.No", "UDISE", "Block", "Management", "School Name (Tamil)", "School Name (English)", "2023-24 (%)", "2024-25 (%)", "2025-26 (%)", "3-Yr Avg (%)"]];
     list.forEach((s, idx) => {
       const r = bucket[String(s.uNo)] || {};
@@ -63589,9 +63619,8 @@ label[for] { cursor: pointer; }
     const lvlFilter = (document.getElementById("admMtFilterLevel")?.value || "").trim();
     const q = (document.getElementById("admMtSearchInput")?.value || "").trim().toLowerCase();
 
-    const allSch = (typeof masterSchools !== "undefined" && Array.isArray(masterSchools)) ? masterSchools : [];
+    const allSch = getPub3YrEligibleSchools(stdStr);
     const filtered = allSch.filter(s => {
-      if (stdStr === "12" && String(s.level || "").toUpperCase() !== "HSS") return false;
       if (blkFilter && String(s.block || "") !== blkFilter) return false;
       if (mgmtFilter && String(s.mgmt1 || "") !== mgmtFilter) return false;
       if (lvlFilter && String(s.level || "") !== lvlFilter) return false;
