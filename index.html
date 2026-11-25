@@ -227,7 +227,7 @@ window.CEOSVG_MASTER_SCHEDULER = (function() {
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.91)</title>
+<title>portal.ceosvg.in | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை (v9.92)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -578,7 +578,7 @@ body.officer-user-mode #admOfficerPortalHeaderWrap {
 </div>
 <!-- 1A. UNIFIED SIGN-IN FORM (BOTH SCHOOL & ADMIN IN ONE WINDOW) -->
 <div id="authPaneSchoolLogin">
-<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.91</span></h2>
+<h2 class="signin-right-title" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span>Sign in</span><span id="portalVersionLoginBadge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-size:0.72rem; font-weight:900; padding:2px 9px; border-radius:999px;">பதிப்பு v9.92</span></h2>
 <form action="javascript:void(0);" onsubmit="handleSchoolLoginSubmit(event); return false;">
 <!-- User Name Input (School U.NO / UDISE / Admin ID) -->
 <div class="modern-input-box">
@@ -6611,7 +6611,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 தமிழ்நாடு பள்ளிக் கல்வித்துறை | முதன்மைக் கல்வி அலுவலகம், சிவகங்கை மாவட்டம் - 630562 | <a href="tel:04575240408" style="color:#0284c7; text-decoration:none;">☎️ 04575-240408</a>
 </p>
 <p style="font-size:0.8rem; color:#64748b;">
-© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.91</strong>
+© 2026 Chief Educational Office, Sivagangai (<strong>portal.ceosvg.in</strong>) &bull; பதிப்பு (Version): <strong>v9.92</strong>
 </p>
 </footer>
 </div>
@@ -6734,7 +6734,7 @@ EMIS தளத்திலிருந்து பதிவிறக்கம�
 <div id="cfD1MigrationPanel" style="width:100%; margin:12px 0; background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%); border:2px solid #0f766e; border-left:5px solid #0f766e; border-radius:10px; padding:14px 16px; box-sizing:border-box;">
   <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
     <div>
-      <div style="font-size:0.94rem; font-weight:900; color:#0f766e;">🗄️ Cloudflare D1 Database (<code>ceosvg-portal-db</code>) — 0-Download D1 Primary &amp; Silent FB Backup (v9.91)</div>
+      <div style="font-size:0.94rem; font-weight:900; color:#0f766e;">🗄️ Cloudflare D1 Database (<code>ceosvg-portal-db</code>) — 0-Download D1 Primary &amp; Silent FB Backup (v9.92)</div>
       <div style="font-size:0.75rem; color:#334155; margin-top:2px;">
         <strong>0% பாதிப்பு:</strong> Firebase தொடர்ந்து முதன்மைத் தரவுத்தளமாகவே இயங்கும். 282 பள்ளிகளின் தரவுகளும் Cloudflare D1 (<code>CEOSVG_D1</code>) தரவுத்தளத்திற்குப் பாதுகாப்பாக நகலெடுக்கப்பட்டு எண்ணிக்கை சரிபார்க்கப்படும்.
       </div>
@@ -8262,6 +8262,16 @@ function deepMergeSchoolExtraPreserveOtp(existingExt, incomingExt, uNo) {
     }
     if (exEbs.hmFinalLock && exEbs.hmFinalLock.locked && (!incEbs.hmFinalLock || !incEbs.hmFinalLock.unlockedAt)) {
       merged.ebs2026.hmFinalLock = exEbs.hmFinalLock;
+    }
+    if (exEbs.finalLock && exEbs.finalLock.locked && (!incEbs.finalLock || !incEbs.finalLock.unlockedAt)) {
+      merged.ebs2026.finalLock = exEbs.finalLock;
+    }
+    const _effLock992 = (merged.ebs2026.finalLock && merged.ebs2026.finalLock.locked)
+      ? merged.ebs2026.finalLock
+      : ((merged.ebs2026.hmFinalLock && merged.ebs2026.hmFinalLock.locked) ? merged.ebs2026.hmFinalLock : null);
+    if (_effLock992) {
+      merged.ebs2026.finalLock = _effLock992;
+      merged.ebs2026.hmFinalLock = _effLock992;
     }
     const exProfiles = (exEbs.staffProfiles && typeof exEbs.staffProfiles === "object") ? exEbs.staffProfiles : {};
     const incProfiles = (incEbs.staffProfiles && typeof incEbs.staffProfiles === "object") ? incEbs.staffProfiles : {};
@@ -11068,6 +11078,8 @@ uNo: activeRegCandidateSchool.uNo,
 udiseNo: activeRegCandidateSchool.udiseNo,
 password: p1,
 pin: pinCode,
+passHash: (typeof sha256HexSync === "function" && p1) ? sha256HexSync(_ADMIN_AUTH_SALT + p1) : "",
+pinHash: (typeof sha256HexSync === "function" && pinCode) ? sha256HexSync(_ADMIN_AUTH_SALT + pinCode) : "",
 email: email,
 phone: mob,
 hmName: hmEn,
@@ -11090,6 +11102,8 @@ mobile: mob,
 schoolEmail: email,
 password: p1,
 pin: pinCode,
+passHash: (typeof sha256HexSync === "function" && p1) ? sha256HexSync(_ADMIN_AUTH_SALT + p1) : "",
+pinHash: (typeof sha256HexSync === "function" && pinCode) ? sha256HexSync(_ADMIN_AUTH_SALT + pinCode) : "",
 otpVerified: true
 });
 const regSchool = activeRegCandidateSchool;
@@ -11245,6 +11259,8 @@ uNo: s.uNo,
 udiseNo: s.udiseNo,
 password: newPass,
 pin: newPin,
+passHash: (typeof sha256HexSync === "function" && newPass) ? sha256HexSync(_ADMIN_AUTH_SALT + newPass) : "",
+pinHash: (typeof sha256HexSync === "function" && newPin) ? sha256HexSync(_ADMIN_AUTH_SALT + newPin) : "",
 email: existing.email || s.email || "",
 phone: existing.phone || s.mobile || "",
 hmName: existing.hmName || s.hmName || "",
@@ -11260,6 +11276,8 @@ udiseNo: s.udiseNo,
 schoolNameEn: s.nameEn,
 password: newPass,
 pin: newPin,
+passHash: (typeof sha256HexSync === "function" && newPass) ? sha256HexSync(_ADMIN_AUTH_SALT + newPass) : "",
+pinHash: (typeof sha256HexSync === "function" && newPin) ? sha256HexSync(_ADMIN_AUTH_SALT + newPin) : "",
 email: schoolAuthStore[s.uNo].email,
 mobile: schoolAuthStore[s.uNo].phone
 });
@@ -13786,14 +13804,20 @@ if (Array.isArray(extra.ebs2026.addedStaff)) {
 showToast(`✅ ஆசிரியர் / பணியாளர் (${stf.name}) விவரங்கள் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டன!`, "#22c55e");
 } else {
 stf.isAddedEbs = true;
+stf.userEditedStaffV59 = true;
 extra.staff.push(stf);
 if (!Array.isArray(extra.ebs2026.addedStaff)) extra.ebs2026.addedStaff = [];
 extra.ebs2026.addedStaff.push(Object.assign({}, stf));
 showToast(`✅ புதிய ஆசிரியர் / பணியாளர் (${stf.name}) விவரம் சேர்க்கப்பட்டது!`, "#22c55e");
 }
+extra.updatedAt = new Date().toISOString();
 districtFlattenedStaffCache = null;
 window._activeSyncTargetUNo = uNo;
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
+// v9.92 Fix: Also sync newly added/edited staff to ebs_2026_27/{uNo} & school_extra/{uNo} in Cloudflare D1!
+if (typeof saveSchoolEbs2026Data === "function") {
+  try { saveSchoolEbs2026Data(false, uNo); } catch (e) {}
+}
 cancelEditStaffMember();
 renderSchoolStaffTable(extra);
 if (activeSchoolSession) renderSchoolStaffStrengthUI(activeSchoolSession);
@@ -28369,9 +28393,11 @@ extra.ebs2026.staffProfiles[sid].isTempId = Boolean(isTempId);
 extra.ebs2026.staffProfiles[sid].isAddedEbs = true;
 }
 recalcSchoolEbsF1StaffCountsFromList(uNo);
+extra.updatedAt = new Date().toISOString();
+window._activeSyncTargetUNo = uNo;
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore);
 renderSchoolEbsModule();
-saveSchoolEbs2026Data(false);
+saveSchoolEbs2026Data(false, uNo);
 return sid;
 }
 function selectSearchedEmisStaffForEbs(idx) {
@@ -31967,11 +31993,31 @@ const uNo = resolvedUNo;
 const schObj = (masterSchools || []).find(s => String(s.uNo) === uNo) || activeSchoolSession || { uNo, sn: 1 };
 const extra = getSchoolExtra(uNo);
 window._activeSyncTargetUNo = uNo;
+extra.updatedAt = new Date().toISOString();
 safeSetStorage("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, true);
 const packet = buildSchoolEbsSheetPacket(uNo, schObj.sn || 1);
 const ebsSheetId = getDedicatedEbsSheetId();
+// v9.92 Fix: Directly await atomic D1 PUT to BOTH school_extra/{uNo} AND ebs_2026_27/{uNo} so EBS & Final Lock NEVER revert!
+if (typeof buildFirebaseEndpoint === "function") {
+  try {
+    const _uEnc992 = encodeURIComponent(uNo);
+    const _ebsPkt992 = { uNo: uNo, ebs2026: extra.ebs2026 || {}, sheetRows: packet || {}, updatedAt: extra.updatedAt };
+    await Promise.all([
+      fetch(buildFirebaseEndpoint("ceosvg_live/school_extra/" + _uEnc992), {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(extra)
+      }).catch(() => {}),
+      fetch(buildFirebaseEndpoint("ceosvg_live/ebs_2026_27/" + _uEnc992), {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(_ebsPkt992)
+      }).catch(() => {})
+    ]);
+    if (window.__ceosvgD1CollCacheV982) {
+      window.__ceosvgD1CollCacheV982.delete("ceosvg_live/school_extra");
+      window.__ceosvgD1CollCacheV982.delete("ceosvg_live/ebs_2026_27");
+    }
+  } catch (_ebsD1Err) {}
+}
 if (typeof pushCloudUpdate === "function") {
-pushCloudUpdate("schoolExtra", schoolExtraDataStore, `School [${uNo}] updated EBS 2026-27 (F1-F4)`, uNo, packet);
+pushCloudUpdate("CEOSVG_SCHOOL_EXTRA_V6", schoolExtraDataStore, `School [${uNo}] updated EBS 2026-27 (F1-F4)`, uNo, packet);
 }
 let sheetSyncRes = null;
 if (typeof sendToGoogleSheetBackend === "function") {
@@ -33650,16 +33696,25 @@ async function confirmEbsHmFinalLock() {
   const now = new Date();
   const lockedDisplay = now.toLocaleString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
   const declId = `CEOSVG-EBS27-U${uNo}-${String(now.getTime()).slice(-4)}`;
-  extra.ebs2026.finalLock = {
+  const lockPayload = {
     locked: true,
     lockedAt: now.toISOString(),
     lockedDisplay,
     hmName,
     declarationId: declId
   };
+  extra.ebs2026.finalLock = lockPayload;
+  extra.ebs2026.hmFinalLock = lockPayload;
   extra.ebs2026.f1.hmName = hmName;
+  extra.updatedAt = now.toISOString();
   closeEbsHmFinalLockModal();
-  await saveSchoolEbs2026Data(false, uNo);
+  // v9.92 Fix: Allow Final Lock itself to bypass blockIfFinalLocked so D1 save ALWAYS succeeds!
+  window.__ceosvgAllowFinalLockSaveV992 = true;
+  try {
+    await saveSchoolEbs2026Data(false, uNo);
+  } finally {
+    window.__ceosvgAllowFinalLockSaveV992 = false;
+  }
   renderSchoolEbsModule();
   if (typeof renderAdminEbsMasterDashboard === "function") {
     const ebsPane = document.getElementById("admPaneEbsMaster");
@@ -35489,7 +35544,7 @@ function ensureStudentSubjectMarkParts(stu, subKey, std, isSplitExam) {
     if (rawTot === "EX" || rawTot === "EXEMPT" || rawTot === "EXEMPTED") {
       return { th: mp.th, pr: mp.pr, in: mp.in, totalStr: "EX", isFail: false, failReason: "" };
     }
-    // v9.91 Fix: Normalize "A", "ABS", "ABSENT" to "AB", and never coerce non-numeric tokens ("-", "NA", etc.) to 0!
+    // v9.92 Fix: Normalize "A", "ABS", "ABSENT" to "AB", and never coerce non-numeric tokens ("-", "NA", etc.) to 0!
     if (rawTot === "" || rawTot === "AB" || rawTot === "A" || rawTot === "ABS" || rawTot === "ABSENT") {
       const normAb = rawTot === "" ? "" : "AB";
       return { th: mp.th, pr: mp.pr, in: mp.in, totalStr: normAb, isFail: true, failReason: "AB" };
@@ -36205,7 +36260,7 @@ function computeSchool12thResultAnalysis(uNo, termKey) {
         return;
       }
 
-      // v9.91 Fix: Ignore non-numeric tokens ("-", "A", etc.) instead of coercing them to 0 in Min. Mark / Avg. Mark
+      // v9.92 Fix: Ignore non-numeric tokens ("-", "A", etc.) instead of coercing them to 0 in Min. Mark / Avg. Mark
       if (isNaN(Number(rawVal))) {
         gStat.failed++;
         gStat.appeared++;
@@ -39154,7 +39209,7 @@ function getSchoolMidTermRecord(uNo, termKey, explicitStd) {
   const _realCnt10 = rec.students.filter(s => s && String(s.nameTa || s.nameEn || s.name || "").trim() !== "").length;
   if (_realCnt10 === 0) {
     let _srcRoster10 = (Array.isArray(cm.roster) && cm.roster.length > 0) ? cm.roster : null;
-    // v9.91 Auto-Heal: If Class Master roster is empty (e.g. students entered directly in Quarterly/MidTerm-1), borrow largest non-empty roster from sibling 10th exam terms!
+    // v9.92 Auto-Heal: If Class Master roster is empty (e.g. students entered directly in Quarterly/MidTerm-1), borrow largest non-empty roster from sibling 10th exam terms!
     if (!_srcRoster10 && store && typeof store === "object") {
       let bestArr = [];
       Object.keys(store).forEach(tk => {
@@ -39397,7 +39452,7 @@ function computeSchoolExamResultAnalysis(uNo, termKey, explicitStd) {
         return;
       }
 
-      // v9.91 Fix: Ignore non-numeric tokens ("-", "A", etc.) instead of coercing them to 0 in Min. Mark / Avg. Mark
+      // v9.92 Fix: Ignore non-numeric tokens ("-", "A", etc.) instead of coercing them to 0 in Min. Mark / Avg. Mark
       if (isNaN(Number(rawVal))) {
         gStat.failed++;
         gStat.appeared++;
@@ -40098,7 +40153,7 @@ function renderSchoolMidTermModule() {
         stBadgeEl.style.display = "inline-flex";
         stBadgeEl.textContent = `🔒 ${stdLbl} ${termLabel} சமர்ப்பிக்கப்பட்டது (${calc.rec.submittedAt || "Saved"})`;
       }
-      // v9.91: Inject School-Side "🔓 Unlock கோரிக்கை" button right after Final Submit button
+      // v9.92: Inject School-Side "🔓 Unlock கோரிக்கை" button right after Final Submit button
       let reqBtn = document.getElementById("mtSubBtnRequestUnlockV986");
       if (!reqBtn && bFinalEl.parentElement) {
         reqBtn = document.createElement("button");
@@ -40735,7 +40790,7 @@ function onMidTermStudentCellInput(idx, field, val, rerenderAll) {
   if (!st) return;
   st[field] = val;
   if (field === "rollNo") {
-    // v9.91: Propagate edited Roll/Register Number to Class Master & all exam terms for this school/std!
+    // v9.92: Propagate edited Roll/Register Number to Class Master & all exam terms for this school/std!
     try {
       const store = getExamResultAnalysisStore();
       const stdKey = String(_activeResultAnalysisStd || "10");
@@ -43041,7 +43096,7 @@ window.adminUnlockSchoolMidTermFinalSubmit = function(uNo, stdArg, termKeyArg) {
     }
     if (typeof renderAdminMidTermDashboard === "function") renderAdminMidTermDashboard();
   } catch (err) {
-    console.error("[v9.91 Admin Unlock RA]", err);
+    console.error("[v9.92 Admin Unlock RA]", err);
     if (typeof showToast === "function") showToast("❌ Unlock செய்வதில் பிழை ஏற்பட்டது.", "#dc2626", true);
   }
 };
@@ -45386,8 +45441,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "04575240408",
     email: "deosec.svg@tnschools.gov.in",
     username: "deo_sec",
-    password: "DeoSec@2026",
-    pin: "202601",
+    password: "",
+    pin: "",
+    passHash: "51fb80ff8d901caffb6f9094441288e1c377553e881ee8b45e711686c8bb4a5b",
+    pinHash: "93070681983c1f728768084f75fa9fe2d73a43d1851196a86a487b2c36c3d0a6",
     scopeBlock: "ALL",
     scopeMgmt: "1G_2A",
     scopeLevel: "ALL",
@@ -45406,8 +45463,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "04575240408",
     email: "deopvt.svg@tnschools.gov.in",
     username: "deo_pvt",
-    password: "DeoPvt@2026",
-    pin: "202602",
+    password: "",
+    pin: "",
+    passHash: "0aa05f382e339f80f240014bbb9a13bc2d9af3e8efea08a1d8988776bfa6ad20",
+    pinHash: "b8cf9cd9f2a83514ba4abb1d5011e206218c0530d4b02fedfdd22df8a282a043",
     scopeBlock: "ALL",
     scopeMgmt: "3P",
     scopeLevel: "ALL",
@@ -45426,8 +45485,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "04575240408",
     email: "deoelem.svg@tnschools.gov.in",
     username: "deo_elem",
-    password: "DeoElem@2026",
-    pin: "202603",
+    password: "",
+    pin: "",
+    passHash: "c522932185a7d460cc35fef0c48906970d1e7ff56e4be01621794b104b83e19e",
+    pinHash: "3cefabaf642de87c3712ffdc0ddfdbb1693e88afcd3b9fa83e6bb7e52f56d065",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "HS",
@@ -45446,8 +45507,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "04575240408",
     email: "pahss.ceosvg@tnschools.gov.in",
     username: "pa_hss",
-    password: "PaHss@2026",
-    pin: "202604",
+    password: "",
+    pin: "",
+    passHash: "0dd8659f4d886acfea541cd06c9173cebbd5e3a0f237839c00da65e6fb4ed986",
+    pinHash: "b3291b22f5a877f9ae6140518f805035eec74289e8029fa6f9b415dec011068d",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "HSS",
@@ -45466,8 +45529,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "04575240408",
     email: "pahs.ceosvg@tnschools.gov.in",
     username: "pa_hs",
-    password: "PaHs@2026",
-    pin: "202605",
+    password: "",
+    pin: "",
+    passHash: "c9877aebd546f0786bed065bfc29416d0139eda0e063a92b87c9fe14adcd1ad6",
+    pinHash: "d4711caea4dd63e0cc57c2b545e74c2747ca0ef43285558b536bb5bbf03b63ec",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "HS",
@@ -45486,8 +45551,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "9626471035",
     email: "ceosvgweb@gmail.com",
     username: "di_svg",
-    password: "DiSvg@2026",
-    pin: "202606",
+    password: "",
+    pin: "",
+    passHash: "d6dda53066dc4b65fdb69eb04c8b072a85d877469dd948faeeeb7e35e5bca463",
+    pinHash: "1e715cf122619218fbf0ed621f7a54cdf51c6eea466aee3627aac1f7dd6ee0c3",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
@@ -45506,8 +45573,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "04575240408",
     email: "apo.ceosvg@tnschools.gov.in",
     username: "apo_svg",
-    password: "ApoSvg@2026",
-    pin: "202607",
+    password: "",
+    pin: "",
+    passHash: "e315efa34928f7d97857432b062f57acbb804d2f607ab1e34689fdf00348a105",
+    pinHash: "f8c91794649f96175529c84b81ed092239819c502a78bd3618d670c01396d3a2",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
@@ -45526,8 +45595,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "04575240408",
     email: "supdt.ceosvg@tnschools.gov.in",
     username: "supdt_a1",
-    password: "Supdt@2026",
-    pin: "202608",
+    password: "",
+    pin: "",
+    passHash: "08d54330d75d6253e80d8c704b3a20240bccf34e70dd592a1c9fce3124f63c99",
+    pinHash: "7a4b4cf4635ecd263b2815c2f92df6552bf9f8bd4bc0a21ffad2eda35e77890d",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
@@ -45546,8 +45617,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "04575240408",
     email: "examsec.ceosvg@tnschools.gov.in",
     username: "clerk_exam",
-    password: "ExamSec@2026",
-    pin: "202609",
+    password: "",
+    pin: "",
+    passHash: "ade8f93a0cd4b356242897b0f06c494daf1fd8e08bf9fc2c413f5bc3f63df1a4",
+    pinHash: "dcf81e1354ff65ad92dd2986d45396745f17caeb0ba5fea87fc4169e2066b0fb",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
@@ -45566,8 +45639,10 @@ const DEFAULT_OFFICE_USERS_SEED = [
     mobile: "04575240408",
     email: "emis.ceosvg@tnschools.gov.in",
     username: "emis_coord",
-    password: "EmisSvg@2026",
-    pin: "202610",
+    password: "",
+    pin: "",
+    passHash: "fdfef73c479ccac93a3be0c24d3e8561293579e1fe8bf45046c3ed8e89232104",
+    pinHash: "26fe1acfaa25f2785bf9c1fee3267d9608e93105e807f2842d443d4f4df98bb8",
     scopeBlock: "ALL",
     scopeMgmt: "ALL",
     scopeLevel: "ALL",
@@ -45628,8 +45703,19 @@ function authenticateOfficeStaffOrDeoUser(rawId, rawPass) {
     };
   }
   const cleanPass = String(rawPass || "").trim();
-  const passOk = Boolean(user.password && cleanPass === String(user.password).trim());
-  const pinOk = Boolean(user.pin && /^\d{6}$/.test(cleanPass) && cleanPass === String(user.pin).trim());
+  const hashedClean = (typeof sha256HexSync === "function" && typeof _ADMIN_AUTH_SALT !== "undefined")
+    ? sha256HexSync(_ADMIN_AUTH_SALT + cleanPass)
+    : "";
+  const passOk = Boolean(
+    (user.passHash && hashedClean && hashedClean === String(user.passHash).trim()) ||
+    (user.password && cleanPass === String(user.password).trim())
+  );
+  const pinOk = Boolean(
+    /^\d{6}$/.test(cleanPass) && (
+      (user.pinHash && hashedClean && hashedClean === String(user.pinHash).trim()) ||
+      (user.pin && cleanPass === String(user.pin).trim())
+    )
+  );
   if (!cleanPass || (!passOk && !pinOk)) {
     return {
       matchedUser: true,
@@ -49445,7 +49531,7 @@ function disablePwaAppAndEnforceLiveShortcutMode() {
       warn.id = "oldPwaStandaloneWarningBanner";
       warn.style.cssText = "background:#7f1d1d; color:#fff; border-bottom:3px solid #fde047; padding:8px 14px; font-size:0.80rem; font-weight:800; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; z-index:10000;";
       warn.innerHTML = `
-        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.91) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
+        <span>⚠️ நீங்கள் பழைய கைபேசி/கணினி செயலி (App) வழியாகத் திறந்துள்ளீர்கள். அனைத்து புதிய மேம்பாடுகளும் (v9.92) உடனடியாகத் தெரிய நேரடி உலாவியில் (Chrome/Edge Shortcut) பயன்படுத்தவும்.</span>
         <div style="display:flex; gap:6px;">
           <button type="button" class="btn btn-primary btn-sm" onclick="downloadDesktopUrlShortcut()" style="background:#fde047; color:#0f172a; border:none; font-weight:900; padding:4px 10px;">🔖 புதிய Shortcut பதிவிறக்கு</button>
           <a href="https://portal.ceosvg.in/?v=5.7_${Date.now()}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="background:#16a34a; color:#fff; border-color:#86efac; font-weight:900; padding:4px 10px; text-decoration:none;">🌐 நேரடி உலாவியில் திற ↗</a>
@@ -49507,7 +49593,7 @@ function openPortalShortcutModal() {
     <div class="modal-card" style="max-width:680px; width:96%; border-top:5px solid #0284c7; padding:0; overflow:hidden;">
       <div class="modal-header" style="background:linear-gradient(135deg,#0f294a 0%,#0284c7 100%); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.91)</div>
+          <div style="font-size:0.72rem; font-weight:800; color:#bae6fd; text-transform:uppercase; letter-spacing:0.6px;">ALWAYS-LIVE BROWSER SHORTCUT (v9.92)</div>
           <h3 style="font-size:1.02rem; font-weight:900; margin:3px 0 0 0; color:#fff;">🔖 portal.ceosvg.in – நேரடி இணையதள Shortcut உருவாக்கும் வசதி</h3>
         </div>
         <button type="button" onclick="closePwaInstallGuideModal()" style="background:#dc2626; border:2px solid #fca5a5; color:#fff; padding:5px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer;">✕ மூடுக</button>
@@ -56001,7 +56087,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     const payload = {
       dualWriteEnabled: Boolean(enabled),
       updatedAt: Date.now(),
-      version: "v9.91"
+      version: "v9.92"
     };
     let fbOk = false;
     try {
@@ -56663,7 +56749,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
     } catch (err) {
       console.warn("[v9.38 School D1 EMIS Loader]", err);
     }
-    // v9.91 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
+    // v9.92 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
     if ((!Array.isArray(stfRows) || stfRows.length === 0) && localStorage.getItem("CEOSVG_CF_D1_PRIMARY_MODE") === "0") {
       try {
         const fbOk = typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl) && typeof buildFirebaseEndpoint === "function";
@@ -56751,7 +56837,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
         console.warn("[v9.60 Admin D1 EMIS Loader]", err);
       }
 
-      // v9.91 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
+      // v9.92 Zero-FB-Read Guard: Only fall back to Firebase RTDB if D1 Primary is explicitly disabled ("0")
       if (cStaff === 0 && localStorage.getItem("CEOSVG_CF_D1_PRIMARY_MODE") === "0") {
         try {
           const fbOk = typeof normalizeFirebaseDbUrl === "function" && typeof firebaseDbUrl !== "undefined" && normalizeFirebaseDbUrl(firebaseDbUrl) && typeof buildFirebaseEndpoint === "function";
@@ -57092,7 +57178,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       const payload = {
         d1PrimaryEnabled: Boolean(enabled),
         updatedAt: new Date().toISOString(),
-        version: "v9.91"
+        version: "v9.92"
       };
       const fbBase = getFirebaseBaseV88();
       const workerBase = getWorkerBaseV88();
@@ -57118,7 +57204,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
   // Upgraded v8.8 worker.js source generator (includes HMAC-SHA256 Session Auth + /__d1/node Primary Read + KV Cache)
   window.getCfKvWorkerSourceCode = function() {
     return [
-      '// Cloudflare Worker: ceosvg-fb-cache (v9.91 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
+      '// Cloudflare Worker: ceosvg-fb-cache (v9.92 — HMAC Session Auth + D1 Primary + Hybrid KV Cache)',
       '// Bindings required: CEOSVG_CACHE_KV (KV Namespace), CEOSVG_D1 (D1 Database: ceosvg-portal-db)',
       '// Optional Secret for Auth Enforcement: SESSION_SECRET (Settings -> Variables & Secrets -> Add Secret)',
       'const FIREBASE_BASE = "https://ceosvg-school-portal-default-rtdb.asia-southeast1.firebasedatabase.app";',
@@ -57226,7 +57312,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '    // 1) Health check',
       '    if (pathname === "" || pathname === "__health") {',
       '      return jsonResp({',
-      '        ok: true, service: "ceosvg-fb-cache", version: "v9.91",',
+      '        ok: true, service: "ceosvg-fb-cache", version: "v9.92",',
       '        kvBound: Boolean(env && env.CEOSVG_CACHE_KV),',
       '        d1Bound: Boolean(env && env.CEOSVG_D1),',
       '        authEnforced,',
@@ -57234,16 +57320,81 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      });',
       '    }',
       '',
-      '    // 2) v8.8 HMAC-SHA256 Session Token Issuer',
-      '    if (pathname === "__auth/session" && request.method === "POST") {',
+      '    // Helper (v9.92): Salted SHA-256 hex digest using WebCrypto for server-side login verification',
+      '    async function sha256HexServer(str) {',
+      '      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(str || "")));',
+      '      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");',
+      '    }',
+      '',
+      '    // 2A) v9.92 Server-Side Credential Verification Login (POST /__auth/login -> Scoped HMAC-SHA256 Token)',
+      '    if (pathname === "__auth/login" && request.method === "POST") {',
       '      let body = {};',
       '      try { body = await request.json(); } catch (e) {}',
       '      const role = ["superadmin", "officer", "school"].includes(String(body.role || "")) ? String(body.role) : "school";',
+      '      const rawPass = String(body.password || "").trim();',
+      '      const uNo = String(body.uNo || "").trim();',
+      '      const username = String(body.username || "").trim().toLowerCase();',
+      '      if (!rawPass) return jsonResp({ ok: false, error: "Password required" }, 400);',
+      '      if (!env || !env.CEOSVG_D1) return jsonResp({ ok: false, error: "D1 not bound" }, 500);',
+      '      await ensureD1Table(env);',
+      '      const SALT = "CEOSVG_SEC_SALT_2026_V4::";',
+      '      const passHash = await sha256HexServer(SALT + rawPass);',
+      '      const passHashUp = await sha256HexServer(SALT + rawPass.toUpperCase());',
+      '      let verified = false;',
+      '      if (role === "school" && uNo) {',
+      '        const row = await env.CEOSVG_D1.prepare("SELECT v FROM portal_kv_store WHERE k = ?").bind("ceosvg_live/school_auth/" + uNo).first();',
+      '        if (row && row.v) {',
+      '          try {',
+      '            const rec = JSON.parse(row.v);',
+      '            const pMatch = (rec.passHash && rec.passHash === passHash) || (rec.password && String(rec.password).trim() === rawPass);',
+      '            const pinMatch = /^\d{6}$/.test(rawPass) && ((rec.pinHash && rec.pinHash === passHash) || (rec.pin && String(rec.pin).trim() === rawPass));',
+      '            verified = Boolean(pMatch || pinMatch);',
+      '          } catch (e) {}',
+      '        }',
+      '      } else if (role === "officer" && username) {',
+      '        const row = await env.CEOSVG_D1.prepare("SELECT v FROM portal_kv_store WHERE k = ?").bind("ceosvg_live/stores/CEOSVG_OFFICE_USERS_RBAC_V1").first();',
+      '        if (row && row.v) {',
+      '          try {',
+      '            const list = JSON.parse(row.v);',
+      '            const usr = Array.isArray(list) ? list.find(u => u && String(u.username || "").trim().toLowerCase() === username && u.status !== "SUSPENDED") : null;',
+      '            if (usr) {',
+      '              const pMatch = (usr.passHash && usr.passHash === passHash) || (usr.password && String(usr.password).trim() === rawPass);',
+      '              const pinMatch = /^\d{6}$/.test(rawPass) && ((usr.pinHash && usr.pinHash === passHash) || (usr.pin && String(usr.pin).trim() === rawPass));',
+      '              verified = Boolean(pMatch || pinMatch);',
+      '            }',
+      '          } catch (e) {}',
+      '        }',
+      '      } else if (role === "superadmin") {',
+      '        const row = await env.CEOSVG_D1.prepare("SELECT v FROM portal_kv_store WHERE k = ?").bind("ceosvg_live/stores/CEOSVG_ADMIN_SECURITY_VAULT").first();',
+      '        if (row && row.v) {',
+      '          try {',
+      '            const vlt = JSON.parse(row.v);',
+      '            if (vlt && (vlt.customAdminPassHashExact === passHash || vlt.customAdminPassHash === passHashUp)) verified = true;',
+      '          } catch (e) {}',
+      '        }',
+      '        if (!verified && env.ADMIN_PASS_HASH && (env.ADMIN_PASS_HASH === passHash || env.ADMIN_PASS_HASH === passHashUp)) verified = true;',
+      '      }',
+      '      if (!verified) return jsonResp({ ok: false, error: "Invalid credentials" }, 401);',
+      '      const secret = authEnforced ? String(env.SESSION_SECRET).trim() : "CEOSVG_OPEN_MODE_V88";',
+      '      const exp = Date.now() + (12 * 60 * 60 * 1000);',
+      '      const token = await issueSessionToken(secret, { role, uNo: role === "school" ? uNo : "ALL", exp, v: "9.92", verified: true });',
+      '      return jsonResp({ ok: true, verified: true, authEnforced, role, uNo: role === "school" ? uNo : "ALL", exp, token });',
+      '    }',
+      '',
+      '    // 2B) HMAC-SHA256 Session Token Issuer (Set STRICT_LOGIN_AUTH=1 in Worker Variables to block unverified admin/officer tokens)',
+      '    if (pathname === "__auth/session" && request.method === "POST") {',
+      '      let body = {};',
+      '      try { body = await request.json(); } catch (e) {}',
+      '      const strictLogin = Boolean(env && String(env.STRICT_LOGIN_AUTH || "").trim() === "1");',
+      '      let role = ["superadmin", "officer", "school"].includes(String(body.role || "")) ? String(body.role) : "school";',
+      '      if (strictLogin && role !== "school") {',
+      '        return jsonResp({ ok: false, error: "Strict Login active: use POST /__auth/login for admin/officer tokens" }, 403);',
+      '      }',
       '      const uNo = String(body.uNo || "").trim();',
       '      const secret = authEnforced ? String(env.SESSION_SECRET).trim() : "CEOSVG_OPEN_MODE_V88";',
       '      const exp = Date.now() + (12 * 60 * 60 * 1000); // 12 hours',
-      '      const token = await issueSessionToken(secret, { role, uNo, exp, v: "8.8" });',
-      '      return jsonResp({ ok: true, authEnforced, role, uNo, exp, token });',
+      '      const token = await issueSessionToken(secret, { role, uNo, exp, v: "9.92" });',
+      '      return jsonResp({ ok: true, authEnforced, strictLogin, role, uNo, exp, token });',
       '    }',
       '',
       '    // 3) Targeted KV invalidation',
@@ -57291,7 +57442,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      return jsonResp({ ok: true, d1Bound: true, authEnforced, totalRows: Number((totalRes && totalRes.cnt) || 0), lastUpdatedAt: Number((totalRes && totalRes.last_ts) || 0), counts });',
       '    }',
       '',
-      '    // v9.91 Auto-Chunking Helpers (transparently supports mega-schools > 700 KB up to 10 MB in Cloudflare D1)',
+      '    // v9.92 Auto-Chunking Helpers (transparently supports mega-schools > 700 KB up to 10 MB in Cloudflare D1)',
       '    const D1_CHUNK_SUFFIX = "#__chunk_";',
       '    const D1_CHUNK_SIZE = 700000;',
       '',
@@ -57329,7 +57480,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      return true;',
       '    }',
       '',
-      '    // Helper (v9.91): Read exact D1 node OR aggregate child rows for parent collections (Auto-Chunking + 0 Firebase Reads)',
+      '    // Helper (v9.92): Read exact D1 node OR aggregate child rows for parent collections (Auto-Chunking + 0 Firebase Reads)',
       '    async function readD1NodeOrCollection(cleanKey, shallowOnly) {',
       '      if (!env || !env.CEOSVG_D1 || !cleanKey) return null;',
       '      await ensureD1Table(env);',
@@ -57367,7 +57518,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '      return { text: JSON.stringify(agg), source: shallowOnly ? "D1-SHALLOW" : "D1-COLLECTION" };',
       '    }',
       '',
-      '    // 6) v9.91 Phase 3 Direct Node + Collection Primary Read (Zero Firebase Fallback)',
+      '    // 6) v9.92 Phase 3 Direct Node + Collection Primary Read (Zero Firebase Fallback)',
       '    if (pathname === "__d1/node" && request.method === "GET") {',
       '      const auth = await verifySessionToken(request, env);',
       '      if (!auth.ok) return jsonResp({ ok: false, error: auth.error }, 401);',
@@ -57413,7 +57564,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '        for (const cq of chunkedQueue) {',
       '          try { await upsertChunkedItem(cq.k, cq.v, now); written++; chunkedWritten++; } catch (ce) {}',
       '        }',
-      '        // v9.91: Non-blocking silent Firebase Write Backup (?print=silent => 204 No Content, 0 bytes download)',
+      '        // v9.92: Non-blocking silent Firebase Write Backup (?print=silent => 204 No Content, 0 bytes download)',
       '        if (written > 0 && body.fbBackup !== false && items.length <= 20) {',
       '          const fbAuth = (env && env.FIREBASE_AUTH_SECRET) ? "&auth=" + encodeURIComponent(String(env.FIREBASE_AUTH_SECRET).trim()) : "";',
       '          ctx.waitUntil(Promise.allSettled(items.map(it => {',
@@ -57662,7 +57813,7 @@ body.exam-section-officer-mode [onclick*="switchAdminTab('deleteReqs')"] {
       '          return new Response(cached, { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json; charset=utf-8", "X-Cache": "HIT-KV", "X-Cache-TTL": String(ttl) } });',
       '        }',
       '      }',
-      '      // v9.91 Zero-Firebase-Read: Populate KV Cache Miss directly from Cloudflare D1 (0 Firebase downloads)',
+      '      // v9.92 Zero-Firebase-Read: Populate KV Cache Miss directly from Cloudflare D1 (0 Firebase downloads)',
       '      const isShallow = url.search.includes("shallow=true");',
       '      const d1Hit = await readD1NodeOrCollection(cleanPath, isShallow);',
       '      const text = d1Hit ? d1Hit.text : "null";',
@@ -58994,7 +59145,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
   if (typeof window.saveSchoolEbs2026Data === "function" && !window.saveSchoolEbs2026Data.__ceosvgV931LockGuarded) {
     const origSaveEbs = window.saveSchoolEbs2026Data;
     window.saveSchoolEbs2026Data = async function(showNotification, optionalUNo) {
-      if (blockIfFinalLocked(optionalUNo)) return false;
+      if (!window.__ceosvgAllowFinalLockSaveV992 && blockIfFinalLocked(optionalUNo)) return false;
       const res = await origSaveEbs.apply(this, arguments);
       setTimeout(() => window.refreshSchoolLockAndIntegrityUI(optionalUNo), 300);
       return res;
@@ -59186,13 +59337,13 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     }
     const workerHeaders = tok ? { "Authorization": "Bearer " + tok, "X-CEOSVG-Token": tok } : {};
 
-    // v9.91 Helper: Append ?print=silent to Firebase write URLs so Firebase returns 204 No Content (0 bytes download)
+    // v9.92 Helper: Append ?print=silent to Firebase write URLs so Firebase returns 204 No Content (0 bytes download)
     const toSilentFbUrl = (rawUrl) => {
       if (!rawUrl || rawUrl.includes("print=silent")) return rawUrl;
       return rawUrl + (rawUrl.includes("?") ? "&print=silent" : "?print=silent");
     };
 
-    // v9.91 Helper: Update Admin D1/KV Live Stats UI lines in real time
+    // v9.92 Helper: Update Admin D1/KV Live Stats UI lines in real time
     const syncUnifiedLiveStatsUI = () => {
       try {
         const kvEl = document.getElementById("cfKvLiveStatsLine");
@@ -59219,7 +59370,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     // STAGE 3: Phase 3 Cloudflare D1 Primary (GET & PUT) — 0 Firebase Reads + Silent FB Write Backup
     if (workerBase && isD1PrimaryEnabled() && cleanPath.startsWith("ceosvg_live/")) {
       if (method === "GET") {
-        // High-read cacheable paths try KV first (KV miss also populates from D1 in v9.91 worker.js)
+        // High-read cacheable paths try KV first (KV miss also populates from D1 in v9.92 worker.js)
         if (isCacheablePath(cleanPath) && !isShallowReq) {
           try {
             const kvResp = await fetchWithAbortTimeout(
@@ -59236,7 +59387,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
             }
           } catch (e) {}
         }
-        // v9.91 Ultra-Fast Parallel Collection Reader (4x-6x faster!):
+        // v9.92 Ultra-Fast Parallel Collection Reader (4x-6x faster!):
         // (1) 60s In-Memory Cache, (2) Single-Flight Deduplication, (3) 4-way Parallel Wave Prefetch (4 x 20 = 80 schools/wave)
         const LARGE_D1_COLLECTIONS = new Set([
           "ceosvg_live/exam_result_analysis_by_uno",
@@ -59346,7 +59497,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
             }
           }
         } catch (e) {}
-        // ZERO-FIREBASE READ KILL-SWITCH (v9.91): Never fall back to Firebase RTDB GET when D1 Primary is active!
+        // ZERO-FIREBASE READ KILL-SWITCH (v9.92): Never fall back to Firebase RTDB GET when D1 Primary is active!
         stats.blockedFbReads = (stats.blockedFbReads || 0) + 1;
         syncUnifiedLiveStatsUI();
         return new Response("null", {
@@ -59631,7 +59782,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
   }
 
   window.CEOSVG_API_CLIENT = {
-    version: "v9.91",
+    version: "v9.92",
     fetch: unifiedFetch,
     nativeFetch: nativeFetch,
     stats: stats,
@@ -59759,7 +59910,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
     const dutyLine = extractJsVarLineFromHtml(rawText, "var EBS_10TH_DUTY_2025_26_LOOKUP = ");
     if (dutyLine && dutyLine.length > 500) {
       try {
-        // v9.91 Fix: Use CSP-safe JSON.parse() instead of new Function()
+        // v9.92 Fix: Use CSP-safe JSON.parse() instead of new Function()
         const expr = dutyLine.replace(/^var\s+EBS_10TH_DUTY_2025_26_LOOKUP\s*=\s*/, "").replace(/\/\/[^\n]*$/, "").replace(/;\s*$/, "").trim();
         const parsedDuty = JSON.parse(expr);
         if (parsedDuty && parsedDuty.byId && Object.keys(parsedDuty.byId).length > 0) {
@@ -60810,7 +60961,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
         }
         else {
           appeared++;
-          // v9.91: Compute per-student numeric-only subject count & check AB/EX before updating Lowest/Avg
+          // v9.92: Compute per-student numeric-only subject count & check AB/EX before updating Lowest/Avg
           let stuNumCnt = 0, stuHasAbOrEx = false;
           subs.forEach(sbChk => {
             const rawV = raw.marks ? raw.marks[sbChk.key] : "";
@@ -60921,7 +61072,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
         appeared: appeared,
         passed: passed,
         passPct: cleanSecPassPct,
-        // v9.91: Average Mark uses ONLY numerically entered marks (strictly excluding EX, AB & blanks); Lowest excludes AB/EX
+        // v9.92: Average Mark uses ONLY numerically entered marks (strictly excluding EX, AB & blanks); Lowest excludes AB/EX
         avg: totMarkCount > 0 ? Math.round(totMarkSum / totMarkCount) : "-",
         max: totMax !== null ? totMax : "-",
         min: totMin !== null ? totMin : (totMinFallback !== null ? totMinFallback : "-"),
@@ -61018,7 +61169,7 @@ body.school-final-locked #viewSchool button[onclick*="submitSchoolStaffDeleteReq
         </tr>`;
     }).join("");
 
-    // Last page of section: Dedicated Abstract ("சுருக்கம்") Table with its own header (v9.91)
+    // Last page of section: Dedicated Abstract ("சுருக்கம்") Table with its own header (v9.92)
     let abstractSectionHtml = "";
     if (isLastSecPage) {
       const topExamRows = [
@@ -61468,7 +61619,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
   }
 
   function getNativeFetchForCtV962() {
-    // v9.91 Zero-Firebase-Read: Route Class Teacher reads/writes through unifiedFetch (D1 Primary + Silent FB Backup)
+    // v9.92 Zero-Firebase-Read: Route Class Teacher reads/writes through unifiedFetch (D1 Primary + Silent FB Backup)
     return window.fetch.bind(window);
   }
 
@@ -61703,7 +61854,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
 
     if (btn) { btn.disabled = true; btn.textContent = "⏳ சரிபார்க்கப்படுகிறது..."; }
     try {
-      // v9.91 Fix: Acquire Worker HMAC Bearer token BEFORE D1 class_teacher_auth lookup (prevents pre-login 401!)
+      // v9.92 Fix: Acquire Worker HMAC Bearer token BEFORE D1 class_teacher_auth lookup (prevents pre-login 401!)
       if (typeof window.refreshWorkerSessionTokenV88 === "function") {
         try { await window.refreshWorkerSessionTokenV88("school", "PRELOGIN", false); } catch (e) {}
       }
@@ -62084,7 +62235,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
     window.activeClassTeacherSession = ct;
     document.body.classList.add("class-teacher-mode");
 
-    // Lock standard & section strictly to assigned Class Teacher section (v9.91)
+    // Lock standard & section strictly to assigned Class Teacher section (v9.92)
     _activeResultAnalysisStd = String(ct.std || "10");
     _raStepStdChosen = true;
     _raSelectedSecId = String(ct.secId || "A");
@@ -62122,7 +62273,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
         </div>`;
     }
 
-    // v9.91: Strictly lock section selector pills (_mtStuFilterSec & onRaSelectSection) to ONLY assigned section(s)
+    // v9.92: Strictly lock section selector pills (_mtStuFilterSec & onRaSelectSection) to ONLY assigned section(s)
     const enforceCtSectionLock = () => {
       const curCt = window.activeClassTeacherSession;
       if (!curCt) return;
@@ -62811,7 +62962,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
 </script>
 
 <script>
-// === CEOSVG v9.91: FIREBASE EXPORT JSON -> CLOUDFLARE D1 DIRECT UPLOADER (0 FIREBASE DOWNLOAD) ===
+// === CEOSVG v9.92: FIREBASE EXPORT JSON -> CLOUDFLARE D1 DIRECT UPLOADER (0 FIREBASE DOWNLOAD) ===
 (function() {
   if (window.__ceosvgV970FbJsonUploaderReady) return;
   window.__ceosvgV970FbJsonUploaderReady = true;
@@ -62980,7 +63131,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
       }
 
       const nativeFetch = window.__CEOSVG_NATIVE_FETCH__ || window.fetch.bind(window);
-      // v9.91: Group normal items in batches of 8, and send mega-schools (>350 KB, e.g. U.No 434) individually for Auto-Chunking!
+      // v9.92: Group normal items in batches of 8, and send mega-schools (>350 KB, e.g. U.No 434) individually for Auto-Chunking!
       const batches = [];
       let curBatch = [];
       for (const it of items) {
@@ -63048,7 +63199,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
         try { await window.checkCloudflareD1Status(false); } catch (e) {}
       }
     } catch (err) {
-      console.error("[v9.91 Firebase JSON -> D1 Upload]", err);
+      console.error("[v9.92 Firebase JSON -> D1 Upload]", err);
       setProgressV970(`❌ JSON பதிவேற்றப் பிழை: ${err && err.message ? err.message : err}`);
       if (typeof showToast === "function") showToast("❌ JSON கோப்பைப் படிக்க முடியவில்லை.", "#dc2626", true);
     } finally {
@@ -63059,7 +63210,7 @@ body.class-teacher-mode #raDedicatedClassHeaderBar > div:last-child:has(#raTopTa
 </script>
 
 <style id="ceosvgV974MobileA11yStyles">
-/* === CEOSVG v9.91: EDGE-TO-EDGE MOBILE MARK ENTRY, ICON-ONLY VIEW SWITCHER & ACCESSIBILITY === */
+/* === CEOSVG v9.92: EDGE-TO-EDGE MOBILE MARK ENTRY, ICON-ONLY VIEW SWITCHER & ACCESSIBILITY === */
 label[for] { cursor: pointer; }
 .ceosvg-mobile-mark-toggle-bar {
   display: none;
@@ -63103,7 +63254,7 @@ label[for] { cursor: pointer; }
 @media (max-width: 768px) {
   .ceosvg-mobile-mark-toggle-bar { display: flex !important; }
 
-  /* v9.91: Strip ALL nested ancestor left/right borders, margins & padding (eliminates the 3 stacked side frames!) */
+  /* v9.92: Strip ALL nested ancestor left/right borders, margins & padding (eliminates the 3 stacked side frames!) */
   body.ceosvg-has-mark-table,
   .ceosvg-mobile-edge-ancestor {
     padding-left: 0 !important;
@@ -63248,7 +63399,7 @@ label[for] { cursor: pointer; }
 }
 </style>
 <script>
-// === CEOSVG v9.91: MOBILE-FIRST MARK ENTRY CARD ENGINE & DYNAMIC ACCESSIBILITY AUTO-LINKER ===
+// === CEOSVG v9.92: MOBILE-FIRST MARK ENTRY CARD ENGINE & DYNAMIC ACCESSIBILITY AUTO-LINKER ===
 (function() {
   if (window.__ceosvgV974MobileA11yReady) return;
   window.__ceosvgV974MobileA11yReady = true;
@@ -63257,7 +63408,7 @@ label[for] { cursor: pointer; }
   let _a11ySeq = 1;
   let _enhanceTimer = null;
 
-  // v9.91 Fix: Keep primary toggle state in memory so Table/Card switch ALWAYS works even if localStorage is full!
+  // v9.92 Fix: Keep primary toggle state in memory so Table/Card switch ALWAYS works even if localStorage is full!
   let _mobileCardsOn = true;
   try {
     if (localStorage.getItem(MOBILE_MODE_KEY) === "0") _mobileCardsOn = false;
@@ -63294,7 +63445,7 @@ label[for] { cursor: pointer; }
         const tblWrapEl = tbl.closest(".table-responsive") || tbl.parentElement;
         if (tblWrapEl) {
           tblWrapEl.classList.add("ceosvg-mark-wrap-mobile");
-          // v9.91: Walk up ancestor wrappers up to #viewSchool to strip all 3 nested left/right frames on phones!
+          // v9.92: Walk up ancestor wrappers up to #viewSchool to strip all 3 nested left/right frames on phones!
           let anc = tblWrapEl.parentElement;
           let depth = 0;
           while (anc && anc !== document.body && depth < 8) {
@@ -63317,7 +63468,7 @@ label[for] { cursor: pointer; }
         }
         tbl.__v974Headers = headers;
 
-        // v9.91: Inject compact ICON-ONLY switcher (📱 / 📊) with no verbose text
+        // v9.92: Inject compact ICON-ONLY switcher (📱 / 📊) with no verbose text
         const wrap = tbl.parentElement;
         if (wrap && !wrap.previousElementSibling?.classList?.contains("ceosvg-mobile-mark-toggle-bar")) {
           const bar = document.createElement("div");
@@ -63432,7 +63583,7 @@ label[for] { cursor: pointer; }
 </script>
 
 <script>
-// === CEOSVG v9.91: SCHOOL UNLOCK REQUEST + ADMIN 3-YEAR PUBLIC EXAM PASS % (2023-24, 2024-25, 2025-26) ===
+// === CEOSVG v9.92: SCHOOL UNLOCK REQUEST + ADMIN 3-YEAR PUBLIC EXAM PASS % (2023-24, 2024-25, 2025-26) ===
 (function() {
   if (window.__ceosvgV986UnlockAndPub3YrReady) return;
   window.__ceosvgV986UnlockAndPub3YrReady = true;
@@ -63575,7 +63726,7 @@ label[for] { cursor: pointer; }
 
   function getPub3YrEligibleSchools(stdStr) {
     const base = (typeof masterSchools !== "undefined" && Array.isArray(masterSchools)) ? masterSchools.slice() : [];
-    // v9.91: Ensure U.No 268 (Sivagangai District Model School, Arasanur-Thirumanjolai) is ALWAYS included for 12th Std
+    // v9.92: Ensure U.No 268 (Sivagangai District Model School, Arasanur-Thirumanjolai) is ALWAYS included for 12th Std
     const has268 = base.some(s => s && String(s.uNo) === "268");
     if (!has268) {
       const init268 = (typeof INITIAL_MASTER_SCHOOLS !== "undefined" && Array.isArray(INITIAL_MASTER_SCHOOLS))
@@ -63713,7 +63864,7 @@ label[for] { cursor: pointer; }
 </script>
 
 <script>
-// === CEOSVG v9.91: DIRECT EXCEL (.xlsx) UPLOAD FOR ADMIN 3-YR PUBLIC EXAM % & 10th/12th MARK ENTRY ===
+// === CEOSVG v9.92: DIRECT EXCEL (.xlsx) UPLOAD FOR ADMIN 3-YR PUBLIC EXAM % & 10th/12th MARK ENTRY ===
 (function() {
   if (window.__ceosvgV988ExcelUploadReady) return;
   window.__ceosvgV988ExcelUploadReady = true;
@@ -63794,7 +63945,7 @@ label[for] { cursor: pointer; }
         showToast(`✅ ${updated} பள்ளிகளின் ${stdStr}-ஆம் வகுப்பு பொதுத்தேர்வு தேர்ச்சி % Excel-இலிருந்து பதிவேற்றப்பட்டு D1-இல் சேமிக்கப்பட்டது!`, "#16a34a", true);
       }
     } catch (err) {
-      console.error("[v9.91 Pub3Yr Excel Upload]", err);
+      console.error("[v9.92 Pub3Yr Excel Upload]", err);
       if (typeof showToast === "function") showToast("❌ Excel கோப்பைப் படிக்க முடியவில்லை.", "#dc2626", true);
     }
   };
@@ -64004,7 +64155,7 @@ label[for] { cursor: pointer; }
         showToast(`✅ ${matchedStudents} மாணவர்களின் மதிப்பெண்கள் Excel-இலிருந்து பதிவேற்றப்பட்டு D1-இல் சேமிக்கப்பட்டன!`, "#16a34a", true);
       }
     } catch (err) {
-      console.error("[v9.91 Mark Entry Excel Upload]", err);
+      console.error("[v9.92 Mark Entry Excel Upload]", err);
       if (typeof showToast === "function") showToast("❌ Excel கோப்பைப் படிக்க முடியவில்லை.", "#dc2626", true);
     }
   };
@@ -64012,7 +64163,7 @@ label[for] { cursor: pointer; }
 </script>
 
 <script>
-// === CEOSVG v9.91: SUPER ADMIN FULL RESET OF CLASS MASTER SECTIONS & STUDENTS (DIRECT D1 OVERWRITE) ===
+// === CEOSVG v9.92: SUPER ADMIN FULL RESET OF CLASS MASTER SECTIONS & STUDENTS (DIRECT D1 OVERWRITE) ===
 (function() {
   if (window.__ceosvgV989FullResetReady) return;
   window.__ceosvgV989FullResetReady = true;
@@ -64150,7 +64301,7 @@ label[for] { cursor: pointer; }
         showToast(`✅ [${uNo}] ${stdStr}-ஆம் வகுப்பு அனைத்துப் பிரிவுகளும் மாணவர் விவரங்களும் D1-இல் நிரந்தரமாக நீக்கப்பட்டன!`, "#16a34a", true);
       }
     } catch (err) {
-      console.error("[v9.91 Full Reset]", err);
+      console.error("[v9.92 Full Reset]", err);
       if (typeof showToast === "function") showToast("❌ D1 முழு மீட்டமைப்பில் பிழை: " + (err && err.message ? err.message : err), "#dc2626", true);
     } finally {
       if (btn) { btn.disabled = false; btn.textContent = "🗑️ அனைத்துப் பிரிவு & மாணவர் நீக்கு (Full Reset)"; }
