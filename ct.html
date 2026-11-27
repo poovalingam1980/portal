@@ -319,20 +319,77 @@ function showToast(msg, bg = "#0f766e") {
   window._tTimer = setTimeout(() => { el.style.display = "none"; }, 3000);
 }
 
+function sha256HexSyncFallback(asciiStr) {
+  const rightRotate = (v, a) => (v >>> a) | (v << (32 - a));
+  const maxWord = Math.pow(2, 32);
+  let result = "";
+  const words = [];
+  const utf8 = unescape(encodeURIComponent(String(asciiStr || "")));
+  const bitLen = utf8.length * 8;
+  let hash = sha256HexSyncFallback.h = sha256HexSyncFallback.h || [];
+  const k = sha256HexSyncFallback.k = sha256HexSyncFallback.k || [];
+  let pc = k.length;
+  const isComp = {};
+  for (let cand = 2; pc < 64; cand++) {
+    if (!isComp[cand]) {
+      for (let i = 0; i < 313; i += cand) isComp[i] = cand;
+      hash[pc] = (Math.pow(cand, 0.5) * maxWord) | 0;
+      k[pc++] = (Math.pow(cand, 1 / 3) * maxWord) | 0;
+    }
+  }
+  let s = utf8 + "\x80";
+  while (s.length % 64 - 56) s += "\x00";
+  for (let i = 0; i < s.length; i++) {
+    const j = s.charCodeAt(i);
+    words[i >> 2] |= j << ((3 - i) % 4) * 8;
+  }
+  words[words.length] = (bitLen / maxWord) | 0;
+  words[words.length] = bitLen;
+  hash = hash.slice(0, 8);
+  for (let j = 0; j < words.length;) {
+    const w = words.slice(j, j += 16);
+    const oldH = hash.slice(0);
+    for (let i = 0; i < 64; i++) {
+      const w15 = w[i - 15], w2 = w[i - 2];
+      const a = hash[0], e = hash[4];
+      const t1 = hash[7] + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ((e & hash[5]) ^ (~e & hash[6])) + k[i] +
+        (w[i] = i < 16 ? w[i] : (w[i - 16] + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) | 0);
+      const t2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+      hash = [(t1 + t2) | 0].concat(hash);
+      hash[4] = (hash[4] + t1) | 0;
+    }
+    for (let i = 0; i < 8; i++) hash[i] = (hash[i] + oldH[i]) | 0;
+  }
+  for (let i = 0; i < 8; i++) {
+    for (let j = 3; j + 1; j--) {
+      const b = (hash[i] >> (j * 8)) & 255;
+      result += (b < 16 ? "0" : "") + b.toString(16);
+    }
+  }
+  return result;
+}
+
 async function sha256Hex(str) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  try {
+    if (typeof crypto !== "undefined" && crypto.subtle && typeof crypto.subtle.digest === "function") {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+  } catch (e) {}
+  return sha256HexSyncFallback(str);
 }
 
 async function getWorkerToken(uNo) {
   try {
-    const r = await fetch(`${WORKER_BASE}/__auth/token`, {
+    const r = await fetch(`${WORKER_BASE}/__auth/session`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role: "school", uNo: String(uNo || "PRELOGIN") })
+      body: JSON.stringify({ role: "school", uNo: String(uNo || "PRELOGIN"), ts: Date.now() })
     });
-    const j = await r.json();
-    if (j && j.token) { state.token = j.token; return j.token; }
+    if (r && r.ok) {
+      const j = await r.json().catch(() => null);
+      if (j && j.token) { state.token = j.token; return j.token; }
+    }
   } catch (e) {}
   return state.token || "";
 }
@@ -343,13 +400,19 @@ async function d1ReadNode(key) {
     const r = await fetch(`${WORKER_BASE}/__d1/node?k=${encodeURIComponent(key)}`, {
       headers: tok ? { "Authorization": "Bearer " + tok } : {}
     });
-    if (r.ok) return await r.json();
+    if (r && r.ok) {
+      const d = await r.json().catch(() => null);
+      if (d !== null) return d;
+    }
   } catch (e) {}
   try {
     const r2 = await fetch(`${WORKER_BASE}/${key}.json`, {
       headers: tok ? { "Authorization": "Bearer " + tok } : {}
     });
-    if (r2.ok) return await r2.json();
+    if (r2 && r2.ok) {
+      const d2 = await r2.json().catch(() => null);
+      if (d2 !== null) return d2;
+    }
   } catch (e) {}
   return null;
 }
