@@ -243,6 +243,7 @@
     .reg-table { font-size: 8.5pt; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 </head>
 <body>
 
@@ -426,6 +427,35 @@ function showToast(msg, bg = "#0f766e") {
   el.style.display = "block";
   clearTimeout(window._tTimer);
   window._tTimer = setTimeout(() => { el.style.display = "none"; }, 3000);
+}
+
+
+async function downloadElementAsPdf(elId, filename, orientation = "portrait", btnEl = null) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (typeof html2pdf === "undefined") {
+    showToast("ℹ️ PDF நூலகம் ஏற்றப்படுகிறது — Print வழியாக Save as PDF செய்யலாம்.", "#0284c7");
+    window.print();
+    return;
+  }
+  const origTxt = btnEl ? btnEl.textContent : "";
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = "⏳ PDF உருவாகிறது..."; }
+  try {
+    await html2pdf().set({
+      margin: [6, 6, 8, 6],
+      filename: filename,
+      image: { type: "jpeg", quality: 0.96 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", scrollY: 0 },
+      jsPDF: { unit: "mm", format: "a4", orientation: orientation || "portrait" },
+      pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+    }).from(el).save();
+    showToast("✅ PDF பதிவிறக்கப்பட்டது / PDF Downloaded!", "#15803d");
+  } catch (e) {
+    showToast("⚠️ PDF உருவாக்கத்தில் பிழை — Print திறக்கிறது.", "#d97706");
+    window.print();
+  } finally {
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = origTxt; }
+  }
 }
 
 function sha256HexSyncFallback(asciiStr) {
@@ -1116,9 +1146,10 @@ function renderRegisterTab() {
   host.innerHTML = `
     <div class="no-print" style="display:flex; justify-content:flex-end; gap:6px; margin-bottom:8px; flex-wrap:wrap;">
       <button type="button" class="chip-btn" onclick="exportRegisterCsv()">📗 Excel (.csv)</button>
-      <button type="button" class="chip-btn" style="background:#6d28d9; color:#fff; border-color:#6d28d9;" onclick="window.print()">🖨️ PDF / Print (A4)</button>
+      <button type="button" class="chip-btn" style="background:#6d28d9; color:#fff; border-color:#6d28d9;" onclick="downloadElementAsPdf('ctRegPrintBox', '[${esc(asg.uNo)}]_${esc(asg.std)}th_Sec_${esc(asg.secId)}_${esc(state.termKey)}_MarkRegister.pdf', 'portrait', this)">📥 PDF பதிவிறக்கு (Download PDF)</button>
+      <button type="button" class="chip-btn" onclick="window.print()">🖨️ அச்சிடு</button>
     </div>
-    <div style="overflow-x:auto; background:#fff; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
+    <div id="ctRegPrintBox" style="overflow-x:auto; background:#fff; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
       <div style="text-align:center; margin-bottom:8px;">
         <div style="font-weight:900; font-size:0.86rem; color:#0f294a;">பள்ளிக்கல்வித்துறை | சிவகங்கை மாவட்டம் • School Education Department | Sivagangai District</div>
         <div style="font-weight:900; font-size:0.90rem; color:#0f766e; margin-top:2px;">${esc(asg.schoolNameTa || asg.schoolNameEn || ("U.No: " + asg.uNo))}</div>
@@ -1198,10 +1229,11 @@ function renderSummaryTab() {
   failedRows.sort((a, b) => a.cnt - b.cnt);
 
   host.innerHTML = `
-    <div class="no-print" style="display:flex; justify-content:flex-end; margin-bottom:8px;">
-      <button type="button" class="chip-btn" style="background:#dc2626; color:#fff; border-color:#dc2626;" onclick="window.print()">🖨️ PDF / Print</button>
+    <div class="no-print" style="display:flex; justify-content:flex-end; gap:6px; margin-bottom:8px;">
+      <button type="button" class="chip-btn" style="background:#dc2626; color:#fff; border-color:#dc2626;" onclick="downloadElementAsPdf('ctFailPrintBox', '[${esc(asg.uNo)}]_${esc(asg.std)}th_Sec_${esc(asg.secId)}_${esc(state.termKey)}_FailedList.pdf', 'portrait', this)">📥 Failed List PDF பதிவிறக்கு</button>
+      <button type="button" class="chip-btn" onclick="window.print()">🖨️ அச்சிடு</button>
     </div>
-    <div class="rep-card">
+    <div id="ctFailPrintBox"><div class="rep-card">
       <div style="font-weight:900; color:#0f294a; margin-bottom:8px;">📊 பாடவாரியாகத் தேர்ச்சி பெறாதோர் / Subject-wise Failed Count</div>
       <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:6px;">
         ${subs.map(s => `<div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:6px 8px; font-size:0.78rem; font-weight:800; display:flex; justify-content:space-between;"><span>${esc(s.label)} (${esc(s.shortEn)})</span><strong style="color:#b91c1c;">${subFailCnt[s.key]}</strong></div>`).join("")}
@@ -1214,7 +1246,7 @@ function renderSummaryTab() {
           <strong>${i + 1}. ${esc(r.name)}</strong> <span style="color:#64748b;">(${esc(r.roll)})</span> — <span style="background:#fee2e2;color:#991b1b;padding:1px 6px;border-radius:999px;font-size:0.70rem;font-weight:900;">${r.cnt} Sub Fail</span>
           <div style="color:#b91c1c; font-weight:800; font-size:0.74rem; margin-top:2px;">${esc(r.fSubs.join(" • "))}</div>
         </div>`).join("")}
-    </div>
+    </div></div>
   `;
 }
 
@@ -1276,9 +1308,10 @@ function renderProgressTab() {
   host.innerHTML = `
     <div class="no-print" style="display:flex; gap:6px; margin-bottom:10px; align-items:center; flex-wrap:wrap;">
       <select class="hdr-select" style="flex:1;" onchange="state.progressStuIdx=this.value; renderProgressTab();">${optsHtml}</select>
-      <button type="button" class="chip-btn" style="background:#ea580c; color:#fff; border-color:#ea580c;" onclick="window.print()">🖨️ PDF / Print</button>
+      <button type="button" class="chip-btn" style="background:#ea580c; color:#fff; border-color:#ea580c;" onclick="downloadElementAsPdf('ctProgPrintBox', '[${esc(asg.uNo)}]_${esc(asg.std)}th_Sec_${esc(asg.secId)}_${esc(state.termKey)}_ProgressReport.pdf', 'portrait', this)">📥 Progress PDF பதிவிறக்கு</button>
+      <button type="button" class="chip-btn" onclick="window.print()">🖨️ அச்சிடு</button>
     </div>
-    ${cardsHtml}
+    <div id="ctProgPrintBox">${cardsHtml}</div>
   `;
 }
 
