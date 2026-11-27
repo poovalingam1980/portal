@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f766e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CEO SVG CT">
+<link rel="manifest" href="manifest-ct.json">
+<title>CEO சிவகங்கை — வகுப்பாசிரியர் மதிப்பெண் செயலி</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f1f5f9;
+    color: #0f172a;
+    padding-bottom: 84px;
+  }
+  .hidden { display: none !important; }
+  .login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: linear-gradient(155deg, #0f294a 0%, #0f766e 100%);
+  }
+  .login-card {
+    width: 100%;
+    max-width: 410px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 22px 20px;
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.28);
+  }
+  .login-logo {
+    width: 58px; height: 58px; border-radius: 15px;
+    background: linear-gradient(135deg, #0f766e, #1d4ed8);
+    color: #fde047; font-size: 1.5rem; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px auto;
+  }
+  .login-title { text-align: center; font-size: 1.08rem; font-weight: 900; color: #0f294a; }
+  .login-sub { text-align: center; font-size: 0.78rem; color: #475569; margin-top: 3px; margin-bottom: 14px; font-weight: 700; }
+  .info-box {
+    background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px;
+    padding: 9px 11px; font-size: 0.76rem; color: #166534; line-height: 1.45; margin-bottom: 14px;
+  }
+  .fld-lbl { display: block; font-size: 0.79rem; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+  .fld-inp {
+    width: 100%; height: 44px; padding: 8px 12px; font-size: 1rem; font-weight: 800;
+    border: 1.5px solid #cbd5e1; border-radius: 10px; outline: none; background: #fff;
+  }
+  .fld-inp:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.15); }
+  .btn-main {
+    width: 100%; height: 46px; border: none; border-radius: 11px; cursor: pointer;
+    background: linear-gradient(135deg, #0f766e, #15803d); color: #fff;
+    font-size: 0.96rem; font-weight: 900; box-shadow: 0 6px 16px rgba(15,118,110,0.28);
+  }
+  .btn-main:disabled { opacity: 0.65; cursor: wait; }
+  .err-box {
+    display: none; background: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c;
+    border-radius: 9px; padding: 8px 10px; font-size: 0.78rem; font-weight: 800; margin-bottom: 10px;
+  }
+  .install-banner {
+    display: none; margin-top: 12px; padding: 9px 12px; border-radius: 10px;
+    background: #eff6ff; border: 1.5px solid #93c5fd; color: #1e3a8a;
+    font-size: 0.78rem; font-weight: 800; text-align: center; cursor: pointer;
+  }
+  .app-header {
+    position: sticky; top: 0; z-index: 40;
+    background: linear-gradient(135deg, #0f294a 0%, #0f766e 100%);
+    color: #fff; padding: 10px 12px 8px 12px;
+    box-shadow: 0 3px 12px rgba(15,41,74,0.22);
+  }
+  .hdr-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .hdr-title { font-size: 0.88rem; font-weight: 900; line-height: 1.25; }
+  .hdr-sub { font-size: 0.72rem; color: #fde047; font-weight: 800; }
+  .hdr-logout {
+    border: none; background: #dc2626; color: #fff; border-radius: 8px;
+    padding: 6px 10px; font-size: 0.74rem; font-weight: 900; cursor: pointer; flex-shrink: 0;
+  }
+  .hdr-controls { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-top: 8px; }
+  .hdr-select {
+    height: 36px; border-radius: 8px; border: 1.5px solid #93c5fd;
+    padding: 2px 8px; font-size: 0.80rem; font-weight: 900; color: #0f294a; background: #fff; width: 100%;
+  }
+  .mode-tabs {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+    padding: 8px 10px 4px 10px; background: #f1f5f9;
+  }
+  .mode-tab {
+    border: 1.5px solid #cbd5e1; background: #fff; color: #334155;
+    border-radius: 9px; padding: 8px 4px; font-size: 0.76rem; font-weight: 900; cursor: pointer; text-align: center;
+  }
+  .mode-tab.active { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 6px 10px; }
+  .kpi-card { background: #fff; border: 1px solid #cbd5e1; border-radius: 9px; padding: 6px 4px; text-align: center; }
+  .kpi-val { font-size: 1.02rem; font-weight: 900; color: #0f294a; }
+  .kpi-lbl { font-size: 0.65rem; font-weight: 800; color: #64748b; }
+  .tools-bar { display: flex; gap: 6px; padding: 4px 10px 8px 10px; align-items: center; flex-wrap: wrap; }
+  .search-inp {
+    flex: 1; min-width: 140px; height: 36px; border: 1.5px solid #cbd5e1;
+    border-radius: 9px; padding: 4px 10px; font-size: 0.84rem; font-weight: 700; background: #fff;
+  }
+  .chip-btn {
+    border: 1.5px solid #0f766e; background: #f0fdfa; color: #0f766e;
+    border-radius: 8px; padding: 6px 9px; font-size: 0.74rem; font-weight: 900; cursor: pointer; white-space: nowrap;
+  }
+  .cards-list { padding: 0 10px; display: flex; flex-direction: column; gap: 10px; }
+  .stu-card {
+    background: #fff; border: 1.5px solid #cbd5e1; border-left: 5px solid #1d4ed8;
+    border-radius: 12px; padding: 10px 11px; box-shadow: 0 2px 6px rgba(15,23,42,0.05);
+  }
+  .stu-card.pass { border-left-color: #16a34a; }
+  .stu-card.fail { border-left-color: #dc2626; }
+  .stu-card.absent { border-left-color: #94a3b8; background: #f8fafc; }
+  .stu-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+  .stu-name { font-size: 0.90rem; font-weight: 900; color: #0f294a; line-height: 1.25; }
+  .stu-meta { font-size: 0.72rem; font-weight: 800; color: #475569; margin-top: 2px; }
+  .stu-status-sel {
+    height: 30px; border-radius: 7px; border: 1.5px solid #cbd5e1;
+    font-size: 0.74rem; font-weight: 900; padding: 2px 6px; background: #fff; color: #0f294a;
+  }
+  .sub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+  .sub-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 7px; }
+  .sub-title { font-size: 0.72rem; font-weight: 900; color: #1e3a8a; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .split-row { display: grid; gap: 4px; align-items: center; }
+  .split-row.cols-3 { grid-template-columns: 1fr 1fr 38px; }
+  .split-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 38px; }
+  .m-inp {
+    width: 100%; height: 36px; border: 1.5px solid #94a3b8; border-radius: 7px;
+    text-align: center; font-size: 0.96rem; font-weight: 900; color: #0f294a; background: #fff; padding: 2px;
+  }
+  .m-inp:focus { border-color: #1d4ed8; outline: none; background: #eff6ff; }
+  .m-inp.fail { background: #fee2e2; border-color: #f87171; color: #991b1b; }
+  .m-inp.centum { background: #dcfce7; border-color: #4ade80; color: #166534; }
+  .m-tot {
+    height: 36px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    font-size: 0.88rem; font-weight: 900; background: #e2e8f0; color: #334155;
+  }
+  .m-tot.pass { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+  .m-tot.fail { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .stu-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1;
+    font-size: 0.80rem; font-weight: 900;
+  }
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    background: #ffffff; border-top: 2px solid #cbd5e1;
+    padding: 8px 12px; display: flex; gap: 8px; align-items: center;
+    box-shadow: 0 -4px 16px rgba(15,23,42,0.12);
+  }
+  .btn-save-cloud {
+    flex: 1; height: 44px; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, #16a34a, #0f766e); color: #fff;
+    font-size: 0.92rem; font-weight: 900; cursor: pointer;
+  }
+  .btn-save-cloud:disabled { opacity: 0.65; }
+  .toast {
+    position: fixed; top: 68px; left: 50%; transform: translateX(-50%);
+    z-index: 999; padding: 9px 16px; border-radius: 999px; color: #fff;
+    font-size: 0.80rem; font-weight: 900; box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+    max-width: 92vw; text-align: center; display: none;
+  }
+  .summary-box { padding: 8px 10px; }
+  .rep-card { background: #fff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .reg-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; background: #fff; }
+  .reg-table th, .reg-table td { border: 1px solid #94a3b8; padding: 4px 5px; text-align: center; }
+  .reg-table th { background: #0f294a; color: #fff; font-weight: 900; }
+  @media print {
+    .app-header, .mode-tabs, .kpi-row, .tools-bar, .bottom-bar, .no-print { display: none !important; }
+    body { background: #fff; padding: 0; }
+    .reg-table { font-size: 9pt; }
+  }
+</style>
+</head>
+<body>
+
+<div id="toastEl" class="toast"></div>
+
+<div id="viewLogin" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">CT</div>
+    <div class="login-title">சிவகங்கை மாவட்டம் — வகுப்பாசிரியர் செயலி</div>
+    <div class="login-sub">10 &amp; 12-ஆம் வகுப்பு மதிப்பெண் பதிவு (portal.ceosvg.in)</div>
+    <div class="info-box">
+      <div><strong>User Name:</strong> ஆசிரியரின் 8-இலக்க <strong>EMIS ID</strong></div>
+      <div><strong>Password:</strong> WhatsApp முதல் 4 எண்கள் + <strong>@</strong> + பிறந்த ஆண்டு (எ.கா: <code>9626@1980</code>)</div>
+    </div>
+    <form id="ctLoginForm">
+      <div style="margin-bottom:10px;">
+        <label class="fld-lbl" for="inpEmis">ஆசிரியர் EMIS ID:</label>
+        <input id="inpEmis" class="fld-inp" type="text" inputmode="numeric" placeholder="எ.கா: 10208747" autocomplete="username" required>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label class="fld-lbl" for="inpPass">கடவுச்சொல் (Password):</label>
+        <input id="inpPass" class="fld-inp" type="password" placeholder="எ.கா: 9626@1980" autocomplete="current-password" required>
+      </div>
+      <div id="loginErr" class="err-box"></div>
+      <button id="btnLogin" class="btn-main" type="submit">🔓 உள்நுழைக (Login)</button>
+    </form>
+    <div id="pwaInstallBanner" class="install-banner">📲 இந்தச் செயலியை உங்கள் Android போனில் App ஆக நிறுவுக (Install App)</div>
+  </div>
+</div>
+
+<div id="viewApp" class="hidden">
+  <div class="app-header">
+    <div class="hdr-top">
+      <div>
+        <div id="hdrSchool" class="hdr-title">பள்ளி பெயர்</div>
+        <div id="hdrTeacher" class="hdr-sub">வகுப்பாசிரியர்</div>
+      </div>
+      <button type="button" class="hdr-logout" onclick="ctLogout()">🚪 Logout</button>
+    </div>
+    <div class="hdr-controls">
+      <select id="selExam" class="hdr-select" onchange="onExamChange(this.value)">
+        <option value="2026_MIDTERM_1">1. முதல் இடைப்பருவத்தேர்வு (Mid-Term 1)</option>
+        <option value="2026_QUARTERLY" selected>2. காலாண்டுத்தேர்வு (Quarterly)</option>
+        <option value="2026_MIDTERM_2">3. இரண்டாம் இடைப்பருவத்தேர்வு (Mid-Term 2)</option>
+        <option value="2026_HALF_YEARLY">4. அரையாண்டுத்தேர்வு (Half-Yearly)</option>
+        <option value="2027_REVISION_1">5. முதல் திருப்புதல் தேர்வு (Revision 1)</option>
+        <option value="2027_REVISION_2">6. இரண்டாம் திருப்புதல் தேர்வு (Revision 2)</option>
+        <option value="2027_REVISION_3">7. மூன்றாம் திருப்புதல் தேர்வு (Revision 3)</option>
+        <option value="2027_SPECIAL_MODEL">8. சிறப்பு மாதிரித்தேர்வு (Special Model)</option>
+      </select>
+      <select id="selAssign" class="hdr-select" style="width:auto; min-width:96px;" onchange="onAssignChange(this.value)"></select>
+    </div>
+  </div>
+
+  <div class="mode-tabs">
+    <button type="button" id="tabEntry" class="mode-tab active" onclick="switchTab('ENTRY')">📝 மதிப்பெண் பதிவு</button>
+    <button type="button" id="tabSummary" class="mode-tab" onclick="switchTab('SUMMARY')">📊 சுருக்கம் &amp; Fail</button>
+    <button type="button" id="tabRegister" class="mode-tab" onclick="switchTab('REGISTER')">🖨️ Mark Register</button>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card"><div id="kpiTot" class="kpi-val">0</div><div class="kpi-lbl">மொத்தம்</div></div>
+    <div class="kpi-card"><div id="kpiApp" class="kpi-val">0</div><div class="kpi-lbl">எழுதியோர்</div></div>
+    <div class="kpi-card"><div id="kpiPass" class="kpi-val" style="color:#15803d;">0</div><div class="kpi-lbl">தேர்ச்சி</div></div>
+    <div class="kpi-card"><div id="kpiPct" class="kpi-val" style="color:#1d4ed8;">0%</div><div class="kpi-lbl">தேர்ச்சி %</div></div>
+  </div>
+
+  <div id="paneEntry">
+    <div class="tools-bar">
+      <input id="inpSearch" class="search-inp" type="search" placeholder="🔍 பெயர் / Roll No தேடு..." oninput="renderCards()">
+      <select id="selFilter" class="hdr-select" style="width:auto; height:36px;" onchange="renderCards()">
+        <option value="ALL">அனைத்தும்</option>
+        <option value="PENDING">பதிவு நிலுவை</option>
+        <option value="FAIL">தேர்ச்சி பெறாதோர்</option>
+        <option value="PASS">தேர்ச்சி</option>
+      </select>
+      <button id="btnAutoFill" type="button" class="chip-btn" onclick="autoFillIntPr()">⚡ Int/Pr நிரப்பு</button>
+    </div>
+    <div id="cardsHost" class="cards-list"></div>
+  </div>
+
+  <div id="paneSummary" class="summary-box hidden"></div>
+  <div id="paneRegister" class="summary-box hidden"></div>
+
+  <div class="bottom-bar">
+    <button id="btnSaveCloud" type="button" class="btn-save-cloud" onclick="saveToCloud(true)">💾 Cloud-இல் சேமி (Save)</button>
+  </div>
+</div>
+
+<script>
+const WORKER_BASE = "https://ceosvg-fb-cache.poovalingam1980.workers.dev";
+const SESSION_KEY = "CEOSVG_CT_APP_SESSION_V1";
+
+const SSLC_SUBS = [
+  { key: "TAMIL", label: "தமிழ்", mode: "SINGLE", max: 100 },
+  { key: "ENGLISH", label: "ஆங்கிலம்", mode: "SINGLE", max: 100 },
+  { key: "MATHS", label: "கணிதம்", mode: "SINGLE", max: 100 },
+  { key: "SCIENCE", label: "அறிவியல்", mode: "SCI_75_25", maxTh: 75, minTh: 20, maxPr: 25, minPr: 15 },
+  { key: "SOCIAL", label: "சமூக அறிவியல்", mode: "SINGLE", max: 100 }
+];
+
+const HSC12_SUB_META = {
+  LANG: { label: "தமிழ்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ENG: { label: "ஆங்கிலம்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  PHY: { label: "இயற்பியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  CHE: { label: "வேதியியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  BIO: { label: "உயிரியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  BOT: { label: "தாவரவியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  ZOO: { label: "விலங்கியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  CS: { label: "கணினி அறிவியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  CA: { label: "Computer App.", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  CT: { label: "Computer Tech", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  MAT: { label: "கணிதவியல்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  COM: { label: "வணிகவியல்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ACC: { label: "கணக்குப்பதிவியல்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ECO: { label: "பொருளியல்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  HIS: { label: "வரலாறு", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  BMAT: { label: "வணிக கணிதம்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  AGRI_TH: { label: "Agri (Th)", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  AGRI_PR: { label: "Agri (Pr)", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 },
+  ELEC_TH: { label: "Elec. (Th)", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ELEC_PR: { label: "Elec. (Pr)", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 },
+  ELX_TH: { label: "Elx. (Th)", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ELX_PR: { label: "Elx. (Pr)", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 },
+  VOC_PR: { label: "Voc. (Pr)", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 }
+};
+
+let state = { session: null, token: "", assignIdx: 0, termKey: "2026_QUARTERLY", raPkt: null, activeTab: "ENTRY", dirty: false };
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+
+function showToast(msg, bg = "#0f766e") {
+  const el = document.getElementById("toastEl");
+  el.textContent = msg;
+  el.style.background = bg;
+  el.style.display = "block";
+  clearTimeout(window._tTimer);
+  window._tTimer = setTimeout(() => { el.style.display = "none"; }, 3000);
+}
+
+async function sha256Hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function getWorkerToken(uNo) {
+  try {
+    const r = await fetch(`${WORKER_BASE}/__auth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: "school", uNo: String(uNo || "PRELOGIN") })
+    });
+    const j = await r.json();
+    if (j && j.token) { state.token = j.token; return j.token; }
+  } catch (e) {}
+  return state.token || "";
+}
+
+async function d1ReadNode(key) {
+  const tok = state.token || await getWorkerToken(state.session ? state.session.uNo : "PRELOGIN");
+  try {
+    const r = await fetch(`${WORKER_BASE}/__d1/node?k=${encodeURIComponent(key)}`, {
+      headers: tok ? { "Authorization": "Bearer " + tok } : {}
+    });
+    if (r.ok) return await r.json();
+  } catch (e) {}
+  try {
+    const r2 = await fetch(`${WORKER_BASE}/${key}.json`, {
+      headers: tok ? { "Authorization": "Bearer " + tok } : {}
+    });
+    if (r2.ok) return await r2.json();
+  } catch (e) {}
+  return null;
+}
+
+async function d1UpsertNode(key, value) {
+  const tok = state.token || await getWorkerToken(state.session ? state.session.uNo : "PRELOGIN");
+  const r = await fetch(`${WORKER_BASE}/__d1/upsert`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(tok ? { "Authorization": "Bearer " + tok } : {}) },
+    body: JSON.stringify({ items: [{ k: key, v: value }], fbBackup: true })
+  });
+  return r && r.ok;
+}
+
+function isSplitExam(tk) { return tk !== "2026_MIDTERM_1" && tk !== "2026_MIDTERM_2"; }
+
+function getCurrentAssign() {
+  const arr = (state.session && Array.isArray(state.session.assignments) && state.session.assignments.length > 0)
+    ? state.session.assignments
+    : (state.session ? [{ uNo: state.session.uNo, std: state.session.std || "10", secId: state.session.secId || "A", schoolNameTa: state.session.schoolNameTa || "" }] : []);
+  return arr[state.assignIdx] || arr[0] || null;
+}
+
+function getTermStoreKey(std, termKey) { return String(std) === "12" ? `STD12_${termKey}` : termKey; }
+
+function getActiveTermRecord() {
+  const asg = getCurrentAssign();
+  if (!asg || !state.raPkt) return null;
+  const pkt = state.raPkt;
+  if (!pkt.terms || typeof pkt.terms !== "object") pkt.terms = {};
+  const tk = getTermStoreKey(asg.std, state.termKey);
+  if (!pkt.terms[tk]) {
+    const cm = String(asg.std) === "12" ? pkt.cm12 : pkt.cm10;
+    pkt.terms[tk] = {
+      sections: cm && Array.isArray(cm.sections) ? JSON.parse(JSON.stringify(cm.sections)) : [{ secId: asg.secId }],
+      students: cm && Array.isArray(cm.students) ? JSON.parse(JSON.stringify(cm.students)).map(s => Object.assign({}, s, { marks: {}, markParts: {} })) : [],
+      updatedAt: new Date().toISOString()
+    };
+  }
+  return pkt.terms[tk];
+}
+
+function getActiveSubjects(rec, asg) {
+  if (String(asg.std) !== "12") return SSLC_SUBS;
+  const sec = (rec && Array.isArray(rec.sections)) ? rec.sections.find(s => String(s.secId) === String(asg.secId)) : null;
+  const grp = (sec && Array.isArray(sec.groupSubjects) && sec.groupSubjects.length >= 4) ? sec.groupSubjects.slice(0, 4) : ["PHY", "CHE", "BIO", "MAT"];
+  const keys = ["LANG", "ENG", ...grp];
+  return keys.map(k => Object.assign({ key: k, label: k, mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 }, HSC12_SUB_META[k] || {}));
+}
+
+function evalSubject(stu, sub, std, isSplit) {
+  if (!stu.marks) stu.marks = {};
+  if (!stu.markParts) stu.markParts = {};
+  if (!isSplit || sub.mode === "SINGLE") {
+    const raw = String(stu.marks[sub.key] != null ? stu.marks[sub.key] : "").trim().toUpperCase();
+    if (!raw) return { totalStr: "", isFail: false, th: "", pr: "", in: "" };
+    if (raw === "AB") return { totalStr: "AB", isFail: true, th: "AB", pr: "", in: "" };
+    if (raw === "EX") return { totalStr: "EX", isFail: false, th: "EX", pr: "", in: "" };
+    const n = Number(raw);
+    return { totalStr: isNaN(n) ? "" : String(n), isFail: !isNaN(n) && n < 35, th: raw, pr: "", in: "" };
+  }
+  const p = stu.markParts[sub.key] || { th: "", pr: "", in: "" };
+  const th = String(p.th != null ? p.th : "").trim().toUpperCase();
+  const pr = String(p.pr != null ? p.pr : "").trim().toUpperCase();
+  const inn = String(p.in != null ? p.in : "").trim().toUpperCase();
+  if (!th && !pr && !inn) {
+    const raw = String(stu.marks[sub.key] != null ? stu.marks[sub.key] : "").trim().toUpperCase();
+    if (!raw) return { totalStr: "", isFail: false, th: "", pr: "", in: "" };
+    if (raw === "AB" || raw === "EX") return { totalStr: raw, isFail: raw === "AB", th: raw, pr: "", in: "" };
+    const n = Number(raw);
+    return { totalStr: isNaN(n) ? "" : String(n), isFail: !isNaN(n) && n < 35, th: "", pr: "", in: "" };
+  }
+  if (th === "EX" || pr === "EX" || inn === "EX") { stu.marks[sub.key] = "EX"; return { totalStr: "EX", isFail: false, th, pr, in: inn }; }
+  if (th === "AB" || (sub.mode === "PR_INT_VOC" && pr === "AB")) { stu.marks[sub.key] = "AB"; return { totalStr: "AB", isFail: true, th, pr, in: inn }; }
+  const nTh = (th && !isNaN(Number(th))) ? Number(th) : 0;
+  const nPr = (pr && !isNaN(Number(pr))) ? Number(pr) : 0;
+  const nIn = (inn && !isNaN(Number(inn))) ? Number(inn) : 0;
+  const tot = Math.min(100, nTh + nPr + nIn);
+  let fail = tot < 35;
+  if (sub.mode === "SCI_75_25" && ((th && nTh < 20) || (pr && nPr < 15) || pr === "AB")) fail = true;
+  if (sub.mode === "TH_PR_INT" && ((th && nTh < 15) || pr === "AB")) fail = true;
+  if (sub.mode === "TH_INT" && th && nTh < 25) fail = true;
+  stu.marks[sub.key] = String(tot);
+  return { totalStr: String(tot), isFail: fail, th, pr, in: inn };
+}
+
+function evalStudent(stu, subs, std, isSplit) {
+  const status = String(stu.status || "PRESENT").toUpperCase();
+  if (status === "LA" || status === "AB" || status === "HB") {
+    return { status, appeared: false, entered: true, passed: false, failedCount: 0, total: 0, subRes: {} };
+  }
+  let total = 0, failedCount = 0, enteredCount = 0;
+  const subRes = {};
+  subs.forEach(sub => {
+    const r = evalSubject(stu, sub, std, isSplit);
+    subRes[sub.key] = r;
+    if (r.totalStr !== "") {
+      enteredCount++;
+      if (r.isFail) failedCount++;
+      const n = Number(r.totalStr);
+      if (!isNaN(n)) total += n;
+    }
+  });
+  return { status, appeared: enteredCount > 0, entered: enteredCount === subs.length, passed: enteredCount > 0 && failedCount === 0, failedCount, total, subRes };
+}
+
+function getSectionStudents() {
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  if (!asg || !rec || !Array.isArray(rec.students)) return [];
+  return rec.students
+    .map((stu, origIdx) => ({ stu, origIdx }))
+    .filter(x => String(x.stu.section || "").trim() === String(asg.secId).trim());
+}
+
+function updateKpis() {
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  if (!asg || !rec) return;
+  const subs = getActiveSubjects(rec, asg);
+  const isSplit = isSplitExam(state.termKey);
+  const list = getSectionStudents();
+  let app = 0, pass = 0;
+  list.forEach(({ stu }) => {
+    const ev = evalStudent(stu, subs, asg.std, isSplit);
+    if (ev.appeared) { app++; if (ev.passed) pass++; }
+  });
+  document.getElementById("kpiTot").textContent = list.length;
+  document.getElementById("kpiApp").textContent = app;
+  document.getElementById("kpiPass").textContent = pass;
+  document.getElementById("kpiPct").textContent = app > 0 ? Math.round((pass / app) * 100) + "%" : "0%";
+  const fillBtn = document.getElementById("btnAutoFill");
+  if (fillBtn) fillBtn.style.display = isSplit ? "inline-block" : "none";
+}
+
+function renderCards() {
+  const host = document.getElementById("cardsHost");
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  if (!asg || !rec) { host.innerHTML = `<div class="rep-card">தரவு ஏற்றப்படுகிறது...</div>`; return; }
+  const subs = getActiveSubjects(rec, asg);
+  const isSplit = isSplitExam(state.termKey);
+  const q = String(document.getElementById("inpSearch")?.value || "").trim().toLowerCase();
+  const f = String(document.getElementById("selFilter")?.value || "ALL");
+  const list = getSectionStudents();
+  updateKpis();
+
+  const filtered = list.filter(({ stu }) => {
+    if (q) {
+      const hay = `${stu.rollNo || ""} ${stu.nameTa || ""} ${stu.nameEn || ""} ${stu.name || ""}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    const ev = evalStudent(stu, subs, asg.std, isSplit);
+    if (f === "PENDING" && ev.entered) return false;
+    if (f === "FAIL" && !(ev.appeared && !ev.passed)) return false;
+    if (f === "PASS" && !ev.passed) return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    host.innerHTML = `<div class="rep-card" style="text-align:center; color:#64748b; font-weight:800;">பொருந்தும் மாணவர்கள் இல்லை.</div>`;
+    return;
+  }
+
+  const maxTot = String(asg.std) === "12" ? 600 : 500;
+  host.innerHTML = filtered.map(({ stu, origIdx }, idx) => {
+    const ev = evalStudent(stu, subs, asg.std, isSplit);
+    const isOff = (ev.status !== "PRESENT");
+    const dis = isOff ? "disabled" : "";
+    const cardCls = isOff ? "absent" : (ev.appeared ? (ev.passed ? "pass" : "fail") : "");
+
+    const subsHtml = subs.map(sub => {
+      const sr = ev.subRes[sub.key] || { totalStr: "", isFail: false, th: "", pr: "", in: "" };
+      if (!isSplit || sub.mode === "SINGLE") {
+        const cls = sr.isFail ? "fail" : (sr.totalStr === "100" ? "centum" : "");
+        return `<div class="sub-box">
+          <div class="sub-title"><span>${esc(sub.label)}</span><span>/100</span></div>
+          <input class="m-inp ${cls}" type="text" inputmode="numeric" maxlength="3" ${dis} value="${esc(isOff ? "" : sr.totalStr)}" placeholder="${isOff ? ev.status : "0-100"}" oninput="onSingleMark(${origIdx}, '${sub.key}', this)">
+        </div>`;
+      }
+      const totCls = sr.totalStr === "" ? "" : (sr.isFail ? "fail" : "pass");
+      if (sub.mode === "TH_PR_INT") {
+        return `<div class="sub-box" style="grid-column: span 2;">
+          <div class="sub-title"><span>${esc(sub.label)}</span><span>Th(70) + Pr(20) + In(10)</span></div>
+          <div class="split-row cols-4">
+            <input class="m-inp" type="text" inputmode="numeric" maxlength="3" ${dis} value="${esc(isOff ? "" : sr.th)}" placeholder="Th70" oninput="onSplitMark(${origIdx}, '${sub.key}', 'th', 70, this)">
+            <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.pr)}" placeholder="Pr20" oninput="onSplitMark(${origIdx}, '${sub.key}', 'pr', 20, this)">
+            <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.in)}" placeholder="In10" oninput="onSplitMark(${origIdx}, '${sub.key}', 'in', 10, this)">
+            <div id="tot_${origIdx}_${sub.key}" class="m-tot ${totCls}">${esc(isOff ? ev.status : (sr.totalStr || "-"))}</div>
+          </div>
+        </div>`;
+      }
+      if (sub.mode === "SCI_75_25") {
+        return `<div class="sub-box" style="grid-column: span 2;">
+          <div class="sub-title"><span>${esc(sub.label)}</span><span>Th(75) + Pr(25)</span></div>
+          <div class="split-row cols-3">
+            <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.th)}" placeholder="Th75" oninput="onSplitMark(${origIdx}, '${sub.key}', 'th', 75, this)">
+            <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.pr)}" placeholder="Pr25" oninput="onSplitMark(${origIdx}, '${sub.key}', 'pr', 25, this)">
+            <div id="tot_${origIdx}_${sub.key}" class="m-tot ${totCls}">${esc(isOff ? ev.status : (sr.totalStr || "-"))}</div>
+          </div>
+        </div>`;
+      }
+      if (sub.mode === "PR_INT_VOC") {
+        return `<div class="sub-box" style="grid-column: span 2;">
+          <div class="sub-title"><span>${esc(sub.label)}</span><span>Pr(75) + In(25)</span></div>
+          <div class="split-row cols-3">
+            <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.pr)}" placeholder="Pr75" oninput="onSplitMark(${origIdx}, '${sub.key}', 'pr', 75, this)">
+            <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.in)}" placeholder="In25" oninput="onSplitMark(${origIdx}, '${sub.key}', 'in', 25, this)">
+            <div id="tot_${origIdx}_${sub.key}" class="m-tot ${totCls}">${esc(isOff ? ev.status : (sr.totalStr || "-"))}</div>
+          </div>
+        </div>`;
+      }
+      return `<div class="sub-box" style="grid-column: span 2;">
+        <div class="sub-title"><span>${esc(sub.label)}</span><span>Th(90) + In(10)</span></div>
+        <div class="split-row cols-3">
+          <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.th)}" placeholder="Th90" oninput="onSplitMark(${origIdx}, '${sub.key}', 'th', 90, this)">
+          <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.in)}" placeholder="In10" oninput="onSplitMark(${origIdx}, '${sub.key}', 'in', 10, this)">
+          <div id="tot_${origIdx}_${sub.key}" class="m-tot ${totCls}">${esc(isOff ? ev.status : (sr.totalStr || "-"))}</div>
+        </div>
+      </div>`;
+    }).join("");
+
+    const resBadge = isOff ? `<span style="color:#64748b;">${ev.status}</span>` :
+      (!ev.appeared ? `<span style="color:#64748b;">⏳ நிலுவை</span>` :
+      (ev.passed ? `<span style="color:#15803d;">✅ PASS</span>` : `<span style="color:#dc2626;">❌ FAIL (${ev.failedCount})</span>`));
+
+    return `<div class="stu-card ${cardCls}" id="card_${origIdx}">
+      <div class="stu-head">
+        <div>
+          <div class="stu-name">${idx + 1}. ${esc(stu.nameTa || stu.nameEn || stu.name || "-")}</div>
+          <div class="stu-meta">Roll: ${esc(stu.rollNo || "-")} • ${esc(stu.nameEn || "")}</div>
+        </div>
+        <select class="stu-status-sel" onchange="onStatusChange(${origIdx}, this.value)">
+          <option value="PRESENT" ${ev.status === "PRESENT" ? "selected" : ""}>✅ Present</option>
+          <option value="AB" ${ev.status === "AB" ? "selected" : ""}>❌ Absent</option>
+          <option value="LA" ${ev.status === "LA" ? "selected" : ""}>🚫 LA</option>
+          <option value="HB" ${ev.status === "HB" ? "selected" : ""}>🏠 HB</option>
+        </select>
+      </div>
+      <div class="sub-grid">${subsHtml}</div>
+      <div class="stu-foot">
+        <span id="ftTot_${origIdx}">மொத்தம்: ${ev.total} / ${maxTot}</span>
+        <span id="ftRes_${origIdx}">${resBadge}</span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function normVal(raw, max) {
+  const s = String(raw || "").trim().toUpperCase();
+  if (!s) return "";
+  if (s === "AB" || s === "A") return "AB";
+  if (s === "EX" || s === "E") return "EX";
+  const n = Number(s);
+  if (isNaN(n)) return "";
+  return String(Math.max(0, Math.min(max, Math.round(n))));
+}
+
+function onSingleMark(origIdx, sk, inp) {
+  const rec = getActiveTermRecord();
+  const stu = rec && rec.students[origIdx];
+  if (!stu) return;
+  const v = normVal(inp.value, 100);
+  if (inp.value !== v && v !== "AB" && v !== "EX" && v !== "") inp.value = v;
+  if (!stu.marks) stu.marks = {};
+  stu.marks[sk] = v;
+  state.dirty = true;
+  refreshCardFooter(origIdx);
+}
+
+function onSplitMark(origIdx, sk, part, max, inp) {
+  const rec = getActiveTermRecord();
+  const stu = rec && rec.students[origIdx];
+  if (!stu) return;
+  const v = normVal(inp.value, max);
+  if (inp.value !== v && v !== "AB" && v !== "EX" && v !== "") inp.value = v;
+  if (!stu.markParts) stu.markParts = {};
+  if (!stu.markParts[sk]) stu.markParts[sk] = { th: "", pr: "", in: "" };
+  stu.markParts[sk][part] = v;
+  state.dirty = true;
+  refreshCardFooter(origIdx, sk);
+}
+
+function refreshCardFooter(origIdx, sk) {
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  const subs = getActiveSubjects(rec, asg);
+  const isSplit = isSplitExam(state.termKey);
+  const stu = rec.students[origIdx];
+  const ev = evalStudent(stu, subs, asg.std, isSplit);
+  if (sk) {
+    const tEl = document.getElementById(`tot_${origIdx}_${sk}`);
+    const sr = ev.subRes[sk];
+    if (tEl && sr) {
+      tEl.textContent = sr.totalStr || "-";
+      tEl.className = "m-tot " + (sr.totalStr === "" ? "" : (sr.isFail ? "fail" : "pass"));
+    }
+  }
+  const maxTot = String(asg.std) === "12" ? 600 : 500;
+  const ftTot = document.getElementById(`ftTot_${origIdx}`);
+  const ftRes = document.getElementById(`ftRes_${origIdx}`);
+  if (ftTot) ftTot.textContent = `மொத்தம்: ${ev.total} / ${maxTot}`;
+  if (ftRes) ftRes.innerHTML = !ev.appeared ? `<span style="color:#64748b;">⏳ நிலுவை</span>` : (ev.passed ? `<span style="color:#15803d;">✅ PASS</span>` : `<span style="color:#dc2626;">❌ FAIL (${ev.failedCount})</span>`);
+  updateKpis();
+}
+
+function onStatusChange(origIdx, val) {
+  const rec = getActiveTermRecord();
+  if (!rec || !rec.students[origIdx]) return;
+  rec.students[origIdx].status = val;
+  state.dirty = true;
+  renderCards();
+}
+
+function autoFillIntPr() {
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  if (!asg || !rec || !isSplitExam(state.termKey)) return;
+  const subs = getActiveSubjects(rec, asg);
+  let cnt = 0;
+  getSectionStudents().forEach(({ stu }) => {
+    if (stu.status && stu.status !== "PRESENT") return;
+    if (!stu.markParts) stu.markParts = {};
+    subs.forEach(sub => {
+      if (sub.mode === "SINGLE") return;
+      if (!stu.markParts[sub.key]) stu.markParts[sub.key] = { th: "", pr: "", in: "" };
+      if (sub.mode === "SCI_75_25" && !stu.markParts[sub.key].pr) { stu.markParts[sub.key].pr = "25"; cnt++; }
+      if (sub.mode === "TH_PR_INT") {
+        if (!stu.markParts[sub.key].pr) { stu.markParts[sub.key].pr = "20"; cnt++; }
+        if (!stu.markParts[sub.key].in) { stu.markParts[sub.key].in = "10"; cnt++; }
+      }
+      if (sub.mode === "TH_INT" && !stu.markParts[sub.key].in) { stu.markParts[sub.key].in = "10"; cnt++; }
+      if (sub.mode === "PR_INT_VOC" && !stu.markParts[sub.key].in) { stu.markParts[sub.key].in = "25"; cnt++; }
+    });
+  });
+  state.dirty = true;
+  renderCards();
+  showToast(`⚡ ${cnt} Internal / Practical மதிப்பெண்கள் நிரப்பப்பட்டன!`);
+}
+
+async function saveToCloud(notify) {
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  if (!asg || !rec || !state.raPkt) return;
+  const btn = document.getElementById("btnSaveCloud");
+  btn.disabled = true; btn.textContent = "⏳ சேமிக்கப்படுகிறது...";
+  try {
+    rec.updatedAt = new Date().toISOString();
+    state.raPkt.updatedAt = rec.updatedAt;
+    const ok = await d1UpsertNode(`ceosvg_live/exam_result_analysis_by_uno/${asg.uNo}`, state.raPkt);
+    if (ok) {
+      state.dirty = false;
+      if (notify) showToast("✅ Cloud D1-இல் வெற்றிகரமாகச் சேமிக்கப்பட்டது!", "#15803d");
+    } else {
+      showToast("⚠️ சேமிப்பில் பிழை! இணைய இணைப்பைச் சரிபார்க்கவும்.", "#dc2626");
+    }
+  } catch (e) {
+    showToast("❌ இணைப்புப் பிழை!", "#dc2626");
+  } finally {
+    btn.disabled = false; btn.textContent = "💾 Cloud-இல் சேமி (Save)";
+  }
+}
+
+function renderSummaryTab() {
+  const host = document.getElementById("paneSummary");
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  const subs = getActiveSubjects(rec, asg);
+  const isSplit = isSplitExam(state.termKey);
+  const list = getSectionStudents();
+  const failedRows = [];
+  const subFailCnt = {};
+  subs.forEach(s => { subFailCnt[s.key] = 0; });
+
+  list.forEach(({ stu }) => {
+    const ev = evalStudent(stu, subs, asg.std, isSplit);
+    if (ev.appeared && !ev.passed) {
+      const fSubs = subs.filter(s => ev.subRes[s.key] && ev.subRes[s.key].isFail).map(s => {
+        subFailCnt[s.key]++;
+        return `${s.label} (${ev.subRes[s.key].totalStr})`;
+      });
+      failedRows.push({ name: stu.nameTa || stu.nameEn, roll: stu.rollNo || "-", cnt: ev.failedCount, fSubs });
+    }
+  });
+
+  host.innerHTML = `
+    <div class="rep-card">
+      <div style="font-weight:900; color:#0f294a; margin-bottom:8px;">📊 பாடவாரியாகத் தேர்ச்சி பெறாதோர் எண்ணிக்கை</div>
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:6px;">
+        ${subs.map(s => `<div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:6px 8px; font-size:0.78rem; font-weight:800; display:flex; justify-content:space-between;"><span>${esc(s.label)}</span><strong style="color:#b91c1c;">${subFailCnt[s.key]}</strong></div>`).join("")}
+      </div>
+    </div>
+    <div class="rep-card">
+      <div style="font-weight:900; color:#b91c1c; margin-bottom:8px;">⚠️ தேர்ச்சி பெறாதோர் பட்டியல் (${failedRows.length})</div>
+      ${failedRows.length === 0 ? `<div style="color:#15803d; font-weight:800;">🎉 100% தேர்ச்சி!</div>` :
+        failedRows.map((r, i) => `<div style="padding:7px 0; border-bottom:1px solid #e2e8f0; font-size:0.80rem;">
+          <strong>${i + 1}. ${esc(r.name)}</strong> <span style="color:#64748b;">(${esc(r.roll)})</span>
+          <div style="color:#b91c1c; font-weight:800; font-size:0.74rem; margin-top:2px;">${esc(r.fSubs.join(" • "))}</div>
+        </div>`).join("")}
+    </div>
+  `;
+}
+
+function renderRegisterTab() {
+  const host = document.getElementById("paneRegister");
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  const subs = getActiveSubjects(rec, asg);
+  const isSplit = isSplitExam(state.termKey);
+  const list = getSectionStudents();
+  const termName = document.getElementById("selExam")?.selectedOptions[0]?.textContent || state.termKey;
+
+  host.innerHTML = `
+    <div class="no-print" style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+      <button type="button" class="chip-btn" style="background:#6d28d9; color:#fff; border-color:#6d28d9;" onclick="window.print()">🖨️ PDF / Print (A4)</button>
+    </div>
+    <div style="overflow-x:auto; background:#fff; padding:8px; border-radius:10px; border:1px solid #cbd5e1;">
+      <div style="text-align:center; font-weight:900; font-size:0.88rem; margin-bottom:6px;">
+        ${esc(asg.schoolNameTa || ("U.No: " + asg.uNo))} — ${esc(asg.std)}-ஆம் வகுப்பு (பிரிவு ${esc(asg.secId)}) • ${esc(termName)}
+      </div>
+      <table class="reg-table">
+        <thead>
+          <tr>
+            <th>வ.எண்</th><th>Roll</th><th style="text-align:left;">மாணவர் பெயர்</th>
+            ${subs.map(s => `<th>${esc(s.label)}</th>`).join("")}
+            <th>மொத்தம்</th><th>முடிவு</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${list.map(({ stu }, i) => {
+            const ev = evalStudent(stu, subs, asg.std, isSplit);
+            return `<tr>
+              <td>${i + 1}</td>
+              <td>${esc(stu.rollNo || "-")}</td>
+              <td style="text-align:left; font-weight:700;">${esc(stu.nameTa || stu.nameEn || "-")}</td>
+              ${subs.map(s => {
+                const sr = ev.subRes[s.key] || { totalStr: "-", isFail: false };
+                return `<td style="${sr.isFail ? "background:#fee2e2;color:#991b1b;font-weight:900;" : ""}">${esc(ev.status !== "PRESENT" ? ev.status : (sr.totalStr || "-"))}</td>`;
+              }).join("")}
+              <td style="font-weight:900;">${ev.total}</td>
+              <td style="font-weight:900; color:${ev.passed ? "#15803d" : "#dc2626"};">${ev.status !== "PRESENT" ? ev.status : (ev.appeared ? (ev.passed ? "PASS" : "FAIL") : "-")}</td>
+            </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function switchTab(t) {
+  state.activeTab = t;
+  document.getElementById("tabEntry").classList.toggle("active", t === "ENTRY");
+  document.getElementById("tabSummary").classList.toggle("active", t === "SUMMARY");
+  document.getElementById("tabRegister").classList.toggle("active", t === "REGISTER");
+  document.getElementById("paneEntry").classList.toggle("hidden", t !== "ENTRY");
+  document.getElementById("paneSummary").classList.toggle("hidden", t !== "SUMMARY");
+  document.getElementById("paneRegister").classList.toggle("hidden", t !== "REGISTER");
+  if (t === "ENTRY") renderCards();
+  if (t === "SUMMARY") renderSummaryTab();
+  if (t === "REGISTER") renderRegisterTab();
+}
+
+async function onExamChange(tk) {
+  if (state.dirty) await saveToCloud(false);
+  state.termKey = tk;
+  switchTab(state.activeTab);
+}
+
+async function onAssignChange(idx) {
+  if (state.dirty) await saveToCloud(false);
+  state.assignIdx = Number(idx) || 0;
+  await loadSchoolResultData();
+}
+
+async function loadSchoolResultData() {
+  const asg = getCurrentAssign();
+  if (!asg) return;
+  document.getElementById("hdrSchool").textContent = asg.schoolNameTa || asg.schoolNameEn || ("பள்ளி U.No: " + asg.uNo);
+  document.getElementById("hdrTeacher").textContent = `👨‍🏫 ${state.session.nameTa || state.session.emisId} • ${asg.std}-ஆம் வகுப்பு (பிரிவு ${asg.secId})`;
+  await getWorkerToken(asg.uNo);
+  const pkt = await d1ReadNode(`ceosvg_live/exam_result_analysis_by_uno/${asg.uNo}`);
+  state.raPkt = (pkt && typeof pkt === "object") ? pkt : { terms: {} };
+  switchTab(state.activeTab);
+}
+
+function openAppView() {
+  document.getElementById("viewLogin").classList.add("hidden");
+  document.getElementById("viewApp").classList.remove("hidden");
+  const arr = (state.session.assignments && state.session.assignments.length > 0)
+    ? state.session.assignments
+    : [{ uNo: state.session.uNo, std: state.session.std || "10", secId: state.session.secId || "A", schoolNameTa: state.session.schoolNameTa || "" }];
+  const sel = document.getElementById("selAssign");
+  sel.innerHTML = arr.map((a, i) => `<option value="${i}">${esc(a.std)}th - ${esc(a.secId)}</option>`).join("");
+  sel.value = String(state.assignIdx);
+  loadSchoolResultData();
+}
+
+function ctLogout() {
+  if (state.dirty && !confirm("சேமிக்காத மதிப்பெண்கள் உள்ளன. Logout செய்யவா?")) return;
+  localStorage.removeItem(SESSION_KEY);
+  state.session = null;
+  state.raPkt = null;
+  document.getElementById("viewApp").classList.add("hidden");
+  document.getElementById("viewLogin").classList.remove("hidden");
+}
+
+document.getElementById("ctLoginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const emis = String(document.getElementById("inpEmis").value || "").trim();
+  const pass = String(document.getElementById("inpPass").value || "").trim();
+  const errEl = document.getElementById("loginErr");
+  const btn = document.getElementById("btnLogin");
+  const showErr = (m) => { errEl.textContent = m; errEl.style.display = "block"; };
+  errEl.style.display = "none";
+  if (!emis || !pass) { showErr("⚠️ EMIS ID மற்றும் கடவுச்சொல்லை உள்ளிடவும்."); return; }
+  btn.disabled = true; btn.textContent = "⏳ சரிபார்க்கப்படுகிறது...";
+  try {
+    await getWorkerToken("PRELOGIN");
+    const rec = await d1ReadNode(`ceosvg_live/class_teacher_auth/${encodeURIComponent(emis)}`);
+    if (!rec || !rec.passHash || !rec.uNo) {
+      showErr("❌ இந்த EMIS ID வகுப்பாசிரியராகப் பதிவு செய்யப்படவில்லை. பள்ளியின் Class Master-இல் வகுப்பாசிரியரைத் தேர்வு செய்யவும்.");
+      return;
+    }
+    const h = await sha256Hex(`${emis}::${pass}`);
+    if (h !== rec.passHash) {
+      showErr("❌ கடவுச்சொல் தவறானது! (WhatsApp முதல் 4 எண்கள்@பிறந்த ஆண்டு — எ.கா: 9626@1980)");
+      return;
+    }
+    state.session = rec;
+    state.assignIdx = 0;
+    localStorage.setItem(SESSION_KEY, JSON.stringify(rec));
+    openAppView();
+  } catch (err) {
+    showErr("❌ இணைய இணைப்புப் பிழை. மீண்டும் முயற்சிக்கவும்.");
+  } finally {
+    btn.disabled = false; btn.textContent = "🔓 உள்நுழைக (Login)";
+  }
+});
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw-ct.js").catch(() => {});
+}
+let deferredPwaPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPwaPrompt = e;
+  const b = document.getElementById("pwaInstallBanner");
+  if (b) b.style.display = "block";
+});
+document.getElementById("pwaInstallBanner").addEventListener("click", async () => {
+  if (!deferredPwaPrompt) return;
+  deferredPwaPrompt.prompt();
+  await deferredPwaPrompt.userChoice;
+  deferredPwaPrompt = null;
+  document.getElementById("pwaInstallBanner").style.display = "none";
+});
+
+try {
+  const saved = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+  if (saved && saved.emisId && saved.uNo) {
+    state.session = saved;
+    openAppView();
+  }
+} catch (e) {}
+</script>
+</body>
+</html>

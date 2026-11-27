@@ -1,0 +1,48 @@
+name: Build CEO SVG Class Teacher Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'android-app/**'
+      - 'ct.html'
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java 17 (Android Gradle)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Capacitor & Generate Android Project
+        working-directory: android-app
+        run: |
+          npm install
+          mkdir -p www
+          cp ../ct.html www/index.html || echo "<h1>Loading CEO SVG Class Teacher...</h1>" > www/index.html
+          npx cap add android
+          npx cap sync android
+
+      - name: Build Debug APK (Installable on any Android Phone)
+        working-directory: android-app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk ../../CEOSVG_ClassTeacher.apk
+
+      - name: Upload CEOSVG_ClassTeacher.apk Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CEOSVG_ClassTeacher_APK
+          path: CEOSVG_ClassTeacher.apk
