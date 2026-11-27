@@ -2,13 +2,14 @@
 <html lang="ta">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="theme-color" content="#0f766e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CEO SVG CT">
 <link rel="manifest" href="manifest-ct.json">
-<title>CEO சிவகங்கை — வகுப்பாசிரியர் மதிப்பெண் செயலி</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%230f294a'/><stop offset='55%' stop-color='%230f766e'/><stop offset='100%' stop-color='%231d4ed8'/></linearGradient><linearGradient id='gold' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%23fde047'/><stop offset='100%' stop-color='%23f59e0b'/></linearGradient></defs><rect width='512' height='512' rx='112' fill='url(%23bg)'/><rect x='18' y='18' width='476' height='476' rx='98' fill='none' stroke='url(%23gold)' stroke-width='10' opacity='0.92'/><polygon points='256,64 402,126 256,188 110,126' fill='url(%23gold)'/><path d='M168,154 v54 c0,24 40,42 88,42 s88,-18 88,-42 v-54 l-88,38 z' fill='%23ffffff' opacity='0.95'/><line x1='388' y1='132' x2='388' y2='210' stroke='%23fde047' stroke-width='10' stroke-linecap='round'/><circle cx='388' cy='218' r='12' fill='%23fde047'/><path d='M120,270 Q188,244 256,274 Q324,244 392,270 L392,374 Q324,350 256,378 Q188,350 120,374 Z' fill='%23ffffff' opacity='0.96'/><line x1='256' y1='274' x2='256' y2='378' stroke='%230f766e' stroke-width='7'/><text x='186' y='338' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='52' fill='%230f294a'>C</text><text x='326' y='338' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='52' fill='%230f766e'>T</text><rect x='92' y='402' width='328' height='54' rx='27' fill='rgba(15,41,74,0.88)' stroke='%23fde047' stroke-width='4'/><text x='256' y='438' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='28' fill='%23fde047' letter-spacing='2'>CEO SIVAGANGAI</text></svg>">
+<title>பள்ளிக்கல்வித்துறை | சிவகங்கை மாவட்டம் — வகுப்பாசிரியர் செயலி (Class Teacher App)</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
@@ -16,100 +17,137 @@
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background: #f1f5f9;
     color: #0f172a;
-    padding-bottom: 84px;
+    padding-bottom: 76px;
   }
   .hidden { display: none !important; }
+
+  /* Login Screen */
   .login-wrap {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 18px;
-    background: linear-gradient(155deg, #0f294a 0%, #0f766e 100%);
+    padding: 16px;
+    background: linear-gradient(155deg, #0b223e 0%, #0f766e 60%, #1d4ed8 100%);
   }
   .login-card {
     width: 100%;
-    max-width: 410px;
+    max-width: 430px;
     background: #ffffff;
-    border-radius: 18px;
-    padding: 22px 20px;
-    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.28);
+    border-radius: 20px;
+    padding: 22px 20px 20px 20px;
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.30);
+    border-top: 5px solid #f59e0b;
   }
-  .login-logo {
-    width: 58px; height: 58px; border-radius: 15px;
-    background: linear-gradient(135deg, #0f766e, #1d4ed8);
-    color: #fde047; font-size: 1.5rem; font-weight: 900;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 10px auto;
+  .login-logo-wrap {
+    width: 78px; height: 78px; margin: 0 auto 10px auto;
+    border-radius: 20px; overflow: hidden;
+    box-shadow: 0 8px 20px rgba(15, 41, 74, 0.25);
   }
-  .login-title { text-align: center; font-size: 1.08rem; font-weight: 900; color: #0f294a; }
-  .login-sub { text-align: center; font-size: 0.78rem; color: #475569; margin-top: 3px; margin-bottom: 14px; font-weight: 700; }
+  .dept-line1 { text-align: center; font-size: 0.96rem; font-weight: 900; color: #0f294a; line-height: 1.3; }
+  .dept-line2 { text-align: center; font-size: 0.90rem; font-weight: 900; color: #0f766e; margin-top: 2px; line-height: 1.3; }
+  .dept-line3 {
+    text-align: center; font-size: 0.76rem; font-weight: 800; color: #475569;
+    margin-top: 5px; margin-bottom: 13px; padding-bottom: 10px; border-bottom: 1.5px solid #e2e8f0;
+  }
   .info-box {
     background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px;
-    padding: 9px 11px; font-size: 0.76rem; color: #166534; line-height: 1.45; margin-bottom: 14px;
+    padding: 9px 11px; font-size: 0.75rem; color: #166534; line-height: 1.48; margin-bottom: 13px;
   }
-  .fld-lbl { display: block; font-size: 0.79rem; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+  .fld-lbl { display: block; font-size: 0.78rem; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
   .fld-inp {
-    width: 100%; height: 44px; padding: 8px 12px; font-size: 1rem; font-weight: 800;
-    border: 1.5px solid #cbd5e1; border-radius: 10px; outline: none; background: #fff;
+    width: 100%; height: 44px; padding: 8px 12px; font-size: 0.98rem; font-weight: 800;
+    border: 1.5px solid #cbd5e1; border-radius: 10px; outline: none; background: #fff; color: #0f294a;
   }
-  .fld-inp:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.15); }
+  .fld-inp:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.16); }
+  .pass-wrap { position: relative; display: flex; align-items: center; }
+  .pass-wrap .fld-inp { padding-right: 46px; }
+  .pass-eye-btn {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 36px; height: 34px; border: none; background: #f1f5f9; border-radius: 8px;
+    cursor: pointer; font-size: 1.05rem; display: flex; align-items: center; justify-content: center;
+  }
+  .pass-eye-btn:hover { background: #e2e8f0; }
   .btn-main {
     width: 100%; height: 46px; border: none; border-radius: 11px; cursor: pointer;
     background: linear-gradient(135deg, #0f766e, #15803d); color: #fff;
-    font-size: 0.96rem; font-weight: 900; box-shadow: 0 6px 16px rgba(15,118,110,0.28);
+    font-size: 0.94rem; font-weight: 900; box-shadow: 0 6px 16px rgba(15,118,110,0.28);
   }
   .btn-main:disabled { opacity: 0.65; cursor: wait; }
   .err-box {
     display: none; background: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c;
-    border-radius: 9px; padding: 8px 10px; font-size: 0.78rem; font-weight: 800; margin-bottom: 10px;
+    border-radius: 9px; padding: 8px 10px; font-size: 0.77rem; font-weight: 800; margin-bottom: 10px;
   }
   .install-banner {
     display: none; margin-top: 12px; padding: 9px 12px; border-radius: 10px;
     background: #eff6ff; border: 1.5px solid #93c5fd; color: #1e3a8a;
-    font-size: 0.78rem; font-weight: 800; text-align: center; cursor: pointer;
+    font-size: 0.77rem; font-weight: 800; text-align: center; cursor: pointer;
   }
+
+  /* App Top Header */
   .app-header {
     position: sticky; top: 0; z-index: 40;
-    background: linear-gradient(135deg, #0f294a 0%, #0f766e 100%);
-    color: #fff; padding: 10px 12px 8px 12px;
-    box-shadow: 0 3px 12px rgba(15,41,74,0.22);
+    background: linear-gradient(135deg, #0b223e 0%, #0f766e 100%);
+    color: #fff; padding: 8px 12px;
+    box-shadow: 0 3px 12px rgba(15,41,74,0.24);
   }
   .hdr-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .hdr-title { font-size: 0.88rem; font-weight: 900; line-height: 1.25; }
-  .hdr-sub { font-size: 0.72rem; color: #fde047; font-weight: 800; }
+  .hdr-brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .hdr-mini-logo { width: 36px; height: 36px; border-radius: 9px; overflow: hidden; flex-shrink: 0; }
+  .hdr-title { font-size: 0.84rem; font-weight: 900; line-height: 1.22; }
+  .hdr-sub { font-size: 0.70rem; color: #fde047; font-weight: 800; line-height: 1.25; }
   .hdr-logout {
     border: none; background: #dc2626; color: #fff; border-radius: 8px;
-    padding: 6px 10px; font-size: 0.74rem; font-weight: 900; cursor: pointer; flex-shrink: 0;
+    padding: 6px 10px; font-size: 0.74rem; font-weight: 900; cursor: pointer; flex-shrink: 0; white-space: nowrap;
   }
-  .hdr-controls { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-top: 8px; }
+  .hdr-controls { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-top: 7px; }
   .hdr-select {
-    height: 36px; border-radius: 8px; border: 1.5px solid #93c5fd;
-    padding: 2px 8px; font-size: 0.80rem; font-weight: 900; color: #0f294a; background: #fff; width: 100%;
+    height: 34px; border-radius: 8px; border: 1.5px solid #93c5fd;
+    padding: 2px 8px; font-size: 0.78rem; font-weight: 900; color: #0f294a; background: #fff; width: 100%;
   }
+
+  /* Navigation Tabs (All Main-Portal Class Teacher Modules) */
   .mode-tabs {
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
-    padding: 8px 10px 4px 10px; background: #f1f5f9;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;
+    padding: 7px 10px 4px 10px; background: #e2e8f0;
   }
   .mode-tab {
     border: 1.5px solid #cbd5e1; background: #fff; color: #334155;
-    border-radius: 9px; padding: 8px 4px; font-size: 0.76rem; font-weight: 900; cursor: pointer; text-align: center;
+    border-radius: 9px; padding: 7px 4px; font-size: 0.72rem; font-weight: 900;
+    cursor: pointer; text-align: center; line-height: 1.2;
   }
   .mode-tab.active { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+
+  /* KPI Strip */
   .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 6px 10px; }
-  .kpi-card { background: #fff; border: 1px solid #cbd5e1; border-radius: 9px; padding: 6px 4px; text-align: center; }
-  .kpi-val { font-size: 1.02rem; font-weight: 900; color: #0f294a; }
-  .kpi-lbl { font-size: 0.65rem; font-weight: 800; color: #64748b; }
-  .tools-bar { display: flex; gap: 6px; padding: 4px 10px 8px 10px; align-items: center; flex-wrap: wrap; }
-  .search-inp {
-    flex: 1; min-width: 140px; height: 36px; border: 1.5px solid #cbd5e1;
-    border-radius: 9px; padding: 4px 10px; font-size: 0.84rem; font-weight: 700; background: #fff;
+  .kpi-card { background: #fff; border: 1px solid #cbd5e1; border-radius: 9px; padding: 5px 4px; text-align: center; }
+  .kpi-val { font-size: 1.00rem; font-weight: 900; color: #0f294a; }
+  .kpi-lbl { font-size: 0.63rem; font-weight: 800; color: #64748b; }
+
+  /* Tools Bar */
+  .tools-bar {
+    display: flex; gap: 6px; padding: 4px 10px 8px 10px; align-items: center; flex-wrap: wrap;
   }
+  .search-inp {
+    flex: 1; min-width: 150px; height: 34px; border: 1.5px solid #cbd5e1;
+    border-radius: 8px; padding: 4px 10px; font-size: 0.80rem; font-weight: 700; background: #fff;
+  }
+  .view-toggle {
+    display: inline-flex; background: #e2e8f0; padding: 2px; border-radius: 8px; border: 1px solid #cbd5e1;
+  }
+  .vt-btn {
+    border: none; background: transparent; color: #334155; font-size: 0.72rem; font-weight: 900;
+    padding: 5px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap;
+  }
+  .vt-btn.active { background: #0f766e; color: #fff; }
   .chip-btn {
     border: 1.5px solid #0f766e; background: #f0fdfa; color: #0f766e;
-    border-radius: 8px; padding: 6px 9px; font-size: 0.74rem; font-weight: 900; cursor: pointer; white-space: nowrap;
+    border-radius: 8px; padding: 5px 9px; font-size: 0.72rem; font-weight: 900; cursor: pointer; white-space: nowrap;
   }
-  .cards-list { padding: 0 10px; display: flex; flex-direction: column; gap: 10px; }
+  .chip-btn.danger { border-color: #fca5a5; background: #fef2f2; color: #dc2626; }
+
+  /* Card View */
+  .cards-list { padding: 0 10px; display: flex; flex-direction: column; gap: 9px; }
   .stu-card {
     background: #fff; border: 1.5px solid #cbd5e1; border-left: 5px solid #1d4ed8;
     border-radius: 12px; padding: 10px 11px; box-shadow: 0 2px 6px rgba(15,23,42,0.05);
@@ -118,63 +156,91 @@
   .stu-card.fail { border-left-color: #dc2626; }
   .stu-card.absent { border-left-color: #94a3b8; background: #f8fafc; }
   .stu-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
-  .stu-name { font-size: 0.90rem; font-weight: 900; color: #0f294a; line-height: 1.25; }
-  .stu-meta { font-size: 0.72rem; font-weight: 800; color: #475569; margin-top: 2px; }
+  .stu-name { font-size: 0.88rem; font-weight: 900; color: #0f294a; line-height: 1.25; }
+  .stu-meta { font-size: 0.71rem; font-weight: 800; color: #475569; margin-top: 2px; }
   .stu-status-sel {
     height: 30px; border-radius: 7px; border: 1.5px solid #cbd5e1;
-    font-size: 0.74rem; font-weight: 900; padding: 2px 6px; background: #fff; color: #0f294a;
+    font-size: 0.73rem; font-weight: 900; padding: 2px 5px; background: #fff; color: #0f294a;
   }
   .sub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
   .sub-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 6px 7px; }
-  .sub-title { font-size: 0.72rem; font-weight: 900; color: #1e3a8a; margin-bottom: 4px; display: flex; justify-content: space-between; }
-  .split-row { display: grid; gap: 4px; align-items: center; }
-  .split-row.cols-3 { grid-template-columns: 1fr 1fr 38px; }
-  .split-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 38px; }
+  .sub-title { font-size: 0.71rem; font-weight: 900; color: #1e3a8a; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .split-row { display: grid; gap: 3px; align-items: center; }
+  .split-row.cols-3 { grid-template-columns: 1fr 1fr 36px; }
+  .split-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 36px; }
   .m-inp {
-    width: 100%; height: 36px; border: 1.5px solid #94a3b8; border-radius: 7px;
-    text-align: center; font-size: 0.96rem; font-weight: 900; color: #0f294a; background: #fff; padding: 2px;
+    width: 100%; height: 34px; border: 1.5px solid #94a3b8; border-radius: 6px;
+    text-align: center; font-size: 0.92rem; font-weight: 900; color: #0f294a; background: #fff; padding: 2px;
   }
   .m-inp:focus { border-color: #1d4ed8; outline: none; background: #eff6ff; }
   .m-inp.fail { background: #fee2e2; border-color: #f87171; color: #991b1b; }
   .m-inp.centum { background: #dcfce7; border-color: #4ade80; color: #166534; }
   .m-tot {
-    height: 36px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
-    font-size: 0.88rem; font-weight: 900; background: #e2e8f0; color: #334155;
+    height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    font-size: 0.84rem; font-weight: 900; background: #e2e8f0; color: #334155;
   }
   .m-tot.pass { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
   .m-tot.fail { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
   .stu-foot {
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1;
-    font-size: 0.80rem; font-weight: 900;
+    font-size: 0.79rem; font-weight: 900;
   }
+
+  /* Editable Table View (Sticky Header) */
+  .tbl-scroll-wrap {
+    margin: 0 10px; max-height: 70vh; overflow: auto;
+    border: 1.5px solid #94a3b8; border-radius: 10px; background: #fff;
+  }
+  .edit-tbl {
+    width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.77rem;
+  }
+  .edit-tbl thead th {
+    position: sticky; top: 0; z-index: 15;
+    background: #0f294a; color: #fff; padding: 5px 4px; font-size: 0.70rem; font-weight: 900;
+    border-right: 1px solid rgba(255,255,255,0.2); box-shadow: inset 0 -2px 0 rgba(255,255,255,0.28);
+    text-align: center; white-space: nowrap;
+  }
+  .edit-tbl tbody td {
+    padding: 4px 4px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+  }
+  .edit-tbl tbody tr:nth-child(even) { background: #f8fafc; }
+
+  /* Sticky Bottom Save Bar */
   .bottom-bar {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
     background: #ffffff; border-top: 2px solid #cbd5e1;
-    padding: 8px 12px; display: flex; gap: 8px; align-items: center;
+    padding: 7px 12px; display: flex; gap: 8px; align-items: center;
     box-shadow: 0 -4px 16px rgba(15,23,42,0.12);
   }
   .btn-save-cloud {
-    flex: 1; height: 44px; border: none; border-radius: 10px;
+    flex: 1; height: 42px; border: none; border-radius: 10px;
     background: linear-gradient(135deg, #16a34a, #0f766e); color: #fff;
-    font-size: 0.92rem; font-weight: 900; cursor: pointer;
+    font-size: 0.90rem; font-weight: 900; cursor: pointer;
   }
   .btn-save-cloud:disabled { opacity: 0.65; }
   .toast {
-    position: fixed; top: 68px; left: 50%; transform: translateX(-50%);
+    position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
     z-index: 999; padding: 9px 16px; border-radius: 999px; color: #fff;
-    font-size: 0.80rem; font-weight: 900; box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+    font-size: 0.79rem; font-weight: 900; box-shadow: 0 8px 22px rgba(0,0,0,0.25);
     max-width: 92vw; text-align: center; display: none;
   }
+
+  /* Report & Print Views */
   .summary-box { padding: 8px 10px; }
   .rep-card { background: #fff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
-  .reg-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; background: #fff; }
-  .reg-table th, .reg-table td { border: 1px solid #94a3b8; padding: 4px 5px; text-align: center; }
+  .reg-table { width: 100%; border-collapse: collapse; font-size: 0.74rem; background: #fff; }
+  .reg-table th, .reg-table td { border: 1px solid #475569; padding: 4px 5px; text-align: center; }
   .reg-table th { background: #0f294a; color: #fff; font-weight: 900; }
+  .prog-card {
+    background: #fff; border: 2px solid #0f294a; border-radius: 10px; padding: 14px;
+    margin-bottom: 14px; page-break-inside: avoid;
+  }
   @media print {
     .app-header, .mode-tabs, .kpi-row, .tools-bar, .bottom-bar, .no-print { display: none !important; }
     body { background: #fff; padding: 0; }
-    .reg-table { font-size: 9pt; }
+    .reg-table { font-size: 8.5pt; }
   }
 </style>
 </head>
@@ -182,39 +248,48 @@
 
 <div id="toastEl" class="toast"></div>
 
+<!-- LOGIN VIEW -->
 <div id="viewLogin" class="login-wrap">
   <div class="login-card">
-    <div class="login-logo">CT</div>
-    <div class="login-title">சிவகங்கை மாவட்டம் — வகுப்பாசிரியர் செயலி</div>
-    <div class="login-sub">10 &amp; 12-ஆம் வகுப்பு மதிப்பெண் பதிவு (portal.ceosvg.in)</div>
+    <div class="login-logo-wrap"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#0f294a'/><stop offset='55%' stop-color='#0f766e'/><stop offset='100%' stop-color='#1d4ed8'/></linearGradient><linearGradient id='gold' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#fde047'/><stop offset='100%' stop-color='#f59e0b'/></linearGradient></defs><rect width='512' height='512' rx='112' fill='url(#bg)'/><rect x='18' y='18' width='476' height='476' rx='98' fill='none' stroke='url(#gold)' stroke-width='10' opacity='0.92'/><polygon points='256,64 402,126 256,188 110,126' fill='url(#gold)'/><path d='M168,154 v54 c0,24 40,42 88,42 s88,-18 88,-42 v-54 l-88,38 z' fill='#ffffff' opacity='0.95'/><line x1='388' y1='132' x2='388' y2='210' stroke='#fde047' stroke-width='10' stroke-linecap='round'/><circle cx='388' cy='218' r='12' fill='#fde047'/><path d='M120,270 Q188,244 256,274 Q324,244 392,270 L392,374 Q324,350 256,378 Q188,350 120,374 Z' fill='#ffffff' opacity='0.96'/><line x1='256' y1='274' x2='256' y2='378' stroke='#0f766e' stroke-width='7'/><text x='186' y='338' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='52' fill='#0f294a'>C</text><text x='326' y='338' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='52' fill='#0f766e'>T</text><rect x='92' y='402' width='328' height='54' rx='27' fill='rgba(15,41,74,0.88)' stroke='#fde047' stroke-width='4'/><text x='256' y='438' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='28' fill='#fde047' letter-spacing='2'>CEO SIVAGANGAI</text></svg></div>
+    <div class="dept-line1">பள்ளிக்கல்வித்துறை | School Education Department</div>
+    <div class="dept-line2">சிவகங்கை மாவட்டம் | Sivagangai District</div>
+    <div class="dept-line3">வகுப்பாசிரியர் மதிப்பெண் செயலி • Class Teacher Marks App (portal.ceosvg.in)</div>
     <div class="info-box">
-      <div><strong>User Name:</strong> ஆசிரியரின் 8-இலக்க <strong>EMIS ID</strong></div>
-      <div><strong>Password:</strong> WhatsApp முதல் 4 எண்கள் + <strong>@</strong> + பிறந்த ஆண்டு (எ.கா: <code>9626@1980</code>)</div>
+      <div><strong>பயனர் பெயர் / User Name:</strong> ஆசிரியர் 8-இலக்க <strong>EMIS ID</strong></div>
+      <div><strong>கடவுச்சொல் / Password:</strong> WhatsApp முதல் 4 எண்கள் + <strong>@</strong> + பிறந்த ஆண்டு <em>(First 4 WhatsApp Digits@Birth Year — எ.கா: <code>9626@1980</code>)</em></div>
     </div>
     <form id="ctLoginForm">
       <div style="margin-bottom:10px;">
-        <label class="fld-lbl" for="inpEmis">ஆசிரியர் EMIS ID:</label>
-        <input id="inpEmis" class="fld-inp" type="text" inputmode="numeric" placeholder="எ.கா: 10208747" autocomplete="username" required>
+        <label class="fld-lbl" for="inpEmis">ஆசிரியர் EMIS ID / Teacher EMIS ID:</label>
+        <input id="inpEmis" class="fld-inp" type="text" inputmode="numeric" placeholder="எ.கா / Ex: 10211958" autocomplete="username" required>
       </div>
       <div style="margin-bottom:12px;">
-        <label class="fld-lbl" for="inpPass">கடவுச்சொல் (Password):</label>
-        <input id="inpPass" class="fld-inp" type="password" placeholder="எ.கா: 9626@1980" autocomplete="current-password" required>
+        <label class="fld-lbl" for="inpPass">கடவுச்சொல் / Password:</label>
+        <div class="pass-wrap">
+          <input id="inpPass" class="fld-inp" type="password" placeholder="எ.கா / Ex: 9626@1980" autocomplete="current-password" required>
+          <button type="button" id="btnTogglePass" class="pass-eye-btn" onclick="togglePasswordVisibility()" title="கடவுச்சொல்லைக் காட்டு / Show Password">👁️</button>
+        </div>
       </div>
       <div id="loginErr" class="err-box"></div>
-      <button id="btnLogin" class="btn-main" type="submit">🔓 உள்நுழைக (Login)</button>
+      <button id="btnLogin" class="btn-main" type="submit">🔓 உள்நுழைக / Login</button>
     </form>
-    <div id="pwaInstallBanner" class="install-banner">📲 இந்தச் செயலியை உங்கள் Android போனில் App ஆக நிறுவுக (Install App)</div>
+    <div id="pwaInstallBanner" class="install-banner">📲 Android செயலியாக நிறுவுக / Install as Android App</div>
   </div>
 </div>
 
+<!-- MAIN APP VIEW -->
 <div id="viewApp" class="hidden">
   <div class="app-header">
     <div class="hdr-top">
-      <div>
-        <div id="hdrSchool" class="hdr-title">பள்ளி பெயர்</div>
-        <div id="hdrTeacher" class="hdr-sub">வகுப்பாசிரியர்</div>
+      <div class="hdr-brand">
+        <div class="hdr-mini-logo"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#0f294a'/><stop offset='55%' stop-color='#0f766e'/><stop offset='100%' stop-color='#1d4ed8'/></linearGradient><linearGradient id='gold' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#fde047'/><stop offset='100%' stop-color='#f59e0b'/></linearGradient></defs><rect width='512' height='512' rx='112' fill='url(#bg)'/><rect x='18' y='18' width='476' height='476' rx='98' fill='none' stroke='url(#gold)' stroke-width='10' opacity='0.92'/><polygon points='256,64 402,126 256,188 110,126' fill='url(#gold)'/><path d='M168,154 v54 c0,24 40,42 88,42 s88,-18 88,-42 v-54 l-88,38 z' fill='#ffffff' opacity='0.95'/><line x1='388' y1='132' x2='388' y2='210' stroke='#fde047' stroke-width='10' stroke-linecap='round'/><circle cx='388' cy='218' r='12' fill='#fde047'/><path d='M120,270 Q188,244 256,274 Q324,244 392,270 L392,374 Q324,350 256,378 Q188,350 120,374 Z' fill='#ffffff' opacity='0.96'/><line x1='256' y1='274' x2='256' y2='378' stroke='#0f766e' stroke-width='7'/><text x='186' y='338' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='52' fill='#0f294a'>C</text><text x='326' y='338' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='52' fill='#0f766e'>T</text><rect x='92' y='402' width='328' height='54' rx='27' fill='rgba(15,41,74,0.88)' stroke='#fde047' stroke-width='4'/><text x='256' y='438' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='28' fill='#fde047' letter-spacing='2'>CEO SIVAGANGAI</text></svg></div>
+        <div style="min-width:0;">
+          <div id="hdrSchool" class="hdr-title">பள்ளிக்கல்வித்துறை | சிவகங்கை மாவட்டம்</div>
+          <div id="hdrTeacher" class="hdr-sub">வகுப்பாசிரியர் / Class Teacher</div>
+        </div>
       </div>
-      <button type="button" class="hdr-logout" onclick="ctLogout()">🚪 Logout</button>
+      <button type="button" class="hdr-logout" onclick="ctLogout()">🚪 வெளியேறு / Logout</button>
     </div>
     <div class="hdr-controls">
       <select id="selExam" class="hdr-select" onchange="onExamChange(this.value)">
@@ -232,82 +307,116 @@
   </div>
 
   <div class="mode-tabs">
-    <button type="button" id="tabEntry" class="mode-tab active" onclick="switchTab('ENTRY')">📝 மதிப்பெண் பதிவு</button>
-    <button type="button" id="tabSummary" class="mode-tab" onclick="switchTab('SUMMARY')">📊 சுருக்கம் &amp; Fail</button>
-    <button type="button" id="tabRegister" class="mode-tab" onclick="switchTab('REGISTER')">🖨️ Mark Register</button>
+    <button type="button" id="tabEntry" class="mode-tab active" onclick="switchTab('ENTRY')">📝 மதிப்பெண்<br>Mark Entry</button>
+    <button type="button" id="tabRegister" class="mode-tab" onclick="switchTab('REGISTER')">📋 பதிவேடு<br>Mark Register</button>
+    <button type="button" id="tabSummary" class="mode-tab" onclick="switchTab('SUMMARY')">⚠️ தேர்ச்சி பெறாதோர்<br>Failed List</button>
+    <button type="button" id="tabProgress" class="mode-tab" onclick="switchTab('PROGRESS')">🎓 முன்னேற்றம்<br>Progress Report</button>
   </div>
 
   <div class="kpi-row">
-    <div class="kpi-card"><div id="kpiTot" class="kpi-val">0</div><div class="kpi-lbl">மொத்தம்</div></div>
-    <div class="kpi-card"><div id="kpiApp" class="kpi-val">0</div><div class="kpi-lbl">எழுதியோர்</div></div>
-    <div class="kpi-card"><div id="kpiPass" class="kpi-val" style="color:#15803d;">0</div><div class="kpi-lbl">தேர்ச்சி</div></div>
-    <div class="kpi-card"><div id="kpiPct" class="kpi-val" style="color:#1d4ed8;">0%</div><div class="kpi-lbl">தேர்ச்சி %</div></div>
+    <div class="kpi-card"><div id="kpiTot" class="kpi-val">0</div><div class="kpi-lbl">மொத்தம் / Total</div></div>
+    <div class="kpi-card"><div id="kpiApp" class="kpi-val">0</div><div class="kpi-lbl">எழுதியோர் / App.</div></div>
+    <div class="kpi-card"><div id="kpiPass" class="kpi-val" style="color:#15803d;">0</div><div class="kpi-lbl">தேர்ச்சி / Pass</div></div>
+    <div class="kpi-card"><div id="kpiPct" class="kpi-val" style="color:#1d4ed8;">0%</div><div class="kpi-lbl">தேர்ச்சி % / Pass %</div></div>
   </div>
 
+  <!-- TAB 1: MARK ENTRY (CARD VIEW + EDITABLE TABLE VIEW) -->
   <div id="paneEntry">
     <div class="tools-bar">
-      <input id="inpSearch" class="search-inp" type="search" placeholder="🔍 பெயர் / Roll No தேடு..." oninput="renderCards()">
-      <select id="selFilter" class="hdr-select" style="width:auto; height:36px;" onchange="renderCards()">
-        <option value="ALL">அனைத்தும்</option>
-        <option value="PENDING">பதிவு நிலுவை</option>
-        <option value="FAIL">தேர்ச்சி பெறாதோர்</option>
-        <option value="PASS">தேர்ச்சி</option>
+      <input id="inpSearch" class="search-inp" type="search" placeholder="🔍 பெயர் / Roll No தேடு (Search)..." oninput="renderMarkEntryView()">
+      <select id="selFilter" class="hdr-select" style="width:auto; height:34px;" onchange="renderMarkEntryView()">
+        <option value="ALL">அனைத்தும் / All</option>
+        <option value="PENDING">நிலுவை / Pending</option>
+        <option value="FAIL">தோல்வி / Fail</option>
+        <option value="PASS">தேர்ச்சி / Pass</option>
       </select>
+      <div class="view-toggle" role="group" aria-label="View Mode">
+        <button type="button" id="btnViewCard" class="vt-btn" onclick="setEntryViewMode('CARD')">📱 கார்டு / Card</button>
+        <button type="button" id="btnViewTable" class="vt-btn" onclick="setEntryViewMode('TABLE')">📊 அட்டவணை / Table</button>
+      </div>
       <button id="btnAutoFill" type="button" class="chip-btn" onclick="autoFillIntPr()">⚡ Int/Pr நிரப்பு</button>
+      <button type="button" class="chip-btn danger" onclick="resetSectionMarks()">🔄 Reset</button>
     </div>
-    <div id="cardsHost" class="cards-list"></div>
+    <div id="markEntryHost"></div>
   </div>
 
-  <div id="paneSummary" class="summary-box hidden"></div>
+  <!-- TAB 2: R1 MARK REGISTER (A4 PRINT / PDF + EXCEL CSV) -->
   <div id="paneRegister" class="summary-box hidden"></div>
 
+  <!-- TAB 3: R4 FAILED STUDENTS REPORT -->
+  <div id="paneSummary" class="summary-box hidden"></div>
+
+  <!-- TAB 4: R6 STUDENT PROGRESS REPORT -->
+  <div id="paneProgress" class="summary-box hidden"></div>
+
   <div class="bottom-bar">
-    <button id="btnSaveCloud" type="button" class="btn-save-cloud" onclick="saveToCloud(true)">💾 Cloud-இல் சேமி (Save)</button>
+    <button id="btnSaveCloud" type="button" class="btn-save-cloud" onclick="saveToCloud(true)">💾 Cloud-இல் சேமி / Save Marks</button>
   </div>
 </div>
 
 <script>
 const WORKER_BASE = "https://ceosvg-fb-cache.poovalingam1980.workers.dev";
 const SESSION_KEY = "CEOSVG_CT_APP_SESSION_V1";
+const VIEW_MODE_KEY = "CEOSVG_CT_ENTRY_VIEW_MODE_V2";
 
 const SSLC_SUBS = [
-  { key: "TAMIL", label: "தமிழ்", mode: "SINGLE", max: 100 },
-  { key: "ENGLISH", label: "ஆங்கிலம்", mode: "SINGLE", max: 100 },
-  { key: "MATHS", label: "கணிதம்", mode: "SINGLE", max: 100 },
-  { key: "SCIENCE", label: "அறிவியல்", mode: "SCI_75_25", maxTh: 75, minTh: 20, maxPr: 25, minPr: 15 },
-  { key: "SOCIAL", label: "சமூக அறிவியல்", mode: "SINGLE", max: 100 }
+  { key: "TAMIL", label: "தமிழ்", shortEn: "Tam", mode: "SINGLE", max: 100 },
+  { key: "ENGLISH", label: "ஆங்கிலம்", shortEn: "Eng", mode: "SINGLE", max: 100 },
+  { key: "MATHS", label: "கணிதம்", shortEn: "Mat", mode: "SINGLE", max: 100 },
+  { key: "SCIENCE", label: "அறிவியல்", shortEn: "Sci", mode: "SCI_75_25", maxTh: 75, minTh: 20, maxPr: 25, minPr: 15 },
+  { key: "SOCIAL", label: "சமூக அறிவியல்", shortEn: "Soc", mode: "SINGLE", max: 100 }
 ];
 
 const HSC12_SUB_META = {
-  LANG: { label: "தமிழ்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  ENG: { label: "ஆங்கிலம்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  PHY: { label: "இயற்பியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
-  CHE: { label: "வேதியியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
-  BIO: { label: "உயிரியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
-  BOT: { label: "தாவரவியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
-  ZOO: { label: "விலங்கியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
-  CS: { label: "கணினி அறிவியல்", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
-  CA: { label: "Computer App.", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
-  CT: { label: "Computer Tech", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
-  MAT: { label: "கணிதவியல்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  COM: { label: "வணிகவியல்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  ACC: { label: "கணக்குப்பதிவியல்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  ECO: { label: "பொருளியல்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  HIS: { label: "வரலாறு", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  BMAT: { label: "வணிக கணிதம்", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  AGRI_TH: { label: "Agri (Th)", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  AGRI_PR: { label: "Agri (Pr)", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 },
-  ELEC_TH: { label: "Elec. (Th)", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  ELEC_PR: { label: "Elec. (Pr)", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 },
-  ELX_TH: { label: "Elx. (Th)", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
-  ELX_PR: { label: "Elx. (Pr)", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 },
-  VOC_PR: { label: "Voc. (Pr)", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 }
+  LANG: { label: "தமிழ்", shortEn: "Tam", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ENG: { label: "ஆங்கிலம்", shortEn: "Eng", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  PHY: { label: "இயற்பியல்", shortEn: "Phy", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  CHE: { label: "வேதியியல்", shortEn: "Che", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  BIO: { label: "உயிரியல்", shortEn: "Bio", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  BOT: { label: "தாவரவியல்", shortEn: "Bot", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  ZOO: { label: "விலங்கியல்", shortEn: "Zoo", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  CS: { label: "கணினி அறிவியல்", shortEn: "CS", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  CA: { label: "Computer App.", shortEn: "CA", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  CT: { label: "Computer Tech", shortEn: "CT", mode: "TH_PR_INT", maxTh: 70, minTh: 15, maxPr: 20, maxInt: 10 },
+  MAT: { label: "கணிதவியல்", shortEn: "Mat", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  COM: { label: "வணிகவியல்", shortEn: "Com", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ACC: { label: "கணக்குப்பதிவியல்", shortEn: "Acc", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ECO: { label: "பொருளியல்", shortEn: "Eco", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  HIS: { label: "வரலாறு", shortEn: "His", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  BMAT: { label: "வணிக கணிதம்", shortEn: "B.Mat", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  AGRI_TH: { label: "Agri (Th)", shortEn: "Agri Th", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  AGRI_PR: { label: "Agri (Pr)", shortEn: "Agri Pr", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 },
+  ELEC_TH: { label: "Elec. (Th)", shortEn: "Elec Th", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ELEC_PR: { label: "Elec. (Pr)", shortEn: "Elec Pr", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 },
+  ELX_TH: { label: "Elx. (Th)", shortEn: "Elx Th", mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 },
+  ELX_PR: { label: "Elx. (Pr)", shortEn: "Elx Pr", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 },
+  VOC_PR: { label: "Voc. (Pr)", shortEn: "Voc Pr", mode: "PR_INT_VOC", maxPr: 75, maxInt: 25 }
 };
 
-let state = { session: null, token: "", assignIdx: 0, termKey: "2026_QUARTERLY", raPkt: null, activeTab: "ENTRY", dirty: false };
+let state = {
+  session: null,
+  token: "",
+  assignIdx: 0,
+  termKey: "2026_QUARTERLY",
+  raPkt: null,
+  activeTab: "ENTRY",
+  viewMode: localStorage.getItem(VIEW_MODE_KEY) || (window.innerWidth >= 820 ? "TABLE" : "CARD"),
+  progressStuIdx: "ALL",
+  dirty: false
+};
 
 function esc(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+
+function togglePasswordVisibility() {
+  const inp = document.getElementById("inpPass");
+  const btn = document.getElementById("btnTogglePass");
+  if (!inp || !btn) return;
+  const isPwd = inp.type === "password";
+  inp.type = isPwd ? "text" : "password";
+  btn.textContent = isPwd ? "🙈" : "👁️";
+  btn.title = isPwd ? "கடவுச்சொல்லை மறை / Hide Password" : "கடவுச்சொல்லைக் காட்டு / Show Password";
 }
 
 function showToast(msg, bg = "#0f766e") {
@@ -428,22 +537,18 @@ async function d1UpsertNode(key, value) {
 }
 
 function isSplitExam(tk) { return tk !== "2026_MIDTERM_1" && tk !== "2026_MIDTERM_2"; }
+function getTermStoreKey(std, termKey) { return String(std) === "12" ? `${termKey}__STD12` : termKey; }
+function toArr(v) {
+  if (Array.isArray(v)) return v.filter(Boolean);
+  if (v && typeof v === "object") return Object.values(v).filter(Boolean);
+  return [];
+}
 
 function getCurrentAssign() {
   const arr = (state.session && Array.isArray(state.session.assignments) && state.session.assignments.length > 0)
     ? state.session.assignments
     : (state.session ? [{ uNo: state.session.uNo, std: state.session.std || "10", secId: state.session.secId || "A", schoolNameTa: state.session.schoolNameTa || "" }] : []);
   return arr[state.assignIdx] || arr[0] || null;
-}
-
-function getTermStoreKey(std, termKey) {
-  return String(std) === "12" ? `${termKey}__STD12` : termKey;
-}
-
-function toArr(v) {
-  if (Array.isArray(v)) return v.filter(Boolean);
-  if (v && typeof v === "object") return Object.values(v).filter(Boolean);
-  return [];
 }
 
 function getActiveTermRecord() {
@@ -483,7 +588,7 @@ function getActiveSubjects(rec, asg) {
   const sec = (rec && Array.isArray(rec.sections)) ? rec.sections.find(s => String(s.secId) === String(asg.secId)) : null;
   const grp = (sec && Array.isArray(sec.groupSubjects) && sec.groupSubjects.length >= 4) ? sec.groupSubjects.slice(0, 4) : ["PHY", "CHE", "BIO", "MAT"];
   const keys = ["LANG", "ENG", ...grp];
-  return keys.map(k => Object.assign({ key: k, label: k, mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 }, HSC12_SUB_META[k] || {}));
+  return keys.map(k => Object.assign({ key: k, label: k, shortEn: k, mode: "TH_INT", maxTh: 90, minTh: 25, maxInt: 10 }, HSC12_SUB_META[k] || {}));
 }
 
 function evalSubject(stu, sub, std, isSplit) {
@@ -551,6 +656,19 @@ function getSectionStudents() {
     .filter(x => String(x.stu.section || "").trim() === String(asg.secId).trim());
 }
 
+function computeRanks(list, subs, std, isSplit) {
+  const passedTotals = list
+    .map(({ stu }) => evalStudent(stu, subs, std, isSplit))
+    .filter(ev => ev.passed)
+    .map(ev => ev.total)
+    .sort((a, b) => b - a);
+  return (ev) => {
+    if (!ev.passed) return "-";
+    const idx = passedTotals.indexOf(ev.total);
+    return idx >= 0 ? (idx + 1) : "-";
+  };
+}
+
 function updateKpis() {
   const asg = getCurrentAssign();
   const rec = getActiveTermRecord();
@@ -571,19 +689,21 @@ function updateKpis() {
   if (fillBtn) fillBtn.style.display = isSplit ? "inline-block" : "none";
 }
 
-function renderCards() {
-  const host = document.getElementById("cardsHost");
+function setEntryViewMode(mode) {
+  state.viewMode = (mode === "TABLE") ? "TABLE" : "CARD";
+  try { localStorage.setItem(VIEW_MODE_KEY, state.viewMode); } catch (e) {}
+  renderMarkEntryView();
+}
+
+function getFilteredSectionList() {
   const asg = getCurrentAssign();
   const rec = getActiveTermRecord();
-  if (!asg || !rec) { host.innerHTML = `<div class="rep-card">தரவு ஏற்றப்படுகிறது...</div>`; return; }
+  if (!asg || !rec) return [];
   const subs = getActiveSubjects(rec, asg);
   const isSplit = isSplitExam(state.termKey);
   const q = String(document.getElementById("inpSearch")?.value || "").trim().toLowerCase();
   const f = String(document.getElementById("selFilter")?.value || "ALL");
-  const list = getSectionStudents();
-  updateKpis();
-
-  const filtered = list.filter(({ stu }) => {
+  return getSectionStudents().filter(({ stu }) => {
     if (q) {
       const hay = `${stu.rollNo || ""} ${stu.nameTa || ""} ${stu.nameEn || ""} ${stu.name || ""}`.toLowerCase();
       if (!hay.includes(q)) return false;
@@ -594,14 +714,32 @@ function renderCards() {
     if (f === "PASS" && !ev.passed) return false;
     return true;
   });
+}
+
+function renderMarkEntryView() {
+  document.getElementById("btnViewCard").classList.toggle("active", state.viewMode === "CARD");
+  document.getElementById("btnViewTable").classList.toggle("active", state.viewMode === "TABLE");
+  updateKpis();
+  if (state.viewMode === "TABLE") renderEditableTable();
+  else renderCards();
+}
+
+function renderCards() {
+  const host = document.getElementById("markEntryHost");
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  if (!asg || !rec) { host.innerHTML = `<div class="rep-card">தரவு ஏற்றப்படுகிறது / Loading...</div>`; return; }
+  const subs = getActiveSubjects(rec, asg);
+  const isSplit = isSplitExam(state.termKey);
+  const filtered = getFilteredSectionList();
 
   if (filtered.length === 0) {
-    host.innerHTML = `<div class="rep-card" style="text-align:center; color:#64748b; font-weight:800;">பொருந்தும் மாணவர்கள் இல்லை.</div>`;
+    host.innerHTML = `<div class="rep-card" style="text-align:center; color:#64748b; font-weight:800; margin:0 10px;">பொருந்தும் மாணவர்கள் இல்லை / No matching students.</div>`;
     return;
   }
 
   const maxTot = String(asg.std) === "12" ? 600 : 500;
-  host.innerHTML = filtered.map(({ stu, origIdx }, idx) => {
+  host.innerHTML = `<div class="cards-list">` + filtered.map(({ stu, origIdx }, idx) => {
     const ev = evalStudent(stu, subs, asg.std, isSplit);
     const isOff = (ev.status !== "PRESENT");
     const dis = isOff ? "disabled" : "";
@@ -612,14 +750,14 @@ function renderCards() {
       if (!isSplit || sub.mode === "SINGLE") {
         const cls = sr.isFail ? "fail" : (sr.totalStr === "100" ? "centum" : "");
         return `<div class="sub-box">
-          <div class="sub-title"><span>${esc(sub.label)}</span><span>/100</span></div>
+          <div class="sub-title"><span>${esc(sub.label)} (${esc(sub.shortEn)})</span><span>/100</span></div>
           <input class="m-inp ${cls}" type="text" inputmode="numeric" maxlength="3" ${dis} value="${esc(isOff ? "" : sr.totalStr)}" placeholder="${isOff ? ev.status : "0-100"}" oninput="onSingleMark(${origIdx}, '${sub.key}', this)">
         </div>`;
       }
       const totCls = sr.totalStr === "" ? "" : (sr.isFail ? "fail" : "pass");
       if (sub.mode === "TH_PR_INT") {
         return `<div class="sub-box" style="grid-column: span 2;">
-          <div class="sub-title"><span>${esc(sub.label)}</span><span>Th(70) + Pr(20) + In(10)</span></div>
+          <div class="sub-title"><span>${esc(sub.label)} (${esc(sub.shortEn)})</span><span>Th(70) + Pr(20) + In(10)</span></div>
           <div class="split-row cols-4">
             <input class="m-inp" type="text" inputmode="numeric" maxlength="3" ${dis} value="${esc(isOff ? "" : sr.th)}" placeholder="Th70" oninput="onSplitMark(${origIdx}, '${sub.key}', 'th', 70, this)">
             <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.pr)}" placeholder="Pr20" oninput="onSplitMark(${origIdx}, '${sub.key}', 'pr', 20, this)">
@@ -630,7 +768,7 @@ function renderCards() {
       }
       if (sub.mode === "SCI_75_25") {
         return `<div class="sub-box" style="grid-column: span 2;">
-          <div class="sub-title"><span>${esc(sub.label)}</span><span>Th(75) + Pr(25)</span></div>
+          <div class="sub-title"><span>${esc(sub.label)} (${esc(sub.shortEn)})</span><span>Th(75) + Pr(25)</span></div>
           <div class="split-row cols-3">
             <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.th)}" placeholder="Th75" oninput="onSplitMark(${origIdx}, '${sub.key}', 'th', 75, this)">
             <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.pr)}" placeholder="Pr25" oninput="onSplitMark(${origIdx}, '${sub.key}', 'pr', 25, this)">
@@ -640,7 +778,7 @@ function renderCards() {
       }
       if (sub.mode === "PR_INT_VOC") {
         return `<div class="sub-box" style="grid-column: span 2;">
-          <div class="sub-title"><span>${esc(sub.label)}</span><span>Pr(75) + In(25)</span></div>
+          <div class="sub-title"><span>${esc(sub.label)} (${esc(sub.shortEn)})</span><span>Pr(75) + In(25)</span></div>
           <div class="split-row cols-3">
             <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.pr)}" placeholder="Pr75" oninput="onSplitMark(${origIdx}, '${sub.key}', 'pr', 75, this)">
             <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.in)}" placeholder="In25" oninput="onSplitMark(${origIdx}, '${sub.key}', 'in', 25, this)">
@@ -649,7 +787,7 @@ function renderCards() {
         </div>`;
       }
       return `<div class="sub-box" style="grid-column: span 2;">
-        <div class="sub-title"><span>${esc(sub.label)}</span><span>Th(90) + In(10)</span></div>
+        <div class="sub-title"><span>${esc(sub.label)} (${esc(sub.shortEn)})</span><span>Th(90) + In(10)</span></div>
         <div class="split-row cols-3">
           <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.th)}" placeholder="Th90" oninput="onSplitMark(${origIdx}, '${sub.key}', 'th', 90, this)">
           <input class="m-inp" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.in)}" placeholder="In10" oninput="onSplitMark(${origIdx}, '${sub.key}', 'in', 10, this)">
@@ -659,8 +797,8 @@ function renderCards() {
     }).join("");
 
     const resBadge = isOff ? `<span style="color:#64748b;">${ev.status}</span>` :
-      (!ev.appeared ? `<span style="color:#64748b;">⏳ நிலுவை</span>` :
-      (ev.passed ? `<span style="color:#15803d;">✅ PASS</span>` : `<span style="color:#dc2626;">❌ FAIL (${ev.failedCount})</span>`));
+      (!ev.appeared ? `<span style="color:#64748b;">⏳ நிலுவை / Pending</span>` :
+      (ev.passed ? `<span style="color:#15803d;">✅ தேர்ச்சி / PASS</span>` : `<span style="color:#dc2626;">❌ தோல்வி / FAIL (${ev.failedCount})</span>`));
 
     return `<div class="stu-card ${cardCls}" id="card_${origIdx}">
       <div class="stu-head">
@@ -677,11 +815,112 @@ function renderCards() {
       </div>
       <div class="sub-grid">${subsHtml}</div>
       <div class="stu-foot">
-        <span id="ftTot_${origIdx}">மொத்தம்: ${ev.total} / ${maxTot}</span>
+        <span id="ftTot_${origIdx}">மொத்தம் / Total: ${ev.total} / ${maxTot}</span>
         <span id="ftRes_${origIdx}">${resBadge}</span>
       </div>
     </div>`;
+  }).join("") + `</div>`;
+}
+
+function renderEditableTable() {
+  const host = document.getElementById("markEntryHost");
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  if (!asg || !rec) { host.innerHTML = `<div class="rep-card">தரவு ஏற்றப்படுகிறது / Loading...</div>`; return; }
+  const subs = getActiveSubjects(rec, asg);
+  const isSplit = isSplitExam(state.termKey);
+  const filtered = getFilteredSectionList();
+
+  if (filtered.length === 0) {
+    host.innerHTML = `<div class="rep-card" style="text-align:center; color:#64748b; font-weight:800; margin:0 10px;">பொருந்தும் மாணவர்கள் இல்லை / No matching students.</div>`;
+    return;
+  }
+
+  const thSubs = subs.map(sub => {
+    if (!isSplit || sub.mode === "SINGLE") {
+      return `<th style="min-width:68px;">${esc(sub.label)}<br><span style="color:#fde047; font-size:0.62rem;">${esc(sub.shortEn)} (100)</span></th>`;
+    }
+    if (sub.mode === "TH_PR_INT") {
+      return `<th style="min-width:148px; background:#4c1d95;">${esc(sub.label)} (${esc(sub.shortEn)})<div style="display:grid;grid-template-columns:1fr 1fr 1fr 34px;gap:2px;font-size:0.60rem;color:#fde047;margin-top:2px;"><span>Th70</span><span>Pr20</span><span>In10</span><span>Tot</span></div></th>`;
+    }
+    if (sub.mode === "SCI_75_25") {
+      return `<th style="min-width:128px; background:#0f766e;">${esc(sub.label)} (${esc(sub.shortEn)})<div style="display:grid;grid-template-columns:1fr 1fr 34px;gap:2px;font-size:0.60rem;color:#fde047;margin-top:2px;"><span>Th75</span><span>Pr25</span><span>Tot</span></div></th>`;
+    }
+    if (sub.mode === "PR_INT_VOC") {
+      return `<th style="min-width:128px; background:#78350f;">${esc(sub.label)} (${esc(sub.shortEn)})<div style="display:grid;grid-template-columns:1fr 1fr 34px;gap:2px;font-size:0.60rem;color:#fde047;margin-top:2px;"><span>Pr75</span><span>In25</span><span>Tot</span></div></th>`;
+    }
+    return `<th style="min-width:128px; background:#1e3a8a;">${esc(sub.label)} (${esc(sub.shortEn)})<div style="display:grid;grid-template-columns:1fr 1fr 34px;gap:2px;font-size:0.60rem;color:#fde047;margin-top:2px;"><span>Th90</span><span>In10</span><span>Tot</span></div></th>`;
   }).join("");
+
+  const rowsHtml = filtered.map(({ stu, origIdx }, idx) => {
+    const ev = evalStudent(stu, subs, asg.std, isSplit);
+    const isOff = (ev.status !== "PRESENT");
+    const dis = isOff ? "disabled" : "";
+    const tdSubs = subs.map(sub => {
+      const sr = ev.subRes[sub.key] || { totalStr: "", isFail: false, th: "", pr: "", in: "" };
+      if (!isSplit || sub.mode === "SINGLE") {
+        const cls = sr.isFail ? "fail" : (sr.totalStr === "100" ? "centum" : "");
+        return `<td style="text-align:center;"><input class="m-inp ${cls}" style="height:30px; font-size:0.86rem;" type="text" inputmode="numeric" maxlength="3" ${dis} value="${esc(isOff ? "" : sr.totalStr)}" placeholder="${isOff ? ev.status : "0-100"}" oninput="onSingleMark(${origIdx}, '${sub.key}', this)"></td>`;
+      }
+      const totCls = sr.totalStr === "" ? "" : (sr.isFail ? "fail" : "pass");
+      if (sub.mode === "TH_PR_INT") {
+        return `<td><div class="split-row cols-4" style="grid-template-columns:1fr 1fr 1fr 34px;">
+          <input class="m-inp" style="height:30px;font-size:0.82rem;" type="text" inputmode="numeric" maxlength="3" ${dis} value="${esc(isOff ? "" : sr.th)}" placeholder="/70" oninput="onSplitMark(${origIdx}, '${sub.key}', 'th', 70, this)">
+          <input class="m-inp" style="height:30px;font-size:0.82rem;" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.pr)}" placeholder="/20" oninput="onSplitMark(${origIdx}, '${sub.key}', 'pr', 20, this)">
+          <input class="m-inp" style="height:30px;font-size:0.82rem;" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : sr.in)}" placeholder="/10" oninput="onSplitMark(${origIdx}, '${sub.key}', 'in', 10, this)">
+          <div id="tot_${origIdx}_${sub.key}" class="m-tot ${totCls}" style="height:30px;font-size:0.78rem;">${esc(isOff ? ev.status : (sr.totalStr || "-"))}</div>
+        </div></td>`;
+      }
+      const p1 = sub.mode === "SCI_75_25" ? ['th', 75, '/75', sr.th] : (sub.mode === "PR_INT_VOC" ? ['pr', 75, '/75', sr.pr] : ['th', 90, '/90', sr.th]);
+      const p2 = sub.mode === "SCI_75_25" ? ['pr', 25, '/25', sr.pr] : (sub.mode === "PR_INT_VOC" ? ['in', 25, '/25', sr.in] : ['in', 10, '/10', sr.in]);
+      return `<td><div class="split-row cols-3" style="grid-template-columns:1fr 1fr 34px;">
+        <input class="m-inp" style="height:30px;font-size:0.82rem;" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : p1[3])}" placeholder="${p1[2]}" oninput="onSplitMark(${origIdx}, '${sub.key}', '${p1[0]}', ${p1[1]}, this)">
+        <input class="m-inp" style="height:30px;font-size:0.82rem;" type="text" inputmode="numeric" maxlength="2" ${dis} value="${esc(isOff ? "" : p2[3])}" placeholder="${p2[2]}" oninput="onSplitMark(${origIdx}, '${sub.key}', '${p2[0]}', ${p2[1]}, this)">
+        <div id="tot_${origIdx}_${sub.key}" class="m-tot ${totCls}" style="height:30px;font-size:0.78rem;">${esc(isOff ? ev.status : (sr.totalStr || "-"))}</div>
+      </div></td>`;
+    }).join("");
+
+    const resBadge = isOff ? `<span style="color:#64748b;">${ev.status}</span>` :
+      (!ev.appeared ? `<span style="color:#64748b;">-</span>` :
+      (ev.passed ? `<span style="color:#15803d;">PASS</span>` : `<span style="color:#dc2626;">FAIL (${ev.failedCount})</span>`));
+
+    return `<tr>
+      <td style="text-align:center; font-weight:900;">${idx + 1}</td>
+      <td style="text-align:center; font-weight:800;">${esc(stu.rollNo || "-")}</td>
+      <td style="min-width:165px;">
+        <div style="font-weight:900; color:#0f294a; font-size:0.80rem;">${esc(stu.nameTa || stu.nameEn || "-")}</div>
+        <div style="font-size:0.68rem; color:#1d4ed8; font-weight:800;">${esc(stu.nameEn || "")}</div>
+      </td>
+      <td>
+        <select class="stu-status-sel" style="height:28px; font-size:0.70rem;" onchange="onStatusChange(${origIdx}, this.value)">
+          <option value="PRESENT" ${ev.status === "PRESENT" ? "selected" : ""}>Present</option>
+          <option value="AB" ${ev.status === "AB" ? "selected" : ""}>AB</option>
+          <option value="LA" ${ev.status === "LA" ? "selected" : ""}>LA</option>
+          <option value="HB" ${ev.status === "HB" ? "selected" : ""}>HB</option>
+        </select>
+      </td>
+      ${tdSubs}
+      <td id="ftTot_${origIdx}" style="text-align:center; font-weight:900; color:#4c1d95;">${ev.total}</td>
+      <td id="ftRes_${origIdx}" style="text-align:center; font-weight:900; font-size:0.74rem;">${resBadge}</td>
+    </tr>`;
+  }).join("");
+
+  host.innerHTML = `<div class="tbl-scroll-wrap">
+    <table class="edit-tbl">
+      <thead>
+        <tr>
+          <th style="width:32px;">வ.எண்<br>S.No</th>
+          <th style="width:66px;">Roll No</th>
+          <th style="text-align:left; background:#115e59;">மாணவர் பெயர் / Student Name</th>
+          <th style="width:74px;">வருகை<br>Status</th>
+          ${thSubs}
+          <th style="width:52px; background:#0f766e;">மொத்தம்<br>Total</th>
+          <th style="width:66px; background:#0f766e;">முடிவு<br>Result</th>
+        </tr>
+      </thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+  </div>`;
 }
 
 function normVal(raw, max) {
@@ -703,7 +942,7 @@ function onSingleMark(origIdx, sk, inp) {
   if (!stu.marks) stu.marks = {};
   stu.marks[sk] = v;
   state.dirty = true;
-  refreshCardFooter(origIdx);
+  refreshRowOrCard(origIdx);
 }
 
 function onSplitMark(origIdx, sk, part, max, inp) {
@@ -716,10 +955,10 @@ function onSplitMark(origIdx, sk, part, max, inp) {
   if (!stu.markParts[sk]) stu.markParts[sk] = { th: "", pr: "", in: "" };
   stu.markParts[sk][part] = v;
   state.dirty = true;
-  refreshCardFooter(origIdx, sk);
+  refreshRowOrCard(origIdx, sk);
 }
 
-function refreshCardFooter(origIdx, sk) {
+function refreshRowOrCard(origIdx, sk) {
   const asg = getCurrentAssign();
   const rec = getActiveTermRecord();
   const subs = getActiveSubjects(rec, asg);
@@ -737,8 +976,14 @@ function refreshCardFooter(origIdx, sk) {
   const maxTot = String(asg.std) === "12" ? 600 : 500;
   const ftTot = document.getElementById(`ftTot_${origIdx}`);
   const ftRes = document.getElementById(`ftRes_${origIdx}`);
-  if (ftTot) ftTot.textContent = `மொத்தம்: ${ev.total} / ${maxTot}`;
-  if (ftRes) ftRes.innerHTML = !ev.appeared ? `<span style="color:#64748b;">⏳ நிலுவை</span>` : (ev.passed ? `<span style="color:#15803d;">✅ PASS</span>` : `<span style="color:#dc2626;">❌ FAIL (${ev.failedCount})</span>`);
+  if (ftTot) ftTot.textContent = state.viewMode === "TABLE" ? String(ev.total) : `மொத்தம் / Total: ${ev.total} / ${maxTot}`;
+  if (ftRes) {
+    if (state.viewMode === "TABLE") {
+      ftRes.innerHTML = !ev.appeared ? `<span style="color:#64748b;">-</span>` : (ev.passed ? `<span style="color:#15803d;">PASS</span>` : `<span style="color:#dc2626;">FAIL (${ev.failedCount})</span>`);
+    } else {
+      ftRes.innerHTML = !ev.appeared ? `<span style="color:#64748b;">⏳ நிலுவை / Pending</span>` : (ev.passed ? `<span style="color:#15803d;">✅ தேர்ச்சி / PASS</span>` : `<span style="color:#dc2626;">❌ தோல்வி / FAIL (${ev.failedCount})</span>`);
+    }
+  }
   updateKpis();
 }
 
@@ -747,7 +992,7 @@ function onStatusChange(origIdx, val) {
   if (!rec || !rec.students[origIdx]) return;
   rec.students[origIdx].status = val;
   state.dirty = true;
-  renderCards();
+  renderMarkEntryView();
 }
 
 function autoFillIntPr() {
@@ -772,8 +1017,20 @@ function autoFillIntPr() {
     });
   });
   state.dirty = true;
-  renderCards();
+  renderMarkEntryView();
   showToast(`⚡ ${cnt} Internal / Practical மதிப்பெண்கள் நிரப்பப்பட்டன!`);
+}
+
+function resetSectionMarks() {
+  if (!confirm("⚠️ இப்பிரிவின் இத்தேர்வு மதிப்பெண்கள் அனைத்தையும் அழிக்கவா? / Clear all marks for this section & exam?")) return;
+  getSectionStudents().forEach(({ stu }) => {
+    stu.marks = {};
+    stu.markParts = {};
+    stu.status = "PRESENT";
+  });
+  state.dirty = true;
+  renderMarkEntryView();
+  showToast("🔄 மதிப்பெண்கள் நீக்கப்பட்டன — சேமி அழுத்தவும் / Marks cleared — Tap Save", "#d97706");
 }
 
 async function saveToCloud(notify) {
@@ -781,22 +1038,140 @@ async function saveToCloud(notify) {
   const rec = getActiveTermRecord();
   if (!asg || !rec || !state.raPkt) return;
   const btn = document.getElementById("btnSaveCloud");
-  btn.disabled = true; btn.textContent = "⏳ சேமிக்கப்படுகிறது...";
+  btn.disabled = true; btn.textContent = "⏳ சேமிக்கப்படுகிறது / Saving...";
   try {
     rec.updatedAt = new Date().toISOString();
     state.raPkt.updatedAt = rec.updatedAt;
     const ok = await d1UpsertNode(`ceosvg_live/exam_result_analysis_by_uno/${asg.uNo}`, state.raPkt);
     if (ok) {
       state.dirty = false;
-      if (notify) showToast("✅ Cloud D1-இல் வெற்றிகரமாகச் சேமிக்கப்பட்டது!", "#15803d");
+      if (notify) showToast("✅ Cloud D1-இல் சேமிக்கப்பட்டது / Saved Successfully!", "#15803d");
     } else {
-      showToast("⚠️ சேமிப்பில் பிழை! இணைய இணைப்பைச் சரிபார்க்கவும்.", "#dc2626");
+      showToast("⚠️ சேமிப்பில் பிழை / Save Failed!", "#dc2626");
     }
   } catch (e) {
-    showToast("❌ இணைப்புப் பிழை!", "#dc2626");
+    showToast("❌ இணைப்புப் பிழை / Network Error!", "#dc2626");
   } finally {
-    btn.disabled = false; btn.textContent = "💾 Cloud-இல் சேமி (Save)";
+    btn.disabled = false; btn.textContent = "💾 Cloud-இல் சேமி / Save Marks";
   }
+}
+
+function exportRegisterCsv() {
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  const subs = getActiveSubjects(rec, asg);
+  const isSplit = isSplitExam(state.termKey);
+  const list = getSectionStudents();
+  const getRank = computeRanks(list, subs, asg.std, isSplit);
+  const hdr = ["S.No", "Roll No", "Name (Tamil)", "Name (English)", ...subs.map(s => s.shortEn), "Total", "Rank", "Result"];
+  const lines = [hdr.join(",")];
+  list.forEach(({ stu }, i) => {
+    const ev = evalStudent(stu, subs, asg.std, isSplit);
+    const row = [
+      i + 1,
+      `"${String(stu.rollNo || "").replace(/"/g, '""')}"`,
+      `"${String(stu.nameTa || "").replace(/"/g, '""')}"`,
+      `"${String(stu.nameEn || "").replace(/"/g, '""')}"`,
+      ...subs.map(s => ev.status !== "PRESENT" ? ev.status : (ev.subRes[s.key]?.totalStr || "")),
+      ev.total,
+      getRank(ev),
+      ev.status !== "PRESENT" ? ev.status : (ev.appeared ? (ev.passed ? "PASS" : "FAIL") : "-")
+    ];
+    lines.push(row.join(","));
+  });
+  const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `[${asg.uNo}]_${asg.std}th_Sec_${asg.secId}_${state.termKey}_MarkRegister.csv`;
+  a.click();
+}
+
+function renderRegisterTab() {
+  const host = document.getElementById("paneRegister");
+  const asg = getCurrentAssign();
+  const rec = getActiveTermRecord();
+  const subs = getActiveSubjects(rec, asg);
+  const isSplit = isSplitExam(state.termKey);
+  const list = getSectionStudents();
+  const getRank = computeRanks(list, subs, asg.std, isSplit);
+  const termName = document.getElementById("selExam")?.selectedOptions[0]?.textContent || state.termKey;
+  const nowStr = new Date().toLocaleString("en-IN", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+
+  let app = 0, pass = 0;
+  const subStats = {};
+  subs.forEach(s => { subStats[s.key] = { app: 0, pass: 0, centum: 0 }; });
+  list.forEach(({ stu }) => {
+    const ev = evalStudent(stu, subs, asg.std, isSplit);
+    if (ev.appeared) { app++; if (ev.passed) pass++; }
+    subs.forEach(s => {
+      const sr = ev.subRes[s.key];
+      if (ev.status === "PRESENT" && sr && sr.totalStr !== "" && sr.totalStr !== "EX") {
+        subStats[s.key].app++;
+        if (!sr.isFail) subStats[s.key].pass++;
+        if (sr.totalStr === "100") subStats[s.key].centum++;
+      }
+    });
+  });
+
+  host.innerHTML = `
+    <div class="no-print" style="display:flex; justify-content:flex-end; gap:6px; margin-bottom:8px; flex-wrap:wrap;">
+      <button type="button" class="chip-btn" onclick="exportRegisterCsv()">📗 Excel (.csv)</button>
+      <button type="button" class="chip-btn" style="background:#6d28d9; color:#fff; border-color:#6d28d9;" onclick="window.print()">🖨️ PDF / Print (A4)</button>
+    </div>
+    <div style="overflow-x:auto; background:#fff; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
+      <div style="text-align:center; margin-bottom:8px;">
+        <div style="font-weight:900; font-size:0.86rem; color:#0f294a;">பள்ளிக்கல்வித்துறை | சிவகங்கை மாவட்டம் • School Education Department | Sivagangai District</div>
+        <div style="font-weight:900; font-size:0.90rem; color:#0f766e; margin-top:2px;">${esc(asg.schoolNameTa || asg.schoolNameEn || ("U.No: " + asg.uNo))}</div>
+        <div style="font-weight:800; font-size:0.78rem; color:#334155;">${esc(asg.std)}-ஆம் வகுப்பு (பிரிவு ${esc(asg.secId)}) • ${esc(termName)} — வகுப்பு மதிப்பெண் பதிவேடு (Class Mark Register)</div>
+      </div>
+      <table class="reg-table">
+        <thead>
+          <tr>
+            <th>வ.எண்</th><th>Roll</th><th style="text-align:left;">மாணவர் பெயர் / Student Name</th>
+            ${subs.map(s => `<th>${esc(s.label)}<br><span style="font-size:0.62rem;">(${esc(s.shortEn)})</span></th>`).join("")}
+            <th>மொத்தம்<br>Total</th><th>தரம்<br>Rank</th><th>முடிவு<br>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${list.map(({ stu }, i) => {
+            const ev = evalStudent(stu, subs, asg.std, isSplit);
+            return `<tr>
+              <td>${i + 1}</td>
+              <td>${esc(stu.rollNo || "-")}</td>
+              <td style="text-align:left; font-weight:700;">${esc(stu.nameTa || stu.nameEn || "-")}</td>
+              ${subs.map(s => {
+                const sr = ev.subRes[s.key] || { totalStr: "-", isFail: false };
+                return `<td style="${sr.isFail ? "background:#fee2e2;color:#991b1b;font-weight:900;" : (sr.totalStr === "100" ? "background:#dcfce7;color:#166534;font-weight:900;" : "")}">${esc(ev.status !== "PRESENT" ? ev.status : (sr.totalStr || "-"))}</td>`;
+              }).join("")}
+              <td style="font-weight:900;">${ev.total}</td>
+              <td style="font-weight:900; color:#1d4ed8;">${getRank(ev)}</td>
+              <td style="font-weight:900; color:${ev.passed ? "#15803d" : "#dc2626"};">${ev.status !== "PRESENT" ? ev.status : (ev.appeared ? (ev.passed ? "PASS" : "FAIL") : "-")}</td>
+            </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+
+      <div style="margin-top:10px; border:1px solid #94a3b8; border-radius:6px; padding:8px; font-size:0.74rem;">
+        <div style="font-weight:900; color:#0f294a; margin-bottom:4px;">சுருக்கம் / Abstract: மொத்தம் (Total): ${list.length} | எழுதியோர் (Appeared): ${app} | தேர்ச்சி (Passed): ${pass} | தேர்ச்சி % (Pass %): ${app > 0 ? Math.round((pass / app) * 100) : 0}%</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          ${subs.map(s => {
+            const st = subStats[s.key];
+            const pct = st.app > 0 ? Math.round((st.pass / st.app) * 100) : 0;
+            return `<span><strong>${esc(s.shortEn)}:</strong> ${pct}%${st.centum > 0 ? ` (100×${st.centum})` : ""}</span>`;
+          }).join(" | ")}
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; margin-top:46px; padding:0 20px; font-size:0.78rem; font-weight:900; color:#0f294a;">
+        <div>வகுப்பாசிரியர் கையொப்பம்<br>Class Teacher Signature</div>
+        <div style="text-align:right;">தலைமையாசிரியர் கையொப்பம்<br>Headmaster / Principal Signature</div>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:14px; padding-top:6px; border-top:1px solid #cbd5e1; font-size:0.68rem; font-weight:800; color:#475569;">
+        <span>portal.ceosvg.in</span>
+        <span>Report Generated on: ${esc(nowStr)}</span>
+      </div>
+    </div>
+  `;
 }
 
 function renderSummaryTab() {
@@ -820,82 +1195,107 @@ function renderSummaryTab() {
       failedRows.push({ name: stu.nameTa || stu.nameEn, roll: stu.rollNo || "-", cnt: ev.failedCount, fSubs });
     }
   });
+  failedRows.sort((a, b) => a.cnt - b.cnt);
 
   host.innerHTML = `
+    <div class="no-print" style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+      <button type="button" class="chip-btn" style="background:#dc2626; color:#fff; border-color:#dc2626;" onclick="window.print()">🖨️ PDF / Print</button>
+    </div>
     <div class="rep-card">
-      <div style="font-weight:900; color:#0f294a; margin-bottom:8px;">📊 பாடவாரியாகத் தேர்ச்சி பெறாதோர் எண்ணிக்கை</div>
+      <div style="font-weight:900; color:#0f294a; margin-bottom:8px;">📊 பாடவாரியாகத் தேர்ச்சி பெறாதோர் / Subject-wise Failed Count</div>
       <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:6px;">
-        ${subs.map(s => `<div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:6px 8px; font-size:0.78rem; font-weight:800; display:flex; justify-content:space-between;"><span>${esc(s.label)}</span><strong style="color:#b91c1c;">${subFailCnt[s.key]}</strong></div>`).join("")}
+        ${subs.map(s => `<div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:6px 8px; font-size:0.78rem; font-weight:800; display:flex; justify-content:space-between;"><span>${esc(s.label)} (${esc(s.shortEn)})</span><strong style="color:#b91c1c;">${subFailCnt[s.key]}</strong></div>`).join("")}
       </div>
     </div>
     <div class="rep-card">
-      <div style="font-weight:900; color:#b91c1c; margin-bottom:8px;">⚠️ தேர்ச்சி பெறாதோர் பட்டியல் (${failedRows.length})</div>
-      ${failedRows.length === 0 ? `<div style="color:#15803d; font-weight:800;">🎉 100% தேர்ச்சி!</div>` :
+      <div style="font-weight:900; color:#b91c1c; margin-bottom:8px;">⚠️ தேர்ச்சி பெறாதோர் பட்டியல் / Failed Students (${failedRows.length})</div>
+      ${failedRows.length === 0 ? `<div style="color:#15803d; font-weight:800;">🎉 100% தேர்ச்சி! / 100% Pass!</div>` :
         failedRows.map((r, i) => `<div style="padding:7px 0; border-bottom:1px solid #e2e8f0; font-size:0.80rem;">
-          <strong>${i + 1}. ${esc(r.name)}</strong> <span style="color:#64748b;">(${esc(r.roll)})</span>
+          <strong>${i + 1}. ${esc(r.name)}</strong> <span style="color:#64748b;">(${esc(r.roll)})</span> — <span style="background:#fee2e2;color:#991b1b;padding:1px 6px;border-radius:999px;font-size:0.70rem;font-weight:900;">${r.cnt} Sub Fail</span>
           <div style="color:#b91c1c; font-weight:800; font-size:0.74rem; margin-top:2px;">${esc(r.fSubs.join(" • "))}</div>
         </div>`).join("")}
     </div>
   `;
 }
 
-function renderRegisterTab() {
-  const host = document.getElementById("paneRegister");
+function renderProgressTab() {
+  const host = document.getElementById("paneProgress");
   const asg = getCurrentAssign();
   const rec = getActiveTermRecord();
   const subs = getActiveSubjects(rec, asg);
   const isSplit = isSplitExam(state.termKey);
   const list = getSectionStudents();
+  const getRank = computeRanks(list, subs, asg.std, isSplit);
   const termName = document.getElementById("selExam")?.selectedOptions[0]?.textContent || state.termKey;
+  const maxTot = String(asg.std) === "12" ? 600 : 500;
 
-  host.innerHTML = `
-    <div class="no-print" style="display:flex; justify-content:flex-end; margin-bottom:8px;">
-      <button type="button" class="chip-btn" style="background:#6d28d9; color:#fff; border-color:#6d28d9;" onclick="window.print()">🖨️ PDF / Print (A4)</button>
-    </div>
-    <div style="overflow-x:auto; background:#fff; padding:8px; border-radius:10px; border:1px solid #cbd5e1;">
-      <div style="text-align:center; font-weight:900; font-size:0.88rem; margin-bottom:6px;">
-        ${esc(asg.schoolNameTa || ("U.No: " + asg.uNo))} — ${esc(asg.std)}-ஆம் வகுப்பு (பிரிவு ${esc(asg.secId)}) • ${esc(termName)}
+  const optsHtml = `<option value="ALL" ${state.progressStuIdx === "ALL" ? "selected" : ""}>அனைத்து மாணவர்கள் / All Students (${list.length})</option>` +
+    list.map(({ stu }, i) => `<option value="${i}" ${String(state.progressStuIdx) === String(i) ? "selected" : ""}>${i + 1}. ${esc(stu.nameTa || stu.nameEn)} (${esc(stu.rollNo || "-")})</option>`).join("");
+
+  const targets = (state.progressStuIdx === "ALL") ? list : (list[Number(state.progressStuIdx)] ? [list[Number(state.progressStuIdx)]] : []);
+
+  const cardsHtml = targets.map(({ stu }) => {
+    const ev = evalStudent(stu, subs, asg.std, isSplit);
+    const pct = ev.appeared ? ((ev.total / maxTot) * 100).toFixed(1) : "0.0";
+    return `<div class="prog-card">
+      <div style="text-align:center; border-bottom:2px solid #0f766e; padding-bottom:6px; margin-bottom:8px;">
+        <div style="font-size:0.78rem; font-weight:900; color:#0f294a;">பள்ளிக்கல்வித்துறை | சிவகங்கை மாவட்டம் • School Education Dept | Sivagangai</div>
+        <div style="font-size:0.88rem; font-weight:900; color:#0f766e;">${esc(asg.schoolNameTa || asg.schoolNameEn || ("U.No: " + asg.uNo))}</div>
+        <div style="font-size:0.76rem; font-weight:800; color:#334155;">மாணவர் முன்னேற்ற அறிக்கை / Student Progress Report — ${esc(termName)}</div>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:0.80rem; font-weight:900; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+        <span>மாணவர் / Student: ${esc(stu.nameTa || stu.nameEn || "-")} (${esc(stu.nameEn || "")})</span>
+        <span>வகுப்பு / Class: ${esc(asg.std)} - ${esc(asg.secId)} | Roll: ${esc(stu.rollNo || "-")}</span>
       </div>
       <table class="reg-table">
-        <thead>
-          <tr>
-            <th>வ.எண்</th><th>Roll</th><th style="text-align:left;">மாணவர் பெயர்</th>
-            ${subs.map(s => `<th>${esc(s.label)}</th>`).join("")}
-            <th>மொத்தம்</th><th>முடிவு</th>
-          </tr>
-        </thead>
+        <thead><tr><th style="text-align:left;">பாடம் / Subject</th><th>மதிப்பெண் / Marks</th><th>நிலை / Status</th></tr></thead>
         <tbody>
-          ${list.map(({ stu }, i) => {
-            const ev = evalStudent(stu, subs, asg.std, isSplit);
+          ${subs.map(s => {
+            const sr = ev.subRes[s.key] || { totalStr: "-", isFail: false };
             return `<tr>
-              <td>${i + 1}</td>
-              <td>${esc(stu.rollNo || "-")}</td>
-              <td style="text-align:left; font-weight:700;">${esc(stu.nameTa || stu.nameEn || "-")}</td>
-              ${subs.map(s => {
-                const sr = ev.subRes[s.key] || { totalStr: "-", isFail: false };
-                return `<td style="${sr.isFail ? "background:#fee2e2;color:#991b1b;font-weight:900;" : ""}">${esc(ev.status !== "PRESENT" ? ev.status : (sr.totalStr || "-"))}</td>`;
-              }).join("")}
-              <td style="font-weight:900;">${ev.total}</td>
-              <td style="font-weight:900; color:${ev.passed ? "#15803d" : "#dc2626"};">${ev.status !== "PRESENT" ? ev.status : (ev.appeared ? (ev.passed ? "PASS" : "FAIL") : "-")}</td>
+              <td style="text-align:left; font-weight:800;">${esc(s.label)} (${esc(s.shortEn)})</td>
+              <td style="font-weight:900;">${esc(ev.status !== "PRESENT" ? ev.status : (sr.totalStr || "-"))}</td>
+              <td style="font-weight:900; color:${sr.isFail ? "#dc2626" : "#15803d"};">${ev.status !== "PRESENT" ? ev.status : (sr.totalStr ? (sr.isFail ? "FAIL" : "PASS") : "-")}</td>
             </tr>`;
           }).join("")}
         </tbody>
       </table>
+      <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.82rem; font-weight:900; color:#0f294a;">
+        <span>மொத்தம் / Total: ${ev.total} / ${maxTot} (${pct}%)</span>
+        <span>தரம் / Rank: ${getRank(ev)}</span>
+        <span style="color:${ev.passed ? "#15803d" : "#dc2626"};">${ev.passed ? "✅ PASS" : (ev.appeared ? "❌ FAIL" : ev.status)}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:34px; font-size:0.74rem; font-weight:800; color:#334155;">
+        <span>பெற்றோர் / Parent</span>
+        <span>வகுப்பாசிரியர் / Class Teacher</span>
+        <span>தலைமையாசிரியர் / HM</span>
+      </div>
+    </div>`;
+  }).join("");
+
+  host.innerHTML = `
+    <div class="no-print" style="display:flex; gap:6px; margin-bottom:10px; align-items:center; flex-wrap:wrap;">
+      <select class="hdr-select" style="flex:1;" onchange="state.progressStuIdx=this.value; renderProgressTab();">${optsHtml}</select>
+      <button type="button" class="chip-btn" style="background:#ea580c; color:#fff; border-color:#ea580c;" onclick="window.print()">🖨️ PDF / Print</button>
     </div>
+    ${cardsHtml}
   `;
 }
 
 function switchTab(t) {
   state.activeTab = t;
   document.getElementById("tabEntry").classList.toggle("active", t === "ENTRY");
-  document.getElementById("tabSummary").classList.toggle("active", t === "SUMMARY");
   document.getElementById("tabRegister").classList.toggle("active", t === "REGISTER");
+  document.getElementById("tabSummary").classList.toggle("active", t === "SUMMARY");
+  document.getElementById("tabProgress").classList.toggle("active", t === "PROGRESS");
   document.getElementById("paneEntry").classList.toggle("hidden", t !== "ENTRY");
-  document.getElementById("paneSummary").classList.toggle("hidden", t !== "SUMMARY");
   document.getElementById("paneRegister").classList.toggle("hidden", t !== "REGISTER");
-  if (t === "ENTRY") renderCards();
-  if (t === "SUMMARY") renderSummaryTab();
+  document.getElementById("paneSummary").classList.toggle("hidden", t !== "SUMMARY");
+  document.getElementById("paneProgress").classList.toggle("hidden", t !== "PROGRESS");
+  if (t === "ENTRY") renderMarkEntryView();
   if (t === "REGISTER") renderRegisterTab();
+  if (t === "SUMMARY") renderSummaryTab();
+  if (t === "PROGRESS") renderProgressTab();
 }
 
 async function onExamChange(tk) {
@@ -914,7 +1314,7 @@ async function loadSchoolResultData() {
   const asg = getCurrentAssign();
   if (!asg) return;
   document.getElementById("hdrSchool").textContent = asg.schoolNameTa || asg.schoolNameEn || ("பள்ளி U.No: " + asg.uNo);
-  document.getElementById("hdrTeacher").textContent = `👨‍🏫 ${state.session.nameTa || state.session.emisId} • ${asg.std}-ஆம் வகுப்பு (பிரிவு ${asg.secId})`;
+  document.getElementById("hdrTeacher").textContent = `👨‍🏫 ${state.session.nameTa || state.session.emisId} • ${asg.std}-ஆம் வகுப்பு (${asg.std}th - ${asg.secId})`;
   await getWorkerToken(asg.uNo);
   const pkt = await d1ReadNode(`ceosvg_live/exam_result_analysis_by_uno/${asg.uNo}`);
   state.raPkt = (pkt && typeof pkt === "object") ? pkt : { terms: {} };
@@ -934,7 +1334,7 @@ function openAppView() {
 }
 
 function ctLogout() {
-  if (state.dirty && !confirm("சேமிக்காத மதிப்பெண்கள் உள்ளன. Logout செய்யவா?")) return;
+  if (state.dirty && !confirm("சேமிக்காத மதிப்பெண்கள் உள்ளன. வெளியேறவா? / Unsaved marks exist. Logout?")) return;
   localStorage.removeItem(SESSION_KEY);
   state.session = null;
   state.raPkt = null;
@@ -950,18 +1350,18 @@ document.getElementById("ctLoginForm").addEventListener("submit", async (e) => {
   const btn = document.getElementById("btnLogin");
   const showErr = (m) => { errEl.textContent = m; errEl.style.display = "block"; };
   errEl.style.display = "none";
-  if (!emis || !pass) { showErr("⚠️ EMIS ID மற்றும் கடவுச்சொல்லை உள்ளிடவும்."); return; }
-  btn.disabled = true; btn.textContent = "⏳ சரிபார்க்கப்படுகிறது...";
+  if (!emis || !pass) { showErr("⚠️ EMIS ID மற்றும் கடவுச்சொல்லை உள்ளிடவும் / Enter EMIS ID & Password."); return; }
+  btn.disabled = true; btn.textContent = "⏳ சரிபார்க்கப்படுகிறது / Verifying...";
   try {
     await getWorkerToken("PRELOGIN");
     const rec = await d1ReadNode(`ceosvg_live/class_teacher_auth/${encodeURIComponent(emis)}`);
     if (!rec || !rec.passHash || !rec.uNo) {
-      showErr("❌ இந்த EMIS ID வகுப்பாசிரியராகப் பதிவு செய்யப்படவில்லை. பள்ளியின் Class Master-இல் வகுப்பாசிரியரைத் தேர்வு செய்யவும்.");
+      showErr("❌ இந்த EMIS ID வகுப்பாசிரியராகப் பதிவு செய்யப்படவில்லை / Not mapped as Class Teacher.");
       return;
     }
     const h = await sha256Hex(`${emis}::${pass}`);
     if (h !== rec.passHash) {
-      showErr("❌ கடவுச்சொல் தவறானது! (WhatsApp முதல் 4 எண்கள்@பிறந்த ஆண்டு — எ.கா: 9626@1980)");
+      showErr("❌ கடவுச்சொல் தவறானது / Invalid Password (எ.கா / Ex: 9626@1980)");
       return;
     }
     state.session = rec;
@@ -969,9 +1369,9 @@ document.getElementById("ctLoginForm").addEventListener("submit", async (e) => {
     localStorage.setItem(SESSION_KEY, JSON.stringify(rec));
     openAppView();
   } catch (err) {
-    showErr("❌ இணைய இணைப்புப் பிழை. மீண்டும் முயற்சிக்கவும்.");
+    showErr("❌ இணைய இணைப்புப் பிழை / Network Error. மீண்டும் முயற்சிக்கவும்.");
   } finally {
-    btn.disabled = false; btn.textContent = "🔓 உள்நுழைக (Login)";
+    btn.disabled = false; btn.textContent = "🔓 உள்நுழைக / Login";
   }
 });
 

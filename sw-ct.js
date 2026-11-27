@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ceosvg-ct-v1';
+const CACHE_NAME = 'ceosvg-ct-v2';
 const SHELL_URLS = ['/ct.html', '/manifest-ct.json'];
 
 self.addEventListener('install', (event) => {
