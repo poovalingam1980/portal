@@ -436,7 +436,15 @@ function getCurrentAssign() {
   return arr[state.assignIdx] || arr[0] || null;
 }
 
-function getTermStoreKey(std, termKey) { return String(std) === "12" ? `STD12_${termKey}` : termKey; }
+function getTermStoreKey(std, termKey) {
+  return String(std) === "12" ? `${termKey}__STD12` : termKey;
+}
+
+function toArr(v) {
+  if (Array.isArray(v)) return v.filter(Boolean);
+  if (v && typeof v === "object") return Object.values(v).filter(Boolean);
+  return [];
+}
 
 function getActiveTermRecord() {
   const asg = getCurrentAssign();
@@ -444,13 +452,28 @@ function getActiveTermRecord() {
   const pkt = state.raPkt;
   if (!pkt.terms || typeof pkt.terms !== "object") pkt.terms = {};
   const tk = getTermStoreKey(asg.std, state.termKey);
+  const cm = String(asg.std) === "12" ? pkt.cm12 : pkt.cm10;
+  const cmSecs = cm ? toArr(cm.sections) : [];
+  const cmRoster = cm ? toArr(cm.roster || cm.students) : [];
+
   if (!pkt.terms[tk]) {
-    const cm = String(asg.std) === "12" ? pkt.cm12 : pkt.cm10;
     pkt.terms[tk] = {
-      sections: cm && Array.isArray(cm.sections) ? JSON.parse(JSON.stringify(cm.sections)) : [{ secId: asg.secId }],
-      students: cm && Array.isArray(cm.students) ? JSON.parse(JSON.stringify(cm.students)).map(s => Object.assign({}, s, { marks: {}, markParts: {} })) : [],
+      uNo: String(asg.uNo),
+      std: String(asg.std),
+      examTerm: state.termKey,
+      markScale: "100",
+      sections: cmSecs.length > 0 ? JSON.parse(JSON.stringify(cmSecs)) : [{ secId: asg.secId }],
+      students: cmRoster.map(s => Object.assign({}, JSON.parse(JSON.stringify(s)), { status: s.status || "PRESENT", marks: {}, markParts: {} })),
       updatedAt: new Date().toISOString()
     };
+  } else {
+    const rec = pkt.terms[tk];
+    rec.sections = toArr(rec.sections);
+    if (rec.sections.length === 0 && cmSecs.length > 0) rec.sections = JSON.parse(JSON.stringify(cmSecs));
+    rec.students = toArr(rec.students);
+    if (rec.students.length === 0 && cmRoster.length > 0) {
+      rec.students = cmRoster.map(s => Object.assign({}, JSON.parse(JSON.stringify(s)), { status: s.status || "PRESENT", marks: {}, markParts: {} }));
+    }
   }
   return pkt.terms[tk];
 }
