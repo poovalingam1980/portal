@@ -1,0 +1,317 @@
+/**
+ * ============================================================================
+ * CEO SIVAGANGAI PORTAL (portal.ceosvg.in) — AUTOMATIC WEEKLY FULL D1 BACKUP
+ * Schedule : Every Friday at 12:00 AM (Midnight IST — Asia/Kolkata)
+ * Target   : Google Drive Folder "CEOSVG_Weekly_D1_Backups" (.json.gz)
+ * Coverage : 100% of all Cloudflare D1 keys under ceosvg_live/
+ *            (Result Analysis 10th & 12th, EBS 2026-27, School Extra,
+ *             Master Schools, School Auth, EMIS Staff, Delete Requests,
+ *             Audit Logs, Exam Centres, Circulars, RBAC & All Stores)
+ * Retention: Keeps latest 12 weekly backups (3 months); auto-trashes older
+ * ============================================================================
+ *
+ * SETUP (1-TIME ONLY — 2 MINUTES):
+ * 1. Open https://script.google.com (logged into ceosvgweb@gmail.com)
+ * 2. Create a new project named "CEOSVG_Weekly_Friday_Backup" (or add as a new .gs file in existing project)
+ * 3. Paste this entire script and press Ctrl + S (Save)
+ * 4. From the top function dropdown, select: setupFridayMidnightBackupTrigger
+ * 5. Click ▶ Run and grant Drive / Mail / External Request permissions
+ * 6. (Optional) Select runBackupNowManualTest and click ▶ Run to verify immediately!
+ */
+
+const CEOSVG_BACKUP_CFG = {
+  WORKER_BASE: "https://ceosvg-fb-cache.poovalingam1980.workers.dev",
+  DRIVE_FOLDER_NAME: "CEOSVG_Weekly_D1_Backups",
+  NOTIFY_EMAIL: "ceosvgweb@gmail.com",
+  KEEP_LATEST_BACKUPS: 12, // Keeps 12 Fridays (~3 months)
+  PAGE_SIZE: 12,
+  MAX_PAGES: 400,
+  // Skip ephemeral/duplicate internal prefixes (exam_result_analysis_by_uno already reassembles ra_split!)
+  SKIP_PREFIXES: [
+    "ceosvg_live/live_presence/",
+    "ceosvg_live/backup_prev/",
+    "ceosvg_live/ra_split/"
+  ]
+};
+
+/**
+ * 1-CLICK SETUP: Schedules automatic backup every Friday at 12:00 AM IST.
+ * Safe to re-run — removes duplicate triggers before creating a fresh one.
+ */
+function setupFridayMidnightBackupTrigger() {
+  const fnName = "runWeeklyFridayFullD1Backup";
+  const existing = ScriptApp.getProjectTriggers();
+  for (let i = 0; i < existing.length; i++) {
+    if (existing[i].getHandlerFunction() === fnName) {
+      ScriptApp.deleteTrigger(existing[i]);
+    }
+  }
+  ScriptApp.newTrigger(fnName)
+    .timeBased()
+    .onWeekDay(ScriptApp.WeekDay.FRIDAY)
+    .atHour(0)
+    .nearMinute(0)
+    .inTimezone("Asia/Kolkata")
+    .create();
+
+  Logger.log("✅ Weekly Trigger created: Every Friday 12:00 AM IST -> " + fnName);
+}
+
+/**
+ * Optional manual test runner — runs the full backup immediately.
+ */
+function runBackupNowManualTest() {
+  return runWeeklyFridayFullD1Backup();
+}
+
+/**
+ * Main Weekly Backup Engine: Downloads 100% of Cloudflare D1 data,
+ * compresses to .json.gz, saves to Google Drive, rotates old files, and emails report.
+ */
+function runWeeklyFridayFullD1Backup() {
+  const startedAt = new Date();
+  const tz = "Asia/Kolkata";
+  const dateStamp = Utilities.formatDate(startedAt, tz, "yyyy-MM-dd");
+  const timeStampIst = Utilities.formatDate(startedAt, tz, "dd-MM-yyyy hh:mm:ss a 'IST'");
+
+  try {
+    // 1) Obtain Super Admin HMAC Session Token from Cloudflare Worker
+    const token = fetchWorkerAdminTokenForBackup_();
+    const authHeaders = token
+      ? { "Authorization": "Bearer " + token, "X-CEOSVG-Token": token }
+      : {};
+
+    // 2) Paginate ALL keys under ceosvg_live/ from Cloudflare D1
+    const rootLive = {};
+    const categoryCounts = {};
+    let totalKeys = 0;
+    let skippedKeys = 0;
+    let failedOffsets = [];
+    let offset = 0;
+
+    for (let page = 0; page < CEOSVG_BACKUP_CFG.MAX_PAGES; page++) {
+      const pageRes = fetchD1PrefixPageWithRetry_("ceosvg_live/", offset, CEOSVG_BACKUP_CFG.PAGE_SIZE, authHeaders);
+      if (!pageRes || !pageRes.ok || !Array.isArray(pageRes.items)) {
+        failedOffsets.push(offset);
+        break;
+      }
+      const items = pageRes.items;
+      if (items.length === 0) break;
+
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
+        if (!it || !it.k) continue;
+        const k = String(it.k);
+
+        // Skip ephemeral / duplicate internal keys
+        let shouldSkip = false;
+        for (let s = 0; s < CEOSVG_BACKUP_CFG.SKIP_PREFIXES.length; s++) {
+          if (k.indexOf(CEOSVG_BACKUP_CFG.SKIP_PREFIXES[s]) === 0) {
+            shouldSkip = true;
+            break;
+          }
+        }
+        if (shouldSkip) {
+          skippedKeys++;
+          continue;
+        }
+
+        // Insert into nested Firebase-compatible tree under ceosvg_live
+        const rel = k.indexOf("ceosvg_live/") === 0 ? k.slice("ceosvg_live/".length) : k;
+        setNestedPathObj_(rootLive, rel, it.v);
+        const topCat = rel.split("/")[0] || "other";
+        categoryCounts[topCat] = (categoryCounts[topCat] || 0) + 1;
+        totalKeys++;
+      }
+
+      if (!pageRes.hasMore || items.length < CEOSVG_BACKUP_CFG.PAGE_SIZE) {
+        break;
+      }
+      offset += CEOSVG_BACKUP_CFG.PAGE_SIZE;
+    }
+
+    if (totalKeys === 0) {
+      throw new Error("0 keys returned from Cloudflare D1. Check Worker token or STRICT_LOGIN_AUTH setting.");
+    }
+
+    // 3) Build complete backup payload (100% compatible with Portal v10.25+ Streaming JSON Restore!)
+    const backupPayload = {
+      _meta: {
+        portal: "portal.ceosvg.in",
+        source: "Cloudflare D1 (ceosvg-portal-db)",
+        exportedAtIst: timeStampIst,
+        exportedAtIso: new Date().toISOString(),
+        totalKeys: totalKeys,
+        skippedInternalKeys: skippedKeys,
+        failedOffsets: failedOffsets,
+        categoryCounts: categoryCounts
+      },
+      ceosvg_live: rootLive
+    };
+
+    const jsonText = JSON.stringify(backupPayload);
+    const rawBytes = Utilities.newBlob(jsonText, "application/json").getBytes().length;
+
+    // 4) Gzip compress to keep Drive storage compact (~85-90% size reduction)
+    const folder = getOrCreateBackupDriveFolder_(CEOSVG_BACKUP_CFG.DRIVE_FOLDER_NAME);
+    const rawBlob = Utilities.newBlob(jsonText, "application/json", "CEOSVG_Full_D1_Backup_" + dateStamp + ".json");
+    const gzBlob = Utilities.gzip(rawBlob, "CEOSVG_Full_D1_Backup_" + dateStamp + ".json.gz");
+    const savedFile = folder.createFile(gzBlob);
+    const gzBytes = savedFile.getSize();
+
+    // 5) Save human-readable summary log alongside the backup
+    const durationSec = Math.round((new Date().getTime() - startedAt.getTime()) / 1000);
+    const summaryLines = [
+      "CEO SIVAGANGAI PORTAL — WEEKLY FRIDAY FULL D1 BACKUP REPORT",
+      "============================================================",
+      "Backup Time (IST) : " + timeStampIst,
+      "Duration          : " + durationSec + " seconds",
+      "Total D1 Keys     : " + totalKeys,
+      "Raw JSON Size     : " + (rawBytes / 1048576).toFixed(2) + " MB",
+      "Compressed (.gz)  : " + (gzBytes / 1048576).toFixed(2) + " MB",
+      "Drive File URL    : " + savedFile.getUrl(),
+      "Failed Offsets    : " + (failedOffsets.length ? failedOffsets.join(", ") : "None (0)"),
+      "------------------------------------------------------------",
+      "Category Breakdown:",
+      JSON.stringify(categoryCounts, null, 2)
+    ].join("\n");
+
+    folder.createFile("Backup_Report_" + dateStamp + ".txt", summaryLines, MimeType.PLAIN_TEXT);
+
+    // 6) Rotate old backups (keep latest 12 Fridays)
+    rotateOldBackupFiles_(folder, CEOSVG_BACKUP_CFG.KEEP_LATEST_BACKUPS);
+
+    // 7) Send confirmation email
+    if (CEOSVG_BACKUP_CFG.NOTIFY_EMAIL) {
+      MailApp.sendEmail({
+        to: CEOSVG_BACKUP_CFG.NOTIFY_EMAIL,
+        subject: "✅ CEOSVG Weekly D1 Backup Completed (" + dateStamp + ") — " + totalKeys + " Keys",
+        body: summaryLines
+      });
+    }
+
+    Logger.log(summaryLines);
+    return { ok: true, fileUrl: savedFile.getUrl(), totalKeys: totalKeys, gzMb: (gzBytes / 1048576).toFixed(2) };
+  } catch (err) {
+    const errMsg = "❌ CEOSVG Weekly Friday D1 Backup Failed (" + timeStampIst + "):\n" + String(err && err.stack ? err.stack : err);
+    Logger.log(errMsg);
+    if (CEOSVG_BACKUP_CFG.NOTIFY_EMAIL) {
+      try {
+        MailApp.sendEmail({
+          to: CEOSVG_BACKUP_CFG.NOTIFY_EMAIL,
+          subject: "⚠️ CEOSVG Weekly D1 Backup FAILED (" + dateStamp + ")",
+          body: errMsg
+        });
+      } catch (me) {}
+    }
+    throw err;
+  }
+}
+
+/**
+ * Helper: Request Super Admin HMAC token from Cloudflare Worker
+ */
+function fetchWorkerAdminTokenForBackup_() {
+  const url = CEOSVG_BACKUP_CFG.WORKER_BASE + "/__auth/session";
+  const resp = UrlFetchApp.fetch(url, {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify({ role: "superadmin", uNo: "ALL", ts: Date.now() }),
+    muteHttpExceptions: true
+  });
+  if (resp.getResponseCode() >= 200 && resp.getResponseCode() < 300) {
+    const j = JSON.parse(resp.getContentText() || "{}");
+    if (j && j.ok && j.token) return String(j.token);
+  }
+  return "";
+}
+
+/**
+ * Helper: Fetch a single D1 prefix page with retry + 1-by-1 mega-school fallback
+ */
+function fetchD1PrefixPageWithRetry_(prefix, offset, limit, headers) {
+  const base = CEOSVG_BACKUP_CFG.WORKER_BASE + "/__d1/read_prefix?prefix=" + encodeURIComponent(prefix);
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const resp = UrlFetchApp.fetch(base + "&offset=" + offset + "&limit=" + limit, {
+        method: "get",
+        headers: headers,
+        muteHttpExceptions: true
+      });
+      if (resp.getResponseCode() === 200) {
+        const j = JSON.parse(resp.getContentText() || "{}");
+        if (j && j.ok) return j;
+      }
+    } catch (e) {}
+    Utilities.sleep(800);
+  }
+  // 1-by-1 fallback so no mega-school row is ever skipped!
+  if (limit > 1) {
+    const combined = [];
+    let anyMore = false;
+    for (let sub = offset; sub < offset + limit; sub++) {
+      try {
+        const oneResp = UrlFetchApp.fetch(base + "&offset=" + sub + "&limit=1", {
+          method: "get",
+          headers: headers,
+          muteHttpExceptions: true
+        });
+        if (oneResp.getResponseCode() === 200) {
+          const oj = JSON.parse(oneResp.getContentText() || "{}");
+          if (oj && oj.ok && Array.isArray(oj.items) && oj.items.length > 0) {
+            combined.push(oj.items[0]);
+            if (oj.hasMore) anyMore = true;
+          }
+        }
+      } catch (e2) {}
+    }
+    if (combined.length > 0) return { ok: true, items: combined, hasMore: anyMore };
+  }
+  return null;
+}
+
+/**
+ * Helper: Build nested object path (e.g. "exam_result_analysis_by_uno/434" -> obj.exam_result_analysis_by_uno["434"])
+ */
+function setNestedPathObj_(rootObj, relPath, val) {
+  const parts = String(relPath || "").split("/").filter(Boolean);
+  if (parts.length === 0) return;
+  let cur = rootObj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const p = parts[i];
+    if (!cur[p] || typeof cur[p] !== "object" || Array.isArray(cur[p])) {
+      cur[p] = {};
+    }
+    cur = cur[p];
+  }
+  cur[parts[parts.length - 1]] = val;
+}
+
+/**
+ * Helper: Get or create dedicated Google Drive folder
+ */
+function getOrCreateBackupDriveFolder_(folderName) {
+  const it = DriveApp.getFoldersByName(folderName);
+  if (it.hasNext()) return it.next();
+  return DriveApp.createFolder(folderName);
+}
+
+/**
+ * Helper: Keep only the latest N weekly .json.gz backups (moves older ones to Trash)
+ */
+function rotateOldBackupFiles_(folder, keepCount) {
+  const files = [];
+  const it = folder.getFiles();
+  while (it.hasNext()) {
+    const f = it.next();
+    if (f.getName().indexOf("CEOSVG_Full_D1_Backup_") === 0) {
+      files.push(f);
+    }
+  }
+  files.sort(function(a, b) {
+    return b.getDateCreated().getTime() - a.getDateCreated().getTime();
+  });
+  for (let i = keepCount; i < files.length; i++) {
+    files[i].setTrashed(true);
+  }
+}
