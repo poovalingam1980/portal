@@ -1067,17 +1067,95 @@ async function saveToCloud(notify) {
   const asg = getCurrentAssign();
   const rec = getActiveTermRecord();
   if (!asg || !rec || !state.raPkt) return;
+  const mySec = String(asg.secId || "").trim();
+  const mySecStus = toArr(rec.students).filter(s => String(s && s.section || "").trim() === mySec);
+  if (!mySec || mySecStus.length === 0) {
+    if (notify) showToast("⚠️ மாணவர் பட்டியல் காலியாக உள்ளதால் Cloud சேமிப்பு நிறுத்தப்பட்டது!", "#d97706");
+    return;
+  }
   const btn = document.getElementById("btnSaveCloud");
   btn.disabled = true; btn.textContent = "⏳ சேமிக்கப்படுகிறது / Saving...";
   try {
-    rec.updatedAt = new Date().toISOString();
-    state.raPkt.updatedAt = rec.updatedAt;
-    const ok = await d1UpsertNode(`ceosvg_live/exam_result_analysis_by_uno/${asg.uNo}`, state.raPkt);
-    if (ok) {
-      state.dirty = false;
-      if (notify) showToast("✅ Cloud D1-இல் சேமிக்கப்பட்டது / Saved Successfully!", "#15803d");
-    } else {
-      showToast("⚠️ சேமிப்பில் பிழை / Save Failed!", "#dc2626");
+    const tk = getTermStoreKey(asg.std, state.termKey);
+    const nowIso = new Date().toISOString();
+    const tok = state.token || await getWorkerToken(state.session ? state.session.uNo : asg.uNo);
+    const termMeta = Object.assign({}, rec);
+    delete termMeta.students;
+    termMeta.updatedAt = nowIso;
+
+    // Shield #1 (v2.1): Server-Side Atomic Section Merge — sends ONLY this teacher's section to Cloudflare D1
+    let useFallback = false;
+    try {
+      const mergeRes = await fetch(`${WORKER_BASE}/__d1/ra_merge_section`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(tok ? { "Authorization": "Bearer " + tok } : {}) },
+        body: JSON.stringify({
+          uNo: String(asg.uNo).trim(),
+          termKey: tk,
+          section: mySec,
+          students: mySecStus,
+          termMeta: termMeta,
+          updatedAt: nowIso,
+          fbBackup: true
+        })
+      });
+      if (mergeRes && mergeRes.status === 423) {
+        showToast("🔒 இந்தத் தேர்வு Final Submit செய்யப்பட்டு பூட்டப்பட்டுள்ளது! திருத்த Admin Unlock தேவை.", "#dc2626");
+        return;
+      }
+      if (mergeRes && mergeRes.status === 404) {
+        useFallback = true; // Worker not yet redeployed with /__d1/ra_merge_section
+      } else if (mergeRes && mergeRes.ok) {
+        const mj = await mergeRes.json().catch(() => null);
+        if (mj && mj.ok) {
+          rec.updatedAt = nowIso;
+          state.dirty = false;
+          if (notify) showToast(`✅ பிரிவு ${mySec} மட்டும் பாதுகாப்பாக D1-இல் சேமிக்கப்பட்டது!`, "#15803d");
+          return;
+        }
+        showToast("⚠️ சேமிப்பில் பிழை / Save Failed!", "#dc2626");
+        return;
+      } else {
+        showToast("⚠️ சேமிப்பில் பிழை (Server Error) / மீண்டும் முயற்சிக்கவும்!", "#dc2626");
+        return;
+      }
+    } catch (netErr) {
+      showToast("❌ இணைய இணைப்புப் பிழை! மற்ற வகுப்புத் தரவு பாதுகாப்பிற்காக சேமிப்பு நிறுத்தப்பட்டது.", "#dc2626");
+      return;
+    }
+
+    // Shield #2 (Strict Abort Fallback when Worker is older): NEVER upload stale state.raPkt if cloud read fails!
+    if (useFallback) {
+      const nodeKey = `ceosvg_live/exam_result_analysis_by_uno/${asg.uNo}`;
+      const latestPkt = await d1ReadNode(nodeKey);
+      if (!latestPkt || typeof latestPkt !== "object") {
+        showToast("⚠️ சமீபத்திய தரவைப் பெற முடியவில்லை! மற்ற வகுப்புத் தரவு பாதுகாப்பிற்காக சேமிப்பு நிறுத்தப்பட்டது. இணையத்தைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.", "#dc2626");
+        return;
+      }
+      if (!latestPkt.terms || typeof latestPkt.terms !== "object") latestPkt.terms = {};
+      const cloudRec = latestPkt.terms[tk];
+      if (cloudRec && (cloudRec.isSubmitted === true || cloudRec.finalSubmitted === true)) {
+        showToast("🔒 இந்தத் தேர்வு Final Submit செய்யப்பட்டு பூட்டப்பட்டுள்ளது! திருத்த Admin Unlock தேவை.", "#dc2626");
+        return;
+      }
+      if (cloudRec && typeof cloudRec === "object") {
+        const cloudStus = toArr(cloudRec.students);
+        const otherSecStus = cloudStus.filter(s => String(s && s.section || "").trim() !== mySec);
+        cloudRec.students = [...otherSecStus, ...mySecStus];
+        cloudRec.updatedAt = nowIso;
+      } else {
+        rec.updatedAt = nowIso;
+        latestPkt.terms[tk] = rec;
+      }
+      latestPkt.updatedAt = nowIso;
+      state.raPkt = latestPkt;
+      const ok = await d1UpsertNode(nodeKey, latestPkt);
+      if (ok) {
+        state.dirty = false;
+        if (notify) showToast(`✅ பிரிவு ${mySec} Cloud D1-இல் சேமிக்கப்பட்டது!`, "#15803d");
+      } else {
+        showToast("⚠️ சேமிப்பில் பிழை / Save Failed!", "#dc2626");
+      }
     }
   } catch (e) {
     showToast("❌ இணைப்புப் பிழை / Network Error!", "#dc2626");
